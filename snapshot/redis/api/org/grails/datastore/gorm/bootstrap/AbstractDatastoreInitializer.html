@@ -246,7 +246,7 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>org.springframework.core.io.support.ResourcePatternResolver</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>org.springframework.core.io.support.PathMatchingResourcePatternResolver</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#resourcePatternResolver">resourcePatternResolver</a></code><br></td>
                         </tr>
                         
@@ -369,6 +369,16 @@ extends java.lang.Object
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#containsRegisteredBean(java.lang.Object, org.springframework.beans.factory.support.BeanDefinitionRegistry, java.lang.String)">containsRegisteredBean</a></strong>(java.lang.Object builder, org.springframework.beans.factory.support.BeanDefinitionRegistry registry, java.lang.String beanName)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>org.springframework.context.ApplicationEventPublisher</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findEventPublisher(org.springframework.beans.factory.support.BeanDefinitionRegistry)">findEventPublisher</a></strong>(org.springframework.beans.factory.support.BeanDefinitionRegistry beanDefinitionRegistry)</code><br>Finds the event publisher to use</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>org.springframework.context.MessageSource</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findMessageSource(org.springframework.beans.factory.support.BeanDefinitionRegistry)">findMessageSource</a></strong>(org.springframework.beans.factory.support.BeanDefinitionRegistry beanDefinitionRegistry)</code><br>Finds the message source to use</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -562,7 +572,7 @@ extends java.lang.Object
                         <a name="resourcePatternResolver"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.springframework.core.io.support.ResourcePatternResolver <strong>resourcePatternResolver</strong></h4>
+                                <h4>org.springframework.core.io.support.PathMatchingResourcePatternResolver <strong>resourcePatternResolver</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -708,6 +718,24 @@ void <strong>configureForBeanDefinitionRegistry</strong>(org.springframework.bea
                                 <h4>@groovy.transform.CompileDynamic
 protected&nbsp;boolean <strong>containsRegisteredBean</strong>(java.lang.Object builder, org.springframework.beans.factory.support.BeanDefinitionRegistry registry, java.lang.String beanName)</h4>
                                 <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="findEventPublisher(org.springframework.beans.factory.support.BeanDefinitionRegistry)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>org.springframework.context.ApplicationEventPublisher <strong>findEventPublisher</strong>(org.springframework.beans.factory.support.BeanDefinitionRegistry beanDefinitionRegistry)</h4>
+                                <p> Finds the event publisher to use
+     <DL><DT><B>Parameters:</B></DT><DD><code>beanDefinitionRegistry</code> -  The event publisher</DD></DL><DL><DT><B>Returns:</B></DT><DD>The event publisher</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="findMessageSource(org.springframework.beans.factory.support.BeanDefinitionRegistry)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>org.springframework.context.MessageSource <strong>findMessageSource</strong>(org.springframework.beans.factory.support.BeanDefinitionRegistry beanDefinitionRegistry)</h4>
+                                <p> Finds the message source to use
+     <DL><DT><B>Parameters:</B></DT><DD><code>beanDefinitionRegistry</code> -  The registry</DD></DL><DL><DT><B>Returns:</B></DT><DD>The message source</DD></DL></p>
                             </li>
                         </ul>
                     
