@@ -496,7 +496,14 @@ public abstract class DatastoreUtils {
                 else {
                     ConfigSlurper configSlurper = new ConfigSlurper();
                     Properties properties = new Properties();
-                    properties.putAll(configuration);
+                    Map<String, Object> finalConfig = new LinkedHashMap<>();
+                    for (String name : configuration.keySet()) {
+                        Object value = configuration.get(name);
+                        if(value != null) {
+                            finalConfig.put(name, value);
+                        }
+                    }
+                    properties.putAll(finalConfig);
                     ConfigObject configObject = configSlurper.parse(properties);
                     ConfigObject flatConfigObject = new ConfigObject();
                     configObject.flatten(flatConfigObject);
