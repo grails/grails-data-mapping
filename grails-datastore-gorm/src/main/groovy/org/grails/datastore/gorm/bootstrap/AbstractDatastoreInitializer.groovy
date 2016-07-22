@@ -2,6 +2,8 @@ package org.grails.datastore.gorm.bootstrap
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.events.ConfigurableApplicationContextEventPublisher
+import org.grails.datastore.gorm.events.DefaultApplicationEventPublisher
 import org.grails.datastore.gorm.plugin.support.PersistenceContextInterceptorAggregator
 import org.grails.datastore.gorm.support.AbstractDatastorePersistenceContextInterceptor
 import org.grails.datastore.mapping.core.DatastoreUtils
@@ -13,9 +15,12 @@ import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.ConfigurableApplicationContext
+import org.springframework.context.MessageSource
 import org.springframework.context.ResourceLoaderAware
 import org.springframework.context.support.GenericApplicationContext
+import org.springframework.context.support.StaticMessageSource
 import org.springframework.core.convert.converter.Converter
 import org.springframework.core.convert.support.ConfigurableConversionService
 import org.springframework.core.env.ConfigurableEnvironment
@@ -43,7 +48,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     public static final String OSIV_CLASS_NAME = 'org.grails.datastore.mapping.web.support.OpenSessionInViewInterceptor'
 
 
-    ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver()
+    PathMatchingResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver()
     Collection<Class> persistentClasses = []
     Collection<String> packages = []
     PropertyResolver configuration = new StandardEnvironment()
@@ -93,6 +98,45 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
 
     AbstractDatastoreInitializer(Map configuration, Class... persistentClasses) {
         this(configuration, persistentClasses.toList())
+    }
+
+    /**
+     * Finds the event publisher to use
+     *
+     * @param beanDefinitionRegistry The event publisher
+     * @return The event publisher
+     */
+    ApplicationEventPublisher findEventPublisher(BeanDefinitionRegistry beanDefinitionRegistry) {
+        ApplicationEventPublisher eventPublisher
+        if(beanDefinitionRegistry instanceof ConfigurableApplicationContext){
+            eventPublisher = new ConfigurableApplicationContextEventPublisher((ConfigurableApplicationContext)beanDefinitionRegistry)
+        }
+        else if(resourcePatternResolver.resourceLoader instanceof ConfigurableApplicationContext) {
+            eventPublisher = new ConfigurableApplicationContextEventPublisher((ConfigurableApplicationContext)resourcePatternResolver.resourceLoader)
+        }
+        else {
+            eventPublisher = new DefaultApplicationEventPublisher()
+        }
+        return eventPublisher
+    }
+
+    /**
+     * Finds the message source to use
+     * @param beanDefinitionRegistry The registry
+     * @return The message source
+     */
+    MessageSource findMessageSource(BeanDefinitionRegistry beanDefinitionRegistry) {
+        MessageSource messageSource
+        if(beanDefinitionRegistry instanceof MessageSource){
+            messageSource = (MessageSource)beanDefinitionRegistry
+        }
+        else if(resourcePatternResolver.resourceLoader instanceof MessageSource) {
+            messageSource = (MessageSource)resourcePatternResolver.resourceLoader
+        }
+        else {
+            messageSource = new StaticMessageSource()
+        }
+        return messageSource
     }
 
     /**
