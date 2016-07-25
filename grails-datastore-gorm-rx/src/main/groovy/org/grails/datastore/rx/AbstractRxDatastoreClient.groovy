@@ -2,6 +2,7 @@ package org.grails.datastore.rx
 
 import grails.gorm.rx.proxy.ObservableProxy
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry
 import org.grails.datastore.mapping.collection.PersistentCollection
 import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.core.IdentityGenerationException
@@ -41,6 +42,8 @@ import org.grails.gorm.rx.events.DomainEventListener
 import org.grails.gorm.rx.events.MultiTenantEventListener
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.context.MessageSource
+import org.springframework.context.MessageSourceAware
 import rx.Observable
 
 import javax.persistence.CascadeType
@@ -51,7 +54,7 @@ import javax.persistence.CascadeType
  * @since 6.0
  */
 @CompileStatic
-abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxDatastoreClientImplementor<T> {
+abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxDatastoreClientImplementor<T>, MessageSourceAware {
 
     protected MappingContext mappingContext
     ConfigurableApplicationEventPublisher eventPublisher = new DefaultApplicationEventPublisher()
@@ -75,6 +78,17 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
         if(this.tenantResolver instanceof RxDatastoreClientAware) {
             ((RxDatastoreClientAware)tenantResolver).setRxDatastoreClient(this)
         }
+        this.mappingContext.setValidatorRegistry(
+                new DefaultValidatorRegistry(mappingContext, connectionSources.getBaseConfiguration())
+        )
+
+    }
+
+    @Override
+    void setMessageSource(MessageSource messageSource) {
+        this.mappingContext.setValidatorRegistry(
+                new DefaultValidatorRegistry(mappingContext, connectionSources.getBaseConfiguration(), messageSource)
+        )
     }
 
     @Override
