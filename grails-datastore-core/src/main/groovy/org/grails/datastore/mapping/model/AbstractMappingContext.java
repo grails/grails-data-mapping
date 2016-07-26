@@ -268,21 +268,25 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
         }
 
         if (!entity.isRoot()) {
-            PersistentEntity root = entity.getRootEntity();
-            Map<String, PersistentEntity> children = persistentEntitiesByDiscriminator.get(root);
-            if (children == null) {
-                children = new ConcurrentHashMap<String,PersistentEntity>();
-                persistentEntitiesByDiscriminator.put(root, children);
-            }
-            children.put(entity.getDiscriminator(), entity);
+            PersistentEntity parent = entity.getParentEntity();
 
-            PersistentEntity directParent = entity.getParentEntity();
-            Collection<PersistentEntity> directChildren = persistentEntitiesByParent.get(directParent);
+            Collection<PersistentEntity> directChildren = persistentEntitiesByParent.get(parent);
             if (directChildren == null) {
-                directChildren = new HashSet<PersistentEntity>();
-                persistentEntitiesByParent.put(directParent, directChildren);
+                directChildren = new HashSet<>();
+                persistentEntitiesByParent.put(parent, directChildren);
             }
             directChildren.add(entity);
+
+            while (parent != null) {
+                Map<String, PersistentEntity> children = persistentEntitiesByDiscriminator.get(parent);
+                if (children == null) {
+                    children = new ConcurrentHashMap<>();
+                    persistentEntitiesByDiscriminator.put(parent, children);
+                }
+                children.put(entity.getDiscriminator(), entity);
+
+                parent = parent.getParentEntity();
+            }
         }
 
     }

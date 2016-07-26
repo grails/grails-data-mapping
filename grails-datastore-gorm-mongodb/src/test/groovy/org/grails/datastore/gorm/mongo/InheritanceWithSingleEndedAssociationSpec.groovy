@@ -13,36 +13,40 @@ class InheritanceWithSingleEndedAssociationSpec extends GormDatastoreSpec {
 
     @Issue('GPMONGODB-304')
     void "Test that inheritance works correctly with single ended associations"() {
-        given:"An association that uses a parent class type"
 
+        given:"An association that uses a parent class type"
             def a = new NodeA(a: 'A')
+            def c = new NodeC(c: 'C')
             def b = new NodeB(b: 'B', childNode: a)
+            def b2 = new NodeB(b: 'B2', childNode: c)
             a.save()
+            c.save()
+            b2.save()
             b.save(flush:true)
             session.clear()
 
         when:"The association is queried with the get method"
             def nodeB = NodeB.get(b.id)
-
+            def nodeB2 = NodeB.get(b2.id)
 
         then:"The correct type is returned for the association"
             nodeB.childNode instanceof EntityProxy
             nodeB.childNode.target instanceof NodeA
+            nodeB2.childNode instanceof EntityProxy
+            nodeB2.childNode.target instanceof NodeC
 
         when:"The association is queried with a finder"
             nodeB = NodeB.findById(b.id)
+            nodeB2 = NodeB.findById(b2.id)
         then:"The correct type is returned for the association"
             nodeB.childNode.target instanceof NodeA
-
-//        nodeB = NodeB.findByB('B')
-//        assertTrue(nodeB.childNode instanceof NodeA) // doesn't work, childNode is a Node
-
+            nodeB2.childNode.target instanceof NodeC
 
     }
 
     @Override
     List getDomainClasses() {
-        [Node, NodeA, NodeB]
+        [Node, NodeA, NodeB, NodeC]
     }
 }
 
@@ -71,4 +75,9 @@ class NodeA extends Node {
 class NodeB extends Node {
     String b
     Node childNode
+}
+
+@Entity
+class NodeC extends NodeA {
+    String c
 }
