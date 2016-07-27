@@ -76,7 +76,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
         if (shouldValidate) {
             def hasErrors = !validate()
             if (hasErrors) {
-                throw new ValidationException("Validation error occurred during call to save() for entity [$this]", errors)
+                throw ValidationException.newInstance("Validation error occurred during call to save() for entity [$this]", errors)
             } else {
                 if (isInsert) {
                     return currentRxGormInstanceApi().insert(this, arguments)
