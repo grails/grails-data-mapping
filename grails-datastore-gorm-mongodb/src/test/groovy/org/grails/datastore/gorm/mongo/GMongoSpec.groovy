@@ -12,12 +12,6 @@ import spock.lang.Specification
 import com.mongodb.DB
 
 class GMongoSpec extends Specification {
-    void setup() {
-        ExpandoMetaClass.enableGlobally()
-    }
-    void cleanup() {
-        ExpandoMetaClass.disableGlobally()
-    }
 
     def "Test configure and use gmongo"() {
         given:

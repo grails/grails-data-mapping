@@ -19,9 +19,6 @@ import spock.lang.Ignore
  */
 class DynamicMethodsConfigurerSpec extends Specification{
 
-      void setup() {
-          ExpandoMetaClass.enableGlobally()
-      }
       void cleanup() {
           GroovySystem.metaClassRegistry.removeMetaClass(Simple)
       }

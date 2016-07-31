@@ -32,7 +32,6 @@ abstract class GormDatastoreSpec extends Specification {
     Session session	    
 
     def setupSpec() {
-        ExpandoMetaClass.enableGlobally()
         setupClass = loadSetupClass()
     }
 

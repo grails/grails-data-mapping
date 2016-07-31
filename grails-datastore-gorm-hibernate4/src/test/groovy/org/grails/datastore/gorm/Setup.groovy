@@ -97,7 +97,6 @@ class Setup {
     }
 
     static Session setup(List<Class> classes, ConfigObject grailsConfig = null, boolean isTransactional = true) {
-        ExpandoMetaClass.enableGlobally()
 //        Log4jConfigurer.initLogging("classpath:log4j.properties")
 
         grailsApplication = new DefaultGrailsApplication(classes as Class[], new GroovyClassLoader(Setup.getClassLoader()))
