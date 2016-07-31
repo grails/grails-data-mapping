@@ -241,6 +241,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      */
     Criteria projections(@DelegatesTo(ProjectionList) Closure callable) {
         callable.delegate = projectionList
+        callable.resolveStrategy = Closure.DELEGATE_FIRST
         callable.call()
         return this
     }
