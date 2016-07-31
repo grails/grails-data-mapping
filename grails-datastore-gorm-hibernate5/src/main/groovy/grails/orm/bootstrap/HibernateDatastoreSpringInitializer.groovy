@@ -303,8 +303,10 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                 if (isWebApplication && osivEnabled) {
                     "flushingRedirectEventListener$suffix"(FlushOnRedirectEventListener, ref("hibernateDatastore$suffix"))
                     "openSessionInViewInterceptor$suffix"(GrailsOpenSessionInViewInterceptor) {
-                        flushMode = HibernateDatastoreSpringInitializer.resolveDefaultFlushMode(config.getProperty("hibernate${suffix}.flush.mode"),
-                                                                                                config.getProperty("hibernate${suffix}.osiv.readonly", Boolean, false))
+                        flushMode = HibernateDatastoreSpringInitializer.resolveDefaultFlushMode(
+                            config.getProperty("hibernate${suffix}.flush.mode"),
+                            config.getProperty("hibernate${suffix}.osiv.readonly", Boolean, false)
+                        )
                         sessionFactory = ref(sessionFactoryName)
                     }
                 }
@@ -319,26 +321,26 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
     private static int resolveDefaultFlushMode(CharSequence flushModeStr, boolean readOnly) {
         int flushMode
         if (Boolean.TRUE.equals(readOnly)) {
-            flushMode = GrailsHibernateTemplate.FLUSH_NEVER
+            flushMode = AbstractHibernateDatastore.FlushMode.MANUAL.level
         }
         else if (flushModeStr instanceof CharSequence) {
             switch(flushModeStr.toString().toLowerCase()) {
                 case "manual":
                 case "never":
-                    flushMode = GrailsHibernateTemplate.FLUSH_NEVER
+                    flushMode = AbstractHibernateDatastore.FlushMode.MANUAL.level
                     break
                 case "always":
-                    flushMode = GrailsHibernateTemplate.FLUSH_ALWAYS
+                    flushMode = AbstractHibernateDatastore.FlushMode.ALWAYS.level
                     break
                 case "commit":
-                    flushMode = GrailsHibernateTemplate.FLUSH_COMMIT
+                    flushMode = AbstractHibernateDatastore.FlushMode.COMMIT.level
                     break
                 default:
-                    flushMode = GrailsHibernateTemplate.FLUSH_AUTO
+                    flushMode = AbstractHibernateDatastore.FlushMode.AUTO.level
             }
         }
         else {
-            flushMode = GrailsHibernateTemplate.FLUSH_AUTO
+            flushMode = AbstractHibernateDatastore.FlushMode.AUTO.level
         }
         return flushMode
     }
