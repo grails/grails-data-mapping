@@ -1,15 +1,19 @@
 package grails.orm.bootstrap
 
 import grails.persistence.Entity
+import org.grails.datastore.gorm.bootstrap.AbstractDatastoreInitializer
+import org.grails.orm.hibernate5.support.GrailsOpenSessionInViewInterceptor
 import org.h2.Driver
 import org.hibernate.Session
 import org.hibernate.SessionFactory
-import org.springframework.context.ApplicationContext
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.jdbc.datasource.DriverManagerDataSource
-import org.springframework.util.Log4jConfigurer
-import spock.lang.IgnoreRest
+import spock.lang.Issue
 import spock.lang.Specification
+import static org.grails.orm.hibernate.AbstractHibernateDatastore.FlushMode.ALWAYS
+import static org.grails.orm.hibernate.AbstractHibernateDatastore.FlushMode.AUTO
+import static org.grails.orm.hibernate.AbstractHibernateDatastore.FlushMode.COMMIT
+import static org.grails.orm.hibernate.AbstractHibernateDatastore.FlushMode.MANUAL
 
 /**
  * Created by graemerocher on 29/01/14.
@@ -183,7 +187,45 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
         then:"There are not errors"
         thrown grails.validation.ValidationException
     }
+
+    @Issue("https://github.com/grails/grails-data-mapping/issues/752")
+    def "test that flush mode is appropriately set in osiv interceptor bean"() {
+        given:
+        def initializer = new HibernateDatastoreSpringInitializer(
+            [
+                'hibernate.osiv.enabled': true,
+                'hibernate.flush.mode': mode
+            ]
+        )
+
+        def dataSource = new DriverManagerDataSource("jdbc:h2:mem:formulaDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
+        dataSource.driverClassName = Driver.name
+
+        when:"DataSource is configured"
+        def applicationContext = new GenericApplicationContext()
+        applicationContext.beanFactory.registerSingleton("dataSource", dataSource)
+        AbstractDatastoreInitializer.GrailsBeanBuilderInit.registerBeans(applicationContext) {
+            grailsControllerHelper(Object)
+        }
+
+        and:
+        initializer.configureForBeanDefinitionRegistry(applicationContext)
+        applicationContext.refresh()
+
+        then:"flush mode is appropriately set in osiv interceptor"
+        applicationContext.getBean("openSessionInViewInterceptor", GrailsOpenSessionInViewInterceptor).flushMode == flushMode
+
+        where:
+        mode     || flushMode
+        'commit' || COMMIT.level
+        'auto'   || AUTO.level
+        'manual' || MANUAL.level
+        'never'  || MANUAL.level
+        'always' || ALWAYS.level
+        'foobar' || AUTO.level
+    }
 }
+
 @Entity
 class Person {
     Long id
