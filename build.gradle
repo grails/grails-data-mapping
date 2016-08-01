@@ -1,7 +1,7 @@
 buildscript {
     repositories {
         mavenLocal()
-        maven { url "https://repo.grails.org/grails/core" }
+        maven { url "https://grails.jfrog.io/grails/core/" }
         jcenter()
     }
     dependencies {
