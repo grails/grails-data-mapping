@@ -577,6 +577,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#lowLevelApi">Using the MongoDB Driver Directly</a></li>
 <li><a href="#transactions">Transactions</a></li>
 <li><a href="#testing">Unit Testing</a></li>
+<li><a href="#_integration_testing">Integration Testing</a></li>
 <li><a href="#reference">Reference</a>
 <ul class="sectlevel2">
 <li><a href="#ref-beans">Beans</a></li>
@@ -2850,6 +2851,17 @@ Person.collection.findOne(<span class="key">firstName</span>:<span class="string
 <td>You can inline domain classes within the unit test if you annotate them with <code>@Entity</code></td>
 </tr>
 </table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_integration_testing">Integration Testing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>There is a plugin available that will execute an in memory Mongo database during your integration tests. Data will be cleared between test cases so they can work similarly to H2 with <code>@Rollback</code>.</p>
+</div>
+<div class="paragraph">
+<p>Visit the github page of the <a href="https://github.com/grails-plugins/grails-embedded-mongodb">Embedded MongoDB Grails Plugin</a> to learn more.</p>
 </div>
 </div>
 </div>
