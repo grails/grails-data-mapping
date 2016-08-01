@@ -1203,6 +1203,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     protected void handleJunction(Closure callable) {
         try {
             callable.delegate = this
+            callable.resolveStrategy = Closure.DELEGATE_FIRST
             callable.call()
         }
         finally {
