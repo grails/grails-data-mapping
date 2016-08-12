@@ -39,7 +39,7 @@ abstract class GormDatastoreSpec extends Specification {
     def setup() {
         cleanRegistry()
         System.setProperty(CURRENT_TEST_NAME, this.getClass().simpleName - 'Spec')
-        session = setupClass.setup(((TEST_CLASSES + getDomainClasses()) as Set) as List)
+        session = setupClass.setup(((TEST_CLASSES + getDomainClasses()) as Set) as List, new ConfigObject(['hibernate': ['hbm2ddl.auto': 'update']]))
         DatastoreUtils.bindSession session
     }
 

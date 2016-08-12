@@ -19,7 +19,7 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
     void "Test that GORM is initialized correctly for an existing BeanDefinitionRegistry"() {
         given:"An initializer instance"
 
-        def datastoreInitializer = new HibernateDatastoreSpringInitializer(Person)
+        def datastoreInitializer = new HibernateDatastoreSpringInitializer(['hibernate.hbm2ddl.auto': 'update'], Person)
         def applicationContext = new GenericApplicationContext()
         def dataSource = new DriverManagerDataSource("jdbc:h2:mem:grailsDb1;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
         dataSource.driverClassName = Driver.name
@@ -66,7 +66,7 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
     void "Test that GORM is initialized correctly for a DataSource"() {
         given:"An initializer instance"
 
-        def datastoreInitializer = new HibernateDatastoreSpringInitializer(Person)
+        def datastoreInitializer = new HibernateDatastoreSpringInitializer(['hibernate.hbm2ddl.auto': 'update'], Person)
         def dataSource = new DriverManagerDataSource("jdbc:h2:mem:grailsDb2;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
         dataSource.driverClassName = Driver.name
 
@@ -104,7 +104,7 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
     void "Test configure multiple data sources"() {
         given:"An initializer instance"
 
-        def datastoreInitializer = new HibernateDatastoreSpringInitializer(Person, Book, Author)
+        def datastoreInitializer = new HibernateDatastoreSpringInitializer(['hibernate.hbm2ddl.auto': 'update'], Person, Book, Author)
         def dataSource = new DriverManagerDataSource("jdbc:h2:mem:people;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
         dataSource.driverClassName = Driver.name
 
@@ -158,7 +158,7 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
     void "Test configure custom dialect with a Class"() {
         given:"An initializer instance"
 
-        def datastoreInitializer = new HibernateDatastoreSpringInitializer(['dataSource.dialect': H2Dialect], Person)
+        def datastoreInitializer = new HibernateDatastoreSpringInitializer(['dataSource.dialect': H2Dialect, 'hibernate.hbm2ddl.auto': 'update'], Person)
         def dataSource = new DriverManagerDataSource("jdbc:h2:mem:dialectTest;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
         dataSource.driverClassName = Driver.name
 
@@ -195,7 +195,7 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
 
         given:"an initializer with default constraints supplied"
 
-        def initializer = new HibernateDatastoreSpringInitializer(['hibernate.show_sql':true, 'grails.gorm.default.constraints': {
+        def initializer = new HibernateDatastoreSpringInitializer(['hibernate.show_sql':true, 'hibernate.hbm2ddl.auto': 'update', 'grails.gorm.default.constraints': {
             '*'(nullable: true, blank: true)
         }], DefaultConstrainedEntity, Text)
 
@@ -223,6 +223,7 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
         given:"an initializer with default constraints supplied"
 
         def initializer = new HibernateDatastoreSpringInitializer(['hibernate.show_sql':true,
+                                                                   'hibernate.hbm2ddl.auto': 'update',
                                                                    'hibernate.cache.region.factory_class':'org.hibernate.cache.EhCacheRegionFactory'], CachePerson, CachePet)
 
         def ds1 = new DriverManagerDataSource("jdbc:h2:mem:ds1;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_DELAY=-1", 'sa', '')
@@ -242,7 +243,7 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
 
     def "test that formula properties are not constrained"() {
         given:
-        def initializer = new HibernateDatastoreSpringInitializer(['hibernate.show_sql':true, 'grails.gorm.default.constraints': {
+        def initializer = new HibernateDatastoreSpringInitializer(['hibernate.show_sql':true, 'hibernate.hbm2ddl.auto': 'update', 'grails.gorm.default.constraints': {
             '*'(nullable: false, blank: true)
         }], MyDate)
 
@@ -262,7 +263,7 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
 
     def "test that failOnError is correctly propagated"() {
         given:
-        def initializer = new HibernateDatastoreSpringInitializer(['grails.gorm.failOnError':true, 'grails.gorm.default.constraints': {
+        def initializer = new HibernateDatastoreSpringInitializer(['hibernate.hbm2ddl.auto': 'update', 'grails.gorm.failOnError':true, 'grails.gorm.default.constraints': {
             '*'(nullable: false, blank: false)
         }], Person)
 
