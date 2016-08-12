@@ -1,6 +1,6 @@
 package grails.gorm.tests
 
-class DeleteAllSpec extends GormDatastoreSpec {
+class DeleteAllSpec extends ConfigGormDatastoreSpec {
 
     def "Test that many objects can be deleted at once using multiple arguments"() {
         given:

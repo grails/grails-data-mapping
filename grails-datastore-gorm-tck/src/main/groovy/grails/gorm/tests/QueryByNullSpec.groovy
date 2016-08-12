@@ -1,6 +1,6 @@
 package grails.gorm.tests
 
-class QueryByNullSpec extends GormDatastoreSpec {
+class QueryByNullSpec extends ConfigGormDatastoreSpec {
 
     void 'Test passing null as the sole argument to a dynamic finder multiple times'() {
         // see GRAILS-3463

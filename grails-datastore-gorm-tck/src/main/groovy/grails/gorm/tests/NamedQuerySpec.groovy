@@ -7,7 +7,7 @@ import spock.lang.Ignore
 /**
  * @author graemerocher
  */
-class NamedQuerySpec extends GormDatastoreSpec {
+class NamedQuerySpec extends ConfigGormDatastoreSpec {
 
     void "Test named query with disjunction"() {
         given:

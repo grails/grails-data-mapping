@@ -5,7 +5,7 @@ import spock.lang.Specification
 /**
  * Tests for querying the size of collections etc.
  */
-class SizeQuerySpec extends GormDatastoreSpec {
+class SizeQuerySpec extends ConfigGormDatastoreSpec {
 
     void "Test sizeLe criterion"() {
         given: "A country with only 1 resident"

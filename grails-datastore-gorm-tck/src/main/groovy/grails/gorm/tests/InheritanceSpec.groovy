@@ -5,7 +5,7 @@ import grails.persistence.Entity
 /**
  * @author graemerocher
  */
-class InheritanceSpec extends GormDatastoreSpec {
+class InheritanceSpec extends ConfigGormDatastoreSpec {
 
     void "Test inheritance with dynamic finder"() {
 

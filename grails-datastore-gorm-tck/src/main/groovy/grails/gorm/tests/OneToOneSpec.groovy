@@ -4,7 +4,7 @@ import grails.persistence.Entity
 import org.grails.datastore.mapping.model.types.OneToOne
 import org.grails.datastore.mapping.proxy.EntityProxy
 
-class OneToOneSpec extends GormDatastoreSpec {
+class OneToOneSpec extends ConfigGormDatastoreSpec {
 
     def "Test persist and retrieve unidirectional many-to-one"() {
         given:"A domain model with a many-to-one"

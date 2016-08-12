@@ -5,7 +5,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 /**
  * Tests validation semantics.
  */
-class ValidationSpec extends GormDatastoreSpec {
+class ValidationSpec extends ConfigGormDatastoreSpec {
 
     @Override
     List getDomainClasses() {

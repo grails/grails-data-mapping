@@ -1,6 +1,6 @@
 package grails.gorm.tests
 
-class FindWhereSpec extends GormDatastoreSpec {
+class FindWhereSpec extends ConfigGormDatastoreSpec {
 
     def "Test findWhere returns a matching Instance"() {
         given:

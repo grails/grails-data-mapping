@@ -5,7 +5,7 @@ import groovy.time.TimeCategory
 /**
  * Abstract base test for querying ranges. Subclasses should do the necessary setup to configure GORM
  */
-class RangeQuerySpec extends GormDatastoreSpec {
+class RangeQuerySpec extends ConfigGormDatastoreSpec {
 
     void "Test between query with dates"() {
         given:

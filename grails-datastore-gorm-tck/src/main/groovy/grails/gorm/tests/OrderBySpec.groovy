@@ -3,7 +3,7 @@ package grails.gorm.tests
 /**
  * Abstract base test for order by queries. Subclasses should do the necessary setup to configure GORM
  */
-class OrderBySpec extends GormDatastoreSpec {
+class OrderBySpec extends ConfigGormDatastoreSpec {
 
     void "Test order with criteria"() {
         given:

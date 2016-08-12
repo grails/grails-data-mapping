@@ -5,7 +5,7 @@ import org.springframework.dao.DataIntegrityViolationException
 import spock.lang.Issue
 
 @Issue('https://github.com/grails/grails-data-mapping/issues/617')
-class MultiColumnUniqueConstraintSpec extends GormDatastoreSpec {
+class MultiColumnUniqueConstraintSpec extends ConfigGormDatastoreSpec {
 
     void "test generated unique constraints"() {
         expect:

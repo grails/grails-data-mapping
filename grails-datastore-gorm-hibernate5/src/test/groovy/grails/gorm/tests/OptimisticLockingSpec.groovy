@@ -6,7 +6,7 @@ import org.springframework.orm.hibernate5.HibernateOptimisticLockingFailureExcep
 /**
  * @author Burt Beckwith
  */
-class OptimisticLockingSpec extends GormDatastoreSpec {
+class OptimisticLockingSpec extends ConfigGormDatastoreSpec {
 
     void "Test versioning"() {
 

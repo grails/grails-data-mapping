@@ -1,6 +1,6 @@
 package grails.gorm.tests
 
-class SaveAllSpec extends GormDatastoreSpec {
+class SaveAllSpec extends ConfigGormDatastoreSpec {
 
     def "Test that many objects can be saved at once using multiple arguments"() {
         given:

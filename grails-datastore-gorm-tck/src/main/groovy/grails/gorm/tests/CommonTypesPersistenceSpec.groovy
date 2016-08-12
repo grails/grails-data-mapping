@@ -5,7 +5,7 @@ import grails.persistence.Entity
 /**
  * @author graemerocher
  */
-class CommonTypesPersistenceSpec extends GormDatastoreSpec {
+class CommonTypesPersistenceSpec extends ConfigGormDatastoreSpec {
 
     def testPersistBasicTypes() {
         given:

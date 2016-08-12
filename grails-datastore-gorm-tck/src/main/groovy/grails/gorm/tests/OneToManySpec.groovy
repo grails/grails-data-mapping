@@ -3,7 +3,7 @@ package grails.gorm.tests
 /**
  * @author graemerocher
  */
-class OneToManySpec extends GormDatastoreSpec {
+class OneToManySpec extends ConfigGormDatastoreSpec {
 
     void "test save and return unidirectional one to many"() {
         given:

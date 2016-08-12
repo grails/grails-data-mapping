@@ -6,7 +6,7 @@ import spock.lang.IgnoreRest
 /**
  * @author graemerocher
  */
-class CrudOperationsSpec extends GormDatastoreSpec {
+class CrudOperationsSpec extends ConfigGormDatastoreSpec {
 
     void "Test get using a string-based key"() {
         given:

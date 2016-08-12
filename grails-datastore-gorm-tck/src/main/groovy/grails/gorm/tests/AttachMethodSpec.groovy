@@ -3,7 +3,7 @@ package grails.gorm.tests
 /**
  * @author graemerocher
  */
-class AttachMethodSpec extends GormDatastoreSpec {
+class AttachMethodSpec extends ConfigGormDatastoreSpec {
 
     void "Test attach method"() {
         given:

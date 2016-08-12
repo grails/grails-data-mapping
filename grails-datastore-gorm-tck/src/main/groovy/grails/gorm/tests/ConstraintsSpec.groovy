@@ -2,7 +2,7 @@ package grails.gorm.tests
 
 import grails.persistence.Entity
 
-class ConstraintsSpec extends GormDatastoreSpec {
+class ConstraintsSpec extends ConfigGormDatastoreSpec {
 
     void "Test constraints with static default values"() {
          given: "A Test class with static constraint values"

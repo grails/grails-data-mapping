@@ -5,7 +5,7 @@ import grails.persistence.Entity
 /**
  * Tests for criteria queries that compare two properties
  */
-class PropertyComparisonQuerySpec extends GormDatastoreSpec {
+class PropertyComparisonQuerySpec extends ConfigGormDatastoreSpec {
 
     void "Test geProperty query"() {
         given:"Some dead and alive dogs"

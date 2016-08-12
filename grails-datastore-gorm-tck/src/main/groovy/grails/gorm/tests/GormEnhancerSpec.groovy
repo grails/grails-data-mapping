@@ -5,7 +5,7 @@ import spock.lang.Ignore
 /**
  * @author graemerocher
  */
-class GormEnhancerSpec extends GormDatastoreSpec {
+class GormEnhancerSpec extends ConfigGormDatastoreSpec {
 
     void "Test basic CRUD operations"() {
         given:
