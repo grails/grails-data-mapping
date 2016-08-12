@@ -60,7 +60,7 @@ class HibernateDatastoreSpringInitializer extends AbstractDatastoreInitializer {
 
     String defaultDataSourceBeanName = Mapping.DEFAULT_DATA_SOURCE
     String defaultSessionFactoryBeanName = SESSION_FACTORY_BEAN_NAME
-    String ddlAuto = "update"
+    String ddlAuto = "none"
     Set<String> dataSources = [defaultDataSourceBeanName]
     boolean enableReload = false
 
