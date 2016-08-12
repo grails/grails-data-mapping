@@ -15,7 +15,6 @@ class OnChangeHandlerSpec extends Specification{
 
     void setup() {
       datastore = new SimpleMapDatastore()
-      ExpandoMetaClass.enableGlobally()
     }
     void cleanup() {
       datastore.mappingContext.persistentEntities.each {

@@ -31,8 +31,6 @@ class BidirectionalListMappingTests extends GroovyTestCase {
     DefaultGrailsDomainConfiguration config
 
     protected void setUp() {
-        ExpandoMetaClass.enableGlobally()
-
         def gcl = new GroovyClassLoader()
 
         config = new DefaultGrailsDomainConfiguration()
