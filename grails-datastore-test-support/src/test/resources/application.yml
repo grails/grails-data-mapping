@@ -1,0 +1,5 @@
+dataSources:
+    ds2:
+        dbCreate: update
+    dataSource:
+        dbCreate: update
