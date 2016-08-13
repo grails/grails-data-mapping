@@ -71,10 +71,12 @@ class Setup {
 
     static Session setup(List<Class> classes, ConfigObject grailsConfig = null, boolean isTransactional = true) {
         grailsApplication = new DefaultGrailsApplication(classes as Class[], new GroovyClassLoader(Setup.getClassLoader()))
-        if(grailsConfig) {
-            grailsApplication.config.putAll(grailsConfig)
-        }
 
+        if (!grailsConfig) {
+            grailsConfig = new ConfigObject(['hibernate': ['hbm2ddl.auto': 'update']])
+        }
+        
+        grailsApplication.config.putAll(grailsConfig)
 
         def initializer = grailsConfig ?  new HibernateDatastoreSpringInitializer(grailsConfig, classes) : new HibernateDatastoreSpringInitializer(classes)
         applicationContext = initializer.configure()
