@@ -1,14 +1,12 @@
 package org.grails.datastore.gorm.boot.autoconfigure
 
 import grails.persistence.Entity
-import org.springframework.beans.factory.support.DefaultListableBeanFactory
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
+import org.springframework.core.env.MapPropertySource
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import spock.lang.Specification
 
@@ -24,7 +22,7 @@ class HibernateGormAutoConfigurationSpec extends Specification{
     }
 
     void setup() {
-
+        this.context.environment.propertySources.addLast(new MapPropertySource("hibernate", ['hibernate': ['hbm2ddl.auto': 'update']]))
         AutoConfigurationPackages.register(context, "org.grails.datastore.gorm.boot.autoconfigure")
 
         def beanFactory = this.context.defaultListableBeanFactory
@@ -56,6 +54,7 @@ class HibernateGormAutoConfigurationSpec extends Specification{
     @Configuration
     @Import(HibernateGormAutoConfiguration)
     static class TestConfiguration {
+
     }
 
 }
