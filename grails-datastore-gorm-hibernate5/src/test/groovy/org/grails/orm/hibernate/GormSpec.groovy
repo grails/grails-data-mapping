@@ -1,12 +1,13 @@
 package org.grails.orm.hibernate
 
 import grails.core.GrailsApplication
-import grails.gorm.tests.ConfigGormDatastoreSpec
+import grails.gorm.tests.GormDatastoreSpec
+import org.grails.datastore.mapping.core.Session
 import org.hibernate.SessionFactory
 import org.springframework.context.ApplicationContext
 import spock.lang.Shared
 
-abstract class GormSpec extends ConfigGormDatastoreSpec {
+abstract class GormSpec extends GormDatastoreSpec {
 
     GrailsApplication grailsApplication
     ApplicationContext applicationContext
@@ -28,4 +29,8 @@ abstract class GormSpec extends ConfigGormDatastoreSpec {
         sessionFactory = setupClass.sessionFactory
     }
 
+    @Override
+    Session createSession() {
+        setupClass.setup(((TEST_CLASSES + getDomainClasses()) as Set) as List, new ConfigObject(['hibernate': ['hbm2ddl.auto': 'update']]))
+    }
 }

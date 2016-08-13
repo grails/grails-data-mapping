@@ -9,8 +9,7 @@ import spock.lang.Unroll
 /**
  * Tests validation semantics.
  */
-class ValidationSpec extends ConfigGormDatastoreSpec {
-
+class ValidationSpec extends GormDatastoreSpec {
     @Override
     List getDomainClasses() {
         return [ClassWithListArgBeforeValidate, ClassWithNoArgBeforeValidate,

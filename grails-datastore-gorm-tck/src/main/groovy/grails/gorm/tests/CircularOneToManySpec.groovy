@@ -5,7 +5,7 @@ import grails.persistence.Entity
 /**
  * @author graemerocher
  */
-class CircularOneToManySpec extends ConfigGormDatastoreSpec {
+class CircularOneToManySpec extends GormDatastoreSpec{
 
     void "Test circular one-to-many"() {
         given:

@@ -6,7 +6,7 @@ import org.grails.datastore.mapping.core.Session
 import spock.lang.IgnoreRest
 import spock.lang.Issue
 
-class EnumSpec extends ConfigGormDatastoreSpec {
+class EnumSpec extends GormDatastoreSpec {
 
     void "Test save()"() {
         given:

@@ -5,7 +5,7 @@ import grails.persistence.Entity
 /**
  * @author graemerocher
  */
-class FindByMethodSpec extends ConfigGormDatastoreSpec {
+class FindByMethodSpec extends GormDatastoreSpec {
 
     void 'Test Using AND Multiple Times In A Dynamic Finder'() {
         given:

@@ -3,7 +3,7 @@ package grails.gorm.tests
 /**
  * Abstract base test for query associations. Subclasses should do the necessary setup to configure GORM
  */
-class QueryByAssociationSpec extends ConfigGormDatastoreSpec {
+class QueryByAssociationSpec extends GormDatastoreSpec {
 
     void "Test query entity by single-ended association"() {
         given:

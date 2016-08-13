@@ -3,7 +3,7 @@ package grails.gorm.tests
 /**
  * @author graemerocher
  */
-class NegationSpec extends ConfigGormDatastoreSpec {
+class NegationSpec extends GormDatastoreSpec {
 
     void "Test negation in dynamic finder"() {
         given:

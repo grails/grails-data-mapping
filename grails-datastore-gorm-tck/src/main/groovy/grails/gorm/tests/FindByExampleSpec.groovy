@@ -1,6 +1,6 @@
 package grails.gorm.tests
 
-class FindByExampleSpec extends ConfigGormDatastoreSpec {
+class FindByExampleSpec extends GormDatastoreSpec {
 
     def "Test findAll by example"() {
         given:

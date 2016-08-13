@@ -3,7 +3,7 @@ package grails.gorm.tests
 /**
  * @author graemerocher
  */
-class ListOrderBySpec extends ConfigGormDatastoreSpec {
+class ListOrderBySpec extends GormDatastoreSpec {
 
     void "Test listOrderBy property name method"() {
         given:

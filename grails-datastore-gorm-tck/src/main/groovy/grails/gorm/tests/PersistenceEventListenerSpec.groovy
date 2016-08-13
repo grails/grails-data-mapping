@@ -15,7 +15,7 @@ import org.springframework.context.ApplicationEvent
 /**
  * @author Tom Widmer
  */
-class PersistenceEventListenerSpec extends ConfigGormDatastoreSpec {
+class PersistenceEventListenerSpec extends GormDatastoreSpec {
     SpecPersistenceListener listener
 
     @Override

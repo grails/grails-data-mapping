@@ -11,7 +11,7 @@ import spock.lang.Ignore
 /**
  * @author graemerocher
  */
-class DomainEventsSpec extends ConfigGormDatastoreSpec {
+class DomainEventsSpec extends GormDatastoreSpec {
 
     def setup() {
         PersonEvent.resetStore()

@@ -1,6 +1,6 @@
 package grails.gorm.tests
 
-class FindOrSaveWhereSpec extends ConfigGormDatastoreSpec {
+class FindOrSaveWhereSpec extends GormDatastoreSpec {
 
     def "Test findOrSaveWhere returns a new instance if it doesn't exist in the database"() {
         when:

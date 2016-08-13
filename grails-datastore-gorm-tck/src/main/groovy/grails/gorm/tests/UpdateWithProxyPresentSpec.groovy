@@ -9,7 +9,7 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 /**
  * @author graemerocher
  */
-class UpdateWithProxyPresentSpec extends ConfigGormDatastoreSpec {
+class UpdateWithProxyPresentSpec extends GormDatastoreSpec {
 
     @Override
     List getDomainClasses() {

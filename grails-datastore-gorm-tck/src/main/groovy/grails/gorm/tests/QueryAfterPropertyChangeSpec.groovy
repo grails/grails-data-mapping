@@ -3,7 +3,7 @@ package grails.gorm.tests
 /**
  * @author graemerocher
  */
-class QueryAfterPropertyChangeSpec extends ConfigGormDatastoreSpec {
+class QueryAfterPropertyChangeSpec extends GormDatastoreSpec {
 
     void "Test that an entity is de-indexed after a change to an indexed property"() {
         given:

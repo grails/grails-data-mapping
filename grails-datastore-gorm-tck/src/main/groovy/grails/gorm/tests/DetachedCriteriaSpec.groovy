@@ -5,7 +5,7 @@ import grails.gorm.PagedResultList
 import spock.lang.IgnoreIf
 import spock.lang.IgnoreRest
 
-class DetachedCriteriaSpec extends ConfigGormDatastoreSpec {
+class DetachedCriteriaSpec extends GormDatastoreSpec {
 
     void "Test the list method returns a PagedResultList with pagination arguments"() {
         given:"A bunch of people"

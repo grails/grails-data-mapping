@@ -1,6 +1,6 @@
 package grails.gorm.tests
 
-class PagedResultSpec extends ConfigGormDatastoreSpec {
+class PagedResultSpec extends GormDatastoreSpec {
 
     void "Test that a paged result list is returned from the list() method with pagination params"() {
         given:"Some people"

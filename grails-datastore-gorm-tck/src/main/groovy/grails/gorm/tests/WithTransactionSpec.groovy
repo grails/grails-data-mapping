@@ -5,7 +5,7 @@ import groovy.transform.InheritConstructors
 /**
  * Transaction tests.
  */
-class WithTransactionSpec extends ConfigGormDatastoreSpec {
+class WithTransactionSpec extends GormDatastoreSpec {
 
     void "Test save() with transaction"() {
         given:

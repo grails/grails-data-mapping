@@ -5,7 +5,7 @@ import grails.persistence.Entity
 /**
  * @author Graeme Rocher
  */
-class DisableAutotimeStampSpec extends ConfigGormDatastoreSpec{
+class DisableAutotimeStampSpec extends GormDatastoreSpec{
 
 
     void "Test that when auto timestamping is disabled the dateCreated and lastUpdated properties are not set"() {

@@ -3,7 +3,7 @@ package grails.gorm.tests
 /**
  * Abstract base test for loading proxies. Subclasses should do the necessary setup to configure GORM
  */
-class ProxyLoadingSpec extends ConfigGormDatastoreSpec {
+class ProxyLoadingSpec extends GormDatastoreSpec {
 
     void "Test load proxied instance directly"() {
 
