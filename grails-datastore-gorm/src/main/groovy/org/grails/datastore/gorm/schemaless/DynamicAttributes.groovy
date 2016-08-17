@@ -14,6 +14,15 @@ trait DynamicAttributes {
 
     private transient Map<String, Object> dynamicAttributes = [:]
 
+    private void putAtDynamic(String name, value) {
+        def oldValue = dynamicAttributes.put(name, value)
+        if(oldValue != value) {
+            if(this instanceof DirtyCheckable) {
+                ((DirtyCheckable)this).markDirty(name, value, oldValue)
+            }
+        }
+    }
+
     /**
      * Sets a dynamic attribute
      *
@@ -22,15 +31,13 @@ trait DynamicAttributes {
      */
     void putAt(String name, value) {
         if(this.hasProperty(name)) {
-            ((GroovyObject)this).setProperty(name, value)
-        }
-        else {
-            def oldValue = dynamicAttributes.put(name, value)
-            if(oldValue != value) {
-                if(this instanceof DirtyCheckable) {
-                    ((DirtyCheckable)this).markDirty(name, value, oldValue)
-                }
+            try {
+                ((GroovyObject)this).setProperty(name, value)
+            } catch (ReadOnlyPropertyException e) {
+                putAtDynamic(name, value)
             }
+        } else {
+            putAtDynamic(name, value)
         }
     }
 
