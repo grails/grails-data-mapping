@@ -8,7 +8,7 @@ import grails.persistence.Entity
  */
 class EntityReflectorSpec extends GormDatastoreSpec {
 
-    void "test getIdentifier"() {
+    void "test getAssociationId with a null association"() {
         when:
         LibraryBook book = new LibraryBook()
         Serializable id = book.getAssociationId("library")
