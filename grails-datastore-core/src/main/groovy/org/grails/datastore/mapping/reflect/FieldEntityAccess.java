@@ -297,7 +297,7 @@ public class FieldEntityAccess implements EntityAccess {
 
         @Override
         public Serializable getIdentifier(Object object) {
-            if(identifierReader != null) {
+            if(identifierReader != null && object != null) {
                 return (Serializable) identifierReader.read(object);
             }
             return null;
