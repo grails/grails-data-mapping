@@ -368,10 +368,15 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#version(boolean)">version</a></strong>(boolean isVersioned)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#tenantId(java.lang.String)">tenantId</a></strong>(java.lang.String tenantIdProperty)</code><br>Sets the tenant id</td>
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#version(boolean)">version</a></strong>(boolean isVersioned)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#version(java.lang.String)">version</a></strong>(java.lang.String versionColumn)</code><br></td>
                         </tr>
@@ -800,6 +805,15 @@ void <strong>tablePerHierarchy</strong>(boolean isTablePerHierarchy)</h4>
 void <strong>tablePerSubclass</strong>(boolean isTablePerSubClass)</h4>
                                 <p> If true the class and its subclasses will be mapped with table per subclass mapping
      </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="tenantId(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>void <strong>tenantId</strong>(java.lang.String tenantIdProperty)</h4>
+                                <p> Sets the tenant id
+     <DL><DT><B>Parameters:</B></DT><DD><code>tenantIdProperty</code> -  The tenant id property</DD></DL></p>
                             </li>
                         </ul>
                     
