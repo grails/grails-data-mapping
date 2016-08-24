@@ -43,4 +43,33 @@ class SubDomainTenantResolverSpec extends Specification {
         cleanup:
         RequestContextHolder.setRequestAttributes(null)
     }
+
+    void "Test subdomain with dot in path"() {
+
+        setup:
+        def request = new MockHttpServletRequest("GET", "/foo")
+        RequestContextHolder.setRequestAttributes(new ServletWebRequest(request))
+
+        when:
+        request.setServerPort(8080)
+        request.setServerName("localhost")
+        request.setRequestURI("/x/y/z.html")
+
+        def tenantId = new SubDomainTenantResolver().resolveTenantIdentifier()
+
+        then:
+        tenantId == ConnectionSource.DEFAULT
+
+        when:
+        request.setServerPort(8080)
+        request.setServerName("foo.mycompany.com")
+        request.setRequestURI("/x/y/z.html")
+        tenantId = new SubDomainTenantResolver().resolveTenantIdentifier()
+
+        then:
+        tenantId == "foo"
+
+        cleanup:
+        RequestContextHolder.setRequestAttributes(null)
+    }
 }
