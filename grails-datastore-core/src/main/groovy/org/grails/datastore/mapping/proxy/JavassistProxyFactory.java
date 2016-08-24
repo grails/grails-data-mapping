@@ -19,6 +19,7 @@ import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
+import org.grails.datastore.mapping.collection.PersistentCollection;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.engine.AssociationQueryExecutor;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
@@ -48,7 +49,7 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
     private static final Set<String> EXCLUDES = new HashSet(Arrays.asList("$getStaticMetaClass"));
 
     public boolean isProxy(Object object) {
-        return object instanceof EntityProxy;
+        return object instanceof EntityProxy || object instanceof PersistentCollection;
     }
 
     public Serializable getIdentifier(Object obj) {
@@ -66,7 +67,12 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
 
     @Override
     public void initialize(Object o) {
-        ((EntityProxy)o).initialize();
+        if(o instanceof EntityProxy) {
+            ((EntityProxy)o).initialize();
+        }
+        else if(o instanceof PersistentCollection) {
+            ((PersistentCollection) o).initialize();
+        }
     }
 
     /**
@@ -76,7 +82,16 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
      * @return True if it is
      */
     public boolean isInitialized(Object object) {
-        return !isProxy(object) || ((EntityProxy) object).isInitialized();
+        if(!isProxy(object)) {
+            return true;
+        }
+        else if(object instanceof EntityProxy) {
+            return ((EntityProxy) object).isInitialized();
+        }
+        else if(object instanceof PersistentCollection) {
+            return ((PersistentCollection) object).isInitialized();
+        }
+        return true;
     }
 
     @Override
@@ -92,7 +107,7 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
      * @return The unwrapped proxy
      */
     public Object unwrap(Object object) {
-        if (isProxy(object)) {
+        if (isProxy(object) && object instanceof EntityProxy) {
             return ((EntityProxy)object).getTarget();
         }
         return object;
