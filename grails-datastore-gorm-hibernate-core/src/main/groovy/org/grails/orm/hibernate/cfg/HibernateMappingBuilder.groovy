@@ -17,6 +17,7 @@ package org.grails.orm.hibernate.cfg
 
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder
+import org.grails.datastore.mapping.model.config.GormProperties
 import org.hibernate.FetchMode
 import org.hibernate.InvalidMappingException
 import org.slf4j.Logger
@@ -273,12 +274,28 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
      */
     @CompileStatic
     void version(String versionColumn) {
-        PropertyConfig pc = mapping.getPropertyConfig("version")
+        PropertyConfig pc = mapping.getPropertyConfig(GormProperties.VERSION)
         if (!pc) {
             pc = new PropertyConfig()
-            mapping.columns['version'] = pc
+            mapping.columns[GormProperties.VERSION] = pc
         }
         pc.columns << new ColumnConfig(name:versionColumn)
+    }
+
+    /**
+     * Sets the tenant id
+     *
+     * @param tenantIdProperty The tenant id property
+     */
+    void tenantId(String tenantIdProperty) {
+        PropertyConfig pc = mapping.getPropertyConfig(GormProperties.TENANT_IDENTITY)
+        if (pc == null) {
+            pc = new PropertyConfig(name: tenantIdProperty)
+            mapping.columns[GormProperties.TENANT_IDENTITY] = pc
+        }
+        else {
+            pc.name == tenantIdProperty
+        }
     }
 
     /**
@@ -451,6 +468,7 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
 
 
             PropertyConfig property = mapping.columns[name] ?: newConfig
+            property.name = namedArgs.name ?: property.name
             property.formula = namedArgs.formula ?: property.formula
             property.type = namedArgs.type ?: property.type
             property.setLazy( namedArgs.lazy instanceof Boolean ? namedArgs.lazy : property.getLazy() )
