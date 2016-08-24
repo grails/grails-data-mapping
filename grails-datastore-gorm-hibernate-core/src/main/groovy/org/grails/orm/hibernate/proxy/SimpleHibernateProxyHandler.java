@@ -20,6 +20,7 @@ import groovy.lang.GroovyObject;
 import groovy.lang.GroovySystem;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.engine.AssociationQueryExecutor;
+import org.grails.datastore.mapping.proxy.JavassistProxyFactory;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
 import org.grails.datastore.mapping.proxy.ProxyHandler;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
@@ -36,19 +37,24 @@ import java.io.Serializable;
  * @author Graeme Rocher
  * @since 1.2.2
  */
-public class SimpleHibernateProxyHandler implements ProxyHandler, ProxyFactory {
+public class SimpleHibernateProxyHandler extends JavassistProxyFactory implements ProxyHandler, ProxyFactory {
 
     public boolean isInitialized(Object o) {
         if (o instanceof HibernateProxy) {
             return !((HibernateProxy)o).getHibernateLazyInitializer().isUninitialized();
         }
-        return true;
+        return super.isInitialized(o);
     }
 
     public boolean isInitialized(Object obj, String associationName) {
         try {
             Object proxy = ClassPropertyFetcher.forClass(obj.getClass()).getPropertyValue(obj, associationName);
-            return Hibernate.isInitialized(proxy);
+            if(proxy instanceof HibernateProxy) {
+                return Hibernate.isInitialized(proxy) ;
+            }
+            else {
+                return super.isInitialized(proxy);
+            }
         }
         catch (RuntimeException e) {
             return false;
@@ -70,7 +76,9 @@ public class SimpleHibernateProxyHandler implements ProxyHandler, ProxyFactory {
             final HibernateProxy proxy = (HibernateProxy)instance;
             return unwrapProxy(proxy);
         }
-        return instance;
+        else {
+            return super.unwrap(instance);
+        }
     }
 
     public Object unwrapProxy(final HibernateProxy proxy) {
@@ -115,7 +123,7 @@ public class SimpleHibernateProxyHandler implements ProxyHandler, ProxyFactory {
     }
 
     public boolean isProxy(Object o) {
-        return (o instanceof HibernateProxy);
+        return (o instanceof HibernateProxy) || super.isProxy(o);
     }
 
     public void initialize(Object o) {
@@ -125,26 +133,34 @@ public class SimpleHibernateProxyHandler implements ProxyHandler, ProxyFactory {
                 hibernateLazyInitializer.initialize();
             }
         }
+        else {
+            super.initialize(o);
+        }
     }
 
     public Object getProxyIdentifier(Object o) {
         if (o instanceof HibernateProxy) {
             return ((HibernateProxy)o).getHibernateLazyInitializer().getIdentifier();
         }
-        return null;
+        return super.getIdentifier(o);
     }
 
     public Class<?> getProxiedClass(Object o) {
-        return HibernateProxyHelper.getClassWithoutInitializingProxy(o);
+        if(o instanceof HibernateProxy) {
+            return HibernateProxyHelper.getClassWithoutInitializingProxy(o);
+        }
+        else {
+            return super.getProxiedClass(o);
+        }
     }
 
     @Override
     public <T> T createProxy(Session session, Class<T> type, Serializable key) {
-        throw new UnsupportedOperationException("Proxy creation not supported");
+        return super.createProxy(session, type, key);
     }
 
     @Override
     public <T, K extends Serializable> T createProxy(Session session, AssociationQueryExecutor<K, T> executor, K associationKey) {
-        throw new UnsupportedOperationException("Proxy creation not supported");
+        return super.createProxy(session, executor, associationKey);
     }
 }
