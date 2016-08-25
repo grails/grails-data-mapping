@@ -87,6 +87,7 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
     private static MethodNode GET_ASSOCIATION_ID_METHOD_NODE =  GORM_ENTITY_CLASS_NODE.getMethods("getAssociationId").get(0)
     public static final Parameter[] ADD_TO_PARAMETERS = [new Parameter(AstUtils.OBJECT_CLASS_NODE, "obj")] as Parameter[]
     public static final ClassNode SERIALIZABLE_CLASS_NODE = ClassHelper.make(Serializable).getPlainNodeReference()
+    private static final Object APPLIED_MARKER = new Object();
 
     protected CompilationUnit compilationUnit
 
@@ -113,7 +114,7 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
     }
 
     void visit(ClassNode classNode, SourceUnit sourceUnit) {
-        if ( classNode.getNodeMetaData(AstUtils.TRANSFORM_APPLIED_MARKER) != null ) {
+        if ( classNode.getNodeMetaData(AstUtils.TRANSFORM_APPLIED_MARKER) == APPLIED_MARKER ) {
             return
         }
 
@@ -271,7 +272,7 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
         if(compilationUnit != null && !isRxEntity) {
             org.codehaus.groovy.transform.trait.TraitComposer.doExtendTraits(classNode, sourceUnit, compilationUnit);
         }
-        classNode.putNodeMetaData(AstUtils.TRANSFORM_APPLIED_MARKER, Boolean.TRUE)
+        classNode.putNodeMetaData(AstUtils.TRANSFORM_APPLIED_MARKER, APPLIED_MARKER)
     }
 
     protected Class pickGormEntityTrait(ClassNode classNode, SourceUnit source) {
