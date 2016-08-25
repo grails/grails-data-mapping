@@ -270,10 +270,8 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
 
         if(compilationUnit != null && !isRxEntity) {
             org.codehaus.groovy.transform.trait.TraitComposer.doExtendTraits(classNode, sourceUnit, compilationUnit);
-            classNode.putNodeMetaData(AstUtils.TRANSFORM_APPLIED_MARKER, Boolean.TRUE)
         }
-
-
+        classNode.putNodeMetaData(AstUtils.TRANSFORM_APPLIED_MARKER, Boolean.TRUE)
     }
 
     protected Class pickGormEntityTrait(ClassNode classNode, SourceUnit source) {
