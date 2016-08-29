@@ -45,4 +45,20 @@ public interface Settings {
      * The multi tenancy resolver class
      */
     String SETTING_MULTI_TENANT_RESOLVER_CLASS = PREFIX + '.' + "multiTenancy.tenantResolverClass";
+    /**
+     * The data sources setting
+     */
+    String SETTING_DATASOURCES = "dataSources";
+
+
+    /**
+     * The data source setting
+     */
+    String SETTING_DATASOURCE = "dataSource";
+
+    /**
+     * The dbCreate setting (defaults to none)
+     */
+    String SETTING_DB_CREATE = SETTING_DATASOURCE + ".dbCreate";
+
 }

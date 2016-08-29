@@ -1,4 +1,4 @@
-package org.grails.orm.hibernate.jdbc;
+package org.grails.datastore.gorm.jdbc;
 
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConversionService;

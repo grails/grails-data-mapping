@@ -2,9 +2,9 @@ package org.grails.orm.hibernate.connections;
 
 import org.grails.datastore.mapping.core.connections.*;
 import org.grails.orm.hibernate.cfg.Settings;
-import org.grails.orm.hibernate.jdbc.connections.DataSourceConnectionSourceFactory;
-import org.grails.orm.hibernate.jdbc.connections.DataSourceSettings;
-import org.grails.orm.hibernate.jdbc.connections.DataSourceSettingsBuilder;
+import org.grails.datastore.gorm.jdbc.connections.DataSourceConnectionSourceFactory;
+import org.grails.datastore.gorm.jdbc.connections.DataSourceSettings;
+import org.grails.datastore.gorm.jdbc.connections.DataSourceSettingsBuilder;
 import org.hibernate.SessionFactory;
 import org.springframework.core.env.PropertyResolver;
 

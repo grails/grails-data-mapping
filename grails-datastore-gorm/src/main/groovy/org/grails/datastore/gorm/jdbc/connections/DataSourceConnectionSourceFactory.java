@@ -1,8 +1,8 @@
-package org.grails.orm.hibernate.jdbc.connections;
+package org.grails.datastore.gorm.jdbc.connections;
 
+import org.grails.datastore.mapping.config.Settings;
 import org.grails.datastore.mapping.core.connections.*;
-import org.grails.orm.hibernate.cfg.Settings;
-import org.grails.orm.hibernate.jdbc.DataSourceBuilder;
+import org.grails.datastore.gorm.jdbc.DataSourceBuilder;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;

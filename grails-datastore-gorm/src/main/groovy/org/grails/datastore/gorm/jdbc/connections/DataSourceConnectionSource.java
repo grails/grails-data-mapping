@@ -1,4 +1,4 @@
-package org.grails.orm.hibernate.jdbc.connections;
+package org.grails.datastore.gorm.jdbc.connections;
 
 import org.grails.datastore.mapping.core.connections.DefaultConnectionSource;
 import org.slf4j.Logger;

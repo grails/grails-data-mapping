@@ -4,11 +4,9 @@ import groovy.transform.AutoClone
 import groovy.transform.CompileStatic
 import groovy.transform.builder.Builder
 import groovy.transform.builder.SimpleStrategy
-import org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher
 import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
-import org.grails.orm.hibernate.AbstractEventTriggeringInterceptor
 import org.grails.orm.hibernate.HibernateEventListeners
-import org.grails.orm.hibernate.jdbc.connections.DataSourceSettings
+import org.grails.datastore.gorm.jdbc.connections.DataSourceSettings
 import org.grails.orm.hibernate.support.AbstractClosureEventTriggeringInterceptor
 import org.hibernate.cfg.Configuration
 import org.hibernate.cfg.ImprovedNamingStrategy

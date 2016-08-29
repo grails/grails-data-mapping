@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.grails.orm.hibernate.jdbc;
+package org.grails.datastore.gorm.jdbc;
 
 
 

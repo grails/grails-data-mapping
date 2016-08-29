@@ -1,13 +1,12 @@
-package org.grails.orm.hibernate.jdbc.connections
+package org.grails.datastore.gorm.jdbc.connections
 
 import groovy.transform.AutoClone
 import groovy.transform.CompileStatic
 import groovy.transform.builder.Builder
 import groovy.transform.builder.SimpleStrategy
+import org.grails.datastore.gorm.jdbc.schema.DefaultSchemaHandler
+import org.grails.datastore.gorm.jdbc.schema.SchemaHandler
 import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
-import org.grails.orm.hibernate.jdbc.schema.DefaultSchemaHandler
-import org.grails.orm.hibernate.jdbc.schema.SchemaHandler
-import org.hibernate.dialect.H2Dialect
 
 /**
  * DataSource settings
@@ -62,7 +61,7 @@ class DataSourceSettings extends ConnectionSourceSettings {
     /**
      * The dialect to use
      */
-    Class dialect = H2Dialect
+    Class dialect
 
     /**
      * The schema handler to use

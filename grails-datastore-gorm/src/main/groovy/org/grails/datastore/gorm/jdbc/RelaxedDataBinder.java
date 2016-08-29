@@ -1,4 +1,4 @@
-package org.grails.orm.hibernate.jdbc;
+package org.grails.datastore.gorm.jdbc;
 /*
  * Copyright 2012-2016 the original author or authors.
  *

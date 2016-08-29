@@ -2,7 +2,7 @@ package org.grails.orm.hibernate.connections;
 
 import org.grails.datastore.mapping.core.connections.ConnectionSource;
 import org.grails.datastore.mapping.core.connections.DefaultConnectionSource;
-import org.grails.orm.hibernate.jdbc.connections.DataSourceSettings;
+import org.grails.datastore.gorm.jdbc.connections.DataSourceSettings;
 import org.hibernate.SessionFactory;
 
 import javax.sql.DataSource;

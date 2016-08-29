@@ -1,7 +1,7 @@
-package org.grails.orm.hibernate.jdbc.connections;
+package org.grails.datastore.gorm.jdbc.connections;
 
+import org.grails.datastore.mapping.config.Settings;
 import org.grails.datastore.mapping.core.connections.ConnectionSource;
-import org.grails.orm.hibernate.cfg.Settings;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;

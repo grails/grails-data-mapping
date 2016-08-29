@@ -1,8 +1,8 @@
-package org.grails.orm.hibernate.jdbc.connections
+package org.grails.datastore.gorm.jdbc.connections
 
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.config.ConfigurationBuilder
-import org.grails.orm.hibernate.cfg.Settings
+import org.grails.datastore.mapping.config.Settings
 import org.springframework.core.env.PropertyResolver
 
 /**

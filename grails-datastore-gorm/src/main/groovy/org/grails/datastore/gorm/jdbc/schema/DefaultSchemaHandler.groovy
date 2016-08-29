@@ -1,4 +1,4 @@
-package org.grails.orm.hibernate.jdbc.schema
+package org.grails.datastore.gorm.jdbc.schema
 
 import javax.sql.DataSource
 import java.sql.Connection

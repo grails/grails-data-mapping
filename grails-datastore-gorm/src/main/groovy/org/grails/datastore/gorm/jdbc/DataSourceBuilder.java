@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.orm.hibernate.jdbc;
+package org.grails.datastore.gorm.jdbc;
 
 
 import java.sql.Connection;
