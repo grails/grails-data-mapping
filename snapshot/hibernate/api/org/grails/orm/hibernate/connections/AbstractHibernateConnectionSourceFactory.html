@@ -129,7 +129,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>protected&nbsp;org.grails.orm.hibernate.jdbc.connections.DataSourceConnectionSourceFactory</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>protected&nbsp;org.grails.datastore.gorm.jdbc.connections.DataSourceConnectionSourceFactory</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#dataSourceConnectionSourceFactory">dataSourceConnectionSourceFactory</a></code></td>
                             <td class="colLast"></code></td>
                         </tr>
@@ -148,7 +148,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                                                 <tr class="altColor">
                             <td class="colFirst"><strong><code>class <a href='../../../../../org/grails/datastore/mapping/core/connections/AbstractConnectionSourceFactory.html' title='AbstractConnectionSourceFactory'>AbstractConnectionSourceFactory</a></code></strong></td>
-                            <td class="colLast"><code>PREFIX, SETTING_AUTO_FLUSH, SETTING_FLUSH_MODE, SETTING_FAIL_ON_ERROR, SETTING_DEFAULT_MAPPING, SETTING_DEFAULT_CONSTRAINTS, SETTING_CUSTOM_TYPES, SETTING_MULTI_TENANCY_MODE, SETTING_MULTI_TENANT_RESOLVER_CLASS</code></td>
+                            <td class="colLast"><code>PREFIX, SETTING_AUTO_FLUSH, SETTING_FLUSH_MODE, SETTING_FAIL_ON_ERROR, SETTING_DEFAULT_MAPPING, SETTING_DEFAULT_CONSTRAINTS, SETTING_CUSTOM_TYPES, SETTING_MULTI_TENANCY_MODE, SETTING_MULTI_TENANT_RESOLVER_CLASS, SETTING_DATASOURCES, SETTING_DATASOURCE, SETTING_DB_CREATE</code></td>
                         </tr>
 
                     </table>
@@ -192,7 +192,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;org.hibernate.SessionFactory, <a href='../../../../../org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.html' title='HibernateConnectionSourceSettings'>HibernateConnectionSourceSettings</a>&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#create(java.lang.String, ConnectionSource<DataSource, DataSourceSettings>, org.grails.orm.hibernate.connections.HibernateConnectionSourceSettings)">create</a></strong>(java.lang.String name, <a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;javax.sql.DataSource, <a href='../../../../../org/grails/orm/hibernate/jdbc/connections/DataSourceSettings.html' title='DataSourceSettings'>DataSourceSettings</a>&gt; dataSourceConnectionSource, <a href='../../../../../org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.html'>HibernateConnectionSourceSettings</a> settings)</code><br>Creates a ConnectionSource for the given DataSource</td>
+                            <td class="colLast"><code><strong><a href="#create(java.lang.String, ConnectionSource<DataSource, DataSourceSettings>, org.grails.orm.hibernate.connections.HibernateConnectionSourceSettings)">create</a></strong>(java.lang.String name, <a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;javax.sql.DataSource, <a href='../../../../../org/grails/datastore/gorm/jdbc/connections/DataSourceSettings.html' title='DataSourceSettings'>DataSourceSettings</a>&gt; dataSourceConnectionSource, <a href='../../../../../org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.html'>HibernateConnectionSourceSettings</a> settings)</code><br>Creates a ConnectionSource for the given DataSource</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -202,7 +202,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#setDataSourceConnectionSourceFactory(org.grails.orm.hibernate.jdbc.connections.DataSourceConnectionSourceFactory)">setDataSourceConnectionSourceFactory</a></strong>(org.grails.orm.hibernate.jdbc.connections.DataSourceConnectionSourceFactory dataSourceConnectionSourceFactory)</code><br>Sets the factory for creating SQL javax.sql.DataSource connection sources</td>
+                            <td class="colLast"><code><strong><a href="#setDataSourceConnectionSourceFactory(org.grails.datastore.gorm.jdbc.connections.DataSourceConnectionSourceFactory)">setDataSourceConnectionSourceFactory</a></strong>(org.grails.datastore.gorm.jdbc.connections.DataSourceConnectionSourceFactory dataSourceConnectionSourceFactory)</code><br>Sets the factory for creating SQL javax.sql.DataSource connection sources</td>
                         </tr>
                         
                     </table>
@@ -253,7 +253,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="dataSourceConnectionSourceFactory"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;org.grails.orm.hibernate.jdbc.connections.DataSourceConnectionSourceFactory <strong>dataSourceConnectionSourceFactory</strong></h4>
+                                <h4>protected&nbsp;org.grails.datastore.gorm.jdbc.connections.DataSourceConnectionSourceFactory <strong>dataSourceConnectionSourceFactory</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -296,7 +296,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="create(java.lang.String, ConnectionSource<DataSource, DataSourceSettings>, org.grails.orm.hibernate.connections.HibernateConnectionSourceSettings)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;org.hibernate.SessionFactory, <a href='../../../../../org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.html' title='HibernateConnectionSourceSettings'>HibernateConnectionSourceSettings</a>&gt; <strong>create</strong>(java.lang.String name, <a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;javax.sql.DataSource, <a href='../../../../../org/grails/orm/hibernate/jdbc/connections/DataSourceSettings.html' title='DataSourceSettings'>DataSourceSettings</a>&gt; dataSourceConnectionSource, <a href='../../../../../org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.html'>HibernateConnectionSourceSettings</a> settings)</h4>
+                                <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;org.hibernate.SessionFactory, <a href='../../../../../org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.html' title='HibernateConnectionSourceSettings'>HibernateConnectionSourceSettings</a>&gt; <strong>create</strong>(java.lang.String name, <a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;javax.sql.DataSource, <a href='../../../../../org/grails/datastore/gorm/jdbc/connections/DataSourceSettings.html' title='DataSourceSettings'>DataSourceSettings</a>&gt; dataSourceConnectionSource, <a href='../../../../../org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.html'>HibernateConnectionSourceSettings</a> settings)</h4>
                                 <p> Creates a ConnectionSource for the given DataSource
      <DL><DT><B>Returns:</B></DT><DD>The ConnectionSource</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name</DD><DD><code>dataSourceConnectionSource</code> -  The data source connection source</DD><DD><code>settings</code> -  The settings</DD></DL></p>
                             </li>
@@ -311,10 +311,10 @@ public&nbsp;java.io.Serializable <strong>getConnectionSourcesConfigurationKey</s
                             </li>
                         </ul>
                     
-                        <a name="setDataSourceConnectionSourceFactory(org.grails.orm.hibernate.jdbc.connections.DataSourceConnectionSourceFactory)"><!-- --></a>
+                        <a name="setDataSourceConnectionSourceFactory(org.grails.datastore.gorm.jdbc.connections.DataSourceConnectionSourceFactory)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>setDataSourceConnectionSourceFactory</strong>(org.grails.orm.hibernate.jdbc.connections.DataSourceConnectionSourceFactory dataSourceConnectionSourceFactory)</h4>
+                                <h4>public&nbsp;void <strong>setDataSourceConnectionSourceFactory</strong>(org.grails.datastore.gorm.jdbc.connections.DataSourceConnectionSourceFactory dataSourceConnectionSourceFactory)</h4>
                                 <p> Sets the factory for creating SQL javax.sql.DataSource connection sources
      <DL><DT><B>Parameters:</B></DT><DD>dataSourceConnectionSourceFactory</DD></DL></p>
                             </li>
