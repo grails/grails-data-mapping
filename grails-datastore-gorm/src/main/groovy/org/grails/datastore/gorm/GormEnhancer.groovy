@@ -385,7 +385,7 @@ class GormEnhancer implements Closeable {
         try {
             Thread.currentThread().contextClassLoader.loadClass("org.codehaus.groovy.grails.validation.ConstrainedProperty").removeConstraint('unique')
         } catch (Throwable e) {
-            log.debug("Not running in Grails 2 environment, so there was an issue removing applied constraints on shutdown. ${e.message}", e)
+            log.debug("Not running in Grails 2 environment, cannot de-register constraints. This exception can be safely ignored if you are not using Grails 2. ${e.message}", e)
         }
     }
 
@@ -550,13 +550,19 @@ class GormEnhancer implements Closeable {
 
     @CompileStatic
     protected List<FinderMethod> createDynamicFinders() {
-        [new FindOrCreateByFinder(datastore),
-         new FindOrSaveByFinder(datastore),
-         new FindByFinder(datastore),
-         new FindAllByFinder(datastore),
-         new FindAllByBooleanFinder(datastore),
-         new FindByBooleanFinder(datastore),
-         new CountByFinder(datastore),
-         new ListOrderByFinder(datastore)] as List<FinderMethod>
+        Datastore targetDatastore = datastore
+        createDynamicFinders(targetDatastore)
+    }
+
+    @CompileStatic
+    protected List<FinderMethod> createDynamicFinders(Datastore targetDatastore) {
+        [new FindOrCreateByFinder(targetDatastore),
+         new FindOrSaveByFinder(targetDatastore),
+         new FindByFinder(targetDatastore),
+         new FindAllByFinder(targetDatastore),
+         new FindAllByBooleanFinder(targetDatastore),
+         new FindByBooleanFinder(targetDatastore),
+         new CountByFinder(targetDatastore),
+         new ListOrderByFinder(targetDatastore)] as List<FinderMethod>
     }
 }

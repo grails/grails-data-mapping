@@ -16,6 +16,7 @@ package org.grails.datastore.gorm
 
 import grails.gorm.CriteriaBuilder
 import grails.gorm.DetachedCriteria
+import grails.gorm.MultiTenant
 import grails.gorm.PagedResultList
 import grails.gorm.api.GormAllOperations
 import grails.gorm.multitenancy.Tenants
@@ -137,31 +138,36 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
             throw new MissingMethodException(methodName, persistentClass, args)
         }
 
-        def mc = persistentClass.getMetaClass()
+        // if the class is multi tenant, don't cache the method because the tenant will need to be resolved
+        // for each method call
+        if(!MultiTenant.isAssignableFrom(persistentClass)) {
 
-        // register the method invocation for next time
-        mc.static."$methodName" = { Object[] varArgs ->
-            // FYI... This is relevant to http://jira.grails.org/browse/GRAILS-3463 and may
-            // become problematic if http://jira.codehaus.org/browse/GROOVY-5876 is addressed...
-            final argumentsForMethod
-            if(varArgs == null) {
-                argumentsForMethod = [null] as Object[]
-            }
-            // if the argument component type is not an Object then we have an array passed that is the actual argument
-            else if(varArgs.getClass().componentType != Object) {
-                // so we wrap it in an object array
-                argumentsForMethod = [varArgs] as Object[]
-            }
-            else {
+            def mc = persistentClass.getMetaClass()
 
-                if(varArgs.length == 1 && varArgs[0].getClass().isArray()) {
-                    argumentsForMethod = varArgs[0]
-                } else {
-
-                    argumentsForMethod = varArgs
+            // register the method invocation for next time
+            mc.static."$methodName" = { Object[] varArgs ->
+                // FYI... This is relevant to http://jira.grails.org/browse/GRAILS-3463 and may
+                // become problematic if http://jira.codehaus.org/browse/GROOVY-5876 is addressed...
+                final argumentsForMethod
+                if(varArgs == null) {
+                    argumentsForMethod = [null] as Object[]
                 }
+                // if the argument component type is not an Object then we have an array passed that is the actual argument
+                else if(varArgs.getClass().componentType != Object) {
+                    // so we wrap it in an object array
+                    argumentsForMethod = [varArgs] as Object[]
+                }
+                else {
+
+                    if(varArgs.length == 1 && varArgs[0].getClass().isArray()) {
+                        argumentsForMethod = varArgs[0]
+                    } else {
+
+                        argumentsForMethod = varArgs
+                    }
+                }
+                method.invoke(delegate, methodName, argumentsForMethod)
             }
-            method.invoke(delegate, methodName, argumentsForMethod)
         }
 
         return method.invoke(persistentClass, methodName, args)
