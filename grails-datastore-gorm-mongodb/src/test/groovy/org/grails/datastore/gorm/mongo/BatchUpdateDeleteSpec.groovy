@@ -71,10 +71,14 @@ class BatchUpdateDeleteSpec extends GormDatastoreSpec {
         BatchUser.where { address == addressA }.updateAll(address: addressB)
         session.flush()
 
+
+        boolean addressBUserCount = BatchUser.where { address == addressB }.count() == 3
+        boolean addressAUserCount = BatchUser.where { address == addressA }.count() == 0
+
         then:
         BatchUser.count() == 3
-        BatchUser.where { address == addressB }.count() == 3
-        BatchUser.where { address == addressA }.count() == 0
+        addressAUserCount
+        addressBUserCount
     }
 
     @Override
