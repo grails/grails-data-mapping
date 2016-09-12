@@ -527,16 +527,6 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>static&nbsp;java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#getProperty(com.mongodb.DB, java.lang.String)">getProperty</a></strong>(com.mongodb.DB db, java.lang.String name)</code><br>Adds a method to return a collection using the dot syntax</td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code>static&nbsp;java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#getProperty(com.mongodb.client.MongoDatabase, java.lang.String)">getProperty</a></strong>(com.mongodb.client.MongoDatabase db, java.lang.String name)</code><br>Adds a method to return a collection using the dot syntax</td>
-                        </tr>
-                        
-                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;com.mongodb.DBObject</strong></code></td>
                             <td class="colLast"><code><strong><a href="#group(com.mongodb.DBCollection, java.util.Map, java.util.Map, java.util.Map, java.lang.String)">group</a></strong>(com.mongodb.DBCollection collection, java.util.Map key, java.util.Map cond, java.util.Map initial, java.lang.String reduce)</code><br></td>
                         </tr>
@@ -694,6 +684,16 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;com.mongodb.client.FindIterable&lt;org.bson.Document&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#projection(FindIterable<Document>, Map<String, Object>)">projection</a></strong>(com.mongodb.client.FindIterable&lt;org.bson.Document&gt; iterable, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;java.lang.Object</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#propertyMissing(com.mongodb.DB, java.lang.String)">propertyMissing</a></strong>(com.mongodb.DB db, java.lang.String name)</code><br>Adds a method to return a collection using the dot syntax</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;java.lang.Object</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#propertyMissing(com.mongodb.client.MongoDatabase, java.lang.String)">propertyMissing</a></strong>(com.mongodb.client.MongoDatabase db, java.lang.String name)</code><br>Adds a method to return a collection using the dot syntax</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -1518,24 +1518,6 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="getProperty(com.mongodb.DB, java.lang.String)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>static&nbsp;java.lang.Object <strong>getProperty</strong>(com.mongodb.DB db, java.lang.String name)</h4>
-                                <p> Adds a method to return a collection using the dot syntax
-     <DL><DT><B>Parameters:</B></DT><DD><code>db</code> -  The database object</DD><DD><code>name</code> -  The collection name</DD></DL><DL><DT><B>Returns:</B></DT><DD>A com.mongodb.DBCollection</DD></DL></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="getProperty(com.mongodb.client.MongoDatabase, java.lang.String)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>static&nbsp;java.lang.Object <strong>getProperty</strong>(com.mongodb.client.MongoDatabase db, java.lang.String name)</h4>
-                                <p> Adds a method to return a collection using the dot syntax
-     <DL><DT><B>Parameters:</B></DT><DD><code>db</code> -  The database object</DD><DD><code>name</code> -  The collection name</DD></DL><DL><DT><B>Returns:</B></DT><DD>A com.mongodb.DBCollection</DD></DL></p>
-                            </li>
-                        </ul>
-                    
                         <a name="group(com.mongodb.DBCollection, java.util.Map, java.util.Map, java.util.Map, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -1789,6 +1771,24 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>static&nbsp;com.mongodb.client.FindIterable&lt;org.bson.Document&gt; <strong>projection</strong>(com.mongodb.client.FindIterable&lt;org.bson.Document&gt; iterable, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection)</h4>
                                 <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="propertyMissing(com.mongodb.DB, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;java.lang.Object <strong>propertyMissing</strong>(com.mongodb.DB db, java.lang.String name)</h4>
+                                <p> Adds a method to return a collection using the dot syntax
+     <DL><DT><B>Parameters:</B></DT><DD><code>db</code> -  The database object</DD><DD><code>name</code> -  The collection name</DD></DL><DL><DT><B>Returns:</B></DT><DD>A com.mongodb.DBCollection</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="propertyMissing(com.mongodb.client.MongoDatabase, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;java.lang.Object <strong>propertyMissing</strong>(com.mongodb.client.MongoDatabase db, java.lang.String name)</h4>
+                                <p> Adds a method to return a collection using the dot syntax
+     <DL><DT><B>Parameters:</B></DT><DD><code>db</code> -  The database object</DD><DD><code>name</code> -  The collection name</DD></DL><DL><DT><B>Returns:</B></DT><DD>A com.mongodb.DBCollection</DD></DL></p>
                             </li>
                         </ul>
                     
