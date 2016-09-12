@@ -15,6 +15,7 @@
  */
 package org.grails.orm.hibernate;
 
+import grails.gorm.MultiTenant;
 import org.grails.datastore.gorm.timestamp.DefaultTimestampProvider;
 import org.grails.datastore.gorm.timestamp.TimestampProvider;
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
@@ -197,7 +198,7 @@ public class EventTriggeringInterceptor extends AbstractEventTriggeringIntercept
             synchronized(clazz) {
                 eventListener = eventListeners.get(key);
                 if (eventListener == null) {
-                    boolean isValidSessionFactory = factory == null || ((AbstractHibernateDatastore) datastore).getSessionFactory().equals(factory);
+                    boolean isValidSessionFactory = MultiTenant.class.isAssignableFrom(clazz) || factory == null || ((AbstractHibernateDatastore) datastore).getSessionFactory().equals(factory);
                     shouldTrigger = (HibernateMappingContext.isDomainClass(clazz) && isValidSessionFactory);
                     if (shouldTrigger) {
                         eventListener = new ClosureEventListener(clazz, failOnError, failOnErrorPackages, timestampProvider);
