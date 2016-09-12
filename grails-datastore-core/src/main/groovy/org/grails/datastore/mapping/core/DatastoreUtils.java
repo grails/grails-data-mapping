@@ -490,8 +490,10 @@ public abstract class DatastoreUtils {
                 MutablePropertySources propertySources = env.getPropertySources();
 
                 if(configuration instanceof ConfigObject) {
-                    propertySources.addFirst(new ConfigObjectPropertySource(DATASTORE_CONFIG, configuration));
-                    propertySources.addFirst(new ConfigObjectPropertySource(DATASTORE_CONFIG_FLAT, createFlatConfig((ConfigObject) configuration)));
+                    ConfigObject existingConfig = (ConfigObject) configuration;
+                    ConfigObject cloned = existingConfig.clone();
+                    propertySources.addFirst(new ConfigObjectPropertySource(DATASTORE_CONFIG, cloned));
+                    propertySources.addFirst(new ConfigObjectPropertySource(DATASTORE_CONFIG_FLAT, createFlatConfig(cloned)));
                 }
                 else {
                     ConfigSlurper configSlurper = new ConfigSlurper();
@@ -529,7 +531,7 @@ public abstract class DatastoreUtils {
         for (Object key : keySet) {
             Object value = currentConfigObject.get(key);
             if(value instanceof ConfigObject) {
-                ConfigObject sub = (ConfigObject) value;
+                ConfigObject sub = ((ConfigObject) value).clone();
                 String fullPath = prefix + key;
                 if(!sub.isEmpty()) {
                     Map flattened = sub.flatten();

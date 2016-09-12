@@ -15,11 +15,12 @@ class ConfigurationBuilderSpec extends Specification {
     void "Test configuration builder"() {
 
         given:"A configuration"
-        def config = DatastoreUtils.createPropertyResolver(
+        def map = [
                 (Settings.SETTING_AUTO_FLUSH): "true",
                 (Settings.SETTING_DEFAULT_MAPPING): {
                 }
-        )
+        ]
+        def config = DatastoreUtils.createPropertyResolver(map)
 
         when:"The configuration is built"
         def builder = new TestConfigurationBuilder(config)
@@ -28,7 +29,7 @@ class ConfigurationBuilderSpec extends Specification {
         then:"The result is correct"
         connectionSourceSettings.autoFlush
         connectionSourceSettings.getDefault().mapping != null
-
+        map.size() == 2 // don't mutate the original map
     }
 
 
