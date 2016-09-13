@@ -480,7 +480,7 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
             property.batchSize = namedArgs.batchSize instanceof Integer ? namedArgs.batchSize : property.batchSize
             property.ignoreNotFound = namedArgs.ignoreNotFound instanceof Boolean ? namedArgs.ignoreNotFound : property.ignoreNotFound
             property.typeParams = namedArgs.params ?: property.typeParams
-            property.setUnique( namedArgs.unique instanceof Boolean ? namedArgs.unique : property.unique)
+            property.setUnique( namedArgs.unique ? namedArgs.unique : property.unique)
             property.nullable = namedArgs.nullable instanceof Boolean ? namedArgs.nullable : property.nullable
             property.maxSize = namedArgs.maxSize instanceof Number ? namedArgs.maxSize : property.maxSize
             property.minSize = namedArgs.minSize instanceof Number ? namedArgs.minSize : property.minSize
