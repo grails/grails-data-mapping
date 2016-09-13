@@ -463,10 +463,10 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
             property.sort = namedArgs.sort ?: property.sort
             property.order = namedArgs.order ?: property.order
             property.batchSize = namedArgs.batchSize instanceof Integer ? namedArgs.batchSize : property.batchSize
-            property.ignoreNotFound = namedArgs.ignoreNotFound != null ? namedArgs.ignoreNotFound : property.ignoreNotFound
+            property.ignoreNotFound = namedArgs.ignoreNotFound instanceof Boolean ? namedArgs.ignoreNotFound : property.ignoreNotFound
             property.typeParams = namedArgs.params ?: property.typeParams
-            property.setUnique( namedArgs.unique ? namedArgs.unique : property.unique)
-            property.nullable = namedArgs.nullable ? true : property.nullable
+            property.setUnique( namedArgs.unique instanceof Boolean ? namedArgs.unique : property.unique)
+            property.nullable = namedArgs.nullable instanceof Boolean ? namedArgs.nullable : property.nullable
             property.maxSize = namedArgs.maxSize instanceof Number ? namedArgs.maxSize : property.maxSize
             property.minSize = namedArgs.minSize instanceof Number ? namedArgs.minSize : property.minSize
             property.max = namedArgs.max instanceof Comparable ? namedArgs.max : property.max
