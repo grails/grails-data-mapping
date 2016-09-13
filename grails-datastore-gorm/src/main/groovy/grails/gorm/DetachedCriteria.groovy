@@ -86,6 +86,19 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<T> implements GormOpe
     }
 
     /**
+     * Defines projections.
+     *
+     * @param callable The callable
+     * @return This detached criteria
+     */
+    DetachedCriteria<T> projections(@DelegatesTo(ProjectionList) Closure callable) {
+        callable.delegate = projectionList
+        callable.resolveStrategy = Closure.DELEGATE_FIRST
+        callable.call()
+        return this
+    }
+
+    /**
      * Synonym for #get
      */
     T find(@DelegatesTo(DetachedCriteria) Closure additionalCriteria) {
@@ -148,11 +161,6 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<T> implements GormOpe
     @Override
     DetachedCriteria<T> select(String property) {
         return (DetachedCriteria<T>)super.select(property)
-    }
-
-    @Override
-    DetachedCriteria<T> projections(@DelegatesTo(ProjectionList) Closure callable) {
-        return (DetachedCriteria<T>)super.projections(callable)
     }
 
     @Override
@@ -695,14 +703,35 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<T> implements GormOpe
         (DetachedCriteria<T>)super.distinct(property)
     }
 
-    @Override
-    protected DetachedCriteria<T> clone() {
-        return (DetachedCriteria)super.clone()
-    }
 
     @Override
     protected DetachedCriteria newInstance() {
         new DetachedCriteria(targetClass, alias)
+    }
+
+    @CompileStatic(TypeCheckingMode.SKIP)
+    protected DetachedCriteria<T> clone() {
+        def criteria = newInstance()
+        criteria.criteria = new ArrayList(this.criteria)
+        final projections = new ArrayList(this.projections)
+        criteria.projections = projections
+        criteria.projectionList = new DetachedProjections(projections)
+        criteria.orders = new ArrayList(this.orders)
+        criteria.defaultMax = defaultMax
+        criteria.defaultOffset = defaultOffset
+        return criteria
+    }
+
+    protected void handleJunction(Closure callable) {
+        try {
+            callable.delegate = this
+            callable.resolveStrategy = Closure.DELEGATE_FIRST
+            callable.call()
+        }
+        finally {
+            def lastJunction = junctions.remove(junctions.size() - 1)
+            add lastJunction
+        }
     }
 
     protected QueryableCriteria buildQueryableCriteria(Closure queryClosure) {

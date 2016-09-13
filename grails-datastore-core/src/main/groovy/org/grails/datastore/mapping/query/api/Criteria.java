@@ -38,7 +38,7 @@ public interface Criteria  {
     Criteria exists(QueryableCriteria<?> subquery);
 
     /**
-     * Executes an not exists subquery
+     * Executes a not exists subquery
      *
      * @param subquery The subquery
      * @return this criteria
@@ -85,7 +85,7 @@ public interface Criteria  {
     Criteria isNotNull(String propertyName);
 
     /**
-     * Creates an "equals" Criterion based on the specified property name and value.
+     * Creates an "equals" Criterion based on the specified property name and value
      *
      * @param propertyName The property name
      * @param propertyValue The property value
@@ -95,7 +95,7 @@ public interface Criteria  {
     Criteria eq(String propertyName, Object propertyValue);
 
     /**
-     * Creates an "equals" Criterion based on the specified property name and value.
+     * Creates an "equals" Criterion based on the specified property name and value
      *
      * @param propertyValue The property value
      *
@@ -104,7 +104,7 @@ public interface Criteria  {
     Criteria idEq(Object propertyValue);
 
     /**
-     * Creates a "not equals" Criterion based on the specified property name and value.
+     * Creates a "not equals" Criterion based on the specified property name and value
      *
      * @param propertyName The property name
      * @param propertyValue The property value
@@ -173,7 +173,7 @@ public interface Criteria  {
     Criteria lt(String property, Object value);
 
     /**
-     * Creates an like Criterion based on the specified property name and value.
+     * Creates a like Criterion based on the specified property name and value
      *
      * @param propertyName The property name
      * @param propertyValue The property value
@@ -193,7 +193,7 @@ public interface Criteria  {
     Criteria ilike(String propertyName, Object propertyValue);
 
     /**
-     * Creates an rlike Criterion based on the specified property name and value.
+     * Creates an rlike Criterion based on the specified property name and value
      *
      * @param propertyName The property name
      * @param propertyValue The property value
@@ -225,7 +225,7 @@ public interface Criteria  {
     Criteria not(Closure callable);
 
     /**
-     * Creates an "in" Criterion based on the specified property name and list of values.
+     * Creates an "in" Criterion based on the specified property name and list of values
      *
      * @param propertyName The property name
      * @param values The values
@@ -235,7 +235,7 @@ public interface Criteria  {
     Criteria in(String propertyName, Collection values);
 
     /**
-     * Creates an "in" Criterion using a subquery.
+     * Creates an "in" Criterion using a subquery
      *
      * @param propertyName The property name
      * @param subquery The subquery
@@ -246,7 +246,7 @@ public interface Criteria  {
 
 
     /**
-     * Creates an "in" Criterion using a subquery.
+     * Creates an "in" Criterion using a subquery
      *
      * @param propertyName The property name
      * @param subquery The subquery
@@ -256,7 +256,7 @@ public interface Criteria  {
     Criteria inList(String propertyName, QueryableCriteria<?> subquery);
 
     /**
-     * Creates an "in" Criterion using a subquery.
+     * Creates an "in" Criterion using a subquery
      *
      * @param propertyName The property name
      * @param subquery The subquery
@@ -266,7 +266,7 @@ public interface Criteria  {
     Criteria in(String propertyName, Closure<?> subquery);
 
     /**
-     * Creates an "in" Criterion using a subquery.
+     * Creates an "in" Criterion using a subquery
      *
      * @param propertyName The property name
      * @param subquery The subquery
@@ -276,7 +276,7 @@ public interface Criteria  {
     Criteria inList(String propertyName, Closure<?> subquery);
 
     /**
-     * Creates an "in" Criterion based on the specified property name and list of values.
+     * Creates an "in" Criterion based on the specified property name and list of values
      *
      * @param propertyName The property name
      * @param values The values
@@ -286,7 +286,7 @@ public interface Criteria  {
     Criteria inList(String propertyName, Collection values);
 
     /**
-     * Creates an "in" Criterion based on the specified property name and list of values.
+     * Creates an "in" Criterion based on the specified property name and list of values
      *
      * @param propertyName The property name
      * @param values The values
@@ -296,7 +296,7 @@ public interface Criteria  {
     Criteria inList(String propertyName, Object[] values);
 
     /**
-      * Creates an "in" Criterion based on the specified property name and list of values.
+      * Creates an "in" Criterion based on the specified property name and list of values
       *
       * @param propertyName The property name
       * @param values The values
@@ -306,7 +306,7 @@ public interface Criteria  {
     Criteria in(String propertyName, Object[] values);
 
     /**
-     * Creates a negated "in" Criterion using a subquery.
+     * Creates a negated "in" Criterion using a subquery
      *
      * @param propertyName The property name
      * @param subquery The subquery
@@ -316,7 +316,7 @@ public interface Criteria  {
     Criteria notIn(String propertyName, QueryableCriteria<?> subquery);
 
     /**
-     * Creates a negated "in" Criterion using a subquery.
+     * Creates a negated "in" Criterion using a subquery
      *
      * @param propertyName The property name
      * @param subquery The subquery
@@ -352,7 +352,7 @@ public interface Criteria  {
     Criteria order(String propertyName, String direction);
 
     /**
-     * Creates a Criterion that contrains a collection property by size
+     * Creates a Criterion that constrains a collection property by size
      *
      * @param propertyName The property name
      * @param size The size to constrain by
@@ -362,7 +362,7 @@ public interface Criteria  {
     Criteria sizeEq(String propertyName, int size) ;
 
     /**
-     * Creates a Criterion that contrains a collection property to be greater than the given size
+     * Creates a Criterion that constrains a collection property to be greater than the given size
      *
      * @param propertyName The property name
      * @param size The size to constrain by
@@ -372,7 +372,7 @@ public interface Criteria  {
     Criteria sizeGt(String propertyName, int size);
 
     /**
-     * Creates a Criterion that contrains a collection property to be greater than or equal to the given size
+     * Creates a Criterion that constrains a collection property to be greater than or equal to the given size
      *
      * @param propertyName The property name
      * @param size The size to constrain by
@@ -382,7 +382,7 @@ public interface Criteria  {
     Criteria sizeGe(String propertyName, int size);
 
     /**
-     * Creates a Criterion that contrains a collection property to be less than or equal to the given size
+     * Creates a Criterion that constrains a collection property to be less than or equal to the given size
      *
      * @param propertyName The property name
      * @param size The size to constrain by
@@ -392,7 +392,7 @@ public interface Criteria  {
     Criteria sizeLe(String propertyName, int size);
 
     /**
-     * Creates a Criterion that contrains a collection property to be less than to the given size
+     * Creates a Criterion that constrains a collection property to be less than to the given size
      *
      * @param propertyName The property name
      * @param size The size to constrain by
@@ -402,7 +402,7 @@ public interface Criteria  {
     Criteria sizeLt(String propertyName, int size);
 
     /**
-     * Creates a Criterion that contrains a collection property to be not equal to the given size
+     * Creates a Criterion that constrains a collection property to be not equal to the given size
      *
      * @param propertyName The property name
      * @param size The size to constrain by
@@ -412,7 +412,7 @@ public interface Criteria  {
     Criteria sizeNe(String propertyName, int size);
 
     /**
-     * Constraints a property to be equal to a specified other property
+     * Constrains a property to be equal to a specified other property
      *
      * @param propertyName The property
      * @param otherPropertyName The other property
@@ -421,7 +421,7 @@ public interface Criteria  {
     Criteria eqProperty(java.lang.String propertyName, java.lang.String otherPropertyName);
 
     /**
-     * Constraints a property to be not equal to a specified other property
+     * Constrains a property to be not equal to a specified other property
      *
      * @param propertyName The property
      * @param otherPropertyName The other property
@@ -430,7 +430,7 @@ public interface Criteria  {
     Criteria neProperty(java.lang.String propertyName, java.lang.String otherPropertyName);
 
     /**
-     * Constraints a property to be greater than a specified other property
+     * Constrains a property to be greater than a specified other property
      *
      * @param propertyName The property
      * @param otherPropertyName The other property
@@ -439,7 +439,7 @@ public interface Criteria  {
     Criteria gtProperty(java.lang.String propertyName, java.lang.String otherPropertyName);
 
     /**
-     * Constraints a property to be greater than or equal to a specified other property
+     * Constrains a property to be greater than or equal to a specified other property
      *
      * @param propertyName The property
      * @param otherPropertyName The other property
@@ -448,7 +448,7 @@ public interface Criteria  {
     Criteria geProperty(java.lang.String propertyName, java.lang.String otherPropertyName);
 
     /**
-     * Constraints a property to be less than a specified other property
+     * Constrains a property to be less than a specified other property
      *
      * @param propertyName The property
      * @param otherPropertyName The other property
@@ -457,7 +457,7 @@ public interface Criteria  {
     Criteria ltProperty(java.lang.String propertyName, java.lang.String otherPropertyName);
 
     /**
-     * Constraints a property to be less than or equal to a specified other property
+     * Constrains a property to be less than or equal to a specified other property
      *
      * @param propertyName The property
      * @param otherPropertyName The other property

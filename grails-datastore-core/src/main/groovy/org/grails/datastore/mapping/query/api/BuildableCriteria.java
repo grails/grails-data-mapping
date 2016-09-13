@@ -67,7 +67,7 @@ public interface BuildableCriteria extends Criteria {
     BuildableCriteria select(String property);
 
     /**
-     * Defines an executes a list query in a single call. Example: Foo.createCriteria().list { }
+     * Defines and executes a list query in a single call. Example: Foo.createCriteria().list { }
      * @param closure The closure to execute
      *
      * @return The result
@@ -75,7 +75,7 @@ public interface BuildableCriteria extends Criteria {
     Object list(@DelegatesTo(Criteria.class) Closure closure);
 
     /**
-     * Defines an executes a list query in a single call. Example: Foo.createCriteria().list { }
+     * Defines and executes a list query in a single call. Example: Foo.createCriteria().list { }
      * 
      * @param params pagination parameters (max, offset, etc...)
      * @param closure The closure to execute
@@ -85,7 +85,7 @@ public interface BuildableCriteria extends Criteria {
     Object list(Map params, @DelegatesTo(Criteria.class) Closure closure);
     
     /**
-     * Defines an executes a list distinct query in a single call. Example: Foo.createCriteria().listDistinct { }
+     * Defines and executes a list distinct query in a single call. Example: Foo.createCriteria().listDistinct { }
      * @param closure The closure to execute
      *
      * @return The result 
@@ -93,7 +93,7 @@ public interface BuildableCriteria extends Criteria {
     Object listDistinct(@DelegatesTo(Criteria.class) Closure closure);
     
     /**
-     * Defines an executes a list query in a single call. Example: Foo.createCriteria().scroll { }
+     * Defines and executes a scroll query in a single call. Example: Foo.createCriteria().scroll { }
      * 
      * @param closure The closure to execute
      *
@@ -102,7 +102,7 @@ public interface BuildableCriteria extends Criteria {
     Object scroll(@DelegatesTo(Criteria.class) Closure closure);
     
     /**
-     * Defines an executes a get query ( a single result) in a single call. Example: Foo.createCriteria().get { }
+     * Defines and executes a get query ( a single result) in a single call. Example: Foo.createCriteria().get { }
      *
      * @param closure The closure to execute
      *

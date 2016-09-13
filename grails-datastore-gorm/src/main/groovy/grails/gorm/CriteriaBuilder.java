@@ -86,7 +86,7 @@ public class CriteriaBuilder extends AbstractCriteriaBuilder implements Buildabl
     }
 
     /**
-     * Defines an executes a list query in a single call. Example: Foo.createCriteria.list { }
+     * Defines and executes a list query in a single call. Example: Foo.createCriteria.list { }
      * @param callable The closure to execute
      *
      * @return The result list
@@ -99,7 +99,7 @@ public class CriteriaBuilder extends AbstractCriteriaBuilder implements Buildabl
     }
 
     /**
-     * Defines an executes a get query ( a single result) in a single call. Example: Foo.createCriteria.get { }
+     * Defines and executes a get query (a single result) in a single call. Example: Foo.createCriteria.get { }
      *
      *
      * @param callable The closure to execute
@@ -115,7 +115,7 @@ public class CriteriaBuilder extends AbstractCriteriaBuilder implements Buildabl
     }
 
     /**
-     * Defines an executes a list distinct query in a single call. Example: Foo.createCriteria.listDistinct { }
+     * Defines and executes a list distinct query in a single call. Example: Foo.createCriteria.listDistinct { }
      * @param callable The closure to execute
      *
      * @return The result list
@@ -142,7 +142,7 @@ public class CriteriaBuilder extends AbstractCriteriaBuilder implements Buildabl
     }
 
     /**
-     * Defines an executes a count query in a single call. Example: Foo.createCriteria.count { }
+     * Defines and executes a count query in a single call. Example: Foo.createCriteria.count { }
      * @param callable The closure to execute
      *
      * @return The result count
