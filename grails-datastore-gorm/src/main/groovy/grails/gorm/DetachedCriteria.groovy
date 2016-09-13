@@ -709,17 +709,9 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<T> implements GormOpe
         new DetachedCriteria(targetClass, alias)
     }
 
-    @CompileStatic(TypeCheckingMode.SKIP)
+    @Override
     protected DetachedCriteria<T> clone() {
-        def criteria = newInstance()
-        criteria.criteria = new ArrayList(this.criteria)
-        final projections = new ArrayList(this.projections)
-        criteria.projections = projections
-        criteria.projectionList = new DetachedProjections(projections)
-        criteria.orders = new ArrayList(this.orders)
-        criteria.defaultMax = defaultMax
-        criteria.defaultOffset = defaultOffset
-        return criteria
+        return (DetachedCriteria)super.clone()
     }
 
     protected void handleJunction(Closure callable) {
