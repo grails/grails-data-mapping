@@ -483,6 +483,12 @@ class MongoCodecEntityPersister extends ThirdPartyCacheEntityPersister<Object> {
                     if(!association.isEmbedded() && !(association instanceof Basic)) {
                         def v = access.getProperty(association.name)
                         if(association instanceof ToOne) {
+
+                            if(association.isBidirectional() && association.isCircular()) {
+                                // don't cascade to the parent of a circular association with a belongsTo
+                                // should probably move this fix for core g-d-m however may impact other impls
+                                continue
+                            }
                             if(v != null) {
                                 mongoSession.delete( v )
                             }
