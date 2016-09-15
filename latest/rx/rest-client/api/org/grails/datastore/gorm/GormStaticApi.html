@@ -487,42 +487,47 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#whereAny(groovy.lang.Closure)">whereAny</a></strong>(groovy.lang.Closure callable)</code><br>@param callable Callable closure containing detached criteria definition</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#withCriteria(groovy.lang.Closure)">withCriteria</a></strong>(groovy.lang.Closure callable)</code><br>Creates a criteria builder instance</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#withCriteria(java.util.Map, groovy.lang.Closure)">withCriteria</a></strong>(java.util.Map builderArgs, groovy.lang.Closure callable)</code><br>Creates a criteria builder instance</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#withDatastoreSession(groovy.lang.Closure)">withDatastoreSession</a></strong>(groovy.lang.Closure callable)</code><br>Same as withSession, but present for the case where withSession is overridden to use the Hibernate session</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#withNewSession(groovy.lang.Closure)">withNewSession</a></strong>(groovy.lang.Closure callable)</code><br>Creates and binds a new session for the scope of the given closure</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#withNewTransaction(groovy.lang.Closure)">withNewTransaction</a></strong>(groovy.lang.Closure callable)</code><br>Executes the closure within the context of a new transaction</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#withSession(groovy.lang.Closure)">withSession</a></strong>(groovy.lang.Closure callable)</code><br>Execute a closure whose first argument is a reference to the current session.</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#withTransaction(groovy.lang.Closure)">withTransaction</a></strong>(groovy.lang.Closure callable)</code><br>Executes the closure within the context of a transaction, creating one if none is present or joining
  an existing transaction if one is already present.</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#withTransaction(org.springframework.transaction.TransactionDefinition, groovy.lang.Closure)">withTransaction</a></strong>(org.springframework.transaction.TransactionDefinition definition, groovy.lang.Closure callable)</code><br>Executes the closure within the context of a transaction for the given org.springframework.transaction.TransactionDefinition</td>
                         </tr>
@@ -1121,6 +1126,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; <strong>where</strong>(groovy.lang.Closure callable)</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>The DetachedCriteria instance</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure containing detached criteria definition</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="whereAny(groovy.lang.Closure)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; <strong>whereAny</strong>(groovy.lang.Closure callable)</h4>
                                 <p>
      <DL><DT><B>Returns:</B></DT><DD>The DetachedCriteria instance</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure containing detached criteria definition</DD></DL></p>
                             </li>

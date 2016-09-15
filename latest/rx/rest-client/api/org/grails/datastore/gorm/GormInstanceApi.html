@@ -213,27 +213,27 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#attach(D)">attach</a></strong>(D instance)</code><br>Attaches an instance to an existing session. </td>
+                            <td class="colLast"><code><strong><a href="#attach(def)">attach</a></strong>(java.lang.Object instance)</code><br>Attaches an instance to an existing session. </td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#delete(D)">delete</a></strong>(D instance)</code><br>Deletes an instance from the datastore</td>
+                            <td class="colLast"><code><strong><a href="#delete(def)">delete</a></strong>(java.lang.Object instance)</code><br>Deletes an instance from the datastore</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#delete(D, java.util.Map)">delete</a></strong>(D instance, java.util.Map params)</code><br>Deletes an instance from the datastore</td>
+                            <td class="colLast"><code><strong><a href="#delete(def, java.util.Map)">delete</a></strong>(java.lang.Object instance, java.util.Map params)</code><br>Deletes an instance from the datastore</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#discard(D)">discard</a></strong>(D instance)</code><br>Discards any pending changes. </td>
+                            <td class="colLast"><code><strong><a href="#discard(def)">discard</a></strong>(java.lang.Object instance)</code><br>Discards any pending changes. </td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;D</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#doSave(D, java.util.Map, org.grails.datastore.mapping.core.Session)">doSave</a></strong>(D instance, java.util.Map params, <a href='../../../../org/grails/datastore/mapping/core/Session.html'>Session</a> session)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#doSave(def, java.util.Map, org.grails.datastore.mapping.core.Session)">doSave</a></strong>(java.lang.Object instance, java.util.Map params, <a href='../../../../org/grails/datastore/mapping/core/Session.html'>Session</a> session)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -243,7 +243,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>java.io.Serializable</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#ident(D)">ident</a></strong>(D instance)</code><br>Returns the objects identifier</td>
+                            <td class="colLast"><code><strong><a href="#ident(def)">ident</a></strong>(java.lang.Object instance)</code><br>Returns the objects identifier</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -253,47 +253,47 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#isAttached(D)">isAttached</a></strong>(D instance)</code><br>No concept of session-based model so defaults to true</td>
+                            <td class="colLast"><code><strong><a href="#isAttached(def)">isAttached</a></strong>(java.lang.Object instance)</code><br>No concept of session-based model so defaults to true</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#lock(D)">lock</a></strong>(D instance)</code><br>Upgrades an existing persistence instance to a write lock</td>
+                            <td class="colLast"><code><strong><a href="#lock(def)">lock</a></strong>(java.lang.Object instance)</code><br>Upgrades an existing persistence instance to a write lock</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#merge(D)">merge</a></strong>(D instance)</code><br>Saves an object the datastore</td>
+                            <td class="colLast"><code><strong><a href="#merge(def)">merge</a></strong>(java.lang.Object instance)</code><br>Saves an object the datastore</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#merge(D, java.util.Map)">merge</a></strong>(D instance, java.util.Map params)</code><br>Saves an object the datastore</td>
+                            <td class="colLast"><code><strong><a href="#merge(def, java.util.Map)">merge</a></strong>(java.lang.Object instance, java.util.Map params)</code><br>Saves an object the datastore</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#mutex(D, groovy.lang.Closure)">mutex</a></strong>(D instance, groovy.lang.Closure callable)</code><br>Locks the instance for updates for the scope of the passed closure</td>
+                            <td class="colLast"><code><strong><a href="#mutex(def, groovy.lang.Closure)">mutex</a></strong>(java.lang.Object instance, groovy.lang.Closure callable)</code><br>Locks the instance for updates for the scope of the passed closure</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#refresh(D)">refresh</a></strong>(D instance)</code><br>Refreshes the state of the current instance</td>
+                            <td class="colLast"><code><strong><a href="#refresh(def)">refresh</a></strong>(java.lang.Object instance)</code><br>Refreshes the state of the current instance</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#save(D)">save</a></strong>(D instance)</code><br>Saves an object the datastore</td>
+                            <td class="colLast"><code><strong><a href="#save(def)">save</a></strong>(java.lang.Object instance)</code><br>Saves an object the datastore</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#save(D, boolean)">save</a></strong>(D instance, boolean validate)</code><br>Save method that takes a boolean which indicates whether to perform validation or not</td>
+                            <td class="colLast"><code><strong><a href="#save(def, boolean)">save</a></strong>(java.lang.Object instance, boolean validate)</code><br>Save method that takes a boolean which indicates whether to perform validation or not</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>D</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#save(D, java.util.Map)">save</a></strong>(D instance, java.util.Map params)</code><br>Saves an object with the given parameters</td>
+                            <td class="colLast"><code><strong><a href="#save(def, java.util.Map)">save</a></strong>(java.lang.Object instance, java.util.Map params)</code><br>Saves an object with the given parameters</td>
                         </tr>
                         
                     </table>
@@ -398,45 +398,45 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Method Detail</h3>
                     
-                        <a name="attach(D)"><!-- --></a>
+                        <a name="attach(def)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>D <strong>attach</strong>(D instance)</h4>
+                                <h4>D <strong>attach</strong>(java.lang.Object instance)</h4>
                                 <p> Attaches an instance to an existing session. Requries a session-based model <DL><DT><B>Returns:</B></DT><DD></DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="delete(D)"><!-- --></a>
+                        <a name="delete(def)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>delete</strong>(D instance)</h4>
+                                <h4>void <strong>delete</strong>(java.lang.Object instance)</h4>
                                 <p> Deletes an instance from the datastore
      <DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance to delete</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="delete(D, java.util.Map)"><!-- --></a>
+                        <a name="delete(def, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>delete</strong>(D instance, java.util.Map params)</h4>
+                                <h4>void <strong>delete</strong>(java.lang.Object instance, java.util.Map params)</h4>
                                 <p> Deletes an instance from the datastore
      <DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance to delete</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="discard(D)"><!-- --></a>
+                        <a name="discard(def)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>discard</strong>(D instance)</h4>
+                                <h4>void <strong>discard</strong>(java.lang.Object instance)</h4>
                                 <p> Discards any pending changes. Requires a session-based model.
      </p>
                             </li>
                         </ul>
                     
-                        <a name="doSave(D, java.util.Map, org.grails.datastore.mapping.core.Session)"><!-- --></a>
+                        <a name="doSave(def, java.util.Map, org.grails.datastore.mapping.core.Session)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;D <strong>doSave</strong>(D instance, java.util.Map params, <a href='../../../../org/grails/datastore/mapping/core/Session.html'>Session</a> session)</h4>
+                                <h4>protected&nbsp;D <strong>doSave</strong>(java.lang.Object instance, java.util.Map params, <a href='../../../../org/grails/datastore/mapping/core/Session.html'>Session</a> session)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -449,10 +449,10 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="ident(D)"><!-- --></a>
+                        <a name="ident(def)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.io.Serializable <strong>ident</strong>(D instance)</h4>
+                                <h4>java.io.Serializable <strong>ident</strong>(java.lang.Object instance)</h4>
                                 <p> Returns the objects identifier
      </p>
                             </li>
@@ -467,82 +467,82 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="isAttached(D)"><!-- --></a>
+                        <a name="isAttached(def)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>boolean <strong>isAttached</strong>(D instance)</h4>
+                                <h4>boolean <strong>isAttached</strong>(java.lang.Object instance)</h4>
                                 <p> No concept of session-based model so defaults to true
      </p>
                             </li>
                         </ul>
                     
-                        <a name="lock(D)"><!-- --></a>
+                        <a name="lock(def)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>D <strong>lock</strong>(D instance)</h4>
+                                <h4>D <strong>lock</strong>(java.lang.Object instance)</h4>
                                 <p> Upgrades an existing persistence instance to a write lock
      <DL><DT><B>Returns:</B></DT><DD>The instance</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="merge(D)"><!-- --></a>
+                        <a name="merge(def)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>D <strong>merge</strong>(D instance)</h4>
+                                <h4>D <strong>merge</strong>(java.lang.Object instance)</h4>
                                 <p> Saves an object the datastore
      <DL><DT><B>Returns:</B></DT><DD>Returns the instance</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="merge(D, java.util.Map)"><!-- --></a>
+                        <a name="merge(def, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>D <strong>merge</strong>(D instance, java.util.Map params)</h4>
+                                <h4>D <strong>merge</strong>(java.lang.Object instance, java.util.Map params)</h4>
                                 <p> Saves an object the datastore
      <DL><DT><B>Returns:</B></DT><DD>Returns the instance</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="mutex(D, groovy.lang.Closure)"><!-- --></a>
+                        <a name="mutex(def, groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.Object <strong>mutex</strong>(D instance, groovy.lang.Closure callable)</h4>
+                                <h4>java.lang.Object <strong>mutex</strong>(java.lang.Object instance, groovy.lang.Closure callable)</h4>
                                 <p> Locks the instance for updates for the scope of the passed closure
      <DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="refresh(D)"><!-- --></a>
+                        <a name="refresh(def)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>D <strong>refresh</strong>(D instance)</h4>
+                                <h4>D <strong>refresh</strong>(java.lang.Object instance)</h4>
                                 <p> Refreshes the state of the current instance
      <DL><DT><B>Returns:</B></DT><DD>The instance</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="save(D)"><!-- --></a>
+                        <a name="save(def)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>D <strong>save</strong>(D instance)</h4>
+                                <h4>D <strong>save</strong>(java.lang.Object instance)</h4>
                                 <p> Saves an object the datastore
      <DL><DT><B>Returns:</B></DT><DD>Returns the instance</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="save(D, boolean)"><!-- --></a>
+                        <a name="save(def, boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>D <strong>save</strong>(D instance, boolean validate)</h4>
+                                <h4>D <strong>save</strong>(java.lang.Object instance, boolean validate)</h4>
                                 <p> Save method that takes a boolean which indicates whether to perform validation or not
      <DL><DT><B>Returns:</B></DT><DD>The instance or null if validation fails</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD><DD><code>validate</code> -  Whether to perform validation</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="save(D, java.util.Map)"><!-- --></a>
+                        <a name="save(def, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>D <strong>save</strong>(D instance, java.util.Map params)</h4>
+                                <h4>D <strong>save</strong>(java.lang.Object instance, java.util.Map params)</h4>
                                 <p> Saves an object with the given parameters
      <DL><DT><B>Returns:</B></DT><DD>The instance</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD><DD><code>params</code> -  The parameters</DD></DL></p>
                             </li>

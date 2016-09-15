@@ -193,8 +193,18 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#addPersistentEntity(java.lang.Class, boolean)">addPersistentEntity</a></strong>(java.lang.Class javaClass, boolean override)</code><br>Adds a PersistentEntity instance</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#addTypeConverter(org.springframework.core.convert.converter.Converter)">addTypeConverter</a></strong>(org.springframework.core.convert.converter.Converter converter)</code><br>Add a converter used to convert property values to and from the datastore</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#createEmbeddedEntity(java.lang.Class)">createEmbeddedEntity</a></strong>(java.lang.Class type)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -245,15 +255,20 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#isPersistentEntity(java.lang.Class)">isPersistentEntity</a></strong>(java.lang.Class type)</code><br>Returns whether the specified class is a persistent entity</td>
+                            <td class="colLast"><code><strong><a href="#isInInheritanceHierarchy(org.grails.datastore.mapping.model.PersistentEntity)">isInInheritanceHierarchy</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br>Returns true if the given entity is in an inheritance hierarchy</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#isPersistentEntity(java.lang.Object)">isPersistentEntity</a></strong>(java.lang.Object value)</code><br>Returns whether the specified value is a persistent entity</td>
+                            <td class="colLast"><code><strong><a href="#isPersistentEntity(java.lang.Class)">isPersistentEntity</a></strong>(java.lang.Class type)</code><br>Returns whether the specified class is a persistent entity</td>
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#isPersistentEntity(java.lang.Object)">isPersistentEntity</a></strong>(java.lang.Object value)</code><br>Returns whether the specified value is a persistent entity</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#setProxyFactory(org.grails.datastore.mapping.proxy.ProxyFactory)">setProxyFactory</a></strong>(<a href='../../../../../org/grails/datastore/mapping/proxy/ProxyFactory.html'>ProxyFactory</a> factory)</code><br>Factory to use for creating proxies</td>
                         </tr>
@@ -327,12 +342,29 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="addPersistentEntity(java.lang.Class, boolean)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> <strong>addPersistentEntity</strong>(java.lang.Class javaClass, boolean override)</h4>
+                                <p> Adds a PersistentEntity instance
+     <DL><DT><B>Returns:</B></DT><DD>The PersistentEntity instance</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class representing the entity</DD><DD><code>override</code> -  Whether to override an existing entity</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="addTypeConverter(org.springframework.core.convert.converter.Converter)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;void <strong>addTypeConverter</strong>(org.springframework.core.convert.converter.Converter converter)</h4>
                                 <p> Add a converter used to convert property values to and from the datastore
      <DL><DT><B>Parameters:</B></DT><DD><code>converter</code> -  The converter to add</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="createEmbeddedEntity(java.lang.Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> <strong>createEmbeddedEntity</strong>(java.lang.Class type)</h4>
+                                <p></p>
                             </li>
                         </ul>
                     
@@ -415,6 +447,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/proxy/ProxyFactory.html'>ProxyFactory</a> <strong>getProxyFactory</strong>()</h4>
                                 <p> Factory used for creating proxies
      <DL><DT><B>Returns:</B></DT><DD>The proxy factory</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="isInInheritanceHierarchy(org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;boolean <strong>isInInheritanceHierarchy</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <p> Returns true if the given entity is in an inheritance hierarchy
+     <DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL></p>
                             </li>
                         </ul>
                     

@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -116,26 +116,6 @@ if (location.href.indexOf('is-external=true') == -1) {
         
         <!-- =========== FIELD SUMMARY =========== -->
         
-            <ul class="blockList">
-                <li class="blockList"><a name="field_summary"><!--   --></a>
-                    <ul class="blockList">
-                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Inherited fields summary table">
-                        <caption><span>Inherited fields</span><span class="tabEnd">&nbsp;</span></caption>
-                        <tr>
-                            <th class="colFirst" scope="col">Fields inherited from class</th>
-                            <th class="colLast" scope="col">Fields</th>
-                        </tr>
-                                                <tr class="altColor">
-                            <td class="colFirst"><strong><code>class <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html' title='DynamicMethodsConfigurer'>DynamicMethodsConfigurer</a></code></strong></td>
-                            <td class="colLast"><code>__$stMC</code></td>
-                        </tr>
-
-                    </table>
-                    </ul>
-                </li>
-                
-            </ul>
-        
 
         <!-- =========== PROPERTY SUMMARY =========== -->
         
@@ -143,6 +123,28 @@ if (location.href.indexOf('is-external=true') == -1) {
         <!-- =========== ELEMENT SUMMARY =========== -->
         
 
+        
+        <!-- ======== CONSTRUCTOR SUMMARY ======== -->
+        <ul class="blockList">
+                <li class="blockList"><a name="constructor_summary"><!--   --></a>
+                    <h3>Constructor Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructors Summary table">
+                        <caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Constructor and description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst">
+                                <code><a href="#OnChangeHandler(org.grails.datastore.mapping.core.Datastore, org.springframework.transaction.PlatformTransactionManager)">OnChangeHandler</a></strong>
+                                (<a href='../../../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore, org.springframework.transaction.PlatformTransactionManager transactionManager)</code><br></td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+              </li>
+        </ul>
         
 
         
@@ -166,7 +168,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#onChange(org.codehaus.groovy.grails.plugins.GrailsPlugin, java.util.Map)">onChange</a></strong>(org.codehaus.groovy.grails.plugins.GrailsPlugin plugin, java.util.Map event)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#onChange(def, java.util.Map)">onChange</a></strong>(java.lang.Object plugin, java.util.Map event)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -189,8 +191,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>class <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html' title='DynamicMethodsConfigurer'>DynamicMethodsConfigurer</a></strong></code></td>
-                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#getMetaClass()' title='getMetaClass'>getMetaClass</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#setMetaClass(groovy.lang.MetaClass)' title='setMetaClass'>setMetaClass</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#invokeMethod(java.lang.String, java.lang.Object)' title='invokeMethod'>invokeMethod</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#getDatastoreType()' title='getDatastoreType'>getDatastoreType</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#getFailOnError()' title='getFailOnError'>getFailOnError</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#isFailOnError()' title='isFailOnError'>isFailOnError</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#setFailOnError(boolean)' title='setFailOnError'>setFailOnError</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#configure()' title='configure'>configure</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#getDatastore()' title='getDatastore'>getDatastore</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#setDatastore(org.grails.datastore.mapping.core.Datastore)' title='setDatastore'>setDatastore</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#getTransactionManager()' title='getTransactionManager'>getTransactionManager</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#setTransactionManager(org.springframework.transaction.PlatformTransactionManager)' title='setTransactionManager'>setTransactionManager</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#getHasExistingDatastore()' title='getHasExistingDatastore'>getHasExistingDatastore</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#isHasExistingDatastore()' title='isHasExistingDatastore'>isHasExistingDatastore</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#setHasExistingDatastore(boolean)' title='setHasExistingDatastore'>setHasExistingDatastore</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#setProperty(java.lang.String, java.lang.Object)' title='setProperty'>setProperty</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#getProperty(java.lang.String)' title='getProperty'>getProperty</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#wait(long, int)' title='wait'>wait</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#wait(long)' title='wait'>wait</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#wait()' title='wait'>wait</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#equals(java.lang.Object)' title='equals'>equals</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#toString()' title='toString'>toString</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#hashCode()' title='hashCode'>hashCode</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#getClass()' title='getClass'>getClass</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#notify()' title='notify'>notify</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#notifyAll()' title='notifyAll'>notifyAll</a></code></td>
+                            <td class="colFirst"><code>class <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html'>DynamicMethodsConfigurer</a></strong></code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#configure()'>configure</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#createEnhancer()'>createEnhancer</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#createGormInstanceApi(java.lang.Class)'>createGormInstanceApi</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#createGormStaticApi(java.lang.Class, List<FinderMethod>)'>createGormStaticApi</a>, <a href='../../../../../../org/grails/datastore/gorm/plugin/support/DynamicMethodsConfigurer.html#getDatastoreType()'>getDatastoreType</a></code></td>
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class java.lang.Object</strong></code></td>
@@ -218,6 +220,24 @@ if (location.href.indexOf('is-external=true') == -1) {
             
 
             
+            <!-- =========== CONSTRUCTOR DETAIL =========== -->
+            <ul class="blockList">
+                <li class="blockList"><a name="constructor_detail">
+                    <!--   -->
+                </a>
+                    <h3>Constructor Detail</h3>
+                    
+                        <a name="OnChangeHandler(org.grails.datastore.mapping.core.Datastore, org.springframework.transaction.PlatformTransactionManager)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><strong>OnChangeHandler</strong>(<a href='../../../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore, org.springframework.transaction.PlatformTransactionManager transactionManager)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                </li>
+            </ul>
+            
 
 
             
@@ -236,10 +256,10 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="onChange(org.codehaus.groovy.grails.plugins.GrailsPlugin, java.util.Map)"><!-- --></a>
+                        <a name="onChange(def, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>onChange</strong>(org.codehaus.groovy.grails.plugins.GrailsPlugin plugin, java.util.Map event)</h4>
+                                <h4>void <strong>onChange</strong>(java.lang.Object plugin, java.util.Map event)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -286,11 +306,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     
