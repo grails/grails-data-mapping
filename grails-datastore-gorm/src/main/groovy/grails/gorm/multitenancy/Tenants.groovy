@@ -114,10 +114,10 @@ class Tenants {
      * @return The result of the closure
      */
     static <T> T withCurrent(Closure<T> callable) {
+        Serializable tenantIdentifier = currentId()
         Datastore datastore = GormEnhancer.findSingleDatastore()
         if(datastore instanceof MultiTenantCapableDatastore) {
             MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore)datastore
-            def tenantIdentifier = multiTenantCapableDatastore.getTenantResolver().resolveTenantIdentifier()
             return withTenantIdInternal(multiTenantCapableDatastore, tenantIdentifier, callable)
         }
         else {
@@ -133,10 +133,10 @@ class Tenants {
      * @return The result of the closure
      */
     static <T> T withCurrent(Class<? extends Datastore> datastoreClass, Closure<T> callable) {
+        Serializable tenantIdentifier = currentId(datastoreClass)
         Datastore datastore = GormEnhancer.findDatastoreByType(datastoreClass)
         if(datastore instanceof MultiTenantCapableDatastore) {
             MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore)datastore
-            def tenantIdentifier = multiTenantCapableDatastore.getTenantResolver().resolveTenantIdentifier()
             return withTenantIdInternal(multiTenantCapableDatastore, tenantIdentifier, callable)
         }
         else {
