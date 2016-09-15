@@ -242,7 +242,17 @@ Using Grails' default naming strategy: '${ImprovedNamingStrategy.name}'"""
                         if (cl.getResource(prefix + 'hibernate.cfg.xml')) {
                             hibConfigLocations << 'classpath:' + prefix + 'hibernate.cfg.xml'
                         }
+                        def explicitLocations = hibConfig?.config?.location
+                        if (explicitLocations) {
+                            if (explicitLocations instanceof Collection) {
+                                hibConfigLocations.addAll(explicitLocations.collect { it.toString() })
+                            }
+                            else {
+                                hibConfigLocations << hibConfig.config.location.toString()
+                            }
+                        }
                         configLocations = hibConfigLocations
+
                         if(hibConfigClass) {
                             configClass = hibConfigClass
                         }
