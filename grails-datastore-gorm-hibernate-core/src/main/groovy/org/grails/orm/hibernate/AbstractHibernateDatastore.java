@@ -56,7 +56,7 @@ import java.util.concurrent.Callable;
  * @author Graeme Rocher
  * @since 2.0
  */
-public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware, Settings, MultiTenantCapableDatastore<SessionFactory, HibernateConnectionSourceSettings>, Closeable, AllTenantsResolver {
+public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware, Settings, MultiTenantCapableDatastore<SessionFactory, HibernateConnectionSourceSettings>, Closeable {
 
     public static final String CONFIG_PROPERTY_CACHE_QUERIES = "grails.hibernate.cache.queries";
     public static final String CONFIG_PROPERTY_OSIV_READONLY = "grails.hibernate.osiv.readonly";
@@ -170,7 +170,6 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
      */
     public abstract  AbstractHibernateDatastore getDatastoreForConnection(String connectionName);
 
-    @Override
     public Iterable<Serializable> resolveTenantIds() {
         if(this.tenantResolver instanceof AllTenantsResolver) {
             return ((AllTenantsResolver)tenantResolver).resolveTenantIds();
@@ -189,7 +188,6 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         }
     }
 
-    @Override
     public Serializable resolveTenantIdentifier() throws TenantNotFoundException {
         return Tenants.currentId(getClass());
     }
