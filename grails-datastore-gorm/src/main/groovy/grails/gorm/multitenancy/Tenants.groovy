@@ -203,8 +203,8 @@ class Tenants {
             MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore) datastore
             MultiTenancySettings.MultiTenancyMode multiTenancyMode = multiTenantCapableDatastore.multiTenancyMode
             if (multiTenancyMode == MultiTenancySettings.MultiTenancyMode.DATABASE) {
-                if(multiTenantCapableDatastore instanceof AllTenantsResolver) {
-                    def tenantIds = ((AllTenantsResolver) multiTenantCapableDatastore).resolveTenantIds()
+                if(multiTenantCapableDatastore.tenantResolver instanceof AllTenantsResolver) {
+                    def tenantIds = ((AllTenantsResolver) multiTenantCapableDatastore.tenantResolver).resolveTenantIds()
                     for(tenantId in tenantIds) {
                         withTenantIdInternal(multiTenantCapableDatastore, tenantId, callable)
                     }
