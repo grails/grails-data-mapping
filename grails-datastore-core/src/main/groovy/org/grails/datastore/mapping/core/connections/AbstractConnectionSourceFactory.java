@@ -17,7 +17,7 @@ public abstract class AbstractConnectionSourceFactory<T, S extends ConnectionSou
     private TenantResolver tenantResolver;
 
     @Autowired(required = false)
-    void setTenantResolver(TenantResolver tenantResolver) {
+    public void setTenantResolver(TenantResolver tenantResolver) {
         this.tenantResolver = tenantResolver;
     }
 
