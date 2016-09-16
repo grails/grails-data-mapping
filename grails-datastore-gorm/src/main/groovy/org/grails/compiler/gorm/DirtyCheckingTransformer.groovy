@@ -176,7 +176,15 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
 
 
     private static ClassNode alignReturnType(final ClassNode receiver, final ClassNode originalReturnType) {
-        ClassNode copiedReturnType = originalReturnType.getPlainNodeReference();
+        ClassNode copiedReturnType
+        if(originalReturnType.isGenericsPlaceHolder()) {
+            copiedReturnType = originalReturnType.getPlainNodeReference();
+            copiedReturnType.setName( originalReturnType.getName() )
+            copiedReturnType.setGenericsPlaceHolder(true)
+        }
+        else {
+            copiedReturnType = originalReturnType.getPlainNodeReference();
+        }
 
         final genericTypes = originalReturnType.getGenericsTypes()
         if (genericTypes) {
@@ -191,7 +199,6 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
             }
             copiedReturnType.setGenericsTypes(newGenericTypes as GenericsType[])
         }
-
         return copiedReturnType;
     }
     protected void weaveIntoExistingSetter(String propertyName, GetterAndSetter getterAndSetter, MethodNode markDirtyMethodNode) {
