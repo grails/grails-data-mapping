@@ -268,11 +268,17 @@ class Tenants {
          * @return The result of the closure
          */
         static <T> T withTenant(Serializable tenantId, Closure<T> callable) {
+            def previous = get()
             try {
                 set(tenantId)
                 callable.call(tenantId)
             } finally {
-                remove()
+                if(previous == null) {
+                    remove()
+                }
+                else {
+                    set(previous)
+                }
             }
         }
     }
