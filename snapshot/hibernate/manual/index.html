@@ -804,7 +804,7 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect3">
 <h4 id="_grails_3_1_x_and_below_with_hibernate_5">2.1.2. Grails 3.1.x and below with Hibernate 5</h4>
 <div class="paragraph">
-<p>Grails 3.1.x and below are based on Spring Boot 1.3.x which enforces Hibernate 4 as the default version of Hibernate:</p>
+<p>Grails 3.1.x and below are based on Spring Boot 1.3.x which enforces Hibernate 4 as the default version of Hibernate, hence you have to use explicit versions to depend on Hibernate 5:</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
@@ -920,7 +920,7 @@ runtime "org.slf4j:slf4j-api:1.7.10"</code></pre>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-The above example also uses the <a href="http://www.h2database.com">H2 Database</a> and Tomcat connection pool.
+The above example also uses the <a href="http://www.h2database.com">H2 Database</a> and Tomcat connection pool. However other pool implementations are supported.
 </td>
 </tr>
 </table>
@@ -1339,10 +1339,27 @@ p.delete()</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Whether to use the second level cache</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hibernate.configLocations</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Location of additional Hibernate XML configuration files</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hibernate.packagesToScan</code></p></td>
+</tr>
 </tbody>
 </table>
 <div class="paragraph">
 <p>In addition, any additional settings that start with <code>hibernate.</code> are passed through to Hibernate, so if there is any specific feature of Hibernate you wish to configure that is possible.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The above table covers the common configuration options. For all configuration refer to properties of the <a href="../api/org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.html">HibernateConnectionSourceSettings</a> class.
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect2">
