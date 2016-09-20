@@ -45,6 +45,11 @@ public interface Settings {
      * The multi tenancy resolver class
      */
     String SETTING_MULTI_TENANT_RESOLVER_CLASS = PREFIX + '.' + "multiTenancy.tenantResolverClass";
+
+    /**
+     * The multi tenancy resolver class
+     */
+    String SETTING_MULTI_TENANT_RESOLVER = PREFIX + '.' + "multiTenancy.tenantResolver";
     /**
      * The data sources setting
      */

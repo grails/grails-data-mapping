@@ -2,6 +2,7 @@ package org.grails.datastore.mapping.config
 
 import org.grails.datastore.mapping.core.DatastoreUtils
 import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
+import org.grails.datastore.mapping.multitenancy.resolvers.FixedTenantResolver
 import org.springframework.core.env.PropertyResolver
 import spock.lang.Specification
 
@@ -11,6 +12,21 @@ import javax.persistence.FlushModeType
  * Created by graemerocher on 29/06/16.
  */
 class ConfigurationBuilderSpec extends Specification {
+
+    void "Test configuration builder with getter and setter"() {
+        given:"A configuration"
+        def map = [
+                (Settings.SETTING_MULTI_TENANT_RESOLVER): new FixedTenantResolver()
+        ]
+        def config = DatastoreUtils.createPropertyResolver(map)
+
+        when:"The configuration is built"
+        def builder = new TestConfigurationBuilder(config)
+        ConnectionSourceSettings connectionSourceSettings = builder.build()
+
+        then:"The result is correct"
+        connectionSourceSettings.multiTenancy.tenantResolver instanceof FixedTenantResolver
+    }
 
     void "Test configuration builder"() {
 

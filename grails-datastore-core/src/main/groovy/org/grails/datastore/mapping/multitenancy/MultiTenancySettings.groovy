@@ -11,7 +11,7 @@ import org.springframework.beans.BeanUtils
 @Builder(builderStrategy = SimpleStrategy, prefix = '')
 class MultiTenancySettings {
 
-    private TenantResolver tenantResolver
+    TenantResolver tenantResolver
 
     /**
      * The default multi tenancy mode
