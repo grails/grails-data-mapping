@@ -15,6 +15,8 @@
  *******************************************************************************/
 package org.grails.datastore.gorm.timestamp;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Date;
 
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
@@ -29,6 +31,7 @@ import org.springframework.util.ClassUtils;
  *
  */
 public class DefaultTimestampProvider implements TimestampProvider {
+
     protected long currentTimeMillis() {
         return System.currentTimeMillis();
     }
@@ -51,7 +54,11 @@ public class DefaultTimestampProvider implements TimestampProvider {
             } else {
                 actualDateTimeClass = ClassUtils.resolvePrimitiveIfNecessary(dateTimeClass);
             }
-            return (T)DefaultGroovyMethods.newInstance(actualDateTimeClass, new Object[] { timestampMillis });
+            try {
+                return (T)DefaultGroovyMethods.newInstance(actualDateTimeClass, new Object[] { timestampMillis });
+            } catch (Exception e) {
+                return (T)DefaultGroovyMethods.invokeMethod(actualDateTimeClass, "now", null);
+            }
         }
     }
 }

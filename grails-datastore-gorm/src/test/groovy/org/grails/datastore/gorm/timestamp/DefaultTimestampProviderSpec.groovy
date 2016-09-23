@@ -35,4 +35,18 @@ class DefaultTimestampProviderSpec extends Specification {
         timestamp.getClass() == Date
     }
 
+    //To support JSR310 date classes
+    def "timestamp provider should instantiate class with static now method"() {
+        when:
+        def timestamp = timestampProvider.createTimestamp(Foo)
+        then:
+        timestamp.getClass() == Foo
+    }
+
+    static class Foo {
+        static Foo now() {
+            return new Foo()
+        }
+    }
+
 }
