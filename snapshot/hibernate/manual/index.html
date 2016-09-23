@@ -920,7 +920,13 @@ runtime "org.slf4j:slf4j-api:1.7.10"</code></pre>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-The above example also uses the <a href="http://www.h2database.com">H2 Database</a> and Tomcat connection pool. However other pool implementations are supported.
+The above example also uses the <a href="http://www.h2database.com">H2 Database</a> and Tomcat connection pool.
+However other pool implementations are supported including <code>commons-dbcp</code>, <code>tomcat pool</code> or <code>hikari</code>.
+If a connection pool is not specified <code>org.springframework.jdbc.datasource.DriverManagerDataSource</code> is used,
+which creates a new connection to the database each time you request a connect.
+The latter will probably cause issues with an H2 in-memory database in that it will create a new in-memory
+database each time a connection is requested, losing previously created tables.
+Normal databases (<code>MySql</code>, <code>Postgres</code> or even file-based <code>H2</code>) are not affected.
 </td>
 </tr>
 </table>
@@ -931,7 +937,7 @@ The above example also uses the <a href="http://www.h2database.com">H2 Database<
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Entity</span>
-<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> GormEntity&lt;Person&gt; {
+<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> GormEntity&lt;Person&gt; { <i class="conum" data-value="1"></i><b>(1)</b>
     <span class="predefined-type">String</span> firstName
     <span class="predefined-type">String</span> lastName
     <span class="directive">static</span> constraints = {
@@ -940,6 +946,16 @@ The above example also uses the <a href="http://www.h2database.com">H2 Database<
     }
 }</code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Use of <code>GormEntity</code> is merely to aid IDE support outside of Grails.
+When used inside a Grails context, some IDEs will use the
+<code>grails-app/domain</code> location as a hint to enable code completion.</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>Then you need to place the bootstrap logic somewhere in your application which uses <code>HibernateDatastore</code>:</p>
