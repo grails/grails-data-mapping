@@ -6,6 +6,13 @@ import org.springframework.util.ClassUtils
 
 import spock.lang.Specification
 
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.OffsetTime
+import java.time.ZonedDateTime
+
 class DefaultTimestampProviderSpec extends Specification {
     DefaultTimestampProvider timestampProvider = new DefaultTimestampProvider()
     
@@ -36,6 +43,7 @@ class DefaultTimestampProviderSpec extends Specification {
     }
 
     //To support JSR310 date classes
+    //LocalDateTime, LocalDate, LocalTime, OffsetDateTime, OffsetTime, ZonedDateTime all have a static now() method
     def "timestamp provider should instantiate class with static now method"() {
         when:
         def timestamp = timestampProvider.createTimestamp(Foo)

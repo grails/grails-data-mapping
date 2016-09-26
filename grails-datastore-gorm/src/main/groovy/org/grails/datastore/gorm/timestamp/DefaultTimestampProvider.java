@@ -15,8 +15,6 @@
  *******************************************************************************/
 package org.grails.datastore.gorm.timestamp;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Date;
 
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
