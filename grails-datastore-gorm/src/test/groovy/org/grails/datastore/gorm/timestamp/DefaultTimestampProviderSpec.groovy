@@ -1,17 +1,8 @@
 package org.grails.datastore.gorm.timestamp
 
 import java.sql.Timestamp
-
 import org.springframework.util.ClassUtils
-
 import spock.lang.Specification
-
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.OffsetDateTime
-import java.time.OffsetTime
-import java.time.ZonedDateTime
 
 class DefaultTimestampProviderSpec extends Specification {
     DefaultTimestampProvider timestampProvider = new DefaultTimestampProvider()
