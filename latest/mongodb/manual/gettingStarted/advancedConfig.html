@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 1.5.3">
+<meta name="generator" content="Asciidoctor 1.5.4">
 <title>Mongo Database Connection Configuration</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -416,7 +416,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 .hide-for-print{display:none!important}
 .show-for-print{display:inherit!important}}
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
@@ -425,7 +425,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel3">
 <li><a href="#_mongo_database_connection_configuration">Mongo Database Connection Configuration</a></li>
 <li><a href="#_mongodb_connection_strings">MongoDB Connection Strings</a></li>
-<li><a href="#_ssl_connections">SSL Connections</a></li>
 <li><a href="#_configuration_options_guide">Configuration Options Guide</a></li>
 <li><a href="#_global_mapping_configuration">Global Mapping Configuration</a></li>
 </ul>
@@ -469,22 +468,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="paragraph">
-<p>Available options and their descriptions are defined in the <a href="http://api.mongodb.org/java/current/com/mongodb/MongoClientOptions.html">MongoOptions</a> javadoc.</p>
-</div>
-<div class="paragraph">
-<p>In production scenarios you will typically use more than one MongoDB server in either <a href="http://docs.mongodb.org/manual/core/master-slave/">master/slave</a> or <a href="http://docs.mongodb.org/manual/replication/">replication</a> scenarios. The plugin allows you to configure <a href="http://docs.mongodb.org/manual/tutorial/deploy-replica-set/">replica sets</a>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails {
-    mongodb {
-        replicaSet = [ "localhost:27017", "localhost:27018"]
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The replica sets are defined using a list of strings that conform to the MongoDB <a href="http://api.mongodb.org/java/current/com/mongodb/DBAddress.html">DBAddress</a> specification.</p>
+<p>Available options and their descriptions are defined in the <a href="http://api.mongodb.org/java/current/com/mongodb/MongoClientOptions.html">MongoClientOptions</a> javadoc.</p>
 </div>
 </div>
 <div class="sect3">
@@ -496,44 +480,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">grails {
     mongodb {
-        connectionString = "mongodb://localhost/mydb"
+        url = "mongodb://localhost/mydb"
     }
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>Using MongoDB connection strings is currently the most flexible and recommended way to configure MongoDB connections.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_ssl_connections">SSL Connections</h4>
-<div class="paragraph">
-<p>You can configure SSL connections by setting <code>ssl</code> to true in the <code>options</code> block:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails {
-    mongodb {
-        ...
-        options {
-            ssl = true
-            ...
-        }
-    }
-}</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Note you can also configure the <code>SSLSocketFactory</code> manually if necessary. All settings within the <code>options</code> block are propagated to the underlying <a href="http://docs.spring.io/spring-data/mongodb/docs/1.4.0.RELEASE/api/org/springframework/data/mongodb/core/MongoOptionsFactoryBean.html">MongoOptionsFactoryBean</a>
-</td>
-</tr>
-</table>
 </div>
 </div>
 <div class="sect3">
@@ -546,15 +499,14 @@ Note you can also configure the <code>SSLSocketFactory</code> manually if necess
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">grails {
     mongodb {
         databaseName = "myDb" // the default database name
-        host "localhost" // the host to connect to
+        host = "localhost" // the host to connect to
         port = 27017 // the port to connect to
         username = ".." // the username to connect with
         password = ".." // the password to connect with
         stateless = false // whether to use stateless sessions by default
 
-        // Alternatively, using 'replicaSet' or 'connectionString'
-        // replicaSet = [ "localhost:27017", "localhost:27018"]
-        // connectionString = "mongodb://localhost/mydb"
+        // Alternatively, using  'url'
+        // url = "mongodb://localhost/mydb"
 
         options {
             connectionsPerHost = 10 // The maximum number of connections allowed per host
@@ -592,7 +544,6 @@ Note you can also configure the <code>SSLSocketFactory</code> manually if necess
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-21 13:37:36 UTC
 </div>
 </div>
 </body>

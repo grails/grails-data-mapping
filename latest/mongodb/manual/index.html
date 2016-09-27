@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 1.5.3">
+<meta name="generator" content="Asciidoctor 1.5.4">
 <meta name="author" content="Graeme Rocher, Burt Beckwith">
 <title>GORM for MongoDB</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
@@ -417,7 +417,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 .hide-for-print{display:none!important}
 .show-for-print{display:inherit!important}}
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
 <style>
 /* Stylesheet for CodeRay to match GitHub theme | MIT License | http://foundation.zurb.com */
 /*pre.CodeRay {background-color:#f7f7f8;}*/
@@ -535,7 +535,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#outsideGrails">GORM for MongoDB without Grails</a></li>
 </ul>
 </li>
-<li><a href="#objectMapping">Mapping Domain Classes to MongoDB Collections</a>
+<li><a href="#objectMapping">Mapping Domain Classes</a>
 <ul class="sectlevel3">
 <li><a href="#_basic_mapping">Basic Mapping</a></li>
 <li><a href="#_embedded_documents">Embedded Documents</a></li>
@@ -551,7 +551,22 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#customTypes">Custom User Types</a></li>
 </ul>
 </li>
+<li><a href="#multipleDataSources">Multiple Data Sources</a>
+<ul class="sectlevel2">
+<li><a href="#_configuring_multiple_mongo_clients">Configuring Multiple Mongo Clients</a></li>
+<li><a href="#_mapping_domain_classes_to_mongo_clients">Mapping Domain Classes to Mongo Clients</a></li>
+<li><a href="#_switching_between_mongo_clients">Switching between Mongo Clients</a></li>
+<li><a href="#connectionSources">The ConnectionSources API</a></li>
+</ul>
+</li>
 <li><a href="#databaseSwitching">Switching Database or Collection at Runtime</a></li>
+<li><a href="#multiTenancy">Multi-Tenancy</a>
+<ul class="sectlevel2">
+<li><a href="#_configuring_multi_tenancy">Configuring Multi Tenancy</a></li>
+<li><a href="#_multi_tenancy_modes">Multi Tenancy Modes</a></li>
+<li><a href="#_dynamic_connectionsources">Dynamic ConnectionSources</a></li>
+</ul>
+</li>
 <li><a href="#stateless">Stateless Mode</a>
 <ul class="sectlevel3">
 <li><a href="#_stateful_mode">Stateful mode</a></li>
@@ -561,16 +576,12 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 <li><a href="#lowLevelApi">Using the MongoDB Driver Directly</a></li>
 <li><a href="#transactions">Transactions</a></li>
-<li><a href="#testing">Unit Testing</a>
-<ul class="sectlevel3">
-<li><a href="#_configuring_domain_classes_for_mongodbtestmixin_tests_with_the_domain_annotation">Configuring domain classes for MongoDbTestMixin tests with the Domain annotation</a></li>
-</ul>
-</li>
+<li><a href="#testing">Unit Testing</a></li>
+<li><a href="#_integration_testing">Integration Testing</a></li>
 <li><a href="#reference">Reference</a>
 <ul class="sectlevel2">
 <li><a href="#ref-beans">Beans</a></li>
 <li><a href="#ref-domain-classes">Domain Classes</a></li>
-<li><a href="#ref-testing">Testing</a></li>
 </ul>
 </li>
 </ul>
@@ -668,6 +679,25 @@ table.CodeRay td.code>pre{padding:0}
 <h3 id="releaseNotes">Release Notes</h3>
 <div class="paragraph">
 <p>Below are the details of the changes across releases:</p>
+</div>
+<div class="sect3">
+<h4 id="_6_0">6.0</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Multiple Data Sources Support</p>
+</li>
+<li>
+<p>Multi Tenancy Support</p>
+</li>
+<li>
+<p>RxGORM for MongoDB (Using MongoDB Rx Drivers)</p>
+</li>
+<li>
+<p>Unified Configuration model</p>
+</li>
+</ul>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_5_0">5.0</h4>
@@ -848,6 +878,54 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
         <span class="key">engine</span>: codec</code></pre>
 </div>
 </div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+When switching from mapping to codec with an existing database, there are several conditions that may require manual changes.
+</td>
+</tr>
+</table>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>The version property of all documents, including embedded, may need to have it&#8217;s type changed.</p>
+</li>
+<li>
+<p>The codec engine is more strict about data types than the mapping engine. For example, data stored in mongo as an <code>INT32</code> could be converted to a <code>BigDecimal</code>. This is no longer possible and the data will need to be changed. Other examples include strings like "1470924116786" could be converted to <code>Date</code> objects in the mapping engine, but will not work in the codec engine. While testing your application, you can identify these types of issues by the error message that will occur. The error will occur at <code>AbstractBsonReader.verifyBSONType</code>. The easiest way to determine which property is the culprit, is to debug your application and put a breakpoint on that method. The variable <code>currentName</code> will contain the property causing the error.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>An example script to update the version property of top level documents is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">db.getCollectionNames().forEach(<span class="keyword">function</span> (c) {
+    <span class="keyword">var</span> collection = db.getCollection(c);
+    collection.find({<span class="key">version</span>: {<span class="predefined">$type</span>: <span class="integer">16</span>}}).forEach(<span class="keyword">function</span>(domain) {
+        domain.version = <span class="keyword">new</span> NumberLong(domain.version);
+        collection.save(domain);
+    });
+});</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Embedded documents may also require updating.
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>
@@ -861,7 +939,7 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile 'org.grails.plugins:mongodb:unspecified'
+    compile 'org.grails.plugins:mongodb:6.0.0.RELEASE'
 }</code></pre>
 </div>
 </div>
@@ -871,7 +949,7 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">plugins {
- compile ':mongodb:unspecified.RELEASE'
+    compile ':mongodb:6.0.0.RELEASE'
 }</code></pre>
 </div>
 </div>
@@ -994,22 +1072,7 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
 </div>
 </div>
 <div class="paragraph">
-<p>Available options and their descriptions are defined in the <a href="http://api.mongodb.org/java/current/com/mongodb/MongoClientOptions.html">MongoOptions</a> javadoc.</p>
-</div>
-<div class="paragraph">
-<p>In production scenarios you will typically use more than one MongoDB server in either <a href="http://docs.mongodb.org/manual/core/master-slave/">master/slave</a> or <a href="http://docs.mongodb.org/manual/replication/">replication</a> scenarios. The plugin allows you to configure <a href="http://docs.mongodb.org/manual/tutorial/deploy-replica-set/">replica sets</a>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">grails {
-    mongodb {
-        replicaSet = [ <span class="string"><span class="delimiter">&quot;</span><span class="content">localhost:27017</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">localhost:27018</span><span class="delimiter">&quot;</span></span>]
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The replica sets are defined using a list of strings that conform to the MongoDB <a href="http://api.mongodb.org/java/current/com/mongodb/DBAddress.html">DBAddress</a> specification.</p>
+<p>Available options and their descriptions are defined in the <a href="http://api.mongodb.org/java/current/com/mongodb/MongoClientOptions.html">MongoClientOptions</a> javadoc.</p>
 </div>
 </div>
 <div class="sect3">
@@ -1021,44 +1084,13 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">grails {
     mongodb {
-        connectionString = <span class="string"><span class="delimiter">&quot;</span><span class="content">mongodb://localhost/mydb</span><span class="delimiter">&quot;</span></span>
+        url = <span class="string"><span class="delimiter">&quot;</span><span class="content">mongodb://localhost/mydb</span><span class="delimiter">&quot;</span></span>
     }
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>Using MongoDB connection strings is currently the most flexible and recommended way to configure MongoDB connections.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_ssl_connections">SSL Connections</h4>
-<div class="paragraph">
-<p>You can configure SSL connections by setting <code>ssl</code> to true in the <code>options</code> block:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">grails {
-    mongodb {
-        ...
-        options {
-            ssl = <span class="predefined-constant">true</span>
-            ...
-        }
-    }
-}</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Note you can also configure the <code>SSLSocketFactory</code> manually if necessary. All settings within the <code>options</code> block are propagated to the underlying <a href="http://docs.spring.io/spring-data/mongodb/docs/1.4.0.RELEASE/api/org/springframework/data/mongodb/core/MongoOptionsFactoryBean.html">MongoOptionsFactoryBean</a>
-</td>
-</tr>
-</table>
 </div>
 </div>
 <div class="sect3">
@@ -1071,15 +1103,14 @@ Note you can also configure the <code>SSLSocketFactory</code> manually if necess
 <pre class="CodeRay highlight"><code data-lang="groovy">grails {
     mongodb {
         databaseName = <span class="string"><span class="delimiter">&quot;</span><span class="content">myDb</span><span class="delimiter">&quot;</span></span> <span class="comment">// the default database name</span>
-        host <span class="string"><span class="delimiter">&quot;</span><span class="content">localhost</span><span class="delimiter">&quot;</span></span> <span class="comment">// the host to connect to</span>
+        host = <span class="string"><span class="delimiter">&quot;</span><span class="content">localhost</span><span class="delimiter">&quot;</span></span> <span class="comment">// the host to connect to</span>
         port = <span class="integer">27017</span> <span class="comment">// the port to connect to</span>
         username = <span class="string"><span class="delimiter">&quot;</span><span class="content">..</span><span class="delimiter">&quot;</span></span> <span class="comment">// the username to connect with</span>
         password = <span class="string"><span class="delimiter">&quot;</span><span class="content">..</span><span class="delimiter">&quot;</span></span> <span class="comment">// the password to connect with</span>
         stateless = <span class="predefined-constant">false</span> <span class="comment">// whether to use stateless sessions by default</span>
 
-        <span class="comment">// Alternatively, using 'replicaSet' or 'connectionString'</span>
-        <span class="comment">// replicaSet = [ &quot;localhost:27017&quot;, &quot;localhost:27018&quot;]</span>
-        <span class="comment">// connectionString = &quot;mongodb://localhost/mydb&quot;</span>
+        <span class="comment">// Alternatively, using  'url'</span>
+        <span class="comment">// url = &quot;mongodb://localhost/mydb&quot;</span>
 
         options {
             connectionsPerHost = <span class="integer">10</span> <span class="comment">// The maximum number of connections allowed per host</span>
@@ -1122,7 +1153,7 @@ Note you can also configure the <code>SSLSocketFactory</code> manually if necess
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile(<span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:gorm-mongodb-spring-boot:VERSION</span><span class="delimiter">&quot;</span></span>)</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-mongodb-spring-boot:6.0.0.RELEASE")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1179,7 +1210,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-datastore-gorm-mongodb:VERSION</span><span class="delimiter">&quot;</span></span></code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-mongodb:6.0.0.RELEASE"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1194,12 +1225,11 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 </div>
 <div class="paragraph">
-<p>Then you need to place the bootstrap logic somewhere in the loading sequence of your application which uses <code>MongoDbDataStoreSpringInitializer</code>:</p>
+<p>Then you need to place the bootstrap logic somewhere in the loading sequence of your application which uses <code>MongoDatastore</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> initializer = <span class="keyword">new</span> MongoDbDataStoreSpringInitializer(Person)
-<span class="keyword">def</span> applicationContext = initializer.configure()
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> datastore = <span class="keyword">new</span> MongoDatastore(Person)
 
 println Person.count()</code></pre>
 </div>
@@ -1209,14 +1239,13 @@ println Person.count()</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> initializer = <span class="keyword">new</span> MongoDbDataStoreSpringInitializer([<span class="string"><span class="delimiter">'</span><span class="content">grails.mongodb.url</span><span class="delimiter">'</span></span>:<span class="string"><span class="delimiter">'</span><span class="content">http://myserver</span><span class="delimiter">'</span></span>], Person)
-<span class="keyword">def</span> applicationContext = initializer.configure()
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> initializer = <span class="keyword">new</span> MongoDatastore([<span class="string"><span class="delimiter">'</span><span class="content">grails.mongodb.url</span><span class="delimiter">'</span></span>:<span class="string"><span class="delimiter">'</span><span class="content">http://myserver</span><span class="delimiter">'</span></span>], Person)
 
 println Person.count()</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>If you are using Spring with an existing <code>ApplicationContext</code> you can instead call <code>configureForBeanDefinitionRegistry</code> prior to refreshing the context. You can pass the Spring <code>Environment</code> object to the constructor for configuration:</p>
+<p>If you are using Spring with an existing <code>ApplicationContext</code> you can instead call <code>MongoDbDataStoreSpringInitializer.configureForBeanDefinitionRegistry</code> prior to refreshing the context. You can pass the Spring <code>Environment</code> object to the constructor for configuration:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1231,7 +1260,7 @@ println Person.count()</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="objectMapping">Mapping Domain Classes to MongoDB Collections</h2>
+<h2 id="objectMapping">Mapping Domain Classes</h2>
 <div class="sectionbody">
 <div class="sect3">
 <h4 id="_basic_mapping">Basic Mapping</h4>
@@ -1625,9 +1654,9 @@ println p[<span class="string"><span class="delimiter">'</span><span class="cont
 <div class="paragraph">
 <p>To store data in a flat surface you use a "2d" index, whilst a "2dsphere" index used for spherical data. GORM for MongoDB supports both and the following sections describe how to define and query Geospacial data.</p>
 </div>
-<div class="paragraph">
-<p>[[2dsphere]]
-==== Geospacial 2D Sphere Support</p>
+<div class="sect3">
+<h4 id="twodsphere">Geospacial 2D Sphere Support</h4>
+
 </div>
 <div class="sect3">
 <h4 id="_using_a_2dsphere_index">Using a 2dsphere Index</h4>
@@ -1737,10 +1766,9 @@ There is a special <code>Distance</code> class that can help with radian calcula
 <div class="paragraph">
 <p>In the above example the native query parameters are simply passed to the <a href="http://docs.mongodb.org/manual/reference/operator/query/near/#op._S_near">$near query</a></p>
 </div>
-<div class="paragraph">
-<p>[[2dindex]]
-==== Geospacial 2D Index Support</p>
 </div>
+<div class="sect3">
+<h4 id="twodindex">Geospacial 2D Index Support</h4>
 <div class="paragraph">
 <p>MongoDB supports <a href="http://docs.mongodb.org/manual/core/2d/">2d indexes</a> that store points on a two-dimensional plane. although they are considered legacy and you should use <code>2dsphere</code> indexes instead.</p>
 </div>
@@ -1936,8 +1964,78 @@ new Entry(<span class="key">shape</span>: <span class="predefined-type">Polygon<
 <div class="paragraph">
 <p>GORM for MongoDB will persist all common known Java types like String, Integer, URL etc., however if you want to persist one of your own classes that is not a domain class you can implement a custom user type.</p>
 </div>
+<div class="sect3">
+<h4 id="_custom_codecs">Custom Codecs</h4>
 <div class="paragraph">
-<p>For example consider the following class:</p>
+<p>GORM for MongoDB is built ontop of MongoDB&#8217;s BSON encoding framework. This means it is possible to implement custom <a href="http://mongodb.github.io/mongo-java-driver/3.2/bson/codecs">Codecs</a> for encoding and decoding values to and from BSON.</p>
+</div>
+<div class="paragraph">
+<p>For example consider the following simple Groovy class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Birthday</span> {
+    <span class="predefined-type">Date</span> date
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By default the encoding engine does not know how to represent this type as a BSON value. To make the encoding engine understand this type you have to implement a custom codec:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.bson.*</span>
+<span class="keyword">import</span> <span class="include">org.bson.codecs.*</span>
+
+<span class="type">class</span> <span class="class">BirthdayCodec</span> <span class="directive">implements</span> Codec&lt;Birthday&gt; {
+    Birthday decode(BsonReader reader, DecoderContext decoderContext) {
+        <span class="keyword">return</span> <span class="keyword">new</span> Birthday(<span class="key">date</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>(reader.readDateTime())) <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+    <span class="type">void</span> encode(BsonWriter writer, Birthday value, EncoderContext encoderContext) {
+        writer.writeDateTime(value.date.time) <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+    <span class="predefined-type">Class</span>&lt;Birthday&gt; getEncoderClass() { Birthday } <i class="conum" data-value="3"></i><b>(3)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Decodes the <code>Birthday</code> type from the <code>BsonReader</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Encodes the <code>Birthday</code> type to the <code>BsonWriter</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Returns the type that is to be encoded. In this case <code>Birthday</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>With that done you then need to register the custom <code>Codec</code>. There are two ways to achieve this.</p>
+</div>
+<div class="paragraph">
+<p>You can register a list of codecs in the <code>grails.mongodb.codecs</code> setting in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">mongodb</span>:
+        <span class="key">codecs</span>:
+            - <span class="string"><span class="content">my.company.BirthdayCodec</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or you can create a <code>META-INF/services/org.bson.Codec</code> file containing the class name of the <code>Codec</code></p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_custom_types_with_gorm">Custom Types with GORM</h4>
+<div class="paragraph">
+<p>Another option is to define a GORM custom type. For example consider the following class:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1972,13 +2070,15 @@ Custom types should go in src/groovy not grails-app/domain
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.bson.*</span>
-<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller</span>;
-<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.model.PersistentProperty</span>;
-<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.mongo.query.MongoQuery</span>;
-<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.query.Query</span>;
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">groovy.transform.InheritConstructors</span>
+<span class="keyword">import</span> <span class="include">org.bson.Document</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.model.PersistentProperty</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.mongo.query.MongoQuery</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.query.Query</span>
 
-<span class="type">class</span> <span class="class">BirthdayType</span> <span class="directive">extends</span> AbstractMappingAwareCustomTypeMarshaller&lt;Birthday, <span class="predefined-type">Document</span>, <span class="predefined-type">Document</span>&gt;(Birthday) {
+<span class="annotation">@InheritConstructors</span>
+<span class="type">class</span> <span class="class">BirthdayType</span> <span class="directive">extends</span> AbstractMappingAwareCustomTypeMarshaller&lt;Birthday, <span class="predefined-type">Document</span>, <span class="predefined-type">Document</span>&gt; {
    <span class="annotation">@Override</span>
    <span class="directive">protected</span> <span class="predefined-type">Object</span> writeInternal(PersistentProperty property, <span class="predefined-type">String</span> key, Birthday value, <span class="predefined-type">Document</span> nativeTarget) {
        <span class="directive">final</span> converted = value.date.time
@@ -2091,6 +2191,146 @@ beans = {
 </div>
 </div>
 </div>
+</div>
+<div class="sect1">
+<h2 id="multipleDataSources">Multiple Data Sources</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>GORM for MongoDB supports the notion of multiple data sources where multiple individual <code>MongoClient</code> instances can be configured and switched between.</p>
+</div>
+<div class="sect2">
+<h3 id="_configuring_multiple_mongo_clients">Configuring Multiple Mongo Clients</h3>
+<div class="paragraph">
+<p>To configure multiple Mongo client connections you need to use the <code>grails.mongodb.connections</code> setting. For example in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">mongodb</span>:
+        <span class="key">url</span>: <span class="string"><span class="content">mongodb://localhost/books</span></span>
+        <span class="key">connections</span>:
+            <span class="key">moreBooks</span>:
+                <span class="key">url</span>: <span class="string"><span class="content">mongodb://localhost/moreBooks</span></span>
+            <span class="key">evenMoreBooks</span>:
+                <span class="key">url</span>: <span class="string"><span class="content">mongodb://localhost/moreBooks</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can configure individual settings for each Mongo client. If a setting is not specified by default the setting is inherited from the default Mongo client.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_mapping_domain_classes_to_mongo_clients">Mapping Domain Classes to Mongo Clients</h3>
+<div class="paragraph">
+<p>If a domain class has no specify Mongo client connection configuration then the default is used.</p>
+</div>
+<div class="paragraph">
+<p>You can set the <code>connection</code> method in the <code>mapping</code> block to configure an alternate Mongo Client.</p>
+</div>
+<div class="paragraph">
+<p>For example, if you want to use the <code>ZipCode</code> domain to use a Mongo client connection called <code>'lookup'</code>, configure it like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">ZipCode</span> {
+
+   <span class="predefined-type">String</span> code
+
+   <span class="directive">static</span> mapping = {
+      connection <span class="string"><span class="delimiter">'</span><span class="content">lookup</span><span class="delimiter">'</span></span>
+   }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A domain class can also use two or more configured Mongo client connections by using the <code>connections</code> method with a list of names to configure more than one, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">ZipCode</span> {
+
+   <span class="predefined-type">String</span> code
+
+   <span class="directive">static</span> mapping = {
+      connections([<span class="string"><span class="delimiter">'</span><span class="content">lookup</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">auditing</span><span class="delimiter">'</span></span>])
+   }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If a domain class uses the default connection and one or more others, you can use the <code>ConnectionSource.DEFAULT</code> constant to indicate that:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.core.connections.*</span>
+
+<span class="type">class</span> <span class="class">ZipCode</span> {
+
+   <span class="predefined-type">String</span> code
+
+   <span class="directive">static</span> mapping = {
+      connections([<span class="string"><span class="delimiter">'</span><span class="content">lookup</span><span class="delimiter">'</span></span>, ConnectionSource.DEFAULT])
+   }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If a domain class uses all configured <code>DataSource</code> instances use the value <code>ALL</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.core.connections.*</span>
+
+<span class="type">class</span> <span class="class">ZipCode</span> {
+
+   <span class="predefined-type">String</span> code
+
+   <span class="directive">static</span> mapping = {
+      connection ConnectionSource.ALL
+   }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_switching_between_mongo_clients">Switching between Mongo Clients</h3>
+<div class="paragraph">
+<p>You can switch to a different connection at runtime with the <code>withConnection</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.withConnection(<span class="string"><span class="delimiter">&quot;</span><span class="content">moreBooks</span><span class="delimiter">&quot;</span></span>) {
+    <span class="predefined-type">Book</span>.list()
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Any logic executed within the body of the closure will use the alternate connection. Once the close finishes execution GORM will switch back to the default connection automatically.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="connectionSources">The ConnectionSources API</h3>
+<div class="paragraph">
+<p>Introduced in GORM 6.0, the <a href="../api/org/grails/datastore/mapping/core/connections/ConnectionSources.html">ConnectionSources</a> API allows you to introspect the data sources configured for the application:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Autowired</span>
+MongoDatastore mongoDatastore
+...
+ConnectionSources&lt;MongoClient, MongoConnectionSourceSettings&gt; connectionSources
+                                        = mongoDatastore.getConnectionSources()
+
+<span class="keyword">for</span>(ConnectionSource&lt;MongoClient, MongoConnectionSourceSettings&gt; connectionSource <span class="keyword">in</span> connectionSources) {
+        println <span class="string"><span class="delimiter">&quot;</span><span class="content">Name </span><span class="inline"><span class="inline-delimiter">$</span>connectionSource</span><span class="content">.name</span><span class="delimiter">&quot;</span></span>
+        MongoClient mongoClient = connectionSource.source
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 <div class="sect1">
 <h2 id="databaseSwitching">Switching Database or Collection at Runtime</h2>
 <div class="sectionbody">
@@ -2118,6 +2358,241 @@ beans = {
 </div>
 <div class="paragraph">
 <p>In addition, there are equivalent <code>withCollection</code> and <code>useCollection</code> methods for switching collection at runtime.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="multiTenancy">Multi-Tenancy</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>GORM for MongoDb supports the following multi-tenancy modes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>DATABASE</code> - A separate database with a separate connection pool is used to store each tenants data.</p>
+</li>
+<li>
+<p><code>SCHEMA</code> - The same database, but different schemas are used to store each tenants data.</p>
+</li>
+<li>
+<p><code>DISCRIMINATOR</code> - The same database is used with a discriminator used to partition and isolate data.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_configuring_multi_tenancy">Configuring Multi Tenancy</h3>
+<div class="paragraph">
+<p>You can configure Multi-Tenancy the same way described in the <a href="../../hibernate/manual/index.html#multiTenancy">GORM for Hibernate documenation</a>, simply specify a multi tenancy mode and resolver:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">gorm</span>:
+        <span class="key">multiTenancy</span>:
+            <span class="key">mode</span>: <span class="string"><span class="content">DATABASE</span></span>
+            <span class="key">tenantResolverClass</span>: <span class="string"><span class="content">org.grails.datastore.mapping.multitenancy.web.SubDomainTenantResolver</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that if you are using MongoDB and Hibernate together the above configuration will configure both MongoDB <strong>and</strong> Hibernate to use a multi-tenancy mode of <code>DATABASE</code>.</p>
+</div>
+<div class="paragraph">
+<p>If you only want to enable multi-tenancy for MongoDB only you can use the following configuration instead:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">mongodb</span>:
+        <span class="key">multiTenancy</span>:
+            <span class="key">mode</span>: <span class="string"><span class="content">DATABASE</span></span>
+            <span class="key">tenantResolverClass</span>: <span class="string"><span class="content">org.grails.datastore.mapping.multitenancy.web.SubDomainTenantResolver</span></span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_multi_tenancy_modes">Multi Tenancy Modes</h3>
+<div class="paragraph">
+<p>As mentioned previously, GORM for MongoDB supports all three multi tenancy modes however there are some considerations to keep in mind.</p>
+</div>
+<div class="sect3">
+<h4 id="_database_per_tenant">Database Per Tenant</h4>
+<div class="paragraph">
+<p>When using the <code>DATABASE</code> mode, only GORM methods calls are dispatched to the correct tenant. This means the following will use the tenant id:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">// switches to the correct client based on the tenant id</span>
+<span class="predefined-type">Book</span>.list()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>However, going directly through the <code>MongoClient</code> will not work:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Autowired</span> MongoClient mongoClient
+
+<span class="comment">// uses the default connection and doesn't resolve the tenant it</span>
+mongoClient.getDatabase(<span class="string"><span class="delimiter">&quot;</span><span class="content">book</span><span class="delimiter">&quot;</span></span>).find()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are working directly with the <code>MongoClient</code> instance you need to make sure you obtain the correct instance. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.gorm.multitenancy.*</span>
+
+<span class="annotation">@Autowired</span> MongoDatastore mongoDatastore
+...
+MongoClient mongoClient =
+        mongoDatastore.getDatastoreForTenantId(Tenants.currentId())
+                      .getMongoClient()</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_schema_per_tenant">Schema Per Tenant</h4>
+<div class="paragraph">
+<p>When using the <code>SCHEMA</code> mode, GORM for MongoDB will use a different MongoDB database, but the same <code>MongoClient</code> instance, for each tenant.</p>
+</div>
+<div class="paragraph">
+<p>However, once again only GORM methods will use the correct database. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">// switches to the correct database based on the tenant id</span>
+<span class="predefined-type">Book</span>.list()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>However, getting the database directly from <code>MongoClient</code> will not work:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Autowired</span> MongoClient mongoClient
+
+<span class="comment">// uses the default connection and doesn't resolve the tenant it</span>
+mongoClient.getDatabase(<span class="string"><span class="delimiter">&quot;</span><span class="content">book</span><span class="delimiter">&quot;</span></span>).find()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To resolve this you should always use the <code>DB</code> property of the class which will ensure the right database is used:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">// switches to the correct database based on the tenant id</span>
+<span class="predefined-type">Book</span>.DB.find()</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_partitioned_multi_tenancy">Partitioned Multi-Tenancy</h4>
+<div class="paragraph">
+<p>When using the <code>DISCRIMINATOR</code> approach, GORM for MongoDB will store a <code>tenantId</code> attribute in each MongoDB document and attempt to partition the data.</p>
+</div>
+<div class="paragraph">
+<p>Once again this works only when using GORM methods and even then there are cases where it will not work if you use native MongoDB interfaces.</p>
+</div>
+<div class="paragraph">
+<p>For example the following works fine:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">// correctly includes the `tenantId` in the query</span>
+<span class="predefined-type">Book</span>.list()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As does this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">com.mongodb.client.model.Filters.*</span>;
+
+<span class="comment">// correctly includes the `tenantId` in the query</span>
+<span class="predefined-type">Book</span>.find(eq(<span class="string"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>)).first()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>But this logic bypasses any built into tenant id interception and inclusion:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.collection.find().first()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Since you are operating directly on the collection GORM cannot know when you perform a query on said collection.</p>
+</div>
+<div class="paragraph">
+<p>In this case you will have to ensure to include the <code>tenantId</code> manually:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">com.mongodb.client.model.Filters.*</span>;
+...
+Book.collection.find(eq(<span class="string"><span class="delimiter">&quot;</span><span class="content">tenantId</span><span class="delimiter">&quot;</span></span>, Tenants.currentId())).first()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And the same is true of write operations such as inserts that are done with the native API.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_dynamic_connectionsources">Dynamic ConnectionSources</h3>
+<div class="paragraph">
+<p>If you are using a multi-tenancy mode of <code>DATABASE</code> then by default the expectation is that all tenants are configured in your <code>application.yml</code> file.</p>
+</div>
+<div class="paragraph">
+<p>However, it is possible read your Mongo client connection sources dynamically using <a href="../api/org/grails/datastore/mapping/mongo/connections/MongoConnectionSources.html">MongoConnectionSources</a>.</p>
+</div>
+<div class="paragraph">
+<p>The <code>MongoConnectionSources</code> class will read the mongo client configurations from a Mongo collection called <code>mongo.connections</code> by default. To configure it you must specify the <code>connectionSourcesClass</code> in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">mongodb</span>:
+        <span class="key">multiTenancy</span>:
+            <span class="key">mode</span>: <span class="string"><span class="content">DATABASE</span></span>
+        <span class="key">connectionSourcesClass</span>: <span class="string"><span class="content">org.grails.datastore.mapping.mongo.connections.MongoConnectionSources</span></span>
+        <span class="key">connectionsCollection</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">myconnections</span><span class="delimiter">&quot;</span></span>
+<span class="head"><span class="head">...</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can then even add new connections at runtime using the <code>ConnectionSources</code> API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.gorm.multitenancy.*</span>
+
+<span class="annotation">@Autowired</span> MongoDatastore mongoDatastore
+...
+def configuration = [<span class="key">url</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">mongodb://localhost/moreBooks</span><span class="delimiter">&quot;</span></span>]
+MongoClient mongoClient =
+        mongoDatastore.connectionSources
+                                          .addConnectionSource(<span class="string"><span class="delimiter">&quot;</span><span class="content">moreBooks</span><span class="delimiter">&quot;</span></span>, configuration)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>All new connection sources will be stored within the specified <code>connectionsCollection</code> and if the application is restarted will read from the <code>connectionsCollection</code>.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+GORM for MongoDB does not implement provisioning of new MongoDB instances at runtime. This is something that would need to be implemented by a cloud services provider for example.
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>
@@ -2376,138 +2851,66 @@ Person.collection.findOne(<span class="key">firstName</span>:<span class="string
 <h2 id="testing">Unit Testing</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>For many simple cases you can use the built in <a href="http://grails.org/doc/latest/guide/testing.html#unitTestingDomains">GORM unit testing</a> provided by Grails.</p>
-</div>
-<div class="paragraph">
-<p>For more complex cases a <code>grails.test.mixin.mongodb.MongoDbTestMixin</code> class is provided which can run tests against a running MongoDB instance or a mock instance (such as one provided by the <a href="#ref-comfakemongofongo-Fongo">Fongo</a> project).</p>
-</div>
-<div class="paragraph">
-<p>Example against a running MongoDB instance:</p>
+<p>To write tests with MongoDB and Spock you can use create a <code>MongoDatastore</code> within the <code>setupSpec</code> method:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.bson.types.ObjectId</span>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">spock.lang.*</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.annotation.Entity</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.mongo.MongoDatastore</span>
 
-<span class="annotation">@Entity</span>
-<span class="type">class</span> <span class="class">Person</span> {
-    ObjectId id
-    <span class="predefined-type">Long</span> version
-    <span class="predefined-type">String</span> name
+<span class="type">class</span> <span class="class">ExampleSpec</span> <span class="directive">extends</span> Specification { <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="annotation">@Shared</span> <span class="annotation">@AutoCleanup</span> MongoDatastore mongoDatastore <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="type">void</span> setupSpec() {
+       mongoDatastore = <span class="keyword">new</span> MongoDatastore(Person) <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test execute GORM standalone in a unit test</span><span class="delimiter">&quot;</span></span>() {
+       <span class="comment">// your logic here </span><i class="conum" data-value="4"></i><b>(4)</b>
+    }
 }
 
-...
-
-import grails.test.mixin.mongodb.*
-
-<span class="annotation">@TestMixin</span>(MongoDbTestMixin)
-<span class="type">class</span> <span class="class">PersonSpec</span> <span class="directive">extends</span> Specification{
-
-    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Test count people</span><span class="delimiter">&quot;</span></span>() {
-        <span class="key">given</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">A mongo domain model</span><span class="delimiter">&quot;</span></span>
-            mongoDomain(&lt;&lt;Person&gt;&gt;)
-
-        <span class="key">expect</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Count the number of people</span><span class="delimiter">&quot;</span></span>
-            Person.count() == <span class="integer">0</span>
-    }
+<span class="annotation">@Entity</span> <i class="conum" data-value="5"></i><b>(5)</b>
+<span class="type">class</span> <span class="class">Person</span> {
+    ...
 }</code></pre>
 </div>
 </div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The test should extend <code>spock.lang.Specification</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>Shared</code> annotation is used to indicate to Spock that the <code>MongoDatastore</code> is shared across all tests. The <code>AutoCleanup</code> annotation makes sure that <code>MongoDatastore</code> is shutdown when all tests finish executing.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Within the <code>setupSpec</code> method a new <code>MongoDatastore</code> is constructed with the classes to use as the argument to the constructor.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>You then write your test logic within each method</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>You can inline domain classes within the unit test if you annotate them with <code>@Entity</code></td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_integration_testing">Integration Testing</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>Example using <a href="#ref-comfakemongofongo-Fongo">Fongo</a>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.github.fakemongo.Fongo</span>
-<span class="keyword">import</span> <span class="include">grails.test.mixin.mongodb.*</span>
-
-<span class="annotation">@TestMixin</span>(MongoDbTestMixin)
-<span class="type">class</span> <span class="class">PersonSpec</span> <span class="directive">extends</span> Specification{
-
-    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Test count people</span><span class="delimiter">&quot;</span></span>() {
-        <span class="key">given</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">A mongo domain model</span><span class="delimiter">&quot;</span></span>
-            Fongo fongo = <span class="keyword">new</span> Fongo(<span class="string"><span class="delimiter">&quot;</span><span class="content">mongo server 1</span><span class="delimiter">&quot;</span></span>);
-            mongoDomain(fongo.mongo, &lt;&lt;Person&gt;&gt;)
-
-        <span class="key">expect</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Count the number of people</span><span class="delimiter">&quot;</span></span>
-            Person.count() == <span class="integer">0</span>
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This library dependency is required in <code>build.gradle</code> for adding support for <code>MongoDbTestMixin</code>.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-        test <span class="string"><span class="delimiter">'</span><span class="content">org.grails:grails-datastore-test-support:5.0.0</span><span class="delimiter">'</span></span>
-    }</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Fongo dependency example</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-        test <span class="string"><span class="delimiter">'</span><span class="content">com.github.fakemongo:fongo:1.5.4</span><span class="delimiter">'</span></span>
-    }</code></pre>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_configuring_domain_classes_for_mongodbtestmixin_tests_with_the_domain_annotation">Configuring domain classes for MongoDbTestMixin tests with the Domain annotation</h4>
-<div class="paragraph">
-<p>The <code>grails.test.mixin.gorm.Domain</code> annotation is used to configure the list of domain classes that gets configured when the unit test runtime is initialized.</p>
+<p>There is a plugin available that will execute an in memory Mongo database during your integration tests. Data will be cleared between test cases so they can work similarly to H2 with <code>@Rollback</code>.</p>
 </div>
 <div class="paragraph">
-<p><code>Domain</code> annotations will be collected from several locations:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>the annotations on the test class</p>
-</li>
-<li>
-<p>the package annotations in the package-info.java/package-info.groovy file in the package of the test class</p>
-</li>
-<li>
-<p>each super class of the test class and their respective package annotations</p>
-</li>
-<li>
-<p>the possible <a href="http://docs.grails.org/latest/api/grails/test/runtime/SharedRuntime.html">SharedRuntime</a> class</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p><code>Domain</code> annotations can be shared by adding them as package annotations to package-info.java/package-info.groovy files or by adding them to a <code>http://docs.grails.org/latest/api/grails/test/runtime/SharedRuntime.html[SharedRuntime]</code> class which has been added for the test.</p>
-</div>
-<div class="paragraph">
-<p>It&#8217;s not possible to use DomainClassUnitTestMixin&#8217;s <code>Mock</code> annotation in MongoDbTestMixin tests. Use the <code>Domain</code> annotation in the place of <code>Mock</code> in MongoDbTestMixin tests.</p>
-</div>
-<div class="paragraph">
-<p>Example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.test.mixin.TestMixin</span>
-<span class="keyword">import</span> <span class="include">grails.test.mixin.gorm.Domain</span>
-<span class="keyword">import</span> <span class="include">spock.lang.Specification</span>
-
-
-<span class="annotation">@Domain</span>(Person)
-<span class="annotation">@TestMixin</span>(MongoDbTestMixin)
-<span class="type">class</span> <span class="class">DomainAnnotationSpec</span> <span class="directive">extends</span> Specification{
-    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">should allow registering domains with Domain annotation</span><span class="delimiter">&quot;</span></span>() {
-        <span class="key">given</span>:
-            <span class="keyword">def</span> person = <span class="keyword">new</span> Person(<span class="key">name</span>:<span class="string"><span class="delimiter">'</span><span class="content">John Doe</span><span class="delimiter">'</span></span>)
-            <span class="keyword">def</span> personId = person.save(<span class="key">flush</span>:<span class="predefined-constant">true</span>, <span class="key">failOnError</span>:<span class="predefined-constant">true</span>)?.id
-        <span class="key">expect</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Dynamic finders to work</span><span class="delimiter">&quot;</span></span>
-            Person.count() &gt; <span class="integer">0</span>
-            Person.get(personId).name == <span class="string"><span class="delimiter">'</span><span class="content">John Doe</span><span class="delimiter">'</span></span>
-    }
-}</code></pre>
-</div>
-</div>
+<p>Visit the github page of the <a href="https://github.com/grails-plugins/grails-embedded-mongodb">Embedded MongoDB Grails Plugin</a> to learn more.</p>
 </div>
 </div>
 </div>
@@ -2519,25 +2922,21 @@ import grails.test.mixin.mongodb.*
 <div class="sect3">
 <h4 id="ref-beans-mongo">mongo</h4>
 <div class="sect4">
-<h5 id="_mongo">mongo</h5>
-
-</div>
-<div class="sect4">
 <h5 id="_purpose">Purpose</h5>
 <div class="paragraph">
-<p>A Spring bean that provides access to the lower level Mongo API based on GMongo</p>
+<p>Provides access to the native <a href="http://api.mongodb.com/java/current/com/mongodb/async/client/MongoClient.html">MongoClient</a> instance.</p>
 </div>
 </div>
 <div class="sect4">
 <h5 id="_examples">Examples</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> mongo
+<pre class="CodeRay highlight"><code data-lang="groovy">MongoClient mongo
 
-<span class="keyword">def</span> foo = {
-    <span class="keyword">def</span> mongo
-    <span class="keyword">def</span> myAction = {
-        <span class="keyword">def</span> db = mongo.getDB(<span class="string"><span class="delimiter">&quot;</span><span class="content">mongo</span><span class="delimiter">&quot;</span></span>)
+<span class="type">class</span> <span class="class">FooController</span> {
+    MongoClient mongo
+    <span class="keyword">def</span> <span class="function">myAction</span>() {
+        MongoDatabase db = mongo.getDatabase(<span class="string"><span class="delimiter">&quot;</span><span class="content">mongo</span><span class="delimiter">&quot;</span></span>)
         db.languages.insert([<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Groovy</span><span class="delimiter">'</span></span>])
     }
 }</code></pre>
@@ -2547,7 +2946,7 @@ import grails.test.mixin.mongodb.*
 <div class="sect4">
 <h5 id="_description">Description</h5>
 <div class="paragraph">
-<p>See the <a href="#ref-compoiatigmongo-GMongo">GMongo</a> docs and the API for <a href="http://api.mongodb.org/java/current/">Mongo Java Driver</a> for API usage info.</p>
+<p>See the API for the <a href="http://api.mongodb.org/java/current/">Mongo Java Driver</a> for API usage info.</p>
 </div>
 </div>
 </div>
@@ -2557,36 +2956,28 @@ import grails.test.mixin.mongodb.*
 <div class="sect3">
 <h4 id="ref-domain-classes-collection">collection</h4>
 <div class="sect4">
-<h5 id="_collection">collection</h5>
-
-</div>
-<div class="sect4">
 <h5 id="_purpose_2">Purpose</h5>
 <div class="paragraph">
-<p>Returns the MongoDB <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html">collection</a> used for the current domain class</p>
+<p>Returns the MongoDB <a href="http://api.mongodb.com/java/current/com/mongodb/async/client/MongoCollection.html">collection</a> used for the current domain class</p>
 </div>
 </div>
 <div class="sect4">
 <h5 id="_examples_2">Examples</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">def bookBson = <span class="predefined-type">Book</span>.collection.findOne()</code></pre>
+<pre class="CodeRay highlight"><code data-lang="java">def bookBson = <span class="predefined-type">Book</span>.collection.find().first()</code></pre>
 </div>
 </div>
 </div>
 <div class="sect4">
 <h5 id="_description_2">Description</h5>
 <div class="paragraph">
-<p>The <code>collection</code> property allows access to the underlying MongoDB <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html">DBCollection</a> object, thus allowing direct access to the low-level MongoDB driver.</p>
+<p>The <code>collection</code> property allows access to the underlying MongoDB <a href="http://api.mongodb.com/java/current/com/mongodb/async/client/MongoCollection.html">MongoCollection</a> object, thus allowing direct access to the low-level MongoDB driver.</p>
 </div>
 </div>
 </div>
 <div class="sect3">
 <h4 id="ref-domain-classes-collectionName">collectionName</h4>
-<div class="sect4">
-<h5 id="_collectionname">collectionName</h5>
-
-</div>
 <div class="sect4">
 <h5 id="_purpose_3">Purpose</h5>
 <div class="paragraph">
@@ -2611,10 +3002,6 @@ import grails.test.mixin.mongodb.*
 <div class="sect3">
 <h4 id="ref-domain-classes-countHits">countHits</h4>
 <div class="sect4">
-<h5 id="_counthits">countHits</h5>
-
-</div>
-<div class="sect4">
 <h5 id="_purpose_4">Purpose</h5>
 <div class="paragraph">
 <p>Executes a MongoDB <a href="http://docs.mongodb.org/manual/reference/operator/query/text/#op._S_text">$text</a> search query and returns the number of hits.</p>
@@ -2637,48 +3024,53 @@ import grails.test.mixin.mongodb.*
 </div>
 <div class="sect3">
 <h4 id="ref-domain-classes-DB">DB</h4>
-<div class="sect4">
-<h5 id="_db">DB</h5>
 
 </div>
-<div class="sect4">
-<h5 id="_purpose_5">Purpose</h5>
+<div class="sect3">
+<h4 id="_purpose_5">Purpose</h4>
 <div class="paragraph">
-<p>Returns the MongoDB <a href="http://api.mongodb.org/java/current/com/mongodb/DB.html">DB</a> object.</p>
-</div>
+<p>Returns the MongoDB <a href="http://api.mongodb.com/java/current/com/mongodb/async/client/MongoDatabase.html">MongoDatabase</a> object.</p>
 </div>
 <div class="sect4">
 <h5 id="_examples_5">Examples</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">def dbCollection = <span class="predefined-type">Book</span>.DB.getCollection(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>)</code></pre>
+<pre class="CodeRay highlight"><code data-lang="java">MongoCollection dbCollection = <span class="predefined-type">Book</span>.DB.getCollection(<span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>)</code></pre>
 </div>
 </div>
 </div>
 <div class="sect4">
 <h5 id="_description_5">Description</h5>
 <div class="paragraph">
-<p>The <code>DB</code> property allows access to the underlying MongoDB <a href="http://api.mongodb.org/java/current/com/mongodb/DB.html">DB</a> object, thus allowing easy access to the low-level MongoDB Java driver.</p>
+<p>The <code>DB</code> property allows access to the underlying MongoDB <a href="http://api.mongodb.com/java/current/com/mongodb/async/client/MongoDatabase.html">MongoDatabase</a> object, thus allowing easy access to the low-level MongoDB Java driver.</p>
 </div>
 </div>
 </div>
 <div class="sect3">
 <h4 id="ref-domain-classes-dbo">dbo</h4>
 <div class="sect4">
-<h5 id="_dbo">dbo</h5>
-
-</div>
-<div class="sect4">
 <h5 id="_purpose_6">Purpose</h5>
 <div class="paragraph">
-<p>Returns the MongoDB <a href="http://api.mongodb.org/java/current/com/mongodb/DBObject.html">DBObject</a> for an instance of a domain class</p>
+<p>Returns the MongoDB <a href="http://api.mongodb.com/java/current/org/bson/Document.html">Document</a> for an instance of a domain class</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Using the <code>Document</code> object directly is discouraged, because it&#8217;s inefficient. It&#8217;s better to use <a href="#dynamicAttributes">Dynamic Attributes</a>.
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect4">
 <h5 id="_examples_6">Examples</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">def b = <span class="predefined-type">Book</span>.get(<span class="integer">1</span>)
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> b = <span class="predefined-type">Book</span>.get(<span class="integer">1</span>)
 
 println b.dbo</code></pre>
 </div>
@@ -2687,16 +3079,12 @@ println b.dbo</code></pre>
 <div class="sect4">
 <h5 id="_description_6">Description</h5>
 <div class="paragraph">
-<p>The <code>dbo</code> property allows access to the underlying MongoDB <a href="http://api.mongodb.org/java/current/com/mongodb/DBObject.html">DBObject</a>, which is a respresentation of the stored BSON document that can be manipulated in memory.</p>
+<p>The <code>dbo</code> property allows access to the underlying MongoDB <a href="http://api.mongodb.com/java/current/org/bson/Document.html">Document</a>, which is a respresentation of the stored BSON document that can be manipulated in memory.</p>
 </div>
 </div>
 </div>
 <div class="sect3">
 <h4 id="ref-domain-classes-findByGeoIntersects">findByGeoIntersects</h4>
-<div class="sect4">
-<h5 id="_findbygeointersects">findByGeoIntersects</h5>
-
-</div>
 <div class="sect4">
 <h5 id="_purpose_7">Purpose</h5>
 <div class="paragraph">
@@ -2751,10 +3139,6 @@ new Entry(<span class="key">shape</span>: <span class="predefined-type">Polygon<
 <div class="sect3">
 <h4 id="ref-domain-classes-findByGeoWithin">findByGeoWithin</h4>
 <div class="sect4">
-<h5 id="_findbygeowithin">findByGeoWithin</h5>
-
-</div>
-<div class="sect4">
 <h5 id="_purpose_8">Purpose</h5>
 <div class="paragraph">
 <p>Executes a MongoDB <a href="http://docs.mongodb.org/manual/reference/operator/query/geoWithin/">$geoWithin</a> query</p>
@@ -2783,10 +3167,6 @@ See <a href="http://docs.mongodb.org/manual/reference/operator/query/geoWithin/"
 </div>
 <div class="sect3">
 <h4 id="ref-domain-classes-findByNear">findByNear</h4>
-<div class="sect4">
-<h5 id="_findbynear">findByNear</h5>
-
-</div>
 <div class="sect4">
 <h5 id="_purpose_9">Purpose</h5>
 <div class="paragraph">
@@ -2818,10 +3198,6 @@ Restaurant.withCriteria {
 </div>
 <div class="sect3">
 <h4 id="ref-domain-classes-findByNearSphere">findByNearSphere</h4>
-<div class="sect4">
-<h5 id="_findbynearsphere">findByNearSphere</h5>
-
-</div>
 <div class="sect4">
 <h5 id="_purpose_10">Purpose</h5>
 <div class="paragraph">
@@ -2857,10 +3233,6 @@ Restaurant.withCriteria {
 <div class="sect3">
 <h4 id="ref-domain-classes-findByWithinBox">findByWithinBox</h4>
 <div class="sect4">
-<h5 id="_findbywithinbox">findByWithinBox</h5>
-
-</div>
-<div class="sect4">
 <h5 id="_purpose_11">Purpose</h5>
 <div class="paragraph">
 <p>Executes a MongoDB <code>$within</code> query on legacy coordinate pairs</p>
@@ -2890,10 +3262,6 @@ Hotel.findByLocationWithinBox( <span class="predefined-type">Box</span>.valueOf(
 </div>
 <div class="sect3">
 <h4 id="ref-domain-classes-findByWithinCircle">findByWithinCircle</h4>
-<div class="sect4">
-<h5 id="_findbywithincircle">findByWithinCircle</h5>
-
-</div>
 <div class="sect4">
 <h5 id="_purpose_12">Purpose</h5>
 <div class="paragraph">
@@ -2925,13 +3293,9 @@ Hotel.findByLocationWithinCircle( Circle.valueOf( [[<span class="integer">40</sp
 <div class="sect3">
 <h4 id="ref-domain-classes-search">search</h4>
 <div class="sect4">
-<h5 id="_search">search</h5>
-
-</div>
-<div class="sect4">
 <h5 id="_purpose_13">Purpose</h5>
 <div class="paragraph">
-<p>Executes a MongoDB <a href="http://docs.mongodb.org/manual/reference/operator/query/text/#op._S_text">$text</a> search query</p>
+<p>Executes a MongoDB <a href="https://docs.mongodb.com/manual/reference/operator/query/text/#op._S_text">$text</a> search query</p>
 </div>
 </div>
 <div class="sect4">
@@ -2957,13 +3321,9 @@ Hotel.findByLocationWithinCircle( Circle.valueOf( [[<span class="integer">40</sp
 <div class="sect3">
 <h4 id="ref-domain-classes-searchTop">searchTop</h4>
 <div class="sect4">
-<h5 id="_searchtop">searchTop</h5>
-
-</div>
-<div class="sect4">
 <h5 id="_purpose_14">Purpose</h5>
 <div class="paragraph">
-<p>Executes a MongoDB <a href="http://docs.mongodb.org/manual/reference/operator/query/text/#op._S_text">$text</a> search query</p>
+<p>Executes a MongoDB <a href="https://docs.mongodb.com/manual/reference/operator/query/text/#op._S_text">$text</a> search query</p>
 </div>
 </div>
 <div class="sect4">
@@ -2985,10 +3345,6 @@ Hotel.findByLocationWithinCircle( Circle.valueOf( [[<span class="integer">40</sp
 <div class="sect3">
 <h4 id="ref-domain-classes-useCollection">useCollection</h4>
 <div class="sect4">
-<h5 id="_usecollection">useCollection</h5>
-
-</div>
-<div class="sect4">
 <h5 id="_purpose_15">Purpose</h5>
 <div class="paragraph">
 <p>Allows switching which collection to use to persist for the domain class for the scope of the current session (connection).</p>
@@ -2998,7 +3354,7 @@ Hotel.findByLocationWithinCircle( Circle.valueOf( [[<span class="integer">40</sp
 <h5 id="_examples_15">Examples</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="predefined-type">Book</span>.useCollection(<span class="string"><span class="delimiter">&quot;</span><span class="content">non-fiction</span><span class="delimiter">&quot;</span></span>)</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.useCollection(<span class="string"><span class="delimiter">&quot;</span><span class="content">non-fiction</span><span class="delimiter">&quot;</span></span>)</code></pre>
 </div>
 </div>
 </div>
@@ -3011,10 +3367,6 @@ Hotel.findByLocationWithinCircle( Circle.valueOf( [[<span class="integer">40</sp
 </div>
 <div class="sect3">
 <h4 id="ref-domain-classes-useDatabase">useDatabase</h4>
-<div class="sect4">
-<h5 id="_usedatabase">useDatabase</h5>
-
-</div>
 <div class="sect4">
 <h5 id="_purpose_16">Purpose</h5>
 <div class="paragraph">
@@ -3039,10 +3391,6 @@ Hotel.findByLocationWithinCircle( Circle.valueOf( [[<span class="integer">40</sp
 <div class="sect3">
 <h4 id="ref-domain-classes-withCollection">withCollection</h4>
 <div class="sect4">
-<h5 id="_withcollection">withCollection</h5>
-
-</div>
-<div class="sect4">
 <h5 id="_purpose_17">Purpose</h5>
 <div class="paragraph">
 <p>Allows switching which collection to use to persist for the domain class for the scope of the given closure</p>
@@ -3052,7 +3400,7 @@ Hotel.findByLocationWithinCircle( Circle.valueOf( [[<span class="integer">40</sp
 <h5 id="_examples_17">Examples</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="predefined-type">Book</span>.withCollection(<span class="string"><span class="delimiter">&quot;</span><span class="content">non-fiction</span><span class="delimiter">&quot;</span></span>) {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.withCollection(<span class="string"><span class="delimiter">&quot;</span><span class="content">non-fiction</span><span class="delimiter">&quot;</span></span>) {
     <span class="comment">// code here</span>
 }</code></pre>
 </div>
@@ -3067,10 +3415,6 @@ Hotel.findByLocationWithinCircle( Circle.valueOf( [[<span class="integer">40</sp
 </div>
 <div class="sect3">
 <h4 id="ref-domain-classes-withDatabase">withDatabase</h4>
-<div class="sect4">
-<h5 id="_withdatabase">withDatabase</h5>
-
-</div>
 <div class="sect4">
 <h5 id="_purpose_18">Purpose</h5>
 <div class="paragraph">
@@ -3095,73 +3439,11 @@ Hotel.findByLocationWithinCircle( Circle.valueOf( [[<span class="integer">40</sp
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="ref-testing">Testing</h3>
-<div class="sect3">
-<h4 id="ref-testing-MongoDbTestMixin">MongoDbTestMixin</h4>
-<div class="sect4">
-<h5 id="_mongodbtestmixin">MongoDbTestMixin</h5>
-
-</div>
-<div class="sect4">
-<h5 id="_purpose_19">Purpose</h5>
-<div class="paragraph">
-<p>A mixin for loading GORM for MongoDB in a unit test</p>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_examples_19">Examples</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Entity</span>
-<span class="type">class</span> <span class="class">Person</span> {
-    <span class="predefined-type">Object</span> id
-    <span class="predefined-type">Long</span> version
-    <span class="predefined-type">String</span> name
-}
-
-...
-
-import grails.test.mixin.mongodb.*
-
-<span class="annotation">@TestMixin</span>(MongoDbTestMixin)
-<span class="type">class</span> <span class="class">PersonSpec</span> <span class="directive">extends</span> Specification{
-
-    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Test count people</span><span class="delimiter">&quot;</span></span>() {
-        <span class="key">given</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">A mongo domain model</span><span class="delimiter">&quot;</span></span>
-            mongoDomain(&lt;&lt;Person&gt;&gt;)
-
-        <span class="key">expect</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Count the number of people</span><span class="delimiter">&quot;</span></span>
-            Person.count() == <span class="integer">0</span>
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This library dependency is required in build.gradle for adding support for <code>MongoDbTestMixin</code>.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-        testCompile <span class="string"><span class="delimiter">'</span><span class="content">org.grails:grails-datastore-test-support:VERSION</span><span class="delimiter">'</span></span>
-    }</code></pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_description_17">Description</h5>
-<div class="paragraph">
-<p><code>MongoDbTestMixin</code> allows you to test interactions with GORM for MongoDB against a running MongoDB instance or a Mock instance such as one provided by the <a href="#ref-comfakemongofongo-Fongo">Fongo</a> project.</p>
-</div>
-</div>
-</div>
-</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-09-21 13:37:36 UTC
 </div>
 </div>
 </body>
