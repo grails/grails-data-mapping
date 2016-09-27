@@ -538,13 +538,15 @@ Custom types should go in src/groovy not grails-app/domain
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import org.bson.*
-import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller;
-import org.grails.datastore.mapping.model.PersistentProperty;
-import org.grails.datastore.mapping.mongo.query.MongoQuery;
-import org.grails.datastore.mapping.query.Query;
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import groovy.transform.InheritConstructors
+import org.bson.Document
+import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
+import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.mongo.query.MongoQuery
+import org.grails.datastore.mapping.query.Query
 
-class BirthdayType extends AbstractMappingAwareCustomTypeMarshaller&lt;Birthday, Document, Document&gt;(Birthday) {
+@InheritConstructors
+class BirthdayType extends AbstractMappingAwareCustomTypeMarshaller&lt;Birthday, Document, Document&gt; {
    @Override
    protected Object writeInternal(PersistentProperty property, String key, Birthday value, Document nativeTarget) {
        final converted = value.date.time

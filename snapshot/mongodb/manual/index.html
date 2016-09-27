@@ -1654,9 +1654,9 @@ println p[<span class="string"><span class="delimiter">'</span><span class="cont
 <div class="paragraph">
 <p>To store data in a flat surface you use a "2d" index, whilst a "2dsphere" index used for spherical data. GORM for MongoDB supports both and the following sections describe how to define and query Geospacial data.</p>
 </div>
-<div class="paragraph">
-<p>[[2dsphere]]
-==== Geospacial 2D Sphere Support</p>
+<div class="sect3">
+<h4 id="twodsphere">Geospacial 2D Sphere Support</h4>
+
 </div>
 <div class="sect3">
 <h4 id="_using_a_2dsphere_index">Using a 2dsphere Index</h4>
@@ -1766,10 +1766,9 @@ There is a special <code>Distance</code> class that can help with radian calcula
 <div class="paragraph">
 <p>In the above example the native query parameters are simply passed to the <a href="http://docs.mongodb.org/manual/reference/operator/query/near/#op._S_near">$near query</a></p>
 </div>
-<div class="paragraph">
-<p>[[2dindex]]
-==== Geospacial 2D Index Support</p>
 </div>
+<div class="sect3">
+<h4 id="twodindex">Geospacial 2D Index Support</h4>
 <div class="paragraph">
 <p>MongoDB supports <a href="http://docs.mongodb.org/manual/core/2d/">2d indexes</a> that store points on a two-dimensional plane. although they are considered legacy and you should use <code>2dsphere</code> indexes instead.</p>
 </div>
@@ -2071,13 +2070,15 @@ Custom types should go in src/groovy not grails-app/domain
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.bson.*</span>
-<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller</span>;
-<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.model.PersistentProperty</span>;
-<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.mongo.query.MongoQuery</span>;
-<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.query.Query</span>;
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">groovy.transform.InheritConstructors</span>
+<span class="keyword">import</span> <span class="include">org.bson.Document</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.model.PersistentProperty</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.mongo.query.MongoQuery</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.query.Query</span>
 
-<span class="type">class</span> <span class="class">BirthdayType</span> <span class="directive">extends</span> AbstractMappingAwareCustomTypeMarshaller&lt;Birthday, <span class="predefined-type">Document</span>, <span class="predefined-type">Document</span>&gt;(Birthday) {
+<span class="annotation">@InheritConstructors</span>
+<span class="type">class</span> <span class="class">BirthdayType</span> <span class="directive">extends</span> AbstractMappingAwareCustomTypeMarshaller&lt;Birthday, <span class="predefined-type">Document</span>, <span class="predefined-type">Document</span>&gt; {
    <span class="annotation">@Override</span>
    <span class="directive">protected</span> <span class="predefined-type">Object</span> writeInternal(PersistentProperty property, <span class="predefined-type">String</span> key, Birthday value, <span class="predefined-type">Document</span> nativeTarget) {
        <span class="directive">final</span> converted = value.date.time
