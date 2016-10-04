@@ -23,7 +23,7 @@ class ValidatorRegistrySpec extends Specification {
 
         when:"A validator is created"
         Validator validator = registry.getValidator(entity)
-        def person = new Person()
+        def person = new Person(age: -1)
         def errors = new ValidationErrors(person, Person.simpleName)
 
         validator.validate(person, errors)

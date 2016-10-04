@@ -17,6 +17,7 @@ import org.grails.datastore.gorm.validation.constraints.RangeConstraint
 import org.grails.datastore.gorm.validation.constraints.ScaleConstraint
 import org.grails.datastore.gorm.validation.constraints.SizeConstraint
 import org.grails.datastore.gorm.validation.constraints.UrlConstraint
+import org.grails.datastore.gorm.validation.constraints.ValidatorConstraint
 import org.grails.datastore.gorm.validation.constraints.factory.ConstraintFactory
 import org.grails.datastore.gorm.validation.constraints.factory.DefaultConstraintFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -66,6 +67,7 @@ class DefaultConstraintRegistry implements ConstraintRegistry {
         addConstraint(ScaleConstraint, [BigDecimal, Double, Float])
         addConstraint(SizeConstraint, charSequenceIterableType)
         addConstraint(UrlConstraint, charSequenceType)
+        addConstraint(ValidatorConstraint)
     }
 
     @Autowired(required = false)
