@@ -101,7 +101,13 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             Serializable.class.getName(),
             URI.class.getName(),
             URL.class.getName(),
-            "org.bson.types.ObjectId")));
+            "org.bson.types.ObjectId",
+            "java.time.LocalDateTime",
+            "java.time.LocalDate",
+            "java.time.LocalTime",
+            "java.time.OffsetDateTime",
+            "java.time.OffsetTime",
+            "java.time.ZonedDateTime")));
     }
 
     private Map<Class, Collection<CustomTypeMarshaller>> typeConverterMap = new ConcurrentHashMap<>();

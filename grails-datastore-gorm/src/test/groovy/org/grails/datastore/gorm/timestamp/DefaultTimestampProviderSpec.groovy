@@ -1,9 +1,7 @@
 package org.grails.datastore.gorm.timestamp
 
 import java.sql.Timestamp
-
 import org.springframework.util.ClassUtils
-
 import spock.lang.Specification
 
 class DefaultTimestampProviderSpec extends Specification {
@@ -33,6 +31,21 @@ class DefaultTimestampProviderSpec extends Specification {
         def timestamp = timestampProvider.createTimestamp(Object)
         then:
         timestamp.getClass() == Date
+    }
+
+    //To support JSR310 date classes
+    //LocalDateTime, LocalDate, LocalTime, OffsetDateTime, OffsetTime, ZonedDateTime all have a static now() method
+    def "timestamp provider should instantiate class with static now method"() {
+        when:
+        def timestamp = timestampProvider.createTimestamp(Foo)
+        then:
+        timestamp.getClass() == Foo
+    }
+
+    static class Foo {
+        static Foo now() {
+            return new Foo()
+        }
     }
 
 }
