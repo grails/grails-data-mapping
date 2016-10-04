@@ -5,6 +5,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.builder.Builder
 import groovy.transform.builder.SimpleStrategy
 import org.grails.datastore.mapping.config.Settings
+import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller
 import org.grails.datastore.mapping.multitenancy.MultiTenancySettings
 
 import javax.persistence.FlushModeType
@@ -96,7 +97,7 @@ class ConnectionSourceSettings implements Settings {
         /**
          * custom types
          */
-        List types = []
+        List<CustomTypeMarshaller> types = []
     }
 }
 

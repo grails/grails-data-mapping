@@ -1,10 +1,12 @@
 package org.grails.datastore.mapping.core.connections;
 
+import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.multitenancy.TenantResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.PropertyResolver;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Abstract implementation of the {@link ConnectionSourceFactory} interface
@@ -15,10 +17,26 @@ import java.io.Serializable;
 public abstract class AbstractConnectionSourceFactory<T, S extends ConnectionSourceSettings> implements ConnectionSourceFactory<T, S> {
 
     private TenantResolver tenantResolver;
+    private List<CustomTypeMarshaller> customTypes;
 
+    /**
+     * The tenant resolver to use
+     *
+     * @param tenantResolver The tenant resolver
+     */
     @Autowired(required = false)
     public void setTenantResolver(TenantResolver tenantResolver) {
         this.tenantResolver = tenantResolver;
+    }
+
+    /**
+     * The custom user types to register
+     *
+     * @param customTypes The custom user types
+     */
+    @Autowired(required = false)
+    public void setCustomTypes(List<CustomTypeMarshaller> customTypes) {
+        this.customTypes = customTypes;
     }
 
     @Override
@@ -27,6 +45,9 @@ public abstract class AbstractConnectionSourceFactory<T, S extends ConnectionSou
         ConnectionSourceSettings fallbackSettings = builder.build();
         if(tenantResolver != null) {
             fallbackSettings.getMultiTenancy().setTenantResolver(tenantResolver);
+        }
+        if(customTypes != null) {
+            fallbackSettings.getCustom().getTypes().addAll( this.customTypes );
         }
         return create(name, configuration, fallbackSettings);
     }
