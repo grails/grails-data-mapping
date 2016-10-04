@@ -96,7 +96,7 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
 
     @Override
     public boolean isInitialized(Object object, String associationName) {
-        final Object value = ClassPropertyFetcher.forClass(object.getClass()).getPropertyValue(associationName);
+        final Object value = ClassPropertyFetcher.forClass(object.getClass()).getPropertyValue(object, associationName);
         return value == null || isInitialized(value);
     }
 
