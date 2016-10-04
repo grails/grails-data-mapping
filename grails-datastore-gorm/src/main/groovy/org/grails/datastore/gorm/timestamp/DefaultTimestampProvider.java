@@ -29,6 +29,7 @@ import org.springframework.util.ClassUtils;
  *
  */
 public class DefaultTimestampProvider implements TimestampProvider {
+
     protected long currentTimeMillis() {
         return System.currentTimeMillis();
     }
@@ -51,7 +52,11 @@ public class DefaultTimestampProvider implements TimestampProvider {
             } else {
                 actualDateTimeClass = ClassUtils.resolvePrimitiveIfNecessary(dateTimeClass);
             }
-            return (T)DefaultGroovyMethods.newInstance(actualDateTimeClass, new Object[] { timestampMillis });
+            try {
+                return (T)DefaultGroovyMethods.newInstance(actualDateTimeClass, new Object[] { timestampMillis });
+            } catch (Exception e) {
+                return (T)DefaultGroovyMethods.invokeMethod(actualDateTimeClass, "now", null);
+            }
         }
     }
 }
