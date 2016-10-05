@@ -32,36 +32,46 @@ import org.springframework.util.Assert;
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class DocumentMappingContext extends AbstractMappingContext {
-    String defaultDatabaseName;
-    MappingFactory<Collection, Attribute> mappingFactory;
+    protected String defaultDatabaseName;
+    protected MappingFactory<Collection, Attribute> mappingFactory;
 
     private MappingConfigurationStrategy syntaxStrategy;
     private Closure defaultMapping;
 
+    public DocumentMappingContext(String defaultDatabaseName, ConnectionSourceSettings settings) {
+        super(settings);
+        Assert.notNull(defaultDatabaseName, "Argument [defaultDatabaseName] cannot be null");
+        this.defaultDatabaseName = defaultDatabaseName;
+    }
+
+    @Deprecated
     public DocumentMappingContext(String defaultDatabaseName) {
         Assert.notNull(defaultDatabaseName, "Argument [defaultDatabaseName] cannot be null");
         this.defaultDatabaseName = defaultDatabaseName;
         mappingFactory = createDocumentMappingFactory(null);
         syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
     }
+
+    @Deprecated
     public DocumentMappingContext(String defaultDatabaseName, Closure defaultMapping) {
         Assert.notNull(defaultDatabaseName, "Argument [defaultDatabaseName] cannot be null");
+
         this.defaultDatabaseName = defaultDatabaseName;
         mappingFactory = createDocumentMappingFactory(defaultMapping);
         this.defaultMapping = defaultMapping;
         syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
     }
 
-    public DocumentMappingContext(String defaultDatabaseName, ConnectionSourceSettings settings) {
-        super(settings);
-        Assert.notNull(defaultDatabaseName, "Argument [defaultDatabaseName] cannot be null");
-        this.defaultDatabaseName = defaultDatabaseName;
+    @Override
+    protected void initialize(ConnectionSourceSettings settings) {
+
         this.defaultMapping = settings.getDefault().getMapping();
         AbstractGormMappingFactory documentMappingFactory = (AbstractGormMappingFactory)createDocumentMappingFactory(defaultMapping);
         documentMappingFactory.setDefaultConstraints(settings.getDefault().getConstraints());
 
         mappingFactory = documentMappingFactory;
         syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
+        super.initialize(settings);
     }
 
     public Closure getDefaultMapping() {

@@ -43,16 +43,21 @@ public class ConfigurationUtils {
 
         if(servicesList != null) {
             for (Object serviceObject : servicesList) {
-                Class serviceTypeClass = null;
-                if(serviceObject instanceof Class) {
-                    serviceTypeClass = (Class) serviceObject;
+                if(serviceType.isInstance(serviceObject)) {
+                    services.add((T)serviceObject);
                 }
-                else if(serviceObject instanceof CharSequence) {
-                    serviceTypeClass = ReflectionUtils.forName(serviceObject.toString(),ConfigurationUtils.class.getClassLoader());
-                }
-                if(serviceTypeClass != null && serviceType.isAssignableFrom(serviceTypeClass)) {
-                    T serviceInstance = (T) ReflectionUtils.instantiate(serviceTypeClass);
-                    services.add(serviceInstance);
+                else {
+                    Class serviceTypeClass = null;
+                    if(serviceObject instanceof Class) {
+                        serviceTypeClass = (Class) serviceObject;
+                    }
+                    else if(serviceObject instanceof CharSequence) {
+                        serviceTypeClass = ReflectionUtils.forName(serviceObject.toString(),ConfigurationUtils.class.getClassLoader());
+                    }
+                    if(serviceTypeClass != null && serviceType.isAssignableFrom(serviceTypeClass)) {
+                        T serviceInstance = (T) ReflectionUtils.instantiate(serviceTypeClass);
+                        services.add(serviceInstance);
+                    }
                 }
             }
         }

@@ -148,7 +148,7 @@ public class ReflectionUtils {
      * @return The instantiated object or null if the class parameter was null
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static Object instantiate(Class clazz) {
+    public static <T> T instantiate(Class<T> clazz) {
         if (clazz == null) return null;
         try {
             return clazz.getConstructor(EMPTY_CLASS_ARRAY).newInstance();
