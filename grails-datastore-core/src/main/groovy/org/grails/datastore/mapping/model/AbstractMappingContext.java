@@ -75,6 +75,7 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
     }
 
     public AbstractMappingContext(ConnectionSourceSettings settings) {
+        FieldEntityAccess.clearReflectors();
         initialize(settings);
     }
 
