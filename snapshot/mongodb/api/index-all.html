@@ -933,6 +933,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/mongo/MongoConstants.html#CODEC_ENGINE" title="Field in MongoConstants">CODEC_ENGINE</a></span> - Field in <a href="org/grails/datastore/mapping/mongo/MongoConstants.html">MongoConstants</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/bson/codecs/CodecCustomTypeMarshaller.html" title="Class in org.grails.datastore.bson.codecs">CodecCustomTypeMarshaller</a></span> - Class in <a href="./org/grails/datastore/bson/codecs/package-summary.html">org.grails.datastore.bson.codecs</a>
+</dt><dd><div class="block">Custom type handler for types that have codecs</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/bson/codecs/CodecCustomTypeMarshaller.html#CodecCustomTypeMarshaller(org.bson.codecs.Codec, org.grails.datastore.mapping.model.MappingContext)" title="Constructor in CodecCustomTypeMarshaller">CodecCustomTypeMarshaller(Codec, MappingContext)</a></span> - Constructor in <a href="org/grails/datastore/bson/codecs/CodecCustomTypeMarshaller.html">CodecCustomTypeMarshaller</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/bson/codecs/CodecExtensions.html" title="Class in org.grails.datastore.bson.codecs">CodecExtensions</a></span> - Class in <a href="./org/grails/datastore/bson/codecs/package-summary.html">org.grails.datastore.bson.codecs</a>
 </dt><dd><div class="block">Additional org.bson.codecs.Codec extensions. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/bson/codecs/CodecExtensions.CurrencyCodec.html" title="Class in org.grails.datastore.bson.codecs.CodecExtensions">CodecExtensions.CurrencyCodec</a></span> - Class in <a href="./org/grails/datastore/bson/codecs/package-summary.html">org.grails.datastore.bson.codecs</a>
@@ -1305,15 +1309,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html#createDocumentMappingFactory(groovy.lang.Closure)" title="Method in DocumentMappingContext">createDocumentMappingFactory(Closure)</a></span> - Method in <a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html">DocumentMappingContext</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/mongo/config/MongoMappingContext.html#createDocumentMappingFactory(groovy.lang.Closure)" title="Method in MongoMappingContext">createDocumentMappingFactory(Closure)</a></span> - Method in <a href="org/grails/datastore/mapping/mongo/config/MongoMappingContext.html">MongoMappingContext</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#createDynamicFinders(org.grails.datastore.mapping.core.Datastore)" title="Method in GormEnhancer">createDynamicFinders(Datastore)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#createEmbeddedCacheEntryKey(java.lang.Object)" title="Method in NativeEntryEntityPersister">createEmbeddedCacheEntryKey(Object)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingContext.html#createEmbeddedEntity(java.lang.Class)" title="Method in MappingContext">createEmbeddedEntity(Class)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingContext.html">MappingContext</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/mongo/config/MongoMappingContext.html#createEmbeddedEntity(java.lang.Class)" title="Method in MongoMappingContext">createEmbeddedEntity(Class)</a></span> - Method in <a href="org/grails/datastore/mapping/mongo/config/MongoMappingContext.html">MongoMappingContext</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/bson/codecs/decoders/EmbeddedCollectionDecoder.html#createEmbeddedEntityCodec(org.bson.codecs.configuration.CodecRegistry, org.grails.datastore.mapping.model.PersistentEntity)" title="Method in EmbeddedCollectionDecoder">createEmbeddedEntityCodec(CodecRegistry, PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/bson/codecs/decoders/EmbeddedCollectionDecoder.html">EmbeddedCollectionDecoder</a>
 </dt><dd> <div class="block"></div></dd>
@@ -3034,8 +3034,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">@return The name of the default database</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html#getDefaultDatabaseName()" title="Method in DocumentMappingContext">getDefaultDatabaseName()</a></span> - Method in <a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html">DocumentMappingContext</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/mongo/config/MongoMappingContext.html#getDefaultDatabaseName(org.springframework.core.env.PropertyResolver)" title="Method in MongoMappingContext">getDefaultDatabaseName(PropertyResolver)</a></span> - Method in <a href="org/grails/datastore/mapping/mongo/config/MongoMappingContext.html">MongoMappingContext</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/config/GormMappingConfigurationStrategy.html#getDefaultIdentityMapping(org.grails.datastore.mapping.model.ClassMapping)" title="Method in GormMappingConfigurationStrategy">getDefaultIdentityMapping(ClassMapping)</a></span> - Method in <a href="org/grails/datastore/mapping/model/config/GormMappingConfigurationStrategy.html">GormMappingConfigurationStrategy</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingConfigurationStrategy.html#getDefaultIdentityMapping(org.grails.datastore.mapping.model.ClassMapping)" title="Method in MappingConfigurationStrategy">getDefaultIdentityMapping(ClassMapping)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingConfigurationStrategy.html">MappingConfigurationStrategy</a>
@@ -3367,8 +3365,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/document/config/DocumentPersistentEntity.DocumentCollectionMapping.html#getMappedForm()" title="Method in DocumentPersistentEntity.DocumentCollectionMapping">getMappedForm()</a></span> - Method in <a href="org/grails/datastore/mapping/document/config/DocumentPersistentEntity.DocumentCollectionMapping.html">DocumentPersistentEntity.DocumentCollectionMapping</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/keyvalue/mapping/config/KeyValuePersistentEntity.KeyValueClassMapping.html#getMappedForm()" title="Method in KeyValuePersistentEntity.KeyValueClassMapping">getMappedForm()</a></span> - Method in <a href="org/grails/datastore/mapping/keyvalue/mapping/config/KeyValuePersistentEntity.KeyValueClassMapping.html">KeyValuePersistentEntity.KeyValueClassMapping</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/mongo/config/MongoMappingContext.DocumentEmbeddedPersistentEntity.DocumentCollectionMapping.html#getMappedForm()" title="Method in MongoMappingContext.DocumentEmbeddedPersistentEntity.DocumentCollectionMapping">getMappedForm()</a></span> - Method in <a href="org/grails/datastore/mapping/mongo/config/MongoMappingContext.DocumentEmbeddedPersistentEntity.DocumentCollectionMapping.html">MongoMappingContext.DocumentEmbeddedPersistentEntity.DocumentCollectionMapping</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/PropertyMapping.html#getMappedForm()" title="Method in PropertyMapping">getMappedForm()</a></span> - Method in <a href="org/grails/datastore/mapping/model/PropertyMapping.html">PropertyMapping</a>
 </dt><dd> <div class="block">Returns the mapped form of the property such as a Column, a Key/Value pair, attribute etc.</div></dd>
@@ -3849,6 +3845,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/Property.html#getTargetName()" title="Method in Property">getTargetName()</a></span> - Method in <a href="org/grails/datastore/mapping/config/Property.html">Property</a>
 </dt><dd> <div class="block">The target to map to, could be a database column, document attribute, or hash key</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/types/AbstractMappingAwareCustomTypeMarshaller.html#getTargetType()" title="Method in AbstractMappingAwareCustomTypeMarshaller">getTargetType()</a></span> - Method in <a href="org/grails/datastore/mapping/engine/types/AbstractMappingAwareCustomTypeMarshaller.html">AbstractMappingAwareCustomTypeMarshaller</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/bson/codecs/CodecCustomTypeMarshaller.html#getTargetType()" title="Method in CodecCustomTypeMarshaller">getTargetType()</a></span> - Method in <a href="org/grails/datastore/bson/codecs/CodecCustomTypeMarshaller.html">CodecCustomTypeMarshaller</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/types/CustomTypeMarshaller.html#getTargetType()" title="Method in CustomTypeMarshaller">getTargetType()</a></span> - Method in <a href="org/grails/datastore/mapping/engine/types/CustomTypeMarshaller.html">CustomTypeMarshaller</a>
 </dt><dd> <div class="block">@return The target Java type</div></dd>
@@ -4729,8 +4727,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/utils/ReflectionUtils.html#isMethodOverriddenFromParent(java.lang.reflect.Method)" title="Method in ReflectionUtils">isMethodOverriddenFromParent(Method)</a></span> - Method in <a href="org/grails/datastore/gorm/utils/ReflectionUtils.html">ReflectionUtils</a>
 </dt><dd> <div class="block">Tests whether a method is overridden from the parent</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/mongo/config/MongoMappingContext.html#isMongoNativeType(java.lang.Class)" title="Method in MongoMappingContext">isMongoNativeType(Class)</a></span> - Method in <a href="org/grails/datastore/mapping/mongo/config/MongoMappingContext.html">MongoMappingContext</a>
-</dt><dd> <div class="block">Check whether a type is a native mongo type that can be stored by the mongo driver without conversion.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/ClassUtils.html#isMultiTenant(java.lang.Class)" title="Method in ClassUtils">isMultiTenant(Class)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/ClassUtils.html">ClassUtils</a>
 </dt><dd> <div class="block">Whether the class is multi tenant</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/connections/ConnectionSourcesSupport.html#isMultiTenant(java.lang.Class)" title="Method in ConnectionSourcesSupport">isMultiTenant(Class)</a></span> - Method in <a href="org/grails/datastore/mapping/core/connections/ConnectionSourcesSupport.html">ConnectionSourcesSupport</a>
@@ -5625,14 +5621,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/mongodb/api/MongoInstanceOperations.html" title="Interface in grails.mongodb.api">MongoInstanceOperations</a></span> - Interface in <a href="./grails/mongodb/api/package-summary.html">grails.mongodb.api</a>
 </dt><dd><div class="block">Instance methods for GORM for MongoDB</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/mongo/config/MongoMappingContext.html" title="Class in org.grails.datastore.mapping.mongo.config">MongoMappingContext</a></span> - Class in <a href="./org/grails/datastore/mapping/mongo/config/package-summary.html">org.grails.datastore.mapping.mongo.config</a>
-</dt><dd><div class="block">Models a <a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html' title='MappingContext'>MappingContext</a> for Mongo.</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/mongo/config/MongoMappingContext.DocumentEmbeddedPersistentEntity.DocumentCollectionMapping.html" title="Class in org.grails.datastore.mapping.mongo.config.MongoMappingContext.DocumentEmbeddedPersistentEntity">MongoMappingContext.DocumentEmbeddedPersistentEntity.DocumentCollectionMapping</a></span> - Class in <a href="./org/grails/datastore/mapping/mongo/config/package-summary.html">org.grails.datastore.mapping.mongo.config</a>
-</dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/mongo/config/MongoMappingContext.DocumentEmbeddedPersistentEntity.DocumentCollectionMapping.html#MongoMappingContext.DocumentEmbeddedPersistentEntity.DocumentCollectionMapping(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext)" title="Constructor in MongoMappingContext.DocumentEmbeddedPersistentEntity.DocumentCollectionMapping">MongoMappingContext.DocumentEmbeddedPersistentEntity.DocumentCollectionMapping(PersistentEntity, MappingContext)</a></span> - Constructor in <a href="org/grails/datastore/mapping/mongo/config/MongoMappingContext.DocumentEmbeddedPersistentEntity.DocumentCollectionMapping.html">MongoMappingContext.DocumentEmbeddedPersistentEntity.DocumentCollectionMapping</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/mongo/config/MongoMappingContext.html#MongoMappingContext(org.grails.datastore.mapping.mongo.connections.AbstractMongoConnectionSourceSettings, java.lang.Class)" title="Constructor in MongoMappingContext">MongoMappingContext(AbstractMongoConnectionSourceSettings, Class)</a></span> - Constructor in <a href="org/grails/datastore/mapping/mongo/config/MongoMappingContext.html">MongoMappingContext</a>
-</dt><dd> <div class="block">Construct a new context for the given settings and classes</div></dd>
 <dt><span class="strong"><a href="grails/mongodb/bootstrap/MongoDbDataStoreSpringInitializer.html#mongoOptions" title="Field in MongoDbDataStoreSpringInitializer">mongoOptions</a></span> - Field in <a href="grails/mongodb/bootstrap/MongoDbDataStoreSpringInitializer.html">MongoDbDataStoreSpringInitializer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/mongodb/bootstrap/MongoDbDataStoreSpringInitializer.html#mongoOptionsBeanName" title="Field in MongoDbDataStoreSpringInitializer">mongoOptionsBeanName</a></span> - Field in <a href="grails/mongodb/bootstrap/MongoDbDataStoreSpringInitializer.html">MongoDbDataStoreSpringInitializer</a>
@@ -6634,6 +6622,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">The query.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/AssociationQueryExecutor.html#query(K)" title="Method in AssociationQueryExecutor">query(K)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/AssociationQueryExecutor.html">AssociationQueryExecutor</a>
 </dt><dd> <div class="block">Queries the given primary key and returns the foreign keys</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/bson/codecs/CodecCustomTypeMarshaller.html#query(org.grails.datastore.mapping.model.PersistentProperty, org.grails.datastore.mapping.query.Query.PropertyCriterion, org.bson.Document)" title="Method in CodecCustomTypeMarshaller">query(PersistentProperty, PropertyCriterion, Document)</a></span> - Method in <a href="org/grails/datastore/bson/codecs/CodecCustomTypeMarshaller.html">CodecCustomTypeMarshaller</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/types/CustomTypeMarshaller.html#query(org.grails.datastore.mapping.model.PersistentProperty, org.grails.datastore.mapping.query.Query.PropertyCriterion, Q)" title="Method in CustomTypeMarshaller">query(PersistentProperty, PropertyCriterion, Q)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/types/CustomTypeMarshaller.html">CustomTypeMarshaller</a>
 </dt><dd> <div class="block">Populates a query</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/PropertyValueIndexer.html#query(java.lang.Object, int, int)" title="Method in PropertyValueIndexer">query(Object, int, int)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/PropertyValueIndexer.html">PropertyValueIndexer</a>
@@ -6679,6 +6669,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dl>
 
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/types/AbstractMappingAwareCustomTypeMarshaller.html#read(org.grails.datastore.mapping.model.PersistentProperty, N)" title="Method in AbstractMappingAwareCustomTypeMarshaller">read(PersistentProperty, N)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/types/AbstractMappingAwareCustomTypeMarshaller.html">AbstractMappingAwareCustomTypeMarshaller</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/bson/codecs/CodecCustomTypeMarshaller.html#read(org.grails.datastore.mapping.model.PersistentProperty, org.bson.Document)" title="Method in CodecCustomTypeMarshaller">read(PersistentProperty, Document)</a></span> - Method in <a href="org/grails/datastore/bson/codecs/CodecCustomTypeMarshaller.html">CodecCustomTypeMarshaller</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/utils/ConfigUtils.html#read(Class<T>, java.lang.String, Map<String, String>, T)" title="Method in ConfigUtils">read(Class&lt;T&gt;, String, Map&lt;String, String&gt;, T)</a></span> - Method in <a href="org/grails/datastore/mapping/config/utils/ConfigUtils.html">ConfigUtils</a>
 </dt><dd> <div class="block"></div></dd>
@@ -6795,8 +6787,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#registerInstanceMethod(java.lang.Class, groovy.lang.ExpandoMetaClass, org.grails.datastore.gorm.AbstractGormApi, java.lang.String, java.lang.Class)" title="Method in GormEnhancer">registerInstanceMethod(Class, ExpandoMetaClass, AbstractGormApi, String, Class)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/mongo/MongoGormEnhancer.html#registerMongoMethodExpressions()" title="Method in MongoGormEnhancer">registerMongoMethodExpressions()</a></span> - Method in <a href="org/grails/datastore/gorm/mongo/MongoGormEnhancer.html">MongoGormEnhancer</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/mongo/config/MongoMappingContext.html#registerMongoTypes()" title="Method in MongoMappingContext">registerMongoTypes()</a></span> - Method in <a href="org/grails/datastore/mapping/mongo/config/MongoMappingContext.html">MongoMappingContext</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/finders/DynamicFinder.html#registerNewMethodExpression(java.lang.Class)" title="Method in DynamicFinder">registerNewMethodExpression(Class)</a></span> - Method in <a href="org/grails/datastore/gorm/finders/DynamicFinder.html">DynamicFinder</a>
 </dt><dd> <div class="block">Registers a new method expression. </div></dd>
@@ -7738,6 +7728,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/mongo/geo/AbstractShapeCoordsType.html#supports(org.grails.datastore.mapping.core.Datastore)" title="Method in AbstractShapeCoordsType">supports(Datastore)</a></span> - Method in <a href="org/grails/datastore/gorm/mongo/geo/AbstractShapeCoordsType.html">AbstractShapeCoordsType</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/bson/codecs/CodecCustomTypeMarshaller.html#supports(org.grails.datastore.mapping.core.Datastore)" title="Method in CodecCustomTypeMarshaller">supports(Datastore)</a></span> - Method in <a href="org/grails/datastore/bson/codecs/CodecCustomTypeMarshaller.html">CodecCustomTypeMarshaller</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/types/CustomTypeMarshaller.html#supports(org.grails.datastore.mapping.core.Datastore)" title="Method in CustomTypeMarshaller">supports(Datastore)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/types/CustomTypeMarshaller.html">CustomTypeMarshaller</a>
 </dt><dd> <div class="block">@deprecated Use <a href='#supports(org.grails.datastore.mapping.model.MappingContext)'>supports(MappingContext)</a> instead</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/mongo/simple/EnumType.html#supports(org.grails.datastore.mapping.core.Datastore)" title="Method in EnumType">supports(Datastore)</a></span> - Method in <a href="org/grails/datastore/gorm/mongo/simple/EnumType.html">EnumType</a>
@@ -8302,6 +8294,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/support/EventTriggerCaller.html#wrapNullInNoopCaller(org.grails.datastore.gorm.support.EventTriggerCaller)" title="Method in EventTriggerCaller">wrapNullInNoopCaller(EventTriggerCaller)</a></span> - Method in <a href="org/grails/datastore/gorm/support/EventTriggerCaller.html">EventTriggerCaller</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/types/AbstractMappingAwareCustomTypeMarshaller.html#write(org.grails.datastore.mapping.model.PersistentProperty, T, N)" title="Method in AbstractMappingAwareCustomTypeMarshaller">write(PersistentProperty, T, N)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/types/AbstractMappingAwareCustomTypeMarshaller.html">AbstractMappingAwareCustomTypeMarshaller</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/bson/codecs/CodecCustomTypeMarshaller.html#write(org.grails.datastore.mapping.model.PersistentProperty, org.bson.Document, org.bson.Document)" title="Method in CodecCustomTypeMarshaller">write(PersistentProperty, Document, Document)</a></span> - Method in <a href="org/grails/datastore/bson/codecs/CodecCustomTypeMarshaller.html">CodecCustomTypeMarshaller</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/types/CustomTypeMarshaller.html#write(org.grails.datastore.mapping.model.PersistentProperty, T, N)" title="Method in CustomTypeMarshaller">write(PersistentProperty, T, N)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/types/CustomTypeMarshaller.html">CustomTypeMarshaller</a>
 </dt><dd> <div class="block">Converts a value to its native form</div></dd>
