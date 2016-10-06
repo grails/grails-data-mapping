@@ -73,7 +73,7 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
 
         for (MethodNode mn in classNode.methods) {
             final methodName = mn.name
-            if(!mn.isPublic() || mn.isStatic() || mn.isSynthetic()) continue
+            if(!mn.isPublic() || mn.isStatic() || mn.isSynthetic() || mn.isAbstract()) continue
 
             if (isSetter(methodName, mn)) {
                 String propertyName = NameUtils.getPropertyNameForGetterOrSetter(methodName)
