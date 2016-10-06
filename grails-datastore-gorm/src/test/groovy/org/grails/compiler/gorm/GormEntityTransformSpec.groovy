@@ -26,6 +26,25 @@ import spock.lang.Specification
  */
 class GormEntityTransformSpec extends Specification{
 
+    void "Test parse abstract GORM entity with getters and setters"() {
+        when:
+        def cls = new GroovyClassLoader().parseClass('''
+import grails.gorm.annotation.Entity
+
+@Entity
+abstract class AbstractDomain {
+
+    abstract String getStringValue()
+    abstract void setStringValue(String value)
+
+}
+
+
+''')
+        then:"It is a valid class"
+        new ClassNode(cls).methods
+    }
+
     void "Test parse GORM entity with single char properties"() {
         when:"A gorm entity is parsed"
         def cls = new GroovyClassLoader().parseClass('''
