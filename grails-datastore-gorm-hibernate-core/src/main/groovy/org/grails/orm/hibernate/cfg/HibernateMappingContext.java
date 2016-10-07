@@ -27,6 +27,7 @@ import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.multitenancy.MultiTenancySettings;
+import org.grails.datastore.mapping.reflect.ClassUtils;
 import org.grails.orm.hibernate.connections.HibernateConnectionSourceSettings;
 import org.grails.orm.hibernate.proxy.SimpleHibernateProxyHandler;
 import org.springframework.core.env.PropertyResolver;
@@ -251,11 +252,18 @@ public class HibernateMappingContext extends AbstractMappingContext {
                 Identity id = (Identity) identity;
                 String generatorName = id.getGenerator();
                 if(generatorName != null) {
+                    ValueGenerator resolvedGenerator;
                     try {
-                        generator = ValueGenerator.valueOf(generatorName.toUpperCase());
+                        resolvedGenerator = ValueGenerator.valueOf(generatorName.toUpperCase());
                     } catch (IllegalArgumentException e) {
-                        throw new DatastoreConfigurationException("Invalid id generation strategy for entity ["+classMapping.getEntity().getName()+"]: " + generatorName);
+                        if(ClassUtils.isPresent(generatorName)) {
+                            resolvedGenerator = ValueGenerator.CUSTOM;
+                        }
+                        else {
+                            throw new DatastoreConfigurationException("Invalid id generation strategy for entity ["+classMapping.getEntity().getName()+"]: " + generatorName);
+                        }
                     }
+                    generator = resolvedGenerator;
                 }
                 else {
                     generator = ValueGenerator.AUTO;
@@ -284,7 +292,6 @@ public class HibernateMappingContext extends AbstractMappingContext {
 
                 @Override
                 public ValueGenerator getGenerator() {
-
                     return generator;
                 }
 
