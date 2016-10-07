@@ -24,6 +24,7 @@ import org.codehaus.groovy.grails.exceptions.GrailsRuntimeException;
 import org.codehaus.groovy.grails.lifecycle.ShutdownOperations;
 import org.codehaus.groovy.grails.validation.ConstrainedProperty;
 import org.grails.datastore.gorm.GormEnhancer;
+import org.grails.datastore.gorm.GormEntity;
 import org.grails.orm.hibernate.*;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.hibernate.*;
@@ -131,10 +132,10 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
         }
 
         final Object id;
-        try {
-            id = InvokerHelper.invokeMethod(target, "ident", null);
+        if(target instanceof GormEntity) {
+            id = ((GormEntity)target).ident();
         }
-        catch (Exception e) {
+        else {
             throw new GrailsRuntimeException("Target of [unique] constraints [" + target +
                     "] is not a domain instance. Unique constraint can only be applied to " +
                     "domain classes and not custom user types or embedded instances");
@@ -219,7 +220,7 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
             Object existing = results.get(0);
             Object existingId = null;
             try {
-                existingId = InvokerHelper.invokeMethod(existing, "ident", null);
+                existingId = ((GormEntity)existing).ident();
             }
             catch (Exception e) {
                 // result is not a domain class

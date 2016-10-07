@@ -23,7 +23,9 @@ import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
+import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.proxy.EntityProxy
+import org.grails.datastore.mapping.reflect.EntityReflector
 import org.grails.datastore.mapping.validation.ValidationException
 
 /**
@@ -179,7 +181,27 @@ class GormInstanceApi<D> extends AbstractGormApi<D> implements GormInstanceOpera
      * Returns the objects identifier
      */
     Serializable ident(D instance) {
-        (Serializable)instance[persistentEntity.getIdentity().name]
+        PersistentProperty identity = persistentEntity.getIdentity()
+        if(identity != null) {
+            return (Serializable)instance[identity.name]
+        }
+        else {
+            PersistentProperty[] idProperties = persistentEntity.getCompositeIdentity()
+            if(idProperties != null) {
+                EntityReflector entityReflector = persistentEntity.getReflector()
+                def idInstance = persistentEntity.newInstance()
+                if(idInstance instanceof Serializable) {
+                    for(prop in idProperties) {
+                        String propertName = prop.name
+                        entityReflector.setProperty(
+                                idInstance, propertName, entityReflector.getProperty(instance, propertName)
+                        )
+                    }
+                    return (Serializable)idInstance
+                }
+            }
+        }
+        return null
     }
 
     /**

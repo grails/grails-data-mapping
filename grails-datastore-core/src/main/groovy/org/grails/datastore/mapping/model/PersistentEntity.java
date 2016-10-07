@@ -50,6 +50,13 @@ public interface PersistentEntity extends Initializable {
     boolean isMultiTenant();
 
     /**
+     * The composite id
+     *
+     * @return The composite id or null if there isn't one
+     */
+    PersistentProperty[] getCompositeIdentity();
+
+    /**
      * @return The tenant id
      */
     TenantId getTenantId();
@@ -63,7 +70,7 @@ public interface PersistentEntity extends Initializable {
     /**
      * Returns the identity of the instance
      *
-     * @return The identity
+     * @return The identity or null if there isn't one
      */
     PersistentProperty getIdentity();
 

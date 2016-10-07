@@ -76,6 +76,7 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
         this.mappingStrategy = classSpecified != null ? classSpecified : GormProperties.DEFAULT_MAPPING_STRATEGY;
     }
 
+    @Override
     public PersistentProperty[] getCompositeIdentity() {
         return compositeIdentity;
     }
