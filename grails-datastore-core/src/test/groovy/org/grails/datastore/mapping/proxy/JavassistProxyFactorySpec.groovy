@@ -21,9 +21,12 @@ class JavassistProxyFactorySpec extends Specification {
         session.getMappingContext() >> mappingContext
         Book book = proxyFactory.createProxy(session, Book, 1L)
         Author a = new Author(book:book)
-
+        a.id == 2L
         expect:
         proxyFactory.isProxy(book)
+        !proxyFactory.isProxy(a)
+        proxyFactory.getIdentifier(book) == 1L
+        proxyFactory.getIdentifier(a) == null // not a proxy
         !proxyFactory.isInitialized(book)
         !proxyFactory.isInitialized(a, "book")
     }

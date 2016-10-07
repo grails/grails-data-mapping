@@ -53,8 +53,12 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
     }
 
     public Serializable getIdentifier(Object obj) {
-        return ((EntityProxy)obj).getProxyKey();
-
+        if(obj instanceof EntityProxy) {
+            return ((EntityProxy)obj).getProxyKey();
+        }
+        else {
+            return null;
+        }
     }
 
     @Override
