@@ -348,6 +348,8 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
                 criteria.add Restrictions.isNull(name)
             }
             criteria.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE)
+
+            GrailsHibernateQueryUtils.populateArgumentsForCriteria(persistentEntity, criteria, args, datastore.mappingContext.conversionService, true)
             firePreQueryEvent(session, criteria)
             List results = criteria.list()
             firePostQueryEvent(session, criteria, results)
@@ -410,6 +412,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
                 criteria.add Restrictions.isNull(name)
             }
             criteria.setMaxResults(1)
+            GrailsHibernateQueryUtils.populateArgumentsForCriteria(persistentEntity, criteria, args, datastore.mappingContext.conversionService, true)
             firePreQueryEvent(session, criteria)
             Object result = criteria.uniqueResult()
             firePostQueryEvent(session, criteria, result)
