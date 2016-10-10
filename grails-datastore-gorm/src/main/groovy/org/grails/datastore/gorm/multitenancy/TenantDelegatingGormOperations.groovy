@@ -563,42 +563,42 @@ class TenantDelegatingGormOperations<D> implements GormAllOperations<D> {
     }
 
     @Override
-    List<D> executeQuery(String query) {
+    List executeQuery(String query) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.executeQuery(query)
         }
     }
 
     @Override
-    List<D> executeQuery(String query, Map args) {
+    List executeQuery(String query, Map args) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.executeQuery(query, args)
         }
     }
 
     @Override
-    List<D> executeQuery(String query, Map params, Map args) {
+    List executeQuery(String query, Map params, Map args) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.executeQuery(query, params, args)
         }
     }
 
     @Override
-    List<D> executeQuery(String query, Collection params) {
+    List executeQuery(String query, Collection params) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.executeQuery(query, params)
         }
     }
 
     @Override
-    List<D> executeQuery(String query, Object... params) {
+    List executeQuery(String query, Object... params) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.executeQuery(query, params)
         }
     }
 
     @Override
-    List<D> executeQuery(String query, Collection params, Map args) {
+    List executeQuery(String query, Collection params, Map args) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.executeQuery(query, params, args)
         }

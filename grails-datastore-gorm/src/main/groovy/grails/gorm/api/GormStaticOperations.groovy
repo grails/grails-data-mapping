@@ -505,7 +505,7 @@ interface GormStaticOperations<D> {
      * @param query The query represented by the given string
      * @return A list of results
      */
-    List<D> executeQuery(String query)
+    List executeQuery(String query)
 
     /**
      * Executes a query for the given String
@@ -516,7 +516,7 @@ interface GormStaticOperations<D> {
      * @return A list of results
      *
      */
-    List<D> executeQuery(String query, Map args)
+    List executeQuery(String query, Map args)
 
     /**
      * Executes a query for the given String
@@ -528,7 +528,7 @@ interface GormStaticOperations<D> {
      * @return A list of results
      *
      */
-    List<D> executeQuery(String query, Map params, Map args)
+    List executeQuery(String query, Map params, Map args)
 
     /**
      * Executes a query for the given String
@@ -539,7 +539,7 @@ interface GormStaticOperations<D> {
      * @return A list of results
      *
      */
-    List<D> executeQuery(String query, Collection params)
+    List executeQuery(String query, Collection params)
 
     /**
      * Executes a query for the given String
@@ -550,7 +550,7 @@ interface GormStaticOperations<D> {
      * @return A list of results
      *
      */
-    List<D> executeQuery(String query, Object...params)
+    List executeQuery(String query, Object...params)
 
     /**
      * Executes a query for the given String
@@ -562,7 +562,7 @@ interface GormStaticOperations<D> {
      * @return A list of results
      *
      */
-    List<D> executeQuery(String query, Collection params, Map args)
+    List executeQuery(String query, Collection params, Map args)
 
     /**
      * Executes an update for the given String

@@ -1013,7 +1013,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @param query The query represented by the given string
      * @return A list of results
      */
-    static List<D> executeQuery(String query) {
+    static List executeQuery(String query) {
         currentGormStaticApi().executeQuery query
     }
 
@@ -1026,7 +1026,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @return A list of results
      *
      */
-    static List<D> executeQuery(String query, Map args) {
+    static List executeQuery(String query, Map args) {
         currentGormStaticApi().executeQuery query, args
     }
 
@@ -1040,7 +1040,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @return A list of results
      *
      */
-    static List<D> executeQuery(String query, Map params, Map args) {
+    static List executeQuery(String query, Map params, Map args) {
         currentGormStaticApi().executeQuery query, params, args
     }
 
@@ -1053,7 +1053,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @return A list of results
      *
      */
-    static List<D> executeQuery(String query, Collection params) {
+    static List executeQuery(String query, Collection params) {
         currentGormStaticApi().executeQuery query, params
     }
 
@@ -1066,7 +1066,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @return A list of results
      *
      */
-    static List<D> executeQuery(String query, Object...params) {
+    static List executeQuery(String query, Object...params) {
         currentGormStaticApi().executeQuery query, params
     }
 
@@ -1080,7 +1080,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @return A list of results
      *
      */
-    static List<D> executeQuery(String query, Collection params, Map args) {
+    static List executeQuery(String query, Collection params, Map args) {
         currentGormStaticApi().executeQuery query, params, args
     }
 

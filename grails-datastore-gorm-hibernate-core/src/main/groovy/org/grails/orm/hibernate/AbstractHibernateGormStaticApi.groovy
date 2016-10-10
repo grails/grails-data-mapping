@@ -358,7 +358,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     }
 
     @Override
-    List<D> executeQuery(String query, Map params, Map args) {
+    List executeQuery(String query, Map params, Map args) {
         def template = hibernateTemplate
         args = new HashMap(args)
         params = new HashMap(params)
@@ -376,7 +376,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     }
 
     @Override
-    List<D> executeQuery(String query, Collection params, Map args) {
+    List executeQuery(String query, Collection params, Map args) {
         def template = hibernateTemplate
         args = new HashMap(args)
 

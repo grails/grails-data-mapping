@@ -1016,28 +1016,28 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
         }
     }
 
-    List<D> executeQuery(String query) {
+    List executeQuery(String query) {
         executeQuery(query, Collections.emptyMap(), Collections.emptyMap())
     }
 
-    List<D> executeQuery(String query, Map args) {
+    List executeQuery(String query, Map args) {
         executeQuery(query, args, args)
     }
 
-    List<D> executeQuery(String query, Map params, Map args) {
+    List executeQuery(String query, Map params, Map args) {
         unsupported("executeQuery")
         return null
     }
 
-    List<D> executeQuery(String query, Collection params) {
+    List executeQuery(String query, Collection params) {
         executeQuery(query, params, Collections.emptyMap())
     }
 
-    List<D> executeQuery(String query, Object...params) {
+    List executeQuery(String query, Object...params) {
         executeQuery(query, params.toList(), Collections.emptyMap())
     }
 
-    List<D> executeQuery(String query, Collection params, Map args) {
+    List executeQuery(String query, Collection params, Map args) {
         unsupported("executeQuery")
         return null
     }
