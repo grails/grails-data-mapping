@@ -10,6 +10,7 @@ grails.mongodb.bootstrap
 grails.mongodb.geo
 grails.plugins.mongodb
 grails.plugins.rx.mongodb
+grails.test.mongodb
 org.grails.compiler.gorm
 org.grails.datastore.bson.codecs
 org.grails.datastore.bson.codecs.decoders
