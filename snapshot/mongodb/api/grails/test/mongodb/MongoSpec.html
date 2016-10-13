@@ -100,7 +100,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
 
     <p> Base class for MongoDB tests
- <DL><DT><B>Authors:</B></DT><DD>Álvaro Sánchez-Mariscal</DD></DL><DL><DT><B>Since:</B></DT><DD>6.0.2</DD></DL></p>
+ <DL><DT><B>Authors:</B></DT><DD>Álvaro Sánchez-Mariscal</DD></DL><DL><DT><B>Since:</B></DT><DD>6.0.1</DD></DL></p>
 
           </li>
     </ul>
@@ -176,16 +176,21 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code>protected&nbsp;java.util.List&lt;java.lang.Class&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getDomainClasses()">getDomainClasses</a></strong>()</code><br>@return The domain classes</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>com.mongodb.MongoClient</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getMongoClient()">getMongoClient</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#setup()">setup</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#setupSpec()">setupSpec</a></strong>()</code><br></td>
                         </tr>
@@ -265,6 +270,15 @@ org.grails.datastore.mapping.mongo.MongoDatastore <strong>mongoDatastore</strong
                             <li class="blockList">
                                 <h4>void <strong>cleanup</strong>()</h4>
                                 <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getDomainClasses()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;java.util.List&lt;java.lang.Class&gt; <strong>getDomainClasses</strong>()</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>The domain classes</DD></DL></p>
                             </li>
                         </ul>
                     
