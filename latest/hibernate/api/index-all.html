@@ -1193,6 +1193,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/connections/DefaultConnectionSource.html#closed" title="Field in DefaultConnectionSource">closed</a></span> - Field in <a href="org/grails/datastore/mapping/core/connections/DefaultConnectionSource.html">DefaultConnectionSource</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/query/AbstractHibernateCriteriaBuilder.html#closeSession()" title="Method in AbstractHibernateCriteriaBuilder">closeSession()</a></span> - Method in <a href="org/grails/orm/hibernate/query/AbstractHibernateCriteriaBuilder.html">AbstractHibernateCriteriaBuilder</a>
+</dt><dd> <div class="block">Closes the session if it is copen</div></dd>
+<dt><span class="strong"><a href="grails/orm/HibernateCriteriaBuilder.html#closeSession()" title="Method in HibernateCriteriaBuilder">closeSession()</a></span> - Method in <a href="grails/orm/HibernateCriteriaBuilder.html">HibernateCriteriaBuilder</a>
+</dt><dd> <div class="block">Closes the session if it is copen</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/support/ClosureEventListener.html" title="Class in org.grails.orm.hibernate.support">ClosureEventListener</a></span> - Class in <a href="./org/grails/orm/hibernate/support/package-summary.html">org.grails.orm.hibernate.support</a>
 </dt><dd><div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/support/ClosureEventListener.html#ClosureEventListener(Class<?>, boolean, java.util.List, org.grails.datastore.gorm.timestamp.TimestampProvider)" title="Constructor in ClosureEventListener">ClosureEventListener(Class&lt;?&gt;, boolean, List, TimestampProvider)</a></span> - Constructor in <a href="org/grails/orm/hibernate/support/ClosureEventListener.html">ClosureEventListener</a>
@@ -1927,6 +1931,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">Default conversion service th</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/conversion/DefaultConversionService.html#DefaultConversionService()" title="Constructor in DefaultConversionService">DefaultConversionService()</a></span> - Constructor in <a href="org/grails/datastore/mapping/model/types/conversion/DefaultConversionService.html">DefaultConversionService</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html#defaultDatabaseName" title="Field in DocumentMappingContext">defaultDatabaseName</a></span> - Field in <a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html">DocumentMappingContext</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/query/AbstractHibernateCriteriaBuilder.html#defaultFlushMode" title="Field in AbstractHibernateCriteriaBuilder">defaultFlushMode</a></span> - Field in <a href="org/grails/orm/hibernate/query/AbstractHibernateCriteriaBuilder.html">AbstractHibernateCriteriaBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/groovy/DefaultMappingConfigurationBuilder.html" title="Class in org.grails.datastore.mapping.config.groovy">DefaultMappingConfigurationBuilder</a></span> - Class in <a href="./org/grails/datastore/mapping/config/groovy/package-summary.html">org.grails.datastore.mapping.config.groovy</a>
@@ -2173,7 +2179,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">@author Guillaume Laforge</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html" title="Class in org.grails.datastore.mapping.document.config">DocumentMappingContext</a></span> - Class in <a href="./org/grails/datastore/mapping/document/config/package-summary.html">org.grails.datastore.mapping.document.config</a>
 </dt><dd><div class="block">Models a <a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html' title='MappingContext'>MappingContext</a> for a Document store.</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html#DocumentMappingContext(java.lang.String, org.grails.datastore.mapping.core.connections.ConnectionSourceSettings)" title="Constructor in DocumentMappingContext">DocumentMappingContext(String, ConnectionSourceSettings)</a></span> - Constructor in <a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html">DocumentMappingContext</a>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html#DocumentMappingContext(java.lang.String, groovy.lang.Closure)" title="Constructor in DocumentMappingContext">DocumentMappingContext(String, Closure)</a></span> - Constructor in <a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html">DocumentMappingContext</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/document/config/DocumentPersistentEntity.html" title="Class in org.grails.datastore.mapping.document.config">DocumentPersistentEntity</a></span> - Class in <a href="./org/grails/datastore/mapping/document/config/package-summary.html">org.grails.datastore.mapping.document.config</a>
 </dt><dd><div class="block"></div></dd>
@@ -3121,6 +3127,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingConfigurationStrategy.html#getCompositeIdentity(java.lang.Class, org.grails.datastore.mapping.model.MappingContext)" title="Method in MappingConfigurationStrategy">getCompositeIdentity(Class, MappingContext)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingConfigurationStrategy.html">MappingConfigurationStrategy</a>
 </dt><dd> <div class="block">Obtains the identity of a persistent entity</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/PersistentEntity.html#getCompositeIdentity()" title="Method in PersistentEntity">getCompositeIdentity()</a></span> - Method in <a href="org/grails/datastore/mapping/model/PersistentEntity.html">PersistentEntity</a>
+</dt><dd> <div class="block">The composite id</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/HibernateMappingContextSessionFactoryBean.html#getConfigClass()" title="Method in HibernateMappingContextSessionFactoryBean">getConfigClass()</a></span> - Method in <a href="org/grails/orm/hibernate/HibernateMappingContextSessionFactoryBean.html">HibernateMappingContextSessionFactoryBean</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/HibernateMappingContextSessionFactoryBean.html#getConfigLocations()" title="Method in HibernateMappingContextSessionFactoryBean">getConfigLocations()</a></span> - Method in <a href="org/grails/orm/hibernate/HibernateMappingContextSessionFactoryBean.html">HibernateMappingContextSessionFactoryBean</a>
@@ -5026,6 +5034,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html#initialize()" title="Method in AbstractPersistentCollection">initialize()</a></span> - Method in <a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html">AbstractPersistentCollection</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html#initialize(org.grails.datastore.mapping.core.connections.ConnectionSourceSettings)" title="Method in DocumentMappingContext">initialize(ConnectionSourceSettings)</a></span> - Method in <a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html">DocumentMappingContext</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/EmbeddedPersistentEntity.html#initialize()" title="Method in EmbeddedPersistentEntity">initialize()</a></span> - Method in <a href="org/grails/datastore/mapping/model/EmbeddedPersistentEntity.html">EmbeddedPersistentEntity</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/EntityProxy.html#initialize()" title="Method in EntityProxy">initialize()</a></span> - Method in <a href="org/grails/datastore/mapping/proxy/EntityProxy.html">EntityProxy</a>
@@ -5164,7 +5174,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">A proxy onto another instance</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/cfg/InstanceProxy.html#InstanceProxy(def, org.grails.orm.hibernate.AbstractHibernateGormInstanceApi, org.grails.orm.hibernate.AbstractHibernateGormValidationApi)" title="Constructor in InstanceProxy">InstanceProxy(def, AbstractHibernateGormInstanceApi, AbstractHibernateGormValidationApi)</a></span> - Constructor in <a href="org/grails/orm/hibernate/cfg/InstanceProxy.html">InstanceProxy</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/ReflectionUtils.html#instantiate(java.lang.Class)" title="Method in ReflectionUtils">instantiate(Class)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/ReflectionUtils.html">ReflectionUtils</a>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/ReflectionUtils.html#instantiate(Class<T>)" title="Method in ReflectionUtils">instantiate(Class&lt;T&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/ReflectionUtils.html">ReflectionUtils</a>
 </dt><dd> <div class="block">Instantiates an object catching any relevant exceptions and rethrowing as a runtime exception</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/InstantiationException.html" title="Class in org.grails.datastore.mapping.reflect">InstantiationException</a></span> - Class in <a href="./org/grails/datastore/mapping/reflect/package-summary.html">org.grails.datastore.mapping.reflect</a>
 </dt><dd><div class="block">Runtime exception equivalent of java.lang.InstantiationException</div></dd>
@@ -6148,6 +6158,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/MappingContextAwareConstraintFactory.html" title="Class in org.grails.datastore.gorm.validation.constraints">MappingContextAwareConstraintFactory</a></span> - Class in <a href="./org/grails/datastore/gorm/validation/constraints/package-summary.html">org.grails.datastore.gorm.validation.constraints</a>
 </dt><dd><div class="block">A constraint that restricts constraints to be applicable only to a given <a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html' title='MappingContext'>MappingContext</a></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/MappingContextAwareConstraintFactory.html#MappingContextAwareConstraintFactory(Class<? extends Constraint>, org.springframework.context.MessageSource, org.grails.datastore.mapping.model.MappingContext, List<Class>)" title="Constructor in MappingContextAwareConstraintFactory">MappingContextAwareConstraintFactory(Class&lt;? extends Constraint&gt;, MessageSource, MappingContext, List&lt;Class&gt;)</a></span> - Constructor in <a href="org/grails/datastore/gorm/validation/constraints/MappingContextAwareConstraintFactory.html">MappingContextAwareConstraintFactory</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html#mappingFactory" title="Field in DocumentMappingContext">mappingFactory</a></span> - Field in <a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html">DocumentMappingContext</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/keyvalue/mapping/config/KeyValueMappingContext.html#mappingFactory" title="Field in KeyValueMappingContext">mappingFactory</a></span> - Field in <a href="org/grails/datastore/mapping/keyvalue/mapping/config/KeyValueMappingContext.html">KeyValueMappingContext</a>
 </dt><dd> <div class="block"></div></dd>
@@ -7977,6 +7989,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">The class to use for the current session context</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Basic.html#setCustomTypeMarshaller(org.grails.datastore.mapping.engine.types.CustomTypeMarshaller)" title="Method in Basic">setCustomTypeMarshaller(CustomTypeMarshaller)</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Basic.html">Basic</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/core/connections/AbstractConnectionSourceFactory.html#setCustomTypes(List<CustomTypeMarshaller>)" title="Method in AbstractConnectionSourceFactory">setCustomTypes(List&lt;CustomTypeMarshaller&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/core/connections/AbstractConnectionSourceFactory.html">AbstractConnectionSourceFactory</a>
+</dt><dd> <div class="block">The custom user types to register</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/support/HibernateDialectDetectorFactoryBean.html#setDataSource(javax.sql.DataSource)" title="Method in HibernateDialectDetectorFactoryBean">setDataSource(DataSource)</a></span> - Method in <a href="org/grails/orm/hibernate/support/HibernateDialectDetectorFactoryBean.html">HibernateDialectDetectorFactoryBean</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/HibernateMappingContextSessionFactoryBean.html#setDataSource(javax.sql.DataSource)" title="Method in HibernateMappingContextSessionFactoryBean">setDataSource(DataSource)</a></span> - Method in <a href="org/grails/orm/hibernate/HibernateMappingContextSessionFactoryBean.html">HibernateMappingContextSessionFactoryBean</a>
@@ -8313,7 +8327,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/orm/hibernate/transaction/PlatformTransactionManagerProxy.html#setTargetTransactionManager(org.springframework.transaction.PlatformTransactionManager)" title="Method in PlatformTransactionManagerProxy">setTargetTransactionManager(PlatformTransactionManager)</a></span> - Method in <a href="org/grails/orm/hibernate/transaction/PlatformTransactionManagerProxy.html">PlatformTransactionManagerProxy</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/connections/AbstractConnectionSourceFactory.html#setTenantResolver(org.grails.datastore.mapping.multitenancy.TenantResolver)" title="Method in AbstractConnectionSourceFactory">setTenantResolver(TenantResolver)</a></span> - Method in <a href="org/grails/datastore/mapping/core/connections/AbstractConnectionSourceFactory.html">AbstractConnectionSourceFactory</a>
-</dt><dd> <div class="block"></div></dd>
+</dt><dd> <div class="block">The tenant resolver to use</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/multitenancy/MultiTenancySettings.html#setTenantResolver(org.grails.datastore.mapping.multitenancy.TenantResolver)" title="Method in MultiTenancySettings">setTenantResolver(TenantResolver)</a></span> - Method in <a href="org/grails/datastore/mapping/multitenancy/MultiTenancySettings.html">MultiTenancySettings</a>
 </dt><dd> <div class="block">Sets the tenant resolver to use</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/GroovyObjectMethodHandler.html#setThisMetaClass(groovy.lang.MetaClass)" title="Method in GroovyObjectMethodHandler">setThisMetaClass(MetaClass)</a></span> - Method in <a href="org/grails/datastore/mapping/proxy/GroovyObjectMethodHandler.html">GroovyObjectMethodHandler</a>
