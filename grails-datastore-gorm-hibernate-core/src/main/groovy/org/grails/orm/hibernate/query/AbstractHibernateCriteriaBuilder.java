@@ -1691,7 +1691,7 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
                 result = executeUniqueResultWithProxyUnwrap();
             }
             if (!participate) {
-                hibernateSession.close();
+                closeSession();
             }
             return result;
         }
@@ -2023,10 +2023,17 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
     }
 
     private void closeSessionFollowingException() {
+        closeSession();
+        criteria = null;
+    }
+
+    /**
+     * Closes the session if it is copen
+     */
+    protected void closeSession() {
         if (hibernateSession != null && hibernateSession.isOpen() && !participate) {
             hibernateSession.close();
         }
-        criteria = null;
     }
 
     public int getDefaultFlushMode() {
