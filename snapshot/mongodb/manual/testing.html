@@ -423,55 +423,72 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>To write tests with MongoDB and Spock you can use create a <code>MongoDatastore</code> within the <code>setupSpec</code> method:</p>
+<p>To write unit tests with MongoDB and Spock you can simply extend from <code>grails.test.mongodb.MongoSpec</code>.</p>
+</div>
+<div class="paragraph">
+<p><code>MongoSpec</code> is an abstract class that just requires you to provide an instance of a <code>MongoClient</code>. You can potentially
+connect to a real MongoDB instance, or use something such as <a href="https://github.com/fakemongo/fongo">Fongo</a>, as shown in the
+following example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import spock.lang.*
-import grails.gorm.annotation.Entity
-import org.grails.datastore.mapping.mongo.MongoDatastore
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">package functional.tests
 
-class ExampleSpec extends Specification { <i class="conum" data-value="1"></i><b>(1)</b>
+import com.github.fakemongo.Fongo
+import com.mongodb.MongoClient
+import grails.test.mongodb.MongoSpec
 
-    @Shared @AutoCleanup MongoDatastore mongoDatastore <i class="conum" data-value="2"></i><b>(2)</b>
-    void setupSpec() {
-       mongoDatastore = new MongoDatastore(Person) <i class="conum" data-value="3"></i><b>(3)</b>
+class BookUnitSpec extends MongoSpec {
+
+    @Override
+    MongoClient getMongoClient() {
+        return new Fongo(getClass().name).mongo
     }
 
-    void "test execute GORM standalone in a unit test"() {
-       // your logic here <i class="conum" data-value="4"></i><b>(4)</b>
-    }
-}
+    void "Test low-level API extensions"() {
+        when:
+        def db = mongoClient.getDatabase("test")
+        db.drop()
+        // Insert a document
+        db['languages'].insert([name: 'Groovy'])
+        // A less verbose way to do it
+        db.languages.insert(name: 'Ruby')
+        // Yet another way
+        db.languages &lt;&lt; [name: 'Python']
 
-@Entity <i class="conum" data-value="5"></i><b>(5)</b>
-class Person {
-    ...
+        then:
+        db.languages.count() == 3
+    }
+
+    void "Test GORM access"(){
+        when:
+        Book book = new Book(title: 'El Quijote').save(flush: true)
+
+        then:
+        Book.count() ==1
+
+        when:
+        book = Book.findByTitle('El Quijote')
+
+        then:
+        book.id
+    }
+
 }</code></pre>
 </div>
 </div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The test should extend <code>spock.lang.Specification</code></td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The <code>Shared</code> annotation is used to indicate to Spock that the <code>MongoDatastore</code> is shared across all tests. The <code>AutoCleanup</code> annotation makes sure that <code>MongoDatastore</code> is shutdown when all tests finish executing.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Within the <code>setupSpec</code> method a new <code>MongoDatastore</code> is constructed with the classes to use as the argument to the constructor.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>You then write your test logic within each method</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>You can inline domain classes within the unit test if you annotate them with <code>@Entity</code></td>
-</tr>
-</table>
+<div class="paragraph">
+<p>Note that the default implementation is to scan your classpath searching for domain classes, from the package defined
+in the configuration property <code>grails.codegen.defaultPackage</code>, and all the way down its subpackages. If your application
+is large, classpath scanning may be slow, so it&#8217;s better to override the method <code>getDomainClasses()</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">    @Override
+    protected List&lt;Class&gt; getDomainClasses() {
+        [Book]
+    }</code></pre>
+</div>
 </div>
 </div>
 <div id="footer">
