@@ -1,5 +1,9 @@
 package org.grails.compiler.gorm
 
+import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
+import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValuePersistentEntity
+import org.grails.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.model.PersistentEntity
 import spock.lang.Specification
 
 /**
@@ -37,5 +41,15 @@ class HotWidgetSetting extends WidgetSetting {
         then:"The entity is compiled correctly"
         cls.name == 'test.Widget'
         cls.getMethod("getSetting").returnType.name == 'test.WidgetSetting'
+
+
+        when:"A mapping context is created"
+        MappingContext mappingContext = new KeyValueMappingContext("test")
+        PersistentEntity entity = mappingContext.addPersistentEntity(cls)
+
+        then:"The entity is has a setting property"
+        entity.getPropertyByName("setting")
+        entity.getPropertyByName("setting")
+        entity.getPropertyByName("setting").type.name == 'test.WidgetSetting'
     }
 }
