@@ -145,40 +145,8 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
         return new SessionEntityProxyMethodHandler(proxyClass, session, cls, id);
     }
 
-    protected Serializable convertId(Serializable idAsInput, Class<?> ownerClass) {
-        if(idAsInput==null) return null;
-        Class<?> idType = ID_TYPES.get(ownerClass);
-        if(idType != null) {
-            if(idType.isInstance(idAsInput)) {
-                return idAsInput;
-            }
-            if(idType == String.class) {
-                return idAsInput.toString();
-            }
-            if(Number.class.isAssignableFrom(idType) && idAsInput instanceof Number) {
-                Number idNumber = (Number)idAsInput;
-                if(idType==Integer.class) {
-                    return idNumber.intValue();
-                }
-                if(idType==Long.class) {
-                    return idNumber.longValue();
-                }
-            }
-            if(idType==Integer.class) {
-                return Integer.parseInt(idAsInput.toString());
-            }
-            if(idType==Long.class) {
-                return Long.parseLong(idAsInput.toString());
-            }
-            return (Serializable)idType.cast(idAsInput);
-        } else {
-            return idAsInput;
-        }
-    }
-
-    protected Object getProxyInstance(Session session, Class type, Serializable idAsInput) {
+    protected Object getProxyInstance(Session session, Class type, Serializable id) {
         Class proxyClass = getProxyClass(type);
-        final Serializable id = convertId(idAsInput, type);
         return createProxiedInstance(session, type, proxyClass, id);
     }
 

@@ -32,6 +32,7 @@ import org.grails.datastore.mapping.engine.event.PreLoadEvent;
 import org.grails.datastore.mapping.engine.event.PreUpdateEvent;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.PropertyMapping;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
@@ -67,7 +68,12 @@ public abstract class EntityPersister implements Persister {
 
     @SuppressWarnings("unchecked")
     public Object proxy(Serializable key) {
-         return getProxyFactory().createProxy(session, getPersistentEntity().getJavaClass(), key);
+        PersistentEntity entity = getPersistentEntity();
+        PersistentProperty identity = entity.getIdentity();
+        if(identity != null) {
+            key = (Serializable) mappingContext.getConversionService().convert(key, identity.getType());
+        }
+        return getProxyFactory().createProxy(session, entity.getJavaClass(), key);
     }
 
     public ProxyFactory getProxyFactory() {

@@ -16,6 +16,7 @@ package org.grails.datastore.mapping.engine;
 
 import java.io.Serializable;
 
+import org.grails.datastore.mapping.model.PersistentProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.CannotAcquireLockException;
 import org.grails.datastore.mapping.core.Session;
@@ -71,6 +72,11 @@ public abstract class LockableEntityPersister extends EntityPersister {
     @Override
     @SuppressWarnings("unchecked")
     public Object proxy(Serializable key) {
-        return getProxyFactory().createProxy(session, getPersistentEntity().getJavaClass(), key);
+        PersistentEntity entity = getPersistentEntity();
+        PersistentProperty identity = entity.getIdentity();
+        if(identity != null) {
+            key = (Serializable) getMappingContext().getConversionService().convert(key, identity.getType());
+        }
+        return getProxyFactory().createProxy(session, entity.getJavaClass(), key);
     }
 }
