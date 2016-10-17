@@ -436,7 +436,7 @@ def clubs = Club.findAll("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenc
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">StatementResult result = Club.cypherStatic("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenchen')</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">StatementResult result = Club.cypherStatic("MATCH n where n.name = {1} RETURN n", ['FC Bayern Muenchen'])</code></pre>
 </div>
 </div>
 <div class="paragraph">
