@@ -939,7 +939,7 @@ Embedded documents may also require updating.
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile 'org.grails.plugins:mongodb:6.0.0'
+    compile 'org.grails.plugins:mongodb:6.0.2'
 }</code></pre>
 </div>
 </div>
@@ -949,7 +949,7 @@ Embedded documents may also require updating.
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">plugins {
-    compile ':mongodb:6.0.0'
+    compile ':mongodb:6.0.2'
 }</code></pre>
 </div>
 </div>
@@ -1153,7 +1153,7 @@ Embedded documents may also require updating.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-mongodb-spring-boot:6.0.0.RELEASE")</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-mongodb-spring-boot:6.0.2.RELEASE")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1210,7 +1210,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-mongodb:6.0.0.RELEASE"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-mongodb:6.0.2.RELEASE"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2180,11 +2180,11 @@ Person.findByBirthdayBetween(<span class="keyword">new</span> Birthday(<span cla
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.BirthdayType</span>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.*</span>
 
 <span class="comment">// Place your Spring DSL code here</span>
 beans = {
-  birthdayType(BirthdayType)
+  birthdayType(BirthdayType, Birthday)
 }</code></pre>
 </div>
 </div>
@@ -2851,55 +2851,72 @@ Person.collection.findOne(<span class="key">firstName</span>:<span class="string
 <h2 id="testing">Unit Testing</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To write tests with MongoDB and Spock you can use create a <code>MongoDatastore</code> within the <code>setupSpec</code> method:</p>
+<p>To write unit tests with MongoDB and Spock you can simply extend from <code>grails.test.mongodb.MongoSpec</code>.</p>
+</div>
+<div class="paragraph">
+<p><code>MongoSpec</code> is an abstract class that just requires you to provide an instance of a <code>MongoClient</code>. You can potentially
+connect to a real MongoDB instance, or use something such as <a href="https://github.com/fakemongo/fongo">Fongo</a>, as shown in the
+following example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">spock.lang.*</span>
-<span class="keyword">import</span> <span class="include">grails.gorm.annotation.Entity</span>
-<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.mongo.MongoDatastore</span>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> functional.tests
 
-<span class="type">class</span> <span class="class">ExampleSpec</span> <span class="directive">extends</span> Specification { <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="keyword">import</span> <span class="include">com.github.fakemongo.Fongo</span>
+<span class="keyword">import</span> <span class="include">com.mongodb.MongoClient</span>
+<span class="keyword">import</span> <span class="include">grails.test.mongodb.MongoSpec</span>
 
-    <span class="annotation">@Shared</span> <span class="annotation">@AutoCleanup</span> MongoDatastore mongoDatastore <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="type">void</span> setupSpec() {
-       mongoDatastore = <span class="keyword">new</span> MongoDatastore(Person) <i class="conum" data-value="3"></i><b>(3)</b>
+<span class="type">class</span> <span class="class">BookUnitSpec</span> <span class="directive">extends</span> MongoSpec {
+
+    <span class="annotation">@Override</span>
+    MongoClient getMongoClient() {
+        <span class="keyword">return</span> <span class="keyword">new</span> Fongo(getClass().name).mongo
     }
 
-    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test execute GORM standalone in a unit test</span><span class="delimiter">&quot;</span></span>() {
-       <span class="comment">// your logic here </span><i class="conum" data-value="4"></i><b>(4)</b>
-    }
-}
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Test low-level API extensions</span><span class="delimiter">&quot;</span></span>() {
+        <span class="key">when</span>:
+        <span class="keyword">def</span> db = mongoClient.getDatabase(<span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>)
+        db.drop()
+        <span class="comment">// Insert a document</span>
+        db[<span class="string"><span class="delimiter">'</span><span class="content">languages</span><span class="delimiter">'</span></span>].insert([<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Groovy</span><span class="delimiter">'</span></span>])
+        <span class="comment">// A less verbose way to do it</span>
+        db.languages.insert(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Ruby</span><span class="delimiter">'</span></span>)
+        <span class="comment">// Yet another way</span>
+        db.languages &lt;&lt; [<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Python</span><span class="delimiter">'</span></span>]
 
-<span class="annotation">@Entity</span> <i class="conum" data-value="5"></i><b>(5)</b>
-<span class="type">class</span> <span class="class">Person</span> {
-    ...
+        <span class="key">then</span>:
+        db.languages.count() == <span class="integer">3</span>
+    }
+
+    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Test GORM access</span><span class="delimiter">&quot;</span></span>(){
+        <span class="key">when</span>:
+        <span class="predefined-type">Book</span> book = <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">El Quijote</span><span class="delimiter">'</span></span>).save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+
+        <span class="key">then</span>:
+        <span class="predefined-type">Book</span>.count() ==<span class="integer">1</span>
+
+        <span class="key">when</span>:
+        book = <span class="predefined-type">Book</span>.findByTitle(<span class="string"><span class="delimiter">'</span><span class="content">El Quijote</span><span class="delimiter">'</span></span>)
+
+        <span class="key">then</span>:
+        book.id
+    }
+
 }</code></pre>
 </div>
 </div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The test should extend <code>spock.lang.Specification</code></td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The <code>Shared</code> annotation is used to indicate to Spock that the <code>MongoDatastore</code> is shared across all tests. The <code>AutoCleanup</code> annotation makes sure that <code>MongoDatastore</code> is shutdown when all tests finish executing.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Within the <code>setupSpec</code> method a new <code>MongoDatastore</code> is constructed with the classes to use as the argument to the constructor.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>You then write your test logic within each method</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>You can inline domain classes within the unit test if you annotate them with <code>@Entity</code></td>
-</tr>
-</table>
+<div class="paragraph">
+<p>Note that the default implementation is to scan your classpath searching for domain classes, from the package defined
+in the configuration property <code>grails.codegen.defaultPackage</code>, and all the way down its subpackages. If your application
+is large, classpath scanning may be slow, so it&#8217;s better to override the method <code>getDomainClasses()</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="annotation">@Override</span>
+    <span class="directive">protected</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">Class</span>&gt; getDomainClasses() {
+        [<span class="predefined-type">Book</span>]
+    }</code></pre>
+</div>
 </div>
 </div>
 </div>

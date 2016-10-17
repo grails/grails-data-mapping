@@ -648,11 +648,11 @@ Person.findByBirthdayBetween(new Birthday(new Date()-7), new Birthday(new Date()
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import com.example.BirthdayType
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import com.example.*
 
 // Place your Spring DSL code here
 beans = {
-  birthdayType(BirthdayType)
+  birthdayType(BirthdayType, Birthday)
 }</code></pre>
 </div>
 </div>
