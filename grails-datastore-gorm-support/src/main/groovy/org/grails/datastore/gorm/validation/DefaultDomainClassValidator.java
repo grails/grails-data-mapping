@@ -5,22 +5,17 @@ import grails.core.GrailsDomainClassProperty;
 import org.grails.core.artefact.DomainClassArtefactHandler;
 import org.grails.datastore.gorm.support.BeforeValidateHelper;
 import org.grails.datastore.mapping.core.Datastore;
-import org.grails.datastore.mapping.core.Session;
-import org.grails.datastore.mapping.model.MappingContext;
-import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.proxy.JavassistProxyFactory;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
 import org.grails.validation.GrailsDomainClassValidator;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.validation.Errors;
 
-import javax.persistence.FlushModeType;
 import java.util.ArrayList;
 
 /**
@@ -67,22 +62,6 @@ public class DefaultDomainClassValidator extends GrailsDomainClassValidator impl
     @Autowired(required = false)
     public void setProxyFactory(ProxyFactory proxyHandler) {
         this.proxyHandler = proxyHandler;
-    }
-
-    @Override
-    public void validate(final Object obj, final Errors errors, final boolean cascade) {
-        Session currentSession = getDatastore().getCurrentSession();
-        FlushModeType originalFlushMode = currentSession.getFlushMode();
-        boolean hasErrors = false;
-        try {
-            currentSession.setFlushMode(FlushModeType.COMMIT);
-            super.validate(obj, errors, cascade);
-            hasErrors = errors.hasErrors();
-        } finally {
-            if(!hasErrors) {
-                currentSession.setFlushMode(originalFlushMode);
-            }
-        }
     }
 
     /**

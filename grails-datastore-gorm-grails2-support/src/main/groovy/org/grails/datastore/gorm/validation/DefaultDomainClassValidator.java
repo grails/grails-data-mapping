@@ -69,22 +69,6 @@ public class DefaultDomainClassValidator extends GrailsDomainClassValidator impl
         this.proxyHandler = proxyHandler;
     }
 
-    @Override
-    public void validate(final Object obj, final Errors errors, final boolean cascade) {
-        Session currentSession = getDatastore().getCurrentSession();
-        FlushModeType originalFlushMode = currentSession.getFlushMode();
-        boolean hasErrors = false;
-        try {
-            currentSession.setFlushMode(FlushModeType.COMMIT);
-            super.validate(obj, errors, cascade);
-            hasErrors = errors.hasErrors();
-        } finally {
-            if(!hasErrors) {
-                currentSession.setFlushMode(originalFlushMode);
-            }
-        }
-    }
-
     /**
      * Overrides the default behaviour and first checks if a PersistentCollection instance has been initialised using the
      * wasInitialised() method before cascading

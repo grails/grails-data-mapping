@@ -19,6 +19,7 @@ import org.grails.datastore.gorm.support.BeforeValidateHelper
 import org.grails.datastore.gorm.validation.CascadingValidator
 import org.grails.datastore.gorm.validation.ValidatorProvider
 import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.engine.event.ValidationEvent
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.config.GormProperties
@@ -28,6 +29,8 @@ import org.springframework.validation.Errors
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
 import org.springframework.validation.Validator
+
+import javax.persistence.FlushModeType
 
 /**
  * Methods used for validating GORM instances.
@@ -75,41 +78,55 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
     }
 
     private boolean doValidate(D instance, Map arguments, List fields) {
-        beforeValidateHelper.invokeBeforeValidate instance, fields
-        fireEvent(instance, fields)
+        FlushModeType previousFlushMode = null
+        Session currentSession = null
 
-        Validator validator = getValidator()
-        if(validator == null) {
-            return true
+        if(datastore != null) {
+            currentSession = datastore.currentSession
+            previousFlushMode = currentSession.flushMode
+            currentSession.setFlushMode(FlushModeType.COMMIT)
         }
+        try {
+            beforeValidateHelper.invokeBeforeValidate instance, fields
+            fireEvent(instance, fields)
 
-        ValidationErrors localErrors = new ValidationErrors(instance)
+            Validator validator = getValidator()
+            if(validator == null) {
+                return true
+            }
 
-        Errors errors = getErrors(instance)
+            ValidationErrors localErrors = new ValidationErrors(instance)
 
-        for (error in errors.allErrors) {
-            if (error instanceof FieldError) {
-                if (((FieldError)error).bindingFailure) {
+            Errors errors = getErrors(instance)
+
+            for (error in errors.allErrors) {
+                if (error instanceof FieldError) {
+                    if (((FieldError)error).bindingFailure) {
+                        localErrors.addError error
+                    }
+                } else {
                     localErrors.addError error
                 }
+            }
+
+            if (validator instanceof CascadingValidator) {
+                validator.validate instance, localErrors, arguments?.deepValidate != false
             } else {
-                localErrors.addError error
+                validator.validate instance, localErrors
+            }
+
+            if (fields) {
+                localErrors = filterErrors(localErrors, fields as Set, instance)
+            }
+
+            setErrors(instance, localErrors)
+
+            return !getErrors(instance).hasErrors()
+        } finally {
+            if(previousFlushMode != null) {
+                currentSession.setFlushMode(previousFlushMode)
             }
         }
-
-        if (validator instanceof CascadingValidator) {
-            validator.validate instance, localErrors, arguments?.deepValidate != false
-        } else {
-            validator.validate instance, localErrors
-        }
-
-        if (fields) {
-            localErrors = filterErrors(localErrors, fields as Set, instance)
-        }
-
-        setErrors(instance, localErrors)
-
-        return !getErrors(instance).hasErrors()
     }
 
     /**
