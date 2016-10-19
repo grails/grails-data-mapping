@@ -46,12 +46,14 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
     BeforeValidateHelper beforeValidateHelper
     protected final MappingContext mappingContext
     protected final ApplicationEventPublisher eventPublisher
+    protected final boolean hasDatastore
 
     GormValidationApi(Class<D> persistentClass, Datastore datastore) {
         super(persistentClass, datastore)
         beforeValidateHelper = new BeforeValidateHelper()
         this.mappingContext = datastore.mappingContext
         this.eventPublisher = datastore.applicationEventPublisher
+        this.hasDatastore = datastore != null
     }
 
     GormValidationApi(Class<D> persistentClass, MappingContext mappingContext, ApplicationEventPublisher eventPublisher) {
@@ -59,6 +61,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
         beforeValidateHelper = new BeforeValidateHelper()
         this.mappingContext = mappingContext
         this.eventPublisher = eventPublisher
+        this.hasDatastore = false
     }
 
     Validator getValidator() {
@@ -81,7 +84,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
         FlushModeType previousFlushMode = null
         Session currentSession = null
 
-        if(datastore != null) {
+        if(hasDatastore) {
             currentSession = datastore.currentSession
             previousFlushMode = currentSession.flushMode
             currentSession.setFlushMode(FlushModeType.COMMIT)
