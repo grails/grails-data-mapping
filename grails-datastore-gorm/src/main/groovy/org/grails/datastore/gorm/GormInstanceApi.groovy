@@ -18,6 +18,7 @@ import grails.gorm.api.GormInstanceOperations
 import groovy.transform.CompileStatic
 
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.grails.datastore.mapping.core.connections.ConnectionSourcesProvider
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckingSupport
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.Session
@@ -313,10 +314,18 @@ class GormInstanceApi<D> extends AbstractGormApi<D> implements GormInstanceOpera
         boolean hasErrors = false
         boolean validate = params?.containsKey("validate") ? params.validate : true
         if(instance instanceof GormValidateable) {
+
             def validateable = (GormValidateable) instance
             if (validate) {
                 validateable.skipValidation(false)
-                hasErrors = !validateable.validate()
+                if(datastore instanceof ConnectionSourcesProvider) {
+                    def connectionSourceName = ((ConnectionSourcesProvider) datastore).connectionSources.defaultConnectionSource.name
+                    GormValidationApi validationApi = GormEnhancer.findValidationApi(instance.getClass(), connectionSourceName)
+                    hasErrors = !validationApi.validate((Object)instance)
+                }
+                else {
+                    hasErrors = !validateable.validate()
+                }
             } else {
                 validateable.skipValidation(true)
                 validateable.clearErrors()
