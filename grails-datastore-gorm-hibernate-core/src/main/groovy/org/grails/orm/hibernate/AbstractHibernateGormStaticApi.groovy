@@ -531,7 +531,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
                 } else if (List.class.isAssignableFrom(value.getClass())) {
                     q.setParameterList stringKey, (List) value
                 } else if (Set.class.isAssignableFrom(value.getClass())) {
-                    q.setParameterList stringKey, (Object[]) value
+                    q.setParameterList stringKey, (Set) value
                 } else if (value.getClass().isArray()) {
                     q.setParameterList stringKey, (Object[]) value
                 } else {
