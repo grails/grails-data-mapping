@@ -7,7 +7,9 @@ import groovy.transform.builder.SimpleStrategy
 import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
 import org.grails.orm.hibernate.HibernateEventListeners
 import org.grails.datastore.gorm.jdbc.connections.DataSourceSettings
+import org.grails.orm.hibernate.dirty.GrailsEntityDirtinessStrategy
 import org.grails.orm.hibernate.support.AbstractClosureEventTriggeringInterceptor
+import org.hibernate.CustomEntityDirtinessStrategy
 import org.hibernate.cfg.Configuration
 import org.hibernate.cfg.ImprovedNamingStrategy
 import org.hibernate.cfg.NamingStrategy
@@ -83,6 +85,11 @@ class HibernateConnectionSourceSettings extends ConnectionSourceSettings {
          * The naming strategy
          */
         Class<? extends NamingStrategy> naming_strategy = ImprovedNamingStrategy
+
+        /**
+         *
+         */
+        Class<? extends CustomEntityDirtinessStrategy> entity_dirtiness_strategy = GrailsEntityDirtinessStrategy
 
         /**
          * A subclass of AbstractClosureEventTriggeringInterceptor
@@ -204,6 +211,10 @@ class HibernateConnectionSourceSettings extends ConnectionSourceSettings {
                 props.put("hibernate.config_class".toString(), configClass.name)
             }
             props.put('hibernate.use_query_cache', String.valueOf(cache.queries))
+
+            if (entity_dirtiness_strategy != null) {
+                props.put('hibernate.entity_dirtiness_strategy', entity_dirtiness_strategy.name)
+            }
 
             String prefix = "hibernate"
             populateProperties(props, this,prefix)
