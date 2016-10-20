@@ -630,6 +630,10 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
             }
         }
 
+        if (key == null) {
+            return null;
+        }
+
         Object o = getInstanceCache(type).get(key);
         if (o == null) {
             o = persister.retrieve(key);
