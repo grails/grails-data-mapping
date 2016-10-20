@@ -33,10 +33,18 @@ class ValidatorRegistrySpec extends Specification {
         errors.allErrors.size() == 2
 
     }
+
 }
 
 @Entity
-class Person {
+class Mammal {
+    Integer legCount
+    static constraints = {
+        legCount nullable: true
+    }
+}
+@Entity
+class Person extends Mammal {
     Long id
     Long version
     String town

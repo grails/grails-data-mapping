@@ -51,24 +51,19 @@ public class DefaultConstraintEvaluator implements ConstraintsEvaluator {
 
     @Override
     public Map<String, ConstrainedProperty> evaluate(@SuppressWarnings("rawtypes") Class theClass, boolean defaultNullable) {
-        LinkedList<Class<?>> classChain = getSuperClassChain(theClass);
         Class<?> clazz;
 
         ConstrainedPropertyBuilder delegate = new ConstrainedPropertyBuilder(this.mappingContext, this.constraintRegistry, theClass, defaultConstraints);
 
+        List<Closure> constraints = ClassPropertyFetcher.forClass(theClass).getStaticPropertyValuesFromInheritanceHierarchy(PROPERTY_NAME, Closure.class);
         // Evaluate all the constraints closures in the inheritance chain
-        for (Class aClassChain : classChain) {
-            clazz = (Class<?>) aClassChain;
-            Closure<?> c = (Closure<?>) ClassPropertyFetcher.forClass(aClassChain).getStaticPropertyValue(PROPERTY_NAME, Closure.class);
+        for (Closure c : constraints) {
 
             if (c != null) {
                 c = (Closure<?>) c.clone();
                 c.setResolveStrategy(Closure.DELEGATE_ONLY);
                 c.setDelegate(delegate);
                 c.call();
-            }
-            else {
-                LOG.debug("User-defined constraints not found on class [" + clazz + "], applying default constraints");
             }
         }
 
