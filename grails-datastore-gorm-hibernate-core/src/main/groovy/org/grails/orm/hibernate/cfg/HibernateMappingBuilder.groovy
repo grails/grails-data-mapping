@@ -498,7 +498,7 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
                 // There is no sub-closure containing multiple column
                 // definitions, so pick up any column settings from
                 // the argument map.
-                def cc
+                ColumnConfig cc
                 if (property.columns) {
                     cc = property.columns[0]
                 }
@@ -516,9 +516,9 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
                 if (namedArgs["write"]) cc.write = namedArgs["write"]
                 if (namedArgs.defaultValue) cc.defaultValue = namedArgs.defaultValue
                 if (namedArgs.comment) cc.comment = namedArgs.comment
-                cc.length = namedArgs["length"] ?: -1
-                cc.precision = namedArgs["precision"] ?: -1
-                cc.scale = namedArgs["scale"] ?: -1
+                cc.length = namedArgs["length"] ?: cc.length
+                cc.precision = namedArgs["precision"] ?: cc.precision
+                cc.scale = namedArgs["scale"] ?: cc.scale
             }
 
             if (namedArgs.cache instanceof String) {
