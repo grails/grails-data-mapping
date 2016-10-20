@@ -37,6 +37,7 @@ class HibernateConnectionSourceSettingsSpec extends Specification {
         expectedHibernateProperties.put('hibernate.cache.queries', 'true')
         expectedHibernateProperties.put('hibernate.flush.mode', 'commit')
         expectedHibernateProperties.put('hibernate.naming_strategy','org.hibernate.cfg.ImprovedNamingStrategy')
+        expectedHibernateProperties.put('hibernate.entity_dirtiness_strategy', 'package org.grails.orm.hibernate.dirty.GrailsEntityDirtinessStrategy')
         expectedHibernateProperties.put('hibernate.configLocations','file:hibernate.cfg.xml')
         expectedHibernateProperties.put('hibernate.use_query_cache','true')
         expectedHibernateProperties.put('hibernate.cache.region.factory_class','org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory')
