@@ -26,6 +26,48 @@ import spock.lang.Specification
  */
 class GormEntityTransformSpec extends Specification{
 
+    void "test parse withTransaction usage in spock"() {
+        def classLoader = new GroovyClassLoader()
+        when:
+        Class bookClass = classLoader.parseClass('''
+import grails.gorm.annotation.Entity
+@Entity
+class Book {
+    String title
+
+    static constraints = {
+        title validator: { val ->
+            val.asBoolean()
+        }
+    }
+}
+
+
+''')
+        Class spockClass = classLoader.parseClass('''
+class HibernateSpecSpec extends spock.lang.Specification {
+
+    void setupSpec() {
+        Book.withTransaction {
+            new Book(title: "The Stand").save(flush:true)
+        }
+    }
+    void "test hibernate spec"() {
+        expect:
+        Book.count() == 1
+        !new Book().validate()
+        !new Book(title: "").validate()
+    }
+}
+
+''')
+
+        then:"The classes are valid"
+        new ClassNode(bookClass).methods
+        new ClassNode(spockClass).methods
+
+    }
+
     void "Test parse abstract GORM entity with getters and setters"() {
         when:
         def cls = new GroovyClassLoader().parseClass('''
