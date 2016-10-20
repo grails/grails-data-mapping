@@ -17,7 +17,7 @@ else
     fi
 fi
 
-if [[ $EXIT_STATUS -eq 0 ]]; then
+if [[ $EXIT_STATUS -eq 0 && $TRAVIS_BRANCH =~ ^master|[1234567]\..\.x$ ]]; then
     ./gradlew --stop
     ./travis-publish.sh || EXIT_STATUS=$?
 fi
