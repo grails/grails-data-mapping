@@ -20,7 +20,7 @@ class GrailsEntityDirtinessStrategy implements CustomEntityDirtinessStrategy {
 
     @Override
     public boolean isDirty(Object entity, EntityPersister persister, Session session) {
-        !cast(entity).hasChanged()
+        cast(entity).hasChanged()
     }
 
     @Override
