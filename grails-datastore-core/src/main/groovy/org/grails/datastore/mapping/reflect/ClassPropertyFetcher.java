@@ -14,6 +14,13 @@
  */
 package org.grails.datastore.mapping.reflect;
 
+import groovy.lang.GroovyObjectSupport;
+import groovy.lang.Script;
+import org.codehaus.groovy.reflection.CachedClass;
+import org.codehaus.groovy.reflection.CachedField;
+import org.codehaus.groovy.reflection.CachedMethod;
+import org.codehaus.groovy.reflection.ClassInfo;
+
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -36,15 +43,15 @@ public class ClassPropertyFetcher {
     private final Class clazz;
     // static fetchers for this class, but also for all super classes with the property.
     // first item in each list is most derived version of static property.
-    final Map<String, List<PropertyFetcher>> staticFetchers = new HashMap<String, List<PropertyFetcher>>();
-    final Map<String, PropertyFetcher> instanceFetchers = new HashMap<String, PropertyFetcher>();
+    final Map<String, List<PropertyFetcher>> staticFetchers = new HashMap<>();
+    final Map<String, PropertyFetcher> instanceFetchers = new HashMap<>();
     private final ReferenceInstanceCallback callback;
     private PropertyDescriptor[] propertyDescriptors;
-    private Map<String, PropertyDescriptor> propertyDescriptorsByName = new HashMap<String, PropertyDescriptor>();
-    private Map<String, Field> fieldsByName = new HashMap<String, Field>();
-    private Map<Class, List<PropertyDescriptor>> typeToPropertyMap = new HashMap<Class, List<PropertyDescriptor>>();
+    private Map<String, PropertyDescriptor> propertyDescriptorsByName = new HashMap<>();
+    private Map<String, Field> fieldsByName = new HashMap<>();
+    private Map<Class, List<PropertyDescriptor>> typeToPropertyMap = new HashMap<>();
 
-    private static Map<Class, ClassPropertyFetcher> cachedClassPropertyFetchers = new WeakHashMap<Class, ClassPropertyFetcher>();
+    private static Map<Class, ClassPropertyFetcher> cachedClassPropertyFetchers = new WeakHashMap<>();
 
     public static ClassPropertyFetcher forClass(final Class c) {
         ClassPropertyFetcher cpf = cachedClassPropertyFetchers.get(c);
@@ -90,17 +97,23 @@ public class ClassPropertyFetcher {
     }
 
     private void init() {
+        ClassInfo classInfo = ClassInfo.getClassInfo(clazz);
+        Class<?> superclass = clazz.getSuperclass();
+        while (superclass != Object.class && superclass != Script.class && superclass != GroovyObjectSupport.class && superclass != null) {
+            ClassPropertyFetcher superFetcher = ClassPropertyFetcher.forClass(superclass);
+            staticFetchers.putAll(superFetcher.staticFetchers);
+            instanceFetchers.putAll(superFetcher.instanceFetchers);
+            superclass = superclass.getSuperclass();
+        }
 
-        List<Class> allClasses = resolveAllClasses(clazz);
-        for (Class c : allClasses) {
-            Field[] fields = c.getDeclaredFields();
-            for (Field field : fields) {
-                processField(field);
-            }
-            Method[] methods = c.getDeclaredMethods();
-            for (Method method : methods) {
-                processMethod(method);
-            }
+        CachedClass cachedClass = classInfo.getCachedClass();
+        CachedField[] fields = cachedClass.getFields();
+        for (CachedField field : fields) {
+            processField(field);
+        }
+        CachedMethod[] methods = cachedClass.getMethods();
+        for (CachedMethod method : methods) {
+            processMethod(method);
         }
 
         try {
@@ -119,7 +132,7 @@ public class ClassPropertyFetcher {
             if (propertyType == null) continue;
             List<PropertyDescriptor> pds = typeToPropertyMap.get(propertyType);
             if (pds == null) {
-                pds = new ArrayList<PropertyDescriptor>();
+                pds = new ArrayList<>();
                 typeToPropertyMap.put(propertyType, pds);
             }
             pds.add(desc);
@@ -130,7 +143,7 @@ public class ClassPropertyFetcher {
                 if (staticReadMethod) {
                     List<PropertyFetcher> propertyFetchers = staticFetchers.get(desc.getName());
                     if (propertyFetchers == null) {
-                        staticFetchers.put(desc.getName(), propertyFetchers = new ArrayList<PropertyFetcher>());
+                        staticFetchers.put(desc.getName(), propertyFetchers = new ArrayList<>());
                     }
                     propertyFetchers.add(
                             new GetterPropertyFetcher(readMethod, true));
@@ -142,8 +155,8 @@ public class ClassPropertyFetcher {
         }
     }
 
-    private void processMethod(Method method) {
-        if (method.isSynthetic()) {
+    private void processMethod(CachedMethod method) {
+        if (method.getCachedMethod().isSynthetic()) {
             return;
         }
         if (!Modifier.isPublic(method.getModifiers())) {
@@ -158,7 +171,7 @@ public class ClassPropertyFetcher {
                     if(propertyName != null) {
                         name = propertyName;
                     }
-                    PropertyFetcher fetcher = new GetterPropertyFetcher(method, true);
+                    PropertyFetcher fetcher = new GetterPropertyFetcher(method.getCachedMethod(), true);
                     List<PropertyFetcher> propertyFetchers = staticFetchers.get(name);
                     if (propertyFetchers == null) {
                         staticFetchers.put(name, propertyFetchers = new ArrayList<PropertyFetcher>());
@@ -177,15 +190,16 @@ public class ClassPropertyFetcher {
         }
     }
 
-    private void processField(Field field) {
-        if (field.isSynthetic()) {
+    private void processField(CachedField field) {
+        Field targetField = field.field;
+        if (targetField.isSynthetic()) {
             return;
         }
         final int modifiers = field.getModifiers();
         final String name = field.getName();
         if (!Modifier.isPublic(modifiers)) {
             if (name.indexOf('$') == -1) {
-                fieldsByName.put(name, field);
+                fieldsByName.put(name, targetField);
             }
         }
         else {
@@ -194,26 +208,16 @@ public class ClassPropertyFetcher {
                 if (staticField) {
                     List<PropertyFetcher> propertyFetchers = staticFetchers.get(name);
                     if (propertyFetchers == null) {
-                        staticFetchers.put(name, propertyFetchers = new ArrayList<PropertyFetcher>());
+                        staticFetchers.put(name, propertyFetchers = new ArrayList<>());
                     }
-                    propertyFetchers.add(new FieldReaderFetcher(field, staticField));
+                    propertyFetchers.add(new FieldReaderFetcher(targetField, staticField));
                 } else {
-                    instanceFetchers.put(name, new FieldReaderFetcher(field, staticField));
+                    instanceFetchers.put(name, new FieldReaderFetcher(targetField, staticField));
                 }
             }
         }
     }
 
-    private List<Class> resolveAllClasses(Class c) {
-        List<Class> list = new ArrayList<Class>();
-        Class currentClass = c;
-        while (currentClass != null) {
-            list.add(currentClass);
-            currentClass = currentClass.getSuperclass();
-        }
-        Collections.reverse(list);
-        return list;
-    }
 
     public Object getPropertyValue(String name) {
         return getPropertyValue(name, false);
