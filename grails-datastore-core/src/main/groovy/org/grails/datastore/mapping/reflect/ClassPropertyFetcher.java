@@ -101,7 +101,9 @@ public class ClassPropertyFetcher {
         Class<?> superclass = clazz.getSuperclass();
         while (superclass != Object.class && superclass != Script.class && superclass != GroovyObjectSupport.class && superclass != null) {
             ClassPropertyFetcher superFetcher = ClassPropertyFetcher.forClass(superclass);
-            staticFetchers.putAll(superFetcher.staticFetchers);
+            for (Map.Entry<String, List<PropertyFetcher>> entry : superFetcher.staticFetchers.entrySet()) {
+                staticFetchers.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+            }
             instanceFetchers.putAll(superFetcher.instanceFetchers);
             superclass = superclass.getSuperclass();
         }
