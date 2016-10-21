@@ -1,5 +1,6 @@
 package grails.gorm.validation
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.validation.constraints.eval.ConstraintsEvaluator
 import org.grails.datastore.mapping.model.MappingContext
@@ -72,9 +73,7 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
 
             if(pp instanceof Association) {
                 Association association = (Association)pp
-                if(association.isOwningSide()) {
-                    cascadeToAssociativeProperty(obj, errors, entityReflector, association)
-                }
+                cascadeToAssociativeProperty(obj, errors, entityReflector, association)
             }
 
             constrainedPropertyNames.remove(propertyName)
@@ -106,12 +105,29 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
             Object associatedObject = reflector.getProperty(parent, propertyName)
 
             if(proxyHandler?.isInitialized(associatedObject)) {
-                cascadeValidationToOne(parent, propertyName, (ToOne)association, errors, reflector, associatedObject, null)
+                if(association.isOwningSide()) {
+                    cascadeValidationToOne(parent, propertyName, (ToOne)association, errors, reflector, associatedObject, null)
+                }
+                else {
+                    Errors existingErrors = retrieveErrors(associatedObject)
+                    if(existingErrors != null && existingErrors.hasErrors()) {
+                        for(error in existingErrors.fieldErrors) {
+                            String path = errors.getNestedPath() + "${propertyName}." +error.field
+                            errors.rejectValue(path, error.code, error.arguments, error.defaultMessage)
+                        }
+                    }
+                }
+
             }
         }
         else if (association instanceof ToMany) {
             cascadeValidationToMany(parent, propertyName, association, errors, reflector)
         }
+    }
+
+    @CompileDynamic
+    protected Errors retrieveErrors(associatedObject) {
+        (Errors) associatedObject.errors
     }
 
     /**

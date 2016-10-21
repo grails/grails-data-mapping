@@ -3,6 +3,7 @@ package org.grails.datastore.gorm.validation;
 import grails.core.GrailsDomainClass;
 import grails.core.GrailsDomainClassProperty;
 import org.grails.core.artefact.DomainClassArtefactHandler;
+import org.grails.datastore.gorm.GormValidateable;
 import org.grails.datastore.gorm.support.BeforeValidateHelper;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.proxy.JavassistProxyFactory;
@@ -15,6 +16,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
 
 import java.util.ArrayList;
 
@@ -98,7 +100,22 @@ public class DefaultDomainClassValidator extends GrailsDomainClassValidator impl
             associatedObject = proxyHandler.isProxy(associatedObject) ? proxyHandler.unwrap(associatedObject) : associatedObject;
             if(associatedObject != null) {
                 cascadeBeforeValidate(associatedObject);
-                super.cascadeValidationToOne(errors, bean, associatedObject, persistentProperty, propertyName, indexOrKey);
+                GrailsDomainClass associatedDomainClass = getAssociatedDomainClass(associatedObject, persistentProperty);
+                if (associatedDomainClass == null || !isOwningInstance(bean, associatedDomainClass) && !persistentProperty.isExplicitSaveUpdateCascade()) {
+                    if(associatedObject instanceof GormValidateable) {
+                        GormValidateable validateable = (GormValidateable) associatedObject;
+                        Errors existingErrors = validateable.getErrors();
+                        if(existingErrors != null && existingErrors.hasErrors()) {
+                            for(FieldError error : existingErrors.getFieldErrors()) {
+                                String path = errors.getNestedPath() + propertyName + '.' + error.getField();
+                                errors.rejectValue(path, error.getCode(), error.getArguments(), error.getDefaultMessage());
+                            }
+                        }
+                    }
+                }
+                else {
+                    super.cascadeValidationToOne(errors, bean, associatedObject, persistentProperty, propertyName, indexOrKey);
+                }
             }
         }
     }
@@ -108,6 +125,29 @@ public class DefaultDomainClassValidator extends GrailsDomainClassValidator impl
         if(associatedDomainClass != null) {
             getBeforeValidateHelper().invokeBeforeValidate(associatedObject, new ArrayList<Object>(associatedDomainClass.getConstrainedProperties().keySet()));
         }
+    }
+
+    private GrailsDomainClass getAssociatedDomainClass(Object associatedObject, GrailsDomainClassProperty persistentProperty) {
+        if (persistentProperty.isEmbedded()) {
+            return persistentProperty.getComponent();
+        }
+
+        if (grailsApplication != null) {
+            return getAssociatedDomainClassFromApplication(associatedObject);
+        }
+
+        return persistentProperty.getReferencedDomainClass();
+    }
+
+    private boolean isOwningInstance(BeanWrapper bean, GrailsDomainClass associatedDomainClass) {
+        Class<?> currentClass = bean.getWrappedClass();
+        while (currentClass != Object.class) {
+            if (associatedDomainClass.isOwningClass(currentClass)) {
+                return true;
+            }
+            currentClass = currentClass.getSuperclass();
+        }
+        return false;
     }
 
     @Override
