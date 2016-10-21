@@ -100,7 +100,7 @@ public class HibernateDomainClassValidator extends GrailsDomainClassValidator im
                 GrailsDomainClass associatedDomainClass = getAssociatedDomainClass(associatedObject, persistentProperty);
 
                 if (associatedDomainClass == null || !isOwningInstance(bean, associatedDomainClass) && !persistentProperty.isExplicitSaveUpdateCascade()) {
-                    if(associatedObject instanceof GormValidateable) {
+                    if(associatedObject instanceof GormValidateable && (persistentProperty.isOneToOne() || persistentProperty.isManyToOne())) {
                         GormValidateable validateable = (GormValidateable) associatedObject;
                         Errors existingErrors = validateable.getErrors();
                         if(existingErrors != null && existingErrors.hasErrors()) {
