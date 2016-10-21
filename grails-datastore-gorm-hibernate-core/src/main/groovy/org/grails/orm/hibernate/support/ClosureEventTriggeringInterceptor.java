@@ -18,6 +18,7 @@ package org.grails.orm.hibernate.support;
 
 import org.grails.datastore.gorm.events.ConfigurableApplicationContextEventPublisher;
 import org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher;
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.orm.hibernate.AbstractHibernateDatastore;
@@ -97,8 +98,10 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     }
 
     public void onPostLoad(PostLoadEvent hibernateEvent) {
+        Object entity = hibernateEvent.getEntity();
+        activateDirtyChecking(entity);
         publishEvent(hibernateEvent, new org.grails.datastore.mapping.engine.event.PostLoadEvent(
-                this.datastore, hibernateEvent.getEntity()));
+                this.datastore, entity));
     }
 
     public boolean onPreInsert(PreInsertEvent hibernateEvent) {
@@ -109,8 +112,10 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     }
 
     public void onPostInsert(PostInsertEvent hibernateEvent) {
+        Object entity = hibernateEvent.getEntity();
+        activateDirtyChecking(entity);
         publishEvent(hibernateEvent, new org.grails.datastore.mapping.engine.event.PostInsertEvent(
-                this.datastore, hibernateEvent.getEntity()));
+                this.datastore, entity));
     }
 
     @Override
@@ -126,8 +131,10 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     }
 
     public void onPostUpdate(PostUpdateEvent hibernateEvent) {
+        Object entity = hibernateEvent.getEntity();
+        activateDirtyChecking(entity);
         publishEvent(hibernateEvent, new org.grails.datastore.mapping.engine.event.PostUpdateEvent(
-                this.datastore, hibernateEvent.getEntity()));
+                this.datastore, entity));
     }
 
     public boolean onPreDelete(PreDeleteEvent hibernateEvent) {
@@ -190,5 +197,10 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
         return AbstractHibernateGormInstanceApi.getAssumedUnsaved();
     }
 
+    private void activateDirtyChecking(Object entity) {
+        if(entity instanceof DirtyCheckable) {
+            ((DirtyCheckable) entity).trackChanges();
+        }
+    }
 
 }

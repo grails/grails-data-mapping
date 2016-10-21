@@ -20,7 +20,7 @@ class GrailsEntityDirtinessStrategy implements CustomEntityDirtinessStrategy {
 
     @Override
     public boolean isDirty(Object entity, EntityPersister persister, Session session) {
-        cast(entity).hasChanged()
+        cast(entity).listDirtyPropertyNames().size() > 0
     }
 
     @Override
@@ -36,7 +36,7 @@ class GrailsEntityDirtinessStrategy implements CustomEntityDirtinessStrategy {
                 @Override
                 public boolean isDirty(CustomEntityDirtinessStrategy.AttributeInformation attributeInformation) {
                     String propertyName = attributeInformation.name
-                    dirtyAware.hasChanged(propertyName)
+                    cast(entity).listDirtyPropertyNames().contains(propertyName)
                 }
             }
         );
