@@ -223,7 +223,7 @@ public class DefaultConstraintEvaluator implements ConstraintsEvaluator {
                 !propertyName.equals(GormProperties.LAST_UPDATED) &&
                 !(p instanceof Identity) &&
                 !(p.getMapping().getMappedForm().isDerived()) &&
-                !( (p instanceof ToOne) && ((ToOne)p).isBidirectional());
+                !( (p instanceof ToOne) && ((ToOne)p).isBidirectional() && ((ToOne) p).isCircular());
     }
 
 }

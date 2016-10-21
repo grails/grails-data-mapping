@@ -202,7 +202,6 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
             errors.setNestedPath(buildNestedPath(nestedPath, propertyName, indexOrKey));
 
             for (PersistentProperty associatedPersistentProperty : associatedPersistentProperties) {
-                if (associatedPersistentProperty.equals(otherSide)) continue;
                 if (association.isEmbedded() && EMBEDDED_EXCLUDES.contains(associatedPersistentProperty.getName())) {
                     continue
                 }
@@ -213,7 +212,8 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
                     ConstrainedProperty associatedConstrainedProperty = associatedConstrainedProperties.get(associatedPropertyName)
                     validatePropertyWithConstraint(associatedObject, errors.getNestedPath() + associatedPropertyName, associatedReflector, errors, associatedConstrainedProperty)
                 }
-
+                // don't continue cascade if the the other side is equal to avoid stack overflow
+                if (associatedPersistentProperty.equals(otherSide)) continue;
                 if (associatedPersistentProperty instanceof Association) {
 
                     cascadeToAssociativeProperty(
