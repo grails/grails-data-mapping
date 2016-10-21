@@ -3,11 +3,13 @@ package org.grails.datastore.gorm.jdbc.connections;
 import org.grails.datastore.mapping.config.Settings;
 import org.grails.datastore.mapping.core.connections.*;
 import org.grails.datastore.gorm.jdbc.DataSourceBuilder;
+import org.grails.datastore.mapping.core.exceptions.ConfigurationException;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.jndi.JndiObjectFactoryBean;
 
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.io.Serializable;
 import java.util.Collections;
@@ -49,7 +51,11 @@ public class DataSourceConnectionSourceFactory extends AbstractConnectionSourceF
             JndiObjectFactoryBean jndiObjectFactoryBean = new JndiObjectFactoryBean();
             jndiObjectFactoryBean.setExpectedType(DataSource.class);
             jndiObjectFactoryBean.setJndiName(settings.getJndiName());
-
+            try {
+                jndiObjectFactoryBean.afterPropertiesSet();
+            } catch (NamingException e) {
+                throw new ConfigurationException("Unable to configure JNDI data source: " + e.getMessage(), e);
+            }
             dataSource = (DataSource)jndiObjectFactoryBean.getObject();
             dataSource = proxy(dataSource, settings);
             return new DefaultConnectionSource<>(name, dataSource, settings);
