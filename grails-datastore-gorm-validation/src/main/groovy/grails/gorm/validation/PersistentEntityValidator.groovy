@@ -104,7 +104,7 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
         if (association instanceof ToOne) {
             Object associatedObject = reflector.getProperty(parent, propertyName)
 
-            if(proxyHandler?.isInitialized(associatedObject)) {
+            if(associatedObject != null && proxyHandler?.isInitialized(associatedObject)) {
                 if(association.isOwningSide()) {
                     cascadeValidationToOne(parent, propertyName, (ToOne)association, errors, reflector, associatedObject, null)
                 }
