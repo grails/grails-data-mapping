@@ -104,14 +104,25 @@ public class Entity {
 
 
     /**
-     * Sets the datastore to use
+     * Sets the connection to use
      *
      * @param name
      * @return
      */
     public Entity connections(String...names) {
-        if(names.length > 0) {
-            this.datasources = Arrays.asList(names)
+        connections(Arrays.asList(names))
+        return this
+    }
+
+    /**
+     * Sets the connection to use
+     *
+     * @param name
+     * @return
+     */
+    public Entity connections(List<String> names) {
+        if(names != null && names.size() > 0) {
+            this.datasources = names;
         }
         return this
     }
