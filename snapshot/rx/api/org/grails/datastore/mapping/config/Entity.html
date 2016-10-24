@@ -222,25 +222,30 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></strong></code></td>
-                            <td class="colLast"><code><strong><a href="#connections(java.lang.String)">connections</a></strong>(java.lang.String... names)</code><br>Sets the datastore to use</td>
+                            <td class="colLast"><code><strong><a href="#connections(java.lang.String)">connections</a></strong>(java.lang.String... names)</code><br>Sets the connection to use</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></strong></code></td>
-                            <td class="colLast"><code><strong><a href="#datasource(java.lang.String)">datasource</a></strong>(java.lang.String name)</code><br>Sets the datastore to use</td>
+                            <td class="colLast"><code><strong><a href="#connections(List<String>)">connections</a></strong>(java.util.List&lt;java.lang.String&gt; names)</code><br>Sets the connection to use</td>
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#datasource(java.lang.String)">datasource</a></strong>(java.lang.String name)</code><br>Sets the datastore to use</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getSort()">getSort</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isVersioned()">isVersioned</a></strong>()</code><br>@return Whether this entity is versioned</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#setSort(java.lang.Object)">setSort</a></strong>(java.lang.Object defaultSort)</code><br></td>
                         </tr>
@@ -401,7 +406,15 @@ public&nbsp;static&nbsp;final&nbsp;java.lang.String <strong>DEFAULT_DATA_SOURCE<
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a> <strong>connections</strong>(java.lang.String... names)</h4>
-                                <p> Sets the datastore to use <DL><DT><B>Returns:</B></DT><DD></DD></DL><DL><DT><B>Parameters:</B></DT><DD>name</DD></DL></p>
+                                <p> Sets the connection to use <DL><DT><B>Returns:</B></DT><DD></DD></DL><DL><DT><B>Parameters:</B></DT><DD>name</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="connections(List<String>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a> <strong>connections</strong>(java.util.List&lt;java.lang.String&gt; names)</h4>
+                                <p> Sets the connection to use <DL><DT><B>Returns:</B></DT><DD></DD></DL><DL><DT><B>Parameters:</B></DT><DD>name</DD></DL></p>
                             </li>
                         </ul>
                     
