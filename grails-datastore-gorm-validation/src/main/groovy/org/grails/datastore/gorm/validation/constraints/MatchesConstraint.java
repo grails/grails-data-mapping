@@ -17,7 +17,7 @@ public class MatchesConstraint extends AbstractConstraint {
 
     public MatchesConstraint(Class<?> constraintOwningClass, String constraintPropertyName, Object constraintParameter, MessageSource messageSource) {
         super(constraintOwningClass, constraintPropertyName, constraintParameter, messageSource);
-        this.regex = constraintParameter.toString();
+        this.regex = this.constraintParameter.toString();
     }
 
     /**

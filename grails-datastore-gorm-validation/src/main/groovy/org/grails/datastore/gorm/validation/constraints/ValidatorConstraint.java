@@ -39,7 +39,7 @@ public class ValidatorConstraint extends AbstractConstraint {
 
     public ValidatorConstraint(Class<?> constraintOwningClass, String constraintPropertyName, Object constraintParameter, MessageSource messageSource) {
         super(constraintOwningClass, constraintPropertyName, constraintParameter, messageSource);
-        validator = (Closure<?>)constraintParameter;
+        validator = (Closure<?>) this.constraintParameter;
         Class<?>[] params = validator.getParameterTypes();
         numValidatorParams = params.length;
     }

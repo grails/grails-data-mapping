@@ -37,7 +37,7 @@ public class ScaleConstraint extends AbstractConstraint {
 
     public ScaleConstraint(Class<?> constraintOwningClass, String constraintPropertyName, Object constraintParameter, MessageSource messageSource) {
         super(constraintOwningClass, constraintPropertyName, constraintParameter, messageSource);
-        this.scale = (int) constraintParameter;
+        this.scale = (int) this.constraintParameter;
     }
 
     /*

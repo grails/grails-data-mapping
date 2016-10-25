@@ -18,7 +18,7 @@ public class InListConstraint extends AbstractConstraint {
 
     public InListConstraint(Class<?> constraintOwningClass, String constraintPropertyName, Object constraintParameter, MessageSource messageSource) {
         super(constraintOwningClass, constraintPropertyName, constraintParameter, messageSource);
-        this.list = (List<?>) constraintParameter;
+        this.list = (List<?>) this.constraintParameter;
     }
 
     /**

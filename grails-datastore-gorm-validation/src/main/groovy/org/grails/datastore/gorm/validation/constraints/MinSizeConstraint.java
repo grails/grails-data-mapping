@@ -20,7 +20,7 @@ public class MinSizeConstraint extends AbstractConstraint {
 
     public MinSizeConstraint(Class<?> constraintOwningClass, String constraintPropertyName, Object constraintParameter, MessageSource messageSource) {
         super(constraintOwningClass, constraintPropertyName, constraintParameter, messageSource);
-        this.minSize = ((Number) constraintParameter).intValue();
+        this.minSize = ((Number) this.constraintParameter).intValue();
     }
 
     /**

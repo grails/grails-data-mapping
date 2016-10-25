@@ -19,7 +19,7 @@ public class EmailConstraint extends AbstractConstraint {
 
     public EmailConstraint(Class<?> constraintOwningClass, String constraintPropertyName, Object constraintParameter, MessageSource messageSource) {
         super(constraintOwningClass, constraintPropertyName, constraintParameter, messageSource);
-        this.email = (boolean) constraintParameter;
+        this.email = (boolean) this.constraintParameter;
     }
 
     /* (non-Javadoc)

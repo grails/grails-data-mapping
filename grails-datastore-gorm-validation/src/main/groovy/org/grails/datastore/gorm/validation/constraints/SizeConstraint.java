@@ -22,7 +22,7 @@ public class SizeConstraint extends AbstractConstraint {
 
     public SizeConstraint(Class<?> constraintOwningClass, String constraintPropertyName, Object constraintParameter, MessageSource messageSource) {
         super(constraintOwningClass, constraintPropertyName, constraintParameter, messageSource);
-        this.range = (IntRange) constraintParameter;
+        this.range = (IntRange) this.constraintParameter;
     }
 
     /**

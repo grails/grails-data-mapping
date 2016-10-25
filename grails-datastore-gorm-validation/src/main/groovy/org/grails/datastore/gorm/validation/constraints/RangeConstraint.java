@@ -18,7 +18,7 @@ public class RangeConstraint extends AbstractConstraint {
 
     public RangeConstraint(Class<?> constraintOwningClass, String constraintPropertyName, Object constraintParameter, MessageSource messageSource) {
         super(constraintOwningClass, constraintPropertyName, constraintParameter, messageSource);
-        this.range = (Range) constraintParameter;
+        this.range = (Range) this.constraintParameter;
     }
 
     /**

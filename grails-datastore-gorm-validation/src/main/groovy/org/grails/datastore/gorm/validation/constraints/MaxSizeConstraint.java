@@ -20,7 +20,7 @@ public class MaxSizeConstraint extends AbstractConstraint {
 
     public MaxSizeConstraint(Class<?> constraintOwningClass, String constraintPropertyName, Object constraintParameter, MessageSource messageSource) {
         super(constraintOwningClass, constraintPropertyName, constraintParameter, messageSource);
-        this.maxSize = ((Number)constraintParameter).intValue() ;
+        this.maxSize = ((Number)this.constraintParameter).intValue() ;
     }
 
     /**

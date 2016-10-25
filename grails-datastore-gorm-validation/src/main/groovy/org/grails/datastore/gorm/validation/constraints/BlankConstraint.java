@@ -17,7 +17,7 @@ public class BlankConstraint extends AbstractVetoingConstraint {
 
     public BlankConstraint(Class<?> constraintOwningClass, String constraintPropertyName, Object constraintParameter, MessageSource messageSource) {
         super(constraintOwningClass, constraintPropertyName, constraintParameter, messageSource);
-        this.blank = (Boolean) getParameter();
+        this.blank = (Boolean) this.constraintParameter;
     }
 
     /* (non-Javadoc)

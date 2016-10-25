@@ -50,11 +50,13 @@ class Person extends Mammal {
     String town
     Integer age
     String country
+    String description
 
     static constraints = {
         town nullable: false
         age validator: { val -> val > 0 }
         country nullable: true
+        description url:true, nullable:true
     }
 }
 

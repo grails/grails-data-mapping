@@ -20,7 +20,7 @@ public class MaxConstraint extends AbstractConstraint {
 
     public MaxConstraint(Class<?> constraintOwningClass, String constraintPropertyName, Object constraintParameter, MessageSource messageSource) {
         super(constraintOwningClass, constraintPropertyName, constraintParameter, messageSource);
-        this.maxValue = (Comparable) constraintParameter;
+        this.maxValue = (Comparable) this.constraintParameter;
     }
 
     /**

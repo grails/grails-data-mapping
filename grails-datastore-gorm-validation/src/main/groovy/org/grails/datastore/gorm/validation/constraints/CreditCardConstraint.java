@@ -17,7 +17,7 @@ public class CreditCardConstraint extends AbstractConstraint {
 
     public CreditCardConstraint(Class<?> constraintOwningClass, String constraintPropertyName, Object constraintParameter, MessageSource messageSource) {
         super(constraintOwningClass, constraintPropertyName, constraintParameter, messageSource);
-        creditCard = (boolean) constraintParameter;
+        creditCard = (boolean) this.constraintParameter;
     }
 
     @Override

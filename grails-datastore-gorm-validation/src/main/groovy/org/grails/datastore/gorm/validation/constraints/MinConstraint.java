@@ -18,7 +18,7 @@ public class MinConstraint extends AbstractConstraint {
 
     public MinConstraint(Class<?> constraintOwningClass, String constraintPropertyName, Object constraintParameter, MessageSource messageSource) {
         super(constraintOwningClass, constraintPropertyName, constraintParameter, messageSource);
-        this.minValue = (Comparable) constraintParameter;
+        this.minValue = (Comparable) this.constraintParameter;
     }
 
     /**

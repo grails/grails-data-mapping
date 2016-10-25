@@ -20,7 +20,7 @@ public class UrlConstraint extends AbstractConstraint {
 
     public UrlConstraint(Class<?> constraintOwningClass, String constraintPropertyName, Object constraintParameter, MessageSource messageSource) {
         super(constraintOwningClass, constraintPropertyName, constraintParameter, messageSource);
-        this.validator = (UrlValidator) constraintParameter;
+        this.validator = (UrlValidator) this.constraintParameter;
     }
 
     /* (non-Javadoc)
