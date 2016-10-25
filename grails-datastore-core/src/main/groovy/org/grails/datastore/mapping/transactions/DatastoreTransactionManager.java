@@ -125,9 +125,6 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
                 tx.setTimeout(timeout);
             }
 
-            // Add the Datastore transaction to the session holder.
-            txObject.setTransaction(tx);
-
             // Bind the session holder to the thread.
             if (txObject.isNewSessionHolder()) {
                 TransactionSynchronizationManager.bindResource(getDatastore(), txObject.getSessionHolder());

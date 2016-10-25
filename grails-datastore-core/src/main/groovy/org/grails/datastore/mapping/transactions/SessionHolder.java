@@ -29,7 +29,6 @@ import org.springframework.transaction.support.ResourceHolderSupport;
 public class SessionHolder extends ResourceHolderSupport {
 
     private Deque<Session> sessions = new LinkedBlockingDeque<Session>();
-    private Transaction<?> transaction;
     private Object creator = null;
 
     public SessionHolder(Session session) {
@@ -46,14 +45,9 @@ public class SessionHolder extends ResourceHolderSupport {
     }
 
     public Transaction<?> getTransaction() {
-        if(transaction != null) {
-            return transaction;
-        }
-        else if(!isEmpty()) {
-            final Session session = getSession();
-            if(session.hasTransaction()) {
-                return session.getTransaction();
-            }
+        final Session session = getSession();
+        if(session != null && session.hasTransaction()) {
+            return session.getTransaction();
         }
         return null;
     }
@@ -66,8 +60,9 @@ public class SessionHolder extends ResourceHolderSupport {
         super.setSynchronizedWithTransaction(synchronizedWithTransaction);
     }
 
+    @Deprecated
     public void setTransaction(Transaction<?> transaction) {
-        this.transaction = transaction;
+        // no-op. here for compatibility
     }
 
     public Session getSession() {
