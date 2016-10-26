@@ -426,24 +426,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>To write unit tests with MongoDB and Spock you can simply extend from <code>grails.test.mongodb.MongoSpec</code>.</p>
 </div>
 <div class="paragraph">
-<p><code>MongoSpec</code> is an abstract class that will initialise GORM in the setup phase of the specification being executed. It
-uses by default a <code>MongoClient</code> instance that connects to a MongoDB instance as defined in your configuration
-(by default, <code>localhost</code> and port <code>27017</code>, see <a href="#gettingStarted">[gettingStarted]</a> for more details):</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.test.mongodb.MongoSpec
-
-class LocalMongoUnitSpec extends MongoSpec {
-
-    // Specs ...
-
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can also provide your own <code>MongoClient</code> instance to use something such as <a href="https://github.com/fakemongo/fongo">Fongo</a>,
-as shown in the following example:</p>
+<p><code>MongoSpec</code> is an abstract class that just requires you to provide an instance of a <code>MongoClient</code>. You can potentially
+connect to a real MongoDB instance, or use something such as <a href="https://github.com/fakemongo/fongo">Fongo</a>, as shown in the
+following example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -456,13 +441,13 @@ import grails.test.mongodb.MongoSpec
 class BookUnitSpec extends MongoSpec {
 
     @Override
-    MongoClient createMongoClient() {
+    MongoClient getMongoClient() {
         return new Fongo(getClass().name).mongo
     }
 
     void "Test low-level API extensions"() {
         when:
-        def db = createMongoClient().getDatabase("test")
+        def db = mongoClient.getDatabase("test")
         db.drop()
         // Insert a document
         db['languages'].insert([name: 'Groovy'])
@@ -499,10 +484,10 @@ is large, classpath scanning may be slow, so it&#8217;s better to override the m
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Override
-protected List&lt;Class&gt; getDomainClasses() {
-    [Book]
-}</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">    @Override
+    protected List&lt;Class&gt; getDomainClasses() {
+        [Book]
+    }</code></pre>
 </div>
 </div>
 </div>
