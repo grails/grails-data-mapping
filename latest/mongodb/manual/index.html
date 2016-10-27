@@ -546,9 +546,14 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#queryIndexes">Querying Indexing</a></li>
 <li><a href="#writeConcern">Customizing the WriteConcern</a></li>
 <li><a href="#dynamicAttributes">Dynamic Attributes</a></li>
+<li><a href="#customTypes">Custom User Types</a></li>
+</ul>
+</li>
+<li><a href="#querying">Querying</a>
+<ul class="sectlevel2">
+<li><a href="#queryingBasicsl">Basic Querying</a></li>
 <li><a href="#geoSpatial">Geospacial Querying</a></li>
 <li><a href="#textSearch">Full Text Search</a></li>
-<li><a href="#customTypes">Custom User Types</a></li>
 </ul>
 </li>
 <li><a href="#multipleDataSources">Multiple Data Sources</a>
@@ -939,7 +944,7 @@ Embedded documents may also require updating.
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile 'org.grails.plugins:mongodb:6.0.2'
+    compile 'org.grails.plugins:mongodb:6.0.3'
 }</code></pre>
 </div>
 </div>
@@ -949,7 +954,7 @@ Embedded documents may also require updating.
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">plugins {
-    compile ':mongodb:6.0.2'
+    compile ':mongodb:6.0.3'
 }</code></pre>
 </div>
 </div>
@@ -1153,7 +1158,7 @@ Embedded documents may also require updating.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-mongodb-spring-boot:6.0.2.RELEASE")</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-mongodb-spring-boot:6.0.3.RELEASE")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1210,7 +1215,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-mongodb:6.0.2.RELEASE"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-mongodb:6.0.3.RELEASE"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1494,90 +1499,8 @@ dirty checking and prevent the property from being updated.</p>
 </div>
 <div class="sect2">
 <h3 id="queryIndexes">Querying Indexing</h3>
-<div class="sect3">
-<h4 id="_basics">Basics</h4>
 <div class="paragraph">
-<p>MongoDB doesn&#8217;t require that you specify indices to query, but like a relational database without specifying indices your queries will be significantly slower.</p>
-</div>
-<div class="paragraph">
-<p>With that in mind it is important to specify the properties you plan to query using the mapping block:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Person</span> {
-    <span class="predefined-type">String</span> name
-    <span class="directive">static</span> mapping = {
-        name <span class="key">index</span>:<span class="predefined-constant">true</span>
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>With the above mapping a MongoDB index will be automatically created for you. You can customize the index options using the <code>indexAttributes</code> configuration parameter:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Person</span> {
-    <span class="predefined-type">String</span> name
-    <span class="directive">static</span> mapping = {
-        name <span class="key">index</span>:<span class="predefined-constant">true</span>, <span class="key">indexAttributes</span>: [<span class="key">unique</span>:<span class="predefined-constant">true</span>, <span class="key">dropDups</span>:<span class="predefined-constant">true</span>]
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can use MongoDB <a href="http://docs.mongodb.org/manual/reference/operator/meta/hint/">Query Hints</a> by passing the <code>hint</code> argument to any dynamic finder:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> people = Person.findByName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Bob</span><span class="delimiter">&quot;</span></span>, [<span class="key">hint</span>:[<span class="key">name</span>:<span class="integer">1</span>]])</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Or in a criteria query using the query "arguments" method</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">Person.withCriteria {
-        eq <span class="string"><span class="delimiter">'</span><span class="content">firstName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Bob</span><span class="delimiter">'</span></span>
-    arguments <span class="key">hint</span>:[<span class="integer">1</span>][firstName] }</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_compound_indices">Compound Indices</h4>
-<div class="paragraph">
-<p>MongoDB supports the notion of <a href="http://docs.mongodb.org/manual/core/index-compound/">compound keys</a>. GORM for MongoDB enables this feature at the mapping level using the <code>compoundIndex</code> mapping:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Person</span> {
-    ...
-    static mapping = {
-        compoundIndex <span class="key">name</span>:<span class="integer">1</span>, <span class="key">age</span>:-<span class="integer">1</span>
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>As per the MongoDB docs 1 is for ascending and -1 is for descending.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_indexing_using_the_em_index_em_method">Indexing using the <em>index</em> method</h4>
-<div class="paragraph">
-<p>In addition to the convenience features described above you can use the <code>index</code> method to define any index you want. For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">static</span> mapping = {
-    index( [<span class="integer">1</span>],[person.address.postCode] [<span class="key">unique</span>:<span class="predefined-constant">true</span>] )
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In the above example I define an index on an embedded attribtue of the document. In fact what arguments you pass to the <code>index</code> method get passed to the underlying MongoDB <a href="http://api.mongodb.org/java/2.12/com/mongodb/DBCollection.html#createIndex(com.mongodb.DBObject,%20com.mongodb.DBObject)">createIndex</a> method.</p>
-</div>
+<p>Unresolved directive in index.adoc - include::objectMapping/queryIndexes.adoc[]</p>
 </div>
 </div>
 <div class="sect2">
@@ -1644,6 +1567,291 @@ println p[<span class="string"><span class="delimiter">'</span><span class="cont
 </div>
 <div class="paragraph">
 <p>Using the subscript operator you can add additional attributes to the underlying <code>Document</code> instance that gets persisted to the MongoDB allowing for more dynamic domain models.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="customTypes">Custom User Types</h3>
+<div class="paragraph">
+<p>GORM for MongoDB will persist all common known Java types like String, Integer, URL etc., however if you want to persist one of your own classes that is not a domain class you can implement a custom user type.</p>
+</div>
+<div class="sect3">
+<h4 id="_custom_codecs">Custom Codecs</h4>
+<div class="paragraph">
+<p>GORM for MongoDB is built ontop of MongoDB&#8217;s BSON encoding framework. This means it is possible to implement custom <a href="http://mongodb.github.io/mongo-java-driver/3.2/bson/codecs">Codecs</a> for encoding and decoding values to and from BSON.</p>
+</div>
+<div class="paragraph">
+<p>For example consider the following simple Groovy class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Birthday</span> {
+    <span class="predefined-type">Date</span> date
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By default the encoding engine does not know how to represent this type as a BSON value. To make the encoding engine understand this type you have to implement a custom codec:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.bson.*</span>
+<span class="keyword">import</span> <span class="include">org.bson.codecs.*</span>
+
+<span class="type">class</span> <span class="class">BirthdayCodec</span> <span class="directive">implements</span> Codec&lt;Birthday&gt; {
+    Birthday decode(BsonReader reader, DecoderContext decoderContext) {
+        <span class="keyword">return</span> <span class="keyword">new</span> Birthday(<span class="key">date</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>(reader.readDateTime())) <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+    <span class="type">void</span> encode(BsonWriter writer, Birthday value, EncoderContext encoderContext) {
+        writer.writeDateTime(value.date.time) <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+    <span class="predefined-type">Class</span>&lt;Birthday&gt; getEncoderClass() { Birthday } <i class="conum" data-value="3"></i><b>(3)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Decodes the <code>Birthday</code> type from the <code>BsonReader</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Encodes the <code>Birthday</code> type to the <code>BsonWriter</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Returns the type that is to be encoded. In this case <code>Birthday</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>With that done you then need to register the custom <code>Codec</code>. There are two ways to achieve this.</p>
+</div>
+<div class="paragraph">
+<p>You can register a list of codecs in the <code>grails.mongodb.codecs</code> setting in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
+    <span class="key">mongodb</span>:
+        <span class="key">codecs</span>:
+            - <span class="string"><span class="content">my.company.BirthdayCodec</span></span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or you can create a <code>META-INF/services/org.bson.codecs.Codec</code> file containing the fully qualified class name of the <code>Codec</code>. If there are multiple codec classes you would like to register, put each one on a separate line.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_custom_types_with_gorm">Custom Types with GORM</h4>
+<div class="paragraph">
+<p>Another option is to define a GORM custom type. For example consider the following class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Birthday</span> <span class="directive">implements</span> <span class="predefined-type">Comparable</span>{
+    <span class="predefined-type">Date</span> date
+
+    Birthday(<span class="predefined-type">Date</span> date) {
+        <span class="local-variable">this</span>.date = date
+    }
+
+    <span class="annotation">@Override</span>
+    <span class="type">int</span> compareTo(<span class="predefined-type">Object</span> t) {
+        date.compareTo(t.date)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Custom types should go in src/groovy not grails-app/domain
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you attempt to reference this class from a domain class it will not automatically be persisted for you. However you can create a custom type implementation and register it with Spring. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">groovy.transform.InheritConstructors</span>
+<span class="keyword">import</span> <span class="include">org.bson.Document</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.model.PersistentProperty</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.mongo.query.MongoQuery</span>
+<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.query.Query</span>
+
+<span class="annotation">@InheritConstructors</span>
+<span class="type">class</span> <span class="class">BirthdayType</span> <span class="directive">extends</span> AbstractMappingAwareCustomTypeMarshaller&lt;Birthday, <span class="predefined-type">Document</span>, <span class="predefined-type">Document</span>&gt; {
+   <span class="annotation">@Override</span>
+   <span class="directive">protected</span> <span class="predefined-type">Object</span> writeInternal(PersistentProperty property, <span class="predefined-type">String</span> key, Birthday value, <span class="predefined-type">Document</span> nativeTarget) {
+       <span class="directive">final</span> converted = value.date.time
+       nativeTarget.put(key, converted)
+       <span class="keyword">return</span> converted
+   }
+
+   <span class="annotation">@Override</span>
+   <span class="directive">protected</span> <span class="type">void</span> queryInternal(PersistentProperty property, <span class="predefined-type">String</span> key, PropertyCriterion criterion, <span class="predefined-type">Document</span> nativeQuery) {
+       <span class="keyword">if</span> (criterion <span class="keyword">instanceof</span> Between) {
+           <span class="keyword">def</span> dbo = <span class="keyword">new</span> BasicDBObject()
+           dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time)
+           dbo.put(MongoQuery.MONGO_LTE_OPERATOR, criterion.getTo().date.time)
+           nativeQuery.put(key, dbo)
+       }
+       <span class="keyword">else</span> {
+           nativeQuery.put(key, criterion.value.date.time)
+       }
+   }
+
+   <span class="annotation">@Override</span>
+   <span class="directive">protected</span> Birthday readInternal(PersistentProperty property, <span class="predefined-type">String</span> key, <span class="predefined-type">Document</span> nativeSource) {
+       <span class="directive">final</span> num = nativeSource.get(key)
+       <span class="keyword">if</span> (num <span class="keyword">instanceof</span> <span class="predefined-type">Long</span>) {
+           <span class="keyword">return</span> <span class="keyword">new</span> Birthday(<span class="keyword">new</span> <span class="predefined-type">Date</span>(num))
+       }
+       <span class="keyword">return</span> <span class="predefined-constant">null</span>
+   }
+})</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above <code>BirthdayType</code> class is a custom user type implementation for MongoDB for the <code>Birthday</code> class. It provides implementations for three methods: <code>readInternal</code>, <code>writeInternal</code> and the optional <code>queryInternal</code>. If you do not implement <code>queryInternal</code> your custom type can be persisted but not queried.</p>
+</div>
+<div class="paragraph">
+<p>The <code>writeInternal</code> method gets passed the property, the key to store it under, the value and the native DBObject where the custom type is to be stored:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Override</span>
+<span class="directive">protected</span> <span class="predefined-type">Object</span> writeInternal(PersistentProperty property, <span class="predefined-type">String</span> key, Birthday value, DBObject nativeTarget) {
+    <span class="directive">final</span> converted = value.date.time
+    nativeTarget.put(key, converted)
+    <span class="keyword">return</span> converted
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can then read the values of the custom type and register them with the <code>DBObject</code>. The <code>readInternal</code> method gets passed the <code>PersistentProperty</code>, the key the user type info is stored under (although you may want to use multiple keys) and the <code>DBObject</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Override</span>
+<span class="directive">protected</span> Birthday readInternal(PersistentProperty property, <span class="predefined-type">String</span> key, <span class="predefined-type">Document</span> nativeSource) {
+    <span class="directive">final</span> num = nativeSource.get(key)
+    <span class="keyword">if</span>(num <span class="keyword">instanceof</span> <span class="predefined-type">Long</span>) {
+        <span class="keyword">return</span> <span class="keyword">new</span> Birthday(<span class="keyword">new</span> <span class="predefined-type">Date</span>(num))
+    }
+    <span class="keyword">return</span> <span class="predefined-constant">null</span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can then construct the custom type by reading values from the <code>DBObject</code>. Finally the <code>queryInternal</code> method allows you to handle how a custom type is queried:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Override</span>
+<span class="directive">protected</span> <span class="type">void</span> queryInternal(PersistentProperty property, <span class="predefined-type">String</span> key, <span class="predefined-type">Query</span>.PropertyCriterion criterion, <span class="predefined-type">Document</span> nativeQuery) {
+    <span class="keyword">if</span>(criterion <span class="keyword">instanceof</span> Between) {
+        <span class="keyword">def</span> dbo = <span class="keyword">new</span> BasicDBObject()
+        dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time);
+        dbo.put(MongoQuery.MONGO_LTE_OPERATOR, criterion.getTo().date.time);
+        nativeQuery.put(key, dbo)
+    }
+    <span class="keyword">else</span> <span class="keyword">if</span>(criterion <span class="keyword">instanceof</span> Equals){
+        nativeQuery.put(key, criterion.value.date.time)
+    }
+    <span class="keyword">else</span> {
+            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="exception">RuntimeException</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">unsupported query type for property </span><span class="inline"><span class="inline-delimiter">$</span>property</span><span class="delimiter">&quot;</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The method gets passed a <code>criterion</code> which is the type of query and depending on the type of query you may handle the query differently. For example the above implementation supports <code>between</code> and <code>equals</code> style queries. So the following 2 queries will work:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">Person.findByBirthday(<span class="keyword">new</span> Birthday(<span class="keyword">new</span> <span class="predefined-type">Date</span>()-<span class="integer">7</span>)) <span class="comment">// find someone who was born 7 days ago</span>
+Person.findByBirthdayBetween(<span class="keyword">new</span> Birthday(<span class="keyword">new</span> <span class="predefined-type">Date</span>()-<span class="integer">7</span>), <span class="keyword">new</span> Birthday(<span class="keyword">new</span> <span class="predefined-type">Date</span>())) <span class="comment">// find someone who was born in the last 7 days</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>However "like" or other query types will not work.</p>
+</div>
+<div class="paragraph">
+<p>To register a custom type in a grails application simply register it as Spring bean. For example, to register the above <code>BirthdayType</code> add the following to grails-app/conf/spring/resources.groovy:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.*</span>
+
+<span class="comment">// Place your Spring DSL code here</span>
+beans = {
+  birthdayType(BirthdayType, Birthday)
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="querying">Querying</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="queryingBasicsl">Basic Querying</h3>
+<div class="paragraph">
+<p>GORM for MongoDB supports all of the <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#querying">regular methods</a> for executing GORM queries apart from HQL, which is a Hibernate specific query language more appropriate for SQL databases.</p>
+</div>
+<div class="paragraph">
+<p>If you wish to execute a native MongoDB query you can use the <code>find</code> method that takes a <a href="https://api.mongodb.com/java/current/org/bson/conversions/Bson.html">Bson</a> argument. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.mongodb.client.FindIterable</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">com.mongodb.client.model.Filters.*</span>
+...
+FindIterable findIterable = Product.find(eq(<span class="string"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">coffee</span><span class="delimiter">&quot;</span></span>))
+findIterable.limit(<span class="integer">10</span>)
+            .each { Product product -&gt;
+    println <span class="string"><span class="delimiter">&quot;</span><span class="content">Product title </span><span class="inline"><span class="inline-delimiter">$</span>product</span><span class="content">.title</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>find</code> method will return a <a href="https://api.mongodb.com/java/current/com/mongodb/client/FindIterable.html">FindIterable</a> instance that you can then use to further customize via <a href="https://api.mongodb.com/java/current/com/mongodb/client/model/Filters.html">filters</a>, <a href="https://api.mongodb.com/java/current/com/mongodb/client/model/Sorts.html">sorting</a> and <a href="https://api.mongodb.com/java/current/com/mongodb/client/model/Projections.html">projections</a>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+For the full MongoDB client model refer to the <a href="https://api.mongodb.com/java/current/com/mongodb/client/model/package-summary.html">com.mongodb.client.model</a> package.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The <code>find</code> method will return instances of your domain class for each query. If you wish to instead obtain MongoDB <a href="https://api.mongodb.com/java/current/org/bson/Document.html">Document</a> instance then you should use the <code>collection</code> property of the domain class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.mongodb.client.FindIterable</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">com.mongodb.client.model.Filters.*</span>
+...
+Document doc = Product.collection
+                        .find(eq(<span class="string"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">coffee</span><span class="delimiter">&quot;</span></span>))
+                        .first()</code></pre>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -1956,237 +2164,6 @@ new Entry(<span class="key">shape</span>: <span class="predefined-type">Polygon<
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">assert</span> Product.countHits(<span class="string"><span class="delimiter">'</span><span class="content">coffee</span><span class="delimiter">'</span></span>) == <span class="integer">5</span></code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="customTypes">Custom User Types</h3>
-<div class="paragraph">
-<p>GORM for MongoDB will persist all common known Java types like String, Integer, URL etc., however if you want to persist one of your own classes that is not a domain class you can implement a custom user type.</p>
-</div>
-<div class="sect3">
-<h4 id="_custom_codecs">Custom Codecs</h4>
-<div class="paragraph">
-<p>GORM for MongoDB is built ontop of MongoDB&#8217;s BSON encoding framework. This means it is possible to implement custom <a href="http://mongodb.github.io/mongo-java-driver/3.2/bson/codecs">Codecs</a> for encoding and decoding values to and from BSON.</p>
-</div>
-<div class="paragraph">
-<p>For example consider the following simple Groovy class:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Birthday</span> {
-    <span class="predefined-type">Date</span> date
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>By default the encoding engine does not know how to represent this type as a BSON value. To make the encoding engine understand this type you have to implement a custom codec:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.bson.*</span>
-<span class="keyword">import</span> <span class="include">org.bson.codecs.*</span>
-
-<span class="type">class</span> <span class="class">BirthdayCodec</span> <span class="directive">implements</span> Codec&lt;Birthday&gt; {
-    Birthday decode(BsonReader reader, DecoderContext decoderContext) {
-        <span class="keyword">return</span> <span class="keyword">new</span> Birthday(<span class="key">date</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>(reader.readDateTime())) <i class="conum" data-value="1"></i><b>(1)</b>
-    }
-    <span class="type">void</span> encode(BsonWriter writer, Birthday value, EncoderContext encoderContext) {
-        writer.writeDateTime(value.date.time) <i class="conum" data-value="2"></i><b>(2)</b>
-    }
-    <span class="predefined-type">Class</span>&lt;Birthday&gt; getEncoderClass() { Birthday } <i class="conum" data-value="3"></i><b>(3)</b>
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Decodes the <code>Birthday</code> type from the <code>BsonReader</code></td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Encodes the <code>Birthday</code> type to the <code>BsonWriter</code></td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Returns the type that is to be encoded. In this case <code>Birthday</code>.</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>With that done you then need to register the custom <code>Codec</code>. There are two ways to achieve this.</p>
-</div>
-<div class="paragraph">
-<p>You can register a list of codecs in the <code>grails.mongodb.codecs</code> setting in <code>application.yml</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
-    <span class="key">mongodb</span>:
-        <span class="key">codecs</span>:
-            - <span class="string"><span class="content">my.company.BirthdayCodec</span></span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Or you can create a <code>META-INF/services/org.bson.Codec</code> file containing the class name of the <code>Codec</code></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_custom_types_with_gorm">Custom Types with GORM</h4>
-<div class="paragraph">
-<p>Another option is to define a GORM custom type. For example consider the following class:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Birthday</span> <span class="directive">implements</span> <span class="predefined-type">Comparable</span>{
-    <span class="predefined-type">Date</span> date
-
-    Birthday(<span class="predefined-type">Date</span> date) {
-        <span class="local-variable">this</span>.date = date
-    }
-
-    <span class="annotation">@Override</span>
-    <span class="type">int</span> compareTo(<span class="predefined-type">Object</span> t) {
-        date.compareTo(t.date)
-    }
-}</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Custom types should go in src/groovy not grails-app/domain
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>If you attempt to reference this class from a domain class it will not automatically be persisted for you. However you can create a custom type implementation and register it with Spring. For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">groovy.transform.InheritConstructors</span>
-<span class="keyword">import</span> <span class="include">org.bson.Document</span>
-<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller</span>
-<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.model.PersistentProperty</span>
-<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.mongo.query.MongoQuery</span>
-<span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.query.Query</span>
-
-<span class="annotation">@InheritConstructors</span>
-<span class="type">class</span> <span class="class">BirthdayType</span> <span class="directive">extends</span> AbstractMappingAwareCustomTypeMarshaller&lt;Birthday, <span class="predefined-type">Document</span>, <span class="predefined-type">Document</span>&gt; {
-   <span class="annotation">@Override</span>
-   <span class="directive">protected</span> <span class="predefined-type">Object</span> writeInternal(PersistentProperty property, <span class="predefined-type">String</span> key, Birthday value, <span class="predefined-type">Document</span> nativeTarget) {
-       <span class="directive">final</span> converted = value.date.time
-       nativeTarget.put(key, converted)
-       <span class="keyword">return</span> converted
-   }
-
-   <span class="annotation">@Override</span>
-   <span class="directive">protected</span> <span class="type">void</span> queryInternal(PersistentProperty property, <span class="predefined-type">String</span> key, PropertyCriterion criterion, <span class="predefined-type">Document</span> nativeQuery) {
-       <span class="keyword">if</span> (criterion <span class="keyword">instanceof</span> Between) {
-           <span class="keyword">def</span> dbo = <span class="keyword">new</span> BasicDBObject()
-           dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time)
-           dbo.put(MongoQuery.MONGO_LTE_OPERATOR, criterion.getTo().date.time)
-           nativeQuery.put(key, dbo)
-       }
-       <span class="keyword">else</span> {
-           nativeQuery.put(key, criterion.value.date.time)
-       }
-   }
-
-   <span class="annotation">@Override</span>
-   <span class="directive">protected</span> Birthday readInternal(PersistentProperty property, <span class="predefined-type">String</span> key, <span class="predefined-type">Document</span> nativeSource) {
-       <span class="directive">final</span> num = nativeSource.get(key)
-       <span class="keyword">if</span> (num <span class="keyword">instanceof</span> <span class="predefined-type">Long</span>) {
-           <span class="keyword">return</span> <span class="keyword">new</span> Birthday(<span class="keyword">new</span> <span class="predefined-type">Date</span>(num))
-       }
-       <span class="keyword">return</span> <span class="predefined-constant">null</span>
-   }
-})</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The above <code>BirthdayType</code> class is a custom user type implementation for MongoDB for the <code>Birthday</code> class. It provides implementations for three methods: <code>readInternal</code>, <code>writeInternal</code> and the optional <code>queryInternal</code>. If you do not implement <code>queryInternal</code> your custom type can be persisted but not queried.</p>
-</div>
-<div class="paragraph">
-<p>The <code>writeInternal</code> method gets passed the property, the key to store it under, the value and the native DBObject where the custom type is to be stored:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Override</span>
-<span class="directive">protected</span> <span class="predefined-type">Object</span> writeInternal(PersistentProperty property, <span class="predefined-type">String</span> key, Birthday value, DBObject nativeTarget) {
-    <span class="directive">final</span> converted = value.date.time
-    nativeTarget.put(key, converted)
-    <span class="keyword">return</span> converted
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can then read the values of the custom type and register them with the <code>DBObject</code>. The <code>readInternal</code> method gets passed the <code>PersistentProperty</code>, the key the user type info is stored under (although you may want to use multiple keys) and the <code>DBObject</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Override</span>
-<span class="directive">protected</span> Birthday readInternal(PersistentProperty property, <span class="predefined-type">String</span> key, <span class="predefined-type">Document</span> nativeSource) {
-    <span class="directive">final</span> num = nativeSource.get(key)
-    <span class="keyword">if</span>(num <span class="keyword">instanceof</span> <span class="predefined-type">Long</span>) {
-        <span class="keyword">return</span> <span class="keyword">new</span> Birthday(<span class="keyword">new</span> <span class="predefined-type">Date</span>(num))
-    }
-    <span class="keyword">return</span> <span class="predefined-constant">null</span>
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can then construct the custom type by reading values from the <code>DBObject</code>. Finally the <code>queryInternal</code> method allows you to handle how a custom type is queried:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Override</span>
-<span class="directive">protected</span> <span class="type">void</span> queryInternal(PersistentProperty property, <span class="predefined-type">String</span> key, <span class="predefined-type">Query</span>.PropertyCriterion criterion, <span class="predefined-type">Document</span> nativeQuery) {
-    <span class="keyword">if</span>(criterion <span class="keyword">instanceof</span> Between) {
-        <span class="keyword">def</span> dbo = <span class="keyword">new</span> BasicDBObject()
-        dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time);
-        dbo.put(MongoQuery.MONGO_LTE_OPERATOR, criterion.getTo().date.time);
-        nativeQuery.put(key, dbo)
-    }
-    <span class="keyword">else</span> <span class="keyword">if</span>(criterion <span class="keyword">instanceof</span> Equals){
-        nativeQuery.put(key, criterion.value.date.time)
-    }
-    <span class="keyword">else</span> {
-            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="exception">RuntimeException</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">unsupported query type for property </span><span class="inline"><span class="inline-delimiter">$</span>property</span><span class="delimiter">&quot;</span></span>)
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The method gets passed a <code>criterion</code> which is the type of query and depending on the type of query you may handle the query differently. For example the above implementation supports <code>between</code> and <code>equals</code> style queries. So the following 2 queries will work:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">Person.findByBirthday(<span class="keyword">new</span> Birthday(<span class="keyword">new</span> <span class="predefined-type">Date</span>()-<span class="integer">7</span>)) <span class="comment">// find someone who was born 7 days ago</span>
-Person.findByBirthdayBetween(<span class="keyword">new</span> Birthday(<span class="keyword">new</span> <span class="predefined-type">Date</span>()-<span class="integer">7</span>), <span class="keyword">new</span> Birthday(<span class="keyword">new</span> <span class="predefined-type">Date</span>())) <span class="comment">// find someone who was born in the last 7 days</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>However "like" or other query types will not work.</p>
-</div>
-<div class="paragraph">
-<p>To register a custom type in a grails application simply register it as Spring bean. For example, to register the above <code>BirthdayType</code> add the following to grails-app/conf/spring/resources.groovy:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">com.example.*</span>
-
-<span class="comment">// Place your Spring DSL code here</span>
-beans = {
-  birthdayType(BirthdayType, Birthday)
-}</code></pre>
-</div>
 </div>
 </div>
 </div>
