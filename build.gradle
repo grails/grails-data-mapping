@@ -26,8 +26,8 @@ project.ext {
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
     projectMajorVersion = "6"
-    projectMinorVersion = "0"
-    projectPatchVersion = "4"
+    projectMinorVersion = "1"
+    projectPatchVersion = "0"
     // releaseType = "RELEASE"
 //    releaseType = "M1"
 //    releaseType = "RC2"
