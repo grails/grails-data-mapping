@@ -77,6 +77,8 @@ public class AutoTimestampEventListener extends AbstractPersistenceEventListener
 
     @Override
     protected void onPersistenceEvent(final AbstractPersistenceEvent event) {
+        if (event.getEntity() == null) return;
+
         if (event.getEventType() == EventType.PreInsert) {
             beforeInsert(event.getEntity(), event.getEntityAccess());
         }
