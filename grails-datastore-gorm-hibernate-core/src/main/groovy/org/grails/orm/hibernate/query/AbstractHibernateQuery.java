@@ -482,7 +482,7 @@ public abstract class AbstractHibernateQuery extends Query {
             }
         }
         if (createdAssociationPaths.containsKey(associationName)) {
-            subCriteria = createdAssociationPaths.get(associationPath);
+            subCriteria = createdAssociationPaths.get(associationName);
         }
         else {
             if(parentCriteria != null) {
