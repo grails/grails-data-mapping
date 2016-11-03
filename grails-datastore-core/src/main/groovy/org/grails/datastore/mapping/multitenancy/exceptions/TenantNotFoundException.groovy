@@ -1,5 +1,6 @@
 package org.grails.datastore.mapping.multitenancy.exceptions
 
+import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.core.DatastoreException
 
 /**
@@ -8,7 +9,8 @@ import org.grails.datastore.mapping.core.DatastoreException
  * @author Graeme Rocher
  * @since 6.0
  */
-class TenantNotFoundException extends DatastoreException {
+@CompileStatic
+class TenantNotFoundException extends TenantException {
     TenantNotFoundException(String s) {
         super(s)
     }
