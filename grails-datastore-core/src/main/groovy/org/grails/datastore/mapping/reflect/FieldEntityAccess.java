@@ -424,7 +424,7 @@ public class FieldEntityAccess implements EntityAccess {
                 try {
                     field.set(object, value);
                 } catch (Throwable e) {
-                    throw new IllegalArgumentException("Cannot write field ["+field+"] to object ["+object+"] of type ["+object.getClass()+"]");
+                    throw new IllegalArgumentException("Cannot set field ["+field.getName()+"] of object ["+object+"] for value ["+value+"] of type ["+value.getClass().getName()+"]");
                 }
             }
         }
