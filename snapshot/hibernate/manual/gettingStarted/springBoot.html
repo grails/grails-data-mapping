@@ -536,6 +536,22 @@ class PersonController {
 }</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>In addition, if you wish to return a GORM instance from a Spring <code>@Controller</code>, it should be noted that Spring uses Jackson for JSON marshalling, and Jackson will attempt to marshal the entire object to JSON, which can present an issue since GORM adds additional persistence related properties to your domain instance. To resolve this issue you should use <code>@JsonIgnoreProperties</code> on your GORM entity class to ignore any properties added by GORM:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.persistence.*
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+
+@Entity
+@JsonIgnoreProperties(['dirtyPropertyNames', 'errors', 'dirty', 'attached', 'version'])
+class Person {
+    String firstName
+    String lastName
+}</code></pre>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">

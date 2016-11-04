@@ -958,6 +958,22 @@ If your GORM entities are in a different package specify the package name as the
 }</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>In addition, if you wish to return a GORM instance from a Spring <code>@Controller</code>, it should be noted that Spring uses Jackson for JSON marshalling, and Jackson will attempt to marshal the entire object to JSON, which can present an issue since GORM adds additional persistence related properties to your domain instance. To resolve this issue you should use <code>@JsonIgnoreProperties</code> on your GORM entity class to ignore any properties added by GORM:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.persistence.*</span>
+<span class="keyword">import</span> <span class="include">com.fasterxml.jackson.annotation.JsonIgnoreProperties</span>
+
+<span class="annotation">@Entity</span>
+<span class="annotation">@JsonIgnoreProperties</span>([<span class="string"><span class="delimiter">'</span><span class="content">dirtyPropertyNames</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">errors</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">dirty</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">attached</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">version</span><span class="delimiter">'</span></span>])
+<span class="type">class</span> <span class="class">Person</span> {
+    <span class="predefined-type">String</span> firstName
+    <span class="predefined-type">String</span> lastName
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="outsideGrails">2.3. Using GORM for Hibernate Outside Grails</h3>
