@@ -1075,7 +1075,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 ClassNode type = getPropertyTypeFromGenerics(actualPropertyName, classNode);
                 if(!AstUtils.isDomainClass(type)) {
 
-                    if(AstUtils.implementsInterface(type, "groovy.lang.GroovyObject")) {
+                    if(AstUtils.isGroovyType(type)) {
                         // an embedded property
                         List<String> associationPropertyNames = getPropertyNames(type);
                         boolean hasNoProperties = associationPropertyNames.isEmpty();
@@ -1099,7 +1099,6 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                             this.currentClassNode = existing;
                         }
 
-                        System.out.println("Handling embedded where!");
                         newCode.addStatement(new ExpressionStatement(new MethodCallExpression(new VariableExpression("delegate"), actualPropertyName, arguments)));
                     }
                     else {
@@ -1151,6 +1150,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             }
         }
     }
+
 
     private ClassNode getPropertyTypeFromGenerics(String propertyName, ClassNode classNode) {
         ClassNode type = getPropertyType(classNode, propertyName);
