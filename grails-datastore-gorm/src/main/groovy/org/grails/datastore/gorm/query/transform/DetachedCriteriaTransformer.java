@@ -528,6 +528,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             String methodName = method.getName();
             if (!method.isAbstract() && isGetter(methodName, method)) {
                 String propertyName = NameUtils.getPropertyNameForGetterOrSetter(methodName);
+                if(GormProperties.META_CLASS.equals(propertyName)) continue;
                 if (GormProperties.HAS_MANY.equals(propertyName) || GormProperties.BELONGS_TO.equals(propertyName) || GormProperties.HAS_ONE.equals(propertyName)) {
                     FieldNode field = classNode.getField(propertyName);
                     if (field != null) {
@@ -542,6 +543,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         for (PropertyNode property : properties) {
 
             String propertyName = property.getName();
+            if(propertyName.equals(GormProperties.META_CLASS)) continue;
             if (GormProperties.HAS_MANY.equals(propertyName) || GormProperties.BELONGS_TO.equals(propertyName) || GormProperties.HAS_ONE.equals(propertyName)) {
                 Expression initialExpression = property.getInitialExpression();
                 populatePropertiesForInitialExpression(cachedProperties, initialExpression);
@@ -1072,7 +1074,37 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 ClassNode classNode = currentClassNode;
                 ClassNode type = getPropertyTypeFromGenerics(actualPropertyName, classNode);
                 if(!AstUtils.isDomainClass(type)) {
-                    addCriteriaCallMethodExpression(newCode, operator, pe, oppositeSide, associationProperty, Collections.<String>emptyList(), false, variableScope);
+
+                    if(AstUtils.implementsInterface(type, "groovy.lang.GroovyObject")) {
+                        // an embedded property
+                        List<String> associationPropertyNames = getPropertyNames(type);
+                        boolean hasNoProperties = associationPropertyNames.isEmpty();
+                        if (!hasNoProperties && !associationPropertyNames.contains(associationProperty)) {
+                            sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot query property \"" + associationProperty + "\" - no such property on class " + type.getName() + " exists.", Token.newString(propertyName, pe.getLineNumber(), pe.getColumnNumber()), sourceUnit));
+                        }
+
+                        ClosureAndArguments closureAndArguments = new ClosureAndArguments(variableScope);
+                        BlockStatement currentBody = closureAndArguments.getCurrentBody();
+                        ArgumentListExpression arguments = closureAndArguments.getArguments();
+
+                        ClassNode existing = this.currentClassNode;
+                        try {
+                            this.currentClassNode = type;
+                            if (functionName != null) {
+                                handleFunctionCall(currentBody, operator, oppositeSide, functionName, new ConstantExpression(associationProperty));
+                            } else {
+                                addCriteriaCallMethodExpression(currentBody, operator, pe, oppositeSide, associationProperty, associationPropertyNames, hasNoProperties, variableScope);
+                            }
+                        } finally {
+                            this.currentClassNode = existing;
+                        }
+
+                        System.out.println("Handling embedded where!");
+                        newCode.addStatement(new ExpressionStatement(new MethodCallExpression(new VariableExpression("delegate"), actualPropertyName, arguments)));
+                    }
+                    else {
+                        addCriteriaCallMethodExpression(newCode, operator, pe, oppositeSide, associationProperty, Collections.<String>emptyList(), false, variableScope);
+                    }
                 }
                 else {
 
