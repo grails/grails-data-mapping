@@ -1,5 +1,6 @@
 package org.grails.datastore.gorm.validation.constraints.builtin
 
+import grails.gorm.DetachedCriteria
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormStaticApi
@@ -43,11 +44,10 @@ class UniqueConstraint extends AbstractConstraint {
     @Override
     protected void processValidate(Object target, Object propertyValue, Errors errors) {
 
-        GormStaticApi staticApi = GormEnhancer.findStaticApi(constraintOwningClass)
-        BuildableCriteria criteria = staticApi.createCriteria()
-        EntityReflector reflector = staticApi.getGormPersistentEntity().getReflector()
+        DetachedCriteria detachedCriteria = new DetachedCriteria(constraintOwningClass)
+        EntityReflector reflector = detachedCriteria.getPersistentEntity().getReflector()
 
-        def existing = criteria.get {
+        detachedCriteria = detachedCriteria.build {
             eq(constraintPropertyName, propertyValue)
 
             if(!group.isEmpty()) {
@@ -55,14 +55,15 @@ class UniqueConstraint extends AbstractConstraint {
                     def propName = prop.toString()
                     def value = reflector.getProperty(target, propName)
                     if(value != null) {
-                        eq propertyName, value
+                        eq propName, value
                     }
                 }
             }
-        }
-        if(existing != null) {
+        }.id()
+
+        def existingId = detachedCriteria.get()
+        if(existingId != null) {
             def targetId = reflector.getIdentifier(target)
-            def existingId = reflector.getIdentifier(existing)
             if(targetId != existingId) {
                 def args = [constraintPropertyName, constraintOwningClass, propertyValue] as Object[]
                 rejectValue(target, errors, "unique", args, getDefaultMessage("default.not.unique.message"))
