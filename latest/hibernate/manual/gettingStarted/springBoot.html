@@ -427,8 +427,46 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.0.3.RELEASE")</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.0.4.RELEASE")
+compile "org.hibernate:hibernate-core:5.1.0.Final"
+compile "org.hibernate:hibernate-ehcache:5.1.0.Final"
+runtime "com.h2database:h2:1.4.192"
+// for MySQL
+// runtime "mysql:mysql-connector-java"
+
+// for connection pooling
+runtime "org.apache.tomcat:tomcat-jdbc:8.5.0"
+runtime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>Then ensure you have configured a <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html">datasource and Hibernate as per the Spring Boot guide</a>. For example in the case of MySQL:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">hibernate:
+    hbm2ddl:
+        auto: update
+    dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+spring:
+    datasource:
+        driverClassName: com.mysql.jdbc.Driver
+        url:   jdbc:mysql://127.0.0.1:3306/gorm
+        username: root
+        password: ""</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If if you prefer to use the Grails way of configuring the <code>DataSource</code> (with <code>dataSource.url</code> etc.) then you can add <code>@EnableAutoConfiguration(exclude = DataSourceAutoConfiguration)</code> to your <code>Application</code> class, which will allow GORM to take over configuring the data source.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>Ensure your Boot <code>Application</code> class is annotated with <code>ComponentScan</code>, for example:</p>
@@ -470,6 +508,44 @@ If your GORM entities are in a different package specify the package name as the
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.persistence.*
 
 @Entity
+class Person {
+    String firstName
+    String lastName
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that Spring Boot does not include any kind of OpenSessionInView interceptor so if you try and invoke GORM methods in a Spring <code>@Controller</code> you may encounter a session not found error. To eliminate this problem make sure your <code>@Controller</code> methods are annotated with <code>@Transactional</code>. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+
+@RestController
+class PersonController {
+
+    @RequestMapping("/people")
+    @Transactional(readOnly = true)
+    public List&lt;String&gt; people() {
+        Person.list().collect { Person p -&gt;
+            "$p.firstName $p.lastName".toString()
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In addition, if you wish to return a GORM instance from a Spring <code>@Controller</code>, it should be noted that Spring uses Jackson for JSON marshalling, and Jackson will attempt to marshal the entire object to JSON, which can present an issue since GORM adds additional persistence related properties to your domain instance. To resolve this issue you should use <code>@JsonIgnoreProperties</code> on your GORM entity class to ignore any properties added by GORM:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.persistence.*
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+
+@Entity
+@JsonIgnoreProperties(['dirtyPropertyNames', 'errors', 'dirty', 'attached', 'version'])
 class Person {
     String firstName
     String lastName

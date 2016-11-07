@@ -811,6 +811,60 @@ def query = Person.where(callable)</code></pre>
 </table>
 </div>
 <div class="sect3">
+<h4 id="_query_aliases_and_sorting">Query Aliases and Sorting</h4>
+<div class="paragraph">
+<p>If you define a query for an association an alias is automatically generated for the query. For example the following query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def query = Pet.where {
+    owner.firstName == "Fred"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Will generate an alias for the <code>owner</code> association such as <code>owner_alias_0</code>. These generated aliases are fine for most cases, but are not useful if you want to later sort or use a projection on the results. For example the following query will fail:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">// fails because a dynamic alias is used
+Pet.where {
+    owner.firstName == "Fred"
+}.list(sort:"owner.lastName")</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you plan to sort the results then an explicit alias should be used and these can be defined by simply declaring a variable in the <code>where</code> query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def query = Pet.where {
+    def o1 = owner <i class="conum" data-value="1"></i><b>(1)</b>
+    o1.firstName == "Fred" <i class="conum" data-value="2"></i><b>(2)</b>
+}.list(sort:'o1.lastName') <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Define an alias called <code>o1</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Use the alias in the query itself</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Use the alias to sort the results</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>By assigning the name of an association to a local variable it will automatically become an alias usable within the query itself and also for the purposes of sorting or projecting the results.</p>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_subqueries">Subqueries</h4>
 <div class="paragraph">
 <p>It is possible to execute subqueries within where queries. For example to find all the people older than the average age the following query can be used:</p>

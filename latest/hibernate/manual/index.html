@@ -755,12 +755,12 @@ table.CodeRay td.code>pre{padding:0}
 <h2 id="gettingStarted">2. Getting Started</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To use GORM 6.0.3 for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
+<p>To use GORM 6.0.4 for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile "org.grails.plugins:hibernate5:6.0.3"
+    compile "org.grails.plugins:hibernate5:6.0.4"
     compile "org.hibernate:hibernate-ehcache"
 }</code></pre>
 </div>
@@ -774,7 +774,7 @@ table.CodeRay td.code>pre{padding:0}
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("6.0.3.RELEASE")
+            details.useVersion("6.0.4.RELEASE")
         }
     }
 }</code></pre>
@@ -783,7 +783,7 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="hibernateVersions">2.1. Configuring Different Hibernate Versions</h3>
 <div class="paragraph">
-<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.0.3.RELEASE.</p>
+<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.0.4.RELEASE.</p>
 </div>
 <div class="sect3">
 <h4 id="_grails_3_2_x_and_above_with_hibernate_4">2.1.1. Grails 3.2.x and above with Hibernate 4</h4>
@@ -849,8 +849,46 @@ configurations.all {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.0.3.RELEASE")</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.0.4.RELEASE")
+compile "org.hibernate:hibernate-core:5.1.0.Final"
+compile "org.hibernate:hibernate-ehcache:5.1.0.Final"
+runtime "com.h2database:h2:1.4.192"
+// for MySQL
+// runtime "mysql:mysql-connector-java"
+
+// for connection pooling
+runtime "org.apache.tomcat:tomcat-jdbc:8.5.0"
+runtime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>Then ensure you have configured a <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html">datasource and Hibernate as per the Spring Boot guide</a>. For example in the case of MySQL:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">hibernate</span>:
+    <span class="key">hbm2ddl</span>:
+        <span class="key">auto</span>: <span class="string"><span class="content">update</span></span>
+    <span class="key">dialect</span>: <span class="string"><span class="content">org.hibernate.dialect.MySQL5InnoDBDialect</span></span>
+<span class="key">spring</span>:
+    <span class="key">datasource</span>:
+        <span class="key">driverClassName</span>: <span class="string"><span class="content">com.mysql.jdbc.Driver</span></span>
+        <span class="key">url</span>:   <span class="string"><span class="content">jdbc:mysql://127.0.0.1:3306/gorm</span></span>
+        <span class="key">username</span>: <span class="string"><span class="content">root</span></span>
+        <span class="key">password</span>: <span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If if you prefer to use the Grails way of configuring the <code>DataSource</code> (with <code>dataSource.url</code> etc.) then you can add <code>@EnableAutoConfiguration(exclude = DataSourceAutoConfiguration)</code> to your <code>Application</code> class, which will allow GORM to take over configuring the data source.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>Ensure your Boot <code>Application</code> class is annotated with <code>ComponentScan</code>, for example:</p>
@@ -898,6 +936,44 @@ If your GORM entities are in a different package specify the package name as the
 }</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>Note that Spring Boot does not include any kind of OpenSessionInView interceptor so if you try and invoke GORM methods in a Spring <code>@Controller</code> you may encounter a session not found error. To eliminate this problem make sure your <code>@Controller</code> methods are annotated with <code>@Transactional</code>. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.springframework.transaction.annotation.Transactional</span>
+<span class="keyword">import</span> <span class="include">org.springframework.web.bind.annotation.RequestMapping</span>
+<span class="keyword">import</span> <span class="include">org.springframework.web.bind.annotation.RestController</span>
+
+<span class="annotation">@RestController</span>
+<span class="type">class</span> <span class="class">PersonController</span> {
+
+    <span class="annotation">@RequestMapping</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">/people</span><span class="delimiter">&quot;</span></span>)
+    <span class="annotation">@Transactional</span>(readOnly = <span class="predefined-constant">true</span>)
+    <span class="directive">public</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; people() {
+        Person.list().collect { Person p -&gt;
+            <span class="string"><span class="delimiter">&quot;</span><span class="inline"><span class="inline-delimiter">$</span>p</span><span class="content">.firstName </span><span class="inline"><span class="inline-delimiter">$</span>p</span><span class="content">.lastName</span><span class="delimiter">&quot;</span></span>.toString()
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In addition, if you wish to return a GORM instance from a Spring <code>@Controller</code>, it should be noted that Spring uses Jackson for JSON marshalling, and Jackson will attempt to marshal the entire object to JSON, which can present an issue since GORM adds additional persistence related properties to your domain instance. To resolve this issue you should use <code>@JsonIgnoreProperties</code> on your GORM entity class to ignore any properties added by GORM:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.persistence.*</span>
+<span class="keyword">import</span> <span class="include">com.fasterxml.jackson.annotation.JsonIgnoreProperties</span>
+
+<span class="annotation">@Entity</span>
+<span class="annotation">@JsonIgnoreProperties</span>([<span class="string"><span class="delimiter">'</span><span class="content">dirtyPropertyNames</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">errors</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">dirty</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">attached</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">version</span><span class="delimiter">'</span></span>])
+<span class="type">class</span> <span class="class">Person</span> {
+    <span class="predefined-type">String</span> firstName
+    <span class="predefined-type">String</span> lastName
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="outsideGrails">2.3. Using GORM for Hibernate Outside Grails</h3>
@@ -906,7 +982,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:6.0.3.RELEASE"
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:6.0.4.RELEASE"
 runtime "com.h2database:h2:1.4.192"
 runtime "org.apache.tomcat:tomcat-jdbc:8.5.0"
 runtime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"
@@ -3607,7 +3683,61 @@ Person p = bartQuery.find()</code></pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_subqueries">7.4.6. Subqueries</h4>
+<h4 id="_query_aliases_and_sorting">7.4.6. Query Aliases and Sorting</h4>
+<div class="paragraph">
+<p>If you define a query for an association an alias is automatically generated for the query. For example the following query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> query = Pet.where {
+    owner.firstName == <span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Will generate an alias for the <code>owner</code> association such as <code>owner_alias_0</code>. These generated aliases are fine for most cases, but are not useful if you want to later sort or use a projection on the results. For example the following query will fail:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">// fails because a dynamic alias is used</span>
+Pet.where {
+    owner.firstName == <span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>
+}.list(<span class="key">sort</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">owner.lastName</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you plan to sort the results then an explicit alias should be used and these can be defined by simply declaring a variable in the <code>where</code> query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> query = Pet.where {
+    <span class="keyword">def</span> o1 = owner <i class="conum" data-value="1"></i><b>(1)</b>
+    o1.firstName == <span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span> <i class="conum" data-value="2"></i><b>(2)</b>
+}.list(<span class="key">sort</span>:<span class="string"><span class="delimiter">'</span><span class="content">o1.lastName</span><span class="delimiter">'</span></span>) <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Define an alias called <code>o1</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Use the alias in the query itself</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Use the alias to sort the results</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>By assigning the name of an association to a local variable it will automatically become an alias usable within the query itself and also for the purposes of sorting or projecting the results.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_subqueries">7.4.7. Subqueries</h4>
 <div class="paragraph">
 <p>It is possible to execute subqueries within where queries. For example to find all the people older than the average age the following query can be used:</p>
 </div>
@@ -3681,7 +3811,7 @@ Person p = bartQuery.find()</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_more_advanced_subqueries_in_gorm">7.4.7. More Advanced Subqueries in GORM</h4>
+<h4 id="_more_advanced_subqueries_in_gorm">7.4.8. More Advanced Subqueries in GORM</h4>
 <div class="paragraph">
 <p>The support for subqueries has been extended. You can now use in  with nested subqueries</p>
 </div>
@@ -3743,7 +3873,7 @@ Person p = bartQuery.find()</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_other_functions">7.4.8. Other Functions</h4>
+<h4 id="_other_functions">7.4.9. Other Functions</h4>
 <div class="paragraph">
 <p>There are several functions available to you within the context of a query. These are summarized in the table below:</p>
 </div>
@@ -3835,7 +3965,7 @@ Currently functions can only be applied to properties or associations of domain 
 </div>
 </div>
 <div class="sect3">
-<h4 id="_batch_updates_and_deletes">7.4.9. Batch Updates and Deletes</h4>
+<h4 id="_batch_updates_and_deletes">7.4.10. Batch Updates and Deletes</h4>
 <div class="paragraph">
 <p>Since each <code>where</code> method call returns a <a href="#detachedCriteria">DetachedCriteria</a> instance, you can use <code>where</code> queries to execute batch operations such as batch updates and deletes. For example, the following query will update all people with the surname "Simpson" to have the surname "Bloggs":</p>
 </div>
@@ -7175,7 +7305,7 @@ sessionFactory.openSession()</code></pre>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:6.0.3.RELEASE"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:6.0.4.RELEASE"</code></pre>
 </div>
 </div>
 </div>
