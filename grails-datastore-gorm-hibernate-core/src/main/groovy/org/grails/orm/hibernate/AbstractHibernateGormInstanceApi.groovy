@@ -142,16 +142,23 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
         // relieving this burden off the developer
         autoRetrieveAssocations datastore, domainClass, target
 
-        ((GormValidateable)target).skipValidation(!shouldValidate)
+        // If validation is disabled, skip it or if a flush:true is passed then disable it too to avoid duplicate validation
+        GormValidateable validateable = (GormValidateable) target
+        boolean shouldSkipValidation = !shouldValidate || shouldFlush
+        validateable.skipValidation(shouldSkipValidation)
 
-        if (shouldInsert(arguments)) {
-            return performInsert(target, shouldFlush)
-        }
-        else if(shouldMerge(arguments)) {
-            return performMerge(target, shouldFlush)
-        }
-        else {
-            return performSave(target, shouldFlush)
+        try {
+            if (shouldInsert(arguments)) {
+                return performInsert(target, shouldFlush)
+            }
+            else if(shouldMerge(arguments)) {
+                return performMerge(target, shouldFlush)
+            }
+            else {
+                return performSave(target, shouldFlush)
+            }
+        } finally {
+            validateable.skipValidation(!shouldFlush)
         }
     }
 

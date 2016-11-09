@@ -1,5 +1,6 @@
 package grails.gorm.validation
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.validation.constraints.eval.ConstraintsEvaluator
 import org.grails.datastore.mapping.model.MappingContext
@@ -72,9 +73,7 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
 
             if(pp instanceof Association) {
                 Association association = (Association)pp
-                if(association.isOwningSide()) {
-                    cascadeToAssociativeProperty(obj, errors, entityReflector, association)
-                }
+                cascadeToAssociativeProperty(obj, errors, entityReflector, association)
             }
 
             constrainedPropertyNames.remove(propertyName)
@@ -105,13 +104,30 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
         if (association instanceof ToOne) {
             Object associatedObject = reflector.getProperty(parent, propertyName)
 
-            if(proxyHandler?.isInitialized(associatedObject)) {
-                cascadeValidationToOne(parent, propertyName, (ToOne)association, errors, reflector, associatedObject, null)
+            if(associatedObject != null && proxyHandler?.isInitialized(associatedObject)) {
+                if(association.isOwningSide()) {
+                    cascadeValidationToOne(parent, propertyName, (ToOne)association, errors, reflector, associatedObject, null)
+                }
+                else {
+                    Errors existingErrors = retrieveErrors(associatedObject)
+                    if(existingErrors != null && existingErrors.hasErrors()) {
+                        for(error in existingErrors.fieldErrors) {
+                            String path = errors.getNestedPath() + "${propertyName}." +error.field
+                            errors.rejectValue(path, error.code, error.arguments, error.defaultMessage)
+                        }
+                    }
+                }
+
             }
         }
         else if (association instanceof ToMany) {
             cascadeValidationToMany(parent, propertyName, association, errors, reflector)
         }
+    }
+
+    @CompileDynamic
+    protected Errors retrieveErrors(associatedObject) {
+        (Errors) associatedObject.errors
     }
 
     /**
@@ -202,7 +218,6 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
             errors.setNestedPath(buildNestedPath(nestedPath, propertyName, indexOrKey));
 
             for (PersistentProperty associatedPersistentProperty : associatedPersistentProperties) {
-                if (associatedPersistentProperty.equals(otherSide)) continue;
                 if (association.isEmbedded() && EMBEDDED_EXCLUDES.contains(associatedPersistentProperty.getName())) {
                     continue
                 }
@@ -213,7 +228,8 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
                     ConstrainedProperty associatedConstrainedProperty = associatedConstrainedProperties.get(associatedPropertyName)
                     validatePropertyWithConstraint(associatedObject, errors.getNestedPath() + associatedPropertyName, associatedReflector, errors, associatedConstrainedProperty)
                 }
-
+                // don't continue cascade if the the other side is equal to avoid stack overflow
+                if (associatedPersistentProperty.equals(otherSide)) continue;
                 if (associatedPersistentProperty instanceof Association) {
 
                     cascadeToAssociativeProperty(

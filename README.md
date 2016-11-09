@@ -13,8 +13,8 @@ Getting Started
 
 For further information see the dedicated websites:
  
-* [Stable Version](http://grails.github.io/grails-data-mapping/latest/).
-* [Development Version](http://grails.github.io/grails-data-mapping/snapshot/).
+* [Stable Version](http://gorm.grails.org/).
+* [Development Version](http://gorm.grails.org/snapshot/).
 	
 License
 ---

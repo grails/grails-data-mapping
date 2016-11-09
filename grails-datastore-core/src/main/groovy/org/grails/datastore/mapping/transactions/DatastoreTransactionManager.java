@@ -125,9 +125,6 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
                 tx.setTimeout(timeout);
             }
 
-            // Add the Datastore transaction to the session holder.
-            txObject.setTransaction(tx);
-
             // Bind the session holder to the thread.
             if (txObject.isNewSessionHolder()) {
                 TransactionSynchronizationManager.bindResource(getDatastore(), txObject.getSessionHolder());
@@ -137,8 +134,11 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
         catch (Exception ex) {
             if (txObject.isNewSession()) {
                 try {
-                    if (session != null && session.getTransaction().isActive()) {
-                        session.getTransaction().rollback();
+                    if (session != null) {
+                        Transaction transaction = session.getTransaction();
+                        if(transaction != null && transaction.isActive()) {
+                            transaction.rollback();
+                        }
                     }
                 }
                 catch (Throwable ex2) {
@@ -156,14 +156,21 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
     protected void doCommit(DefaultTransactionStatus status) throws TransactionException {
         TransactionObject txObject = (TransactionObject) status.getTransaction();
         final SessionHolder sessionHolder = txObject.getSessionHolder();
-        if (status.isDebug()) {
-            logger.debug("Committing Datastore transaction on Session [" + sessionHolder.getSession() + "]");
-        }
         try {
-            if (sessionHolder.getSession() != null) {
-                sessionHolder.getSession().flush();
+            Transaction<?> transaction = txObject.getTransaction();
+            if(transaction != null && transaction.isActive()) {
+                Session session = sessionHolder.getSession();
+                if (session != null) {
+                    if (status.isDebug()) {
+                        logger.debug("Flushing Session prior to transaction commit [" + session + "]");
+                    }
+                    session.flush();
+                }
+                if (status.isDebug()) {
+                    logger.debug("Committing Datastore transaction on Session [" + session + "]");
+                }
+                transaction.commit();
             }
-            txObject.getTransaction().commit();
         }
         catch (DataAccessException ex) {
             throw new TransactionSystemException("Could not commit Datastore transaction", ex);
@@ -174,12 +181,15 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
     protected void doRollback(DefaultTransactionStatus status) throws TransactionException {
         TransactionObject txObject = (TransactionObject) status.getTransaction();
         final SessionHolder sessionHolder = txObject.getSessionHolder();
-        if (status.isDebug()) {
-            logger.debug("Rolling back Datastore transaction on Session [" +
-                    sessionHolder.getSession() + "]");
-        }
         try {
-            txObject.getTransaction().rollback();
+            Transaction<?> transaction = txObject.getTransaction();
+            if(transaction != null && transaction.isActive()) {
+                if (status.isDebug()) {
+                    logger.debug("Rolling back Datastore transaction on Session [" +
+                            sessionHolder.getSession() + "]");
+                }
+                transaction.rollback();
+            }
         }
         catch (DataAccessException ex) {
             throw new TransactionSystemException("Could not rollback Datastore transaction", ex);

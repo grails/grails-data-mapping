@@ -36,8 +36,12 @@ public class TransactionObject implements SmartTransactionObject {
         return getSessionHolder().getTransaction();
     }
 
+    /**
+     * @deprecated Here for binary compatibility, doesn't actually do anything
+     * @param transaction
+     */
+    @Deprecated
     public void setTransaction(Transaction<?> transaction) {
-        getSessionHolder().setTransaction(transaction);
     }
 
     public void setSession(Session session) {

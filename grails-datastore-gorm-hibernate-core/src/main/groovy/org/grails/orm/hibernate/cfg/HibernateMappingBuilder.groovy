@@ -18,6 +18,7 @@ package org.grails.orm.hibernate.cfg
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder
 import org.grails.datastore.mapping.model.config.GormProperties
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.hibernate.FetchMode
 import org.hibernate.InvalidMappingException
 import org.slf4j.Logger
@@ -36,11 +37,16 @@ import org.springframework.validation.DataBinder
 
 class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, PropertyConfig>{
 
+    private static final String INCLUDE_PARAM = 'include'
+    private static final String EXCLUDE_PARAM = 'exclude'
     static final Logger LOG = LoggerFactory.getLogger(this)
 
     Mapping mapping
     final String className
     final Closure defaultConstraints
+
+    private List<String> methodMissingExcludes = []
+    private List<String> methodMissingIncludes
 
     /**
      * Constructor for builder
@@ -657,12 +663,48 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
     }
 
     void methodMissing(String name, Object args) {
+        if(methodMissingIncludes != null && !methodMissingIncludes.contains(name)) {
+            return
+        }
+        else if(methodMissingExcludes.contains(name)) {
+            return
+        }
+
         boolean hasArgs = args.asBoolean()
         if ('user-type' == name && hasArgs && (args[0] instanceof Map)) {
             hibernateCustomUserType(args[0])
         }
         else if('importFrom' == name && hasArgs && (args[0] instanceof Class)) {
             // ignore, handled by constraints
+            ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass((Class)args[0]);
+            List<Closure> constraintsToImports = cpf.getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.CONSTRAINTS, Closure)
+            if(constraintsToImports) {
+
+                List originalIncludes = this.methodMissingIncludes
+                List originalExludes = this.methodMissingExcludes
+                try {
+                    if(args[-1] instanceof Map) {
+                        Map argMap = (Map) args[-1]
+                        def includes = argMap.get(INCLUDE_PARAM)
+                        def excludes = argMap.get(EXCLUDE_PARAM)
+                        if(includes instanceof List) {
+                            this.methodMissingIncludes = includes
+                        }
+                        if(excludes instanceof List) {
+                            this.methodMissingExcludes = excludes
+                        }
+                    }
+
+                    for(Closure callable in constraintsToImports) {
+                        callable.setDelegate(this)
+                        callable.setResolveStrategy(Closure.DELEGATE_ONLY)
+                        callable.call()
+                    }
+                } finally {
+                    this.methodMissingIncludes = originalIncludes
+                    this.methodMissingExcludes = originalExludes
+                }
+            }
         }
         else if (args && ((args[0] instanceof Map) || (args[0] instanceof Closure))) {
             handleMethodMissing(name, args)
