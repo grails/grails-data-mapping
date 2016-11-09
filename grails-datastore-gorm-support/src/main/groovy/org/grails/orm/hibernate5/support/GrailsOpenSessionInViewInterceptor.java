@@ -17,6 +17,7 @@ package org.grails.orm.hibernate5.support;
 
 import org.grails.orm.hibernate.AbstractHibernateDatastore;
 import org.grails.orm.hibernate.support.HibernateRuntimeUtils;
+import org.grails.orm.hibernate.support.HibernateVersionSupport;
 import org.grails.web.servlet.mvc.GrailsWebRequest;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
@@ -82,7 +83,8 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
         Session session = sessionHolder != null ? sessionHolder.getSession() : null;
         try {
             super.postHandle(request, model);
-            boolean isNotManual = session.getFlushMode() != FlushMode.MANUAL || session.getFlushMode() != FlushMode.COMMIT;
+            FlushMode flushMode = HibernateVersionSupport.getFlushMode(session);
+            boolean isNotManual = flushMode != FlushMode.MANUAL || flushMode != FlushMode.COMMIT;
             if (session != null && isNotManual) {
                 logger.debug("Eagerly flushing Hibernate session");
                 session.flush();
@@ -90,7 +92,7 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
         }
         finally {
             if (session != null) {
-                session.setFlushMode(FlushMode.MANUAL);
+                HibernateVersionSupport.setFlushMode(session, FlushMode.MANUAL);
             }
         }
     }

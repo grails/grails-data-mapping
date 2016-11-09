@@ -9,6 +9,7 @@ import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.proxy.EntityProxy;
 import org.springframework.cglib.reflect.FastClass;
 import org.springframework.cglib.reflect.FastMethod;
+import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.util.ReflectionUtils;
 
@@ -90,7 +91,15 @@ public class FieldEntityAccess implements EntityAccess {
     @Override
     public void setProperty(String name, Object value) {
         FieldEntityReflector.PropertyWriter writer = reflector.getPropertyWriter(name);
-        writer.write(entity, conversionService.convert(value, writer.propertyType()));
+        Object converted;
+        try {
+            converted = conversionService.convert(value, writer.propertyType());
+        } catch (ConversionException e) {
+            throw new IllegalArgumentException("Cannot assign value ["+value+"] to property ["+name+"] of type ["+writer.propertyType().getName()+"] of class ["+persistentEntity.getName()+"]. The value could not be converted to the appropriate type: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Cannot assign value ["+value+"] to property ["+name+"] of type ["+writer.propertyType().getName()+"] of class ["+persistentEntity.getName()+"]. The value is not an acceptable type: " + e.getMessage(), e);
+        }
+        writer.write(entity, converted);
     }
 
     @Override
@@ -100,12 +109,26 @@ public class FieldEntityAccess implements EntityAccess {
 
     @Override
     public void setIdentifier(Object id) {
-        reflector.setIdentifier(entity, conversionService.convert(id, reflector.identifierType()));
+        Object converted;
+        try {
+            converted = conversionService.convert(id, reflector.identifierType());
+        } catch (ConversionException e) {
+            throw new IllegalArgumentException("Cannot assign identifier ["+id+"] to property ["+reflector.getIdentifierName()+"] of type ["+reflector.identifierType().getName()+"] of class ["+persistentEntity.getName()+"]. The value could not be converted to the appropriate type: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Cannot assign identifier ["+id+"] to property ["+reflector.getIdentifierName()+"] of type ["+reflector.identifierType().getName()+"] of class ["+persistentEntity.getName()+"]. The identifier is not an compatible type: " + e.getMessage(), e);
+
+        }
+        reflector.setIdentifier(entity, converted);
     }
 
     @Override
     public void setIdentifierNoConversion(Object id) {
-        reflector.setIdentifier(entity, id);
+        try {
+            reflector.setIdentifier(entity, id);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Cannot assign identifier ["+id+"] to property ["+reflector.getIdentifierName()+"] of type ["+reflector.identifierType().getName()+"] of class ["+persistentEntity.getName()+"]. The identifier is not an compatible type: " + e.getMessage(), e);
+
+        }
     }
 
     @Override
@@ -125,7 +148,12 @@ public class FieldEntityAccess implements EntityAccess {
 
     @Override
     public void setPropertyNoConversion(String name, Object value) {
-        reflector.setProperty(entity, name, value);
+        try {
+            reflector.setProperty(entity, name, value);
+        } catch (Exception e) {
+            String valueType = value != null ? value.getClass().getName() : null;
+            throw new IllegalArgumentException("Cannot assign value ["+value+"] with type ["+valueType+"] to property ["+name+"] of class ["+persistentEntity.getName()+"]. The value is not an acceptable type: " + e.getMessage(), e);
+        }
     }
 
 
@@ -195,7 +223,7 @@ public class FieldEntityAccess implements EntityAccess {
                 this.identifierWriter = null;
                 this.identifierType = null;
             }
-            PersistentProperty[] composite = ((AbstractPersistentEntity) entity).getCompositeIdentity();
+            PersistentProperty[] composite = entity.getCompositeIdentity();
             if(composite != null) {
                 for (PersistentProperty property : composite) {
                     String propertyName = property.getName();
@@ -424,7 +452,7 @@ public class FieldEntityAccess implements EntityAccess {
                 try {
                     field.set(object, value);
                 } catch (Throwable e) {
-                    throw new IllegalArgumentException("Cannot write field ["+field+"] to object ["+object+"] of type ["+object.getClass()+"]");
+                    throw new IllegalArgumentException("Cannot set field ["+field.getName()+"] of object ["+object+"] for value ["+value+"] of type ["+value.getClass().getName()+"]");
                 }
             }
         }

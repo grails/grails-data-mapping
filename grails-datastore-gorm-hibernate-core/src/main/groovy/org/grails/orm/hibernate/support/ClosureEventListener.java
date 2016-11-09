@@ -331,7 +331,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
 
     private <T> T doWithManualSession(AbstractEvent event, Closure<T> callable) {
         Session session = event.getSession();
-        FlushMode current = session.getFlushMode();
+        FlushMode current = HibernateVersionSupport.getFlushMode(session);
         try {
             session.setFlushMode(FlushMode.MANUAL);
             return callable.call();

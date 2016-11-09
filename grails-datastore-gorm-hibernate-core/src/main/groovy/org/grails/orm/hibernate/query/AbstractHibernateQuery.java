@@ -173,30 +173,46 @@ public abstract class AbstractHibernateQuery extends Query {
             DetachedAssociationCriteria associationCriteria = (DetachedAssociationCriteria) criterion;
 
             Association association = associationCriteria.getAssociation();
+            List<Query.Criterion> criteria = associationCriteria.getCriteria();
 
-            CriteriaAndAlias criteriaAndAlias = getCriteriaAndAlias(associationCriteria);
-
-            if(criteriaAndAlias.criteria != null)
-                aliasInstanceStack.add(criteriaAndAlias.criteria);
-            else if(criteriaAndAlias.detachedCriteria != null)
-                aliasInstanceStack.add(criteriaAndAlias.detachedCriteria);
-            aliasStack.add(criteriaAndAlias.alias);
-            associationStack.add(association);
-            entityStack.add(association.getAssociatedEntity());
-
-            try {
-                @SuppressWarnings("unchecked")
-                List<Criterion> associationCriteriaList = associationCriteria.getCriteria();
-                for (Criterion c : associationCriteriaList) {
-                    add(c);
+            if(association instanceof Embedded) {
+                String associationName = association.getName();
+                for (Criterion c : criteria) {
+                    final org.hibernate.criterion.Criterion hibernateCriterion = getHibernateCriterionAdapter().toHibernateCriterion(this, c, associationName);
+                    if (hibernateCriterion != null) {
+                        addToCriteria(hibernateCriterion);
+                    }
                 }
             }
-            finally {
-                aliasInstanceStack.removeLast();
-                aliasStack.removeLast();
-                entityStack.removeLast();
-                associationStack.removeLast();
+            else {
+
+                CriteriaAndAlias criteriaAndAlias = getCriteriaAndAlias(associationCriteria);
+
+                if(criteriaAndAlias.criteria != null) {
+                    aliasInstanceStack.add(criteriaAndAlias.criteria);
+                }
+                else if(criteriaAndAlias.detachedCriteria != null) {
+                    aliasInstanceStack.add(criteriaAndAlias.detachedCriteria);
+                }
+                aliasStack.add(criteriaAndAlias.alias);
+                associationStack.add(association);
+                entityStack.add(association.getAssociatedEntity());
+
+                try {
+                    @SuppressWarnings("unchecked")
+                    List<Criterion> associationCriteriaList = criteria;
+                    for (Criterion c : associationCriteriaList) {
+                        add(c);
+                    }
+                }
+                finally {
+                    aliasInstanceStack.removeLast();
+                    aliasStack.removeLast();
+                    entityStack.removeLast();
+                    associationStack.removeLast();
+                }
             }
+
         }
         else {
 
@@ -482,7 +498,7 @@ public abstract class AbstractHibernateQuery extends Query {
             }
         }
         if (createdAssociationPaths.containsKey(associationName)) {
-            subCriteria = createdAssociationPaths.get(associationPath);
+            subCriteria = createdAssociationPaths.get(associationName);
         }
         else {
             if(parentCriteria != null) {

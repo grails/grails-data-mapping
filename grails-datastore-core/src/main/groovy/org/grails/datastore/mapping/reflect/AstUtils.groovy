@@ -432,6 +432,15 @@ class AstUtils {
         return findInterface(classNode, interfaceName) != null
     }
 
+    /**
+     * Whether the given type is a Groovy object
+     * @param type The type
+     * @return True if it is
+     */
+    static boolean isGroovyType(ClassNode type) {
+        return type.isPrimaryClassNode() || implementsInterface(type, "groovy.lang.GroovyObject")
+    }
+
     public static ClassNode findInterface(ClassNode classNode, String interfaceName) {
         ClassNode currentClassNode = classNode;
         while (currentClassNode != null && !currentClassNode.getName().equals(OBJECT_CLASS_NODE.getName())) {

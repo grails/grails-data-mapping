@@ -25,6 +25,24 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
             queryInfo.query == 'UPDATE grails.gorm.tests.Person person SET person.firstName=:p1 WHERE (person.age=:p2 AND lower(person.firstName) like lower(:p3))'
     }
 
+    void "Test update query with subquery"() {
+        given:"Some criteria"
+        DetachedCriteria criteria = new DetachedCriteria(Person).build {
+            notIn("age", new DetachedCriteria(Person).build {
+                eq('lastName', 'Simpson')
+            }.distinct('age'))
+        }
+
+        when:"A jpa query is built"
+        def builder = new JpaQueryBuilder(session.mappingContext.getPersistentEntity(Person.name),criteria.criteria)
+        def queryInfo = builder.buildUpdate(firstName:"Fred")
+
+        then:"The query is valid"
+        queryInfo.query == 'UPDATE grails.gorm.tests.Person person SET person.firstName=:p1 WHERE (person.age NOT IN (SELECT person1.age FROM grails.gorm.tests.Person person1 WHERE person1.lastName=:p2))'
+        queryInfo.parameters == ["Fred", "Simpson"]
+
+    }
+
     void "Test exception is thrown in join with delete"() {
         given:"Some criteria"
             DetachedCriteria criteria = new DetachedCriteria(Person).build {

@@ -2,18 +2,17 @@ package org.grails.gorm.rx.events
 
 import grails.gorm.rx.multitenancy.Tenants
 import groovy.transform.CompileStatic
-import org.grails.datastore.gorm.GormEnhancer
-import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.core.connections.ConnectionSource
 import org.grails.datastore.mapping.engine.event.PersistenceEventListener
 import org.grails.datastore.mapping.engine.event.PreInsertEvent
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.TenantId
+import org.grails.datastore.mapping.multitenancy.exceptions.TenantException
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.event.PostQueryEvent
 import org.grails.datastore.mapping.query.event.PreQueryEvent
 import org.grails.datastore.mapping.reflect.EntityReflector
 import org.grails.datastore.rx.RxDatastoreClient
-import org.grails.gorm.rx.api.RxGormEnhancer
 import org.springframework.context.ApplicationEvent
 import org.springframework.util.Assert
 
@@ -69,7 +68,13 @@ class MultiTenantEventListener implements PersistenceEventListener {
                     EntityReflector reflector = entity.getReflector();
                     if(supportsSourceType(datastoreClient.getClass()) && this.datastoreClient.equals(datastoreClient)) {
                         Serializable currentId = Tenants.currentId(datastoreClient.getClass());
-                        reflector.setProperty(preInsertEvent.getEntityObject(), tenantId.getName(), currentId);
+                        if(currentId != null) {
+                            try {
+                                reflector.setProperty(preInsertEvent.getEntityObject(), tenantId.getName(), currentId);
+                            } catch (Exception e) {
+                                throw new TenantException("Could not assigned tenant id ["+currentId+"] to property ["+tenantId+"], probably due to a type mismatch. You should return a type from the tenant resolver that matches the property type of the tenant id!: " + e.getMessage(), e);
+                            }
+                        }
                     }
                 }
             }

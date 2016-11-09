@@ -19,7 +19,7 @@ dependencies {
     }
     documentation "org.grails:grails-async:$grailsVersion"
     compileOnly "org.springframework:spring-beans:$springVersion"
-    compile 'io.reactivex:rxjava:1.1.3'
+    compile 'io.reactivex:rxjava:1.2.1'
 }
 
 tasks.withType(Groovydoc) {
