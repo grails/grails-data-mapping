@@ -86,6 +86,7 @@ org.grails.orm.hibernate
 org.grails.orm.hibernate.cfg
 org.grails.orm.hibernate.connections
 org.grails.orm.hibernate.datasource
+org.grails.orm.hibernate.dirty
 org.grails.orm.hibernate.exceptions
 org.grails.orm.hibernate.multitenancy
 org.grails.orm.hibernate.persister.entity
