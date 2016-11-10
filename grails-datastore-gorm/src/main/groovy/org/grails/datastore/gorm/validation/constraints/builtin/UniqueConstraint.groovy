@@ -46,10 +46,11 @@ class UniqueConstraint extends AbstractConstraint {
 
         DetachedCriteria detachedCriteria = new DetachedCriteria(constraintOwningClass)
         EntityReflector reflector = detachedCriteria.getPersistentEntity().getReflector()
+        String constraintPropertyName = this.constraintPropertyName
+        String group = this.group
 
         detachedCriteria = detachedCriteria.build {
             eq(constraintPropertyName, propertyValue)
-
             if(!group.isEmpty()) {
                 for(prop in group) {
                     def propName = prop.toString()
