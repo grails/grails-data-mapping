@@ -65,6 +65,11 @@ class HibernateConnectionSourceSettings extends ConnectionSourceSettings {
          * Whether Hibernate should be in read-only mode
          */
         boolean readOnly = false
+
+        /**
+         * Whether to use Hibernate's dirty checking instead of Grails'
+         */
+        boolean hibernateDirtyChecking = false
         /**
          * Cache settings
          */
@@ -212,7 +217,7 @@ class HibernateConnectionSourceSettings extends ConnectionSourceSettings {
             }
             props.put('hibernate.use_query_cache', String.valueOf(cache.queries))
 
-            if (entity_dirtiness_strategy != null) {
+            if (entity_dirtiness_strategy != null && useHibernateDirtyChecking) {
                 props.put('hibernate.entity_dirtiness_strategy', entity_dirtiness_strategy.name)
             }
 

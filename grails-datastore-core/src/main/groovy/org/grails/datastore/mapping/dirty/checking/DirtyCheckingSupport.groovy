@@ -15,6 +15,7 @@
 package org.grails.datastore.mapping.dirty.checking
 
 import groovy.transform.CompileStatic
+import groovy.transform.PackageScope
 import org.grails.datastore.mapping.collection.PersistentCollection
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
@@ -32,6 +33,10 @@ import org.grails.datastore.mapping.reflect.EntityReflector
  */
 @CompileStatic
 class DirtyCheckingSupport {
+    /**
+     * Used internally as a marker. Do not use in user code
+     */
+    public static final  Map DIRTY_CLASS_MARKER = [:]
 
     /**
      * Checks whether associations are dirty

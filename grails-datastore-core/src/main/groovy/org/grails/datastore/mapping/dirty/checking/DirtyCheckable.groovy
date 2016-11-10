@@ -10,8 +10,12 @@ import groovy.transform.CompileStatic
  * @since 2.0
  */
 @CompileStatic
-public trait DirtyCheckable {
+trait DirtyCheckable {
 
+    /**
+     * For internal use, do not use
+     */
+    @Deprecated
     public static final  String DIRTY_CLASS_MARKER = '$DIRTY_MARKER'
 
     private transient Map<String, Object> $changedProperties
@@ -28,7 +32,7 @@ public trait DirtyCheckable {
      * @return True if the instance has any changes
      */
     boolean hasChanged() {
-        $changedProperties == null || $changedProperties
+        $changedProperties == null || DirtyCheckingSupport.DIRTY_CLASS_MARKER.is($changedProperties) || !$changedProperties.isEmpty()
     }
 
     /**
@@ -36,14 +40,16 @@ public trait DirtyCheckable {
      * @return True if the given property has any changes
      */
     boolean hasChanged(String propertyName) {
-        $changedProperties == null ||  $changedProperties && $changedProperties.containsKey(propertyName)
+        hasChanged() && $changedProperties.containsKey(propertyName)
     }
 
     /**
      * Marks this instance as dirty
      */
     void markDirty() {
-        if( $changedProperties != null) $changedProperties.put getClass().name, DIRTY_CLASS_MARKER
+        if( $changedProperties != null) {
+            $changedProperties = DirtyCheckingSupport.DIRTY_CLASS_MARKER
+        }
     }
 
     /**
@@ -51,7 +57,7 @@ public trait DirtyCheckable {
      * @param propertyName The property name
      */
     void markDirty(String propertyName) {
-        if( $changedProperties != null && !$changedProperties.containsKey(propertyName))  {
+        if( $changedProperties != null && !$changedProperties.is(DirtyCheckingSupport.DIRTY_CLASS_MARKER) && !$changedProperties.containsKey(propertyName))  {
             $changedProperties.put propertyName, ((GroovyObject)this).getProperty(propertyName)
         }
     }
@@ -62,7 +68,7 @@ public trait DirtyCheckable {
      * @param newValue The new value
      */
     void markDirty(String propertyName, newValue) {
-        if( $changedProperties != null && !$changedProperties.containsKey(propertyName))  {
+        if( $changedProperties != null && !$changedProperties.is(DirtyCheckingSupport.DIRTY_CLASS_MARKER) && !$changedProperties.containsKey(propertyName))  {
             def oldValue = ((GroovyObject) this).getProperty(propertyName)
             if(newValue != oldValue) {
                 $changedProperties.put propertyName, oldValue
@@ -76,7 +82,7 @@ public trait DirtyCheckable {
      * @param newValue The new value
      */
     void markDirty(String propertyName, newValue, oldValue) {
-        if( $changedProperties != null && !$changedProperties.containsKey(propertyName))  {
+        if( $changedProperties != null && !$changedProperties.is(DirtyCheckingSupport.DIRTY_CLASS_MARKER) && !$changedProperties.containsKey(propertyName))  {
             if(newValue != oldValue) {
                 $changedProperties.put propertyName, oldValue
             }
@@ -87,10 +93,9 @@ public trait DirtyCheckable {
      * @return A list of the dirty property names
      */
     List<String> listDirtyPropertyNames() {
-        def className = getClass().name
         if($changedProperties != null) {
             return Collections.unmodifiableList(
-                $changedProperties.keySet().findAll { String propertyName -> propertyName != className }.toList()
+                $changedProperties.keySet().toList()
             )
         }
         return Collections.emptyList()

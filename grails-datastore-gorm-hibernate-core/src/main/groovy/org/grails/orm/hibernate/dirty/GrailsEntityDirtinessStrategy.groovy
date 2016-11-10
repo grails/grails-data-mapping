@@ -15,6 +15,7 @@
  */
 package org.grails.orm.hibernate.dirty
 
+import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.hibernate.CustomEntityDirtinessStrategy
 import org.hibernate.Session
@@ -24,34 +25,36 @@ import org.hibernate.persister.entity.EntityPersister
  * A class to customize Hibernate dirtiness based on Grails {@link DirtyCheckable} interface
  *
  * @author James Kleeh
+ * @author Graeme Rocher
+ *
  * @since 6.0.3
  */
+@CompileStatic
 class GrailsEntityDirtinessStrategy implements CustomEntityDirtinessStrategy {
 
     @Override
-    public boolean canDirtyCheck(Object entity, EntityPersister persister, Session session) {
+    boolean canDirtyCheck(Object entity, EntityPersister persister, Session session) {
         return entity instanceof DirtyCheckable
     }
 
     @Override
-    public boolean isDirty(Object entity, EntityPersister persister, Session session) {
-        !cast(entity).listDirtyPropertyNames().empty
+    boolean isDirty(Object entity, EntityPersister persister, Session session) {
+        !session.contains(entity) || cast(entity).hasChanged()
     }
 
     @Override
-    public void resetDirty(Object entity, EntityPersister persister, Session session) {
+    void resetDirty(Object entity, EntityPersister persister, Session session) {
         cast(entity).trackChanges()
     }
 
     @Override
-    public void findDirty(Object entity, EntityPersister persister, Session session, CustomEntityDirtinessStrategy.DirtyCheckContext dirtyCheckContext) {
-        final DirtyCheckable dirtyAware = cast(entity)
+    void findDirty(Object entity, EntityPersister persister, Session session, CustomEntityDirtinessStrategy.DirtyCheckContext dirtyCheckContext) {
         dirtyCheckContext.doDirtyChecking(
             new CustomEntityDirtinessStrategy.AttributeChecker() {
                 @Override
-                public boolean isDirty(CustomEntityDirtinessStrategy.AttributeInformation attributeInformation) {
+                boolean isDirty(CustomEntityDirtinessStrategy.AttributeInformation attributeInformation) {
                     String propertyName = attributeInformation.name
-                    cast(entity).listDirtyPropertyNames().contains(propertyName)
+                    !session.contains(entity) || cast(entity).hasChanged(propertyName)
                 }
             }
         );

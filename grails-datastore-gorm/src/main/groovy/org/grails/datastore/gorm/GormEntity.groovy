@@ -387,6 +387,9 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
 
                 else {
                     associationReflector?.setProperty(obj, name, targetObject)
+                    if(obj instanceof DirtyCheckable) {
+                        ((DirtyCheckable)obj).markDirty(name)
+                    }
                 }
             }
             targetObject
