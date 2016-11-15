@@ -46,6 +46,9 @@ import java.util.regex.Pattern
  */
 @CompileStatic
 class AstUtils {
+    private static final Class<?>[] EMPTY_JAVA_CLASS_ARRAY = [];
+    private static final Class<?>[] OBJECT_CLASS_ARG = [Object.class];
+
     public static final Object TRANSFORM_APPLIED_MARKER = new Object();
     public static final String DOMAIN_TYPE = "Domain"
     public static final Parameter[] ZERO_PARAMETERS = new Parameter[0];
@@ -473,4 +476,13 @@ class AstUtils {
         final String sample = sourceUnit.getSample(node.getLineNumber(), node.getColumnNumber(), new Janitor());
         System.err.println("WARNING: " + warningMessage + "\n\n" + sample);
     }
+
+    public static boolean isSetter(MethodNode declaredMethod) {
+        return declaredMethod.getParameters().length == 1 && ReflectionUtils.isSetter(declaredMethod.getName(), OBJECT_CLASS_ARG);
+    }
+
+    public static boolean isGetter(MethodNode declaredMethod) {
+        return declaredMethod.getParameters().length == 0 && ReflectionUtils.isGetter(declaredMethod.getName(), EMPTY_JAVA_CLASS_ARRAY);
+    }
+
 }

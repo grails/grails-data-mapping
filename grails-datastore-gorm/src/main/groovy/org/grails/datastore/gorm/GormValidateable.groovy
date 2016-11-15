@@ -19,6 +19,8 @@ import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.validation.ValidationErrors
 import org.springframework.validation.Errors
 
+import javax.persistence.Transient
+
 
 /**
  * A trait that adds GORM validation behavior to any class
@@ -34,6 +36,7 @@ trait GormValidateable {
     /**
      * The validation errors object
      */
+    @Transient
     Errors errors
 
     /**

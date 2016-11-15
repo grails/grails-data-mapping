@@ -1,5 +1,6 @@
 package org.grails.compiler.gorm
 
+import grails.gorm.dirty.checking.DirtyCheckedProperty
 import groovy.transform.CompilationUnitAware
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.*
@@ -10,6 +11,7 @@ import org.codehaus.groovy.control.CompilationUnit
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.syntax.Token
 import org.codehaus.groovy.syntax.Types
+import org.codehaus.groovy.transform.sc.StaticCompilationVisitor
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.AstUtils
@@ -33,6 +35,9 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
     private static final Class<?>[] OBJECT_CLASS_ARG = [Object.class];
     public static final String METHOD_NAME_MARK_DIRTY = "markDirty"
     public static final ConstantExpression CONSTANT_NULL = new ConstantExpression(null)
+    public static final ClassNode DIRTY_CHECKED_PROPERTY_CLASS_NODE = ClassHelper.make(DirtyCheckedProperty)
+    public static final AnnotationNode DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE = new AnnotationNode(DIRTY_CHECKED_PROPERTY_CLASS_NODE)
+
 
     protected CompilationUnit compilationUnit
 
@@ -68,7 +73,7 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
         // Now we go through all the properties, if the property is a persistent property and change tracking has been initiated then we add to the setter of the property
         // code that will mark the property as dirty. Note that if the property has no getter we have to add one, since only adding the setter results in a read-only property
         final propertyNodes = classNode.getProperties()
-
+        def staticCompilationVisitor = new StaticCompilationVisitor(source, classNode)
         Map<String, GetterAndSetter> gettersAndSetters = [:]
 
         for (MethodNode mn in classNode.methods) {
@@ -116,7 +121,12 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
                         returnType = originalReturnType
                     }
                     boolean booleanProperty = ClassHelper.boolean_TYPE.getName().equals(returnType.getName())
-                    classNode.addMethod(NameUtils.getGetterName(propertyName, false), PUBLIC, returnType, ZERO_PARAMETERS, null, new ReturnStatement(new VariableExpression(propertyField.getName())))
+                    def getter = classNode.addMethod(NameUtils.getGetterName(propertyName, false), PUBLIC, returnType, ZERO_PARAMETERS, null, new ReturnStatement(new VariableExpression(propertyField.getName())))
+                    getter.addAnnotation(DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE)
+                    staticCompilationVisitor.visitMethod(
+                        getter
+                    )
+
                     if(booleanProperty) {
                         classNode.addMethod(NameUtils.getGetterName(propertyName, true), PUBLIC, returnType, ZERO_PARAMETERS, null, new ReturnStatement(new VariableExpression(propertyField.getName())))
                     }
@@ -135,7 +145,13 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
                     )
                     )
 
-                    classNode.addMethod(setterName, PUBLIC, ClassHelper.VOID_TYPE, [setterParameter] as Parameter[], null, setterBody)
+
+                    def setter = classNode.addMethod(setterName, PUBLIC, ClassHelper.VOID_TYPE, [setterParameter] as Parameter[], null, setterBody)
+                    setter.addAnnotation(DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE)
+                    staticCompilationVisitor.visitMethod(
+                        setter
+                    )
+
                 }
                 else if(getterAndSetter.hasBoth()) {
                     // if both a setter and getter are present, we get hold of the setter and weave the markDirty method call into it
@@ -205,6 +221,13 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
         final setterMethod = getterAndSetter.setter
         if(setterMethod.annotations.any { AnnotationNode an -> an.classNode.name == 'grails.persistence.PersistenceMethod'} ) return
 
+        if(!setterMethod.getAnnotations(DIRTY_CHECKED_PROPERTY_CLASS_NODE)) {
+            setterMethod.addAnnotation(DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE)
+        }
+        def getter = getterAndSetter.getter
+        if(!getter.getAnnotations(DIRTY_CHECKED_PROPERTY_CLASS_NODE)) {
+            getter.addAnnotation(DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE)
+        }
         final currentBody = setterMethod.code
         final setterParameter = setterMethod.getParameters()[0]
         MethodCallExpression markDirtyMethodCall = createMarkDirtyMethodCall(markDirtyMethodNode, propertyName, setterParameter)
