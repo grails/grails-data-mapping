@@ -14,8 +14,8 @@ class HibernateEntityTransformationSpec extends Specification {
     void "test hibernate entity transformation"() {
         when:"A hibernate interceptor is set"
         Class cls = new GroovyClassLoader().parseClass('''
-import grails.gorm.hibernate.annotation.HibernateEntity
-@HibernateEntity
+import grails.gorm.annotation.Entity
+@Entity
 class MyEntity {
     String name
     String lastName

@@ -2,7 +2,6 @@ package org.grails.orm.hibernate.compiler
 
 import grails.gorm.dirty.checking.DirtyCheckedProperty
 import grails.gorm.hibernate.annotation.HibernateEntity
-import groovy.transform.CompilationUnitAware
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.*
 import org.codehaus.groovy.ast.stmt.BlockStatement
@@ -12,11 +11,12 @@ import org.codehaus.groovy.ast.stmt.Statement
 import org.codehaus.groovy.control.CompilationUnit
 import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.SourceUnit
-import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 import org.codehaus.groovy.transform.sc.StaticCompilationVisitor
-import org.grails.compiler.gorm.GormEntityTransformation
+import org.grails.compiler.gorm.AdditionalGormEntityTransformation
+import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.AstUtils
+import org.grails.datastore.mapping.reflect.ClassUtils
 import org.grails.datastore.mapping.reflect.NameUtils
 import org.hibernate.engine.spi.EntityEntry
 import org.hibernate.engine.spi.ManagedEntity
@@ -37,10 +37,12 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.*
  */
 @CompileStatic
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
-class HibernateEntityTransformation implements CompilationUnitAware,ASTTransformation {
+class HibernateEntityTransformation implements AdditionalGormEntityTransformation {
     private static final ClassNode MY_TYPE = new ClassNode(HibernateEntity.class);
-    CompilationUnit compilationUnit
     private static final Object APPLIED_MARKER = new Object();
+
+    final boolean available = ClassUtils.isPresent("org.hibernate.SessionFactory") && Boolean.valueOf(System.getProperty("hibernate.enhance", "true"))
+    CompilationUnit compilationUnit
 
     @Override
     void visit(ASTNode[] astNodes, SourceUnit sourceUnit) {
@@ -70,10 +72,12 @@ class HibernateEntityTransformation implements CompilationUnitAware,ASTTransform
             return
         }
 
-        // first apply GORM entity transformation
-        GormEntityTransformation gormEntityTransformation = new GormEntityTransformation()
-        gormEntityTransformation.setCompilationUnit(compilationUnit)
-        gormEntityTransformation.visit(classNode, sourceUnit)
+        def mapWith = AstUtils.getPropertyFromHierarchy(classNode, GormProperties.MAPPING_STRATEGY)
+        String mapWithValue = mapWith?.initialExpression?.text
+
+        if(mapWithValue != null && (mapWithValue != ('hibernate') || mapWithValue != GormProperties.DEFAULT_MAPPING_STRATEGY)) {
+            return
+        }
 
         ClassNode managedEntityClassNode = ClassHelper.make(ManagedEntity)
         ClassNode attributeInterceptableClassNode = ClassHelper.make(PersistentAttributeInterceptable)

@@ -267,7 +267,12 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
             }
 
         }
-
+        def additionalTransforms = ServiceLoader.load(AdditionalGormEntityTransformation, getClass().classLoader)
+        for(additionalTransform in additionalTransforms) {
+            if(additionalTransform.isAvailable()) {
+                additionalTransform.visit(classNode, sourceUnit)
+            }
+        }
 
         if(compilationUnit != null && !isRxEntity) {
             org.codehaus.groovy.transform.trait.TraitComposer.doExtendTraits(classNode, sourceUnit, compilationUnit);
