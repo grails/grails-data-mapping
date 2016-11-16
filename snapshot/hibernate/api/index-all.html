@@ -2034,6 +2034,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html#dirty" title="Field in AbstractPersistentCollection">dirty</a></span> - Field in <a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html">AbstractPersistentCollection</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html#DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE" title="Field in DirtyCheckingTransformer">DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE</a></span> - Field in <a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html">DirtyCheckingTransformer</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html#DIRTY_CHECKED_PROPERTY_CLASS_NODE" title="Field in DirtyCheckingTransformer">DIRTY_CHECKED_PROPERTY_CLASS_NODE</a></span> - Field in <a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html">DirtyCheckingTransformer</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckable.html#DIRTY_CLASS_MARKER" title="Field in DirtyCheckable">DIRTY_CLASS_MARKER</a></span> - Field in <a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckable.html">DirtyCheckable</a>
 </dt><dd> <div class="block">For internal use, do not use</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingSupport.html#DIRTY_CLASS_MARKER" title="Field in DirtyCheckingSupport">DIRTY_CLASS_MARKER</a></span> - Field in <a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingSupport.html">DirtyCheckingSupport</a>
@@ -2048,6 +2052,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">Interface to classes that are able to track changes to their internal state.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckableCollection.html" title="Interface in org.grails.datastore.mapping.dirty.checking">DirtyCheckableCollection</a></span> - Interface in <a href="./org/grails/datastore/mapping/dirty/checking/package-summary.html">org.grails.datastore.mapping.dirty.checking</a>
 </dt><dd><div class="block">@author Graeme Rocher</div></dd>
+<dt><span class="strong"><a href="grails/gorm/dirty/checking/DirtyCheckedProperty.html" title="Annotation Type in grails.gorm.dirty.checking">DirtyCheckedProperty</a></span> - Annotation Type in <a href="./grails/gorm/dirty/checking/package-summary.html">grails.gorm.dirty.checking</a>
+</dt><dd><div class="block">A marker annotation added to methods that are dirty checked</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingCollection.html" title="Class in org.grails.datastore.mapping.dirty.checking">DirtyCheckingCollection</a></span> - Class in <a href="./org/grails/datastore/mapping/dirty/checking/package-summary.html">org.grails.datastore.mapping.dirty.checking</a>
 </dt><dd><div class="block">Collection capable of marking the parent entity as dirty when it is modified</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingCollection.html#DirtyCheckingCollection(java.util.Collection, org.grails.datastore.mapping.dirty.checking.DirtyCheckable, java.lang.String)" title="Constructor in DirtyCheckingCollection">DirtyCheckingCollection(Collection, DirtyCheckable, String)</a></span> - Constructor in <a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingCollection.html">DirtyCheckingCollection</a>
@@ -4575,6 +4581,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">@author Steven Devijver</div></dd>
 <dt><span class="strong"><a href="grails/test/mixin/hibernate/HibernateTestMixin.html#hibernateDomain(TestRuntime, java.util.Map)" title="Method in HibernateTestMixin">hibernateDomain(TestRuntime, Map)</a></span> - Method in <a href="grails/test/mixin/hibernate/HibernateTestMixin.html">HibernateTestMixin</a>
 </dt><dd> <div class="block">Sets up a GORM for Hibernate domain</div></dd>
+<dt><span class="strong"><a href="grails/gorm/hibernate/annotation/HibernateEntity.html" title="Annotation Type in grails.gorm.hibernate.annotation">HibernateEntity</a></span> - Annotation Type in <a href="./grails/gorm/hibernate/annotation/package-summary.html">grails.gorm.hibernate.annotation</a>
+</dt><dd><div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/compiler/HibernateEntityTransformation.html" title="Class in org.grails.orm.hibernate.compiler">HibernateEntityTransformation</a></span> - Class in <a href="./org/grails/orm/hibernate/compiler/package-summary.html">org.grails.orm.hibernate.compiler</a>
+</dt><dd><div class="block">A transformation that transforms entities that implement the <a href='../../../../../grails/gorm/hibernate/annotation/HibernateEntity.html' title='HibernateEntity'>HibernateEntity</a> trait,
+ adding logic that intercepts getter and setter access to eliminate the need for proxies.</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/HibernateEventListeners.html" title="Class in org.grails.orm.hibernate">HibernateEventListeners</a></span> - Class in <a href="./org/grails/orm/hibernate/package-summary.html">org.grails.orm.hibernate</a>
 </dt><dd><div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/EventListenerIntegrator.html#hibernateEventListeners" title="Field in EventListenerIntegrator">hibernateEventListeners</a></span> - Field in <a href="org/grails/orm/hibernate/EventListenerIntegrator.html">EventListenerIntegrator</a>
@@ -5232,6 +5243,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Whether this PersistentEntity is mapped using a different store. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/ToOne.html#isForeignKeyInChild()" title="Method in ToOne">isForeignKeyInChild()</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/ToOne.html">ToOne</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/AstUtils.html#isGetter(org.codehaus.groovy.ast.MethodNode)" title="Method in AstUtils">isGetter(MethodNode)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/AstUtils.html">AstUtils</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/ReflectionUtils.html#isGetter(java.lang.String, Class<?>)" title="Method in ReflectionUtils">isGetter(String, Class&lt;?&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/ReflectionUtils.html">ReflectionUtils</a>
 </dt><dd> <div class="block">Returns true if the name of the method specified and the number of arguments make it a javabean property</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html#isGrailsPresent()" title="Method in AbstractDatastoreInitializer">isGrailsPresent()</a></span> - Method in <a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html">AbstractDatastoreInitializer</a>
@@ -5457,6 +5470,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/QueryCreator.html#isSchemaless()" title="Method in QueryCreator">isSchemaless()</a></span> - Method in <a href="org/grails/datastore/mapping/query/QueryCreator.html">QueryCreator</a>
 </dt><dd> <div class="block">@return Whether schemaless queries are allowed</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/GrailsHibernateTemplate.html#isSessionTransactional(org.hibernate.Session)" title="Method in GrailsHibernateTemplate">isSessionTransactional(Session)</a></span> - Method in <a href="org/grails/orm/hibernate/GrailsHibernateTemplate.html">GrailsHibernateTemplate</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/AstUtils.html#isSetter(org.codehaus.groovy.ast.MethodNode)" title="Method in AstUtils">isSetter(MethodNode)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/AstUtils.html">AstUtils</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/ReflectionUtils.html#isSetter(java.lang.String, java.lang.Class)" title="Method in ReflectionUtils">isSetter(String, Class)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/ReflectionUtils.html">ReflectionUtils</a>
 </dt><dd> <div class="block"></div></dd>
@@ -8844,6 +8859,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/compiler/gorm/GlobalTraitRepairTransformation.html#visit(org.codehaus.groovy.ast.ASTNode, org.codehaus.groovy.control.SourceUnit)" title="Method in GlobalTraitRepairTransformation">visit(ASTNode, SourceUnit)</a></span> - Method in <a href="org/grails/compiler/gorm/GlobalTraitRepairTransformation.html">GlobalTraitRepairTransformation</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/compiler/gorm/GormEntityTransformation.html#visit(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.control.SourceUnit)" title="Method in GormEntityTransformation">visit(ClassNode, SourceUnit)</a></span> - Method in <a href="org/grails/compiler/gorm/GormEntityTransformation.html">GormEntityTransformation</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/compiler/HibernateEntityTransformation.html#visit(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.control.SourceUnit)" title="Method in HibernateEntityTransformation">visit(ClassNode, SourceUnit)</a></span> - Method in <a href="org/grails/orm/hibernate/compiler/HibernateEntityTransformation.html">HibernateEntityTransformation</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaTransformer.html#visitClass(org.codehaus.groovy.ast.ClassNode)" title="Method in DetachedCriteriaTransformer">visitClass(ClassNode)</a></span> - Method in <a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaTransformer.html">DetachedCriteriaTransformer</a>
 </dt><dd> <div class="block"></div></dd>

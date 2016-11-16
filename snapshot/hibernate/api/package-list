@@ -3,6 +3,7 @@ grails.gorm
 grails.gorm.annotation
 grails.gorm.api
 grails.gorm.dirty.checking
+grails.gorm.hibernate.annotation
 grails.gorm.multitenancy
 grails.gorm.transactions
 grails.orm
@@ -84,6 +85,7 @@ org.grails.datastore.mapping.transactions.support
 org.grails.datastore.mapping.validation
 org.grails.orm.hibernate
 org.grails.orm.hibernate.cfg
+org.grails.orm.hibernate.compiler
 org.grails.orm.hibernate.connections
 org.grails.orm.hibernate.datasource
 org.grails.orm.hibernate.dirty
