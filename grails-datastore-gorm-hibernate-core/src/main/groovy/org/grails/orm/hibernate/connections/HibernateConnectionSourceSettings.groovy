@@ -217,7 +217,7 @@ class HibernateConnectionSourceSettings extends ConnectionSourceSettings {
             }
             props.put('hibernate.use_query_cache', String.valueOf(cache.queries))
 
-            if (entity_dirtiness_strategy != null && useHibernateDirtyChecking) {
+            if (entity_dirtiness_strategy != null && !hibernateDirtyChecking) {
                 props.put('hibernate.entity_dirtiness_strategy', entity_dirtiness_strategy.name)
             }
 
