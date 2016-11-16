@@ -21,6 +21,7 @@ import org.grails.datastore.gorm.GormValidateable
 import org.grails.datastore.gorm.validation.CascadingValidator
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.config.GormProperties
+import org.grails.datastore.mapping.model.types.Embedded
 import org.grails.datastore.mapping.proxy.ProxyHandler
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.mapping.reflect.ClassUtils
@@ -293,7 +294,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
         EntityReflector reflector = datastore.mappingContext.getEntityReflector(entity)
         IHibernateTemplate t = this.hibernateTemplate
         for (PersistentProperty prop in entity.associations) {
-            if(prop instanceof ToOne) {
+            if(prop instanceof ToOne && !(prop instanceof Embedded)) {
                 ToOne toOne = (ToOne)prop
 
                 def propertyName = prop.name
