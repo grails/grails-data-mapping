@@ -146,3 +146,17 @@ class MyEntity {
         myEntity.name == 'changed'
     }
 }
+@HibernateEntity
+class MyTest {
+    String name
+    String lastName
+    int age
+
+    String getLastName() {
+        return this.lastName
+    }
+
+    void setLastName(String name) {
+        this.lastName = name
+    }
+}

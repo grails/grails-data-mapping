@@ -224,6 +224,10 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
         if(!setterMethod.getAnnotations(DIRTY_CHECKED_PROPERTY_CLASS_NODE)) {
             setterMethod.addAnnotation(DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE)
         }
+        else {
+            // already woven
+            return
+        }
         def getter = getterAndSetter.getter
         if(!getter.getAnnotations(DIRTY_CHECKED_PROPERTY_CLASS_NODE)) {
             getter.addAnnotation(DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE)

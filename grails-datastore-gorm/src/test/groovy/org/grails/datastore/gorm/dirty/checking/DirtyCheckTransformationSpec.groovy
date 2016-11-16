@@ -223,7 +223,6 @@ class FundProduct {
             !book.hasChanged()
         when: "The title is updated"
             book.title = "Title (Edited)"
-            book.markDirty()
         then: "The listDirtyPropertyNames should not include the class name"
             book.hasChanged()
             book.hasChanged("title")

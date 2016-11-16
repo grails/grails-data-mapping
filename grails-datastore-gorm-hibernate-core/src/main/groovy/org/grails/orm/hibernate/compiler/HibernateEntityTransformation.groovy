@@ -115,9 +115,7 @@ class HibernateEntityTransformation implements CompilationUnitAware,ASTTransform
                 persistentAttributeInterceptorClassNode,
                 AstUtils.ZERO_PARAMETERS,
                 null,
-                block(
-                    returnS(varX(interceptorField))
-                )
+                returnS(varX(interceptorField))
         )
         classNode.addMethod(getInterceptorMethod)
         staticCompilationVisitor.visitMethod(getInterceptorMethod)
@@ -130,9 +128,7 @@ class HibernateEntityTransformation implements CompilationUnitAware,ASTTransform
                 ClassHelper.VOID_TYPE,
                 params(p1),
                 null,
-                block(
-                    assignS( varX(interceptorField), varX(p1) )
-                )
+                assignS( varX(interceptorField), varX(p1) )
         )
         classNode.addMethod(setInterceptorMethod)
         staticCompilationVisitor.visitMethod(setInterceptorMethod)
@@ -144,9 +140,7 @@ class HibernateEntityTransformation implements CompilationUnitAware,ASTTransform
                 ClassHelper.OBJECT_TYPE,
                 AstUtils.ZERO_PARAMETERS,
                 null,
-                block(
-                    returnS(varX("this"))
-                )
+                returnS(varX("this"))
         )
         classNode.addMethod(getEntityInstanceMethod)
         staticCompilationVisitor.visitMethod(getEntityInstanceMethod)
@@ -159,9 +153,7 @@ class HibernateEntityTransformation implements CompilationUnitAware,ASTTransform
                 entityEntryClassNode,
                 AstUtils.ZERO_PARAMETERS,
                 null,
-                block(
-                    returnS(varX(entityEntryHolderField))
-                )
+                returnS(varX(entityEntryHolderField))
         )
         classNode.addMethod(getEntityEntryMethod)
         staticCompilationVisitor.visitMethod(getEntityEntryMethod)
@@ -174,9 +166,7 @@ class HibernateEntityTransformation implements CompilationUnitAware,ASTTransform
                 ClassHelper.VOID_TYPE,
                 params(entityEntryParam),
                 null,
-                block(
-                    assignS( varX(entityEntryHolderField), varX(entityEntryParam) )
-                )
+                assignS( varX(entityEntryHolderField), varX(entityEntryParam) )
         )
         classNode.addMethod(setEntityEntryMethod)
         staticCompilationVisitor.visitMethod(setEntityEntryMethod)
@@ -188,9 +178,7 @@ class HibernateEntityTransformation implements CompilationUnitAware,ASTTransform
                 managedEntityClassNode,
                 AstUtils.ZERO_PARAMETERS,
                 null,
-                block(
-                    returnS(varX(previousManagedEntityField))
-                )
+                returnS(varX(previousManagedEntityField))
         )
         classNode.addMethod(getPreviousManagedEntityMethod)
         staticCompilationVisitor.visitMethod(getPreviousManagedEntityMethod)
@@ -202,9 +190,7 @@ class HibernateEntityTransformation implements CompilationUnitAware,ASTTransform
                 managedEntityClassNode,
                 AstUtils.ZERO_PARAMETERS,
                 null,
-                block(
-                    returnS(varX(nextManagedEntityField))
-                )
+                returnS(varX(nextManagedEntityField))
         )
         classNode.addMethod(getNextManagedEntityMethod)
         staticCompilationVisitor.visitMethod(getNextManagedEntityMethod)
@@ -217,9 +203,7 @@ class HibernateEntityTransformation implements CompilationUnitAware,ASTTransform
                 ClassHelper.VOID_TYPE,
                 params(previousParam),
                 null,
-                block(
-                    assignS( varX(previousManagedEntityField), varX(previousParam) )
-                )
+                assignS( varX(previousManagedEntityField), varX(previousParam) )
         )
         classNode.addMethod(setPreviousManagedEntityMethod)
         staticCompilationVisitor.visitMethod(setPreviousManagedEntityMethod)
@@ -232,9 +216,7 @@ class HibernateEntityTransformation implements CompilationUnitAware,ASTTransform
                 ClassHelper.VOID_TYPE,
                 params(nextParam),
                 null,
-                block(
-                    assignS( varX(nextManagedEntityField), varX(nextParam) )
-                )
+                assignS( varX(nextManagedEntityField), varX(nextParam) )
         )
         classNode.addMethod(setNextManagedEntityMethod)
         staticCompilationVisitor.visitMethod(setNextManagedEntityMethod)
