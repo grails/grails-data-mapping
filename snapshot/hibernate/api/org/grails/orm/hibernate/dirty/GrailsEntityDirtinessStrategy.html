@@ -163,11 +163,16 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>org.hibernate.engine.spi.Status</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getStatus(org.hibernate.Session, java.lang.Object)">getStatus</a></strong>(org.hibernate.Session session, java.lang.Object entity)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isDirty(java.lang.Object, org.hibernate.persister.entity.EntityPersister, org.hibernate.Session)">isDirty</a></strong>(java.lang.Object entity, org.hibernate.persister.entity.EntityPersister persister, org.hibernate.Session session)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#resetDirty(java.lang.Object, org.hibernate.persister.entity.EntityPersister, org.hibernate.Session)">resetDirty</a></strong>(java.lang.Object entity, org.hibernate.persister.entity.EntityPersister persister, org.hibernate.Session session)</code><br></td>
                         </tr>
@@ -236,6 +241,15 @@ boolean <strong>canDirtyCheck</strong>(java.lang.Object entity, org.hibernate.pe
                             <li class="blockList">
                                 <h4>@java.lang.Override
 void <strong>findDirty</strong>(java.lang.Object entity, org.hibernate.persister.entity.EntityPersister persister, org.hibernate.Session session, org.hibernate.CustomEntityDirtinessStrategy$DirtyCheckContext dirtyCheckContext)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getStatus(org.hibernate.Session, java.lang.Object)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@groovy.transform.CompileDynamic
+org.hibernate.engine.spi.Status <strong>getStatus</strong>(org.hibernate.Session session, java.lang.Object entity)</h4>
                                 <p></p>
                             </li>
                         </ul>
