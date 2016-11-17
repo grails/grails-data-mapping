@@ -17,6 +17,7 @@ import org.grails.datastore.mapping.core.Datastore
 import org.hibernate.Criteria
 import org.hibernate.FlushMode
 import org.hibernate.Query
+import org.hibernate.SQLQuery
 import org.hibernate.Session
 import org.hibernate.criterion.Example
 import org.hibernate.criterion.Projections
@@ -266,6 +267,51 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
             populateQueryWithNamedArguments(q, params)
 
             createHqlQuery(session, q).list()
+        }
+    }
+
+    /**
+     * Finds all results for this entity for the given SQL query
+     *
+     * @param sql The SQL query
+     * @param args The arguments
+     * @return All entities matching the SQL query
+     */
+    List<D> findAllWithSql(CharSequence sql, Map args = Collections.emptyMap()) {
+        IHibernateTemplate template = hibernateTemplate
+        return (List<D>) template.execute { Session session ->
+
+            List params = []
+            if(sql instanceof GString) {
+                def gString = (GString) sql
+                StringBuilder sqlString = new StringBuilder()
+                int i = 0
+                Object[] values = gString.values
+                def strings = gString.getStrings()
+                for(str in strings) {
+                    sqlString.append(str)
+                    if(i < values.length) {
+                        sqlString.append('?')
+                        params.add(values[i++])
+                    }
+                }
+                sql = sqlString
+            }
+            SQLQuery q = session.createSQLQuery(sql.toString())
+
+            template.applySettings(q)
+
+            params.eachWithIndex { val, int i ->
+                if (val instanceof CharSequence) {
+                    q.setParameter i, val.toString()
+                }
+                else {
+                    q.setParameter i, val
+                }
+            }
+            q.addEntity(persistentClass)
+            populateQueryArguments(q, args)
+            return createHqlQuery(session, q).list()
         }
     }
 
