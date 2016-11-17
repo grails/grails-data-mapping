@@ -19,6 +19,9 @@ import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.hibernate.CustomEntityDirtinessStrategy
 import org.hibernate.Session
+import org.hibernate.engine.spi.EntityEntry
+import org.hibernate.engine.spi.SessionImplementor
+import org.hibernate.engine.spi.Status
 import org.hibernate.persister.entity.EntityPersister
 
 /**
@@ -53,8 +56,23 @@ class GrailsEntityDirtinessStrategy implements CustomEntityDirtinessStrategy {
             new CustomEntityDirtinessStrategy.AttributeChecker() {
                 @Override
                 boolean isDirty(CustomEntityDirtinessStrategy.AttributeInformation attributeInformation) {
+                    SessionImplementor si = (SessionImplementor) session
+                    EntityEntry entry = si.getPersistenceContext().getEntry(entity)
                     String propertyName = attributeInformation.name
-                    !session.contains(entity) || cast(entity).hasChanged(propertyName)
+                    if(entry != null) {
+                        if(entry.status == Status.MANAGED) {
+                            // perform dirty check
+                            return cast(entity).hasChanged(propertyName)
+                        }
+                        else {
+                            // either deleted or in a state that cannot be regarded as dirty
+                            return false
+                        }
+                    }
+                    else {
+                        // a new object not within the session
+                        return true
+                    }
                 }
             }
         );
