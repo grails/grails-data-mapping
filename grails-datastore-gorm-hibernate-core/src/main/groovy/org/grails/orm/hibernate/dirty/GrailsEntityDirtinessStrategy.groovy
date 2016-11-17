@@ -15,11 +15,11 @@
  */
 package org.grails.orm.hibernate.dirty
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.hibernate.CustomEntityDirtinessStrategy
 import org.hibernate.Session
-import org.hibernate.engine.spi.EntityEntry
 import org.hibernate.engine.spi.SessionImplementor
 import org.hibernate.engine.spi.Status
 import org.hibernate.persister.entity.EntityPersister
@@ -52,15 +52,14 @@ class GrailsEntityDirtinessStrategy implements CustomEntityDirtinessStrategy {
 
     @Override
     void findDirty(Object entity, EntityPersister persister, Session session, CustomEntityDirtinessStrategy.DirtyCheckContext dirtyCheckContext) {
+        Status status = getStatus(session, entity)
         dirtyCheckContext.doDirtyChecking(
             new CustomEntityDirtinessStrategy.AttributeChecker() {
                 @Override
                 boolean isDirty(CustomEntityDirtinessStrategy.AttributeInformation attributeInformation) {
-                    SessionImplementor si = (SessionImplementor) session
-                    EntityEntry entry = si.getPersistenceContext().getEntry(entity)
                     String propertyName = attributeInformation.name
-                    if(entry != null) {
-                        if(entry.status == Status.MANAGED) {
+                    if(status != null) {
+                        if(status == Status.MANAGED) {
                             // perform dirty check
                             return cast(entity).hasChanged(propertyName)
                         }
@@ -76,6 +75,12 @@ class GrailsEntityDirtinessStrategy implements CustomEntityDirtinessStrategy {
                 }
             }
         );
+    }
+
+    @CompileDynamic
+    Status getStatus(Session session, Object entity) {
+        SessionImplementor si = (SessionImplementor) session
+        return si.getPersistenceContext().getEntry(entity)?.getStatus()
     }
 
     private DirtyCheckable cast(Object entity) {
