@@ -44,10 +44,10 @@ trait DirtyCheckable {
     }
 
     /**
-     * Marks this instance as dirty
+     * Marks the whole class and all its properties as dirty. When called any future call to any of the hasChanged methods will return true.
      */
     void markDirty() {
-        if( $changedProperties != null) {
+        if( $changedProperties != null && $changedProperties.isEmpty()) {
             $changedProperties = DirtyCheckingSupport.DIRTY_CLASS_MARKER
         }
     }
