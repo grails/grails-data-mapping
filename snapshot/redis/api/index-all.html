@@ -765,6 +765,8 @@ if (location.href.indexOf('is-external=true') == -1) {
  form such as a table, column family, or document (depending on the underlying data store).</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#classMapping" title="Field in NativeEntryEntityPersister">classMapping</a></span> - Field in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/utils/ClasspathEntityScanner.html" title="Class in org.grails.datastore.gorm.utils">ClasspathEntityScanner</a></span> - Class in <a href="./org/grails/datastore/gorm/utils/package-summary.html">org.grails.datastore.gorm.utils</a>
+</dt><dd><div class="block">Utility class for scanning the classpath for entities</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/ClassUtils.html" title="Class in org.grails.datastore.mapping.reflect">ClassUtils</a></span> - Class in <a href="./org/grails/datastore/mapping/reflect/package-summary.html">org.grails.datastore.mapping.reflect</a>
 </dt><dd><div class="block">Helper methods for dealing with classes and reflection</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/support/AbstractDatastorePersistenceContextInterceptor.html#clear()" title="Method in AbstractDatastorePersistenceContextInterceptor">clear()</a></span> - Method in <a href="org/grails/datastore/gorm/support/AbstractDatastorePersistenceContextInterceptor.html">AbstractDatastorePersistenceContextInterceptor</a>
@@ -1890,7 +1892,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/AssociationQuery.html#executeQuery(org.grails.datastore.mapping.model.PersistentEntity, Junction)" title="Method in AssociationQuery">executeQuery(PersistentEntity, Junction)</a></span> - Method in <a href="org/grails/datastore/mapping/query/AssociationQuery.html">AssociationQuery</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#executeQuery(java.lang.String, java.util.Collection, java.util.Map)" title="Method in GormEntity">executeQuery(String, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#executeQuery(java.lang.CharSequence, java.util.Collection, java.util.Map)" title="Method in GormEntity">executeQuery(CharSequence, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
 </dt><dd> <div class="block">Executes a query for the given String</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#executeQuery(java.lang.CharSequence, java.util.Collection, java.util.Map)" title="Method in GormStaticApi">executeQuery(CharSequence, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
 </dt><dd> <div class="block"></div></dd>
@@ -1905,7 +1907,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/redis/query/RedisQuery.html#executeSubBetween(org.grails.datastore.mapping.redis.engine.RedisEntityPersister, Between)" title="Method in RedisQuery">executeSubBetween(RedisEntityPersister, Between)</a></span> - Method in <a href="org/grails/datastore/mapping/redis/query/RedisQuery.html">RedisQuery</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#executeUpdate(java.lang.String, java.util.Collection, java.util.Map)" title="Method in GormEntity">executeUpdate(String, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#executeUpdate(java.lang.CharSequence, java.util.Collection, java.util.Map)" title="Method in GormEntity">executeUpdate(CharSequence, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
 </dt><dd> <div class="block">Executes an update for the given String</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#executeUpdate(java.lang.CharSequence, java.util.Collection, java.util.Map)" title="Method in GormStaticApi">executeUpdate(CharSequence, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
 </dt><dd> <div class="block"></div></dd>
@@ -1974,7 +1976,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/DetachedCriteria.html#find(groovy.lang.Closure)" title="Method in DetachedCriteria">find(Closure)</a></span> - Method in <a href="grails/gorm/DetachedCriteria.html">DetachedCriteria</a>
 </dt><dd> <div class="block">Synonym for #get</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#find(java.lang.String, java.util.Collection, java.util.Map)" title="Method in GormEntity">find(String, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#find(java.lang.CharSequence, java.util.Collection, java.util.Map)" title="Method in GormEntity">find(CharSequence, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
 </dt><dd> <div class="block">Finds an object for the given string-based query, positional parameters and arguments</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/GormQueryOperations.html#find()" title="Method in GormQueryOperations">find()</a></span> - Method in <a href="org/grails/datastore/gorm/query/GormQueryOperations.html">GormQueryOperations</a>
 </dt><dd> <div class="block">Synonym for #get</div></dd>
@@ -1988,7 +1990,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">@return Find a single result</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/multitenancy/TenantDelegatingGormOperations.html#find(java.lang.CharSequence, java.util.Collection, java.util.Map)" title="Method in TenantDelegatingGormOperations">find(CharSequence, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/multitenancy/TenantDelegatingGormOperations.html">TenantDelegatingGormOperations</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#findAll(java.lang.String, java.util.Collection, java.util.Map)" title="Method in GormEntity">findAll(String, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#findAll(java.lang.CharSequence, java.util.Collection, java.util.Map)" title="Method in GormEntity">findAll(CharSequence, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
 </dt><dd> <div class="block">Finds all objects for the given string-based query, positional parameters and arguments</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#findAll(java.lang.CharSequence, java.util.Collection, java.util.Map)" title="Method in GormStaticApi">findAll(CharSequence, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
 </dt><dd> <div class="block"></div></dd>
@@ -6160,6 +6162,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">@author Burt Beckwith</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/SaveOrUpdateEvent.html#SaveOrUpdateEvent(org.grails.datastore.mapping.core.Datastore, java.lang.Object)" title="Constructor in SaveOrUpdateEvent">SaveOrUpdateEvent(Datastore, Object)</a></span> - Constructor in <a href="org/grails/datastore/mapping/engine/event/SaveOrUpdateEvent.html">SaveOrUpdateEvent</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/utils/ClasspathEntityScanner.html#scan(java.lang.Package)" title="Method in ClasspathEntityScanner">scan(Package)</a></span> - Method in <a href="org/grails/datastore/gorm/utils/ClasspathEntityScanner.html">ClasspathEntityScanner</a>
+</dt><dd> <div class="block">Scans the classpath for entities for the given packages</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html#scanForPersistentClasses()" title="Method in AbstractDatastoreInitializer">scanForPersistentClasses()</a></span> - Method in <a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html">AbstractDatastoreInitializer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/redis/util/JedisTemplate.html#scard(java.lang.String)" title="Method in JedisTemplate">scard(String)</a></span> - Method in <a href="org/grails/datastore/mapping/redis/util/JedisTemplate.html">JedisTemplate</a>
