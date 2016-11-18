@@ -53,7 +53,7 @@ class ClasspathEntityScanner {
      * @param packages The packages
      * @return The entities
      */
-    Collection<Class> scan(Package... packages) {
+    Class[] scan(Package... packages) {
         ClassPathScanningCandidateComponentProvider componentProvider = new ClassPathScanningCandidateComponentProvider(false)
         for(ann in annotations) {
             componentProvider.addIncludeFilter(new AnnotationTypeFilter(ann))
@@ -71,6 +71,6 @@ class ClasspathEntityScanner {
                 }
             }
         }
-        return classes
+        return classes as Class[]
     }
 }
