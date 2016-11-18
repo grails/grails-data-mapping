@@ -42,6 +42,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.PropertyResolver;
 
+import javax.annotation.PreDestroy;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Serializable;
@@ -74,6 +75,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     protected final boolean failOnError;
     protected final String dataSourceName;
     protected final TenantResolver tenantResolver;
+    private boolean destroyed;
 
     protected AbstractHibernateDatastore(ConnectionSources<SessionFactory, HibernateConnectionSourceSettings> connectionSources, HibernateMappingContext mappingContext) {
         super(mappingContext, connectionSources.getBaseConfiguration(), null);
@@ -278,12 +280,16 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
 
     @Override
     public void destroy() throws Exception {
-        super.destroy();
-        AbstractHibernateGormInstanceApi.resetInsertActive();
-        connectionSources.close();
+        if(!this.destroyed) {
+            super.destroy();
+            AbstractHibernateGormInstanceApi.resetInsertActive();
+            connectionSources.close();
+            destroyed = true;
+        }
     }
 
     @Override
+    @PreDestroy
     public void close() throws IOException {
         try {
             destroy();
