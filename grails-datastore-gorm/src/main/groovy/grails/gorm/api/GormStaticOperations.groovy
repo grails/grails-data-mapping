@@ -505,7 +505,7 @@ interface GormStaticOperations<D> {
      * @param query The query represented by the given string
      * @return A list of results
      */
-    List executeQuery(String query)
+    List executeQuery(CharSequence query)
 
     /**
      * Executes a query for the given String
@@ -516,7 +516,7 @@ interface GormStaticOperations<D> {
      * @return A list of results
      *
      */
-    List executeQuery(String query, Map args)
+    List executeQuery(CharSequence query, Map args)
 
     /**
      * Executes a query for the given String
@@ -528,7 +528,7 @@ interface GormStaticOperations<D> {
      * @return A list of results
      *
      */
-    List executeQuery(String query, Map params, Map args)
+    List executeQuery(CharSequence query, Map params, Map args)
 
     /**
      * Executes a query for the given String
@@ -539,7 +539,7 @@ interface GormStaticOperations<D> {
      * @return A list of results
      *
      */
-    List executeQuery(String query, Collection params)
+    List executeQuery(CharSequence query, Collection params)
 
     /**
      * Executes a query for the given String
@@ -550,7 +550,7 @@ interface GormStaticOperations<D> {
      * @return A list of results
      *
      */
-    List executeQuery(String query, Object...params)
+    List executeQuery(CharSequence query, Object...params)
 
     /**
      * Executes a query for the given String
@@ -562,7 +562,7 @@ interface GormStaticOperations<D> {
      * @return A list of results
      *
      */
-    List executeQuery(String query, Collection params, Map args)
+    List executeQuery(CharSequence query, Collection params, Map args)
 
     /**
      * Executes an update for the given String
@@ -572,7 +572,7 @@ interface GormStaticOperations<D> {
      * @return The number of entities updated
      *
      */
-    Integer executeUpdate(String query)
+    Integer executeUpdate(CharSequence query)
 
     /**
      * Executes an update for the given String
@@ -583,7 +583,7 @@ interface GormStaticOperations<D> {
      * @return The number of entities updated
      *
      */
-    Integer executeUpdate(String query, Map args)
+    Integer executeUpdate(CharSequence query, Map args)
 
     /**
      * Executes an update for the given String
@@ -595,7 +595,7 @@ interface GormStaticOperations<D> {
      * @return The number of entities updated
      *
      */
-    Integer executeUpdate(String query, Map params, Map args)
+    Integer executeUpdate(CharSequence query, Map params, Map args)
 
     /**
      * Executes an update for the given String
@@ -606,7 +606,7 @@ interface GormStaticOperations<D> {
      * @return The number of entities updated
      *
      */
-    Integer executeUpdate(String query, Collection params)
+    Integer executeUpdate(CharSequence query, Collection params)
 
     /**
      * Executes an update for the given String
@@ -617,7 +617,7 @@ interface GormStaticOperations<D> {
      * @return The number of entities updated
      *
      */
-    Integer executeUpdate(String query, Object...params)
+    Integer executeUpdate(CharSequence query, Object...params)
 
     /**
      * Executes an update for the given String
@@ -629,7 +629,7 @@ interface GormStaticOperations<D> {
      * @return The number of entities updated
      *
      */
-    Integer executeUpdate(String query, Collection params, Map args)
+    Integer executeUpdate(CharSequence query, Collection params, Map args)
 
     /**
      * Finds an object for the given string-based query
@@ -637,7 +637,7 @@ interface GormStaticOperations<D> {
      * @param query The query
      * @return The object
      */
-    D find(String query)
+    D find(CharSequence query)
 
     /**
      * Finds an object for the given string-based query and named parameters
@@ -647,7 +647,7 @@ interface GormStaticOperations<D> {
      *
      * @return The object
      */
-    D find(String query, Map params)
+    D find(CharSequence query, Map params)
 
     /**
      * Finds an object for the given string-based query, named parameters and arguments
@@ -658,7 +658,7 @@ interface GormStaticOperations<D> {
      *
      * @return The object
      */
-    D find(String query, Map params, Map args)
+    D find(CharSequence query, Map params, Map args)
 
     /**
      * Finds an object for the given string-based query and positional parameters
@@ -668,7 +668,7 @@ interface GormStaticOperations<D> {
      *
      * @return The object
      */
-    D find(String query, Collection params)
+    D find(CharSequence query, Collection params)
 
     /**
      * Finds an object for the given string-based query and positional parameters
@@ -679,7 +679,7 @@ interface GormStaticOperations<D> {
      *
      * @return The object
      */
-    D find(String query, Object[] params)
+    D find(CharSequence query, Object[] params)
 
     /**
      * Finds an object for the given string-based query, positional parameters and arguments
@@ -690,7 +690,7 @@ interface GormStaticOperations<D> {
      *
      * @return The object
      */
-    D find(String query, Collection params, Map args)
+    D find(CharSequence query, Collection params, Map args)
 
     /**
      * Finds all objects for the given string-based query
@@ -699,7 +699,7 @@ interface GormStaticOperations<D> {
      *
      * @return The object
      */
-    List<D> findAll(String query)
+    List<D> findAll(CharSequence query)
 
     /**
      * Finds all objects for the given string-based query and named parameters
@@ -709,7 +709,7 @@ interface GormStaticOperations<D> {
      *
      * @return The objects
      */
-    List<D> findAll(String query, Map params)
+    List<D> findAll(CharSequence query, Map params)
 
     /**
      * Finds all objects for the given string-based query, named parameters and arguments
@@ -720,7 +720,7 @@ interface GormStaticOperations<D> {
      *
      * @return The objects
      */
-    List<D> findAll(String query, Map params, Map args)
+    List<D> findAll(CharSequence query, Map params, Map args)
 
     /**
      * Finds all objects for the given string-based query and positional parameters
@@ -730,7 +730,7 @@ interface GormStaticOperations<D> {
      *
      * @return The objects
      */
-    List<D> findAll(String query, Collection params)
+    List<D> findAll(CharSequence query, Collection params)
 
     /**
      * Finds all objects for the given string-based query and positional parameters
@@ -740,7 +740,7 @@ interface GormStaticOperations<D> {
      *
      * @return The objects
      */
-    List<D> findAll(String query, Object[] params)
+    List<D> findAll(CharSequence query, Object[] params)
 
     /**
      * Finds all objects for the given string-based query, positional parameters and arguments
@@ -751,7 +751,7 @@ interface GormStaticOperations<D> {
      *
      * @return The objects
      */
-    List<D> findAll(String query, Collection params, Map args)
+    List<D> findAll(CharSequence query, Collection params, Map args)
 
 
     /**

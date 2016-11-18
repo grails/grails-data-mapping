@@ -1016,106 +1016,130 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
         }
     }
 
-    List executeQuery(String query) {
+    @Override
+    List executeQuery(CharSequence query) {
         executeQuery(query, Collections.emptyMap(), Collections.emptyMap())
     }
 
-    List executeQuery(String query, Map args) {
+    @Override
+    List executeQuery(CharSequence query, Map args) {
         executeQuery(query, args, args)
     }
 
-    List executeQuery(String query, Map params, Map args) {
+    @Override
+    List executeQuery(CharSequence query, Map params, Map args) {
         unsupported("executeQuery")
         return null
     }
 
-    List executeQuery(String query, Collection params) {
+    @Override
+    List executeQuery(CharSequence query, Collection params) {
         executeQuery(query, params, Collections.emptyMap())
     }
 
-    List executeQuery(String query, Object...params) {
+    @Override
+    List executeQuery(CharSequence query, Object...params) {
         executeQuery(query, params.toList(), Collections.emptyMap())
     }
 
-    List executeQuery(String query, Collection params, Map args) {
+    @Override
+    List executeQuery(CharSequence query, Collection params, Map args) {
         unsupported("executeQuery")
         return null
     }
 
-    Integer executeUpdate(String query) {
+    @Override
+    Integer executeUpdate(CharSequence query) {
         executeUpdate(query, Collections.emptyMap(), Collections.emptyMap())
     }
 
-    Integer executeUpdate(String query, Map args) {
+    @Override
+    Integer executeUpdate(CharSequence query, Map args) {
         executeUpdate(query, args, args)
     }
 
-    Integer executeUpdate(String query, Map params, Map args) {
+    @Override
+    Integer executeUpdate(CharSequence query, Map params, Map args) {
         unsupported("executeUpdate")
         return null
     }
 
-    Integer executeUpdate(String query, Collection params) {
+    @Override
+    Integer executeUpdate(CharSequence query, Collection params) {
         executeUpdate(query, params, Collections.emptyMap())
     }
 
-    Integer executeUpdate(String query, Object...params) {
+    @Override
+    Integer executeUpdate(CharSequence query, Object...params) {
         executeUpdate(query, params.toList(), Collections.emptyMap())
     }
 
-    Integer executeUpdate(String query, Collection params, Map args) {
+    @Override
+    Integer executeUpdate(CharSequence query, Collection params, Map args) {
         unsupported("executeUpdate")
         return null
     }
 
-    D find(String query) {
+    @Override
+    D find(CharSequence query) {
         find(query, Collections.emptyMap())
     }
 
-    D find(String query, Map params) {
+    @Override
+    D find(CharSequence query, Map params) {
         find(query, params, params)
     }
 
-    D find(String query, Map params, Map args) {
+    @Override
+    D find(CharSequence query, Map params, Map args) {
         unsupported("find")
         return null
     }
 
-    D find(String query, Collection params) {
+    @Override
+    D find(CharSequence query, Collection params) {
         find(query, params, Collections.emptyMap())
     }
 
-    D find(String query, Object[] params) {
+    @Override
+    D find(CharSequence query, Object[] params) {
         find(query, params.toList(), Collections.emptyMap())
     }
 
-    D find(String query, Collection params, Map args) {
+    @Override
+    D find(CharSequence query, Collection params, Map args) {
         unsupported("find")
         return null
     }
 
-    List<D> findAll(String query) {
+    @Override
+    List<D> findAll(CharSequence query) {
         findAll(query, Collections.emptyMap(), Collections.emptyMap())
     }
 
-    List<D> findAll(String query, Map params) {
+    @Override
+    List<D> findAll(CharSequence query, Map params) {
         findAll(query, params, params)
     }
 
-    List<D> findAll(String query, Map params, Map args) {
+    @Override
+    List<D> findAll(CharSequence query, Map params, Map args) {
         unsupported("findAll")
         return null
     }
 
-    List<D> findAll(String query, Collection params) {
+    @Override
+    List<D> findAll(CharSequence query, Collection params) {
         findAll(query, params, Collections.emptyMap())
     }
 
-    List<D> findAll(String query, Object[] params) {
+    @Override
+    List<D> findAll(CharSequence query, Object[] params) {
         findAll(query, params.toList(), Collections.emptyMap())
     }
 
-    List<D> findAll(String query, Collection params, Map args) {
+    @Override
+    List<D> findAll(CharSequence query, Collection params, Map args) {
         unsupported("findAll")
         return null
     }

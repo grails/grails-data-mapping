@@ -563,168 +563,168 @@ class TenantDelegatingGormOperations<D> implements GormAllOperations<D> {
     }
 
     @Override
-    List executeQuery(String query) {
+    List executeQuery(CharSequence query) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.executeQuery(query)
         }
     }
 
     @Override
-    List executeQuery(String query, Map args) {
+    List executeQuery(CharSequence query, Map args) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.executeQuery(query, args)
         }
     }
 
     @Override
-    List executeQuery(String query, Map params, Map args) {
+    List executeQuery(CharSequence query, Map params, Map args) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.executeQuery(query, params, args)
         }
     }
 
     @Override
-    List executeQuery(String query, Collection params) {
+    List executeQuery(CharSequence query, Collection params) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.executeQuery(query, params)
         }
     }
 
     @Override
-    List executeQuery(String query, Object... params) {
+    List executeQuery(CharSequence query, Object... params) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.executeQuery(query, params)
         }
     }
 
     @Override
-    List executeQuery(String query, Collection params, Map args) {
+    List executeQuery(CharSequence query, Collection params, Map args) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.executeQuery(query, params, args)
         }
     }
 
     @Override
-    Integer executeUpdate(String query) {
+    Integer executeUpdate(CharSequence query) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.executeUpdate(query)
         }
     }
 
     @Override
-    Integer executeUpdate(String query, Map args) {
+    Integer executeUpdate(CharSequence query, Map args) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.executeUpdate(query, args)
         }
     }
 
     @Override
-    Integer executeUpdate(String query, Map params, Map args) {
+    Integer executeUpdate(CharSequence query, Map params, Map args) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.executeUpdate(query, params, args)
         }
     }
 
     @Override
-    Integer executeUpdate(String query, Collection params) {
+    Integer executeUpdate(CharSequence query, Collection params) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.executeUpdate(query, params)
         }
     }
 
     @Override
-    Integer executeUpdate(String query, Object... params) {
+    Integer executeUpdate(CharSequence query, Object... params) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.executeUpdate(query, params)
         }
     }
 
     @Override
-    Integer executeUpdate(String query, Collection params, Map args) {
+    Integer executeUpdate(CharSequence query, Collection params, Map args) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.executeUpdate(query, params, args)
         }
     }
 
     @Override
-    D find(String query) {
+    D find(CharSequence query) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.find(query)
         }
     }
 
     @Override
-    D find(String query, Map params) {
+    D find(CharSequence query, Map params) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.find(query, params)
         }
     }
 
     @Override
-    D find(String query, Map params, Map args) {
+    D find(CharSequence query, Map params, Map args) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.find(query, params, args)
         }
     }
 
     @Override
-    D find(String query, Collection params) {
+    D find(CharSequence query, Collection params) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.find(query, params)
         }
     }
 
     @Override
-    D find(String query, Object[] params) {
+    D find(CharSequence query, Object[] params) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.find(query, params)
         }
     }
 
     @Override
-    D find(String query, Collection params, Map args) {
+    D find(CharSequence query, Collection params, Map args) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.find(query, params, args)
         }
     }
 
     @Override
-    List<D> findAll(String query) {
+    List<D> findAll(CharSequence query) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.findAll(query)
         }
     }
 
     @Override
-    List<D> findAll(String query, Map params) {
+    List<D> findAll(CharSequence query, Map params) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.findAll(query, params)
         }
     }
 
     @Override
-    List<D> findAll(String query, Map params, Map args) {
+    List<D> findAll(CharSequence query, Map params, Map args) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.findAll(query, params, args)
         }
     }
 
     @Override
-    List<D> findAll(String query, Collection params) {
+    List<D> findAll(CharSequence query, Collection params) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.findAll(query, params)
         }
     }
 
     @Override
-    List<D> findAll(String query, Object[] params) {
+    List<D> findAll(CharSequence query, Object[] params) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.findAll(query, params)
         }
     }
 
     @Override
-    List<D> findAll(String query, Collection params, Map args) {
+    List<D> findAll(CharSequence query, Collection params, Map args) {
         Tenants.withId((Class<Datastore>)datastore.getClass(), tenantId) {
             allOperations.findAll(query, params, args)
         }

@@ -200,8 +200,9 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
      * @return A result or null if no result found
      */
     @Override
-    D find(String query, Map queryNamedArgs, Map args) {
-        query = normalizeMultiLineQueryString(query)
+    D find(CharSequence query, Map queryNamedArgs, Map args) {
+        String queryString = query.toString()
+        query = normalizeMultiLineQueryString(queryString)
         if (!queryPattern.matcher(query).matches()) {
             throw new GrailsQueryException("Invalid query [$query] for domain class [$persistentEntity.name]");
         }
@@ -210,7 +211,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         queryNamedArgs = new HashMap(queryNamedArgs)
         args = new HashMap(args)
         return (D) template.execute { Session session ->
-            def q = session.createQuery(query)
+            def q = session.createQuery(queryString)
             template.applySettings(q)
 
             populateQueryArguments(q, queryNamedArgs)
@@ -223,8 +224,9 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     protected abstract HibernateHqlQuery createHqlQuery(Session session, Query q)
 
     @Override
-    D find(String query, Collection params, Map args) {
-        query = normalizeMultiLineQueryString(query)
+    D find(CharSequence query, Collection params, Map args) {
+        String queryString = query.toString()
+        query = normalizeMultiLineQueryString(queryString)
         if (!queryPattern.matcher(query).matches()) {
             throw new GrailsQueryException("Invalid query [$query] for domain class [$persistentEntity.name]");
         }
@@ -232,7 +234,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         args = new HashMap(args)
         def template = hibernateTemplate
         return (D) template.execute { Session session ->
-            def q = session.createQuery(query)
+            def q = session.createQuery(queryString)
             template.applySettings(q)
 
             params.eachWithIndex { val, int i ->
@@ -249,8 +251,9 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     }
 
     @Override
-    List<D> findAll(String query, Map params, Map args) {
-        query = normalizeMultiLineQueryString(query)
+    List<D> findAll(CharSequence query, Map params, Map args) {
+        String queryString = query.toString()
+        query = normalizeMultiLineQueryString(queryString)
         if (!queryPattern.matcher(query).matches()) {
             throw new GrailsQueryException("Invalid query [$query] for domain class [$persistentEntity.name]");
         }
@@ -259,7 +262,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         params = new HashMap(params)
         def template = hibernateTemplate
         return (List<D>) template.execute { Session session ->
-            def q = session.createQuery(query)
+            def q = session.createQuery(query.toString())
             template.applySettings(q)
 
             populateQueryArguments(q, params)
@@ -316,8 +319,9 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     }
 
     @Override
-    List<D> findAll(String query, Collection params, Map args) {
-        query = normalizeMultiLineQueryString(query)
+    List<D> findAll(CharSequence query, Collection params, Map args) {
+        String queryString = query.toString()
+        query = normalizeMultiLineQueryString(queryString)
         if (!queryPattern.matcher(query).matches()) {
             throw new GrailsQueryException("Invalid query [$query] for domain class [$persistentEntity.name]");
         }
@@ -326,7 +330,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
 
         def template = hibernateTemplate
         return (List<D>) template.execute { Session session ->
-            def q = session.createQuery(query)
+            def q = session.createQuery(queryString)
             template.applySettings(q)
 
             params.eachWithIndex { val, int i ->
@@ -404,13 +408,13 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     }
 
     @Override
-    List executeQuery(String query, Map params, Map args) {
+    List executeQuery(CharSequence query, Map params, Map args) {
         def template = hibernateTemplate
         args = new HashMap(args)
         params = new HashMap(params)
 
         return (List<D>) template.execute { Session session ->
-            def q = session.createQuery(query)
+            def q = session.createQuery(query.toString())
             template.applySettings(q)
 
             populateQueryArguments(q, params)
@@ -422,12 +426,12 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     }
 
     @Override
-    List executeQuery(String query, Collection params, Map args) {
+    List executeQuery(CharSequence query, Collection params, Map args) {
         def template = hibernateTemplate
         args = new HashMap(args)
 
         return (List<D>) template.execute { Session session ->
-            def q = session.createQuery(query)
+            def q = session.createQuery(query.toString())
             template.applySettings(q)
 
             params.eachWithIndex { val, int i ->
