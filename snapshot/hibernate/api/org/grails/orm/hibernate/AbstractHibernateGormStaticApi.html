@@ -235,6 +235,16 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>protected&nbsp;java.lang.String</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#buildNamedParameterQueryFromGString(groovy.lang.GString, java.util.Map)">buildNamedParameterQueryFromGString</a></strong>(groovy.lang.GString query, java.util.Map params)</code><br>Processes a query converting GString expressions into parameters</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>protected&nbsp;java.lang.String</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#buildOrdinalParameterQueryFromGString(groovy.lang.GString, java.util.List)">buildOrdinalParameterQueryFromGString</a></strong>(groovy.lang.GString query, java.util.List params)</code><br>Processes a query converting GString expressions into parameters</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;java.io.Serializable</strong></code></td>
                             <td class="colLast"><code><strong><a href="#convertIdentifier(java.io.Serializable)">convertIdentifier</a></strong>(java.io.Serializable id)</code><br></td>
                         </tr>
@@ -251,12 +261,32 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>java.util.List</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#executeQuery(java.lang.CharSequence)">executeQuery</a></strong>(java.lang.CharSequence query)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>java.util.List</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#executeQuery(java.lang.CharSequence, java.util.Map)">executeQuery</a></strong>(java.lang.CharSequence query, java.util.Map args)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>java.util.List</strong></code></td>
                             <td class="colLast"><code><strong><a href="#executeQuery(java.lang.CharSequence, java.util.Map, java.util.Map)">executeQuery</a></strong>(java.lang.CharSequence query, java.util.Map params, java.util.Map args)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>java.util.List</strong></code></td>
                             <td class="colLast"><code><strong><a href="#executeQuery(java.lang.CharSequence, java.util.Collection, java.util.Map)">executeQuery</a></strong>(java.lang.CharSequence query, java.util.Collection params, java.util.Map args)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>java.lang.Integer</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#executeUpdate(java.lang.CharSequence)">executeUpdate</a></strong>(java.lang.CharSequence query)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>java.lang.Integer</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#executeUpdate(java.lang.CharSequence, java.util.Map)">executeUpdate</a></strong>(java.lang.CharSequence query, java.util.Map args)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -281,12 +311,32 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>D</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#find(java.lang.CharSequence)">find</a></strong>(java.lang.CharSequence query)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>D</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#find(java.lang.CharSequence, java.util.Map)">find</a></strong>(java.lang.CharSequence query, java.util.Map params)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>D</strong></code></td>
                             <td class="colLast"><code><strong><a href="#find(D, java.util.Map)">find</a></strong>(D exampleObject, java.util.Map args)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findAll(java.lang.CharSequence, java.util.Map, java.util.Map)">findAll</a></strong>(java.lang.CharSequence query, java.util.Map params, java.util.Map args)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findAll(java.lang.CharSequence)">findAll</a></strong>(java.lang.CharSequence query)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>java.util.List&lt;D&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findAll(java.lang.CharSequence, java.util.Map)">findAll</a></strong>(java.lang.CharSequence query, java.util.Map params)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -529,6 +579,24 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Method Detail</h3>
                     
+                        <a name="buildNamedParameterQueryFromGString(groovy.lang.GString, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;java.lang.String <strong>buildNamedParameterQueryFromGString</strong>(groovy.lang.GString query, java.util.Map params)</h4>
+                                <p> Processes a query converting GString expressions into parameters
+     <DL><DT><B>Returns:</B></DT><DD>The final String</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD><DD><code>params</code> -  The parameters</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="buildOrdinalParameterQueryFromGString(groovy.lang.GString, java.util.List)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;java.lang.String <strong>buildOrdinalParameterQueryFromGString</strong>(groovy.lang.GString query, java.util.List params)</h4>
+                                <p> Processes a query converting GString expressions into parameters
+     <DL><DT><B>Returns:</B></DT><DD>The final String</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD><DD><code>params</code> -  The parameters</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="convertIdentifier(java.io.Serializable)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -554,6 +622,24 @@ java.lang.Integer <strong>count</strong>()</h4>
                             </li>
                         </ul>
                     
+                        <a name="executeQuery(java.lang.CharSequence)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.util.List <strong>executeQuery</strong>(java.lang.CharSequence query)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="executeQuery(java.lang.CharSequence, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.util.List <strong>executeQuery</strong>(java.lang.CharSequence query, java.util.Map args)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="executeQuery(java.lang.CharSequence, java.util.Map, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -568,6 +654,24 @@ java.util.List <strong>executeQuery</strong>(java.lang.CharSequence query, java.
                             <li class="blockList">
                                 <h4>@java.lang.Override
 java.util.List <strong>executeQuery</strong>(java.lang.CharSequence query, java.util.Collection params, java.util.Map args)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="executeUpdate(java.lang.CharSequence)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.lang.Integer <strong>executeUpdate</strong>(java.lang.CharSequence query)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="executeUpdate(java.lang.CharSequence, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.lang.Integer <strong>executeUpdate</strong>(java.lang.CharSequence query, java.util.Map args)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -608,6 +712,24 @@ D <strong>find</strong>(java.lang.CharSequence query, java.util.Collection param
                             </li>
                         </ul>
                     
+                        <a name="find(java.lang.CharSequence)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+D <strong>find</strong>(java.lang.CharSequence query)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="find(java.lang.CharSequence, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+D <strong>find</strong>(java.lang.CharSequence query, java.util.Map params)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="find(D, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -622,6 +744,24 @@ D <strong>find</strong>(D exampleObject, java.util.Map args)</h4>
                             <li class="blockList">
                                 <h4>@java.lang.Override
 java.util.List&lt;D&gt; <strong>findAll</strong>(java.lang.CharSequence query, java.util.Map params, java.util.Map args)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="findAll(java.lang.CharSequence)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.util.List&lt;D&gt; <strong>findAll</strong>(java.lang.CharSequence query)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="findAll(java.lang.CharSequence, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.util.List&lt;D&gt; <strong>findAll</strong>(java.lang.CharSequence query, java.util.Map params)</h4>
                                 <p></p>
                             </li>
                         </ul>

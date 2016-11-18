@@ -902,6 +902,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Enable the builder syntax for constructing Criteria</div></dd>
 <dt><span class="strong"><a href="grails/plugin/hibernate/commands/SchemaExportCommand.html#buildMetadata(grails.dev.commands.ExecutionContext, org.hibernate.service.ServiceRegistry)" title="Method in SchemaExportCommand">buildMetadata(ExecutionContext, ServiceRegistry)</a></span> - Method in <a href="grails/plugin/hibernate/commands/SchemaExportCommand.html">SchemaExportCommand</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/AbstractHibernateGormStaticApi.html#buildNamedParameterQueryFromGString(groovy.lang.GString, java.util.Map)" title="Method in AbstractHibernateGormStaticApi">buildNamedParameterQueryFromGString(GString, Map)</a></span> - Method in <a href="org/grails/orm/hibernate/AbstractHibernateGormStaticApi.html">AbstractHibernateGormStaticApi</a>
+</dt><dd> <div class="block">Processes a query converting GString expressions into parameters</div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/AbstractHibernateGormStaticApi.html#buildOrdinalParameterQueryFromGString(groovy.lang.GString, java.util.List)" title="Method in AbstractHibernateGormStaticApi">buildOrdinalParameterQueryFromGString(GString, List)</a></span> - Method in <a href="org/grails/orm/hibernate/AbstractHibernateGormStaticApi.html">AbstractHibernateGormStaticApi</a>
+</dt><dd> <div class="block">Processes a query converting GString expressions into parameters</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/proxy/GroovyAwarePojoEntityTuplizer.html#buildProxyFactory(org.hibernate.mapping.PersistentClass, org.hibernate.property.access.spi.Getter, org.hibernate.property.access.spi.Setter)" title="Method in GroovyAwarePojoEntityTuplizer">buildProxyFactory(PersistentClass, Getter, Setter)</a></span> - Method in <a href="org/grails/orm/hibernate/proxy/GroovyAwarePojoEntityTuplizer.html">GroovyAwarePojoEntityTuplizer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/proxy/GroovyAwarePojoEntityTuplizer.html#buildProxyFactoryInternal(org.hibernate.mapping.PersistentClass, org.hibernate.property.access.spi.Getter, org.hibernate.property.access.spi.Setter)" title="Method in GroovyAwarePojoEntityTuplizer">buildProxyFactoryInternal(PersistentClass, Getter, Setter)</a></span> - Method in <a href="org/grails/orm/hibernate/proxy/GroovyAwarePojoEntityTuplizer.html">GroovyAwarePojoEntityTuplizer</a>
@@ -2457,7 +2461,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/AssociationQuery.html#executeQuery(org.grails.datastore.mapping.model.PersistentEntity, Junction)" title="Method in AssociationQuery">executeQuery(PersistentEntity, Junction)</a></span> - Method in <a href="org/grails/datastore/mapping/query/AssociationQuery.html">AssociationQuery</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#executeQuery(java.lang.String, java.util.Collection, java.util.Map)" title="Method in GormEntity">executeQuery(String, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#executeQuery(java.lang.CharSequence, java.util.Collection, java.util.Map)" title="Method in GormEntity">executeQuery(CharSequence, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
 </dt><dd> <div class="block">Executes a query for the given String</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#executeQuery(java.lang.CharSequence, java.util.Collection, java.util.Map)" title="Method in GormStaticApi">executeQuery(CharSequence, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
 </dt><dd> <div class="block"></div></dd>
@@ -2474,7 +2478,9 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/orm/HibernateCriteriaBuilder.html#executeUniqueResultWithProxyUnwrap()" title="Method in HibernateCriteriaBuilder">executeUniqueResultWithProxyUnwrap()</a></span> - Method in <a href="grails/orm/HibernateCriteriaBuilder.html">HibernateCriteriaBuilder</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#executeUpdate(java.lang.String, java.util.Collection, java.util.Map)" title="Method in GormEntity">executeUpdate(String, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/AbstractHibernateGormStaticApi.html#executeUpdate(java.lang.CharSequence, java.util.Map)" title="Method in AbstractHibernateGormStaticApi">executeUpdate(CharSequence, Map)</a></span> - Method in <a href="org/grails/orm/hibernate/AbstractHibernateGormStaticApi.html">AbstractHibernateGormStaticApi</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#executeUpdate(java.lang.CharSequence, java.util.Collection, java.util.Map)" title="Method in GormEntity">executeUpdate(CharSequence, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
 </dt><dd> <div class="block">Executes an update for the given String</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#executeUpdate(java.lang.CharSequence, java.util.Collection, java.util.Map)" title="Method in GormStaticApi">executeUpdate(CharSequence, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
 </dt><dd> <div class="block"></div></dd>
@@ -2551,7 +2557,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/DetachedCriteria.html#find(groovy.lang.Closure)" title="Method in DetachedCriteria">find(Closure)</a></span> - Method in <a href="grails/gorm/DetachedCriteria.html">DetachedCriteria</a>
 </dt><dd> <div class="block">Synonym for #get</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#find(java.lang.String, java.util.Collection, java.util.Map)" title="Method in GormEntity">find(String, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#find(java.lang.CharSequence, java.util.Collection, java.util.Map)" title="Method in GormEntity">find(CharSequence, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
 </dt><dd> <div class="block">Finds an object for the given string-based query, positional parameters and arguments</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/GormQueryOperations.html#find()" title="Method in GormQueryOperations">find()</a></span> - Method in <a href="org/grails/datastore/gorm/query/GormQueryOperations.html">GormQueryOperations</a>
 </dt><dd> <div class="block">Synonym for #get</div></dd>
@@ -2567,7 +2573,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/AbstractHibernateGormStaticApi.html#findAll(D, java.util.Map)" title="Method in AbstractHibernateGormStaticApi">findAll(D, Map)</a></span> - Method in <a href="org/grails/orm/hibernate/AbstractHibernateGormStaticApi.html">AbstractHibernateGormStaticApi</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#findAll(java.lang.String, java.util.Collection, java.util.Map)" title="Method in GormEntity">findAll(String, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#findAll(java.lang.CharSequence, java.util.Collection, java.util.Map)" title="Method in GormEntity">findAll(CharSequence, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
 </dt><dd> <div class="block">Finds all objects for the given string-based query, positional parameters and arguments</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#findAll(java.lang.CharSequence, java.util.Collection, java.util.Map)" title="Method in GormStaticApi">findAll(CharSequence, Collection, Map)</a></span> - Method in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
 </dt><dd> <div class="block"></div></dd>
