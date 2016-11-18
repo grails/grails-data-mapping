@@ -376,7 +376,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
             return find(hql, newParams, newParams)
         }
         else {
-            return (D)super.find(query)
+            return (D)super.find(query, params)
         }
     }
 
@@ -390,7 +390,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
             return findAll(hql, newParams, newParams)
         }
         else {
-            return super.findAll(query)
+            return super.findAll(query, params)
         }
     }
 
@@ -402,7 +402,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
             return executeQuery(hql, newParams, newParams)
         }
         else {
-            return super.executeQuery(query)
+            return super.executeQuery(query, args)
         }
     }
 
@@ -414,7 +414,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
             return executeUpdate(hql, newParams, newParams)
         }
         else {
-            return super.executeUpdate(query)
+            return super.executeUpdate(query, args)
         }
     }
 
