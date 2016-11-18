@@ -1016,7 +1016,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @param query The query represented by the given string
      * @return A list of results
      */
-    static List executeQuery(String query) {
+    static List executeQuery(CharSequence query) {
         currentGormStaticApi().executeQuery query
     }
 
@@ -1029,7 +1029,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @return A list of results
      *
      */
-    static List executeQuery(String query, Map args) {
+    static List executeQuery(CharSequence query, Map args) {
         currentGormStaticApi().executeQuery query, args
     }
 
@@ -1043,7 +1043,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @return A list of results
      *
      */
-    static List executeQuery(String query, Map params, Map args) {
+    static List executeQuery(CharSequence query, Map params, Map args) {
         currentGormStaticApi().executeQuery query, params, args
     }
 
@@ -1056,7 +1056,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @return A list of results
      *
      */
-    static List executeQuery(String query, Collection params) {
+    static List executeQuery(CharSequence query, Collection params) {
         currentGormStaticApi().executeQuery query, params
     }
 
@@ -1069,7 +1069,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @return A list of results
      *
      */
-    static List executeQuery(String query, Object...params) {
+    static List executeQuery(CharSequence query, Object...params) {
         currentGormStaticApi().executeQuery query, params
     }
 
@@ -1083,7 +1083,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @return A list of results
      *
      */
-    static List executeQuery(String query, Collection params, Map args) {
+    static List executeQuery(CharSequence query, Collection params, Map args) {
         currentGormStaticApi().executeQuery query, params, args
     }
 
@@ -1095,7 +1095,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @return The number of entities updated
      *
      */
-    static Integer executeUpdate(String query) {
+    static Integer executeUpdate(CharSequence query) {
         currentGormStaticApi().executeUpdate query
     }
 
@@ -1108,7 +1108,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @return The number of entities updated
      *
      */
-    static Integer executeUpdate(String query, Map args) {
+    static Integer executeUpdate(CharSequence query, Map args) {
         currentGormStaticApi().executeUpdate query, args
     }
 
@@ -1122,7 +1122,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @return The number of entities updated
      *
      */
-    static Integer executeUpdate(String query, Map params, Map args) {
+    static Integer executeUpdate(CharSequence query, Map params, Map args) {
         currentGormStaticApi().executeUpdate query, params, args
     }
 
@@ -1135,7 +1135,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @return The number of entities updated
      *
      */
-    static Integer executeUpdate(String query, Collection params) {
+    static Integer executeUpdate(CharSequence query, Collection params) {
         currentGormStaticApi().executeUpdate query, params
     }
 
@@ -1148,7 +1148,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @return The number of entities updated
      *
      */
-    static Integer executeUpdate(String query, Object...params) {
+    static Integer executeUpdate(CharSequence query, Object...params) {
         currentGormStaticApi().executeUpdate query, params
     }
 
@@ -1162,7 +1162,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @return The number of entities updated
      *
      */
-    static Integer executeUpdate(String query, Collection params, Map args) {
+    static Integer executeUpdate(CharSequence query, Collection params, Map args) {
         currentGormStaticApi().executeUpdate query, params, args
     }
 
@@ -1172,7 +1172,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @param query The query
      * @return The object
      */
-    static D find(String query) {
+    static D find(CharSequence query) {
         currentGormStaticApi().find query
     }
 
@@ -1184,7 +1184,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      *
      * @return The object
      */
-    static D find(String query, Map params) {
+    static D find(CharSequence query, Map params) {
         currentGormStaticApi().find query, params
     }
 
@@ -1197,7 +1197,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      *
      * @return The object
      */
-    static D find(String query, Map params, Map args) {
+    static D find(CharSequence query, Map params, Map args) {
         currentGormStaticApi().find query, params, args
     }
 
@@ -1209,7 +1209,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      *
      * @return The object
      */
-    static D find(String query, Collection params) {
+    static D find(CharSequence query, Collection params) {
         currentGormStaticApi().find query, params
     }
 
@@ -1222,7 +1222,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      *
      * @return The object
      */
-    static D find(String query, Object[] params) {
+    static D find(CharSequence query, Object[] params) {
         currentGormStaticApi().find query, params
     }
 
@@ -1235,7 +1235,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      *
      * @return The object
      */
-    static D find(String query, Collection params, Map args) {
+    static D find(CharSequence query, Collection params, Map args) {
         currentGormStaticApi().find query, params, args
     }
 
@@ -1246,7 +1246,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      *
      * @return The object
      */
-    static List<D> findAll(String query) {
+    static List<D> findAll(CharSequence query) {
         currentGormStaticApi().findAll query
     }
 
@@ -1258,7 +1258,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      *
      * @return The objects
      */
-    static List<D> findAll(String query, Map params) {
+    static List<D> findAll(CharSequence query, Map params) {
         currentGormStaticApi().findAll query, params
     }
 
@@ -1271,7 +1271,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      *
      * @return The objects
      */
-    static List<D> findAll(String query, Map params, Map args) {
+    static List<D> findAll(CharSequence query, Map params, Map args) {
         currentGormStaticApi().findAll query, params, args
     }
 
@@ -1283,7 +1283,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      *
      * @return The objects
      */
-    static List<D> findAll(String query, Collection params) {
+    static List<D> findAll(CharSequence query, Collection params) {
         currentGormStaticApi().findAll query, params
     }
 
@@ -1295,7 +1295,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      *
      * @return The objects
      */
-    static List<D> findAll(String query, Object[] params) {
+    static List<D> findAll(CharSequence query, Object[] params) {
         currentGormStaticApi().findAll query, params
     }
 
@@ -1308,7 +1308,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      *
      * @return The objects
      */
-    static List<D> findAll(String query, Collection params, Map args) {
+    static List<D> findAll(CharSequence query, Collection params, Map args) {
         currentGormStaticApi().findAll query, params, args
     }
 

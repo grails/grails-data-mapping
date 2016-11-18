@@ -201,6 +201,12 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
      */
     @Override
     D find(CharSequence query, Map queryNamedArgs, Map args) {
+        queryNamedArgs = new LinkedHashMap(queryNamedArgs)
+        args = new LinkedHashMap(args)
+        if(query instanceof GString) {
+            query = buildNamedParameterQueryFromGString((GString) query, queryNamedArgs)
+        }
+
         String queryString = query.toString()
         query = normalizeMultiLineQueryString(queryString)
         if (!queryPattern.matcher(query).matches()) {
@@ -209,7 +215,6 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
 
         def template = hibernateTemplate
         queryNamedArgs = new HashMap(queryNamedArgs)
-        args = new HashMap(args)
         return (D) template.execute { Session session ->
             def q = session.createQuery(queryString)
             template.applySettings(q)
@@ -225,6 +230,10 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
 
     @Override
     D find(CharSequence query, Collection params, Map args) {
+        if(query instanceof GString) {
+            throw new GrailsQueryException("Unsafe query [$query]. GORM cannot automatically escape a GString value when combined with ordinal parameters, so this query is potentially vulnerable to HQL injection attacks. Please embed the parameters within the GString so they can be safely escaped.");
+        }
+
         String queryString = query.toString()
         query = normalizeMultiLineQueryString(queryString)
         if (!queryPattern.matcher(query).matches()) {
@@ -252,14 +261,18 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
 
     @Override
     List<D> findAll(CharSequence query, Map params, Map args) {
+        params = new LinkedHashMap(params)
+        args = new LinkedHashMap(args)
+        if(query instanceof GString) {
+            query = buildNamedParameterQueryFromGString((GString) query, params)
+        }
+
         String queryString = query.toString()
         query = normalizeMultiLineQueryString(queryString)
         if (!queryPattern.matcher(query).matches()) {
             throw new GrailsQueryException("Invalid query [$query] for domain class [$persistentEntity.name]");
         }
 
-        args = new HashMap(args)
-        params = new HashMap(params)
         def template = hibernateTemplate
         return (List<D>) template.execute { Session session ->
             def q = session.createQuery(query.toString())
@@ -286,20 +299,9 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
 
             List params = []
             if(sql instanceof GString) {
-                def gString = (GString) sql
-                StringBuilder sqlString = new StringBuilder()
-                int i = 0
-                Object[] values = gString.values
-                def strings = gString.getStrings()
-                for(str in strings) {
-                    sqlString.append(str)
-                    if(i < values.length) {
-                        sqlString.append('?')
-                        params.add(values[i++])
-                    }
-                }
-                sql = sqlString
+                sql = buildOrdinalParameterQueryFromGString((GString)sql, params)
             }
+
             SQLQuery q = session.createSQLQuery(sql.toString())
 
             template.applySettings(q)
@@ -319,7 +321,109 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     }
 
     @Override
+    List<D> findAll(CharSequence query) {
+        if(query instanceof GString) {
+            List params = []
+            String hql = buildOrdinalParameterQueryFromGString((GString)query, params)
+            return findAll(hql, params, Collections.emptyMap())
+        }
+        else {
+            return super.findAll(query)
+        }
+    }
+
+    @Override
+    List executeQuery(CharSequence query) {
+        if(query instanceof GString) {
+            List params = []
+            String hql = buildOrdinalParameterQueryFromGString((GString)query, params)
+            return executeQuery(hql, params, Collections.emptyMap())
+        }
+        else {
+            return super.executeQuery(query)
+        }
+    }
+
+    @Override
+    Integer executeUpdate(CharSequence query) {
+        if(query instanceof GString) {
+            List params = []
+            String hql = buildOrdinalParameterQueryFromGString((GString)query, params)
+            return executeUpdate(hql, params, Collections.emptyMap())
+        }
+        else {
+            return super.executeUpdate(query)
+        }
+    }
+
+    @Override
+    D find(CharSequence query) {
+        if(query instanceof GString) {
+            List params = []
+            String hql = buildOrdinalParameterQueryFromGString((GString)query, params)
+            return find(hql, params, Collections.emptyMap())
+        }
+        else {
+            return (D)super.find(query)
+        }
+    }
+
+    @Override
+    D find(CharSequence query, Map params) {
+        if(query instanceof GString) {
+            Map newParams = new LinkedHashMap(params)
+            String hql = buildNamedParameterQueryFromGString((GString)query, newParams)
+            return find(hql, newParams, newParams)
+        }
+        else {
+            return (D)super.find(query)
+        }
+    }
+
+
+
+    @Override
+    List<D> findAll(CharSequence query, Map params) {
+        if(query instanceof GString) {
+            Map newParams = new LinkedHashMap(params)
+            String hql = buildNamedParameterQueryFromGString((GString)query, newParams)
+            return findAll(hql, newParams, newParams)
+        }
+        else {
+            return super.findAll(query)
+        }
+    }
+
+    @Override
+    List executeQuery(CharSequence query, Map args) {
+        if(query instanceof GString) {
+            Map newParams = new LinkedHashMap(args)
+            String hql = buildNamedParameterQueryFromGString((GString)query, newParams)
+            return executeQuery(hql, newParams, newParams)
+        }
+        else {
+            return super.executeQuery(query)
+        }
+    }
+
+    @Override
+    Integer executeUpdate(CharSequence query, Map args) {
+        if(query instanceof GString) {
+            Map newParams = new LinkedHashMap(args)
+            String hql = buildNamedParameterQueryFromGString((GString)query, newParams)
+            return executeUpdate(hql, newParams, newParams)
+        }
+        else {
+            return super.executeUpdate(query)
+        }
+    }
+
+    @Override
     List<D> findAll(CharSequence query, Collection params, Map args) {
+        if(query instanceof GString) {
+            throw new GrailsQueryException("Unsafe query [$query]. GORM cannot automatically escape a GString value when combined with ordinal parameters, so this query is potentially vulnerable to HQL injection attacks. Please embed the parameters within the GString so they can be safely escaped.");
+        }
+
         String queryString = query.toString()
         query = normalizeMultiLineQueryString(queryString)
         if (!queryPattern.matcher(query).matches()) {
@@ -407,11 +511,16 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         }
     }
 
+
     @Override
     List executeQuery(CharSequence query, Map params, Map args) {
         def template = hibernateTemplate
         args = new HashMap(args)
         params = new HashMap(params)
+
+        if(query instanceof GString) {
+            query = buildNamedParameterQueryFromGString((GString) query, params)
+        }
 
         return (List<D>) template.execute { Session session ->
             def q = session.createQuery(query.toString())
@@ -427,6 +536,10 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
 
     @Override
     List executeQuery(CharSequence query, Collection params, Map args) {
+        if(query instanceof GString) {
+            throw new GrailsQueryException("Unsafe query [$query]. GORM cannot automatically escape a GString value when combined with ordinal parameters, so this query is potentially vulnerable to HQL injection attacks. Please embed the parameters within the GString so they can be safely escaped.");
+        }
+
         def template = hibernateTemplate
         args = new HashMap(args)
 
@@ -470,11 +583,11 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         }
     }
 
-
-
     List<D> getAll(List ids) {
         getAllInternal(ids)
     }
+
+
 
     List<D> getAll(Long... ids) {
         getAllInternal(ids as List)
@@ -523,6 +636,50 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         return queryArgs
     }
 
+    /**
+     * Processes a query converting GString expressions into parameters
+     *
+     * @param query The query
+     * @param params The parameters
+     * @return The final String
+     */
+    protected String buildOrdinalParameterQueryFromGString(GString query, List params) {
+        StringBuilder sqlString = new StringBuilder()
+        int i = 0
+        Object[] values = query.values
+        def strings = query.getStrings()
+        for (str in strings) {
+            sqlString.append(str)
+            if (i < values.length) {
+                sqlString.append('?')
+                params.add(values[i++])
+            }
+        }
+        return sqlString.toString()
+    }
+
+    /**
+     * Processes a query converting GString expressions into parameters
+     *
+     * @param query The query
+     * @param params The parameters
+     * @return The final String
+     */
+    protected String buildNamedParameterQueryFromGString(GString query, Map params) {
+        StringBuilder sqlString = new StringBuilder()
+        int i = 0
+        Object[] values = query.values
+        def strings = query.getStrings()
+        for (str in strings) {
+            sqlString.append(str)
+            if (i < values.length) {
+                String parameterName = "p$i"
+                sqlString.append(':').append(parameterName)
+                params.put(parameterName, values[i++])
+            }
+        }
+        return sqlString.toString()
+    }
 
     protected List<String> removeNullNames(Map query) {
         List<String> nullNames = []
