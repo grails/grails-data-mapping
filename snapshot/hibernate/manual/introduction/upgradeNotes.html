@@ -428,47 +428,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>In preparation for Hibernate 5.2 support the previous "SessionFactoryBean" notion has been removed. Now if you wish to customize <code>SessionFactory</code> creation you should instead register a custom <code>org.grails.orm.hibernate.connections.HibernateConnectionSourceFactory</code> in Spring.</p>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_identityenumtype_handling_changed">IdentityEnumType Handling Changed</h4>
-<div class="paragraph">
-<p>Previous versions of GORM shipped with a <code>org.grails.orm.hibernate.cfg.IdentityEnumType</code> class for altering the handling of enums. In order to support different versions of Hibernate 5.x which feature different signatures for the <code>org.hibernate.usertype.UserType</code> interface this class has been removed.</p>
-</div>
-<div class="paragraph">
-<p>If you wish to obtain the same functionality you need to change your <code>mapping</code> block to:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">static mapping = {
-   myEnum enumType:"identity"
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_changes_to_support_hibernate_5_2">Changes to Support Hibernate 5.2</h4>
-<div class="paragraph">
-<p>Hibernate 5.2 includes many breaking API changes, in order to support Hibernate 5.2 several classes have been removed or rewritten. Including:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>org.grails.orm.hibernate.proxy.GroovyAwareJavassistLazyInitializer</code></p>
-</li>
-<li>
-<p><code>org.grails.orm.hibernate.proxy.GroovyAwareJavassistProxyFactory</code></p>
-</li>
-<li>
-<p><code>org.grails.orm.hibernate.persister.entity.GroovyAwareJoinedSubclassEntityPersister</code></p>
-</li>
-<li>
-<p><code>org.grails.orm.hibernate.persister.entity.GroovyAwareSingleTableEntityPersister</code></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Most of these classes are considered internal, however if you have extended or references these classes you may need to modify your code appropriately.</p>
-</div>
-</div>
 </div>
 <div id="footer">
 <div id="footer-text">

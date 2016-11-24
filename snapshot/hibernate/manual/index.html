@@ -748,47 +748,6 @@ table.CodeRay td.code>pre{padding:0}
 <p>In preparation for Hibernate 5.2 support the previous "SessionFactoryBean" notion has been removed. Now if you wish to customize <code>SessionFactory</code> creation you should instead register a custom <code>org.grails.orm.hibernate.connections.HibernateConnectionSourceFactory</code> in Spring.</p>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_identityenumtype_handling_changed">1.2.2. IdentityEnumType Handling Changed</h4>
-<div class="paragraph">
-<p>Previous versions of GORM shipped with a <code>org.grails.orm.hibernate.cfg.IdentityEnumType</code> class for altering the handling of enums. In order to support different versions of Hibernate 5.x which feature different signatures for the <code>org.hibernate.usertype.UserType</code> interface this class has been removed.</p>
-</div>
-<div class="paragraph">
-<p>If you wish to obtain the same functionality you need to change your <code>mapping</code> block to:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">static</span> mapping = {
-   myEnum <span class="key">enumType</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">identity</span><span class="delimiter">&quot;</span></span>
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_changes_to_support_hibernate_5_2">1.2.3. Changes to Support Hibernate 5.2</h4>
-<div class="paragraph">
-<p>Hibernate 5.2 includes many breaking API changes, in order to support Hibernate 5.2 several classes have been removed or rewritten. Including:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>org.grails.orm.hibernate.proxy.GroovyAwareJavassistLazyInitializer</code></p>
-</li>
-<li>
-<p><code>org.grails.orm.hibernate.proxy.GroovyAwareJavassistProxyFactory</code></p>
-</li>
-<li>
-<p><code>org.grails.orm.hibernate.persister.entity.GroovyAwareJoinedSubclassEntityPersister</code></p>
-</li>
-<li>
-<p><code>org.grails.orm.hibernate.persister.entity.GroovyAwareSingleTableEntityPersister</code></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Most of these classes are considered internal, however if you have extended or references these classes you may need to modify your code appropriately.</p>
-</div>
-</div>
 </div>
 </div>
 </div>
@@ -796,12 +755,12 @@ table.CodeRay td.code>pre{padding:0}
 <h2 id="gettingStarted">2. Getting Started</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To use GORM 6.1.0.BUILD-SNAPSHOT for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
+<p>To use GORM 6.0.5.BUILD-SNAPSHOT for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile "org.grails.plugins:hibernate5:6.1.0.BUILD-SNAPSHOT"
+    compile "org.grails.plugins:hibernate5:6.0.5.BUILD-SNAPSHOT"
     compile "org.hibernate:hibernate-ehcache"
 }</code></pre>
 </div>
@@ -815,7 +774,7 @@ table.CodeRay td.code>pre{padding:0}
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("6.1.0.BUILD-SNAPSHOT")
+            details.useVersion("6.0.5.BUILD-SNAPSHOT")
         }
     }
 }</code></pre>
@@ -824,7 +783,7 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="hibernateVersions">2.1. Configuring Different Hibernate Versions</h3>
 <div class="paragraph">
-<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.1.0.BUILD-SNAPSHOT.</p>
+<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.0.5.BUILD-SNAPSHOT.</p>
 </div>
 <div class="sect3">
 <h4 id="_grails_3_2_x_and_above_with_hibernate_4">2.1.1. Grails 3.2.x and above with Hibernate 4</h4>
@@ -890,7 +849,7 @@ configurations.all {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.1.0.BUILD-SNAPSHOT")
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.0.5.BUILD-SNAPSHOT")
 compile "org.hibernate:hibernate-core:5.1.0.Final"
 compile "org.hibernate:hibernate-ehcache:5.1.0.Final"
 runtime "com.h2database:h2:1.4.192"
@@ -1023,7 +982,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:6.1.0.BUILD-SNAPSHOT"
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:6.0.5.BUILD-SNAPSHOT"
 runtime "com.h2database:h2:1.4.192"
 runtime "org.apache.tomcat:tomcat-jdbc:8.5.0"
 runtime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"
@@ -7346,7 +7305,7 @@ sessionFactory.openSession()</code></pre>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:6.1.0.BUILD-SNAPSHOT"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:6.0.5.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 </div>
