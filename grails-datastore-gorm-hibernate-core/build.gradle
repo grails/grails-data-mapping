@@ -1,5 +1,4 @@
 dependencies {
-    compile "org.grails:grails-async:$grailsVersion"
     compile(project(":grails-datastore-gorm")) {
         exclude group: 'org.grails', module:'grails-bootstrap'
         exclude group: 'org.grails', module:'grails-core'
@@ -29,7 +28,6 @@ dependencies {
 
     compileOnly("org.hibernate:hibernate-core:$hibVersion") {
         exclude group:'commons-logging', module:'commons-logging'
-        exclude group:'dom4j', module:'dom4j'
         exclude group:'com.h2database', module:'h2'
         exclude group:'commons-collections', module:'commons-collections'
         exclude group:'org.slf4j', module:'jcl-over-slf4j'
@@ -37,15 +35,6 @@ dependencies {
         exclude group:'org.slf4j', module:'slf4j-log4j12'
         exclude group:'xml-apis', module:'xml-apis'
     }
-
-    compile('dom4j:dom4j:1.6.1') {
-        exclude group: 'xml-apis', module:'xml-apis'
-    }
-
-    runtime ('antlr:antlr:2.7.7') {
-        exclude group: 'commons-logging', module:'commons-logging'
-    }
-
 
     compileOnly('org.hibernate.common:hibernate-commons-annotations:4.0.5.Final'){
         exclude group: 'org.slf4j', module:'slf4j-api'
@@ -76,6 +65,10 @@ dependencies {
         exclude group: 'commons-logging', module:'commons-logging'
     }
 
+    compileOnly "org.grails:grails-async:$grailsVersion", {
+        exclude group:'io.projectreactor',module:'reactor-core'
+        exclude group:'io.projectreactor',module:'reactor-stream'
+    }
     testCompile("org.hibernate:hibernate-core:$hibVersion") {
         exclude group:'commons-logging', module:'commons-logging'
         exclude group:'dom4j', module:'dom4j'
@@ -87,5 +80,9 @@ dependencies {
     }
 
     testRuntime "com.h2database:h2:1.3.164"
-
 }
+
+groovydoc {
+    classpath += configurations.compileOnly
+}
+
