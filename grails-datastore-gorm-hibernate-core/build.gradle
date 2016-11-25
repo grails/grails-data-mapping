@@ -65,7 +65,7 @@ dependencies {
         exclude group: 'commons-logging', module:'commons-logging'
     }
 
-    compileOnly "org.grails:grails-async:$grailsVersion", {
+    compile "org.grails:grails-async:$grailsVersion", {
         exclude group:'io.projectreactor',module:'reactor-core'
         exclude group:'io.projectreactor',module:'reactor-stream'
     }
