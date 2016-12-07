@@ -21,7 +21,8 @@ class HibernateConnectionSourceSettingsSpec extends Specification {
                 'hibernate.cache.queries': 'true',
                 'hibernate.hbm2ddl.auto': 'create',
                 'hibernate.cache':['region.factory_class':'org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory'],
-                'hibernate.configLocations':'file:hibernate.cfg.xml'
+                'hibernate.configLocations':'file:hibernate.cfg.xml',
+                'org.hibernate.foo':'bar'
         ]
         HibernateConnectionSourceSettingsBuilder builder = new HibernateConnectionSourceSettingsBuilder(DatastoreUtils.createPropertyResolver(config))
         HibernateConnectionSourceSettings settings = builder.build()
@@ -40,6 +41,7 @@ class HibernateConnectionSourceSettingsSpec extends Specification {
         expectedHibernateProperties.put('hibernate.configLocations','file:hibernate.cfg.xml')
         expectedHibernateProperties.put('hibernate.use_query_cache','true')
         expectedHibernateProperties.put('hibernate.cache.region.factory_class','org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory')
+        expectedHibernateProperties.put('org.hibernate.foo','bar')
 
         def expectedCombinedProperties = new Properties()
         expectedCombinedProperties.putAll(expectedDataSourceProperties)

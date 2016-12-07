@@ -33,6 +33,17 @@ class HibernateConnectionSourceSettingsBuilder extends ConfigurationBuilder<Hibe
     }
 
     @Override
+    HibernateConnectionSourceSettings build() {
+        HibernateConnectionSourceSettings finalSettings = (HibernateConnectionSourceSettings)super.build()
+        Map orgHibernateProperties = propertyResolver.getProperty("org.hibernate", Map.class, Collections.emptyMap())
+        Properties additionalProperties = finalSettings.getHibernate().getAdditionalProperties()
+        for(key in orgHibernateProperties.keySet()) {
+            additionalProperties.put("org.hibernate.$key".toString(), orgHibernateProperties.get(key))
+        }
+        return finalSettings
+    }
+
+    @Override
     protected HibernateConnectionSourceSettings toConfiguration(HibernateConnectionSourceSettings builder) {
         return builder
     }
