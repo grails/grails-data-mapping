@@ -4160,7 +4160,61 @@ def numberOfBranches = c.get {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_sql_projections">7.5.4. SQL Projections</h4>
+<h4 id="_transforming_projection_results">7.5.4. Transforming Projection Results</h4>
+<div class="paragraph">
+<p>If the raw value or simple object array returned by the criteria method doesn&#8217;t suit your needs, the result can be transformed with a <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/transform/ResultTransformer.html">ResultTransformer</a>. Let&#8217;s say we want to transform the criteria results into a Map so that we can easily reference values by key:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">def c = Account.createCriteria()
+
+def accountsOverview = c.get {
+    resultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP)
+    projections {
+        sum(<span class="string"><span class="delimiter">'</span><span class="content">balance</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">allBalances</span><span class="delimiter">'</span></span>)
+        countDistinct(<span class="string"><span class="delimiter">'</span><span class="content">holderLastName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">lastNames</span><span class="delimiter">'</span></span>)
+    }
+}
+
+<span class="comment">// accountsOverview.allBalances</span>
+<span class="comment">// accountsOverview.lastNames</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that we&#8217;ve added an alias to each projection as an additional parameter to be used as the key. For this to work, all projections must have aliases defined, otherwise the corresponding map entry will not be built.</p>
+</div>
+<div class="paragraph">
+<p>We can also transform the result into an object of our choosing via the <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/transform/Transformers.html#aliasToBean-java.lang.Class-">Transformers.aliasToBean()</a> method. In this case, we&#8217;ll transform it into an <code>AccountsOverview</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="type">class</span> <span class="class">AccountsOverview</span> {
+    <span class="predefined-type">Number</span> allBalances
+    <span class="predefined-type">Number</span> lastNames
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">def c = Account.createCriteria()
+
+def accountsOverview = c.get {
+    resultTransformer(Transformers.aliasToBean(AccountsOverview))
+    projections {
+        sum(<span class="string"><span class="delimiter">'</span><span class="content">balance</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">allBalances</span><span class="delimiter">'</span></span>)
+        countDistinct(<span class="string"><span class="delimiter">'</span><span class="content">holderLastName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">lastNames</span><span class="delimiter">'</span></span>)
+    }
+}
+
+<span class="comment">// accountsOverview instanceof AccountsOverview</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each alias must have a corresponding property or explicit setter on the bean otherwise an exception will be thrown.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_sql_projections">7.5.5. SQL Projections</h4>
 <div class="paragraph">
 <p>The criteria DSL provides access to Hibernate&#8217;s SQL projection API.</p>
 </div>
@@ -4300,7 +4354,7 @@ of all of the boxes which have that width.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_using_sql_restrictions">7.5.5. Using SQL Restrictions</h4>
+<h4 id="_using_sql_restrictions">7.5.6. Using SQL Restrictions</h4>
 <div class="paragraph">
 <p>You can access Hibernate&#8217;s SQL Restrictions capabilities.</p>
 </div>
@@ -4342,7 +4396,7 @@ Note that the parameter there is SQL. The <code>first_name</code> attribute refe
 </div>
 </div>
 <div class="sect3">
-<h4 id="_using_scrollable_results">7.5.6. Using Scrollable Results</h4>
+<h4 id="_using_scrollable_results">7.5.7. Using Scrollable Results</h4>
 <div class="paragraph">
 <p>You can use Hibernate&#8217;s <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/ScrollableResults.html">ScrollableResults</a> feature by calling the scroll method:</p>
 </div>
@@ -4375,7 +4429,7 @@ def accountNumber = results.getLong(<span class="string"><span class="delimiter"
 </div>
 </div>
 <div class="sect3">
-<h4 id="_setting_properties_in_the_criteria_instance">7.5.7. Setting properties in the Criteria instance</h4>
+<h4 id="_setting_properties_in_the_criteria_instance">7.5.8. Setting properties in the Criteria instance</h4>
 <div class="paragraph">
 <p>If a node within the builder tree doesn&#8217;t match a particular criterion it will attempt to set a property on the Criteria object itself. This allows full access to all the properties in this class. This example calls <code>setMaxResults</code> and <code>setFirstResult</code> on the <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/Criteria.html">Criteria</a> instance:</p>
 </div>
@@ -4392,7 +4446,7 @@ def accountNumber = results.getLong(<span class="string"><span class="delimiter"
 </div>
 </div>
 <div class="sect3">
-<h4 id="_querying_with_eager_fetching">7.5.8. Querying with Eager Fetching</h4>
+<h4 id="_querying_with_eager_fetching">7.5.9. Querying with Eager Fetching</h4>
 <div class="paragraph">
 <p>In the section on <a href="#fetching">Eager and Lazy Fetching</a> we discussed how to declaratively specify fetching to avoid the N+1 SELECT problem. However, this can also be achieved using a criteria query:</p>
 </div>
@@ -4453,7 +4507,7 @@ def results = Airport.withCriteria {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_method_reference">7.5.9. Method Reference</h4>
+<h4 id="_method_reference">7.5.10. Method Reference</h4>
 <div class="paragraph">
 <p>If you invoke the builder with no method name such as:</p>
 </div>
@@ -4506,7 +4560,7 @@ def results = Airport.withCriteria {
 </table>
 </div>
 <div class="sect3">
-<h4 id="_combining_criteria">7.5.10. Combining Criteria</h4>
+<h4 id="_combining_criteria">7.5.11. Combining Criteria</h4>
 <div class="paragraph">
 <p>You can combine multiple criteria closures in the following way:</p>
 </div>
