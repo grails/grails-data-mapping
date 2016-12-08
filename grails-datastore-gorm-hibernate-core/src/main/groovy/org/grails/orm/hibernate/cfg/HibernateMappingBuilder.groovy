@@ -27,6 +27,8 @@ import org.springframework.beans.MutablePropertyValues
 import org.springframework.context.ApplicationContext
 import org.springframework.validation.DataBinder
 
+import javax.persistence.AccessType
+
 /**
  * Implements the ORM mapping DSL constructing a model that can be evaluated by the
  * GrailsDomainBinder class which maps GORM classes onto the database.
@@ -476,6 +478,7 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
             PropertyConfig property = mapping.columns[name] ?: newConfig
             property.name = namedArgs.name ?: property.name
             property.formula = namedArgs.formula ?: property.formula
+            property.accessType = namedArgs.accessType instanceof AccessType ? namedArgs.accessType : property.accessType
             property.type = namedArgs.type ?: property.type
             property.setLazy( namedArgs.lazy instanceof Boolean ? namedArgs.lazy : property.getLazy() )
             property.insertable = namedArgs.insertable != null ? namedArgs.insertable : property.insertable
