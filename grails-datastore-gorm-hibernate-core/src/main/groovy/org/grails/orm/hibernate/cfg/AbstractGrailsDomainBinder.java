@@ -2569,7 +2569,10 @@ public abstract class AbstractGrailsDomainBinder {
             prop.setUpdateable(getUpdateableness(grailsProperty));
         }
 
-        prop.setPropertyAccessorName(mappings.getDefaultAccess());
+        AccessType accessType = AccessType.getAccessStrategy(
+                grailsProperty.getMapping().getMappedForm().getAccessType()
+        );
+        prop.setPropertyAccessorName( accessType.getType() );
         prop.setOptional(grailsProperty.isNullable());
 
         setCascadeBehaviour(grailsProperty, prop);
