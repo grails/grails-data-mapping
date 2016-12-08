@@ -3,7 +3,6 @@ package org.grails.datastore.mapping.reflect;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.codehaus.groovy.transform.trait.Traits;
 import org.grails.datastore.mapping.engine.EntityAccess;
-import org.grails.datastore.mapping.model.AbstractPersistentEntity;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.proxy.EntityProxy;
@@ -180,39 +179,10 @@ public class FieldEntityAccess implements EntityAccess {
                 String identityName = identity.getName();
                 this.identifierName = identityName;
                 this.identifierType = identity.getType();
-                Field field = ReflectionUtils.findField(javaClass, identityName);
-                if(field != null) {
-                    ReflectionUtils.makeAccessible(field);
-                    identifierReader = new FieldReader(field);
-                    identifierWriter = new FieldWriter(field);
-                }
-                else {
-                    PropertyDescriptor descriptor = cpf.getPropertyDescriptor(identityName);
-                    Method readMethod = descriptor.getReadMethod();
 
-                    Traits.TraitBridge traitBridge = readMethod.getAnnotation(Traits.TraitBridge.class);
-                    if(traitBridge != null) {
-                        String traitFieldName = traitBridge.traitClass().getName().replace('.','_') + "__" + identityName;
-                        field = ReflectionUtils.findField(javaClass, traitFieldName);
-                        if(field != null) {
-                            ReflectionUtils.makeAccessible(field);
-                            identifierReader = new FieldReader(field);
-                            identifierWriter = new FieldWriter(field);
-                        }
-                        else {
-                            Method writeMethod = descriptor.getWriteMethod();
-
-                            identifierReader = new FastMethodReader(fastClass.getMethod(readMethod));
-                            identifierWriter = new FastMethodWriter(fastClass.getMethod(writeMethod), descriptor.getPropertyType());
-                        }
-                    }
-                    else {
-                        Method writeMethod = descriptor.getWriteMethod();
-
-                        identifierReader = new FastMethodReader(fastClass.getMethod(readMethod));
-                        identifierWriter = new FastMethodWriter(fastClass.getMethod(writeMethod), descriptor.getPropertyType());
-                    }
-                }
+                ReaderAndWriterMaker readerAndWriterMaker = new ReaderAndWriterMaker(cpf, identityName).make();
+                identifierReader = readerAndWriterMaker.getPropertyReader();
+                identifierWriter = readerAndWriterMaker.getPropertyWriter();
 
                 readerMap.put(identifierName, identifierReader);
                 writerMap.put(identifierName, identifierWriter);
@@ -223,27 +193,14 @@ public class FieldEntityAccess implements EntityAccess {
                 this.identifierWriter = null;
                 this.identifierType = null;
             }
+
             PersistentProperty[] composite = entity.getCompositeIdentity();
             if(composite != null) {
                 for (PersistentProperty property : composite) {
                     String propertyName = property.getName();
-                    Field field = ReflectionUtils.findField(javaClass, propertyName);
-                    if (field != null) {
-                        ReflectionUtils.makeAccessible(field);
-                        FieldReader reader = new FieldReader(field);
-                        readerMap.put(propertyName, reader);
-                        FieldWriter writer = new FieldWriter(field);
-                        writerMap.put(propertyName, writer);
-                    } else {
-
-                        PropertyDescriptor descriptor = cpf.getPropertyDescriptor(propertyName);
-                        Method readMethod = descriptor.getReadMethod();
-                        Method writeMethod = descriptor.getWriteMethod();
-                        FastMethodReader reader = new FastMethodReader(fastClass.getMethod(readMethod));
-                        readerMap.put(propertyName, reader);
-                        FastMethodWriter writer = new FastMethodWriter(fastClass.getMethod(writeMethod), descriptor.getPropertyType());
-                        writerMap.put(propertyName, writer);
-                    }
+                    ReaderAndWriterMaker readerAndWriterMaker = new ReaderAndWriterMaker(cpf, propertyName).make();
+                    readerMap.put(propertyName, readerAndWriterMaker.getPropertyReader());
+                    writerMap.put(propertyName, readerAndWriterMaker.getPropertyWriter());
                 }
             }
             List<PersistentProperty> properties = entity.getPersistentProperties();
@@ -253,30 +210,19 @@ public class FieldEntityAccess implements EntityAccess {
                 PersistentProperty property = properties.get(i);
 
                 String propertyName = property.getName();
-                Field field = ReflectionUtils.findField(javaClass, propertyName);
-                if(field != null) {
-                    ReflectionUtils.makeAccessible(field);
-                    FieldReader reader = new FieldReader(field);
-                    readers[i] = reader;
-                    readerMap.put(propertyName, reader);
-                    FieldWriter writer = new FieldWriter(field);
-                    writers[i] = writer;
-                    writerMap.put(propertyName, writer);
-                }
-                else {
+                ReaderAndWriterMaker readerAndWriterMaker = new ReaderAndWriterMaker(cpf, propertyName).make();
+                PropertyReader reader = readerAndWriterMaker.getPropertyReader();
+                PropertyWriter writer = readerAndWriterMaker.getPropertyWriter();
 
-                    PropertyDescriptor descriptor = cpf.getPropertyDescriptor(propertyName);
-                    Method readMethod = descriptor.getReadMethod();
-                    Method writeMethod = descriptor.getWriteMethod();
-                    FastMethodReader reader = new FastMethodReader(fastClass.getMethod(readMethod));
-                    readers[i] = reader;
-                    readerMap.put(propertyName, reader);
-                    FastMethodWriter writer = new FastMethodWriter(fastClass.getMethod(writeMethod), descriptor.getPropertyType());
-                    writers[i] = writer;
-                    writerMap.put(propertyName, writer);
-
-                }
+                readers[i] = reader;
+                readerMap.put(propertyName, reader);
+                writers[i] = writer;
+                writerMap.put(propertyName, writer);
             }
+        }
+
+        protected String getTraitFieldName(Traits.TraitBridge traitBridge, String fieldName) {
+            return traitBridge.traitClass().getName().replace('.','_') + "__" + fieldName;
         }
 
         @Override
@@ -362,6 +308,46 @@ public class FieldEntityAccess implements EntityAccess {
         }
 
 
+
+        static class ReflectMethodReader implements PropertyReader {
+            final Method method;
+
+            public ReflectMethodReader(Method method) {
+                this.method = method;
+                ReflectionUtils.makeAccessible(method);
+            }
+
+            @Override
+            public Class propertyType() {
+                return method.getReturnType();
+            }
+
+            @Override
+            public Object read(Object object) {
+                return ReflectionUtils.invokeMethod(method, object);
+            }
+        }
+
+        static class ReflectionMethodWriter implements PropertyWriter {
+            final Method method;
+            final Class propertyType;
+
+            public ReflectionMethodWriter(Method method, Class propertyType) {
+                this.method = method;
+                ReflectionUtils.makeAccessible(method);
+                this.propertyType = propertyType;
+            }
+
+            @Override
+            public Class propertyType() {
+                return propertyType;
+            }
+
+            @Override
+            public void write(Object object, Object value) {
+                ReflectionUtils.invokeMethod(method, object, value);
+            }
+        }
 
         static class FastMethodReader implements PropertyReader {
             final FastMethod method;
@@ -454,6 +440,69 @@ public class FieldEntityAccess implements EntityAccess {
                 } catch (Throwable e) {
                     throw new IllegalArgumentException("Cannot set field ["+field.getName()+"] of object ["+object+"] for value ["+value+"] of type ["+value.getClass().getName()+"]");
                 }
+            }
+        }
+
+        private class ReaderAndWriterMaker {
+            private ClassPropertyFetcher cpf;
+            private String propertyName;
+            private PropertyReader propertyReader;
+            private PropertyWriter propertyWriter;
+
+            public ReaderAndWriterMaker(ClassPropertyFetcher cpf, String propertyName) {
+                this.cpf = cpf;
+                this.propertyName = propertyName;
+            }
+
+            public PropertyReader getPropertyReader() {
+                return propertyReader;
+            }
+
+            public PropertyWriter getPropertyWriter() {
+                return propertyWriter;
+            }
+
+            public ReaderAndWriterMaker make() {
+                Class javaClass = cpf.getJavaClass();
+                Field field = ReflectionUtils.findField(javaClass, propertyName);
+                if(field != null) {
+                    ReflectionUtils.makeAccessible(field);
+                    propertyReader = new FieldReader(field);
+                    propertyWriter = new FieldWriter(field);
+                }
+                else {
+                    PropertyDescriptor descriptor = cpf.getPropertyDescriptor(propertyName);
+                    Method readMethod = descriptor.getReadMethod();
+
+                    Traits.TraitBridge traitBridge = readMethod.getAnnotation(Traits.TraitBridge.class);
+                    if(traitBridge != null) {
+                        String traitFieldName = getTraitFieldName(traitBridge, propertyName);
+                        field = ReflectionUtils.findField(javaClass, traitFieldName);
+                        if(field != null) {
+                            ReflectionUtils.makeAccessible(field);
+                            propertyReader = new FieldReader(field);
+                            propertyWriter = new FieldWriter(field);
+                        }
+                        else {
+                            Method writeMethod = descriptor.getWriteMethod();
+                            if(readMethod.getDeclaringClass().equals(fastClass.getJavaClass())) {
+                                propertyReader = new FastMethodReader(fastClass.getMethod(readMethod));
+                                propertyWriter = new FastMethodWriter(fastClass.getMethod(writeMethod), descriptor.getPropertyType());
+                            }
+                            else {
+                                propertyReader = new ReflectMethodReader(readMethod);
+                                propertyWriter = new ReflectionMethodWriter(writeMethod, descriptor.getPropertyType());
+
+                            }
+                        }
+                    }
+                    else {
+                        Method writeMethod = descriptor.getWriteMethod();
+                        propertyReader = new FastMethodReader(fastClass.getMethod(readMethod));
+                        propertyWriter = new FastMethodWriter(fastClass.getMethod(writeMethod), descriptor.getPropertyType());
+                    }
+                }
+                return this;
             }
         }
     }
