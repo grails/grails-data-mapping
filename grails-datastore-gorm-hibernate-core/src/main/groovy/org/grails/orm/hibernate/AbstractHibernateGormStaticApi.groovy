@@ -286,6 +286,39 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         }
     }
 
+    def <D> D findWithSql(CharSequence sql) {
+        IHibernateTemplate template = hibernateTemplate
+        return (D) template.execute { Session session ->
+
+            List params = []
+            if(sql instanceof GString) {
+                sql = buildOrdinalParameterQueryFromGString((GString)sql, params)
+            }
+
+            SQLQuery q = session.createSQLQuery(sql.toString())
+
+            template.applySettings(q)
+
+            params.eachWithIndex { val, int i ->
+                if (val instanceof CharSequence) {
+                    q.setParameter i, val.toString()
+                }
+                else {
+                    q.setParameter i, val
+                }
+            }
+            q.addEntity(persistentClass)
+            q.setMaxResults(1)
+            def results = createHqlQuery(session, q).list()
+            if(results.isEmpty()) {
+                return null
+            }
+            else {
+                return results.get(0)
+            }
+        }
+    }
+
     /**
      * Finds all results for this entity for the given SQL query
      *
@@ -796,4 +829,5 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
            return query.trim().replace('\n', ' ')
         return query
     }
+
 }
