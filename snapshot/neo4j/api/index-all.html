@@ -545,8 +545,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/config/GormProperties.html#ATTACHED" title="Field in GormProperties">ATTACHED</a></span> - Field in <a href="org/grails/datastore/mapping/model/config/GormProperties.html">GormProperties</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/mapping/config/Attribute.html" title="Class in org.grails.datastore.gorm.neo4j.mapping.config">Attribute</a></span> - Class in <a href="./org/grails/datastore/gorm/neo4j/mapping/config/package-summary.html">org.grails.datastore.gorm.neo4j.mapping.config</a>
-</dt><dd><div class="block">Represents a Neo4j attribute or relationships config</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/document/config/Attribute.html" title="Class in org.grails.datastore.mapping.document.config">Attribute</a></span> - Class in <a href="./org/grails/datastore/mapping/document/config/package-summary.html">org.grails.datastore.mapping.document.config</a>
+</dt><dd><div class="block">Configures how a Java property maps to a Document attribute</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/AbstractAttributeStoringSession.html#attributes" title="Field in AbstractAttributeStoringSession">attributes</a></span> - Field in <a href="org/grails/datastore/mapping/core/AbstractAttributeStoringSession.html">AbstractAttributeStoringSession</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/schemaless/DynamicAttributes.html#attributes(Map<String, Object>)" title="Method in DynamicAttributes">attributes(Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/schemaless/DynamicAttributes.html">DynamicAttributes</a>
@@ -811,6 +811,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">Utility class for scanning the classpath for entities</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/ClassUtils.html" title="Class in org.grails.datastore.mapping.reflect">ClassUtils</a></span> - Class in <a href="./org/grails/datastore/mapping/reflect/package-summary.html">org.grails.datastore.mapping.reflect</a>
 </dt><dd><div class="block">Helper methods for dealing with classes and reflection</div></dd>
+<dt><span class="strong"><a href="grails/test/neo4j/Neo4jSpec.html#cleanup()" title="Method in Neo4jSpec">cleanup()</a></span> - Method in <a href="grails/test/neo4j/Neo4jSpec.html">Neo4jSpec</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/support/AbstractDatastorePersistenceContextInterceptor.html#clear()" title="Method in AbstractDatastorePersistenceContextInterceptor">clear()</a></span> - Method in <a href="org/grails/datastore/gorm/support/AbstractDatastorePersistenceContextInterceptor.html">AbstractDatastorePersistenceContextInterceptor</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html#clear()" title="Method in AbstractPersistentCollection">clear()</a></span> - Method in <a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html">AbstractPersistentCollection</a>
@@ -1570,8 +1572,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">ClassCodeVisitorSupport that transforms where methods into detached criteria queries</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaTransformer.html#detachedCriteriaVariables" title="Field in DetachedCriteriaTransformer">detachedCriteriaVariables</a></span> - Field in <a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaTransformer.html">DetachedCriteriaTransformer</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="grails/neo4j/Direction.html" title="Enum in grails.neo4j">Direction</a></span> - Enum in <a href="./grails/neo4j/package-summary.html">grails.neo4j</a>
-</dt><dd><div class="block">Used to configure the direction of a relationship</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html#dirty" title="Field in AbstractPersistentCollection">dirty</a></span> - Field in <a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html">AbstractPersistentCollection</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html#DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE" title="Field in DirtyCheckingTransformer">DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE</a></span> - Field in <a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html">DirtyCheckingTransformer</a>
@@ -2585,6 +2585,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Obtains a list of property names that are dirty</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/PersistentEntity.html#getDiscriminator()" title="Method in PersistentEntity">getDiscriminator()</a></span> - Method in <a href="org/grails/datastore/mapping/model/PersistentEntity.html">PersistentEntity</a>
 </dt><dd> <div class="block">The discriminator used when persisting subclasses of an inheritance hierarchy</div></dd>
+<dt><span class="strong"><a href="grails/test/neo4j/Neo4jSpec.html#getDomainClasses()" title="Method in Neo4jSpec">getDomainClasses()</a></span> - Method in <a href="grails/test/neo4j/Neo4jSpec.html">Neo4jSpec</a>
+</dt><dd> <div class="block">@return The domain classes</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/jdbc/DatabaseDriver.html#getDriverClassName()" title="Method in DatabaseDriver">getDriverClassName()</a></span> - Method in <a href="org/grails/datastore/gorm/jdbc/DatabaseDriver.html">DatabaseDriver</a>
 </dt><dd> <div class="block">Return the driver class name.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#getEmbedded(T, java.lang.String)" title="Method in NativeEntryEntityPersister">getEmbedded(T, String)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
@@ -2847,7 +2849,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">@return The names of the transformed entities for this context</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html#getLabels(java.lang.Object)" title="Method in GraphPersistentEntity">getLabels(Object)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html">GraphPersistentEntity</a>
 </dt><dd> <div class="block">Get labels specific to the given instance</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/mapping/config/Node.html#getLabels()" title="Method in Node">getLabels()</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/mapping/config/Node.html">Node</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/mapping/config/Neo4jEntity.html#getLabels()" title="Method in Neo4jEntity">getLabels()</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/mapping/config/Neo4jEntity.html">Neo4jEntity</a>
 </dt><dd> <div class="block">@return The label definitions for the entity</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html#getLabelsAsString(java.lang.Object)" title="Method in GraphPersistentEntity">getLabelsAsString(Object)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html">GraphPersistentEntity</a>
 </dt><dd> <div class="block">return all labels as string usable for cypher, concatenated by ":"
@@ -2895,6 +2897,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Obtains the MappingContext object</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/EntityPersister.html#getMappingContext()" title="Method in EntityPersister">getMappingContext()</a></span> - Method in <a href="org/grails/datastore/mapping/engine/EntityPersister.html">EntityPersister</a>
 </dt><dd> <div class="block">@return The MappingContext instance</div></dd>
+<dt><span class="strong"><a href="grails/test/neo4j/Neo4jSpec.html#getMappingContext()" title="Method in Neo4jSpec">getMappingContext()</a></span> - Method in <a href="grails/test/neo4j/Neo4jSpec.html">Neo4jSpec</a>
+</dt><dd> <div class="block">@return Obtains the mapping context</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/PersistentEntity.html#getMappingContext()" title="Method in PersistentEntity">getMappingContext()</a></span> - Method in <a href="org/grails/datastore/mapping/model/PersistentEntity.html">PersistentEntity</a>
 </dt><dd> <div class="block">Obtains the MappingContext where this PersistentEntity is defined</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/Session.html#getMappingContext()" title="Method in Session">getMappingContext()</a></span> - Method in <a href="org/grails/datastore/mapping/core/Session.html">Session</a>
@@ -3038,6 +3042,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingConfigurationStrategy.html#getOwningEntities(java.lang.Class, org.grails.datastore.mapping.model.MappingContext)" title="Method in MappingConfigurationStrategy">getOwningEntities(Class, MappingContext)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingConfigurationStrategy.html">MappingConfigurationStrategy</a>
 </dt><dd> <div class="block">Returns a set of entities that "own" the given entity. </div></dd>
+<dt><span class="strong"><a href="grails/test/neo4j/Neo4jSpec.html#getPackageToScan(grails.config.Config)" title="Method in Neo4jSpec">getPackageToScan(Config)</a></span> - Method in <a href="grails/test/neo4j/Neo4jSpec.html">Neo4jSpec</a>
+</dt><dd> <div class="block">Obtains the default package to scan</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaTransformer.html#getParameterizedDetachedCriteriaClassNode(org.codehaus.groovy.ast.ClassNode)" title="Method in DetachedCriteriaTransformer">getParameterizedDetachedCriteriaClassNode(ClassNode)</a></span> - Method in <a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaTransformer.html">DetachedCriteriaTransformer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/jpa/JpaQueryInfo.html#getParameters()" title="Method in JpaQueryInfo">getParameters()</a></span> - Method in <a href="org/grails/datastore/mapping/query/jpa/JpaQueryInfo.html">JpaQueryInfo</a>
@@ -3240,8 +3246,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/PersistentEntity.html#getReflector()" title="Method in PersistentEntity">getReflector()</a></span> - Method in <a href="org/grails/datastore/mapping/model/PersistentEntity.html">PersistentEntity</a>
 </dt><dd> <div class="block">@return The reflector this entity</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/RelationshipUtils.html#getRelationshipType(org.grails.datastore.mapping.model.types.Association, org.grails.datastore.gorm.neo4j.mapping.config.Attribute)" title="Method in RelationshipUtils">getRelationshipType(Association, Attribute)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/RelationshipUtils.html">RelationshipUtils</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/event/PostQueryEvent.html#getResults()" title="Method in PostQueryEvent">getResults()</a></span> - Method in <a href="org/grails/datastore/mapping/query/event/PostQueryEvent.html">PostQueryEvent</a>
 </dt><dd> <div class="block"> <DL><DT><B>Returns:</B></DT><DD>The results of the query.</DD></DL></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/PersistentEntity.html#getRootEntity()" title="Method in PersistentEntity">getRootEntity()</a></span> - Method in <a href="org/grails/datastore/mapping/model/PersistentEntity.html">PersistentEntity</a>
@@ -3350,8 +3354,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getType()" title="Method in AbstractPersistentProperty">getType()</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractPersistentProperty.html">AbstractPersistentProperty</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/mapping/config/Attribute.html#getType()" title="Method in Attribute">getType()</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/mapping/config/Attribute.html">Attribute</a>
-</dt><dd> <div class="block">@return The relationship type</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/EntityPersister.html#getType()" title="Method in EntityPersister">getType()</a></span> - Method in <a href="org/grails/datastore/mapping/engine/EntityPersister.html">EntityPersister</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/PersistentProperty.html#getType()" title="Method in PersistentProperty">getType()</a></span> - Method in <a href="org/grails/datastore/mapping/model/PersistentProperty.html">PersistentProperty</a>
@@ -4100,7 +4102,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Check if the instance has been modified since loading.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/AstUtils.html#isDomainClass(org.codehaus.groovy.ast.ClassNode)" title="Method in AstUtils">isDomainClass(ClassNode)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/AstUtils.html">AstUtils</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/mapping/config/Node.html#isDynamicAssociations()" title="Method in Node">isDynamicAssociations()</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/mapping/config/Node.html">Node</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/mapping/config/Neo4jEntity.html#isDynamicAssociations()" title="Method in Neo4jEntity">isDynamicAssociations()</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/mapping/config/Neo4jEntity.html">Neo4jEntity</a>
 </dt><dd> <div class="block">Whether this entity supports dynamic associations. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Association.html#isEmbedded()" title="Method in Association">isEmbedded()</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Association.html">Association</a>
 </dt><dd> <div class="block">@return Whether this association is embedded</div></dd>
@@ -4151,8 +4153,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/PersistentEntity.html#isIdentityName(java.lang.String)" title="Method in PersistentEntity">isIdentityName(String)</a></span> - Method in <a href="org/grails/datastore/mapping/model/PersistentEntity.html">PersistentEntity</a>
 </dt><dd> <div class="block">True if the given property is the identifier</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/Query.Order.html#isIgnoreCase()" title="Method in Query.Order">isIgnoreCase()</a></span> - Method in <a href="org/grails/datastore/mapping/query/Query.Order.html">Query.Order</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/RelationshipUtils.html#isIncomingRelationship(org.grails.datastore.mapping.model.types.Association, org.grails.datastore.gorm.neo4j.mapping.config.Attribute)" title="Method in RelationshipUtils">isIncomingRelationship(Association, Attribute)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/RelationshipUtils.html">RelationshipUtils</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/Property.html#isIndex()" title="Method in Property">isIndex()</a></span> - Method in <a href="org/grails/datastore/mapping/config/Property.html">Property</a>
 </dt><dd> <div class="block">@return Whether this property is index</div></dd>
@@ -4780,8 +4780,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Mark the collection as dirty.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/engine/Neo4jQuery.html#matchForAssociation(org.grails.datastore.mapping.model.types.Association, java.lang.String, Map<String, String>)" title="Method in Neo4jQuery">matchForAssociation(Association, String, Map&lt;String, String&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/engine/Neo4jQuery.html">Neo4jQuery</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/RelationshipUtils.html#matchForAssociation(org.grails.datastore.mapping.model.types.Association, java.lang.String, Map<String, String>)" title="Method in RelationshipUtils">matchForAssociation(Association, String, Map&lt;String, String&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/RelationshipUtils.html">RelationshipUtils</a>
-</dt><dd> <div class="block">Build an association match for the given association, variable name and attributes</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/jdbc/DatabaseDriver.html#matchProductName(java.lang.String)" title="Method in DatabaseDriver">matchProductName(String)</a></span> - Method in <a href="org/grails/datastore/gorm/jdbc/DatabaseDriver.html">DatabaseDriver</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html#max(java.lang.String)" title="Method in AbstractCriteriaBuilder">max(String)</a></span> - Method in <a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html">AbstractCriteriaBuilder</a>
@@ -5058,8 +5056,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/connections/Neo4jEmbeddedConnectionSource.html" title="Class in org.grails.datastore.gorm.neo4j.connections">Neo4jEmbeddedConnectionSource</a></span> - Class in <a href="./org/grails/datastore/gorm/neo4j/connections/package-summary.html">org.grails.datastore.gorm.neo4j.connections</a>
 </dt><dd><div class="block">A <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a> for embedded Neo4j</div></dd>
-<dt><span class="strong"><a href="grails/neo4j/Neo4jEntity.html" title="Trait in grails.neo4j">Neo4jEntity</a></span> - Trait in <a href="./grails/neo4j/package-summary.html">grails.neo4j</a>
-</dt><dd><div class="block">Extends the default {@org.grails.datastore.gorm.GormEntity} trait, adding new methods specific to Neo4j</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/mapping/config/Neo4jEntity.html" title="Class in org.grails.datastore.gorm.neo4j.mapping.config">Neo4jEntity</a></span> - Class in <a href="./org/grails/datastore/gorm/neo4j/mapping/config/package-summary.html">org.grails.datastore.gorm.neo4j.mapping.config</a>
+</dt><dd><div class="block">Extends the default <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html' title='Entity'>Entity</a> configuration adding the ability to assign labels</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/engine/Neo4jEntityPersister.html" title="Class in org.grails.datastore.gorm.neo4j.engine">Neo4jEntityPersister</a></span> - Class in <a href="./org/grails/datastore/gorm/neo4j/engine/package-summary.html">org.grails.datastore.gorm.neo4j.engine</a>
 </dt><dd><div class="block">Core <a href='../../../../../../org/grails/datastore/mapping/engine/EntityPersister.html' title='EntityPersister'>EntityPersister</a> implementation responsible for CRUD operations against the Graph.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/engine/Neo4jEntityPersister.html#Neo4jEntityPersister(org.grails.datastore.mapping.model.MappingContext, org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.core.Session, org.springframework.context.ApplicationEventPublisher)" title="Constructor in Neo4jEntityPersister">Neo4jEntityPersister(MappingContext, PersistentEntity, Session, ApplicationEventPublisher)</a></span> - Constructor in <a href="org/grails/datastore/gorm/neo4j/engine/Neo4jEntityPersister.html">Neo4jEntityPersister</a>
@@ -5136,6 +5134,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">A Neo4j sorted set</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/collection/Neo4jSortedSet.html#Neo4jSortedSet(org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.model.types.Association, java.util.SortedSet, org.grails.datastore.gorm.neo4j.Neo4jSession)" title="Constructor in Neo4jSortedSet">Neo4jSortedSet(EntityAccess, Association, SortedSet, Neo4jSession)</a></span> - Constructor in <a href="org/grails/datastore/gorm/neo4j/collection/Neo4jSortedSet.html">Neo4jSortedSet</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/test/neo4j/Neo4jSpec.html" title="Class in grails.test.neo4j">Neo4jSpec</a></span> - Class in <a href="./grails/test/neo4j/package-summary.html">grails.test.neo4j</a>
+</dt><dd><div class="block">Base class for Neo4j tests</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/Neo4jTransaction.html" title="Class in org.grails.datastore.gorm.neo4j">Neo4jTransaction</a></span> - Class in <a href="./org/grails/datastore/gorm/neo4j/package-summary.html">org.grails.datastore.gorm.neo4j</a>
 </dt><dd><div class="block">Represents a Neo4j transaction</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/Neo4jTransaction.html#Neo4jTransaction(org.neo4j.driver.v1.Session, org.springframework.transaction.TransactionDefinition, boolean)" title="Constructor in Neo4jTransaction">Neo4jTransaction(Session, TransactionDefinition, boolean)</a></span> - Constructor in <a href="org/grails/datastore/gorm/neo4j/Neo4jTransaction.html">Neo4jTransaction</a>
@@ -5176,8 +5176,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">An interface for generating unique identifiers for instances</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/identity/SnowflakeIdGenerator.html#nextId()" title="Method in SnowflakeIdGenerator">nextId()</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/identity/SnowflakeIdGenerator.html">SnowflakeIdGenerator</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/mapping/config/Node.html" title="Class in org.grails.datastore.gorm.neo4j.mapping.config">Node</a></span> - Class in <a href="./org/grails/datastore/gorm/neo4j/mapping/config/package-summary.html">org.grails.datastore.gorm.neo4j.mapping.config</a>
-</dt><dd><div class="block">Extends the default <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html' title='Entity'>Entity</a> configuration adding the ability to assign labels</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/CypherBuilder.html#NODE_DATA" title="Field in CypherBuilder">NODE_DATA</a></span> - Field in <a href="org/grails/datastore/gorm/neo4j/CypherBuilder.html">CypherBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/CypherBuilder.html#NODE_LABELS" title="Field in CypherBuilder">NODE_LABELS</a></span> - Field in <a href="org/grails/datastore/gorm/neo4j/CypherBuilder.html">CypherBuilder</a>
@@ -6067,7 +6065,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/engine/RelationshipPendingInsert.html#RelationshipPendingInsert(org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.model.types.Association, Collection<Serializable>, org.neo4j.driver.v1.Transaction)" title="Constructor in RelationshipPendingInsert">RelationshipPendingInsert(EntityAccess, Association, Collection&lt;Serializable&gt;, Transaction)</a></span> - Constructor in <a href="org/grails/datastore/gorm/neo4j/engine/RelationshipPendingInsert.html">RelationshipPendingInsert</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/RelationshipUtils.html#relationshipTypeUsedFor(org.grails.datastore.mapping.model.types.Association)" title="Method in RelationshipUtils">relationshipTypeUsedFor(Association)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/RelationshipUtils.html">RelationshipUtils</a>
-</dt><dd> <div class="block">Obtain the Neo4j relationship type for the giveen association</div></dd>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/RelationshipUtils.html" title="Class in org.grails.datastore.gorm.neo4j">RelationshipUtils</a></span> - Class in <a href="./org/grails/datastore/gorm/neo4j/package-summary.html">org.grails.datastore.gorm.neo4j</a>
 </dt><dd><div class="block">Utility methods for manipulating relationships</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html#remove(java.lang.Object)" title="Method in AbstractPersistentCollection">remove(Object)</a></span> - Method in <a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html">AbstractPersistentCollection</a>
@@ -6452,7 +6450,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/finders/DynamicFinderInvocation.html#setDetachedCriteria(grails.gorm.DetachedCriteria)" title="Method in DynamicFinderInvocation">setDetachedCriteria(DetachedCriteria)</a></span> - Method in <a href="org/grails/datastore/gorm/finders/DynamicFinderInvocation.html">DynamicFinderInvocation</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/mapping/config/Node.html#setDynamicAssociations(boolean)" title="Method in Node">setDynamicAssociations(boolean)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/mapping/config/Node.html">Node</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/mapping/config/Neo4jEntity.html#setDynamicAssociations(boolean)" title="Method in Neo4jEntity">setDynamicAssociations(boolean)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/mapping/config/Neo4jEntity.html">Neo4jEntity</a>
 </dt><dd> <div class="block">@see #isDynamicAssociations()</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#setEmbedded(T, java.lang.String, T)" title="Method in NativeEntryEntityPersister">setEmbedded(T, String, T)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block">Implementors should override this method to provide support for embedded objects</div></dd>
@@ -6522,7 +6520,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/keyvalue/mapping/config/Family.html#setKeyspace(java.lang.String)" title="Method in Family">setKeyspace(String)</a></span> - Method in <a href="org/grails/datastore/mapping/keyvalue/mapping/config/Family.html">Family</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/mapping/config/Node.html#setLabels(java.lang.Object)" title="Method in Node">setLabels(Object)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/mapping/config/Node.html">Node</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/mapping/config/Neo4jEntity.html#setLabels(java.lang.Object)" title="Method in Neo4jEntity">setLabels(Object)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/mapping/config/Neo4jEntity.html">Neo4jEntity</a>
 </dt><dd> <div class="block">Sets the label definition</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/Property.html#setLazy(java.lang.Boolean)" title="Method in Property">setLazy(Boolean)</a></span> - Method in <a href="org/grails/datastore/mapping/config/Property.html">Property</a>
 </dt><dd> <div class="block">@param lazy Set to true if lazy proxies should be used for each element of collection types</div></dd>
@@ -6715,8 +6713,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/transactions/TransactionObject.html#setTransaction(Transaction<?>)" title="Method in TransactionObject">setTransaction(Transaction&lt;?&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/transactions/TransactionObject.html">TransactionObject</a>
 </dt><dd> <div class="block">@deprecated Here for binary compatibility, doesn't actually do anything</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/mapping/config/Attribute.html#setType(java.lang.String)" title="Method in Attribute">setType(String)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/mapping/config/Attribute.html">Attribute</a>
-</dt><dd> <div class="block">Sets the relationship type</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/TypeDirectionPair.html#setType(java.lang.String)" title="Method in TypeDirectionPair">setType(String)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/TypeDirectionPair.html">TypeDirectionPair</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/Property.html#setUnique(List<String>)" title="Method in Property">setUnique(List&lt;String&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/config/Property.html">Property</a>
@@ -6725,6 +6721,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/Query.html#setUniqueResult(boolean)" title="Method in Query">setUniqueResult(boolean)</a></span> - Method in <a href="org/grails/datastore/mapping/query/Query.html">Query</a>
 </dt><dd> <div class="block">Here purely for compatibility</div></dd>
+<dt><span class="strong"><a href="grails/test/neo4j/Neo4jSpec.html#setup()" title="Method in Neo4jSpec">setup()</a></span> - Method in <a href="grails/test/neo4j/Neo4jSpec.html">Neo4jSpec</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/test/neo4j/Neo4jSpec.html#setupSpec()" title="Method in Neo4jSpec">setupSpec()</a></span> - Method in <a href="grails/test/neo4j/Neo4jSpec.html">Neo4jSpec</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/ValidationEvent.html#setValidatedFields(List<?>)" title="Method in ValidationEvent">setValidatedFields(List&lt;?&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/event/ValidationEvent.html">ValidationEvent</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormValidationApi.html#setValidator(org.springframework.validation.Validator)" title="Method in GormValidationApi">setValidator(Validator)</a></span> - Method in <a href="org/grails/datastore/gorm/GormValidationApi.html">GormValidationApi</a>
@@ -7088,8 +7088,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Association.html#toString()" title="Method in Association">toString()</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Association.html">Association</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="grails/neo4j/Direction.html#toString()" title="Method in Direction">toString()</a></span> - Method in <a href="grails/neo4j/Direction.html">Direction</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/engine/Neo4jQuery.CypherExpression.html#toString()" title="Method in Neo4jQuery.CypherExpression">toString()</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/engine/Neo4jQuery.CypherExpression.html">Neo4jQuery.CypherExpression</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/TypeDirectionPair.html#toString()" title="Method in TypeDirectionPair">toString()</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/TypeDirectionPair.html">TypeDirectionPair</a>
@@ -7128,8 +7126,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentProperty.html#type" title="Field in AbstractPersistentProperty">type</a></span> - Field in <a href="org/grails/datastore/mapping/model/AbstractPersistentProperty.html">AbstractPersistentProperty</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/mapping/config/Attribute.html#type(java.lang.String)" title="Method in Attribute">type(String)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/mapping/config/Attribute.html">Attribute</a>
-</dt><dd> <div class="block">Sets the relationship type</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/CypherBuilder.html#TYPE" title="Field in CypherBuilder">TYPE</a></span> - Field in <a href="org/grails/datastore/gorm/neo4j/CypherBuilder.html">CypherBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/TypeDirectionPair.html" title="Class in org.grails.datastore.gorm.neo4j">TypeDirectionPair</a></span> - Class in <a href="./org/grails/datastore/gorm/neo4j/package-summary.html">org.grails.datastore.gorm.neo4j</a>
@@ -7198,7 +7194,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/jdbc/schema/SchemaHandler.html#useDefaultSchema(java.sql.Connection)" title="Method in SchemaHandler">useDefaultSchema(Connection)</a></span> - Method in <a href="org/grails/datastore/gorm/jdbc/schema/SchemaHandler.html">SchemaHandler</a>
 </dt><dd> <div class="block">Uses the given schema. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/RelationshipUtils.html#useReversedMappingFor(org.grails.datastore.mapping.model.types.Association)" title="Method in RelationshipUtils">useReversedMappingFor(Association)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/RelationshipUtils.html">RelationshipUtils</a>
-</dt><dd> <div class="block">Whether the association is inverse</div></dd>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/jdbc/schema/DefaultSchemaHandler.html#useSchema(java.sql.Connection, java.lang.String)" title="Method in DefaultSchemaHandler">useSchema(Connection, String)</a></span> - Method in <a href="org/grails/datastore/gorm/jdbc/schema/DefaultSchemaHandler.html">DefaultSchemaHandler</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/jdbc/schema/SchemaHandler.html#useSchema(java.sql.Connection, java.lang.String)" title="Method in SchemaHandler">useSchema(Connection, String)</a></span> - Method in <a href="org/grails/datastore/gorm/jdbc/schema/SchemaHandler.html">SchemaHandler</a>
