@@ -17,6 +17,7 @@ package org.grails.datastore.mapping.config;
 import groovy.lang.IntRange;
 import groovy.lang.ObjectRange;
 
+import javax.persistence.AccessType;
 import javax.persistence.EnumType;
 import javax.persistence.FetchType;
 import java.util.ArrayList;
@@ -50,11 +51,23 @@ public class Property implements Cloneable {
     private boolean derived;
     private String cascade;
     private String formula;
+    private AccessType accessType = AccessType.PROPERTY;
 
 
     @Override
     public Property clone() throws CloneNotSupportedException {
         return (Property) super.clone();
+    }
+
+    /**
+     * @return The default access type to use to read and write property values
+     */
+    public AccessType getAccessType() {
+        return accessType;
+    }
+
+    public void setAccessType(AccessType accessType) {
+        this.accessType = accessType;
     }
 
     /**

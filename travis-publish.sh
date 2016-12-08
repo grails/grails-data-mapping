@@ -36,7 +36,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
 
         echo "Triggering Hibernate 5 build"
-        git clone https://${GH_TOKEN}@github.com/grails/gorm-hibernate5.git gorm-hibernate5
+        git clone -b 6.0.x https://${GH_TOKEN}@github.com/grails/gorm-hibernate5.git gorm-hibernate5
         cd gorm-hibernate5
         echo "$(date)" > .snapshot
         git add .snapshot
@@ -58,7 +58,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         cd ..
 
         echo "Triggering Hibernate 4 build"
-        git clone https://${GH_TOKEN}@github.com/grails/gorm-hibernate4.git gorm-hibernate4
+        git clone -b 6.0.x https://${GH_TOKEN}@github.com/grails/gorm-hibernate4.git gorm-hibernate4
         cd gorm-hibernate4
         echo "$(date)" > .snapshot
         git add .snapshot
@@ -102,7 +102,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         cd ..
 
         echo "Triggering Neo4j build"
-        git clone https://${GH_TOKEN}@github.com/grails/gorm-neo4j.git gorm-neo4j
+        git clone -b 6.0.x https://${GH_TOKEN}@github.com/grails/gorm-neo4j.git gorm-neo4j
         cd gorm-neo4j
         echo "$(date)" > .snapshot
         git add .snapshot
@@ -124,7 +124,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         cd ..
 
         echo "Triggering MongoDB build"
-        git clone https://${GH_TOKEN}@github.com/grails/gorm-mongodb.git gorm-mongodb
+        git clone -b 6.0.x https://${GH_TOKEN}@github.com/grails/gorm-mongodb.git gorm-mongodb
         cd gorm-mongodb
         echo "$(date)" > .snapshot
         git add .snapshot
@@ -146,54 +146,10 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         git push
         cd ..
 
-        echo "Triggering Redis build"
-        git clone https://${GH_TOKEN}@github.com/grails/gorm-redis.git gorm-redis
-        cd gorm-redis
-        echo "$(date)" > .snapshot
-        git add .snapshot
-        if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
-            if [[ $TRAVIS_TAG =~ [M\d|RC\d] ]]; then            
-               echo "gormVersion=${TRAVIS_TAG:1}" > gradle.properties  
-            else 
-               echo "gormVersion=${TRAVIS_TAG:1}.RELEASE" > gradle.properties
-            fi            
-
-            git add gradle.properties
-            git commit -m "New GORM Release $TRAVIS_TAG"
-#            git tag $TRAVIS_TAG
-#            git push --tags
-        else
-            git commit -m "New Core Snapshot: $(date)"
-        fi
-        git push
-        cd ..
-
-        echo "Triggering Cassandra build"
-        git clone https://${GH_TOKEN}@github.com/grails/gorm-cassandra.git gorm-cassandra
-        cd gorm-cassandra
-        echo "$(date)" > .snapshot
-        git add .snapshot
-        if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
-            if [[ $TRAVIS_TAG =~ [M\d|RC\d] ]]; then            
-               echo "gormVersion=${TRAVIS_TAG:1}" > gradle.properties  
-            else 
-               echo "gormVersion=${TRAVIS_TAG:1}.RELEASE" > gradle.properties
-            fi            
-
-            git add gradle.properties
-            git commit -m "New GORM Release $TRAVIS_TAG"
-#            git tag $TRAVIS_TAG
-#            git push --tags
-        else
-            git commit -m "New Core Snapshot: $(date)"
-        fi
-        git push
-        cd ..
-
         # If there is a tag present then this becomes the latest
         if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
             echo "Triggering documentation build"
-            git clone https://${GH_TOKEN}@github.com/grails/gorm-docs.git gorm-docs
+            git clone -b 6.0.x https://${GH_TOKEN}@github.com/grails/gorm-docs.git gorm-docs
             cd gorm-docs
 
             if [[ $TRAVIS_TAG =~ [M\d|RC\d] ]]; then            

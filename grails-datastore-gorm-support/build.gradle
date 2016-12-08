@@ -1,20 +1,6 @@
 dependencies {
     compile project(':grails-datastore-gorm')
 
-    provided project(':grails-datastore-gorm-hibernate-core')
-    provided 'org.springframework:spring-orm:4.2.3.RELEASE'
-
-    provided "org.grails:grails-web-url-mappings:$grailsVersion"
-
-    provided("org.hibernate:hibernate-core:${hibernateVersion}.Final") {
-        exclude group:'commons-logging', module:'commons-logging'
-        exclude group:'commons-collections', module:'commons-collections'
-        exclude group:'org.slf4j', module:'slf4j-api'
-        exclude group:'xml-apis', module:'xml-apis'
-        exclude group:'dom4j', module:'dom4j'
-        exclude group:'antlr', module: 'antlr'
-    }
-
     compile("org.grails:grails-core:$grailsVersion") {
         exclude group:'aopalliance',module:'aopalliance'
         exclude group:'commons-logging',module:'commons-logging'
@@ -43,6 +29,8 @@ dependencies {
         exclude group:'com.googlecode.concurrentlinkedhashmap',module:'concurrentlinkedhashmap-lru'
     }
     compile("org.grails:grails-bootstrap:$grailsVersion") {
+        exclude group:'org.codehaus.groovy', module:'groovy-ant'
+        exclude group:'org.codehaus.groovy', module:'groovy-xml'
         exclude group:'org.apache.ant',module:'ant'
         exclude group:'org.apache.ant',module:'ant-launcher'
         exclude group:'org.apache.ant',module:'ant-trax'
@@ -53,5 +41,31 @@ dependencies {
         exclude group:'jline',module:'jline'
         exclude group:'org.fusesource.jansi',module:'jansi'
         exclude group:'net.java.dev.jna',module:'jna'
+    }
+
+    compileOnly project(':grails-datastore-gorm-hibernate-core')
+    compileOnly 'org.springframework:spring-orm:4.2.3.RELEASE'
+    compileOnly 'org.springframework:spring-webmvc:4.2.3.RELEASE'
+
+    compileOnly "org.grails:grails-web-url-mappings:$grailsVersion", {
+        transitive = false
+    }
+
+    compileOnly "org.grails:grails-web-common:$grailsVersion", {
+        transitive = false
+    }
+
+
+    compileOnly "org.grails:grails-validation:$grailsVersion", {
+        transitive = false
+    }
+
+    compileOnly("org.hibernate:hibernate-core:${hibernateVersion}.Final") {
+        exclude group:'commons-logging', module:'commons-logging'
+        exclude group:'commons-collections', module:'commons-collections'
+        exclude group:'org.slf4j', module:'slf4j-api'
+        exclude group:'xml-apis', module:'xml-apis'
+        exclude group:'dom4j', module:'dom4j'
+        exclude group:'antlr', module: 'antlr'
     }
 }

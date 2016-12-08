@@ -48,7 +48,6 @@ class HibernateConnectionSourceSettings extends ConnectionSourceSettings {
         Properties properties = new Properties()
         properties.putAll( dataSource.toHibernateProperties() )
         properties.putAll( hibernate.toProperties() )
-
         return properties
     }
 
@@ -180,7 +179,10 @@ class HibernateConnectionSourceSettings extends ConnectionSourceSettings {
          */
         String[] packagesToScan
 
-
+        /**
+         * Any additional properties that should be passed through as is.
+         */
+        Properties additionalProperties = new Properties()
 
         @CompileStatic
         Map<String, Object> toHibernateEventListeners(AbstractClosureEventTriggeringInterceptor eventTriggeringInterceptor) {
@@ -222,6 +224,7 @@ class HibernateConnectionSourceSettings extends ConnectionSourceSettings {
             }
 
             String prefix = "hibernate"
+            props.putAll( additionalProperties )
             populateProperties(props, this,prefix)
             return props
         }
