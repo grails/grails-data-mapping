@@ -36,7 +36,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
 
         echo "Triggering Hibernate 5 build"
-        git clone -b 6.0.x https://${GH_TOKEN}@github.com/grails/gorm-hibernate5.git gorm-hibernate5
+        git clone https://${GH_TOKEN}@github.com/grails/gorm-hibernate5.git gorm-hibernate5
         cd gorm-hibernate5
         echo "$(date)" > .snapshot
         git add .snapshot
@@ -58,7 +58,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         cd ..
 
         echo "Triggering Hibernate 4 build"
-        git clone -b 6.0.x https://${GH_TOKEN}@github.com/grails/gorm-hibernate4.git gorm-hibernate4
+        git clone https://${GH_TOKEN}@github.com/grails/gorm-hibernate4.git gorm-hibernate4
         cd gorm-hibernate4
         echo "$(date)" > .snapshot
         git add .snapshot
@@ -102,7 +102,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         cd ..
 
         echo "Triggering Neo4j build"
-        git clone -b 6.0.x https://${GH_TOKEN}@github.com/grails/gorm-neo4j.git gorm-neo4j
+        git clone https://${GH_TOKEN}@github.com/grails/gorm-neo4j.git gorm-neo4j
         cd gorm-neo4j
         echo "$(date)" > .snapshot
         git add .snapshot
@@ -124,7 +124,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         cd ..
 
         echo "Triggering MongoDB build"
-        git clone -b 6.0.x https://${GH_TOKEN}@github.com/grails/gorm-mongodb.git gorm-mongodb
+        git clone https://${GH_TOKEN}@github.com/grails/gorm-mongodb.git gorm-mongodb
         cd gorm-mongodb
         echo "$(date)" > .snapshot
         git add .snapshot
@@ -149,7 +149,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         # If there is a tag present then this becomes the latest
         if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
             echo "Triggering documentation build"
-            git clone -b 6.0.x https://${GH_TOKEN}@github.com/grails/gorm-docs.git gorm-docs
+            git clone https://${GH_TOKEN}@github.com/grails/gorm-docs.git gorm-docs
             cd gorm-docs
 
             if [[ $TRAVIS_TAG =~ [M\d|RC\d] ]]; then            
