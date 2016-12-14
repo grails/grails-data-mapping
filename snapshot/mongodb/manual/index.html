@@ -2868,7 +2868,7 @@ as shown in the following example:</p>
     <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Test low-level API extensions</span><span class="delimiter">&quot;</span></span>() {
         <span class="key">when</span>:
         <span class="keyword">def</span> db = createMongoClient().getDatabase(<span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>)
-        db.drop()
+<span class="comment">//        db.drop()</span>
         <span class="comment">// Insert a document</span>
         db[<span class="string"><span class="delimiter">'</span><span class="content">languages</span><span class="delimiter">'</span></span>].insert([<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Groovy</span><span class="delimiter">'</span></span>])
         <span class="comment">// A less verbose way to do it</span>
