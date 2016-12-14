@@ -535,8 +535,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#standalone">GORM for Neo4j without Grails</a></li>
 </ul>
 </li>
-<li><a href="#mapping">Mapping Domain Classes to Nodes</a></li>
-<li><a href="#relationships">Mapping Domain Classes to Relationships</a>
+<li><a href="#mapping">Mapping Domain Classes to Nodes</a>
 <ul class="sectlevel2">
 <li><a href="#idGeneration">Neo4j ID generators</a></li>
 <li><a href="#associations">Understanding Association Mapping</a></li>
@@ -544,6 +543,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#schemaless">Dynamic Properties and Associations</a></li>
 </ul>
 </li>
+<li><a href="#relationships">Mapping Domain Classes to Relationships</a></li>
 <li><a href="#querying">Querying with GORM for Neo4j</a>
 <ul class="sectlevel2">
 <li><a href="#lazyLoading">Understanding Lazy Loading</a></li>
@@ -1237,75 +1237,6 @@ If you want to see what queries GORM for Neo4j generates, enabling logging for t
 </tr>
 </table>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="relationships">Mapping Domain Classes to Relationships</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>In addition to being able to map a domain class to a Neo4j <code>Node</code>, since 6.1 you are able to map a domain class to a Neo4j <code>Relationship</code>.</p>
-</div>
-<div class="paragraph">
-<p>For example consider the following domain model:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.neo4j.*</span>
-
-<span class="type">class</span> <span class="class">Movie</span> {
-    <span class="predefined-type">String</span> title
-    <span class="directive">static</span> hasMany = [<span class="key">cast</span>:CastMember]
-}
-
-<span class="type">class</span> <span class="class">CastMember</span> <span class="directive">implements</span> Relationship&lt;Person, Movie&gt; {
-    <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; roles = <span class="type">[]</span>
-}
-
-<span class="type">class</span> <span class="class">Person</span> {
-    <span class="predefined-type">String</span> name
-    <span class="directive">static</span> hasMany = [<span class="key">appearances</span>:CastMember]
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>CastMember</code> class implements the <a href="../api/grails/neo4j/Relationship.html">Relationship</a> trait which takes two generic arguments: The class that represents the start of the relationship and the class that represents the end.</p>
-</div>
-<div class="paragraph">
-<p>You can then use regular GORM methods to query the <code>CastMember</code> relationship. In addition because Neo4j relationships are dynamic you can assign additional properties to them at runtime. For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> castMember = <span class="keyword">new</span> CastMember(
-    <span class="key">from</span>: <span class="keyword">new</span> Person(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Keanu</span><span class="delimiter">&quot;</span></span>),
-    <span class="key">to</span>: <span class="keyword">new</span> Movie(<span class="key">title</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">The Matrix</span><span class="delimiter">&quot;</span></span>),
-    <span class="key">roles</span>: [<span class="string"><span class="delimiter">&quot;</span><span class="content">Neo</span><span class="delimiter">&quot;</span></span>])
-
-castMember[<span class="string"><span class="delimiter">'</span><span class="content">realName</span><span class="delimiter">'</span></span>] = <span class="string"><span class="delimiter">&quot;</span><span class="content">Thomas Anderson</span><span class="delimiter">&quot;</span></span>
-castMember.save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In the above example the <code>roles</code> property is saved as a property of the relationship, as is the dynamic <code>realName</code> property.</p>
-</div>
-<div class="paragraph">
-<p>You can then query relationships using these properties:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">CastMember cm = CastMember.findByRoles([<span class="string"><span class="delimiter">'</span><span class="content">Neo</span><span class="delimiter">'</span></span>])
-Person person = cm.from
-println person.name</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The above example will produce a Cypher query that queries the relationship rather than the nodes:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>MATCH (n:Celeb)-[r]-&gt;(to:Movie) WHERE ( r.roles={1} ) RETURN r as rel, n as from, to as to
- ] for params [[1:[Neo]]</pre>
-</div>
-</div>
 <div class="sect2">
 <h3 id="idGeneration">Neo4j ID generators</h3>
 <div class="paragraph">
@@ -1527,6 +1458,75 @@ For more information on defining relationships with GORM, see the <a href="http:
 </div>
 <div class="paragraph">
 <p>The downside of dynamic associations is that GORM has to issue a separate query for each loaded instance when retrieving entities. If you have a small amount of data this is not a problem, but for larger data sets it is not recommended.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="relationships">Mapping Domain Classes to Relationships</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In addition to being able to map a domain class to a Neo4j <code>Node</code>, since 6.1 you are able to map a domain class to a Neo4j <code>Relationship</code>.</p>
+</div>
+<div class="paragraph">
+<p>For example consider the following domain model:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.neo4j.*</span>
+
+<span class="type">class</span> <span class="class">Movie</span> {
+    <span class="predefined-type">String</span> title
+    <span class="directive">static</span> hasMany = [<span class="key">cast</span>:CastMember]
+}
+
+<span class="type">class</span> <span class="class">CastMember</span> <span class="directive">implements</span> Relationship&lt;Person, Movie&gt; {
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; roles = <span class="type">[]</span>
+}
+
+<span class="type">class</span> <span class="class">Person</span> {
+    <span class="predefined-type">String</span> name
+    <span class="directive">static</span> hasMany = [<span class="key">appearances</span>:CastMember]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>CastMember</code> class implements the <a href="../api/grails/neo4j/Relationship.html">Relationship</a> trait which takes two generic arguments: The class that represents the start of the relationship and the class that represents the end.</p>
+</div>
+<div class="paragraph">
+<p>You can then use regular GORM methods to query the <code>CastMember</code> relationship. In addition because Neo4j relationships are dynamic you can assign additional properties to them at runtime. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> castMember = <span class="keyword">new</span> CastMember(
+    <span class="key">from</span>: <span class="keyword">new</span> Person(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Keanu</span><span class="delimiter">&quot;</span></span>),
+    <span class="key">to</span>: <span class="keyword">new</span> Movie(<span class="key">title</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">The Matrix</span><span class="delimiter">&quot;</span></span>),
+    <span class="key">roles</span>: [<span class="string"><span class="delimiter">&quot;</span><span class="content">Neo</span><span class="delimiter">&quot;</span></span>])
+
+castMember[<span class="string"><span class="delimiter">'</span><span class="content">realName</span><span class="delimiter">'</span></span>] = <span class="string"><span class="delimiter">&quot;</span><span class="content">Thomas Anderson</span><span class="delimiter">&quot;</span></span>
+castMember.save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above example the <code>roles</code> property is saved as a property of the relationship, as is the dynamic <code>realName</code> property.</p>
+</div>
+<div class="paragraph">
+<p>You can then query relationships using these properties:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">CastMember cm = CastMember.findByRoles([<span class="string"><span class="delimiter">'</span><span class="content">Neo</span><span class="delimiter">'</span></span>])
+Person person = cm.from
+println person.name</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example will produce a Cypher query that queries the relationship rather than the nodes:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>MATCH (n:Celeb)-[r]-&gt;(to:Movie) WHERE ( r.roles={1} ) RETURN r as rel, n as from, to as to
+ ] for params [[1:[Neo]]</pre>
 </div>
 </div>
 </div>
