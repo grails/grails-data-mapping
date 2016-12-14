@@ -25,6 +25,10 @@ trait HibernateEntity<D> extends GormEntity<D> {
         currentHibernateStaticApi().findAllWithSql sql
     }
 
+    static D findWithSql(CharSequence sql) {
+        currentHibernateStaticApi().findWithSql(sql)
+    }
+
     private static AbstractHibernateGormStaticApi currentHibernateStaticApi() {
         (AbstractHibernateGormStaticApi)GormEnhancer.findStaticApi(this)
     }
