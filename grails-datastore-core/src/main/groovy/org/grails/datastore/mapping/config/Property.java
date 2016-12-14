@@ -51,7 +51,7 @@ public class Property implements Cloneable {
     private boolean derived;
     private String cascade;
     private String formula;
-    private AccessType accessType = AccessType.PROPERTY;
+    private AccessType accessType = AccessType.FIELD;
 
 
     @Override
