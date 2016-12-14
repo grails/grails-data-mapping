@@ -82,7 +82,7 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
         Session session = sessionHolder != null ? sessionHolder.getSession() : null;
         try {
             super.postHandle(request, model);
-            boolean isNotManual = session.getFlushMode() != FlushMode.MANUAL || session.getFlushMode() != FlushMode.COMMIT;
+            boolean isNotManual = session.getFlushMode() != FlushMode.MANUAL && session.getFlushMode() != FlushMode.COMMIT;
             if (session != null && isNotManual) {
                 logger.debug("Eagerly flushing Hibernate session");
                 session.flush();
