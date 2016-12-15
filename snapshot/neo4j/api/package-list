@@ -6,7 +6,6 @@ grails.gorm.multitenancy
 grails.gorm.transactions
 grails.neo4j
 grails.neo4j.bootstrap
-grails.test.neo4j
 org.grails.compiler.gorm
 org.grails.datastore.gorm
 org.grails.datastore.gorm.async
