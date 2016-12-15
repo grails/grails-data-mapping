@@ -31,7 +31,7 @@ import org.springframework.web.context.request.WebRequest;
 
 
 /**
- * Extends the default spring OSIVI and doesn't flush the session if it has been set
+ * Extends the default spring OSIV and doesn't flush the session if it has been set
  * to MANUAL on the session itself.
  *
  * @author Graeme Rocher
@@ -82,9 +82,10 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
         Session session = sessionHolder != null ? sessionHolder.getSession() : null;
         try {
             super.postHandle(request, model);
-            boolean isNotManual = session.getFlushMode() != FlushMode.MANUAL || session.getFlushMode() != FlushMode.COMMIT;
-            if (session != null && isNotManual) {
-                logger.debug("Eagerly flushing Hibernate session");
+            if (session != null && session.getFlushMode() != FlushMode.MANUAL && session.getFlushMode() != FlushMode.COMMIT) {
+                if(logger.isDebugEnabled()) {
+                    logger.debug("Eagerly flushing Hibernate session");
+                }
                 session.flush();
             }
         }
