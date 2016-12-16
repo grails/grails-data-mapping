@@ -1,7 +1,7 @@
 package org.grails.orm.hibernate.compiler
 
 import grails.gorm.dirty.checking.DirtyCheckedProperty
-import grails.gorm.hibernate.annotation.HibernateEntity
+import groovy.transform.CompilationUnitAware
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.*
 import org.codehaus.groovy.ast.stmt.BlockStatement
@@ -11,12 +11,11 @@ import org.codehaus.groovy.ast.stmt.Statement
 import org.codehaus.groovy.control.CompilationUnit
 import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.SourceUnit
+import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 import org.codehaus.groovy.transform.sc.StaticCompilationVisitor
-import org.grails.compiler.gorm.AdditionalGormEntityTransformation
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.AstUtils
-import org.grails.datastore.mapping.reflect.ClassUtils
 import org.grails.datastore.mapping.reflect.NameUtils
 import org.hibernate.engine.spi.EntityEntry
 import org.hibernate.engine.spi.ManagedEntity
@@ -29,7 +28,7 @@ import java.lang.reflect.Modifier
 import static org.codehaus.groovy.ast.tools.GeneralUtils.*
 
 /**
- * A transformation that transforms entities that implement the {@link grails.gorm.hibernate.annotation.HibernateEntity} trait,
+ * A transformation that transforms entities that implement the {@link grails.gorm.hibernate.annotation.ManagedEntity} trait,
  * adding logic that intercepts getter and setter access to eliminate the need for proxies.
  *
  * @author Graeme Rocher
@@ -37,11 +36,11 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.*
  */
 @CompileStatic
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
-class HibernateEntityTransformation implements AdditionalGormEntityTransformation {
-    private static final ClassNode MY_TYPE = new ClassNode(HibernateEntity.class);
+class HibernateEntityTransformation implements ASTTransformation, CompilationUnitAware {
+    private static final ClassNode MY_TYPE = new ClassNode(grails.gorm.hibernate.annotation.ManagedEntity.class);
     private static final Object APPLIED_MARKER = new Object();
 
-    final boolean available = ClassUtils.isPresent("org.hibernate.SessionFactory") && Boolean.valueOf(System.getProperty("hibernate.enhance", "true"))
+//    final boolean available = ClassUtils.isPresent("org.hibernate.SessionFactory") && Boolean.valueOf(System.getProperty("hibernate.enhance", "true"))
     CompilationUnit compilationUnit
 
     @Override

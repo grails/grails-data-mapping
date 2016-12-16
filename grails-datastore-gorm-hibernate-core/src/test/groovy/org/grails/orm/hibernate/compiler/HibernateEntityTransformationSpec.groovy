@@ -1,6 +1,5 @@
 package org.grails.orm.hibernate.compiler
 
-import grails.gorm.hibernate.annotation.HibernateEntity
 import org.hibernate.engine.spi.ManagedEntity
 import org.hibernate.engine.spi.PersistentAttributeInterceptable
 import org.hibernate.engine.spi.PersistentAttributeInterceptor
@@ -146,7 +145,7 @@ class MyEntity {
         myEntity.name == 'changed'
     }
 }
-@HibernateEntity
+@grails.gorm.hibernate.annotation.ManagedEntity
 class MyTest {
     String name
     String lastName

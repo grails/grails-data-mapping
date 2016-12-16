@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @GroovyASTTransformationClass("org.grails.orm.hibernate.compiler.HibernateEntityTransformation")
-public @interface HibernateEntity {
+public @interface ManagedEntity {
     // no attributes
 }
