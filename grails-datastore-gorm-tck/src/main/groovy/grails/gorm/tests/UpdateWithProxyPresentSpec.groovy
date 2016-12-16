@@ -1,5 +1,6 @@
 package grails.gorm.tests
 
+import grails.gorm.DetachedCriteria
 import grails.gorm.dirty.checking.DirtyCheck
 import grails.persistence.Entity
 import groovy.transform.EqualsAndHashCode
@@ -114,14 +115,20 @@ class Person implements Serializable, Comparable<Person> {
     Face face
     boolean myBooleanProperty
 
-//    static peopleWithOlderPets = where {
-//        pets {
-//            age > 9
-//        }
-//    }
-//    static peopleWithOlderPets2 = where {
-//        pets.age > 9
-//    }
+    static DetachedCriteria<Person> withAge(int a) {
+        Person.where {
+            age > a
+        }
+    }
+
+    static DetachedCriteria<Person> peopleWithOlderPets = where {
+        pets {
+            age > 9
+        }
+    }
+    static DetachedCriteria<Person> peopleWithOlderPets2 = where {
+        pets.age > 9
+    }
 
     static Person getByFirstNameAndLastNameAndAge(String firstName, String lastName, int age) {
         find( new Person(firstName: firstName, lastName: lastName, age: age) )

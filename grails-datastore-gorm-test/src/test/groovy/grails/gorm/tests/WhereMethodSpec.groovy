@@ -6,7 +6,7 @@ import groovy.transform.CompileStatic;
 
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
-
+import org.grails.datastore.mapping.reflect.FieldEntityAccess
 import spock.lang.Ignore
 import spock.lang.Issue
 
@@ -14,7 +14,7 @@ import spock.lang.Issue
  * Tests for the new where method used to define detached criteria using the new DSL
  */
 @ApplyDetachedCriteriaTransform
-@Ignore
+//@Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
 
     def gcl
@@ -26,38 +26,48 @@ class WhereMethodSpec extends GormDatastoreSpec {
         gcl= new GroovyClassLoader()
         list << gcl.parseClass('''
 import grails.gorm.tests.*
-import grails.gorm.*
+import grails.gorm.annotation.*
 import grails.persistence.*
-import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
-
-@ApplyDetachedCriteriaTransform
+import grails.gorm.DetachedCriteria
 @Entity
 class Todo {
     Long id
     String title
+    static DetachedCriteria<Todo> titleStartsWith(String str) {
+        where {
+            title ==~ "$str%"
+        }
+    }      
+    
     static doStuff() {
         where { title == 'blah' }
     }
+    
 }
+Todo.titleStartsWith("test").where {
+   title == 'A%'
+}
+return Todo
 ''')
 
+        list[-1].newInstance()
         list << gcl.parseClass('''
 import grails.gorm.tests.*
-import grails.gorm.*
+import grails.gorm.annotation.*
 import grails.persistence.*
-import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
+import grails.gorm.DetachedCriteria
 
-@ApplyDetachedCriteriaTransform
 @Entity
 class Project {
     Long id
     String name
     static hasMany =[todos:Todo]
-    Set todos
 
     static todosThatStartWithA = where {
         todos.title ==~ "A%"
     }
+    
+  
 }
 ''')
         return list
@@ -80,6 +90,42 @@ class Project {
 
     def closureProperty = {
         Person.where { lastName == "Simpson" }.list()
+    }
+
+    def "test transform method that returns where query"() {
+        given:"A bunch of people"
+        createPeople()
+
+
+        when:"A method is called that returns where"
+        List<Person> people = Person.withAge(10).where {
+            lastName == 'Simpson'
+        }.list()
+
+        then:"The results are correct"
+        people.size() == 2
+    }
+    @Issue('GRAILS-9425')
+    def "Test that static definition of where query works with associations"() {
+        given:"given a project and some todos"
+        FieldEntityAccess.clearReflectors()
+        def Todo = this.gcl.loadClass("Todo")
+        def Project = this.gcl.loadClass("Project")
+
+        Project.newInstance(name: "Foo").save()
+        Project.newInstance(name: "Bar")
+                .addToTodos(title:"A todo")
+                .addToTodos(title:"Another")
+                .save(flush: true)
+
+        session.clear()
+
+        when:"a statically defined where query is used"
+        def results = Project.todosThatStartWithA.list()
+
+        then:"The correct results are returned"
+        results.size() == 1
+        results.find { it.name == 'Bar' }
     }
 
     @Issue('GRAILS-9696')
@@ -202,26 +248,7 @@ class Project {
         e.message.contains 'Cannot query property "firstN" - no such property on class grails.gorm.tests.Person exists.'
     }
 
-    @Issue('GRAILS-9425')
-    def "Test that static definition of where query works with associations"() {
-         given:"given a project and some todos"
-             def Todo = this.gcl.loadClass("Todo")
-             def Project = this.gcl.loadClass("Project")
 
-             Project.newInstance(name: "Foo").save()
-             Project.newInstance(name: "Bar")
-                     .addToTodos(title:"A todo")
-                     .addToTodos(title:"Another")
-                     .save(flush: true)
-
-            session.clear()
-
-         when:"a statically defined where query is used"
-            def results = Project.todosThatStartWithA.list()
-
-         then:"The correct results are returned"
-            results.size() == 1
-    }
 
     @Issue('GRAILS-8526')
     def "Test association query with referenced arguments"() {
@@ -1712,8 +1739,8 @@ class Pet {
         def gcl = new GroovyClassLoader(getClass().classLoader)
         gcl.parseClass('''
 import grails.gorm.tests.*
-import grails.gorm.*
-import grails.persistence.*
+import grails.gorm.DetachedCriteria
+import grails.gorm.annotation.*
 import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 
 @ApplyDetachedCriteriaTransform

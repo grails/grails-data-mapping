@@ -374,6 +374,28 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                         visitMethodCall(classNode, arguments);
                     }
                 }
+            } else if(objectExpression instanceof MethodCallExpression) {
+                MethodCallExpression mce = (MethodCallExpression)objectExpression;
+                MethodNode methodTarget = mce.getMethodTarget();
+                String methodName = mce.getMethodAsString();
+                Expression targetObject = mce.getObjectExpression();
+                ClassNode targetType = null;
+                if(targetObject instanceof ClassExpression) {
+                    targetType = ((ClassExpression)targetObject).getType();
+                }
+                else if(targetObject instanceof VariableExpression) {
+                    targetType = ((VariableExpression)targetObject).getType();
+                }
+
+                if(targetType != null && AstUtils.isDomainClass(targetType) && isCandidateWhereMethod(method, arguments)) {
+                    List<MethodNode> methods = targetType.getMethods(methodName);
+                    for (MethodNode methodNode : methods) {
+                        if(methodNode.getReturnType().equals(DETACHED_CRITERIA_CLASS_NODE)) {
+                            visitMethodCall(targetType, arguments);
+                        }
+                    }
+
+                }
             }
         } catch (Exception e) {
             logTransformationError(call, e);
