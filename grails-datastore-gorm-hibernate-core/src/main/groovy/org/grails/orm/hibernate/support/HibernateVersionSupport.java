@@ -68,7 +68,10 @@ public class HibernateVersionSupport {
      * @since 4.3
      */
     public static FlushMode getFlushMode(Session session) {
-        return (FlushMode) ReflectionUtils.invokeMethod(getFlushMode, session);
+        if(session != null) {
+            return (FlushMode) ReflectionUtils.invokeMethod(getFlushMode, session);
+        }
+        return FlushMode.MANUAL;
     }
 
     /**
