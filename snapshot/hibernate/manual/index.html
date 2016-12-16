@@ -789,6 +789,45 @@ table.CodeRay td.code>pre{padding:0}
 <p>Most of these classes are considered internal, however if you have extended or references these classes you may need to modify your code appropriately.</p>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_domain_autowiring_disabled_by_default">1.2.4. Domain Autowiring Disabled by Default</h4>
+<div class="paragraph">
+<p>Spring autowiring of domain instances has been disabled by default because it represents a performance bottleneck. If you are autowiring services into your domain instances you will need to re-enable using the <code>mapping</code> block:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">static</span> mapping = {
+   autowire <span class="predefined-constant">true</span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that if enabled read performance will degrade.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_field_accesstype_by_default">1.2.5. Field AccessType by Default</h4>
+<div class="paragraph">
+<p>Previous versions of GORM used property access to read and write values to entities by default. In other words the respective getters and setters were used when reflecting on the instances. GORM 6.1 uses field access by default instead, which means the field is used when reading and writing data via reflection to instances.</p>
+</div>
+<div class="paragraph">
+<p>If you wish to continue to use property access this can be configured by altering the default mapping in your configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">javax.persistence.*</span>
+grails.gorm.default.mapping = {
+   <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span>(<span class="key">accessType</span>: AccessType.PROPERTY)
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_fail_on_error_package_setting_renamed">1.2.6. Fail on Error Package Setting Renamed</h4>
+<div class="paragraph">
+<p>The <code>grails.gorm.failOnError</code> setting can no longer be used to configure the packages to enable fail on error. Instead <code>grails.gorm.failOnErrorPackages</code> should be used.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
