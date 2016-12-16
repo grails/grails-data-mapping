@@ -14,6 +14,7 @@ import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 import org.codehaus.groovy.transform.sc.StaticCompilationVisitor
+import org.grails.compiler.gorm.GormEntityTransformation
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.AstUtils
 import org.grails.datastore.mapping.reflect.NameUtils
@@ -78,6 +79,8 @@ class HibernateEntityTransformation implements ASTTransformation, CompilationUni
             return
         }
 
+        new GormEntityTransformation(compilationUnit: compilationUnit).visit(classNode, sourceUnit)
+        
         ClassNode managedEntityClassNode = ClassHelper.make(ManagedEntity)
         ClassNode attributeInterceptableClassNode = ClassHelper.make(PersistentAttributeInterceptable)
         ClassNode entityEntryClassNode = ClassHelper.make(EntityEntry)
