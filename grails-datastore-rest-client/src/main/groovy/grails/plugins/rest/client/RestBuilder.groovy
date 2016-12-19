@@ -14,6 +14,13 @@
  */
 package grails.plugins.rest.client
 
+import org.grails.web.converters.configuration.ConverterConfiguration
+import org.grails.web.converters.marshaller.json.ArrayMarshaller
+import org.grails.web.converters.marshaller.json.ByteArrayMarshaller
+import org.grails.web.converters.marshaller.json.CollectionMarshaller
+import org.grails.web.converters.marshaller.json.GroovyBeanMarshaller
+import org.grails.web.converters.marshaller.json.MapMarshaller
+
 import static org.springframework.http.HttpMethod.*
 
 import java.net.Proxy
@@ -53,9 +60,15 @@ class RestBuilder {
 
     RestBuilder(Map settings = [:]) {
 
-        if(ConvertersConfigurationHolder.getConverterConfiguration(JSON) instanceof DefaultConverterConfiguration) {
+        def currentConfiguration = ConvertersConfigurationHolder.getConverterConfiguration(JSON)
+        if(currentConfiguration instanceof DefaultConverterConfiguration) {
             // init manually
-            new ConvertersConfigurationInitializer().initialize()
+            DefaultConverterConfiguration defaultConfig = ((DefaultConverterConfiguration)currentConfiguration)
+            defaultConfig.registerObjectMarshaller(new MapMarshaller())
+            defaultConfig.registerObjectMarshaller(new ArrayMarshaller());
+            defaultConfig.registerObjectMarshaller(new ByteArrayMarshaller());
+            defaultConfig.registerObjectMarshaller(new CollectionMarshaller());
+            defaultConfig.registerObjectMarshaller(new GroovyBeanMarshaller());
         }
 
         Proxy proxyFromSystemProperties = getProxyForSystemProperties()
