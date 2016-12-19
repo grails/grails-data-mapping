@@ -3,8 +3,7 @@ package org.grails.datastore.gorm
 import grails.gorm.tests.GormDatastoreSpec
 import grails.validation.ConstrainedProperty
 import grails.validation.ValidationException
-
-import org.grails.core.support.GrailsDomainConfigurationUtil
+import org.grails.validation.DefaultConstraintEvaluator
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
 
@@ -17,7 +16,7 @@ class SaveWithFailOnErrorDefaultSpec extends GormDatastoreSpec {
     def setup() {
         def validator = [supports: {Class cls -> true},
                 validate: {Object target, Errors errors ->
-                    def constrainedProperties = GrailsDomainConfigurationUtil.evaluateConstraints(TestProduct)
+                    def constrainedProperties = new DefaultConstraintEvaluator().evaluate(TestProduct)
                     for (ConstrainedProperty cp in constrainedProperties.values()) {
                         cp.validate(target, target[cp.propertyName], errors)
                     }
