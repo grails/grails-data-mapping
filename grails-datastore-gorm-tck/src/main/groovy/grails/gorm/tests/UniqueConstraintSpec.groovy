@@ -7,8 +7,10 @@ import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.validation.DefaultConstraintEvaluator
+import org.springframework.util.ClassUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
+import spock.lang.IgnoreIf
 import spock.lang.Issue
 
 import javax.persistence.FlushModeType
@@ -16,6 +18,7 @@ import javax.persistence.FlushModeType
 /**
  * Tests the unique constraint
  */
+@IgnoreIf( { !ClassUtils.isPresent( "org.grails.validation.DefaultConstraintEvaluator", getClass().getClassLoader()) })
 class UniqueConstraintSpec extends GormDatastoreSpec {
 
     @Issue('https://github.com/grails/grails-core/issues/9596')
