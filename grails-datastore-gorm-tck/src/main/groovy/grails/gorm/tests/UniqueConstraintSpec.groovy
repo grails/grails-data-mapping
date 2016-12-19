@@ -1,7 +1,6 @@
 package grails.gorm.tests
 
 import grails.persistence.Entity
-import org.codehaus.groovy.grails.commons.GrailsDomainConfigurationUtil
 import org.grails.datastore.gorm.validation.constraints.UniqueConstraint
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.model.MappingContext

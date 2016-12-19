@@ -3,6 +3,7 @@ package org.grails.datastore.gorm.events
 import groovy.transform.CompileStatic
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationListener
+import org.springframework.context.PayloadApplicationEvent
 import org.springframework.context.event.SmartApplicationListener
 
 /**
@@ -28,6 +29,24 @@ class DefaultApplicationEventPublisher implements ConfigurableApplicationEventPu
                 }
             }
             listener.onApplicationEvent(event)
+        }
+    }
+
+    @Override
+    void publishEvent(Object event) {
+        for(listener in applicationListeners) {
+            def eventObject = new PayloadApplicationEvent<Object>(this, event)
+            if(listener instanceof SmartApplicationListener) {
+                SmartApplicationListener smartApplicationListener = (SmartApplicationListener) listener
+                if( !smartApplicationListener.supportsEventType((Class<ApplicationEvent>)eventObject.getClass()) ) {
+                    continue
+                }
+                else if(!smartApplicationListener.supportsSourceType(eventObject.source.getClass())) {
+                    continue
+                }
+            }
+
+            listener.onApplicationEvent(eventObject)
         }
     }
 

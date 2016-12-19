@@ -29,4 +29,9 @@ class ConfigurableApplicationContextEventPublisher implements ConfigurableApplic
     void publishEvent(ApplicationEvent event) {
         this.applicationContext.publishEvent(event)
     }
+
+    @Override
+    void publishEvent(Object event) {
+        this.applicationContext.publishEvent(event)
+    }
 }
