@@ -81,6 +81,7 @@ class UniqueConstraintSpec extends GormDatastoreSpec {
             GroupWithin.count() == 2
     }
 
+    @IgnoreIf( { !ClassUtils.isPresent( "org.grails.validation.DefaultConstraintEvaluator", getClass().getClassLoader()) })
     void "should update to a existing value fail"() {
         given:"A validator that uses the unique constraint"
             setupValidator()
@@ -109,6 +110,7 @@ class UniqueConstraintSpec extends GormDatastoreSpec {
 
     }
 
+    @IgnoreIf( { !ClassUtils.isPresent( "org.grails.validation.DefaultConstraintEvaluator", getClass().getClassLoader()) })
     void "withManualFlushMode should use flushmode commit"() {
 
         setup:
