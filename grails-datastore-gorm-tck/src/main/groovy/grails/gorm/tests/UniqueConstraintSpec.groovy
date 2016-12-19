@@ -18,10 +18,11 @@ import javax.persistence.FlushModeType
 /**
  * Tests the unique constraint
  */
-@IgnoreIf( { !ClassUtils.isPresent( "org.grails.validation.DefaultConstraintEvaluator", getClass().getClassLoader()) })
+
 class UniqueConstraintSpec extends GormDatastoreSpec {
 
     @Issue('https://github.com/grails/grails-core/issues/9596')
+    @IgnoreIf( { !ClassUtils.isPresent( "org.grails.validation.DefaultConstraintEvaluator", getClass().getClassLoader()) })
     void "Test update secondary property when using unique constraint"() {
         when:"An object with a unique constraint is saved"
         UniqueGroup o = new UniqueGroup(name: "foo", desc: "foo description").save(flush: true)
@@ -46,6 +47,7 @@ class UniqueConstraintSpec extends GormDatastoreSpec {
         o.desc == 'description changed'
     }
 
+    @IgnoreIf( { !ClassUtils.isPresent( "org.grails.validation.DefaultConstraintEvaluator", getClass().getClassLoader()) })
     void "Test simple unique constraint"() {
         given:"A validator that uses the unique constraint"
             setupValidator()
