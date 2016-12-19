@@ -73,14 +73,24 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
             return null
         }
 
-        (D)hibernateTemplate.execute(  { Session session ->
-            def criteria = session.createCriteria(persistentEntity.javaClass)
-            criteria.add Restrictions.idEq(convertIdentifier(id))
-            firePreQueryEvent(session,criteria)
-            def result = (D) criteria.uniqueResult()
-            firePostQueryEvent(session, criteria, result)
-            return proxyHandler.unwrap( result )
-        } )
+        if(persistentEntity.isMultiTenant()) {
+            // for multi-tenant entities we process get(..) via a query
+            (D)hibernateTemplate.execute(  { Session session ->
+                def criteria = session.createCriteria(persistentEntity.javaClass)
+                criteria.add Restrictions.idEq(convertIdentifier(id))
+                firePreQueryEvent(session,criteria)
+                def result = (D) criteria.uniqueResult()
+                firePostQueryEvent(session, criteria, result)
+                return proxyHandler.unwrap( result )
+            } )
+        }
+        else {
+            // for non multi-tenant entities we process get(..) via the second level cache
+            return (D)proxyHandler.unwrap(
+                hibernateTemplate.get(persistentEntity.javaClass, convertIdentifier(id))
+            )
+        }
+
     }
 
     @Override
