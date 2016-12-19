@@ -85,7 +85,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         }
         else {
             // for non multi-tenant entities we process get(..) via the second level cache
-            return (D)hibernateTemplate.get(persistentEntity.javaClass, id)
+            return (D)hibernateTemplate.get(persistentEntity.javaClass, convertIdentifier(id))
         }
 
     }
