@@ -449,7 +449,36 @@ class Pet {
 <p>As you can see from the query the relationship is defined as <code>(from)-[r:PETS]-&gt;(to)</code>, with the direction of the association defined by who "owns" the association. Since <code>Pet</code> defines a <code>belongTo</code> association to <code>Owner</code>, this means that <code>Owner</code> owns the association and the relationship is from <code>Owner</code> to <code>Pet</code>.</p>
 </div>
 <div class="paragraph">
-<p>For more information on defining relationships with GORM, see the <a href="http://grails.github.io/grails-doc/latest/guide/GORM.html#gormAssociation">corresponding guide in the GORM documentation</a>.</p>
+<p>You can customize the Neo4j relationship type and direction using the <code>mapping</code> block if necessary:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import static grails.neo4j.Direction.*
+
+class Owner {
+    String name
+    static hasMany = [pets:Pet]
+
+    static mapping = {
+         pets type:"PETZ", direction:BOTH
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case a bidirectional relationship will be created  in the graph such as <code>(from)&lt;-[r:PETZ]-&gt;(to)</code>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+For more information on defining relationships with GORM, see the <a href="http://grails.github.io/grails-doc/latest/guide/GORM.html#gormAssociation">corresponding guide in the GORM documentation</a>.
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div id="footer">
