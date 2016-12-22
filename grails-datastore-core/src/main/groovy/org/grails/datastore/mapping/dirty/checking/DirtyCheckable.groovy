@@ -2,6 +2,8 @@ package org.grails.datastore.mapping.dirty.checking
 
 import groovy.transform.CompileStatic
 
+import javax.persistence.Transient
+
 /**
  * Interface to classes that are able to track changes to their internal state.
  *
@@ -18,6 +20,7 @@ trait DirtyCheckable {
     @Deprecated
     public static final  String DIRTY_CLASS_MARKER = '$DIRTY_MARKER'
 
+    @Transient
     private transient Map<String, Object> $changedProperties
 
     /**

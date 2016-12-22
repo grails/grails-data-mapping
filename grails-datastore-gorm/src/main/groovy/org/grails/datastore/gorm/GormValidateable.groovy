@@ -32,6 +32,7 @@ import javax.persistence.Transient
 @CompileStatic
 trait GormValidateable {
 
+    @Transient
     private transient boolean skipValidate = false
     /**
      * The validation errors object
