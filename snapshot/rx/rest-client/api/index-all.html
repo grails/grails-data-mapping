@@ -3712,6 +3712,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Return the XA driver source class name.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/transform/GlobalDetachedCriteriaASTTransformation.html" title="Class in org.grails.datastore.gorm.query.transform">GlobalDetachedCriteriaASTTransformation</a></span> - Class in <a href="./org/grails/datastore/gorm/query/transform/package-summary.html">org.grails.datastore.gorm.query.transform</a>
 </dt><dd><div class="block">Global version of the detached query transformer</div></dd>
+<dt><span class="strong"><a href="org/grails/compiler/gorm/GlobalJpaEntityTransform.html" title="Class in org.grails.compiler.gorm">GlobalJpaEntityTransform</a></span> - Class in <a href="./org/grails/compiler/gorm/package-summary.html">org.grails.compiler.gorm</a>
+</dt><dd><div class="block">Makes all entities annotated with @Entity JPA into GORM entities</div></dd>
 <dt><span class="strong"><a href="org/grails/compiler/gorm/GlobalTraitRepairTransformation.html" title="Class in org.grails.compiler.gorm">GlobalTraitRepairTransformation</a></span> - Class in <a href="./org/grails/compiler/gorm/package-summary.html">org.grails.compiler.gorm</a>
 </dt><dd><div class="block">Repairs the AST due to bugs in the way org.codehaus.groovy.transform.trait.TraitComposer works. </div></dd>
 <dt><span class="strong"><a href="grails/gorm/api/GormAllOperations.html" title="Interface in grails.gorm.api">GormAllOperations</a></span> - Interface in <a href="./grails/gorm/api/package-summary.html">grails.gorm.api</a>
@@ -4884,6 +4886,14 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Specifies whether a join query should be used (if join queries are supported by the underlying datastore)</div></dd>
 <dt><span class="strong"><a href="grails/gorm/rx/rest/RestDetachedCriteria.html#join(java.lang.String)" title="Method in RestDetachedCriteria">join(String)</a></span> - Method in <a href="grails/gorm/rx/rest/RestDetachedCriteria.html">RestDetachedCriteria</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/compiler/gorm/GormEntityTransformation.html#JPA_ENTITY_ANNOTATION_NODE" title="Field in GormEntityTransformation">JPA_ENTITY_ANNOTATION_NODE</a></span> - Field in <a href="org/grails/compiler/gorm/GormEntityTransformation.html">GormEntityTransformation</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/compiler/gorm/GormEntityTransformation.html#JPA_ENTITY_CLASS_NODE" title="Field in GormEntityTransformation">JPA_ENTITY_CLASS_NODE</a></span> - Field in <a href="org/grails/compiler/gorm/GormEntityTransformation.html">GormEntityTransformation</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/gorm/annotation/JpaEntity.html" title="Annotation Type in grails.gorm.annotation">JpaEntity</a></span> - Annotation Type in <a href="./grails/gorm/annotation/package-summary.html">grails.gorm.annotation</a>
+</dt><dd><div class="block">A class annotation used to make a class into a GORM domain class.</div></dd>
+<dt><span class="strong"><a href="org/grails/compiler/gorm/JpaGormEntityTransformation.html" title="Class in org.grails.compiler.gorm">JpaGormEntityTransformation</a></span> - Class in <a href="./org/grails/compiler/gorm/package-summary.html">org.grails.compiler.gorm</a>
+</dt><dd><div class="block">Enhanced GORM entity annotated with JPA annotations</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/jpa/JpaQueryInfo.html" title="Class in org.grails.datastore.mapping.query.jpa">JpaQueryInfo</a></span> - Class in <a href="./org/grails/datastore/mapping/query/jpa/package-summary.html">org.grails.datastore.mapping.query.jpa</a>
 </dt><dd><div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/jpa/JpaQueryInfo.html#JpaQueryInfo(java.lang.String, java.util.List)" title="Constructor in JpaQueryInfo">JpaQueryInfo(String, List)</a></span> - Constructor in <a href="org/grails/datastore/mapping/query/jpa/JpaQueryInfo.html">JpaQueryInfo</a>
@@ -7976,11 +7986,17 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/transform/GlobalDetachedCriteriaASTTransformation.html#visit(org.codehaus.groovy.ast.ASTNode, org.codehaus.groovy.control.SourceUnit)" title="Method in GlobalDetachedCriteriaASTTransformation">visit(ASTNode, SourceUnit)</a></span> - Method in <a href="org/grails/datastore/gorm/query/transform/GlobalDetachedCriteriaASTTransformation.html">GlobalDetachedCriteriaASTTransformation</a>
 </dt><dd> <div class="block">The method is invoked when an AST Transformation is active. </div></dd>
+<dt><span class="strong"><a href="org/grails/compiler/gorm/GlobalJpaEntityTransform.html#visit(org.codehaus.groovy.ast.ASTNode, org.codehaus.groovy.control.SourceUnit)" title="Method in GlobalJpaEntityTransform">visit(ASTNode, SourceUnit)</a></span> - Method in <a href="org/grails/compiler/gorm/GlobalJpaEntityTransform.html">GlobalJpaEntityTransform</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/compiler/gorm/GlobalTraitRepairTransformation.html#visit(org.codehaus.groovy.ast.ASTNode, org.codehaus.groovy.control.SourceUnit)" title="Method in GlobalTraitRepairTransformation">visit(ASTNode, SourceUnit)</a></span> - Method in <a href="org/grails/compiler/gorm/GlobalTraitRepairTransformation.html">GlobalTraitRepairTransformation</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/compiler/gorm/GormEntityTransformation.html#visit(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.control.SourceUnit)" title="Method in GormEntityTransformation">visit(ClassNode, SourceUnit)</a></span> - Method in <a href="org/grails/compiler/gorm/GormEntityTransformation.html">GormEntityTransformation</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/compiler/gorm/JpaGormEntityTransformation.html#visit(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.control.SourceUnit)" title="Method in JpaGormEntityTransformation">visit(ClassNode, SourceUnit)</a></span> - Method in <a href="org/grails/compiler/gorm/JpaGormEntityTransformation.html">JpaGormEntityTransformation</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaTransformer.html#visitClass(org.codehaus.groovy.ast.ClassNode)" title="Method in DetachedCriteriaTransformer">visitClass(ClassNode)</a></span> - Method in <a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaTransformer.html">DetachedCriteriaTransformer</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/compiler/gorm/GlobalJpaEntityTransform.html#visitClass(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.control.SourceUnit)" title="Method in GlobalJpaEntityTransform">visitClass(ClassNode, SourceUnit)</a></span> - Method in <a href="org/grails/compiler/gorm/GlobalJpaEntityTransform.html">GlobalJpaEntityTransform</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/compiler/gorm/GlobalTraitRepairTransformation.html#visitClass(org.codehaus.groovy.ast.ClassNode)" title="Method in GlobalTraitRepairTransformation">visitClass(ClassNode)</a></span> - Method in <a href="org/grails/compiler/gorm/GlobalTraitRepairTransformation.html">GlobalTraitRepairTransformation</a>
 </dt><dd> <div class="block"></div></dd>
