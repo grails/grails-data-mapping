@@ -19,9 +19,8 @@ import org.grails.datastore.mapping.model.AbstractMappingContext;
 import org.grails.datastore.mapping.model.MappingConfigurationStrategy;
 import org.grails.datastore.mapping.model.MappingFactory;
 import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy;
+import org.grails.datastore.mapping.model.config.JpaMappingConfigurationStrategy;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 
 /**
  * A MappingContext used to map objects to a Key/Value store
@@ -51,7 +50,7 @@ public class KeyValueMappingContext extends AbstractMappingContext {
         this.keyspace = keyspace;
         initializeDefaultMappingFactory(keyspace);
 
-        syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
+        syntaxStrategy = new JpaMappingConfigurationStrategy(mappingFactory);
     }
 
     /**
@@ -66,7 +65,7 @@ public class KeyValueMappingContext extends AbstractMappingContext {
         GormKeyValueMappingFactory mappingFactory = (GormKeyValueMappingFactory) getMappingFactory();
         mappingFactory.setDefaultConstraints(settings.getDefault().getConstraints());
         mappingFactory.setDefaultMapping(settings.getDefault().getMapping());
-        syntaxStrategy = new GormMappingConfigurationStrategy(this.mappingFactory);
+        syntaxStrategy = new JpaMappingConfigurationStrategy(this.mappingFactory);
     }
 
     public String getKeyspace() {

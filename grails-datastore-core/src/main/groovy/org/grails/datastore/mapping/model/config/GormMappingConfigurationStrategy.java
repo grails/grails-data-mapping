@@ -79,7 +79,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
     private static final String IDENTITY_PROPERTY = IDENTITY;
     private static final String VERSION_PROPERTY = VERSION;
     public static final String MAPPED_BY_NONE = "none";
-    private MappingFactory propertyFactory;
+    protected MappingFactory propertyFactory;
     private static final Set EXCLUDED_PROPERTIES = new HashSet(Arrays.asList("class", "metaClass"));
     private boolean canExpandMappingContext = true;
 
@@ -250,7 +250,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         return values;
     }
 
-    private void configureOwningSide(Association association) {
+    protected void configureOwningSide(Association association) {
         PersistentEntity associatedEntity = association.getAssociatedEntity();
         if(associatedEntity == null) {
             association.setOwningSide(true);
@@ -288,7 +288,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         return owners;
     }
 
-    private Association establishRelationshipForCollection(PropertyDescriptor property, PersistentEntity entity, MappingContext context, Map<String, Class> hasManyMap, Map mappedByMap, boolean embedded) {
+    protected Association establishRelationshipForCollection(PropertyDescriptor property, PersistentEntity entity, MappingContext context, Map<String, Class> hasManyMap, Map mappedByMap, boolean embedded) {
         // is it a relationship
         Class relatedClassType = hasManyMap.get(property.getName());
         // try a bit harder for embedded collections (could make this the default, rendering 'hasMany' optional
@@ -775,11 +775,11 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         return null;
     }
 
-    private boolean isCollectionType(Class type) {
+    protected boolean isCollectionType(Class type) {
         return Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type);
     }
 
-    private boolean isExcludedProperty(String propertyName, ClassMapping classMapping, Collection transients, boolean includeIdentifiers) {
+    protected boolean isExcludedProperty(String propertyName, ClassMapping classMapping, Collection transients, boolean includeIdentifiers) {
         IdentityMapping id = classMapping != null ? classMapping.getIdentifier() : null;
         String[] identifierName = id != null ? id.getIdentifierName() : null;
         return isExcludeId(propertyName, id, identifierName,includeIdentifiers) ||

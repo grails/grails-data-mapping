@@ -1,6 +1,6 @@
 package org.grails.datastore.mapping.model
 
-import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy
+import org.grails.datastore.mapping.model.config.JpaMappingConfigurationStrategy
 
 /**
  * @author Graeme Rocher
@@ -8,7 +8,7 @@ import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrateg
  */
 class TestMappingContext extends AbstractMappingContext {
     MappingFactory mappingFactory = new TestMappedPropertyFactory()
-    MappingConfigurationStrategy mappingSyntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory)
+    MappingConfigurationStrategy mappingSyntaxStrategy = new JpaMappingConfigurationStrategy(mappingFactory)
 
     protected PersistentEntity createPersistentEntity(Class javaClass) {
         return new TestPersistentEntity(javaClass, this)

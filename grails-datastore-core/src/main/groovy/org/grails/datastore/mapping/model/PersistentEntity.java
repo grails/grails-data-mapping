@@ -206,4 +206,11 @@ public interface PersistentEntity extends Initializable {
      * @return The reflector this entity
      */
     EntityReflector getReflector();
+
+    /**
+     * Add a class to the owners list of this PersistentEntity
+     * @param type The class to add
+     * @return True if the operation was successful
+     */
+    boolean addOwner(Class type);
 }

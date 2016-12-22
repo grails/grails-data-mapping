@@ -390,4 +390,8 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
         return javaClass.getName();
     }
 
+    public boolean addOwner(Class type) {
+        return owners.add(type);
+    }
+
 }

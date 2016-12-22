@@ -24,8 +24,8 @@ import org.grails.datastore.mapping.config.Settings;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
 import org.grails.datastore.mapping.model.*;
-import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy;
 import org.grails.datastore.mapping.model.config.GormProperties;
+import org.grails.datastore.mapping.model.config.JpaMappingConfigurationStrategy;
 import org.grails.datastore.mapping.multitenancy.MultiTenancySettings;
 import org.grails.datastore.mapping.reflect.ClassUtils;
 import org.grails.orm.hibernate.connections.HibernateConnectionSourceSettings;
@@ -63,7 +63,7 @@ public class HibernateMappingContext extends AbstractMappingContext {
             this.mappingFactory.setDefaultConstraints(settings.getDefault().getConstraints());
         }
         this.mappingFactory.setContextObject(contextObject);
-        this.syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory) {
+        this.syntaxStrategy = new JpaMappingConfigurationStrategy(mappingFactory) {
             @Override
             protected boolean supportsCustomType(Class<?> propertyType) {
                 return !Errors.class.isAssignableFrom(propertyType);
@@ -111,7 +111,7 @@ public class HibernateMappingContext extends AbstractMappingContext {
             this.mappingFactory.setDefaultMapping(defaultMapping);
         }
         this.mappingFactory.setContextObject(contextObject);
-        this.syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory) {
+        this.syntaxStrategy = new JpaMappingConfigurationStrategy(mappingFactory) {
             @Override
             protected boolean supportsCustomType(Class<?> propertyType) {
                 return !Errors.class.isAssignableFrom(propertyType);
