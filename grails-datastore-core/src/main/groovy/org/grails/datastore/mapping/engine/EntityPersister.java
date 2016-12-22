@@ -235,10 +235,13 @@ public abstract class EntityPersister implements Persister {
 
     protected boolean isAssignedId(PersistentEntity persistentEntity) {
         boolean assignedId = false;
-        PropertyMapping mapping = persistentEntity.getIdentity().getMapping();
-        if (mapping != null) {
-            Property p = mapping.getMappedForm();
-            assignedId = p != null && "assigned".equals(p.getGenerator());
+        PersistentProperty identity = persistentEntity.getIdentity();
+        if(identity != null) {
+            PropertyMapping mapping = identity.getMapping();
+            if (mapping != null) {
+                Property p = mapping.getMappedForm();
+                assignedId = p != null && "assigned".equals(p.getGenerator());
+            }
         }
         return assignedId;
     }

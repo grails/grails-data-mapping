@@ -293,16 +293,14 @@ public class JpaMappingConfigurationStrategy extends GormMappingConfigurationStr
             if (hasAnnotation(cpf, descriptor, Id.class)) {
                 idProperties.add(descriptor.getName());
             }
-            //This won't work as is because it is expected the properties will be on the persistent entity itself, not on another class
-/*            if (hasAnnotation(cpf, descriptor, EmbeddedId.class)) {
-                Class embeddedIdType = descriptor.getPropertyType();
-                ClassPropertyFetcher embeddedCpf = ClassPropertyFetcher.forClass(embeddedIdType);
-                for (PropertyDescriptor embeddedDescriptor : embeddedCpf.getPropertyDescriptors()) {
-                    if (embeddedDescriptor.getReadMethod() != null) {
-                        idProperties.add(embeddedDescriptor.getName());
-                    }
-                }
-            }*/
+            else if (hasAnnotation(cpf, descriptor, EmbeddedId.class)) {
+                idProperties.add(descriptor.getName());
+            }
+        }
+
+        if(idProperties.isEmpty()) {
+            // default to just use 'id'
+            idProperties.add(GormProperties.IDENTITY);
         }
 
         return new IdentityMapping() {

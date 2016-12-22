@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.grails.datastore.mapping.model.PersistentProperty;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.core.convert.ConversionService;
@@ -94,7 +95,11 @@ public class BeanEntityAccess implements EntityAccess {
         if (idName != null) {
             return getProperty(idName);
         }
-        return getProperty(persistentEntity.getIdentity().getName());
+        PersistentProperty identity = persistentEntity.getIdentity();
+        if(identity != null) {
+            return getProperty(identity.getName());
+        }
+        return null;
     }
 
     @Override
@@ -112,7 +117,10 @@ public class BeanEntityAccess implements EntityAccess {
     protected String getIdentifierName(ClassMapping cm) {
         final IdentityMapping identifier = cm.getIdentifier();
         if (identifier != null && identifier.getIdentifierName() != null) {
-            return identifier.getIdentifierName()[0];
+            String[] identifierName = identifier.getIdentifierName();
+            if(identifierName.length > 0) {
+                return identifierName[0];
+            }
         }
         return null;
     }
