@@ -34,6 +34,8 @@ import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.mapping.reflect.EntityReflector
 import org.springframework.transaction.TransactionDefinition
 
+import javax.persistence.Transient
+
 /**
  *
  * A trait that turns any class into a GORM entity
@@ -169,6 +171,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
     /**
      * No concept of session-based model so defaults to true
      */
+    @Transient
     boolean isAttached() {
         currentGormInstanceApi().isAttached this
     }
@@ -212,6 +215,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @param instance The instance
      * @return true if it is dirty
      */
+    @Transient
     boolean isDirty() {
         currentGormInstanceApi().isDirty this
     }
@@ -222,6 +226,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @param instance The instance
      * @return A list of property names that are dirty
      */
+    @Transient
     List getDirtyPropertyNames() {
         currentGormInstanceApi().getDirtyPropertyNames this
     }

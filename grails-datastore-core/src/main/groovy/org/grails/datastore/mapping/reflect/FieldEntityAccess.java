@@ -174,7 +174,7 @@ public class FieldEntityAccess implements EntityAccess {
             Class javaClass = entity.getJavaClass();
             PersistentProperty identity = entity.getIdentity();
             ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
-            fastClass = FastClass.create(entity.getJavaClass());
+            fastClass = FastClass.create(javaClass);
             if(identity != null) {
                 String identityName = identity.getName();
                 this.identifierName = identityName;

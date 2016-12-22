@@ -51,6 +51,7 @@ import org.codehaus.groovy.control.CompilationUnit
 import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.ASTTransformation
+import org.codehaus.groovy.transform.AbstractASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.gorm.query.GormQueryOperations
@@ -58,6 +59,9 @@ import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.AstUtils
 import org.grails.datastore.mapping.reflect.NameUtils
 
+import javax.persistence.Embeddable
+import javax.persistence.ManyToMany
+import javax.persistence.OneToMany
 import java.lang.annotation.Annotation
 import java.lang.reflect.Modifier
 
@@ -77,8 +81,10 @@ import java.lang.reflect.Modifier
  */
 @CompileStatic
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
-class GormEntityTransformation implements CompilationUnitAware,ASTTransformation {
+class GormEntityTransformation extends AbstractASTTransformation implements CompilationUnitAware,ASTTransformation {
     private static final ClassNode MY_TYPE = new ClassNode(Entity.class);
+    protected static final ClassNode JPA_ENTITY_CLASS_NODE = ClassHelper.make(javax.persistence.Entity)
+    protected static final AnnotationNode JPA_ENTITY_ANNOTATION_NODE = new AnnotationNode(JPA_ENTITY_CLASS_NODE)
 
     private static final String GET_NAMED_QUERY = "getNamedQuery"
     private static ClassNode GORM_ENTITY_CLASS_NODE = ClassHelper.make(GormEntity)
@@ -123,20 +129,28 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
             return
         }
 
+        if(hasAnnotation(classNode, ClassHelper.make(Embeddable))) {
+            // do not apply transform to embeddedable JPA classes
+            return
+        }
+
+        final boolean isJpaEntity = hasAnnotation(classNode, JPA_ENTITY_CLASS_NODE)
 
         AstUtils.addTransformedEntityName(classNode.name)
         // Add the entity annotation and enable generic replacement
         classNode.setUsingGenerics(true);
-        AstUtils.addAnnotationIfNecessary(classNode, Entity.class);
 
-        try {
-            AstUtils.addAnnotationIfNecessary(classNode, (Class<? extends Annotation>)getClass().classLoader.loadClass('grails.persistence.Entity'))
-        } catch (Throwable e) {
+        if(!isJpaEntity) {
+            AstUtils.addAnnotationIfNecessary(classNode, Entity.class);
             try {
-                def cl = Thread.currentThread().contextClassLoader
-                AstUtils.addAnnotationIfNecessary(classNode, (Class<? extends Annotation>)Class.forName('grails.persistence.Entity', true, cl))
-            } catch (Throwable e2) {
-                // Only GORM classes on the classpath continue
+                AstUtils.addAnnotationIfNecessary(classNode, (Class<? extends Annotation>)getClass().classLoader.loadClass('grails.persistence.Entity'))
+            } catch (Throwable e) {
+                try {
+                    def cl = Thread.currentThread().contextClassLoader
+                    AstUtils.addAnnotationIfNecessary(classNode, (Class<? extends Annotation>)Class.forName('grails.persistence.Entity', true, cl))
+                } catch (Throwable e2) {
+                    // Only GORM classes on the classpath continue
+                }
             }
         }
 
@@ -146,25 +160,29 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
 
         def rxEntityClassNode = AstUtils.findInterface(classNode, "grails.gorm.rx.RxEntity")
         boolean isRxEntity = rxEntityClassNode != null
-        // now enhance with id and version
-        injectIdProperty(classNode)
 
-        if(!isRxEntity) {
+        if(!isJpaEntity) {
+            // Add default id
+            injectIdProperty(classNode)
+        }
+
+        if(!isRxEntity && !isJpaEntity) {
+            // Add version
             injectVersionProperty(classNode)
         }
 
         // inject toString()
-        injectToStringMethod(classNode)
+        if(!isJpaEntity) {
+            injectToStringMethod(classNode)
+        }
 
 
         // inject the GORM entity trait unless it is an RX entity
-
         MethodNode addToMethodNode = ADD_TO_METHOD_NODE
         MethodNode removeFromMethodNode = REMOVE_FROM_METHOD_NODE
         MethodNode getAssociationMethodNode = GET_ASSOCIATION_ID_METHOD_NODE
 
         if(!isRxEntity) {
-
             def classGormEntityTrait = pickGormEntityTrait(classNode, sourceUnit)
             AstUtils.injectTrait(classNode, classGormEntityTrait)
         }
@@ -175,7 +193,13 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
         }
 
         // inject associations
-        injectAssociations(classNode, addToMethodNode, removeFromMethodNode, getAssociationMethodNode)
+        if(isJpaEntity) {
+            injectAssociationsForJpaEntity(classNode, addToMethodNode, removeFromMethodNode, getAssociationMethodNode)
+        }
+        else {
+            injectAssociations(classNode, addToMethodNode, removeFromMethodNode, getAssociationMethodNode)
+        }
+
         // convert the methodMissing and propertyMissing implementations to $static_methodMissing and $static_propertyMissing for the static versions
         def methodMissingBody = new BlockStatement()
         def methodNameParam = new Parameter(ClassHelper.make(String), "name")
@@ -368,6 +392,20 @@ class GormEntityTransformation implements CompilationUnitAware,ASTTransformation
             ClassNode parent = AstUtils.getFurthestUnresolvedParent(classNode);
 
             parent.addProperty(GormProperties.IDENTITY, Modifier.PUBLIC, new ClassNode(Long.class), null, null, null);
+        }
+    }
+
+    private void injectAssociationsForJpaEntity(ClassNode classNode, MethodNode addToMethodNode, MethodNode removeFromMethodNode, MethodNode getAssociationMethodNode) {
+        ClassNode oneToManyClassNode = ClassHelper.make(OneToMany)
+        ClassNode manyToManyClassNode = ClassHelper.make(ManyToMany)
+        def filter = { AnnotationNode an -> an.classNode == oneToManyClassNode || an.classNode == manyToManyClassNode }
+        for (PropertyNode propertyNode in classNode.getProperties()) {
+            if(propertyNode.annotations.any(filter)) {
+                addRelationshipManagementMethods(propertyNode.name, classNode, addToMethodNode, removeFromMethodNode)
+            }
+            else if(propertyNode.field?.annotations?.any(filter)) {
+                addRelationshipManagementMethods(propertyNode.name, classNode, addToMethodNode, removeFromMethodNode)
+            }
         }
     }
 
