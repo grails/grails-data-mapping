@@ -111,7 +111,6 @@
 <li><a href="grails/gorm/CriteriaBuilder.html" title="class in grails.gorm" target="classFrame">CriteriaBuilder</a></li>
 <li><a href="org/grails/datastore/mapping/model/types/Custom.html" title="class in org.grails.datastore.mapping.model.types" target="classFrame">Custom</a></li>
 <li><a href="org/grails/datastore/mapping/engine/types/CustomTypeMarshaller.html" title="interface in org.grails.datastore.mapping.engine.types" target="classFrame"><I>CustomTypeMarshaller</I></a></li>
-<li><a href="org/grails/datastore/gorm/neo4j/CypherBuilder.html" title="class in org.grails.datastore.gorm.neo4j" target="classFrame">CypherBuilder</a></li>
 <li><a href="org/grails/datastore/gorm/jdbc/connections/DataSourceConnectionSource.html" title="class in org.grails.datastore.gorm.jdbc.connections" target="classFrame">DataSourceConnectionSource</a></li>
 <li><a href="org/grails/datastore/gorm/jdbc/connections/DataSourceSettings.html" title="class in org.grails.datastore.gorm.jdbc.connections" target="classFrame">DataSourceSettings</a></li>
 <li><a href="org/grails/datastore/gorm/jdbc/connections/DataSourceSettingsBuilder.html" title="class in org.grails.datastore.gorm.jdbc.connections" target="classFrame">DataSourceSettingsBuilder</a></li>
@@ -192,6 +191,7 @@
 <li><a href="org/grails/datastore/mapping/multitenancy/resolvers/FixedTenantResolver.html" title="class in org.grails.datastore.mapping.multitenancy.resolvers" target="classFrame">FixedTenantResolver</a></li>
 <li><a href="org/grails/datastore/mapping/query/criteria/FunctionCallingCriterion.html" title="class in org.grails.datastore.mapping.query.criteria" target="classFrame">FunctionCallingCriterion</a></li>
 <li><a href="org/grails/datastore/gorm/query/transform/GlobalDetachedCriteriaASTTransformation.html" title="class in org.grails.datastore.gorm.query.transform" target="classFrame">GlobalDetachedCriteriaASTTransformation</a></li>
+<li><a href="org/grails/compiler/gorm/GlobalJpaEntityTransform.html" title="class in org.grails.compiler.gorm" target="classFrame">GlobalJpaEntityTransform</a></li>
 <li><a href="org/grails/compiler/gorm/GlobalTraitRepairTransformation.html" title="class in org.grails.compiler.gorm" target="classFrame">GlobalTraitRepairTransformation</a></li>
 <li><a href="grails/gorm/api/GormAllOperations.html" title="interface in grails.gorm.api" target="classFrame"><I>GormAllOperations</I></a></li>
 <li><a href="org/grails/datastore/gorm/async/GormAsyncStaticApi.html" title="class in org.grails.datastore.gorm.async" target="classFrame">GormAsyncStaticApi</a></li>
@@ -239,6 +239,8 @@
 <li><a href="org/grails/datastore/mapping/model/types/conversion/IntegerToShortConverter.html" title="class in org.grails.datastore.mapping.model.types.conversion" target="classFrame">IntegerToShortConverter</a></li>
 <li><a href="org/grails/datastore/gorm/neo4j/util/IteratorUtil.html" title="class in org.grails.datastore.gorm.neo4j.util" target="classFrame">IteratorUtil</a></li>
 <li><a href="org/grails/datastore/mapping/proxy/JavassistProxyFactory.html" title="class in org.grails.datastore.mapping.proxy" target="classFrame">JavassistProxyFactory</a></li>
+<li><a href="grails/gorm/annotation/JpaEntity.html" title="annotation type in grails.gorm.annotation" target="classFrame">JpaEntity</a></li>
+<li><a href="org/grails/compiler/gorm/JpaGormEntityTransformation.html" title="class in org.grails.compiler.gorm" target="classFrame">JpaGormEntityTransformation</a></li>
 <li><a href="org/grails/datastore/mapping/query/jpa/JpaQueryInfo.html" title="class in org.grails.datastore.mapping.query.jpa" target="classFrame">JpaQueryInfo</a></li>
 <li><a href="org/grails/datastore/mapping/keyvalue/mapping/config/KeyValue.html" title="class in org.grails.datastore.mapping.keyvalue.mapping.config" target="classFrame">KeyValue</a></li>
 <li><a href="org/grails/datastore/mapping/keyvalue/engine/KeyValueEntry.html" title="class in org.grails.datastore.mapping.keyvalue.engine" target="classFrame">KeyValueEntry</a></li>
@@ -300,7 +302,6 @@
 <li><a href="org/grails/datastore/gorm/neo4j/config/Neo4jDriverConfigBuilder.html" title="class in org.grails.datastore.gorm.neo4j.config" target="classFrame">Neo4jDriverConfigBuilder</a></li>
 <li><a href="org/grails/datastore/gorm/neo4j/connections/Neo4jEmbeddedConnectionSource.html" title="class in org.grails.datastore.gorm.neo4j.connections" target="classFrame">Neo4jEmbeddedConnectionSource</a></li>
 <li><a href="grails/neo4j/Neo4jEntity.html" title="trait in grails.neo4j" target="classFrame"><I>Neo4jEntity</I></a></li>
-<li><a href="org/grails/datastore/gorm/neo4j/engine/Neo4jEntityPersister.html" title="class in org.grails.datastore.gorm.neo4j.engine" target="classFrame">Neo4jEntityPersister</a></li>
 <li><a href="org/grails/datastore/gorm/neo4j/Neo4jEntityTraitProvider.html" title="class in org.grails.datastore.gorm.neo4j" target="classFrame">Neo4jEntityTraitProvider</a></li>
 <li><a href="org/grails/datastore/gorm/neo4j/extensions/Neo4jExtensions.html" title="class in org.grails.datastore.gorm.neo4j.extensions" target="classFrame">Neo4jExtensions</a></li>
 <li><a href="org/grails/datastore/gorm/neo4j/Neo4jGrailsPlugin.html" title="class in org.grails.datastore.gorm.neo4j" target="classFrame">Neo4jGrailsPlugin</a></li>
@@ -320,12 +321,13 @@
 <li><a href="org/grails/datastore/gorm/neo4j/engine/Neo4jQuery.PropertyComparisonCriterionHandler.html" title="class in org.grails.datastore.gorm.neo4j.engine.Neo4jQuery" target="classFrame">Neo4jQuery.PropertyComparisonCriterionHandler</a></li>
 <li><a href="org/grails/datastore/gorm/neo4j/engine/Neo4jQuery.SizeCriterionHandler.html" title="class in org.grails.datastore.gorm.neo4j.engine.Neo4jQuery" target="classFrame">Neo4jQuery.SizeCriterionHandler</a></li>
 <li><a href="org/grails/datastore/gorm/neo4j/collection/Neo4jResultList.html" title="class in org.grails.datastore.gorm.neo4j.collection" target="classFrame">Neo4jResultList</a></li>
-<li><a href="org/grails/datastore/gorm/neo4j/Neo4jSession.html" title="class in org.grails.datastore.gorm.neo4j" target="classFrame">Neo4jSession</a></li>
 <li><a href="org/grails/datastore/gorm/neo4j/collection/Neo4jSet.html" title="class in org.grails.datastore.gorm.neo4j.collection" target="classFrame">Neo4jSet</a></li>
 <li><a href="org/grails/datastore/gorm/neo4j/collection/Neo4jSortedSet.html" title="class in org.grails.datastore.gorm.neo4j.collection" target="classFrame">Neo4jSortedSet</a></li>
+<li><a href="grails/test/neo4j/Neo4jSpec.html" title="class in grails.test.neo4j" target="classFrame">Neo4jSpec</a></li>
 <li><a href="org/grails/datastore/gorm/neo4j/Neo4jTransaction.html" title="class in org.grails.datastore.gorm.neo4j" target="classFrame">Neo4jTransaction</a></li>
 <li><a href="org/grails/datastore/mapping/multitenancy/resolvers/NoTenantResolver.html" title="class in org.grails.datastore.mapping.multitenancy.resolvers" target="classFrame">NoTenantResolver</a></li>
-<li><a href="org/grails/datastore/gorm/neo4j/mapping/config/Node.html" title="class in org.grails.datastore.gorm.neo4j.mapping.config" target="classFrame">Node</a></li>
+<li><a href="grails/neo4j/Node.html" title="trait in grails.neo4j" target="classFrame"><I>Node</I></a></li>
+<li><a href="org/grails/datastore/gorm/neo4j/mapping/config/NodeConfig.html" title="class in org.grails.datastore.gorm.neo4j.mapping.config" target="classFrame">NodeConfig</a></li>
 <li><a href="org/grails/datastore/mapping/engine/NonPersistentTypeException.html" title="class in org.grails.datastore.mapping.engine" target="classFrame">NonPersistentTypeException</a></li>
 <li><a href="org/grails/datastore/gorm/plugin/support/OnChangeHandler.html" title="class in org.grails.datastore.gorm.plugin.support" target="classFrame">OnChangeHandler</a></li>
 <li><a href="org/grails/datastore/mapping/model/types/OneToMany.html" title="class in org.grails.datastore.mapping.model.types" target="classFrame">OneToMany</a></li>
@@ -446,8 +448,9 @@
 <li><a href="org/grails/datastore/gorm/utils/ReflectionUtils.html" title="class in org.grails.datastore.gorm.utils" target="classFrame">ReflectionUtils</a></li>
 <li><a href="org/grails/datastore/mapping/reflect/ReflectionUtils.html" title="class in org.grails.datastore.mapping.reflect" target="classFrame">ReflectionUtils</a></li>
 <li><a href="org/grails/datastore/mapping/rdbms/RelationalDatastore.html" title="interface in org.grails.datastore.mapping.rdbms" target="classFrame"><I>RelationalDatastore</I></a></li>
-<li><a href="org/grails/datastore/gorm/neo4j/engine/RelationshipPendingDelete.html" title="class in org.grails.datastore.gorm.neo4j.engine" target="classFrame">RelationshipPendingDelete</a></li>
-<li><a href="org/grails/datastore/gorm/neo4j/engine/RelationshipPendingInsert.html" title="class in org.grails.datastore.gorm.neo4j.engine" target="classFrame">RelationshipPendingInsert</a></li>
+<li><a href="grails/neo4j/Relationship.html" title="trait in grails.neo4j" target="classFrame"><I>Relationship</I></a></li>
+<li><a href="org/grails/datastore/gorm/neo4j/mapping/config/RelationshipConfig.html" title="class in org.grails.datastore.gorm.neo4j.mapping.config" target="classFrame">RelationshipConfig</a></li>
+<li><a href="org/grails/datastore/gorm/neo4j/RelationshipPersistentEntity.html" title="class in org.grails.datastore.gorm.neo4j" target="classFrame">RelationshipPersistentEntity</a></li>
 <li><a href="org/grails/datastore/gorm/neo4j/RelationshipUtils.html" title="class in org.grails.datastore.gorm.neo4j" target="classFrame">RelationshipUtils</a></li>
 <li><a href="org/grails/datastore/mapping/query/Restrictions.html" title="class in org.grails.datastore.mapping.query" target="classFrame">Restrictions</a></li>
 <li><a href="org/grails/datastore/mapping/engine/event/SaveOrUpdateEvent.html" title="class in org.grails.datastore.mapping.engine.event" target="classFrame">SaveOrUpdateEvent</a></li>
