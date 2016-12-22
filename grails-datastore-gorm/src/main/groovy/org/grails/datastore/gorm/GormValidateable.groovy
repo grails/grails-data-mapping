@@ -98,6 +98,7 @@ trait GormValidateable {
      * Obtains the errors for an instance
      * @return The {@link Errors} instance
      */
+    @Transient
     Errors getErrors() {
         if(errors == null) {
             errors = new ValidationErrors(this)
