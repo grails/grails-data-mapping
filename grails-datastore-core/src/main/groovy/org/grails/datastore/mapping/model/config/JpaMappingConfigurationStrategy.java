@@ -5,6 +5,7 @@ import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.model.types.EmbeddedCollection;
+import org.grails.datastore.mapping.model.types.Simple;
 import org.grails.datastore.mapping.model.types.ToOne;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.grails.datastore.mapping.reflect.ReflectionUtils;
@@ -102,7 +103,11 @@ public class JpaMappingConfigurationStrategy extends GormMappingConfigurationStr
                 }
             }
             else if (propertyFactory.isSimpleType(propertyType)) {
-                persistentProperties.add(propertyFactory.createSimple(entity, context, descriptor));
+                Simple simpleProperty = propertyFactory.createSimple(entity, context, descriptor);
+                if(getAnnotation(readMethod, field, GeneratedValue.class) != null) {
+                    simpleProperty.getMapping().getMappedForm().setDerived(true);
+                }
+                persistentProperties.add(simpleProperty);
             }
             else if (supportsCustomType(propertyType)) {
                 persistentProperties.add(propertyFactory.createCustom(entity, context, descriptor));

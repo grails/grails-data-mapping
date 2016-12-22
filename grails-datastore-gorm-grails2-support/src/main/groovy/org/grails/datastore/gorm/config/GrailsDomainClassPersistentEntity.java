@@ -286,6 +286,11 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
         return getMappingContext().getEntityReflector(this);
     }
 
+    @Override
+    public boolean addOwner(Class type) {
+        return false;
+    }
+
     private PersistentProperty createBasicCollection(GrailsDomainClassMappingContext mappingContext, GrailsDomainClassProperty grailsDomainClassProperty) {
         final PropertyMapping<Property> mapping = createDefaultMapping(grailsDomainClassProperty);
         final Basic basic = new Basic(this, mappingContext, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {

@@ -411,4 +411,9 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
     public EntityReflector getReflector() {
         return getMappingContext().getEntityReflector(this);
     }
+
+    @Override
+    public boolean addOwner(Class type) {
+        return false;
+    }
 }
