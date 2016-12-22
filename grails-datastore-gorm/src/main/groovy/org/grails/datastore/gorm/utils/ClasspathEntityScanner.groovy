@@ -17,6 +17,7 @@ package org.grails.datastore.gorm.utils
 import grails.gorm.annotation.Entity
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.grails.datastore.mapping.reflect.ClassUtils
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider
 import org.springframework.core.type.filter.AnnotationTypeFilter
@@ -36,7 +37,7 @@ class ClasspathEntityScanner {
     /**
      * The annotations to scan
      */
-    List<Class<? extends Annotation>> annotations = [Entity]
+    List<Class<? extends Annotation>> annotations = [Entity, javax.persistence.Entity]
     /**
      * The classloader to use
      */
@@ -47,6 +48,15 @@ class ClasspathEntityScanner {
      */
     List<String> ignoredPackages = ['com', 'net', '', 'org', 'java', 'javax', 'groovy']
 
+    ClasspathEntityScanner() {
+        if(ClassUtils.isPresent("grails.persistence.Entity")) {
+            try {
+                annotations.add((Class<? extends Annotation>)Class.forName("grails.persistence.Entity") )
+            } catch (Throwable e) {
+                log.error("Annotation [grails.persistence.Entity] found on classpath, but could not be loaded: ${e.message}", e)
+            }
+        }
+    }
     /**
      * Scans the classpath for entities for the given packages
      *
