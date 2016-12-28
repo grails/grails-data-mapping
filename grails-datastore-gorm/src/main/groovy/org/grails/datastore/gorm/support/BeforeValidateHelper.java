@@ -16,11 +16,12 @@ package org.grails.datastore.gorm.support;
 
 import groovy.lang.MetaClass;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class BeforeValidateHelper {
+public class BeforeValidateHelper implements Serializable {
     public static final String BEFORE_VALIDATE = "beforeValidate";
     private Map<Class<?>, BeforeValidateEventTriggerCaller> eventTriggerCallerCache = new ConcurrentHashMap<Class<?>, BeforeValidateEventTriggerCaller>();
     
