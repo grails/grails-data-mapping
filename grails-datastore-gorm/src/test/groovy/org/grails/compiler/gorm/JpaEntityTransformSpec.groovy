@@ -1,6 +1,6 @@
 package org.grails.compiler.gorm
 
-
+import grails.gorm.annotation.validation.EntityAttributes
 import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
@@ -17,13 +17,14 @@ class JpaEntityTransformSpec extends Specification {
         GroovyClassLoader gcl = new GroovyClassLoader()
         Class customerClass = gcl.parseClass('''
 import javax.persistence.*
-
+import javax.validation.constraints.Digits
 @Entity
 class Customer {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     Long myId
+    @Digits
     String firstName;
     String lastName;
     
@@ -36,6 +37,7 @@ class Customer {
         ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(customerClass)
         expect:
         GormEntity.isAssignableFrom(customerClass)
+        customerClass.getAnnotation(EntityAttributes).validateable() == true
         !cpf.getPropertyDescriptor(GormProperties.IDENTITY)
         !cpf.getPropertyDescriptor(GormProperties.VERSION)
         customerClass.getDeclaredMethod('addToRelated', Object)
