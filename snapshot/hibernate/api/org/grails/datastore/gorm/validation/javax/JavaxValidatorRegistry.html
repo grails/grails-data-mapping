@@ -216,13 +216,53 @@ extends org.grails.datastore.gorm.validation.constraints.registry.DefaultValidat
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#close()">close</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>javax.validation.ConstraintValidatorFactory</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getConstraintValidatorFactory()">getConstraintValidatorFactory</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>javax.validation.MessageInterpolator</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getMessageInterpolator()">getMessageInterpolator</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>javax.validation.ParameterNameProvider</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getParameterNameProvider()">getParameterNameProvider</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>javax.validation.TraversableResolver</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getTraversableResolver()">getTraversableResolver</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>org.springframework.validation.Validator</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getValidator(org.grails.datastore.mapping.model.PersistentEntity)">getValidator</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>javax.validation.Validator</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getValidator()">getValidator</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isAvailable()">isAvailable</a></strong>()</code><br>@return Whether javax.validation is available</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#unwrap(Class<T>)">unwrap</a></strong>(java.lang.Class&lt;T&gt; aClass)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>javax.validation.ValidatorContext</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#usingContext()">usingContext</a></strong>()</code><br></td>
                         </tr>
                         
                     </table>
@@ -241,7 +281,7 @@ extends org.grails.datastore.gorm.validation.constraints.registry.DefaultValidat
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>class org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry</strong></code></td>
-                            <td class="colLast"><code>org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getMetaClass(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#setMetaClass(groovy.lang.MetaClass), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#invokeMethod(java.lang.String, java.lang.Object), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#addConstraint(java.lang.Class, java.util.List), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#addConstraint(java.lang.Class), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#findConstraintFactories(java.lang.String), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#findConstraintFactories(java.lang.Class), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getValidatorMap(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getConstraintsEvaluator(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getConstraintRegistry(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#addConstraintFactory(org.grails.datastore.gorm.validation.constraints.factory.ConstraintFactory), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getValidator(org.grails.datastore.mapping.model.PersistentEntity), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getMessageSource(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#setProperty(java.lang.String, java.lang.Object), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getProperty(java.lang.String), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#wait(long, int), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#wait(long), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#wait(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#equals(java.lang.Object), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#toString(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#hashCode(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getClass(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#notify(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#notifyAll()</code></td>
+                            <td class="colLast"><code>org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getValidator(org.grails.datastore.mapping.model.PersistentEntity), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getMessageSource(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getMetaClass(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#setMetaClass(groovy.lang.MetaClass), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#invokeMethod(java.lang.String, java.lang.Object), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#addConstraintFactory(org.grails.datastore.gorm.validation.constraints.factory.ConstraintFactory), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#addConstraint(java.lang.Class, java.util.List), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#addConstraint(java.lang.Class), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#findConstraintFactories(java.lang.Class), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#findConstraintFactories(java.lang.String), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getValidatorMap(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getConstraintsEvaluator(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getConstraintRegistry(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#setProperty(java.lang.String, java.lang.Object), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getProperty(java.lang.String), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#wait(long, int), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#wait(long), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#wait(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#equals(java.lang.Object), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#toString(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#hashCode(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getClass(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#notify(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#notifyAll()</code></td>
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class java.lang.Object</strong></code></td>
@@ -275,8 +315,7 @@ extends org.grails.datastore.gorm.validation.constraints.registry.DefaultValidat
                         <a name="validatorFactory"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.lang.Delegate
-final&nbsp;javax.validation.ValidatorFactory <strong>validatorFactory</strong></h4>
+                                <h4>final&nbsp;javax.validation.ValidatorFactory <strong>validatorFactory</strong></h4>
                                 <p> The validator factory
      </p>
                             </li>
@@ -317,11 +356,65 @@ final&nbsp;javax.validation.ValidatorFactory <strong>validatorFactory</strong></
                 </a>
                     <h3>Method Detail</h3>
                     
+                        <a name="close()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+void <strong>close</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getConstraintValidatorFactory()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+javax.validation.ConstraintValidatorFactory <strong>getConstraintValidatorFactory</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getMessageInterpolator()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+javax.validation.MessageInterpolator <strong>getMessageInterpolator</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getParameterNameProvider()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+javax.validation.ParameterNameProvider <strong>getParameterNameProvider</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getTraversableResolver()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+javax.validation.TraversableResolver <strong>getTraversableResolver</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getValidator(org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
 org.springframework.validation.Validator <strong>getValidator</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getValidator()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+javax.validation.Validator <strong>getValidator</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -332,6 +425,24 @@ org.springframework.validation.Validator <strong>getValidator</strong>(<a href='
                                 <h4>static&nbsp;boolean <strong>isAvailable</strong>()</h4>
                                 <p>
      <DL><DT><B>Returns:</B></DT><DD>Whether javax.validation is available</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="unwrap(Class<T>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+T <strong>unwrap</strong>(java.lang.Class&lt;T&gt; aClass)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="usingContext()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+javax.validation.ValidatorContext <strong>usingContext</strong>()</h4>
+                                <p></p>
                             </li>
                         </ul>
                     
