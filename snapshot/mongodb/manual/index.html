@@ -944,7 +944,7 @@ Embedded documents may also require updating.
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile 'org.grails.plugins:mongodb:6.0.6.BUILD-SNAPSHOT'
+    compile 'org.grails.plugins:mongodb:6.1.0.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
@@ -954,7 +954,7 @@ Embedded documents may also require updating.
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">plugins {
-    compile ':mongodb:6.0.6.BUILD-SNAPSHOT'
+    compile ':mongodb:6.1.0.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
@@ -1158,7 +1158,7 @@ Embedded documents may also require updating.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-mongodb-spring-boot:6.0.6.BUILD-SNAPSHOT")</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-mongodb-spring-boot:6.1.0.BUILD-SNAPSHOT")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1215,7 +1215,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-mongodb:6.0.6.BUILD-SNAPSHOT"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-mongodb:6.1.0.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2868,7 +2868,7 @@ as shown in the following example:</p>
     <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Test low-level API extensions</span><span class="delimiter">&quot;</span></span>() {
         <span class="key">when</span>:
         <span class="keyword">def</span> db = createMongoClient().getDatabase(<span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>)
-        db.drop()
+<span class="comment">//        db.drop()</span>
         <span class="comment">// Insert a document</span>
         db[<span class="string"><span class="delimiter">'</span><span class="content">languages</span><span class="delimiter">'</span></span>].insert([<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Groovy</span><span class="delimiter">'</span></span>])
         <span class="comment">// A less verbose way to do it</span>
