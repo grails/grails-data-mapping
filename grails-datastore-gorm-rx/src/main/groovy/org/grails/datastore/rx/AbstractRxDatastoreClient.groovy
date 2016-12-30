@@ -4,6 +4,7 @@ import grails.gorm.rx.proxy.ObservableProxy
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry
 import org.grails.datastore.gorm.validation.javax.JavaxValidatorRegistry
+import org.grails.datastore.gorm.validation.registry.support.ValidatorRegistries
 import org.grails.datastore.mapping.collection.PersistentCollection
 import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.core.IdentityGenerationException
@@ -90,18 +91,12 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
     void setMessageSource(MessageSource messageSource) {
         ValidatorRegistry validatorRegistry = createValidatorRegistry(messageSource)
         this.mappingContext.setValidatorRegistry(
-                validatorRegistry
+            validatorRegistry
         )
     }
 
     protected ValidatorRegistry createValidatorRegistry(MessageSource messageSource = new StaticMessageSource()) {
-        ValidatorRegistry validatorRegistry
-        if (JavaxValidatorRegistry.isAvailable()) {
-            validatorRegistry = new JavaxValidatorRegistry(mappingContext, getConnectionSources().getDefaultConnectionSource().getSettings(), messageSource);
-        } else {
-            validatorRegistry = new DefaultValidatorRegistry(mappingContext, getConnectionSources().getDefaultConnectionSource().getSettings(), messageSource);
-        }
-        validatorRegistry
+        return ValidatorRegistries.createValidatorRegistry(mappingContext, getConnectionSources().getDefaultConnectionSource().getSettings(), messageSource)
     }
 
     @Override

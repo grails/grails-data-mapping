@@ -18,6 +18,7 @@ import grails.gorm.multitenancy.Tenants;
 import groovy.lang.Closure;
 import org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry;
 import org.grails.datastore.gorm.validation.javax.JavaxValidatorRegistry;
+import org.grails.datastore.gorm.validation.registry.support.ValidatorRegistries;
 import org.grails.datastore.mapping.config.Settings;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Datastore;
@@ -149,14 +150,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     }
 
     protected ValidatorRegistry createValidatorRegistry(MessageSource messageSource) {
-        ValidatorRegistry validatorRegistry;
-        if(JavaxValidatorRegistry.isAvailable()) {
-            validatorRegistry = new JavaxValidatorRegistry(mappingContext, getConnectionSources().getDefaultConnectionSource().getSettings(), messageSource);
-        }
-        else {
-            validatorRegistry = new DefaultValidatorRegistry(mappingContext, getConnectionSources().getDefaultConnectionSource().getSettings(), messageSource);
-        }
-        return validatorRegistry;
+        return ValidatorRegistries.createValidatorRegistry(mappingContext, getConnectionSources().getDefaultConnectionSource().getSettings(), messageSource);
     }
 
     @Override
