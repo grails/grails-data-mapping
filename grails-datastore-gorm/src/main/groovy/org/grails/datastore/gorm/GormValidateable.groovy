@@ -18,6 +18,7 @@ package org.grails.datastore.gorm
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.validation.ValidationErrors
 import org.springframework.validation.Errors
+import org.springframework.validation.annotation.Validated
 
 import javax.persistence.Transient
 
@@ -53,7 +54,8 @@ trait GormValidateable {
      * @return Whether this instance should skip validation
      */
     boolean shouldSkipValidation() {
-        return this.skipValidate;
+        // skip validation if validation set to true or validation handled by javax.validation
+        return this.skipValidate || getClass().getAnnotation(Validated);
     }
 
 

@@ -3,6 +3,7 @@ package org.grails.datastore.rx
 import grails.gorm.rx.proxy.ObservableProxy
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry
+import org.grails.datastore.gorm.validation.javax.JavaxValidatorRegistry
 import org.grails.datastore.mapping.collection.PersistentCollection
 import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.core.IdentityGenerationException
@@ -26,6 +27,7 @@ import org.grails.datastore.mapping.multitenancy.MultiTenancySettings
 import org.grails.datastore.mapping.multitenancy.TenantResolver
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.reflect.EntityReflector
+import org.grails.datastore.mapping.validation.ValidatorRegistry
 import org.grails.datastore.rx.batch.BatchOperation
 import org.grails.datastore.rx.internal.RxDatastoreClientImplementor
 import org.grails.datastore.rx.proxy.ProxyFactory
@@ -79,15 +81,23 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
             ((RxDatastoreClientAware)tenantResolver).setRxDatastoreClient(this)
         }
         this.mappingContext.setValidatorRegistry(
-                new DefaultValidatorRegistry(mappingContext, connectionSources.getBaseConfiguration())
+                new DefaultValidatorRegistry(mappingContext, getConnectionSources().getDefaultConnectionSource().getSettings())
         )
 
     }
 
     @Override
     void setMessageSource(MessageSource messageSource) {
+        ValidatorRegistry validatorRegistry
+        if(JavaxValidatorRegistry.isAvailable()) {
+            validatorRegistry = new JavaxValidatorRegistry(mappingContext, getConnectionSources().getDefaultConnectionSource().getSettings(), messageSource);
+        }
+        else {
+            validatorRegistry = new DefaultValidatorRegistry(mappingContext, getConnectionSources().getDefaultConnectionSource().getSettings(), messageSource);
+        }
+
         this.mappingContext.setValidatorRegistry(
-                new DefaultValidatorRegistry(mappingContext, connectionSources.getBaseConfiguration(), messageSource)
+                validatorRegistry
         )
     }
 

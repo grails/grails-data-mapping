@@ -37,6 +37,7 @@ project.ext {
     projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
 
     // plugin versions
+    hibernateValidatorVersion = "5.0.3.Final"
     hibernateVersion = "4.3.11"
     hibernate5Version = "5.1.3"
 

@@ -1,9 +1,9 @@
 package org.grails.compiler.gorm
 
-import grails.gorm.annotation.validation.EntityAttributes
 import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
+import org.springframework.validation.annotation.Validated
 import spock.lang.Specification
 
 
@@ -37,7 +37,7 @@ class Customer {
         ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(customerClass)
         expect:
         GormEntity.isAssignableFrom(customerClass)
-        customerClass.getAnnotation(EntityAttributes).validateable() == true
+        customerClass.getAnnotation(Validated)
         !cpf.getPropertyDescriptor(GormProperties.IDENTITY)
         !cpf.getPropertyDescriptor(GormProperties.VERSION)
         customerClass.getDeclaredMethod('addToRelated', Object)

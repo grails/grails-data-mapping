@@ -1,6 +1,5 @@
 package org.grails.compiler.gorm
 
-import grails.gorm.annotation.validation.EntityAttributes
 import grails.gorm.dirty.checking.DirtyCheckedProperty
 import groovy.transform.CompilationUnitAware
 import groovy.transform.CompileStatic
@@ -19,6 +18,7 @@ import org.grails.datastore.mapping.reflect.AstUtils
 import org.grails.datastore.mapping.reflect.ClassUtils
 import org.grails.datastore.mapping.reflect.NameUtils
 import org.grails.datastore.mapping.reflect.ReflectionUtils
+import org.springframework.validation.annotation.Validated
 
 import static java.lang.reflect.Modifier.*
 import static org.grails.datastore.mapping.reflect.AstUtils.*
@@ -108,8 +108,7 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
                 // if there are any javax.validation constraints present
                 def annotationNodes = mn.annotations
                 if(!isJavaValidateable && isAnnotatedWithJavaValidationApi(annotationNodes)) {
-                    def added = AstUtils.addAnnotationOrGetExisting(classNode, EntityAttributes)
-                    added.setMember("validateable", ConstantExpression.TRUE)
+                    addAnnotationIfNecessary(classNode, Validated)
                     isJavaValidateable = true
                 }
 
@@ -135,13 +134,11 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
                 if(getterAndSetter == null) {
                     final FieldNode propertyField = pn.getField()
                     if(!isJavaValidateable && isAnnotatedWithJavaValidationApi(pn.annotations)) {
-                        def added = AstUtils.addAnnotationOrGetExisting(classNode, EntityAttributes)
-                        added.setMember("validateable", ConstantExpression.TRUE)
+                        addAnnotationIfNecessary(classNode, Validated)
                         isJavaValidateable = true
                     }
                     else if(!isJavaValidateable && isAnnotatedWithJavaValidationApi(propertyField.annotations)) {
-                        def added = AstUtils.addAnnotationOrGetExisting(classNode, EntityAttributes)
-                        added.setMember("validateable", ConstantExpression.TRUE)
+                        addAnnotationIfNecessary(classNode, Validated)
                         isJavaValidateable = true
                     }
 

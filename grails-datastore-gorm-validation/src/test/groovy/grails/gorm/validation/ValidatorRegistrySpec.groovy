@@ -37,6 +37,13 @@ class ValidatorRegistrySpec extends Specification {
 }
 
 @Entity
+class Product {
+    String name
+    @Digits
+    String price
+}
+
+@Entity
 class Mammal {
     Integer legCount
     static constraints = {

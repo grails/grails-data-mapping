@@ -16,6 +16,8 @@ package org.grails.orm.hibernate;
 
 import grails.gorm.multitenancy.Tenants;
 import groovy.lang.Closure;
+import org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry;
+import org.grails.datastore.gorm.validation.javax.JavaxValidatorRegistry;
 import org.grails.datastore.mapping.config.Settings;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Datastore;
@@ -29,6 +31,7 @@ import org.grails.datastore.mapping.multitenancy.MultiTenantCapableDatastore;
 import org.grails.datastore.mapping.multitenancy.TenantResolver;
 import org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException;
 import org.grails.datastore.mapping.multitenancy.resolvers.FixedTenantResolver;
+import org.grails.datastore.mapping.validation.ValidatorRegistry;
 import org.grails.orm.hibernate.cfg.HibernateMappingContext;
 import org.grails.orm.hibernate.connections.HibernateConnectionSource;
 import org.grails.orm.hibernate.connections.HibernateConnectionSourceSettings;
@@ -37,9 +40,7 @@ import org.grails.datastore.gorm.jdbc.schema.SchemaHandler;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.*;
 import org.springframework.core.env.PropertyResolver;
 
 import javax.annotation.PreDestroy;
@@ -57,7 +58,7 @@ import java.util.concurrent.Callable;
  * @author Graeme Rocher
  * @since 2.0
  */
-public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware, Settings, MultiTenantCapableDatastore<SessionFactory, HibernateConnectionSourceSettings>, Closeable {
+public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware, Settings, MultiTenantCapableDatastore<SessionFactory, HibernateConnectionSourceSettings>, Closeable, MessageSourceAware {
 
     public static final String CONFIG_PROPERTY_CACHE_QUERIES = "grails.hibernate.cache.queries";
     public static final String CONFIG_PROPERTY_OSIV_READONLY = "grails.hibernate.osiv.readonly";
@@ -137,6 +138,25 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
 
     public AbstractHibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, PropertyResolver config) {
         this(mappingContext, sessionFactory, config, null, ConnectionSource.DEFAULT);
+    }
+
+    @Override
+    public void setMessageSource(MessageSource messageSource) {
+        ValidatorRegistry validatorRegistry = createValidatorRegistry(messageSource);
+        this.mappingContext.setValidatorRegistry(
+                validatorRegistry
+        );
+    }
+
+    protected ValidatorRegistry createValidatorRegistry(MessageSource messageSource) {
+        ValidatorRegistry validatorRegistry;
+        if(JavaxValidatorRegistry.isAvailable()) {
+            validatorRegistry = new JavaxValidatorRegistry(mappingContext, getConnectionSources().getDefaultConnectionSource().getSettings(), messageSource);
+        }
+        else {
+            validatorRegistry = new DefaultValidatorRegistry(mappingContext, getConnectionSources().getDefaultConnectionSource().getSettings(), messageSource);
+        }
+        return validatorRegistry;
     }
 
     @Override

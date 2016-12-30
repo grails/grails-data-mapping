@@ -5,8 +5,10 @@ import grails.gorm.validation.exceptions.ValidationConfigurationException
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.validation.constraints.eval.ConstraintsEvaluator
 import org.grails.datastore.gorm.validation.constraints.eval.DefaultConstraintEvaluator
+import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.reflect.ClassUtils
 import org.grails.datastore.mapping.reflect.ClosureToMapPopulator
 import org.grails.datastore.mapping.validation.ValidatorRegistry
 import org.springframework.context.MessageSource
@@ -14,6 +16,7 @@ import org.springframework.context.support.StaticMessageSource
 import org.springframework.core.env.PropertyResolver
 import org.springframework.core.env.StandardEnvironment
 import org.springframework.validation.Validator
+import org.springframework.validation.annotation.Validated
 
 import java.util.concurrent.ConcurrentHashMap
 
@@ -32,15 +35,15 @@ class DefaultValidatorRegistry implements ValidatorRegistry, ConstraintRegistry 
     final @Delegate ConstraintRegistry constraintRegistry
     final MessageSource messageSource
 
-    DefaultValidatorRegistry(MappingContext mappingContext, PropertyResolver configuration = new StandardEnvironment(), MessageSource messageSource = new StaticMessageSource()) {
+    DefaultValidatorRegistry(MappingContext mappingContext, ConnectionSourceSettings connectionSourceSettings, MessageSource messageSource = new StaticMessageSource()) {
         this.constraintRegistry = new DefaultConstraintRegistry(messageSource)
         this.messageSource = messageSource
-        Map<String, Object> defaultConstraintsMap = resolveDefaultConstraints(configuration)
+        Map<String, Object> defaultConstraintsMap = resolveDefaultConstraints(connectionSourceSettings)
         this.constraintsEvaluator = new DefaultConstraintEvaluator(constraintRegistry, mappingContext, defaultConstraintsMap)
     }
 
-    protected Map<String, Object> resolveDefaultConstraints(PropertyResolver configuration) {
-        Closure defaultConstraints = configuration.getProperty(DEFAULT_CONSTRAINTS, Closure.class, null)
+    protected Map<String, Object> resolveDefaultConstraints( ConnectionSourceSettings connectionSourceSettings ) {
+        Closure defaultConstraints = connectionSourceSettings.default.constraints
         Map<String, Object> defaultConstraintsMap = null
         if (defaultConstraints != null) {
             defaultConstraintsMap = [:]
