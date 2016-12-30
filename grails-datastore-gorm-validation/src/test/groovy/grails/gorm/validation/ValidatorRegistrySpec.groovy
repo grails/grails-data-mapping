@@ -1,6 +1,7 @@
 package grails.gorm.validation
 
 import org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry
+import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.validation.ValidationErrors
@@ -19,7 +20,7 @@ class ValidatorRegistrySpec extends Specification {
         given:"A validator registry"
         MappingContext mappingContext = new KeyValueMappingContext("test")
         def entity = mappingContext.addPersistentEntity(Person)
-        ValidatorRegistry registry = new DefaultValidatorRegistry(mappingContext)
+        ValidatorRegistry registry = new DefaultValidatorRegistry(mappingContext, new ConnectionSourceSettings())
 
         when:"A validator is created"
         Validator validator = registry.getValidator(entity)
@@ -39,7 +40,6 @@ class ValidatorRegistrySpec extends Specification {
 @Entity
 class Product {
     String name
-    @Digits
     String price
 }
 

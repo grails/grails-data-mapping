@@ -46,6 +46,7 @@ import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.MessageSource
 import org.springframework.context.MessageSourceAware
+import org.springframework.context.support.StaticMessageSource
 import rx.Observable
 
 import javax.persistence.CascadeType
@@ -81,24 +82,26 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
             ((RxDatastoreClientAware)tenantResolver).setRxDatastoreClient(this)
         }
         this.mappingContext.setValidatorRegistry(
-                new DefaultValidatorRegistry(mappingContext, getConnectionSources().getDefaultConnectionSource().getSettings())
+                createValidatorRegistry()
         )
-
     }
 
     @Override
     void setMessageSource(MessageSource messageSource) {
-        ValidatorRegistry validatorRegistry
-        if(JavaxValidatorRegistry.isAvailable()) {
-            validatorRegistry = new JavaxValidatorRegistry(mappingContext, getConnectionSources().getDefaultConnectionSource().getSettings(), messageSource);
-        }
-        else {
-            validatorRegistry = new DefaultValidatorRegistry(mappingContext, getConnectionSources().getDefaultConnectionSource().getSettings(), messageSource);
-        }
-
+        ValidatorRegistry validatorRegistry = createValidatorRegistry(messageSource)
         this.mappingContext.setValidatorRegistry(
                 validatorRegistry
         )
+    }
+
+    protected ValidatorRegistry createValidatorRegistry(MessageSource messageSource = new StaticMessageSource()) {
+        ValidatorRegistry validatorRegistry
+        if (JavaxValidatorRegistry.isAvailable()) {
+            validatorRegistry = new JavaxValidatorRegistry(mappingContext, getConnectionSources().getDefaultConnectionSource().getSettings(), messageSource);
+        } else {
+            validatorRegistry = new DefaultValidatorRegistry(mappingContext, getConnectionSources().getDefaultConnectionSource().getSettings(), messageSource);
+        }
+        validatorRegistry
     }
 
     @Override
