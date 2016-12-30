@@ -40,6 +40,7 @@ org.grails.datastore.gorm.utils
 org.grails.datastore.gorm.validation
 org.grails.datastore.gorm.validation.constraints
 org.grails.datastore.gorm.validation.constraints.builtin
+org.grails.datastore.gorm.validation.javax
 org.grails.datastore.gorm.validation.listener
 org.grails.datastore.mapping.cache
 org.grails.datastore.mapping.cache.exception
@@ -92,7 +93,6 @@ org.grails.orm.hibernate.datasource
 org.grails.orm.hibernate.dirty
 org.grails.orm.hibernate.exceptions
 org.grails.orm.hibernate.multitenancy
-org.grails.orm.hibernate.persister.entity
 org.grails.orm.hibernate.proxy
 org.grails.orm.hibernate.query
 org.grails.orm.hibernate.support
