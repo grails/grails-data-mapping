@@ -14,7 +14,12 @@ import org.springframework.validation.Validator
 import org.springframework.validation.annotation.Validated
 import org.springframework.validation.beanvalidation.MessageSourceResourceBundleLocator
 
+import javax.validation.ConstraintValidatorFactory
+import javax.validation.MessageInterpolator
+import javax.validation.ParameterNameProvider
+import javax.validation.TraversableResolver
 import javax.validation.Validation
+import javax.validation.ValidatorContext
 import javax.validation.ValidatorFactory
 
 /**
@@ -29,7 +34,7 @@ class JavaxValidatorRegistry extends DefaultValidatorRegistry implements Validat
     /**
      * The validator factory
      */
-    @Delegate final ValidatorFactory validatorFactory
+    final ValidatorFactory validatorFactory
 
     JavaxValidatorRegistry(MappingContext mappingContext, ConnectionSourceSettings settings, MessageSource messageSource = new StaticMessageSource()) {
         super(mappingContext, settings, messageSource)
@@ -51,6 +56,46 @@ class JavaxValidatorRegistry extends DefaultValidatorRegistry implements Validat
         else {
             return super.getValidator(entity)
         }
+    }
+
+    @Override
+    javax.validation.Validator getValidator() {
+        return validatorFactory.getValidator()
+    }
+
+    @Override
+    ValidatorContext usingContext() {
+        return validatorFactory.usingContext()
+    }
+
+    @Override
+    MessageInterpolator getMessageInterpolator() {
+        return validatorFactory.getMessageInterpolator()
+    }
+
+    @Override
+    TraversableResolver getTraversableResolver() {
+        return validatorFactory.getTraversableResolver()
+    }
+
+    @Override
+    ConstraintValidatorFactory getConstraintValidatorFactory() {
+        return validatorFactory.getConstraintValidatorFactory()
+    }
+
+    @Override
+    ParameterNameProvider getParameterNameProvider() {
+        return validatorFactory.getParameterNameProvider()
+    }
+
+    @Override
+    def <T> T unwrap(Class<T> aClass) {
+        return validatorFactory.unwrap(aClass)
+    }
+
+    @Override
+    void close() {
+        validatorFactory.close()
     }
 
     /**
