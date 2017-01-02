@@ -22,7 +22,7 @@ import javax.persistence.Entity
  * @since 6.1
  */
 @CompileStatic
-@GroovyASTTransformation(phase= CompilePhase.CANONICALIZATION)
+@GroovyASTTransformation(phase= CompilePhase.SEMANTIC_ANALYSIS)
 class GlobalJpaEntityTransform extends AbstractASTTransformation implements ASTTransformation, CompilationUnitAware {
 
     CompilationUnit compilationUnit

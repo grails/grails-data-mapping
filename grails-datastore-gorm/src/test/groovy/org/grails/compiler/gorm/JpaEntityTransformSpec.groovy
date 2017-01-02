@@ -6,6 +6,8 @@ import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.validation.annotation.Validated
 import spock.lang.Specification
 
+import javax.persistence.Transient
+
 
 /**
  * Created by graemerocher on 22/12/16.
@@ -35,10 +37,15 @@ class Customer {
 
 ''')
         ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(customerClass)
+        def instance = customerClass.newInstance()
+        instance.myId = 1L
         expect:
+        instance.id == 1L
         GormEntity.isAssignableFrom(customerClass)
         customerClass.getAnnotation(Validated)
-        !cpf.getPropertyDescriptor(GormProperties.IDENTITY)
+        customerClass.getDeclaredMethod("getId").returnType == Long
+        customerClass.getDeclaredMethod("getId").getAnnotation(Transient)
+        cpf.getPropertyDescriptor(GormProperties.IDENTITY)
         !cpf.getPropertyDescriptor(GormProperties.VERSION)
         customerClass.getDeclaredMethod('addToRelated', Object)
         customerClass.getDeclaredMethod('removeFromRelated', Object)

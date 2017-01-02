@@ -60,8 +60,11 @@ import org.grails.datastore.mapping.reflect.AstUtils
 import org.grails.datastore.mapping.reflect.NameUtils
 
 import javax.persistence.Embeddable
+import javax.persistence.Id
 import javax.persistence.ManyToMany
 import javax.persistence.OneToMany
+import javax.persistence.Transient
+import javax.persistence.Version
 import java.lang.annotation.Annotation
 import java.lang.reflect.Modifier
 
@@ -84,7 +87,10 @@ import java.lang.reflect.Modifier
 class GormEntityTransformation extends AbstractASTTransformation implements CompilationUnitAware,ASTTransformation {
     private static final ClassNode MY_TYPE = new ClassNode(Entity.class);
     protected static final ClassNode JPA_ENTITY_CLASS_NODE = ClassHelper.make(javax.persistence.Entity)
-    protected static final AnnotationNode JPA_ENTITY_ANNOTATION_NODE = new AnnotationNode(JPA_ENTITY_CLASS_NODE)
+    public static final AnnotationNode JPA_ENTITY_ANNOTATION_NODE = new AnnotationNode(JPA_ENTITY_CLASS_NODE)
+    public static final AnnotationNode JPA_VERSION_ANNOTATION_NODE = new AnnotationNode(ClassHelper.make(Version))
+    public static final AnnotationNode JPA_ID_ANNOTATION_NODE = new AnnotationNode(ClassHelper.make(Id))
+    public static final AnnotationNode JPA_TRANSIENT_ANNOTATION_NODE = new AnnotationNode(ClassHelper.make(Transient))
 
     private static final String GET_NAMED_QUERY = "getNamedQuery"
     private static ClassNode GORM_ENTITY_CLASS_NODE = ClassHelper.make(GormEntity)
