@@ -122,7 +122,7 @@ class SubMember extends Member {
         GormValidateable.isAssignableFrom(cls)
         DirtyCheckable.isAssignableFrom(cls)
         cls.getAnnotation(grails.gorm.annotation.Entity)
-        ClassPropertyFetcher.forClass(SubMember).getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.TRANSIENT, Collection) ==  [[], ["transientProperty"]]
+        ClassPropertyFetcher.forClass(SubMember).getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.TRANSIENT, Collection) ==  [["transientProperty"]]
     }
     void "test that a class marked with @Artefact('Domain') is enhanced with GormEntityTraitSpec"() {
         expect:

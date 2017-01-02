@@ -14,21 +14,24 @@
  */
 package org.grails.datastore.mapping.reflect;
 
-import groovy.lang.GroovyObjectSupport;
-import groovy.lang.Script;
-import org.codehaus.groovy.reflection.CachedClass;
+import groovy.lang.MetaBeanProperty;
+import groovy.lang.MetaClass;
+import groovy.lang.MetaMethod;
+import groovy.lang.MetaProperty;
 import org.codehaus.groovy.reflection.CachedField;
 import org.codehaus.groovy.reflection.CachedMethod;
 import org.codehaus.groovy.reflection.ClassInfo;
+import org.springframework.beans.BeanUtils;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 
 /**
@@ -41,39 +44,25 @@ import java.util.*;
 public class ClassPropertyFetcher {
 
     private final Class clazz;
-    // static fetchers for this class, but also for all super classes with the property.
-    // first item in each list is most derived version of static property.
-    final Map<String, List<PropertyFetcher>> staticFetchers = new HashMap<>();
-    final Map<String, PropertyFetcher> instanceFetchers = new HashMap<>();
-    private final ReferenceInstanceCallback callback;
-    private PropertyDescriptor[] propertyDescriptors;
-    private Map<String, PropertyDescriptor> propertyDescriptorsByName = new HashMap<>();
-    private Map<String, Field> fieldsByName = new HashMap<>();
-    private Map<Class, List<PropertyDescriptor>> typeToPropertyMap = new HashMap<>();
-
-    private static Map<Class, ClassPropertyFetcher> cachedClassPropertyFetchers = new WeakHashMap<>();
+    private final ClassInfo classInfo;
+    private final MetaClass theMetaClass;
 
     public static ClassPropertyFetcher forClass(final Class c) {
-        ClassPropertyFetcher cpf = cachedClassPropertyFetchers.get(c);
-        if (cpf == null) {
-            cpf = new ClassPropertyFetcher(c);
-            cachedClassPropertyFetchers.put(c, cpf);
-        }
-        return cpf;
+        return new ClassPropertyFetcher(c);
     }
 
+    /**
+     * @deprecated Does nothing, no longer needed
+     */
+    @Deprecated
     public static void clearCache()  {
-        cachedClassPropertyFetchers.clear();
+        // no-op
     }
 
     ClassPropertyFetcher(final Class clazz) {
         this.clazz = clazz;
-        this.callback = new ReferenceInstanceCallback() {
-            public Object getReferenceInstance() {
-               return ReflectionUtils.instantiate(clazz);
-            }
-        };
-        init();
+        this.classInfo = ClassInfo.getClassInfo(clazz);
+        this.theMetaClass = classInfo.getMetaClass();
     }
 
     /**
@@ -83,189 +72,60 @@ public class ClassPropertyFetcher {
         return clazz;
     }
 
+    /**
+     * @Deprecated will be removed in a future version of GORM
+     */
+    @Deprecated
     public Object getReference() {
-        return callback == null ? null : callback.getReferenceInstance();
+        return BeanUtils.instantiate(clazz);
     }
 
+    /**
+     * @deprecated  Use getMetaProperties instead
+     */
+    @Deprecated
     public PropertyDescriptor[] getPropertyDescriptors() {
-        return propertyDescriptors;
+        try {
+            return Introspector.getBeanInfo(clazz).getPropertyDescriptors();
+        } catch (IntrospectionException e) {
+            return new PropertyDescriptor[0];
+        }
+    }
+
+    /**
+     * @return The meta properties of this class
+     */
+    public List<MetaProperty> getProperties() {
+        return theMetaClass.getProperties();
     }
 
     public boolean isReadableProperty(String name) {
-        return staticFetchers.containsKey(name) ||
-               instanceFetchers.containsKey(name);
+        MetaProperty metaProperty = theMetaClass.getMetaProperty(name);
+        if(metaProperty instanceof MetaBeanProperty) {
+            MetaBeanProperty metaBeanProperty = (MetaBeanProperty) metaProperty;
+            return metaBeanProperty.getField() != null || metaBeanProperty.getGetter() != null;
+        }
+        return false;
     }
-
-    private void init() {
-        ClassInfo classInfo = ClassInfo.getClassInfo(clazz);
-        Class<?> superclass = clazz.getSuperclass();
-        while (superclass != Object.class && superclass != Script.class && superclass != GroovyObjectSupport.class && superclass != null) {
-            ClassPropertyFetcher superFetcher = ClassPropertyFetcher.forClass(superclass);
-            for (Map.Entry<String, List<PropertyFetcher>> entry : superFetcher.staticFetchers.entrySet()) {
-                staticFetchers.put(entry.getKey(), new ArrayList<>(entry.getValue()));
-            }
-            instanceFetchers.putAll(superFetcher.instanceFetchers);
-            superclass = superclass.getSuperclass();
-        }
-
-        CachedClass cachedClass = classInfo.getCachedClass();
-        CachedField[] fields = cachedClass.getFields();
-        for (CachedField field : fields) {
-            processField(field);
-        }
-        CachedMethod[] methods = cachedClass.getMethods();
-        for (CachedMethod method : methods) {
-            processMethod(method);
-        }
-
-        try {
-            propertyDescriptors = Introspector.getBeanInfo(clazz).getPropertyDescriptors();
-        } catch (IntrospectionException e) {
-            // ignore
-        }
-
-        if (propertyDescriptors == null) {
-            return;
-        }
-
-        for (PropertyDescriptor desc : propertyDescriptors) {
-            propertyDescriptorsByName.put(desc.getName(),desc);
-            final Class<?> propertyType = desc.getPropertyType();
-            if (propertyType == null) continue;
-            List<PropertyDescriptor> pds = typeToPropertyMap.get(propertyType);
-            if (pds == null) {
-                pds = new ArrayList<>();
-                typeToPropertyMap.put(propertyType, pds);
-            }
-            pds.add(desc);
-
-            Method readMethod = desc.getReadMethod();
-            if (readMethod != null) {
-                boolean staticReadMethod = Modifier.isStatic(readMethod.getModifiers());
-                if (staticReadMethod) {
-                    List<PropertyFetcher> propertyFetchers = staticFetchers.get(desc.getName());
-                    if (propertyFetchers == null) {
-                        staticFetchers.put(desc.getName(), propertyFetchers = new ArrayList<>());
-                    }
-                    propertyFetchers.add(
-                            new GetterPropertyFetcher(readMethod, true));
-                } else {
-                    instanceFetchers.put(desc.getName(),
-                            new GetterPropertyFetcher(readMethod, false));
-                }
-            }
-        }
-    }
-
-    private void processMethod(CachedMethod method) {
-        if (method.getCachedMethod().isSynthetic()) {
-            return;
-        }
-        if (!Modifier.isPublic(method.getModifiers())) {
-            return;
-        }
-        if (Modifier.isStatic(method.getModifiers()) &&
-                method.getReturnType() != Void.class) {
-            if (method.getParameterTypes().length == 0) {
-                String name = method.getName();
-                if (name.indexOf('$') == -1) {
-                    final String propertyName = NameUtils.getPropertyNameForGetterOrSetter(name);
-                    if(propertyName != null) {
-                        name = propertyName;
-                    }
-                    PropertyFetcher fetcher = new GetterPropertyFetcher(method.getCachedMethod(), true);
-                    List<PropertyFetcher> propertyFetchers = staticFetchers.get(name);
-                    if (propertyFetchers == null) {
-                        staticFetchers.put(name, propertyFetchers = new ArrayList<PropertyFetcher>());
-                    }
-                    propertyFetchers.add(fetcher);
-                    String decapitalized = Introspector.decapitalize(name);
-                    if (!decapitalized.equals(name)) {
-                        propertyFetchers = staticFetchers.get(decapitalized);
-                        if (propertyFetchers == null) {
-                            staticFetchers.put(decapitalized, propertyFetchers = new ArrayList<PropertyFetcher>());
-                        }
-                        propertyFetchers.add(fetcher);
-                    }
-                }
-            }
-        }
-    }
-
-    private void processField(CachedField field) {
-        Field targetField = field.field;
-        if (targetField.isSynthetic()) {
-            return;
-        }
-        final int modifiers = field.getModifiers();
-        final String name = field.getName();
-        if (!Modifier.isPublic(modifiers)) {
-            if (name.indexOf('$') == -1) {
-                fieldsByName.put(name, targetField);
-            }
-        }
-        else {
-            if (name.indexOf('$') == -1) {
-                boolean staticField = Modifier.isStatic(modifiers);
-                if (staticField) {
-                    List<PropertyFetcher> propertyFetchers = staticFetchers.get(name);
-                    if (propertyFetchers == null) {
-                        staticFetchers.put(name, propertyFetchers = new ArrayList<>());
-                    }
-                    propertyFetchers.add(new FieldReaderFetcher(targetField, staticField));
-                } else {
-                    instanceFetchers.put(name, new FieldReaderFetcher(targetField, staticField));
-                }
-            }
-        }
-    }
-
 
     public Object getPropertyValue(String name) {
-        return getPropertyValue(name, false);
-    }
-
-    public Object getPropertyValue(String name, boolean onlyInstanceProperties) {
-        PropertyFetcher fetcher = resolveFetcher(name, onlyInstanceProperties);
-        return getPropertyValueWithFetcher(name, fetcher);
+        MetaProperty metaProperty = theMetaClass.getMetaProperty(name);
+        if(metaProperty != null && Modifier.isStatic(metaProperty.getModifiers())) {
+            return metaProperty.getProperty(classInfo.getCachedClass().getTheClass());
+        }
+        return null;
     }
 
     public Object getPropertyValue(final Object instance, String name) {
-        PropertyFetcher fetcher = resolveFetcher(name, true);
-        return getPropertyValueWithFetcher(name, fetcher,new ReferenceInstanceCallback() {
-            @Override
-            public Object getReferenceInstance() {
-                return instance;
-            }
-        });
-    }
-
-    private Object getPropertyValueWithFetcher(String name, PropertyFetcher fetcher) {
-        ReferenceInstanceCallback thisCallback = callback;
-        return getPropertyValueWithFetcher(name, fetcher, thisCallback);
-    }
-
-    private Object getPropertyValueWithFetcher(String name, PropertyFetcher fetcher, ReferenceInstanceCallback thisCallback) {
-        if (fetcher != null) {
-            try {
-                return fetcher.get(thisCallback);
-            } catch (Exception e) {
-                System.err.println("Error fetching property's "
-                        + name + " value from class " + clazz.getName() + ": " + e.getMessage());
-            }
+        MetaProperty metaProperty = theMetaClass.getMetaProperty(name);
+        if(metaProperty != null && !Modifier.isStatic(metaProperty.getModifiers())) {
+            return metaProperty.getProperty(instance);
         }
         return null;
     }
 
     public <T> T getStaticPropertyValue(String name, Class<T> c) {
-        List<PropertyFetcher> propertyFetchers = staticFetchers.get(name);
-        if (propertyFetchers == null) {
-            return null;
-        }
-        PropertyFetcher fetcher = propertyFetchers.get(0);
-
-        Object v = getPropertyValueWithFetcher(name, fetcher);
-        return returnOnlyIfInstanceOf(v, c);
+        return returnOnlyIfInstanceOf(getPropertyValue(name), c);
     }
 
     /**
@@ -279,23 +139,124 @@ public class ClassPropertyFetcher {
      * @return The list, with 0+ values (never null). Do not modify the returned list.
      */
     public <T> List<T> getStaticPropertyValuesFromInheritanceHierarchy(String name, Class<T> c) {
-        List<PropertyFetcher> propertyFetchers = staticFetchers.get(name);
-        if (propertyFetchers == null) {
-            return Collections.emptyList();
-        }
-        List<T> values = new ArrayList<T>(propertyFetchers.size());
-        for (PropertyFetcher fetcher : propertyFetchers) {
-            Object v = getPropertyValueWithFetcher(name, fetcher);
-            T t = returnOnlyIfInstanceOf(v, c);
-            if (t != null) {
-                values.add(t);
+        Collection<ClassInfo> hierarchy = classInfo.getCachedClass().getHierarchy();
+        List<T> values = new ArrayList<>(4);
+        for (ClassInfo current : hierarchy) {
+            MetaProperty metaProperty = current.getMetaClass().getMetaProperty(name);
+            if(metaProperty != null) {
+                Object val = metaProperty.getProperty(current.getCachedClass().getTheClass());
+                if(c.isInstance(val)) {
+                    values.add((T) val);
+                }
+            }
+            else {
+                // reached a super class that doesn't have the property
+                break;
             }
         }
+        Collections.reverse(values);
         return values;
     }
 
     public <T> T getPropertyValue(String name, Class<T> c) {
-        return returnOnlyIfInstanceOf(getPropertyValue(name, false), c);
+        return getStaticPropertyValue(name, c);
+    }
+
+    public Class getPropertyType(String name) {
+        return getPropertyType(name, false);
+    }
+
+    public Class getPropertyType(String name, boolean onlyInstanceProperties) {
+        MetaProperty metaProperty = theMetaClass.getMetaProperty(name);
+        if(metaProperty != null) {
+            boolean isStatic = Modifier.isStatic(metaProperty.getModifiers());
+            if(onlyInstanceProperties && !isStatic) {
+                return metaProperty.getType();
+            }
+            else if(!onlyInstanceProperties && isStatic) {
+                return metaProperty.getType();
+            }
+        }
+        return null;
+    }
+
+    public PropertyDescriptor getPropertyDescriptor(String name) {
+        MetaProperty property = theMetaClass.getMetaProperty(name);
+        if(property instanceof MetaBeanProperty) {
+            MetaBeanProperty beanProperty = (MetaBeanProperty) property;
+            MetaMethod getter = beanProperty.getGetter();
+            MetaMethod setter = beanProperty.getSetter();
+            if(getter instanceof CachedMethod && setter instanceof CachedMethod) {
+                CachedMethod cachedGetter = (CachedMethod) getter;
+                CachedMethod cachedSetter = (CachedMethod) setter;
+                try {
+                    return new PropertyDescriptor(beanProperty.getName(), cachedGetter.getCachedMethod(), cachedSetter.getCachedMethod());
+                } catch (IntrospectionException e) {
+                    // ignore
+                }
+            }
+            else if(getter instanceof CachedMethod) {
+                CachedMethod cachedGetter = (CachedMethod) getter;
+                try {
+                    return new PropertyDescriptor(beanProperty.getName(), cachedGetter.getCachedMethod(), null);
+                } catch (IntrospectionException e) {
+                    // ignore
+                }
+
+            }
+        }
+        return null;
+    }
+
+    public List<PropertyDescriptor> getPropertiesOfType(Class javaClass) {
+        List<MetaProperty> properties = theMetaClass.getProperties();
+        List<PropertyDescriptor> propertyDescriptors = new ArrayList<>(2);
+
+        for (MetaProperty property : properties) {
+            int modifiers = property.getModifiers();
+            if(Modifier.isStatic(modifiers) || property.getName().contains("$") || !property.getType().equals(javaClass)) continue;
+
+            addBeanProperty(propertyDescriptors, property);
+        }
+        return propertyDescriptors;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<PropertyDescriptor> getPropertiesAssignableToType(Class assignableType) {
+        List<MetaProperty> properties = theMetaClass.getProperties();
+        List<PropertyDescriptor> propertyDescriptors = new ArrayList<>(2);
+        for (MetaProperty property : properties) {
+            int modifiers = property.getModifiers();
+            if(Modifier.isStatic(modifiers) || property.getName().contains("$") || !assignableType.isAssignableFrom(property.getType())) {
+                continue;
+            }
+
+            addBeanProperty(propertyDescriptors, property);
+        }
+        return propertyDescriptors;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<PropertyDescriptor> getPropertiesAssignableFromType(Class assignableType) {
+        List<MetaProperty> properties = theMetaClass.getProperties();
+        List<PropertyDescriptor> propertyDescriptors = new ArrayList<>(2);
+        for (MetaProperty property : properties) {
+            int modifiers = property.getModifiers();
+            if(Modifier.isStatic(modifiers) || property.getName().contains("$") || !property.getType().equals(assignableType)) continue;
+            addBeanProperty(propertyDescriptors, property);
+        }
+        return propertyDescriptors;
+    }
+
+    public Field getDeclaredField(String name) {
+        MetaProperty metaProperty = theMetaClass.getMetaProperty(name);
+        if(metaProperty instanceof MetaBeanProperty) {
+            CachedField field = ((MetaBeanProperty) metaProperty).getField();
+            if(field != null) {
+                return field.field;
+            }
+        }
+        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -306,124 +267,30 @@ public class ClassPropertyFetcher {
         return null;
     }
 
-    private PropertyFetcher resolveFetcher(String name, boolean onlyInstanceProperties) {
-        PropertyFetcher fetcher = null;
-        if (!onlyInstanceProperties) {
-            List<PropertyFetcher> f = staticFetchers.get(name);
-            fetcher = f == null ? null : f.get(0);
-        }
-        if (fetcher == null) {
-            fetcher = instanceFetchers.get(name);
-        }
-        return fetcher;
-    }
+    protected void addBeanProperty(List<PropertyDescriptor> propertyDescriptors, MetaProperty property) {
+        if(property instanceof MetaBeanProperty) {
+            MetaBeanProperty beanProperty = (MetaBeanProperty) property;
+            MetaMethod getter = beanProperty.getGetter();
+            MetaMethod setter = beanProperty.getSetter();
+            boolean isGetterCachedMethod = getter instanceof CachedMethod;
+            if(isGetterCachedMethod && setter instanceof CachedMethod) {
+                CachedMethod cachedGetter = (CachedMethod) getter;
+                CachedMethod cachedSetter = (CachedMethod) setter;
+                try {
+                    propertyDescriptors.add(new PropertyDescriptor(beanProperty.getName(), cachedGetter.getCachedMethod(), cachedSetter.getCachedMethod()));
+                } catch (IntrospectionException e) {
+                    // ignore
+                }
+            }
+            else if(isGetterCachedMethod) {
+                CachedMethod cachedGetter = (CachedMethod) getter;
+                try {
+                    propertyDescriptors.add(new PropertyDescriptor(beanProperty.getName(), cachedGetter.getCachedMethod(), null));
+                } catch (IntrospectionException e) {
+                    // ignore
+                }
 
-    public Class getPropertyType(String name) {
-        return getPropertyType(name, false);
-    }
-
-    public Class getPropertyType(String name, boolean onlyInstanceProperties) {
-        PropertyFetcher fetcher = resolveFetcher(name, onlyInstanceProperties);
-        return fetcher == null ? null : fetcher.getPropertyType(name);
-    }
-
-    public PropertyDescriptor getPropertyDescriptor(String name) {
-        return propertyDescriptorsByName.get(name);
-    }
-
-    public List<PropertyDescriptor> getPropertiesOfType(Class javaClass) {
-        final List<PropertyDescriptor> propertyDescriptorList = typeToPropertyMap.get(javaClass);
-        if (propertyDescriptorList == null) return Collections.emptyList();
-        return propertyDescriptorList;
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<PropertyDescriptor> getPropertiesAssignableToType(Class assignableType) {
-        List<PropertyDescriptor> properties = new ArrayList<PropertyDescriptor>();
-        for (Class type : typeToPropertyMap.keySet()) {
-            if (assignableType.isAssignableFrom(type)) {
-                properties.addAll(typeToPropertyMap.get(type));
             }
         }
-        return properties;
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<PropertyDescriptor> getPropertiesAssignableFromType(Class assignableType) {
-        List<PropertyDescriptor> properties = new ArrayList<PropertyDescriptor>();
-        for (Class type : typeToPropertyMap.keySet()) {
-            if (type.isAssignableFrom( assignableType )) {
-                properties.addAll(typeToPropertyMap.get(type));
-            }
-        }
-        return properties;
-    }
-
-    public interface ReferenceInstanceCallback {
-        Object getReferenceInstance();
-    }
-
-    interface PropertyFetcher {
-        Object get(ReferenceInstanceCallback callback)
-                throws IllegalArgumentException, IllegalAccessException,
-                InvocationTargetException;
-
-        Class getPropertyType(String name);
-    }
-
-    static class GetterPropertyFetcher implements PropertyFetcher {
-        private final Method readMethod;
-        private final boolean staticMethod;
-
-        GetterPropertyFetcher(Method readMethod, boolean staticMethod) {
-            this.readMethod = readMethod;
-            this.staticMethod = staticMethod;
-            ReflectionUtils.makeAccessible(readMethod);
-        }
-
-        public Object get(ReferenceInstanceCallback callback)
-                throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-            if (staticMethod) {
-                return readMethod.invoke(null, (Object[]) null);
-            }
-            if (callback != null) {
-                return readMethod.invoke(callback.getReferenceInstance(), (Object[]) null);
-            }
-            return null;
-        }
-
-        public Class getPropertyType(String name) {
-            return readMethod.getReturnType();
-        }
-    }
-
-    static class FieldReaderFetcher implements PropertyFetcher {
-        private final Field field;
-        private final boolean staticField;
-
-        public FieldReaderFetcher(Field field, boolean staticField) {
-            this.field = field;
-            this.staticField = staticField;
-            ReflectionUtils.makeAccessible(field);
-        }
-
-        public Object get(ReferenceInstanceCallback callback)
-                throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-            if (staticField) {
-                return field.get(null);
-            }
-            if (callback != null) {
-                return field.get(callback.getReferenceInstance());
-            }
-            return null;
-        }
-
-        public Class getPropertyType(String name) {
-            return field.getType();
-        }
-    }
-
-    public Field getDeclaredField(String name) {
-        return fieldsByName.get(name);
     }
 }
