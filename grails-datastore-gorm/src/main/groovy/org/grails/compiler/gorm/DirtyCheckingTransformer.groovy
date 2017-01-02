@@ -249,8 +249,8 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
             }
         }
 
-        if(!hasVersion && ClassUtils.isPresent("grails.artefact.Artefact")) {
-            // if the entity is a JPA and has not version property then add a transient one as a stub, this is more to satisfy Grails
+        if(!hasVersion && ClassUtils.isPresent("grails.artefact.Artefact") && !classNode.getAnnotations(GormEntityTransformation.JPA_ENTITY_CLASS_NODE).isEmpty()) {
+            // if the entity is a JPA and has no version property then add a transient one as a stub, this is more to satisfy Grails
             def getVersionMethod = new MethodNode(
                     "getVersion",
                     Modifier.PUBLIC,
