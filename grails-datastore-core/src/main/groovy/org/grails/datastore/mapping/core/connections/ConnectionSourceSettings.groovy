@@ -37,6 +37,11 @@ class ConnectionSourceSettings implements Settings {
     boolean autoFlush = false
 
     /**
+     * Whether to autowire entities via Spring if used
+     */
+    boolean autowire = false
+
+    /**
      * Whether to fail on a validation error
      */
     boolean failOnError = false

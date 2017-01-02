@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.core.connections.ConnectionSourcesProvider;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.event.*;
@@ -59,6 +60,8 @@ public class DomainEventListener extends AbstractPersistenceEventListener
     private static final List<String> REFRESH_EVENTS = Arrays.asList(
             EVENT_BEFORE_INSERT, EVENT_BEFORE_UPDATE, EVENT_BEFORE_DELETE);
 
+    private final boolean autowireEntities;
+
     public DomainEventListener(final Datastore datastore) {
         super(datastore);
 
@@ -67,16 +70,22 @@ public class DomainEventListener extends AbstractPersistenceEventListener
         }
 
         datastore.getMappingContext().addMappingContextListener(this);
+        if(datastore instanceof ConnectionSourcesProvider) {
+            autowireEntities = ((ConnectionSourcesProvider)datastore).getConnectionSources().getDefaultConnectionSource().getSettings().isAutowire();
+        }
+        else {
+            autowireEntities = false;
+        }
     }
 
 
-    protected DomainEventListener(final MappingContext mappingContext) {
+    protected DomainEventListener(ConnectionSourcesProvider connectionSourcesProvider, final MappingContext mappingContext) {
         super(null);
 
         for (PersistentEntity entity : mappingContext.getPersistentEntities()) {
             createEventCaches(entity);
         }
-
+        autowireEntities = ((ConnectionSourcesProvider)datastore).getConnectionSources().getDefaultConnectionSource().getSettings().isAutowire();
         mappingContext.addMappingContextListener(this);
     }
 
@@ -220,7 +229,7 @@ public class DomainEventListener extends AbstractPersistenceEventListener
 
     public void afterLoad(final PersistentEntity entity, final EntityAccess ea, PostLoadEvent event) {
         activateDirtyChecking(ea);
-        if (entity != null &&  entity.getMapping().getMappedForm().isAutowire() ) {
+        if (autowireEntities || ( entity != null &&  entity.getMapping().getMappedForm().isAutowire() )) {
             autowireBeanProperties(ea.getEntity());
         }
         invokeEvent(EVENT_AFTER_LOAD, entity, ea, event);

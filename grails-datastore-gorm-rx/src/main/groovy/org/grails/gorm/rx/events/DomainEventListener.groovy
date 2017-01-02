@@ -16,7 +16,7 @@ class DomainEventListener extends org.grails.datastore.gorm.events.DomainEventLi
     final RxDatastoreClient datastoreClient
 
     DomainEventListener(RxDatastoreClient datastoreClient) {
-        super(datastoreClient.mappingContext)
+        super(datastoreClient, datastoreClient.mappingContext)
         this.datastoreClient = datastoreClient
     }
 
