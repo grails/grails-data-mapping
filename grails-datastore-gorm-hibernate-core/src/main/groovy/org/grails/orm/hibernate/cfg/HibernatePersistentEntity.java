@@ -24,7 +24,7 @@ import org.grails.datastore.mapping.model.*;
  * @since 5.0
  */
 public class HibernatePersistentEntity extends AbstractPersistentEntity<Mapping> {
-    private final ClassMapping<Mapping> classMapping;
+    private final AbstractClassMapping<Mapping> classMapping;
 
 
     public HibernatePersistentEntity(Class javaClass, final MappingContext context) {
@@ -32,9 +32,8 @@ public class HibernatePersistentEntity extends AbstractPersistentEntity<Mapping>
 
 
 
-        this.classMapping = new ClassMapping<Mapping>() {
+        this.classMapping = new AbstractClassMapping<Mapping>(this, context) {
             Mapping mappedForm = (Mapping) context.getMappingFactory().createMappedForm(HibernatePersistentEntity.this);
-            IdentityMapping identityMapping = context.getMappingFactory().createIdentityMapping(this);
             @Override
             public PersistentEntity getEntity() {
                 return HibernatePersistentEntity.this;
@@ -43,11 +42,6 @@ public class HibernatePersistentEntity extends AbstractPersistentEntity<Mapping>
             @Override
             public Mapping getMappedForm() {
                 return mappedForm;
-            }
-
-            @Override
-            public IdentityMapping getIdentifier() {
-                return identityMapping;
             }
         };
 
