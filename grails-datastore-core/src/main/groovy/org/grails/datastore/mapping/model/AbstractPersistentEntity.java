@@ -145,7 +145,18 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
                     this.tenantId = (TenantId) persistentProperty;
                 }
                 if(persistentProperty instanceof Identity) {
-                    identity = persistentProperty;
+                    if(compositeIdentity != null) {
+                        int l = compositeIdentity.length;
+                        compositeIdentity = Arrays.copyOf(compositeIdentity, l +1);
+                        compositeIdentity[l] = identity;
+                    }
+                    else if(identity != null) {
+                        compositeIdentity = new PersistentProperty[] { identity, persistentProperty };
+                        identity = null;
+                    }
+                    else {
+                        identity = persistentProperty;
+                    }
                 }
 
                 if (!(persistentProperty instanceof OneToMany)) {
@@ -163,7 +174,7 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
                 }
             }
 
-            if(identity == null) {
+            if(identity == null && compositeIdentity == null) {
                 identity = resolveIdentifier();
             }
 
