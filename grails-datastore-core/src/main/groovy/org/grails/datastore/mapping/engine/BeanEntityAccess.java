@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.core.convert.ConversionService;
@@ -39,7 +40,7 @@ import org.springframework.util.ReflectionUtils;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class BeanEntityAccess implements EntityAccess {
 
-    private static final Set EXCLUDED_PROPERTIES = new HashSet(Arrays.asList("class", "metaClass", "properties"));
+    private static final Set EXCLUDED_PROPERTIES = ClassPropertyFetcher.EXCLUDED_PROPERTIES;
 
     protected Object entity;
     protected BeanWrapper beanWrapper;

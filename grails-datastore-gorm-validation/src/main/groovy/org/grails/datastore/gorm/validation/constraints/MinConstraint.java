@@ -52,7 +52,7 @@ public class MinConstraint extends AbstractConstraint {
                     "] must implement the interface [java.lang.Comparable]");
         }
 
-        Class<?> propertyClass = ClassPropertyFetcher.forClass(constraintOwningClass).getPropertyType(constraintPropertyName);
+        Class<?> propertyClass = ClassPropertyFetcher.getPropertyType(constraintOwningClass, constraintPropertyName);
         if (!ClassUtils.isAssignableOrConvertibleFrom(constraintParameter.getClass(),propertyClass)) {
             throw new IllegalArgumentException("Parameter for constraint [" + ConstrainedProperty.MIN_CONSTRAINT +
                     "] of property [" + constraintPropertyName + "] of class [" + constraintOwningClass +

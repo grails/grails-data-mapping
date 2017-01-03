@@ -71,7 +71,6 @@ public abstract class AbstractGormMappingFactory<R extends Entity, T extends Pro
             return entityToMapping.get(entity);
         }
         else {
-            ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
             R family = BeanUtils.instantiate(getEntityMappedFormType());
             entityToMapping.put(entity, family);
             MappingConfigurationBuilder builder = createConfigurationBuilder(entity, family);
@@ -82,11 +81,11 @@ public abstract class AbstractGormMappingFactory<R extends Entity, T extends Pro
             if (defaultConstraints != null) {
                 evaluateWithContext(builder, defaultConstraints);
             }
-            List<Closure> values = cpf.getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.MAPPING, Closure.class);
+            List<Closure> values = ClassPropertyFetcher.getStaticPropertyValuesFromInheritanceHierarchy(entity.getJavaClass(),GormProperties.MAPPING, Closure.class);
             for (Closure value : values) {
                 evaluateWithContext(builder, value);
             }
-            values = cpf.getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.CONSTRAINTS, Closure.class);
+            values = ClassPropertyFetcher.getStaticPropertyValuesFromInheritanceHierarchy(entity.getJavaClass(),GormProperties.CONSTRAINTS, Closure.class);
             for (Closure value : values) {
                 evaluateWithContext(builder, value);
             }

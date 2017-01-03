@@ -53,7 +53,7 @@ public class MaxConstraint extends AbstractConstraint {
                     "] of class ["+constraintOwningClass + "] must implement the interface [java.lang.Comparable]");
         }
 
-        Class<?> propertyClass = ClassPropertyFetcher.forClass(constraintOwningClass).getPropertyType(constraintPropertyName);
+        Class<?> propertyClass = ClassPropertyFetcher.getPropertyType(constraintOwningClass, constraintPropertyName);
         if (!ClassUtils.isAssignableOrConvertibleFrom(constraintParameter.getClass(), propertyClass)) {
             throw new IllegalArgumentException("Parameter for constraint [" +
                     ConstrainedProperty.MAX_CONSTRAINT + "] of property [" +

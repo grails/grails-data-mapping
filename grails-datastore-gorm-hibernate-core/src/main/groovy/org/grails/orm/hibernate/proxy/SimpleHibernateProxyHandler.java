@@ -48,7 +48,7 @@ public class SimpleHibernateProxyHandler extends JavassistProxyFactory implement
 
     public boolean isInitialized(Object obj, String associationName) {
         try {
-            Object proxy = ClassPropertyFetcher.forClass(obj.getClass()).getPropertyValue(obj, associationName);
+            Object proxy = ClassPropertyFetcher.getInstancePropertyValue(obj, associationName);
             if(proxy instanceof HibernateProxy) {
                 return Hibernate.isInitialized(proxy) ;
             }
@@ -111,7 +111,7 @@ public class SimpleHibernateProxyHandler extends JavassistProxyFactory implement
 
     public HibernateProxy getAssociationProxy(Object obj, String associationName) {
         try {
-            Object proxy = ClassPropertyFetcher.forClass(obj.getClass()).getPropertyValue(obj, associationName);
+            Object proxy = ClassPropertyFetcher.getInstancePropertyValue(obj, associationName);
             if (proxy instanceof HibernateProxy) {
                 return (HibernateProxy) proxy;
             }

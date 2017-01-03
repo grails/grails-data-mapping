@@ -679,8 +679,7 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
         }
         else if('importFrom' == name && hasArgs && (args[0] instanceof Class)) {
             // ignore, handled by constraints
-            ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass((Class)args[0]);
-            List<Closure> constraintsToImports = cpf.getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.CONSTRAINTS, Closure)
+            List<Closure> constraintsToImports = ClassPropertyFetcher.getStaticPropertyValuesFromInheritanceHierarchy((Class)args[0], GormProperties.CONSTRAINTS, Closure)
             if(constraintsToImports) {
 
                 List originalIncludes = this.methodMissingIncludes

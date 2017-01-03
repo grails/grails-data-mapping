@@ -25,6 +25,7 @@ import org.grails.datastore.mapping.core.EntityCreationException;
 import org.grails.datastore.mapping.core.exceptions.ConfigurationException;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.model.types.Identity;
 import org.grails.datastore.mapping.model.types.OneToMany;
 import org.grails.datastore.mapping.model.types.TenantId;
 import org.grails.datastore.mapping.multitenancy.MultiTenancySettings;
@@ -72,7 +73,7 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
         this.isAbstract = Modifier.isAbstract(javaClass.getModifiers());
         this.isMultiTenant = org.grails.datastore.mapping.reflect.ClassUtils.isMultiTenant(javaClass);
         decapitalizedName = Introspector.decapitalize(javaClass.getSimpleName());
-        String classSpecified = ClassPropertyFetcher.forClass(javaClass).getStaticPropertyValue(GormProperties.MAPPING_STRATEGY, String.class);
+        String classSpecified = ClassPropertyFetcher.getStaticPropertyValue(javaClass, GormProperties.MAPPING_STRATEGY, String.class);
         this.mappingStrategy = classSpecified != null ? classSpecified : GormProperties.DEFAULT_MAPPING_STRATEGY;
     }
 
@@ -133,7 +134,6 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
             }
 
             persistentProperties = mappingSyntaxStrategy.getPersistentProperties(this, context, mapping, includeIdentifiers());
-            identity = resolveIdentifier();
 
             persistentPropertyNames = new ArrayList<>();
             associations = new ArrayList();
@@ -143,8 +143,11 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
             for (PersistentProperty persistentProperty : persistentProperties) {
                 if(multiTenancyEnabled && persistentProperty instanceof TenantId) {
                     this.tenantId = (TenantId) persistentProperty;
-
                 }
+                if(persistentProperty instanceof Identity) {
+                    identity = persistentProperty;
+                }
+
                 if (!(persistentProperty instanceof OneToMany)) {
                     persistentPropertyNames.add(persistentProperty.getName());
                 }
@@ -158,6 +161,10 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
                 if(targetName != null) {
                     mappedPropertiesByName.put(targetName, persistentProperty);
                 }
+            }
+
+            if(identity == null) {
+                identity = resolveIdentifier();
             }
 
             if(multiTenancyEnabled && tenantId == null) {
@@ -186,13 +193,18 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
             }
 
 
-            final PersistentProperty idProp = getPropertyByName(GormProperties.IDENTITY);
+            final PersistentProperty idProp = identity != null ? identity : getPropertyByName(GormProperties.IDENTITY);
             if(idProp != null) {
                 persistentProperties.remove(idProp);
-                persistentPropertyNames.remove(GormProperties.IDENTITY);
+                persistentPropertyNames.remove(idProp.getName());
+                if(!idProp.getName().equals(GormProperties.IDENTITY)) {
+                    PersistentProperty otherId = getPropertyByName(GormProperties.IDENTITY);
+                    persistentProperties.remove(otherId);
+                    persistentPropertyNames.remove(GormProperties.IDENTITY);
+                }
             }
             IdentityMapping identifier = mapping != null ? mapping.getIdentifier() : null;
-            if(identifier != null) {
+            if(identity == null && identifier != null) {
 
                 final String[] identifierName = identifier.getIdentifierName();
                 final MappingContext mappingContext = getMappingContext();
@@ -234,11 +246,18 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     }
 
     protected boolean includeIdentifiers() {
-        return false;
+        return true;
     }
 
     protected PersistentProperty resolveIdentifier() {
-        return context.getMappingSyntaxStrategy().getIdentity(javaClass, context);
+        PersistentProperty identity = context.getMappingSyntaxStrategy().getIdentity(javaClass, context);
+        if(identity != null) {
+            PersistentProperty resolvedId = getPropertyByName(identity.getName());
+            if(resolvedId != null) {
+                identity = resolvedId;
+            }
+        }
+        return identity;
     }
 
     public boolean hasProperty(String name, Class type) {

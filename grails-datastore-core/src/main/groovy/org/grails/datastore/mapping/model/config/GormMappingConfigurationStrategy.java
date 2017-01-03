@@ -34,6 +34,8 @@ import java.util.Set;
 
 import javax.persistence.Entity;
 
+import groovy.lang.MetaBeanProperty;
+import groovy.lang.MetaProperty;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.IdentityMapping;
@@ -80,7 +82,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
     private static final String VERSION_PROPERTY = VERSION;
     public static final String MAPPED_BY_NONE = "none";
     protected MappingFactory propertyFactory;
-    private static final Set EXCLUDED_PROPERTIES = new HashSet(Arrays.asList("class", "metaClass"));
+    private static final Set EXCLUDED_PROPERTIES = ClassPropertyFetcher.EXCLUDED_PROPERTIES;
     private boolean canExpandMappingContext = true;
 
     public GormMappingConfigurationStrategy(MappingFactory propertyFactory) {
@@ -151,16 +153,21 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         // hasOne for declaring a one-to-one association with the foreign key in the child
         Map hasOneMap = getAssociationMap(cpf, HAS_ONE);
 
-        for (PropertyDescriptor descriptor : cpf.getPropertyDescriptors()) {
-            if (descriptor.getPropertyType() == null || descriptor.getPropertyType() == Object.class) {
+        for (MetaProperty metaProperty : cpf.getMetaProperties()) {
+            PropertyDescriptor propertyDescriptor = propertyFactory.createPropertyDescriptor(metaProperty);
+            if(propertyDescriptor == null) {
+                continue;
+            }
+            Class propertyType = metaProperty.getType();
+            if (propertyType == null || propertyType == Object.class) {
                 // indexed property
                 continue;
             }
-            if (descriptor.getReadMethod() == null || descriptor.getWriteMethod() == null) {
+            if (propertyDescriptor.getReadMethod() == null || propertyDescriptor.getWriteMethod() == null) {
                 // non-persistent getter or setter
                 continue;
             }
-            final String propertyName = descriptor.getName();
+            final String propertyName = metaProperty.getName();
             if (propertyName.equals(VERSION) && !entity.isVersioned()) {
                 continue;
             }
@@ -170,27 +177,26 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 continue;
             }
             if (isExcludedProperty(propertyName, classMapping, transients, includeIdentifiers)) continue;
-            Class<?> propertyType = descriptor.getPropertyType();
             Class currentPropType = propertyType;
             // establish if the property is a one-to-many
             // if it is a Set and there are relationships defined
             // and it is defined as persistent
             if (embedded.contains(propertyName)) {
                 if (isCollectionType(currentPropType)) {
-                    final Association association = establishRelationshipForCollection(descriptor, entity, context, hasManyMap, mappedByMap, true);
+                    final Association association = establishRelationshipForCollection(propertyDescriptor, entity, context, hasManyMap, mappedByMap, true);
                     if (association != null) {
                         persistentProperties.add(association);
                     }
                 }
                 else {
-                    final ToOne association = establishDomainClassRelationship(entity, descriptor, context, hasOneMap, true);
+                    final ToOne association = establishDomainClassRelationship(entity, propertyDescriptor, context, hasOneMap, true);
                     if (association != null) {
                         persistentProperties.add(association);
                     }
                 }
             }
             else if (isCollectionType(currentPropType)) {
-                final Association association = establishRelationshipForCollection(descriptor, entity, context, hasManyMap, mappedByMap, false);
+                final Association association = establishRelationshipForCollection(propertyDescriptor, entity, context, hasManyMap, mappedByMap, false);
                 if (association != null) {
                     configureOwningSide(association);
                     persistentProperties.add(association);
@@ -198,20 +204,20 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             }
             // otherwise if the type is a domain class establish relationship
             else if (isPersistentEntity(currentPropType)) {
-                final ToOne association = establishDomainClassRelationship(entity, descriptor, context, hasOneMap, false);
+                final ToOne association = establishDomainClassRelationship(entity, propertyDescriptor, context, hasOneMap, false);
                 if (association != null) {
                     configureOwningSide(association);
                     persistentProperties.add(association);
                 }
             }
-            else if(propertyFactory.isTenantId(entity, context, descriptor)) {
-                persistentProperties.add(propertyFactory.createTenantId(entity, context, descriptor));
+            else if(propertyFactory.isTenantId(entity, context, propertyDescriptor)) {
+                persistentProperties.add(propertyFactory.createTenantId(entity, context, propertyDescriptor));
             }
             else if (propertyFactory.isSimpleType(propertyType)) {
-                persistentProperties.add(propertyFactory.createSimple(entity, context, descriptor));
+                persistentProperties.add(propertyFactory.createSimple(entity, context, propertyDescriptor));
             }
             else if (supportsCustomType(propertyType)) {
-                persistentProperties.add(propertyFactory.createCustom(entity, context, descriptor));
+                persistentProperties.add(propertyFactory.createCustom(entity, context, propertyDescriptor));
             }
         }
         return persistentProperties;
@@ -781,7 +787,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
 
     protected boolean isExcludedProperty(String propertyName, ClassMapping classMapping, Collection transients, boolean includeIdentifiers) {
         IdentityMapping id = classMapping != null ? classMapping.getIdentifier() : null;
-        String[] identifierName = id != null ? id.getIdentifierName() : null;
+        String[] identifierName = id != null && !includeIdentifiers ? id.getIdentifierName() : null;
         return isExcludeId(propertyName, id, identifierName,includeIdentifiers) ||
                 EXCLUDED_PROPERTIES.contains(propertyName) ||
                 transients.contains(propertyName);

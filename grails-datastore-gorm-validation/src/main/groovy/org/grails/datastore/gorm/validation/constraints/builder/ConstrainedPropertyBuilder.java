@@ -3,10 +3,7 @@ package org.grails.datastore.gorm.validation.constraints.builder;
 
 import grails.gorm.validation.ConstrainedProperty;
 import grails.gorm.validation.Constraint;
-import groovy.lang.GroovySystem;
-import groovy.lang.MetaClass;
-import groovy.lang.MissingMethodException;
-import groovy.lang.MissingPropertyException;
+import groovy.lang.*;
 import groovy.util.BuilderSupport;
 import org.grails.datastore.gorm.validation.constraints.registry.ConstraintRegistry;
 import grails.gorm.validation.DefaultConstrainedProperty;
@@ -19,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.InvalidPropertyException;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
@@ -162,14 +160,17 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
         Map importFromConstrainedProperties = new DefaultConstraintEvaluator(constraintRegistry,mappingContext, defaultConstraints )
                                                         .evaluate(importFromClazz);
 
-        PropertyDescriptor[] propertyDescriptors = classPropertyFetcher.getPropertyDescriptors();
+        List<MetaProperty> metaProperties = classPropertyFetcher.getMetaProperties();
 
         List toBeIncludedPropertyNamesParam = (List) attributes.get("include");
         List toBeExcludedPropertyNamesParam = (List) attributes.get("exclude");
 
         List<String> resultingPropertyNames = new ArrayList<>();
-        for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-            String propertyName = propertyDescriptor.getName();
+        for (MetaProperty metaProperty : metaProperties) {
+            if(Modifier.isStatic(metaProperty.getModifiers())) {
+                continue;
+            }
+            String propertyName = metaProperty.getName();
 
             if (toBeIncludedPropertyNamesParam == null) {
                 resultingPropertyNames.add(propertyName);

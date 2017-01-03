@@ -128,7 +128,7 @@ class GroovyProxyFactory implements ProxyFactory {
 
     @Override
     public boolean isInitialized(Object object, String associationName) {
-        final Object value = ClassPropertyFetcher.forClass(object.getClass()).getPropertyValue(associationName)
+        final Object value = ClassPropertyFetcher.getInstancePropertyValue(object, associationName)
         return value == null || isInitialized(value)
     }
 

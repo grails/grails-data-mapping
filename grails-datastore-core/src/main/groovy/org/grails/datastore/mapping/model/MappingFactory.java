@@ -14,8 +14,10 @@
  */
 package org.grails.datastore.mapping.model;
 
+import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
@@ -28,6 +30,10 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import groovy.lang.MetaBeanProperty;
+import groovy.lang.MetaMethod;
+import groovy.lang.MetaProperty;
+import org.codehaus.groovy.reflection.CachedMethod;
 import org.grails.datastore.mapping.config.Entity;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
@@ -236,6 +242,31 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             for (CustomTypeMarshaller marshaller : allMarshallers) {
                 if(marshaller.supports(context)) {
                     return marshaller;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Creates a PropertyDescriptor from a MetaBeanProperty
+     *
+     * @param property The bean property
+     * @return The descriptor or null
+     */
+    public PropertyDescriptor createPropertyDescriptor(MetaProperty property) {
+        int modifiers = property.getModifiers();
+        if(!Modifier.isStatic(modifiers)) {
+            if(property instanceof MetaBeanProperty) {
+                MetaBeanProperty beanProperty = (MetaBeanProperty) property;
+                MetaMethod getter = beanProperty.getGetter();
+                MetaMethod setter = beanProperty.getSetter();
+                if(getter instanceof CachedMethod && setter instanceof CachedMethod) {
+                    try {
+                        return new PropertyDescriptor(property.getName(), ((CachedMethod) getter).getCachedMethod(), ((CachedMethod) setter).getCachedMethod());
+                    } catch (IntrospectionException e) {
+                        return null;
+                    }
                 }
             }
         }

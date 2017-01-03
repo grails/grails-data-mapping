@@ -36,7 +36,7 @@ public class NotEqualConstraint extends AbstractConstraint {
                     constraintOwningClass + "] cannot be null");
         }
 
-        Class<?> propertyClass = ClassPropertyFetcher.forClass(constraintOwningClass).getPropertyType(constraintPropertyName);
+        Class<?> propertyClass = ClassPropertyFetcher.getPropertyType(constraintOwningClass, constraintPropertyName);
         if (!ClassUtils.isAssignableOrConvertibleFrom(constraintParameter.getClass(),propertyClass)  && propertyClass != null) {
             throw new IllegalArgumentException("Parameter for constraint [" +
                     ConstrainedProperty.NOT_EQUAL_CONSTRAINT + "] of property [" +

@@ -65,8 +65,7 @@ public abstract class Basic<T extends Property> extends ToMany<T> {
         }
 
         if(componentType == null) {
-            List<Map> maps = ClassPropertyFetcher.forClass(ownerClass)
-                                .getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.HAS_MANY, Map.class);
+            List<Map> maps = ClassPropertyFetcher.getStaticPropertyValuesFromInheritanceHierarchy(ownerClass, GormProperties.HAS_MANY, Map.class);
 
             for (Map map : maps) {
                 if(map.containsKey(getName())) {

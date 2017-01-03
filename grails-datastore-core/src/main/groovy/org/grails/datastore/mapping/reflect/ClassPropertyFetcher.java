@@ -14,24 +14,20 @@
  */
 package org.grails.datastore.mapping.reflect;
 
-import groovy.lang.MetaBeanProperty;
-import groovy.lang.MetaClass;
-import groovy.lang.MetaMethod;
-import groovy.lang.MetaProperty;
+import groovy.lang.*;
 import org.codehaus.groovy.reflection.CachedField;
 import org.codehaus.groovy.reflection.CachedMethod;
 import org.codehaus.groovy.reflection.ClassInfo;
+import org.codehaus.groovy.runtime.MetaClassHelper;
 import org.springframework.beans.BeanUtils;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -46,6 +42,8 @@ public class ClassPropertyFetcher {
     private final Class clazz;
     private final ClassInfo classInfo;
     private final MetaClass theMetaClass;
+    private final List<MetaProperty> metaProperties;
+    public static final Set EXCLUDED_PROPERTIES = new HashSet(Arrays.asList("class", "metaClass", "properties"));
 
     public static ClassPropertyFetcher forClass(final Class c) {
         return new ClassPropertyFetcher(c);
@@ -63,6 +61,22 @@ public class ClassPropertyFetcher {
         this.clazz = clazz;
         this.classInfo = ClassInfo.getClassInfo(clazz);
         this.theMetaClass = classInfo.getMetaClass();
+        List<MetaProperty> properties = theMetaClass.getProperties();
+        this.metaProperties = new ArrayList<>(properties.size());
+        for (MetaProperty property : properties) {
+            if(property instanceof MetaBeanProperty) {
+                int modifiers = property.getModifiers();
+                if(Modifier.isPublic(modifiers) && !Modifier.isStatic(modifiers)) {
+                    String propertyName = property.getName();
+                    if(EXCLUDED_PROPERTIES.contains(propertyName)) continue;
+
+                    MetaBeanProperty beanProperty = (MetaBeanProperty) property;
+                    if(beanProperty.getGetter() instanceof CachedMethod) {
+                        this.metaProperties.add(property);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -95,8 +109,8 @@ public class ClassPropertyFetcher {
     /**
      * @return The meta properties of this class
      */
-    public List<MetaProperty> getProperties() {
-        return theMetaClass.getProperties();
+    public List<MetaProperty> getMetaProperties() {
+        return metaProperties;
     }
 
     public boolean isReadableProperty(String name) {
@@ -109,23 +123,64 @@ public class ClassPropertyFetcher {
     }
 
     public Object getPropertyValue(String name) {
+        MetaClass theMetaClass = this.theMetaClass;
+        return getStaticPropertyValue(theMetaClass, name);
+    }
+
+    private static Object getStaticPropertyValue(MetaClass theMetaClass, String name) {
         MetaProperty metaProperty = theMetaClass.getMetaProperty(name);
         if(metaProperty != null && Modifier.isStatic(metaProperty.getModifiers())) {
-            return metaProperty.getProperty(classInfo.getCachedClass().getTheClass());
+            return metaProperty.getProperty(theMetaClass.getTheClass());
         }
         return null;
     }
 
     public Object getPropertyValue(final Object instance, String name) {
-        MetaProperty metaProperty = theMetaClass.getMetaProperty(name);
+        MetaClass metaClass = this.theMetaClass;
+        return getInstancePropertyValue(instance, name, metaClass);
+    }
+
+    public static Object getInstancePropertyValue(Object instance, String name) {
+        return getInstancePropertyValue(instance, name, GroovySystem.getMetaClassRegistry().getMetaClass(instance.getClass()));
+    }
+
+    private static Object getInstancePropertyValue(Object instance, String name, MetaClass metaClass) {
+        MetaProperty metaProperty = metaClass.getMetaProperty(name);
         if(metaProperty != null && !Modifier.isStatic(metaProperty.getModifiers())) {
-            return metaProperty.getProperty(instance);
+            if(metaProperty instanceof MetaBeanProperty) {
+                MetaBeanProperty beanProperty = (MetaBeanProperty) metaProperty;
+                CachedField field = beanProperty.getField();
+                if(field != null) {
+                    return field.getProperty(instance);
+                }
+                else {
+                    MetaMethod getter = beanProperty.getGetter();
+                    if(getter instanceof CachedMethod) {
+                        return getter.invoke(instance, MetaClassHelper.EMPTY_ARRAY);
+                    }
+                    else {
+                        // take the slow path and reflect
+                        Method method = org.springframework.util.ReflectionUtils.findMethod(instance.getClass(), NameUtils.getGetterName(name));
+                        if(method != null) {
+                            org.springframework.util.ReflectionUtils.makeAccessible(method);
+                            return org.springframework.util.ReflectionUtils.invokeMethod(method, instance);
+                        }
+                    }
+                }
+            }
+            else {
+                return metaProperty.getProperty(instance);
+            }
         }
         return null;
     }
 
     public <T> T getStaticPropertyValue(String name, Class<T> c) {
         return returnOnlyIfInstanceOf(getPropertyValue(name), c);
+    }
+
+    public static <T> T getStaticPropertyValue(Class clazz, String name, Class<T> requiredType) {
+        return returnOnlyIfInstanceOf(getStaticPropertyValue(GroovySystem.getMetaClassRegistry().getMetaClass(clazz), name), requiredType);
     }
 
     /**
@@ -139,19 +194,35 @@ public class ClassPropertyFetcher {
      * @return The list, with 0+ values (never null). Do not modify the returned list.
      */
     public <T> List<T> getStaticPropertyValuesFromInheritanceHierarchy(String name, Class<T> c) {
+        ClassInfo classInfo = this.classInfo;
+        return getStaticPropertyValuesFromInheritanceHierarchy(classInfo, name, c);
+    }
+
+    /**
+     * Get the list of property values for this static property from the whole inheritance hierarchy, starting
+     * from the most derived version of the property ending with the base class. There are entries for each extant
+     * version of the property in turn, so if you have a 10-deep inheritance hierarchy, you may get 0+ values returned,
+     * one per class in the hierarchy that has the property declared (and of the correct type).
+     * @param name Name of the property.
+     * @param requiredTyped Required type of the property (including derived types)
+     * @param <T> Required type of the property.
+     * @return The list, with 0+ values (never null). Do not modify the returned list.
+     */
+    public static <T> List<T> getStaticPropertyValuesFromInheritanceHierarchy(Class theClass, String name, Class<T> requiredTyped) {
+        return getStaticPropertyValuesFromInheritanceHierarchy(ClassInfo.getClassInfo(theClass), name, requiredTyped);
+    }
+
+    private static <T> List<T> getStaticPropertyValuesFromInheritanceHierarchy(ClassInfo classInfo, String name, Class<T> c) {
         Collection<ClassInfo> hierarchy = classInfo.getCachedClass().getHierarchy();
-        List<T> values = new ArrayList<>(4);
+        List<T> values = new ArrayList<>(hierarchy.size());
         for (ClassInfo current : hierarchy) {
+            if(current.getCachedClass().isInterface()) continue;
             MetaProperty metaProperty = current.getMetaClass().getMetaProperty(name);
-            if(metaProperty != null) {
+            if(metaProperty != null && Modifier.isStatic(metaProperty.getModifiers())) {
                 Object val = metaProperty.getProperty(current.getCachedClass().getTheClass());
                 if(c.isInstance(val)) {
                     values.add((T) val);
                 }
-            }
-            else {
-                // reached a super class that doesn't have the property
-                break;
             }
         }
         Collections.reverse(values);
@@ -170,10 +241,10 @@ public class ClassPropertyFetcher {
         MetaProperty metaProperty = theMetaClass.getMetaProperty(name);
         if(metaProperty != null) {
             boolean isStatic = Modifier.isStatic(metaProperty.getModifiers());
-            if(onlyInstanceProperties && !isStatic) {
-                return metaProperty.getType();
+            if(onlyInstanceProperties && isStatic) {
+                return null;
             }
-            else if(!onlyInstanceProperties && isStatic) {
+            else {
                 return metaProperty.getType();
             }
         }
@@ -242,7 +313,7 @@ public class ClassPropertyFetcher {
         List<PropertyDescriptor> propertyDescriptors = new ArrayList<>(2);
         for (MetaProperty property : properties) {
             int modifiers = property.getModifiers();
-            if(Modifier.isStatic(modifiers) || property.getName().contains("$") || !property.getType().equals(assignableType)) continue;
+            if(Modifier.isStatic(modifiers) || property.getName().contains("$") || !property.getType().isAssignableFrom( assignableType )) continue;
             addBeanProperty(propertyDescriptors, property);
         }
         return propertyDescriptors;
@@ -260,7 +331,7 @@ public class ClassPropertyFetcher {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T returnOnlyIfInstanceOf(Object value, Class<T> type) {
+    private static <T> T returnOnlyIfInstanceOf(Object value, Class<T> type) {
         if (value != null && (type == Object.class || ReflectionUtils.isAssignableFrom(type, value.getClass()))) {
             return (T)value;
         }
@@ -292,5 +363,13 @@ public class ClassPropertyFetcher {
 
             }
         }
+    }
+
+    public static Class<?> getPropertyType(Class<?> cls, String propertyName) {
+        MetaProperty metaProperty = GroovySystem.getMetaClassRegistry().getMetaClass(cls).getMetaProperty(propertyName);
+        if(metaProperty != null) {
+            return metaProperty.getType();
+        }
+        return null;
     }
 }

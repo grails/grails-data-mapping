@@ -1,5 +1,6 @@
 package org.grails.datastore.mapping.model.config;
 
+import groovy.lang.MetaProperty;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.model.*;
@@ -16,6 +17,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import javax.persistence.*;
 
@@ -39,8 +41,10 @@ public class JpaMappingConfigurationStrategy extends GormMappingConfigurationStr
         final List<PersistentProperty> persistentProperties = new ArrayList<PersistentProperty>();
         ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
 
-        for (PropertyDescriptor descriptor : cpf.getPropertyDescriptors()) {
-            if (descriptor.getPropertyType() == null || descriptor.getPropertyType() == Object.class) {
+        for (MetaProperty metaProperty : cpf.getMetaProperties()) {
+            PropertyDescriptor descriptor = propertyFactory.createPropertyDescriptor(metaProperty);
+
+            if (descriptor == null || descriptor.getPropertyType() == null || descriptor.getPropertyType() == Object.class) {
                 // indexed property
                 continue;
             }
@@ -62,18 +66,18 @@ public class JpaMappingConfigurationStrategy extends GormMappingConfigurationStr
             if (hasAnnotation(readMethod, field, Transient.class)) {
                 continue;
             }
-            if (hasAnnotation(readMethod, field, Id.class)) {
-                continue;
-            }
-            if (hasAnnotation(readMethod, field, EmbeddedId.class)) {
-                continue;
-            }
 
             if (isExcludedProperty(propertyName, classMapping, new ArrayList<>(), includeIdentifiers)) continue;
 
             Class<?> propertyType = descriptor.getPropertyType();
 
-            if (getAnnotation(readMethod, field, Embedded.class) != null) {
+            if(getAnnotation(readMethod, field, Id.class) != null) {
+                persistentProperties.add( propertyFactory.createIdentity(entity, context, descriptor));
+            }
+            else if(getAnnotation(readMethod, field, EmbeddedId.class) != null) {
+                persistentProperties.add( propertyFactory.createIdentity(entity, context, descriptor));
+            }
+            else if (getAnnotation(readMethod, field, Embedded.class) != null) {
                 if (isCollectionType(propertyType)) {
                     final Association association = establishRelationshipForCollection(descriptor, field, entity, context, true);
                     if (association != null) {
@@ -279,33 +283,47 @@ public class JpaMappingConfigurationStrategy extends GormMappingConfigurationStr
     @Override
     public IdentityMapping getIdentityMapping(final ClassMapping classMapping) {
 
-        PersistentEntity entity = classMapping.getEntity();
+        final PersistentEntity entity = classMapping.getEntity();
 
         if (!isJpaEntity(entity.getJavaClass())) {
             return super.getIdentityMapping(classMapping);
         }
 
-        final List<String> idProperties = new ArrayList<>();
-
-        ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
-
-        for (PropertyDescriptor descriptor : cpf.getPropertyDescriptors()) {
-            if (hasAnnotation(cpf, descriptor, Id.class)) {
-                idProperties.add(descriptor.getName());
-            }
-            else if (hasAnnotation(cpf, descriptor, EmbeddedId.class)) {
-                idProperties.add(descriptor.getName());
-            }
-        }
-
-        if(idProperties.isEmpty()) {
-            // default to just use 'id'
-            idProperties.add(GormProperties.IDENTITY);
-        }
-
         return new IdentityMapping() {
+            String[] idPropertiesArray;
+
             public String[] getIdentifierName() {
-                return idProperties.toArray(new String[idProperties.size()]);
+                if(idPropertiesArray != null) {
+                    return idPropertiesArray;
+                }
+
+                List<String> idProperties = new ArrayList<>();
+
+                ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
+
+                for (MetaProperty metaProperty : cpf.getMetaProperties()) {
+                    int modifiers = metaProperty.getModifiers();
+                    if(Modifier.isStatic(modifiers) || Modifier.isAbstract(modifiers)) {
+                        continue;
+                    }
+                    PropertyDescriptor pd = propertyFactory.createPropertyDescriptor(metaProperty);
+                    if(pd != null) {
+
+                        if (hasAnnotation(cpf, pd, Id.class)) {
+                            idProperties.add(metaProperty.getName());
+                        }
+                        else if (hasAnnotation(cpf, pd, EmbeddedId.class)) {
+                            idProperties.add(metaProperty.getName());
+                        }
+                    }
+                }
+
+                if(idProperties.isEmpty()) {
+                    // default to just use 'id'
+                    idProperties.add(GormProperties.IDENTITY);
+                }
+                idPropertiesArray = idProperties.toArray(new String[idProperties.size()]);
+                return idPropertiesArray;
             }
 
             @Override
@@ -342,16 +360,8 @@ public class JpaMappingConfigurationStrategy extends GormMappingConfigurationStr
         if (readMethod != null && readMethod.isAnnotationPresent(type)) {
             return true;
         }
-        Field field;
-        try {
-            field = cpf.getDeclaredField(descriptor.getName());
-        } catch (Exception e) {
-            field = null;
-        }
-        if (field != null && field.isAnnotationPresent(type)) {
-            return true;
-        }
-        return false;
+        Field field = cpf.getDeclaredField(descriptor.getName());
+        return field != null && field.isAnnotationPresent(type);
     }
 
     <A extends Annotation> A getAnnotation(ClassPropertyFetcher cpf, PropertyDescriptor descriptor, Class<A> type) {
@@ -359,12 +369,7 @@ public class JpaMappingConfigurationStrategy extends GormMappingConfigurationStr
         if (readMethod != null && readMethod.isAnnotationPresent(type)) {
             return readMethod.getAnnotation(type);
         }
-        Field field;
-        try {
-            field = cpf.getDeclaredField(descriptor.getName());
-        } catch (Exception e) {
-            field = null;
-        }
+        Field field = cpf.getDeclaredField(descriptor.getName());
         if (field != null && field.isAnnotationPresent(type)) {
             return field.getAnnotation(type);
         }

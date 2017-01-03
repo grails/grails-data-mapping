@@ -53,7 +53,7 @@ public class DefaultConstraintEvaluator implements ConstraintsEvaluator {
     public Map<String, ConstrainedProperty> evaluate(@SuppressWarnings("rawtypes") Class theClass, boolean defaultNullable) {
         ConstrainedPropertyBuilder delegate = new ConstrainedPropertyBuilder(this.mappingContext, this.constraintRegistry, theClass, defaultConstraints);
 
-        List<Closure> constraints = ClassPropertyFetcher.forClass(theClass).getStaticPropertyValuesFromInheritanceHierarchy(PROPERTY_NAME, Closure.class);
+        List<Closure> constraints = ClassPropertyFetcher.getStaticPropertyValuesFromInheritanceHierarchy(theClass, PROPERTY_NAME, Closure.class);
         // Evaluate all the constraints closures in the inheritance chain
         for (Closure c : constraints) {
 
