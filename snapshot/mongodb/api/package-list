@@ -18,7 +18,6 @@ org.grails.datastore.bson.codecs.encoders
 org.grails.datastore.bson.json
 org.grails.datastore.bson.query
 org.grails.datastore.gorm
-org.grails.datastore.gorm.async
 org.grails.datastore.gorm.bootstrap
 org.grails.datastore.gorm.bootstrap.support
 org.grails.datastore.gorm.events
