@@ -63,7 +63,11 @@ public abstract class AbstractPersistentProperty<T extends Property> implements 
 
     @Override
     public String toString() {
-        return getName() + ":" + getType().getName();
+        String mappingType = getClass().getName();
+        if(mappingType.contains("$")) {
+            mappingType = getClass().getSuperclass().getName();
+        }
+        return getName() + ":" + getType().getName() + " ("+mappingType+")";
     }
 
     public boolean isNullable() {
@@ -96,4 +100,6 @@ public abstract class AbstractPersistentProperty<T extends Property> implements 
 
         return inherited;
     }
+
+
 }

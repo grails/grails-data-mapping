@@ -15,10 +15,12 @@
 package org.grails.datastore.mapping.reflect;
 
 import groovy.lang.*;
+import org.codehaus.groovy.reflection.CachedClass;
 import org.codehaus.groovy.reflection.CachedField;
 import org.codehaus.groovy.reflection.CachedMethod;
 import org.codehaus.groovy.reflection.ClassInfo;
 import org.codehaus.groovy.runtime.MetaClassHelper;
+import org.codehaus.groovy.runtime.metaclass.MultipleSetterProperty;
 import org.springframework.beans.BeanUtils;
 
 import java.beans.IntrospectionException;
@@ -64,15 +66,37 @@ public class ClassPropertyFetcher {
         List<MetaProperty> properties = theMetaClass.getProperties();
         this.metaProperties = new ArrayList<>(properties.size());
         for (MetaProperty property : properties) {
-            if(property instanceof MetaBeanProperty) {
-                int modifiers = property.getModifiers();
-                if(Modifier.isPublic(modifiers) && !Modifier.isStatic(modifiers)) {
-                    String propertyName = property.getName();
-                    if(EXCLUDED_PROPERTIES.contains(propertyName)) continue;
+            int modifiers = property.getModifiers();
+            String propertyName = property.getName();
+            if(!Modifier.isPublic(modifiers) || Modifier.isStatic(modifiers) || EXCLUDED_PROPERTIES.contains(propertyName)) {
+                continue;
+            }
 
-                    MetaBeanProperty beanProperty = (MetaBeanProperty) property;
-                    if(beanProperty.getGetter() instanceof CachedMethod) {
-                        this.metaProperties.add(property);
+            if(property instanceof MetaBeanProperty) {
+                MetaBeanProperty beanProperty = (MetaBeanProperty) property;
+                MetaMethod getter = beanProperty.getGetter();
+                if(getter instanceof CachedMethod) {
+                    this.metaProperties.add(property);
+                }
+            }
+            else if(property instanceof MultipleSetterProperty) {
+                MultipleSetterProperty msp = (MultipleSetterProperty) property;
+                MetaMethod getter = msp.getGetter();
+                if(getter instanceof CachedMethod) {
+                    try {
+                        CachedClass cachedClass = classInfo.getCachedClass();
+                        Method foundGetter = clazz.getDeclaredMethod(NameUtils.getGetterName(propertyName));
+                        if(foundGetter != null) {
+
+                            getter = new CachedMethod(cachedClass, foundGetter);
+                            Method foundSetter = clazz.getDeclaredMethod(NameUtils.getSetterName(propertyName), getter.getReturnType());
+                            if(foundSetter != null) {
+                                MetaMethod setter = new CachedMethod(cachedClass, foundSetter);
+                                this.metaProperties.add(new MetaBeanProperty(msp.getName(), clazz, getter, setter));
+                            }
+                        }
+                    } catch (NoSuchMethodException e) {
+                        // ignore
                     }
                 }
             }
@@ -142,37 +166,6 @@ public class ClassPropertyFetcher {
 
     public static Object getInstancePropertyValue(Object instance, String name) {
         return getInstancePropertyValue(instance, name, GroovySystem.getMetaClassRegistry().getMetaClass(instance.getClass()));
-    }
-
-    private static Object getInstancePropertyValue(Object instance, String name, MetaClass metaClass) {
-        MetaProperty metaProperty = metaClass.getMetaProperty(name);
-        if(metaProperty != null && !Modifier.isStatic(metaProperty.getModifiers())) {
-            if(metaProperty instanceof MetaBeanProperty) {
-                MetaBeanProperty beanProperty = (MetaBeanProperty) metaProperty;
-                CachedField field = beanProperty.getField();
-                if(field != null) {
-                    return field.getProperty(instance);
-                }
-                else {
-                    MetaMethod getter = beanProperty.getGetter();
-                    if(getter instanceof CachedMethod) {
-                        return getter.invoke(instance, MetaClassHelper.EMPTY_ARRAY);
-                    }
-                    else {
-                        // take the slow path and reflect
-                        Method method = org.springframework.util.ReflectionUtils.findMethod(instance.getClass(), NameUtils.getGetterName(name));
-                        if(method != null) {
-                            org.springframework.util.ReflectionUtils.makeAccessible(method);
-                            return org.springframework.util.ReflectionUtils.invokeMethod(method, instance);
-                        }
-                    }
-                }
-            }
-            else {
-                return metaProperty.getProperty(instance);
-            }
-        }
-        return null;
     }
 
     public <T> T getStaticPropertyValue(String name, Class<T> c) {
@@ -253,27 +246,70 @@ public class ClassPropertyFetcher {
 
     public PropertyDescriptor getPropertyDescriptor(String name) {
         MetaProperty property = theMetaClass.getMetaProperty(name);
-        if(property instanceof MetaBeanProperty) {
-            MetaBeanProperty beanProperty = (MetaBeanProperty) property;
-            MetaMethod getter = beanProperty.getGetter();
-            MetaMethod setter = beanProperty.getSetter();
-            if(getter instanceof CachedMethod && setter instanceof CachedMethod) {
-                CachedMethod cachedGetter = (CachedMethod) getter;
-                CachedMethod cachedSetter = (CachedMethod) setter;
-                try {
-                    return new PropertyDescriptor(beanProperty.getName(), cachedGetter.getCachedMethod(), cachedSetter.getCachedMethod());
-                } catch (IntrospectionException e) {
-                    // ignore
+        if(property  != null) {
+            return createPropertyDescriptor(clazz, property);
+        }
+        return null;
+    }
+
+    /**
+     * Creates a PropertyDescriptor from a MetaBeanProperty
+     *
+     * @param property The bean property
+     * @return The descriptor or null
+     */
+    public static PropertyDescriptor createPropertyDescriptor(Class declaringClass, MetaProperty property) {
+        int modifiers = property.getModifiers();
+        if(!Modifier.isStatic(modifiers)) {
+            String propertyName = property.getName();
+            if(property instanceof MetaBeanProperty) {
+                MetaBeanProperty beanProperty = (MetaBeanProperty) property;
+                MetaMethod getter = beanProperty.getGetter();
+                MetaMethod setter = beanProperty.getSetter();
+                if(getter instanceof CachedMethod && setter instanceof CachedMethod) {
+                    try {
+                        return new PropertyDescriptor(propertyName, ((CachedMethod) getter).getCachedMethod(), ((CachedMethod) setter).getCachedMethod());
+                    } catch (IntrospectionException e) {
+                        return null;
+                    }
+                }
+                else if(getter instanceof CachedMethod) {
+                    try {
+                        return new PropertyDescriptor(propertyName, ((CachedMethod) getter).getCachedMethod(), null);
+                    } catch (IntrospectionException e) {
+                        return null;
+                    }
                 }
             }
-            else if(getter instanceof CachedMethod) {
-                CachedMethod cachedGetter = (CachedMethod) getter;
-                try {
-                    return new PropertyDescriptor(beanProperty.getName(), cachedGetter.getCachedMethod(), null);
-                } catch (IntrospectionException e) {
-                    // ignore
-                }
+            else if(property instanceof MultipleSetterProperty) {
+                MultipleSetterProperty msp = (MultipleSetterProperty) property;
 
+                MetaMethod getter = msp.getGetter();
+                if(getter instanceof CachedMethod) {
+                    try {
+                        Method foundGetter = declaringClass.getDeclaredMethod(NameUtils.getGetterName(propertyName));
+                        if(foundGetter != null) {
+
+                            Method foundSetter = declaringClass.getDeclaredMethod(NameUtils.getSetterName(propertyName), getter.getReturnType());
+                            if(foundSetter != null) {
+                                try {
+                                    return new PropertyDescriptor(propertyName, foundGetter, foundSetter);
+                                } catch (IntrospectionException e) {
+                                    return null;
+                                }
+                            }
+                            else {
+                                try {
+                                    return new PropertyDescriptor(propertyName, foundGetter, null);
+                                } catch (IntrospectionException e) {
+                                    return null;
+                                }
+                            }
+                        }
+                    } catch (NoSuchMethodException e) {
+                        // ignore
+                    }
+                }
             }
         }
         return null;
@@ -319,6 +355,14 @@ public class ClassPropertyFetcher {
         return propertyDescriptors;
     }
 
+    public static Class<?> getPropertyType(Class<?> cls, String propertyName) {
+        MetaProperty metaProperty = GroovySystem.getMetaClassRegistry().getMetaClass(cls).getMetaProperty(propertyName);
+        if(metaProperty != null) {
+            return metaProperty.getType();
+        }
+        return null;
+    }
+
     public Field getDeclaredField(String name) {
         MetaProperty metaProperty = theMetaClass.getMetaProperty(name);
         if(metaProperty instanceof MetaBeanProperty) {
@@ -327,13 +371,12 @@ public class ClassPropertyFetcher {
                 return field.field;
             }
         }
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> T returnOnlyIfInstanceOf(Object value, Class<T> type) {
-        if (value != null && (type == Object.class || ReflectionUtils.isAssignableFrom(type, value.getClass()))) {
-            return (T)value;
+        else if(metaProperty instanceof MultipleSetterProperty) {
+            MultipleSetterProperty msp = (MultipleSetterProperty) metaProperty;
+            CachedField field = msp.getField();
+            if(field != null) {
+                return field.field;
+            }
         }
         return null;
     }
@@ -365,10 +408,54 @@ public class ClassPropertyFetcher {
         }
     }
 
-    public static Class<?> getPropertyType(Class<?> cls, String propertyName) {
-        MetaProperty metaProperty = GroovySystem.getMetaClassRegistry().getMetaClass(cls).getMetaProperty(propertyName);
-        if(metaProperty != null) {
-            return metaProperty.getType();
+    @SuppressWarnings("unchecked")
+    private static <T> T returnOnlyIfInstanceOf(Object value, Class<T> type) {
+        if (value != null && (type == Object.class || ReflectionUtils.isAssignableFrom(type, value.getClass()))) {
+            return (T)value;
+        }
+        return null;
+    }
+
+    private static Object getInstancePropertyValue(Object instance, String name, MetaClass metaClass) {
+        MetaProperty metaProperty = metaClass.getMetaProperty(name);
+        if(metaProperty != null && !Modifier.isStatic(metaProperty.getModifiers())) {
+            if(metaProperty instanceof MetaBeanProperty) {
+                MetaBeanProperty beanProperty = (MetaBeanProperty) metaProperty;
+                CachedField field = beanProperty.getField();
+                MetaMethod getter = beanProperty.getGetter();
+                Object result = getPropertyWithFieldOrGetter(instance, name, field, getter);
+                if (result != null) return result;
+            }
+            else if(metaProperty instanceof MultipleSetterProperty) {
+                MultipleSetterProperty msp = (MultipleSetterProperty) metaProperty;
+                CachedField field = msp.getField();
+                MetaMethod getter = msp.getGetter();
+                Object result = getPropertyWithFieldOrGetter(instance, name, field, getter);
+                if (result != null) return result;
+            }
+            else {
+                return metaProperty.getProperty(instance);
+            }
+        }
+        return null;
+    }
+
+    private static Object getPropertyWithFieldOrGetter(Object instance, String name, CachedField field, MetaMethod getter) {
+        if(field != null) {
+            return field.getProperty(instance);
+        }
+        else {
+            if(getter instanceof CachedMethod) {
+                return getter.invoke(instance, MetaClassHelper.EMPTY_ARRAY);
+            }
+            else {
+                // take the slow path and reflect
+                Method method = org.springframework.util.ReflectionUtils.findMethod(instance.getClass(), NameUtils.getGetterName(name));
+                if(method != null) {
+                    org.springframework.util.ReflectionUtils.makeAccessible(method);
+                    return org.springframework.util.ReflectionUtils.invokeMethod(method, instance);
+                }
+            }
         }
         return null;
     }

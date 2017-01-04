@@ -34,15 +34,16 @@ public class JpaMappingConfigurationStrategy extends GormMappingConfigurationStr
 
     @Override
     public List<PersistentProperty> getPersistentProperties(PersistentEntity entity, MappingContext context, ClassMapping classMapping, boolean includeIdentifiers) {
-        if (!isJpaEntity(entity.getJavaClass())) {
+        Class entityClass = entity.getJavaClass();
+        if (!isJpaEntity(entityClass)) {
             return super.getPersistentProperties(entity, context, classMapping, includeIdentifiers);
         }
 
         final List<PersistentProperty> persistentProperties = new ArrayList<PersistentProperty>();
-        ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
+        ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entityClass);
 
         for (MetaProperty metaProperty : cpf.getMetaProperties()) {
-            PropertyDescriptor descriptor = propertyFactory.createPropertyDescriptor(metaProperty);
+            PropertyDescriptor descriptor = propertyFactory.createPropertyDescriptor(entityClass, metaProperty);
 
             if (descriptor == null || descriptor.getPropertyType() == null || descriptor.getPropertyType() == Object.class) {
                 // indexed property
@@ -306,7 +307,7 @@ public class JpaMappingConfigurationStrategy extends GormMappingConfigurationStr
                     if(Modifier.isStatic(modifiers) || Modifier.isAbstract(modifiers)) {
                         continue;
                     }
-                    PropertyDescriptor pd = propertyFactory.createPropertyDescriptor(metaProperty);
+                    PropertyDescriptor pd = propertyFactory.createPropertyDescriptor(entity.getJavaClass(), metaProperty);
                     if(pd != null) {
 
                         if (hasAnnotation(cpf, pd, Id.class)) {

@@ -204,14 +204,12 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
             }
 
 
-            final PersistentProperty idProp = identity != null ? identity : getPropertyByName(GormProperties.IDENTITY);
-            if(idProp != null) {
+            if(identity != null) {
+                PersistentProperty idProp = propertiesByName.get(identity.getName());
                 persistentProperties.remove(idProp);
                 persistentPropertyNames.remove(idProp.getName());
                 if(!idProp.getName().equals(GormProperties.IDENTITY)) {
-                    PersistentProperty otherId = getPropertyByName(GormProperties.IDENTITY);
-                    persistentProperties.remove(otherId);
-                    persistentPropertyNames.remove(GormProperties.IDENTITY);
+                    disableDefaultId();
                 }
             }
             IdentityMapping identifier = mapping != null ? mapping.getIdentifier() : null;
@@ -221,7 +219,6 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
                 final MappingContext mappingContext = getMappingContext();
                 if(identifierName.length > 1) {
                     compositeIdentity = mappingContext.getMappingSyntaxStrategy().getCompositeIdentity(javaClass, mappingContext);
-
                 }
                 for (String in : identifierName) {
                     final PersistentProperty p = propertiesByName.get(in);
@@ -230,6 +227,7 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
                     }
                     persistentPropertyNames.remove(in);
                 }
+                disableDefaultId();
             }
         }
 
@@ -237,6 +235,14 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
 
         propertiesInitialized = true;
         this.entityReflector = getMappingContext().getEntityReflector(this);
+    }
+
+    private void disableDefaultId() {
+        PersistentProperty otherId = getPropertyByName(GormProperties.IDENTITY);
+        if(otherId != null) {
+            persistentProperties.remove(otherId);
+            persistentPropertyNames.remove(GormProperties.IDENTITY);
+        }
     }
 
     @Override
@@ -261,14 +267,7 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     }
 
     protected PersistentProperty resolveIdentifier() {
-        PersistentProperty identity = context.getMappingSyntaxStrategy().getIdentity(javaClass, context);
-        if(identity != null) {
-            PersistentProperty resolvedId = getPropertyByName(identity.getName());
-            if(resolvedId != null) {
-                identity = resolvedId;
-            }
-        }
-        return identity;
+        return context.getMappingSyntaxStrategy().getIdentity(javaClass, context);
     }
 
     public boolean hasProperty(String name, Class type) {

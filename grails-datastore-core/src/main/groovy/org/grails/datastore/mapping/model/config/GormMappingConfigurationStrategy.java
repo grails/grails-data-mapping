@@ -154,7 +154,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         Map hasOneMap = getAssociationMap(cpf, HAS_ONE);
 
         for (MetaProperty metaProperty : cpf.getMetaProperties()) {
-            PropertyDescriptor propertyDescriptor = propertyFactory.createPropertyDescriptor(metaProperty);
+            PropertyDescriptor propertyDescriptor = propertyFactory.createPropertyDescriptor(entity.getJavaClass(), metaProperty);
             if(propertyDescriptor == null) {
                 continue;
             }

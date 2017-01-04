@@ -17,6 +17,7 @@ package org.grails.datastore.mapping.model;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -34,11 +35,15 @@ import groovy.lang.MetaBeanProperty;
 import groovy.lang.MetaMethod;
 import groovy.lang.MetaProperty;
 import org.codehaus.groovy.reflection.CachedMethod;
+import org.codehaus.groovy.runtime.metaclass.MultipleSetterProperty;
 import org.grails.datastore.mapping.config.Entity;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.model.types.*;
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
+import org.grails.datastore.mapping.reflect.NameUtils;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * <p>An abstract factory for creating persistent property instances.</p>
@@ -254,23 +259,8 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
      * @param property The bean property
      * @return The descriptor or null
      */
-    public PropertyDescriptor createPropertyDescriptor(MetaProperty property) {
-        int modifiers = property.getModifiers();
-        if(!Modifier.isStatic(modifiers)) {
-            if(property instanceof MetaBeanProperty) {
-                MetaBeanProperty beanProperty = (MetaBeanProperty) property;
-                MetaMethod getter = beanProperty.getGetter();
-                MetaMethod setter = beanProperty.getSetter();
-                if(getter instanceof CachedMethod && setter instanceof CachedMethod) {
-                    try {
-                        return new PropertyDescriptor(property.getName(), ((CachedMethod) getter).getCachedMethod(), ((CachedMethod) setter).getCachedMethod());
-                    } catch (IntrospectionException e) {
-                        return null;
-                    }
-                }
-            }
-        }
-        return null;
+    public PropertyDescriptor createPropertyDescriptor(Class declaringClass, MetaProperty property) {
+        return ClassPropertyFetcher.createPropertyDescriptor(declaringClass, property);
     }
 
     /**
