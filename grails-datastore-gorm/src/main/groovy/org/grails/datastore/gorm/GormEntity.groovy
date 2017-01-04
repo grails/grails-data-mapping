@@ -17,7 +17,6 @@ package org.grails.datastore.gorm
 
 import grails.gorm.DetachedCriteria
 import groovy.transform.CompileStatic
-import org.grails.datastore.gorm.async.GormAsyncStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.query.GormQueryOperations
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
@@ -566,13 +565,6 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      */
     static List<D> getAll(Serializable... ids) {
         currentGormStaticApi().getAll ids
-    }
-
-    /**
-     * @return The async version of the GORM static API
-     */
-    static GormAsyncStaticApi<D> getAsync() {
-        currentGormStaticApi().getAsync()
     }
 
     /**

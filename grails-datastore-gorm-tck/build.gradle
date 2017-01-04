@@ -44,6 +44,7 @@ dependencies {
         exclude group:'org.fusesource.jansi',module:'jansi'
         exclude group:'net.java.dev.jna',module:'jna'
     }
+    compile project(":grails-datastore-gorm-async")
     compile project(":grails-datastore-gorm-support")
     compile "junit:junit:$junitVersion"
     compile 'javax.servlet:javax.servlet-api:3.0.1'

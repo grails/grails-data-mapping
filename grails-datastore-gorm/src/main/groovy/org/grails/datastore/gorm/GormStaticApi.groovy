@@ -25,7 +25,6 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.grails.datastore.gorm.async.GormAsyncStaticApi
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.multitenancy.TenantDelegatingGormOperations
@@ -348,13 +347,6 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
         (List<D>)execute ({ Session session ->
            session.retrieveAll(persistentClass, ids.flatten())
         } as SessionCallback)
-    }
-
-    /**
-     * @return The async version of the GORM static API
-     */
-    GormAsyncStaticApi<D> getAsync() {
-        return new GormAsyncStaticApi<D>(this)
     }
 
     /**
