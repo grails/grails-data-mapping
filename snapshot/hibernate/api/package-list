@@ -16,7 +16,6 @@ grails.test.mixin.gorm
 grails.test.mixin.hibernate
 org.grails.compiler.gorm
 org.grails.datastore.gorm
-org.grails.datastore.gorm.async
 org.grails.datastore.gorm.boot.autoconfigure
 org.grails.datastore.gorm.boot.compiler
 org.grails.datastore.gorm.bootstrap
