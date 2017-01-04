@@ -1,5 +1,6 @@
 package org.grails.datastore.gorm.bootstrap
 
+import grails.gorm.annotation.Entity
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.events.ConfigurableApplicationContextEventPublisher
@@ -31,6 +32,7 @@ import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.core.io.support.ResourcePatternResolver
+import org.springframework.core.type.AnnotationMetadata
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory
 import org.springframework.util.ClassUtils
 
@@ -200,7 +202,8 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
         def resources = this.resourcePatternResolver.getResources(pattern)
         for (Resource res in resources) {
             def reader = readerFactory.getMetadataReader(res)
-            if (reader.annotationMetadata.hasAnnotation("grails.persistence.Entity")) {
+            def annotationMetadata = reader.annotationMetadata
+            if (annotationMetadata.hasAnnotation("grails.persistence.Entity") || annotationMetadata.hasAnnotation(Entity.name) || annotationMetadata.hasAnnotation(javax.persistence.Entity.name)) {
                 persistentClasses << classLoader.loadClass(reader.classMetadata.className)
             }
         }
