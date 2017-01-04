@@ -85,7 +85,7 @@ public class DomainEventListener extends AbstractPersistenceEventListener
         for (PersistentEntity entity : mappingContext.getPersistentEntities()) {
             createEventCaches(entity);
         }
-        autowireEntities = ((ConnectionSourcesProvider)datastore).getConnectionSources().getDefaultConnectionSource().getSettings().isAutowire();
+        autowireEntities = connectionSourcesProvider.getConnectionSources().getDefaultConnectionSource().getSettings().isAutowire();
         mappingContext.addMappingContextListener(this);
     }
 
