@@ -1,19 +1,9 @@
 dependencies {
     compile(project(":grails-datastore-gorm")) {
-        exclude group: 'org.grails', module:'grails-bootstrap'
-        exclude group: 'org.grails', module:'grails-core'
-        exclude group: 'org.grails', module:'grails-async'
-        exclude group: 'org.grails', module:'grails-plugin-testing'
-        exclude group: 'org.slf4j', module:'jcl-over-slf4j'
-        exclude group: 'org.slf4j', module:'jul-to-slf4j'
         exclude group: 'org.slf4j', module:'slf4j-api'
-        exclude group: 'org.slf4j', module:'slf4j-simple'
     }
 
-    compile(project(":grails-datastore-core")) {
-        exclude group: 'org.grails', module:'grails-plugin-testing'
-    }
-
+    compile(project(":grails-datastore-core"))
     compile "org.springframework:spring-jdbc:$springVersion", {
         exclude group: 'commons-logging', module:'commons-logging'
     }
@@ -22,7 +12,7 @@ dependencies {
     }
 
     compile 'javax.transaction:jta:1.1'
-    compile 'org.javassist:javassist:3.20.0-GA'
+    compile "org.javassist:javassist:$javassistVersion"
 
     String hibVersion = "${hibernateVersion}.Final"
 
@@ -65,10 +55,6 @@ dependencies {
         exclude group: 'commons-logging', module:'commons-logging'
     }
 
-    compile "org.grails:grails-async:$grailsVersion", {
-        exclude group:'io.projectreactor',module:'reactor-core'
-        exclude group:'io.projectreactor',module:'reactor-stream'
-    }
     testCompile("org.hibernate:hibernate-core:$hibVersion") {
         exclude group:'commons-logging', module:'commons-logging'
         exclude group:'dom4j', module:'dom4j'
