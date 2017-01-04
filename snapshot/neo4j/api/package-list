@@ -9,7 +9,6 @@ grails.neo4j.bootstrap
 grails.test.neo4j
 org.grails.compiler.gorm
 org.grails.datastore.gorm
-org.grails.datastore.gorm.async
 org.grails.datastore.gorm.bootstrap
 org.grails.datastore.gorm.bootstrap.support
 org.grails.datastore.gorm.events
