@@ -205,11 +205,17 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
 
 
             if(identity != null) {
-                PersistentProperty idProp = propertiesByName.get(identity.getName());
-                persistentProperties.remove(idProp);
-                persistentPropertyNames.remove(idProp.getName());
-                if(!idProp.getName().equals(GormProperties.IDENTITY)) {
-                    disableDefaultId();
+                String idName = identity.getName();
+                PersistentProperty idProp = propertiesByName.get(idName);
+                if(idProp == null) {
+                    propertiesByName.put(idName, identity);
+                }
+                else {
+                    persistentProperties.remove(idProp);
+                    persistentPropertyNames.remove(idProp.getName());
+                    if(!idProp.getName().equals(GormProperties.IDENTITY)) {
+                        disableDefaultId();
+                    }
                 }
             }
             IdentityMapping identifier = mapping != null ? mapping.getIdentifier() : null;
