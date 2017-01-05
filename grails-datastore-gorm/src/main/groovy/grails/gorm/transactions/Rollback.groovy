@@ -1,0 +1,29 @@
+package grails.gorm.transactions
+
+import org.codehaus.groovy.transform.GroovyASTTransformationClass
+
+import java.lang.annotation.Documented
+import java.lang.annotation.ElementType
+import java.lang.annotation.Inherited
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+import java.lang.annotation.Target
+
+/**
+ * A transforms that applies a transaction that always rolls back. Useful for testing. See {@link Transactional}
+ *
+ * @author Graeme Rocher
+ * @since 6.1
+ */
+@Target([ElementType.METHOD, ElementType.TYPE])
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+@GroovyASTTransformationClass("org.grails.datastore.gorm.transactions.transform.RollbackTransform")
+public @interface Rollback {
+    /**
+     * Whether or not the transaction for the annotated method should be rolled
+     * back after the method has completed.
+     */
+    boolean value() default true
+}

@@ -17,6 +17,7 @@
 package grails.gorm.transactions
 
 import groovy.transform.CompileStatic
+import org.grails.datastore.mapping.transactions.CustomizableRollbackTransactionAttribute
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.TransactionException
@@ -30,17 +31,18 @@ import org.springframework.transaction.support.TransactionCallback
  *
  * @author Kazuki YAMAMOTO
  * @author Graeme Rocher
- * @since 2.4
+ *
+ * @since 5.0
  */
 @CompileStatic
 class GrailsTransactionTemplate {
 
-    GrailsTransactionAttribute transactionAttribute
+    CustomizableRollbackTransactionAttribute transactionAttribute
 
     private org.springframework.transaction.support.TransactionTemplate transactionTemplate
 
     GrailsTransactionTemplate(PlatformTransactionManager transactionManager) {
-        this(transactionManager, new GrailsTransactionAttribute())
+        this(transactionManager, new CustomizableRollbackTransactionAttribute())
     }
 
     GrailsTransactionTemplate(PlatformTransactionManager transactionManager, TransactionDefinition transactionDefinition) {
@@ -48,10 +50,10 @@ class GrailsTransactionTemplate {
     }
 
     GrailsTransactionTemplate(PlatformTransactionManager transactionManager, TransactionAttribute transactionAttribute) {
-        this(transactionManager, transactionAttribute instanceof GrailsTransactionAttribute ? (GrailsTransactionAttribute)transactionAttribute : new GrailsTransactionAttribute(transactionAttribute));
+        this(transactionManager, transactionAttribute instanceof CustomizableRollbackTransactionAttribute ? (CustomizableRollbackTransactionAttribute)transactionAttribute : new CustomizableRollbackTransactionAttribute(transactionAttribute));
     }
 
-    GrailsTransactionTemplate(PlatformTransactionManager transactionManager, GrailsTransactionAttribute transactionAttribute) {
+    GrailsTransactionTemplate(PlatformTransactionManager transactionManager, CustomizableRollbackTransactionAttribute transactionAttribute) {
         this.transactionAttribute = transactionAttribute;
         this.transactionTemplate = new org.springframework.transaction.support.TransactionTemplate(transactionManager, this.transactionAttribute)
     }
@@ -101,7 +103,7 @@ class GrailsTransactionTemplate {
                         }
                     } finally {
                         boolean inheritRollbackOnly = true
-                        if(transactionAttribute instanceof GrailsTransactionAttribute) {
+                        if(transactionAttribute instanceof CustomizableRollbackTransactionAttribute) {
                             inheritRollbackOnly = transactionAttribute.isInheritRollbackOnly()
                         }
                         if(inheritRollbackOnly && status.isRollbackOnly()) {

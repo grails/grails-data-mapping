@@ -18,6 +18,7 @@ package org.grails.datastore.mapping.reflect
 import groovy.transform.CompileStatic
 import groovy.transform.Memoized
 import org.codehaus.groovy.ast.ASTNode
+import org.codehaus.groovy.ast.AnnotatedNode
 import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
@@ -28,14 +29,21 @@ import org.codehaus.groovy.ast.PropertyNode
 import org.codehaus.groovy.ast.expr.ArgumentListExpression
 import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.Expression
+import org.codehaus.groovy.ast.expr.MethodCallExpression
+import org.codehaus.groovy.classgen.VariableScopeVisitor
 import org.codehaus.groovy.control.Janitor
 import org.codehaus.groovy.control.SourceUnit
+import org.codehaus.groovy.runtime.MetaClassHelper
+import org.codehaus.groovy.syntax.Token
+import org.codehaus.groovy.syntax.Types
 import org.springframework.util.StringUtils
 
 import javax.persistence.Entity
 import java.lang.annotation.Annotation
 import java.lang.reflect.Modifier
 import java.util.regex.Pattern
+
+import static org.codehaus.groovy.ast.tools.GenericsUtils.correctToGenericsSpecRecurse
 
 
 /**
@@ -52,6 +60,8 @@ class AstUtils {
     public static final Object TRANSFORM_APPLIED_MARKER = new Object();
     public static final String DOMAIN_TYPE = "Domain"
     public static final Parameter[] ZERO_PARAMETERS = new Parameter[0];
+    public static final ClassNode[] EMPTY_CLASS_ARRAY = new ClassNode[0];
+    public static final Token ASSIGNMENT_OPERATOR = Token.newSymbol(Types.ASSIGNMENT_OPERATOR, 0, 0);
     public static final ArgumentListExpression ZERO_ARGUMENTS = new ArgumentListExpression();
     public static final ClassNode OBJECT_CLASS_NODE = new ClassNode(Object.class).getPlainNodeReference();
 
@@ -98,6 +108,171 @@ class AstUtils {
         return DOMAIN_PATH_PATTERN.matcher(url.getFile()).find();
     }
 
+    /**
+     * Build static direct call to getter of a property
+     *
+     * @param objectExpression
+     * @param propertyName
+     * @param targetClassNode
+     * @return The method call expression
+     */
+    public static MethodCallExpression buildGetPropertyExpression(final Expression objectExpression, final String propertyName, final ClassNode targetClassNode) {
+        return buildGetPropertyExpression(objectExpression, propertyName, targetClassNode, false);
+    }
+
+    /**
+     * Build static direct call to getter of a property
+     *
+     * @param objectExpression
+     * @param propertyName
+     * @param targetClassNode
+     * @param useBooleanGetter
+     * @return The method call expression
+     */
+    public static MethodCallExpression buildGetPropertyExpression(final Expression objectExpression, final String propertyName, final ClassNode targetClassNode, final boolean useBooleanGetter) {
+        String methodName = (useBooleanGetter ? "is" : "get") + MetaClassHelper.capitalize(propertyName);
+        MethodCallExpression methodCallExpression = new MethodCallExpression(objectExpression, methodName, MethodCallExpression.NO_ARGUMENTS);
+        MethodNode getterMethod = targetClassNode.getGetterMethod(methodName);
+        if(getterMethod != null) {
+            methodCallExpression.setMethodTarget(getterMethod);
+        }
+        return methodCallExpression;
+    }
+
+    /**
+     * Build static direct call to setter of a property
+     *
+     * @param objectExpression
+     * @param propertyName
+     * @param targetClassNode
+     * @param valueExpression
+     * @return The method call expression
+     */
+    public static MethodCallExpression buildSetPropertyExpression(final Expression objectExpression, final String propertyName, final ClassNode targetClassNode, final Expression valueExpression) {
+        String methodName = "set" + MetaClassHelper.capitalize(propertyName);
+        MethodCallExpression methodCallExpression = new MethodCallExpression(objectExpression, methodName, new ArgumentListExpression(valueExpression));
+        MethodNode setterMethod = targetClassNode.getSetterMethod(methodName);
+        if(setterMethod != null) {
+            methodCallExpression.setMethodTarget(setterMethod);
+        }
+        return methodCallExpression;
+    }
+
+    public static void processVariableScopes(SourceUnit source, ClassNode classNode, MethodNode methodNode) {
+        VariableScopeVisitor scopeVisitor = new VariableScopeVisitor(source);
+        if(methodNode == null) {
+            scopeVisitor.visitClass(classNode);
+        } else {
+            scopeVisitor.prepareVisit(classNode);
+            scopeVisitor.visitMethod(methodNode);
+        }
+    }
+
+    /**
+     * Returns true if MethodNode is marked with annotationClass
+     * @param methodNode A MethodNode to inspect
+     * @param annotationClass an annotation to look for
+     * @return true if classNode is marked with annotationClass, otherwise false
+     */
+    public static boolean hasAnnotation(final MethodNode methodNode, final Class<? extends Annotation> annotationClass) {
+        return !methodNode.getAnnotations(new ClassNode(annotationClass)).isEmpty();
+    }
+
+    /**
+     * Returns true if MethodNode is marked with annotationClass
+     * @param methodNode A MethodNode to inspect
+     * @param annotationClass an annotation to look for
+     * @return true if classNode is marked with annotationClass, otherwise false
+     */
+    public static boolean hasAnnotation(final MethodNode methodNode, String annotationClassName) {
+        List<AnnotationNode> annos = methodNode.getAnnotations()
+        for(ann in annos) {
+            if(ann.classNode.name == annotationClassName) return true
+        }
+        return false
+    }
+
+    public static boolean hasAnnotation(List<AnnotationNode> annotationNodes, AnnotationNode annotationNode) {
+        return annotationNodes.any() { AnnotationNode ann ->
+            ann.classNode.equals(annotationNode.classNode)
+        }
+    }
+
+
+    /**
+     * @param classNode a ClassNode to search
+     * @param annotationsToLookFor Annotations to look for
+     * @return true if classNode is marked with any of the annotations in annotationsToLookFor
+     */
+    public static boolean hasAnyAnnotations(final ClassNode classNode, final Class<? extends Annotation>... annotationsToLookFor) {
+        for (Class<? extends Annotation> annotationClass : annotationsToLookFor) {
+            if(hasAnnotation(classNode, annotationClass)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if classNode is marked with annotationClass
+     * @param classNode A ClassNode to inspect
+     * @param annotationClass an annotation to look for
+     * @return true if classNode is marked with annotationClass, otherwise false
+     */
+    public static boolean hasAnnotation(final ClassNode classNode, final Class<? extends Annotation> annotationClass) {
+        return !classNode.getAnnotations(new ClassNode(annotationClass)).isEmpty();
+    }
+
+    public static Parameter[] copyParameters(Parameter[] parameterTypes) {
+        return copyParameters(parameterTypes, null);
+    }
+
+    public static Parameter[] copyParameters(Parameter[] parameterTypes, Map<String, ClassNode> genericsPlaceholders) {
+        Parameter[] newParameterTypes = new Parameter[parameterTypes.length];
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Parameter parameterType = parameterTypes[i];
+            Parameter newParameter = new Parameter(replaceGenericsPlaceholders(parameterType.getType(), genericsPlaceholders), parameterType.getName(), parameterType.getInitialExpression());
+            copyAnnotations(parameterType, newParameter);
+            newParameterTypes[i] = newParameter;
+        }
+        return newParameterTypes;
+    }
+
+    public static Parameter[] copyParameters(Map<String, ClassNode> genericsSpec, Parameter[] parameterTypes, List<String> currentMethodGenPlaceholders) {
+        Parameter[] newParameterTypes = new Parameter[parameterTypes.length];
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Parameter parameterType = parameterTypes[i];
+            ClassNode newParamType = correctToGenericsSpecRecurse(genericsSpec, parameterType.getType(), currentMethodGenPlaceholders);
+            Parameter newParameter = new Parameter(newParamType, parameterType.getName(), parameterType.getInitialExpression());
+            newParameter.addAnnotations(parameterType.getAnnotations());
+            newParameterTypes[i] = newParameter;
+        }
+        return newParameterTypes;
+    }
+    public static void copyAnnotations(final AnnotatedNode from, final AnnotatedNode to) {
+        copyAnnotations(from, to, null, null);
+    }
+
+    public static void copyAnnotations(final AnnotatedNode from, final AnnotatedNode to, final Set<String> included, final Set<String> excluded) {
+        final List<AnnotationNode> annotationsToCopy = from.getAnnotations();
+        for(final AnnotationNode node : annotationsToCopy) {
+            String annotationClassName = node.getClassNode().getName();
+            if((excluded==null || !excluded.contains(annotationClassName)) &&
+                    (included==null || included.contains(annotationClassName))) {
+                final AnnotationNode copyOfAnnotationNode = cloneAnnotation(node);
+                to.addAnnotation(copyOfAnnotationNode);
+            }
+        }
+    }
+
+    public static AnnotationNode cloneAnnotation(final AnnotationNode node) {
+        final AnnotationNode copyOfAnnotationNode = new AnnotationNode(node.getClassNode());
+        final Map<String, Expression> members = node.getMembers();
+        for(final Map.Entry<String, Expression> entry : members.entrySet()) {
+            copyOfAnnotationNode.addMember(entry.getKey(), entry.getValue());
+        }
+        return copyOfAnnotationNode;
+    }
 
     public static boolean isEnum(ClassNode classNode) {
         ClassNode parent = classNode.getSuperClass();

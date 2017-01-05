@@ -12,6 +12,9 @@ dependencies {
     testCompile "org.grails:grails-spring:$grailsVersion"
     testCompile "org.grails:grails-core:$grailsVersion"
 
+    testCompile "org.springframework:spring-jdbc:$springVersion"
+    testRuntime 'com.h2database:h2:1.3.176'
+    
     testCompile("org.hibernate:hibernate-validator:$hibernateValidatorVersion")
     testRuntime('javax.el:javax.el-api:2.2.4')
     testRuntime('org.glassfish.web:el-impl:2.2')

@@ -271,12 +271,6 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
         }
     }
 
-    boolean hasAnnotation(List<AnnotationNode> annotationNodes, AnnotationNode annotationNode) {
-        return annotationNodes.any() { AnnotationNode ann ->
-            ann.classNode.equals(annotationNode.classNode)
-        }
-    }
-
     protected boolean isAnnotatedWithJavaValidationApi(List<AnnotationNode> annotationNodes) {
         VALIDATION_CONSTRAINT_NODE != null && annotationNodes.any { AnnotationNode an -> an.classNode.getAnnotations(VALIDATION_CONSTRAINT_NODE) }
     }
