@@ -3,6 +3,7 @@ grails.gorm.annotation
 grails.gorm.api
 grails.gorm.dirty.checking
 grails.gorm.multitenancy
+grails.gorm.services
 grails.gorm.transactions
 grails.mongodb
 grails.mongodb.api
@@ -42,6 +43,7 @@ org.grails.datastore.gorm.query.transform
 org.grails.datastore.gorm.schemaless
 org.grails.datastore.gorm.support
 org.grails.datastore.gorm.timestamp
+org.grails.datastore.gorm.transactions.transform
 org.grails.datastore.gorm.utils
 org.grails.datastore.gorm.validation
 org.grails.datastore.gorm.validation.constraints
