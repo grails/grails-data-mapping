@@ -21,8 +21,11 @@ import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
 import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.transactions.DatastoreTransactionManager;
+import org.grails.datastore.mapping.transactions.TransactionCapableDatastore;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.PropertyResolver;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * A simple implementation of the {@link org.grails.datastore.mapping.core.Datastore} interface that backs onto an in-memory map.
@@ -32,9 +35,10 @@ import org.springframework.core.env.PropertyResolver;
  * @since 1.0
  */
 @SuppressWarnings("rawtypes")
-public class SimpleMapDatastore extends AbstractDatastore {
+public class SimpleMapDatastore extends AbstractDatastore implements TransactionCapableDatastore {
     private Map<String, Map> datastore = new ConcurrentHashMap<String, Map>();
     private Map indices = new ConcurrentHashMap();
+    private final PlatformTransactionManager transactionManager;
 
     /**
      * Creates a map based datastore backing onto the specified map
@@ -48,6 +52,14 @@ public class SimpleMapDatastore extends AbstractDatastore {
         setApplicationContext(ctx);
     }
 
+    public SimpleMapDatastore() {
+        this(null);
+    }
+
+    public SimpleMapDatastore(ConfigurableApplicationContext ctx) {
+        this(new KeyValueMappingContext(""), ctx);
+    }
+
     /**
      * Creates a map based datastore for the specified mapping context
      *
@@ -55,15 +67,11 @@ public class SimpleMapDatastore extends AbstractDatastore {
      */
     public SimpleMapDatastore(MappingContext mappingContext, ConfigurableApplicationContext ctx) {
         super(mappingContext, ctx.getEnvironment(), ctx);
+
+        DatastoreTransactionManager dtm = new DatastoreTransactionManager();
+        dtm.setDatastore(this);
+        this.transactionManager = dtm;
         initializeConverters(getMappingContext());
-    }
-
-    public SimpleMapDatastore() {
-        this(null);
-    }
-
-    public SimpleMapDatastore(ConfigurableApplicationContext ctx) {
-        this(new KeyValueMappingContext(""), ctx);
     }
 
     public Map getIndices() {
@@ -82,5 +90,10 @@ public class SimpleMapDatastore extends AbstractDatastore {
     public void clearData() {
         datastore.clear();
         indices.clear();
+    }
+
+    @Override
+    public PlatformTransactionManager getTransactionManager() {
+        return this.transactionManager;
     }
 }
