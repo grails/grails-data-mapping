@@ -16,6 +16,9 @@
 package grails.gorm.transactions;
 
 import org.codehaus.groovy.transform.GroovyASTTransformationClass;
+import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.core.connections.ConnectionSource;
+import org.grails.datastore.mapping.core.connections.ConnectionSourcesProvider;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -152,5 +155,17 @@ public @interface Transactional {
      *
      */
     boolean inheritRollbackOnly() default true;
+
+    /**
+     * If you are using multiple GORM implementations and wish to create a transaction for a specific implementation then use this. For example {@code @Transactional(forDatastore=HibernateDatastore) }
+     *
+     * @return The type of the datastore
+     */
+    Class<? extends ConnectionSourcesProvider>[] forDatastore() default {};
+
+    /**
+     * The connection to use by default
+     */
+    String connection() default ConnectionSource.DEFAULT;
 
 }

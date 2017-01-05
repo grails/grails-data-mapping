@@ -60,6 +60,13 @@ import grails.gorm.transactions.Transactional
         then: "It implements TransactionManagerAware"
         field.declaringClass.name == 'MammalService'
 
+        when:
+        dogService.newInstance().sound()
+
+        then:
+        def e = thrown(IllegalStateException)
+        e.message == 'No GORM implementations configured. Ensure GORM has been initialized correctly'
+
     }
 
     @Issue('https://github.com/grails/grails-core/issues/9837')
@@ -288,8 +295,7 @@ class DemoSpec extends Specification {
 
 
     class BookService {
-        static datasource = 'foo'
-        @Transactional(readOnly = true, timeout = 1000, isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRES_NEW)
+        @Transactional(readOnly = true, timeout = 1000, isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRES_NEW, connection = "foo")
         TransactionStatus readBook() {
              return transactionStatus
         }

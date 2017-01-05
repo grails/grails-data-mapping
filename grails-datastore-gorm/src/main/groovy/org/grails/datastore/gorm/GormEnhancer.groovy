@@ -41,7 +41,9 @@ import org.grails.datastore.mapping.multitenancy.resolvers.FixedTenantResolver
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.mapping.reflect.MetaClassUtils
 import org.grails.datastore.mapping.reflect.NameUtils
+import org.grails.datastore.mapping.transactions.TransactionCapableDatastore
 import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.TransactionSystemException
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -334,6 +336,38 @@ class GormEnhancer implements Closeable {
         else {
             return allDatastores.first()
         }
+    }
+
+    /**
+     * Finds a single available transaction manager
+     *
+     * @return The transaction manager
+     *
+     * @throws TransactionSystemException If the current implementation does not support transactions
+     * @throws IllegalStateException If no GORM implementation has been bootstrapped and configured
+     */
+    static PlatformTransactionManager findSingleTransactionManager() {
+        Datastore datastore = findSingleDatastore()
+        if(datastore instanceof TransactionCapableDatastore)  {
+            return ((TransactionCapableDatastore)datastore).getTransactionManager()
+        }
+        throw new TransactionSystemException("Datastore implementation ${datastore.getClass().getName()} does not support transactions!")
+    }
+
+    /**
+     * Finds a single available transaction manager
+     *
+     * @return The transaction manager
+     *
+     * @throws TransactionSystemException If the current implementation does not support transactions
+     * @throws IllegalStateException If no GORM implementation has been bootstrapped and configured
+     */
+    static PlatformTransactionManager findTransactionManager(Class<? extends Datastore> datastoreType) {
+        Datastore datastore = findDatastoreByType(datastoreType)
+        if(datastore instanceof TransactionCapableDatastore)  {
+            return ((TransactionCapableDatastore)datastore).getTransactionManager()
+        }
+        throw new TransactionSystemException("Datastore implementation ${datastore.getClass().getName()} does not support transactions!")
     }
 
     /**

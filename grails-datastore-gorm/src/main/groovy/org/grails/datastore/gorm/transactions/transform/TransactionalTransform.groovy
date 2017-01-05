@@ -23,6 +23,7 @@ import org.codehaus.groovy.ast.stmt.Statement
 import org.codehaus.groovy.classgen.VariableScopeVisitor
 import org.codehaus.groovy.control.ErrorCollector
 import org.codehaus.groovy.transform.AbstractASTTransformation
+import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.mapping.transactions.CustomizableRollbackTransactionAttribute
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -51,12 +52,49 @@ import org.springframework.transaction.interceptor.NoRollbackRuleAttribute
 import org.springframework.transaction.interceptor.RollbackRuleAttribute
 
 /**
- * This AST transform reads the {@link Transactional} annotation and transforms method calls by
- * wrapping the body of the method in an execution of {@link GrailsTransactionTemplate}.
+ * <p>This AST transform reads the {@link Transactional} annotation and transforms method calls by
+ * wrapping the body of the method in an execution of {@link GrailsTransactionTemplate}.</p>
  *
+ * <p>In other words given the following class:</p>
+ *
+ *
+ * <pre>
+ * class FooService {
+ *   {@code @Transactional}
+ *   void updateFoo() {
+ *       ...
+ *   }
+ * }
+ * </pre>
+ *
+ *
+ * <p>The resulting byte code produced will be (more or less):</p>
+ *
+ * <pre>
+ * class FooService {
+ *   PlatformTransactionManager $transactionManager
+ *
+ *   PlatformTransactionManager getTransactionManager() { $transactionManager }
+ *
+ *   void updateFoo() {
+ *       GrailsTransactionTemplate template = new GrailsTransactionTemplate(getTransactionManager())
+ *       template.execute { TransactionStatus status ->
+ *           $tt_updateFoo(status)
+ *       }
+ *   }
+ *
+ *   private void $tt_updateFoo(TransactionStatus status) {
+ *       ...
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ *     The body of the method is moved to a new method prefixed with "$tt_" and which receives the arguments of the method and the TransactionStatus object
+ * </p>
  *
  * @author Graeme Rocher
- * @since 2.3
+ * @since 6.1
  */
 @CompileStatic
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
@@ -91,7 +129,7 @@ class TransactionalTransform extends AbstractASTTransformation {
 
             final declaringClassNode = methodNode.getDeclaringClass()
 
-            weaveTransactionManagerAware(source, declaringClassNode)
+            weaveTransactionManagerAware(source, annotationNode, declaringClassNode)
             weaveTransactionalMethod(source, declaringClassNode, annotationNode, methodNode)
         }
         else if (parent instanceof ClassNode) {
@@ -105,7 +143,7 @@ class TransactionalTransform extends AbstractASTTransformation {
     }
 
     public void weaveTransactionalBehavior(SourceUnit source, ClassNode classNode, AnnotationNode annotationNode) {
-        weaveTransactionManagerAware(source, classNode)
+        weaveTransactionManagerAware(source, annotationNode, classNode)
         List<MethodNode> methods = new ArrayList<MethodNode>(classNode.getMethods());
 
         for (MethodNode md in methods) {
@@ -167,16 +205,6 @@ class TransactionalTransform extends AbstractASTTransformation {
             }
         }
         excludedAnnotation
-    }
-
-    ClassNode getAnnotationClassNode(String annotationName) {
-        try {
-            final classLoader = Thread.currentThread().contextClassLoader
-            final clazz = classLoader.loadClass(annotationName)
-            return new ClassNode(clazz)
-        } catch (e) {
-            return null
-        }
     }
 
     protected void weaveTransactionalMethod(SourceUnit source, ClassNode classNode, AnnotationNode annotationNode, MethodNode methodNode, String executeMethodName = getTransactionTemplateMethodName()) {
@@ -342,8 +370,16 @@ class TransactionalTransform extends AbstractASTTransformation {
         return originalMethodCall
     }
 
-    protected void weaveTransactionManagerAware(SourceUnit source, ClassNode declaringClassNode) {
-        boolean hasDataSourceProperty = hasOrInheritsProperty(declaringClassNode, PROPERTY_DATA_SOURCE)
+
+    protected void weaveTransactionManagerAware(SourceUnit source, AnnotationNode annotationNode, ClassNode declaringClassNode) {
+        if ( declaringClassNode.getNodeMetaData(TRANSFORM_APPLIED_MARKER) == APPLIED_MARKER ) {
+            return
+        }
+
+        declaringClassNode.putNodeMetaData(TRANSFORM_APPLIED_MARKER, APPLIED_MARKER)
+
+        Expression connectionName = annotationNode.getMember("connection")
+        boolean hasDataSourceProperty = connectionName != null
 
         //add the transactionManager property
         if (!hasOrInheritsProperty(declaringClassNode, PROPERTY_TRANSACTION_MANAGER) ) {
@@ -363,14 +399,27 @@ class TransactionalTransform extends AbstractASTTransformation {
             // this is a hacky workaround that ensures the transaction manager is also set on the spock shared instance which seems to differ for
             // some reason
             if(isSubclassOf(declaringClassNode, "spock.lang.Specification")) {
-                getterBody.addStatement(new ExpressionStatement(
-                        new MethodCallExpression(new PropertyExpression(new PropertyExpression(new VariableExpression("this"), "specificationContext"), "sharedInstance" ),
-                                "setTransactionManager",
-                                transactionManagerPropertyExpr)
-                ))
+                getterBody.addStatement(
+                    stmt(
+                        callX( propX( propX( varThis(), "specificationContext"), "sharedInstance"),
+                              "setTransactionManager",
+                               transactionManagerPropertyExpr)
+                    )
+                )
             }
 
-            getterBody.addStatement( returnS(transactionManagerPropertyExpr) )
+            ClassExpression gormEnhancerExpr = classX(GormEnhancer)
+            MethodCallExpression transactionManagerLookupExpr = callX(gormEnhancerExpr, "findSingleTransactionManager")
+            transactionManagerLookupExpr.setMethodTarget(
+                gormEnhancerExpr.getType().getDeclaredMethod("findSingleTransactionManager", ZERO_PARAMETERS )
+            )
+            Statement ifElse = ifElseS(
+                notNullX( transactionManagerPropertyExpr ),
+                    returnS( transactionManagerPropertyExpr ),
+                    returnS(transactionManagerLookupExpr)
+            )
+
+            getterBody.addStatement( ifElse )
             declaringClassNode.addMethod("getTransactionManager",
                                             Modifier.PUBLIC,
                                             transactionManagerClassNode,
@@ -385,17 +434,11 @@ class TransactionalTransform extends AbstractASTTransformation {
                                                             null,
                                                             setterBody)
 
+            AnnotationNode autowired = addAnnotationOrGetExisting(methodNode, Autowired)
+            autowired.setMember("required", constX(false))
             if(hasDataSourceProperty) {
-                methodNode.addAnnotation(new AnnotationNode(new ClassNode(Autowired.class)))
-
-                def qualifier = new AnnotationNode(new ClassNode(Qualifier.class))
-
-                def expression = declaringClassNode.getProperty(PROPERTY_DATA_SOURCE).getInitialExpression()
-                if(expression != null) {
-
-                    qualifier.addMember("value", new ConstantExpression("transactionManager_${expression.getText()}".toString()))
-                    methodNode.addAnnotation(qualifier)
-                }
+                def qualifier = addAnnotationOrGetExisting(methodNode, Qualifier)
+                qualifier.addMember("value", constX("transactionManager_" + connectionName.text))
             }
         }
     }

@@ -30,6 +30,7 @@ import org.codehaus.groovy.ast.expr.ArgumentListExpression
 import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
+import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.classgen.VariableScopeVisitor
 import org.codehaus.groovy.control.Janitor
 import org.codehaus.groovy.control.SourceUnit
@@ -483,7 +484,7 @@ class AstUtils {
      * @param classNode The class node
      * @param annotationClass The annotation class
      */
-    public static void addAnnotationIfNecessary(ClassNode classNode, Class<? extends Annotation> annotationClass) {
+    public static void addAnnotationIfNecessary(AnnotatedNode classNode, Class<? extends Annotation> annotationClass) {
         addAnnotationOrGetExisting(classNode, annotationClass);
     }
 
@@ -493,30 +494,37 @@ class AstUtils {
      * @param classNode The class node
      * @param annotationClass The annotation class
      */
-    public static AnnotationNode addAnnotationOrGetExisting(ClassNode classNode, Class<? extends Annotation> annotationClass) {
+    public static AnnotationNode addAnnotationOrGetExisting(AnnotatedNode classNode, Class<? extends Annotation> annotationClass) {
         return addAnnotationOrGetExisting(classNode, annotationClass, Collections.<String, Object>emptyMap());
+    }
+
+    /**
+     * @return A new this variable
+     */
+    public static VariableExpression varThis() {
+        return new VariableExpression("this")
     }
 
     /**
      * Adds an annotation to the given class node or returns the existing annotation
      *
-     * @param classNode The class node
+     * @param annotatedNode The class node
      * @param annotationClass The annotation class
      */
-    public static AnnotationNode addAnnotationOrGetExisting(ClassNode classNode, Class<? extends Annotation> annotationClass, Map<String, Object> members) {
+    public static AnnotationNode addAnnotationOrGetExisting(AnnotatedNode annotatedNode, Class<? extends Annotation> annotationClass, Map<String, Object> members) {
         ClassNode annotationClassNode = ClassHelper.make(annotationClass);
-        return addAnnotationOrGetExisting(classNode, annotationClassNode, members);
+        return addAnnotationOrGetExisting(annotatedNode, annotationClassNode, members);
     }
 
-    public static AnnotationNode addAnnotationOrGetExisting(ClassNode classNode, ClassNode annotationClassNode) {
-        return addAnnotationOrGetExisting(classNode, annotationClassNode, Collections.<String, Object>emptyMap());
+    public static AnnotationNode addAnnotationOrGetExisting(AnnotatedNode annotatedNode, ClassNode annotationClassNode) {
+        return addAnnotationOrGetExisting(annotatedNode, annotationClassNode, Collections.<String, Object>emptyMap());
     }
 
-    public static AnnotationNode addAnnotationOrGetExisting(ClassNode classNode, ClassNode annotationClassNode, Map<String, Object> members) {
-        List<AnnotationNode> annotations = classNode.getAnnotations();
+    public static AnnotationNode addAnnotationOrGetExisting(AnnotatedNode annotatedNode, ClassNode annotationClassNode, Map<String, Object> members) {
+        List<AnnotationNode> annotations = annotatedNode.getAnnotations();
         AnnotationNode annotationToAdd = new AnnotationNode(annotationClassNode);
         if (annotations.isEmpty()) {
-            classNode.addAnnotation(annotationToAdd);
+            annotatedNode.addAnnotation(annotationToAdd);
         }
         else {
             AnnotationNode existing = findAnnotation(annotationClassNode, annotations);
@@ -524,7 +532,7 @@ class AstUtils {
                 annotationToAdd = existing;
             }
             else {
-                classNode.addAnnotation(annotationToAdd);
+                annotatedNode.addAnnotation(annotationToAdd);
             }
         }
 
@@ -537,12 +545,12 @@ class AstUtils {
         return annotationToAdd;
     }
 
-    public static AnnotationNode findAnnotation(ClassNode classNode, Class<?> type) {
+    public static AnnotationNode findAnnotation(AnnotatedNode classNode, Class<?> type) {
         List<AnnotationNode> annotations = classNode.getAnnotations();
         return annotations == null ? null : findAnnotation(new ClassNode(type),annotations);
     }
 
-    public static AnnotationNode findAnnotation(ClassNode annotationClassNode, List<AnnotationNode> annotations) {
+    public static AnnotationNode findAnnotation(AnnotatedNode annotationClassNode, List<AnnotationNode> annotations) {
         for (AnnotationNode annotation : annotations) {
             if (annotation.getClassNode().equals(annotationClassNode)) {
                 return annotation;
