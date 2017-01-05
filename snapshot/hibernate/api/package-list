@@ -6,6 +6,7 @@ grails.gorm.dirty.checking
 grails.gorm.hibernate
 grails.gorm.hibernate.annotation
 grails.gorm.multitenancy
+grails.gorm.services
 grails.gorm.transactions
 grails.orm
 grails.orm.bootstrap
@@ -35,6 +36,7 @@ org.grails.datastore.gorm.query.transform
 org.grails.datastore.gorm.schemaless
 org.grails.datastore.gorm.support
 org.grails.datastore.gorm.timestamp
+org.grails.datastore.gorm.transactions.transform
 org.grails.datastore.gorm.utils
 org.grails.datastore.gorm.validation
 org.grails.datastore.gorm.validation.constraints

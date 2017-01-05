@@ -129,14 +129,26 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>static&nbsp;org.codehaus.groovy.syntax.Token</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#ASSIGNMENT_OPERATOR">ASSIGNMENT_OPERATOR</a></code></td>
+                            <td class="colLast"></code></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>static&nbsp;java.util.regex.Pattern</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#DOMAIN_PATH_PATTERN">DOMAIN_PATH_PATTERN</a></code></td>
                             <td class="colLast"></code></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>static&nbsp;java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#DOMAIN_TYPE">DOMAIN_TYPE</a></code></td>
+                            <td class="colLast"></code></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>static&nbsp;org.codehaus.groovy.ast.ClassNode[]</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#EMPTY_CLASS_ARRAY">EMPTY_CLASS_ARRAY</a></code></td>
                             <td class="colLast"></code></td>
                         </tr>
                         
@@ -207,27 +219,27 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#addAnnotationIfNecessary(org.codehaus.groovy.ast.ClassNode, Class<? extends Annotation>)">addAnnotationIfNecessary</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.Class&lt;? extends java.lang.annotation.Annotation&gt; annotationClass)</code><br>Adds an annotation to the give nclass node if it doesn't already exist</td>
+                            <td class="colLast"><code><strong><a href="#addAnnotationIfNecessary(org.codehaus.groovy.ast.AnnotatedNode, Class<? extends Annotation>)">addAnnotationIfNecessary</a></strong>(org.codehaus.groovy.ast.AnnotatedNode classNode, java.lang.Class&lt;? extends java.lang.annotation.Annotation&gt; annotationClass)</code><br>Adds an annotation to the give nclass node if it doesn't already exist</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.AnnotationNode</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#addAnnotationOrGetExisting(org.codehaus.groovy.ast.ClassNode, Class<? extends Annotation>)">addAnnotationOrGetExisting</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.Class&lt;? extends java.lang.annotation.Annotation&gt; annotationClass)</code><br>Adds an annotation to the given class node or returns the existing annotation</td>
+                            <td class="colLast"><code><strong><a href="#addAnnotationOrGetExisting(org.codehaus.groovy.ast.AnnotatedNode, Class<? extends Annotation>)">addAnnotationOrGetExisting</a></strong>(org.codehaus.groovy.ast.AnnotatedNode classNode, java.lang.Class&lt;? extends java.lang.annotation.Annotation&gt; annotationClass)</code><br>Adds an annotation to the given class node or returns the existing annotation</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.AnnotationNode</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#addAnnotationOrGetExisting(org.codehaus.groovy.ast.ClassNode, Class<? extends Annotation>, Map<String, Object>)">addAnnotationOrGetExisting</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.Class&lt;? extends java.lang.annotation.Annotation&gt; annotationClass, java.util.Map&lt;java.lang.String, java.lang.Object&gt; members)</code><br>Adds an annotation to the given class node or returns the existing annotation</td>
+                            <td class="colLast"><code><strong><a href="#addAnnotationOrGetExisting(org.codehaus.groovy.ast.AnnotatedNode, Class<? extends Annotation>, Map<String, Object>)">addAnnotationOrGetExisting</a></strong>(org.codehaus.groovy.ast.AnnotatedNode annotatedNode, java.lang.Class&lt;? extends java.lang.annotation.Annotation&gt; annotationClass, java.util.Map&lt;java.lang.String, java.lang.Object&gt; members)</code><br>Adds an annotation to the given class node or returns the existing annotation</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.AnnotationNode</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#addAnnotationOrGetExisting(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.ClassNode)">addAnnotationOrGetExisting</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.ClassNode annotationClassNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#addAnnotationOrGetExisting(org.codehaus.groovy.ast.AnnotatedNode, org.codehaus.groovy.ast.ClassNode)">addAnnotationOrGetExisting</a></strong>(org.codehaus.groovy.ast.AnnotatedNode annotatedNode, org.codehaus.groovy.ast.ClassNode annotationClassNode)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.AnnotationNode</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#addAnnotationOrGetExisting(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.ClassNode, Map<String, Object>)">addAnnotationOrGetExisting</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.ClassNode annotationClassNode, java.util.Map&lt;java.lang.String, java.lang.Object&gt; members)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#addAnnotationOrGetExisting(org.codehaus.groovy.ast.AnnotatedNode, org.codehaus.groovy.ast.ClassNode, Map<String, Object>)">addAnnotationOrGetExisting</a></strong>(org.codehaus.groovy.ast.AnnotatedNode annotatedNode, org.codehaus.groovy.ast.ClassNode annotationClassNode, java.util.Map&lt;java.lang.String, java.lang.Object&gt; members)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -236,33 +248,103 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.AnnotationNode</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#findAnnotation(org.codehaus.groovy.ast.ClassNode, Class<?>)">findAnnotation</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.Class&lt;?&gt; type)</code><br></td>
+                            <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.expr.MethodCallExpression</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#buildGetPropertyExpression(org.codehaus.groovy.ast.expr.Expression, java.lang.String, org.codehaus.groovy.ast.ClassNode)">buildGetPropertyExpression</a></strong>(org.codehaus.groovy.ast.expr.Expression objectExpression, java.lang.String propertyName, org.codehaus.groovy.ast.ClassNode targetClassNode)</code><br>Build static direct call to getter of a property</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.expr.MethodCallExpression</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#buildGetPropertyExpression(org.codehaus.groovy.ast.expr.Expression, java.lang.String, org.codehaus.groovy.ast.ClassNode, boolean)">buildGetPropertyExpression</a></strong>(org.codehaus.groovy.ast.expr.Expression objectExpression, java.lang.String propertyName, org.codehaus.groovy.ast.ClassNode targetClassNode, boolean useBooleanGetter)</code><br>Build static direct call to getter of a property</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.expr.MethodCallExpression</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#buildSetPropertyExpression(org.codehaus.groovy.ast.expr.Expression, java.lang.String, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.expr.Expression)">buildSetPropertyExpression</a></strong>(org.codehaus.groovy.ast.expr.Expression objectExpression, java.lang.String propertyName, org.codehaus.groovy.ast.ClassNode targetClassNode, org.codehaus.groovy.ast.expr.Expression valueExpression)</code><br>Build static direct call to setter of a property</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.AnnotationNode</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#findAnnotation(org.codehaus.groovy.ast.ClassNode, List<AnnotationNode>)">findAnnotation</a></strong>(org.codehaus.groovy.ast.ClassNode annotationClassNode, java.util.List&lt;org.codehaus.groovy.ast.AnnotationNode&gt; annotations)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#cloneAnnotation(org.codehaus.groovy.ast.AnnotationNode)">cloneAnnotation</a></strong>(org.codehaus.groovy.ast.AnnotationNode node)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#copyAnnotations(org.codehaus.groovy.ast.AnnotatedNode, org.codehaus.groovy.ast.AnnotatedNode)">copyAnnotations</a></strong>(org.codehaus.groovy.ast.AnnotatedNode from, org.codehaus.groovy.ast.AnnotatedNode to)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#copyAnnotations(org.codehaus.groovy.ast.AnnotatedNode, org.codehaus.groovy.ast.AnnotatedNode, Set<String>, Set<String>)">copyAnnotations</a></strong>(org.codehaus.groovy.ast.AnnotatedNode from, org.codehaus.groovy.ast.AnnotatedNode to, java.util.Set&lt;java.lang.String&gt; included, java.util.Set&lt;java.lang.String&gt; excluded)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.Parameter[]</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#copyParameters(org.codehaus.groovy.ast.Parameter)">copyParameters</a></strong>(org.codehaus.groovy.ast.Parameter[] parameterTypes)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.Parameter[]</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#copyParameters(org.codehaus.groovy.ast.Parameter, Map<String, ClassNode>)">copyParameters</a></strong>(org.codehaus.groovy.ast.Parameter[] parameterTypes, java.util.Map&lt;java.lang.String, org.codehaus.groovy.ast.ClassNode&gt; genericsPlaceholders)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.Parameter[]</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#copyParameters(Map<String, ClassNode>, org.codehaus.groovy.ast.Parameter, List<String>)">copyParameters</a></strong>(java.util.Map&lt;java.lang.String, org.codehaus.groovy.ast.ClassNode&gt; genericsSpec, org.codehaus.groovy.ast.Parameter[] parameterTypes, java.util.List&lt;java.lang.String&gt; currentMethodGenPlaceholders)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.AnnotationNode</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findAnnotation(org.codehaus.groovy.ast.AnnotatedNode, Class<?>)">findAnnotation</a></strong>(org.codehaus.groovy.ast.AnnotatedNode classNode, java.lang.Class&lt;?&gt; type)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.AnnotationNode</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findAnnotation(org.codehaus.groovy.ast.AnnotatedNode, List<AnnotationNode>)">findAnnotation</a></strong>(org.codehaus.groovy.ast.AnnotatedNode annotationClassNode, java.util.List&lt;org.codehaus.groovy.ast.AnnotationNode&gt; annotations)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.ClassNode</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findInterface(org.codehaus.groovy.ast.ClassNode, java.lang.String)">findInterface</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.String interfaceName)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.ClassNode</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getFurthestUnresolvedParent(org.codehaus.groovy.ast.ClassNode)">getFurthestUnresolvedParent</a></strong>(org.codehaus.groovy.ast.ClassNode classNode)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;java.util.Collection&lt;java.lang.String&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getKnownEntityNames()">getKnownEntityNames</a></strong>()</code><br>@return The names of the transformed entities for this context</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.PropertyNode</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getPropertyFromHierarchy(org.codehaus.groovy.ast.ClassNode, java.lang.String)">getPropertyFromHierarchy</a></strong>(org.codehaus.groovy.ast.ClassNode cn, java.lang.String name)</code><br>Obtains a property from the class hierarchy</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#hasAnnotation(org.codehaus.groovy.ast.MethodNode, Class<? extends Annotation>)">hasAnnotation</a></strong>(org.codehaus.groovy.ast.MethodNode methodNode, java.lang.Class&lt;? extends java.lang.annotation.Annotation&gt; annotationClass)</code><br>Returns true if MethodNode is marked with annotationClass</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#hasAnnotation(org.codehaus.groovy.ast.MethodNode, java.lang.String)">hasAnnotation</a></strong>(org.codehaus.groovy.ast.MethodNode methodNode, java.lang.String annotationClassName)</code><br>Returns true if MethodNode is marked with annotationClass</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#hasAnnotation(List<AnnotationNode>, org.codehaus.groovy.ast.AnnotationNode)">hasAnnotation</a></strong>(java.util.List&lt;org.codehaus.groovy.ast.AnnotationNode&gt; annotationNodes, org.codehaus.groovy.ast.AnnotationNode annotationNode)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#hasAnnotation(org.codehaus.groovy.ast.ClassNode, Class<? extends Annotation>)">hasAnnotation</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.Class&lt;? extends java.lang.annotation.Annotation&gt; annotationClass)</code><br>Returns true if classNode is marked with annotationClass</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#hasAnyAnnotations(org.codehaus.groovy.ast.ClassNode, Class<? extends Annotation>)">hasAnyAnnotations</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.Class&lt;? extends java.lang.annotation.Annotation&gt;... annotationsToLookFor)</code><br>@param classNode a ClassNode to search</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -351,13 +433,23 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.ClassNode</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#replaceGenericsPlaceholders(org.codehaus.groovy.ast.ClassNode, Map<String, ClassNode>)">replaceGenericsPlaceholders</a></strong>(org.codehaus.groovy.ast.ClassNode type, java.util.Map&lt;java.lang.String, org.codehaus.groovy.ast.ClassNode&gt; genericsPlaceholders)</code><br></td>
+                            <td class="colFirst"><code>static&nbsp;void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#processVariableScopes(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)">processVariableScopes</a></strong>(org.codehaus.groovy.control.SourceUnit source, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.MethodNode methodNode)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.ClassNode</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#replaceGenericsPlaceholders(org.codehaus.groovy.ast.ClassNode, Map<String, ClassNode>)">replaceGenericsPlaceholders</a></strong>(org.codehaus.groovy.ast.ClassNode type, java.util.Map&lt;java.lang.String, org.codehaus.groovy.ast.ClassNode&gt; genericsPlaceholders)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.ClassNode</strong></code></td>
                             <td class="colLast"><code><strong><a href="#replaceGenericsPlaceholders(org.codehaus.groovy.ast.ClassNode, Map<String, ClassNode>, org.codehaus.groovy.ast.ClassNode)">replaceGenericsPlaceholders</a></strong>(org.codehaus.groovy.ast.ClassNode type, java.util.Map&lt;java.lang.String, org.codehaus.groovy.ast.ClassNode&gt; genericsPlaceholders, org.codehaus.groovy.ast.ClassNode defaultPlaceholder)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;org.codehaus.groovy.ast.expr.VariableExpression</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#varThis()">varThis</a></strong>()</code><br>@return A new this variable</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -406,6 +498,14 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Field Detail</h3>
                     
+                        <a name="ASSIGNMENT_OPERATOR"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;static&nbsp;final&nbsp;org.codehaus.groovy.syntax.Token <strong>ASSIGNMENT_OPERATOR</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="DOMAIN_PATH_PATTERN"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -418,6 +518,14 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;static&nbsp;final&nbsp;java.lang.String <strong>DOMAIN_TYPE</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="EMPTY_CLASS_ARRAY"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;static&nbsp;final&nbsp;org.codehaus.groovy.ast.ClassNode[] <strong>EMPTY_CLASS_ARRAY</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -490,45 +598,45 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Method Detail</h3>
                     
-                        <a name="addAnnotationIfNecessary(org.codehaus.groovy.ast.ClassNode, Class<? extends Annotation>)"><!-- --></a>
+                        <a name="addAnnotationIfNecessary(org.codehaus.groovy.ast.AnnotatedNode, Class<? extends Annotation>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;void <strong>addAnnotationIfNecessary</strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.Class&lt;? extends java.lang.annotation.Annotation&gt; annotationClass)</h4>
+                                <h4>static&nbsp;void <strong>addAnnotationIfNecessary</strong>(org.codehaus.groovy.ast.AnnotatedNode classNode, java.lang.Class&lt;? extends java.lang.annotation.Annotation&gt; annotationClass)</h4>
                                 <p> Adds an annotation to the give nclass node if it doesn't already exist
      <DL><DT><B>Parameters:</B></DT><DD><code>classNode</code> -  The class node</DD><DD><code>annotationClass</code> -  The annotation class</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="addAnnotationOrGetExisting(org.codehaus.groovy.ast.ClassNode, Class<? extends Annotation>)"><!-- --></a>
+                        <a name="addAnnotationOrGetExisting(org.codehaus.groovy.ast.AnnotatedNode, Class<? extends Annotation>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.codehaus.groovy.ast.AnnotationNode <strong>addAnnotationOrGetExisting</strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.Class&lt;? extends java.lang.annotation.Annotation&gt; annotationClass)</h4>
+                                <h4>static&nbsp;org.codehaus.groovy.ast.AnnotationNode <strong>addAnnotationOrGetExisting</strong>(org.codehaus.groovy.ast.AnnotatedNode classNode, java.lang.Class&lt;? extends java.lang.annotation.Annotation&gt; annotationClass)</h4>
                                 <p> Adds an annotation to the given class node or returns the existing annotation
      <DL><DT><B>Parameters:</B></DT><DD><code>classNode</code> -  The class node</DD><DD><code>annotationClass</code> -  The annotation class</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="addAnnotationOrGetExisting(org.codehaus.groovy.ast.ClassNode, Class<? extends Annotation>, Map<String, Object>)"><!-- --></a>
+                        <a name="addAnnotationOrGetExisting(org.codehaus.groovy.ast.AnnotatedNode, Class<? extends Annotation>, Map<String, Object>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.codehaus.groovy.ast.AnnotationNode <strong>addAnnotationOrGetExisting</strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.Class&lt;? extends java.lang.annotation.Annotation&gt; annotationClass, java.util.Map&lt;java.lang.String, java.lang.Object&gt; members)</h4>
+                                <h4>static&nbsp;org.codehaus.groovy.ast.AnnotationNode <strong>addAnnotationOrGetExisting</strong>(org.codehaus.groovy.ast.AnnotatedNode annotatedNode, java.lang.Class&lt;? extends java.lang.annotation.Annotation&gt; annotationClass, java.util.Map&lt;java.lang.String, java.lang.Object&gt; members)</h4>
                                 <p> Adds an annotation to the given class node or returns the existing annotation
-     <DL><DT><B>Parameters:</B></DT><DD><code>classNode</code> -  The class node</DD><DD><code>annotationClass</code> -  The annotation class</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>annotatedNode</code> -  The class node</DD><DD><code>annotationClass</code> -  The annotation class</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="addAnnotationOrGetExisting(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
+                        <a name="addAnnotationOrGetExisting(org.codehaus.groovy.ast.AnnotatedNode, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.codehaus.groovy.ast.AnnotationNode <strong>addAnnotationOrGetExisting</strong>(org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.ClassNode annotationClassNode)</h4>
+                                <h4>static&nbsp;org.codehaus.groovy.ast.AnnotationNode <strong>addAnnotationOrGetExisting</strong>(org.codehaus.groovy.ast.AnnotatedNode annotatedNode, org.codehaus.groovy.ast.ClassNode annotationClassNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="addAnnotationOrGetExisting(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.ClassNode, Map<String, Object>)"><!-- --></a>
+                        <a name="addAnnotationOrGetExisting(org.codehaus.groovy.ast.AnnotatedNode, org.codehaus.groovy.ast.ClassNode, Map<String, Object>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.codehaus.groovy.ast.AnnotationNode <strong>addAnnotationOrGetExisting</strong>(org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.ClassNode annotationClassNode, java.util.Map&lt;java.lang.String, java.lang.Object&gt; members)</h4>
+                                <h4>static&nbsp;org.codehaus.groovy.ast.AnnotationNode <strong>addAnnotationOrGetExisting</strong>(org.codehaus.groovy.ast.AnnotatedNode annotatedNode, org.codehaus.groovy.ast.ClassNode annotationClassNode, java.util.Map&lt;java.lang.String, java.lang.Object&gt; members)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -542,18 +650,93 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="findAnnotation(org.codehaus.groovy.ast.ClassNode, Class<?>)"><!-- --></a>
+                        <a name="buildGetPropertyExpression(org.codehaus.groovy.ast.expr.Expression, java.lang.String, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.codehaus.groovy.ast.AnnotationNode <strong>findAnnotation</strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.Class&lt;?&gt; type)</h4>
+                                <h4>static&nbsp;org.codehaus.groovy.ast.expr.MethodCallExpression <strong>buildGetPropertyExpression</strong>(org.codehaus.groovy.ast.expr.Expression objectExpression, java.lang.String propertyName, org.codehaus.groovy.ast.ClassNode targetClassNode)</h4>
+                                <p> Build static direct call to getter of a property
+     <DL><DT><B>Returns:</B></DT><DD>The method call expression</DD></DL><DL><DT><B>Parameters:</B></DT><DD>objectExpression</DD><DD>propertyName</DD><DD>targetClassNode</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="buildGetPropertyExpression(org.codehaus.groovy.ast.expr.Expression, java.lang.String, org.codehaus.groovy.ast.ClassNode, boolean)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;org.codehaus.groovy.ast.expr.MethodCallExpression <strong>buildGetPropertyExpression</strong>(org.codehaus.groovy.ast.expr.Expression objectExpression, java.lang.String propertyName, org.codehaus.groovy.ast.ClassNode targetClassNode, boolean useBooleanGetter)</h4>
+                                <p> Build static direct call to getter of a property
+     <DL><DT><B>Returns:</B></DT><DD>The method call expression</DD></DL><DL><DT><B>Parameters:</B></DT><DD>objectExpression</DD><DD>propertyName</DD><DD>targetClassNode</DD><DD>useBooleanGetter</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="buildSetPropertyExpression(org.codehaus.groovy.ast.expr.Expression, java.lang.String, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.expr.Expression)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;org.codehaus.groovy.ast.expr.MethodCallExpression <strong>buildSetPropertyExpression</strong>(org.codehaus.groovy.ast.expr.Expression objectExpression, java.lang.String propertyName, org.codehaus.groovy.ast.ClassNode targetClassNode, org.codehaus.groovy.ast.expr.Expression valueExpression)</h4>
+                                <p> Build static direct call to setter of a property
+     <DL><DT><B>Returns:</B></DT><DD>The method call expression</DD></DL><DL><DT><B>Parameters:</B></DT><DD>objectExpression</DD><DD>propertyName</DD><DD>targetClassNode</DD><DD>valueExpression</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="cloneAnnotation(org.codehaus.groovy.ast.AnnotationNode)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;org.codehaus.groovy.ast.AnnotationNode <strong>cloneAnnotation</strong>(org.codehaus.groovy.ast.AnnotationNode node)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="findAnnotation(org.codehaus.groovy.ast.ClassNode, List<AnnotationNode>)"><!-- --></a>
+                        <a name="copyAnnotations(org.codehaus.groovy.ast.AnnotatedNode, org.codehaus.groovy.ast.AnnotatedNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.codehaus.groovy.ast.AnnotationNode <strong>findAnnotation</strong>(org.codehaus.groovy.ast.ClassNode annotationClassNode, java.util.List&lt;org.codehaus.groovy.ast.AnnotationNode&gt; annotations)</h4>
+                                <h4>static&nbsp;void <strong>copyAnnotations</strong>(org.codehaus.groovy.ast.AnnotatedNode from, org.codehaus.groovy.ast.AnnotatedNode to)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="copyAnnotations(org.codehaus.groovy.ast.AnnotatedNode, org.codehaus.groovy.ast.AnnotatedNode, Set<String>, Set<String>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;void <strong>copyAnnotations</strong>(org.codehaus.groovy.ast.AnnotatedNode from, org.codehaus.groovy.ast.AnnotatedNode to, java.util.Set&lt;java.lang.String&gt; included, java.util.Set&lt;java.lang.String&gt; excluded)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="copyParameters(org.codehaus.groovy.ast.Parameter)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;org.codehaus.groovy.ast.Parameter[] <strong>copyParameters</strong>(org.codehaus.groovy.ast.Parameter[] parameterTypes)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="copyParameters(org.codehaus.groovy.ast.Parameter, Map<String, ClassNode>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;org.codehaus.groovy.ast.Parameter[] <strong>copyParameters</strong>(org.codehaus.groovy.ast.Parameter[] parameterTypes, java.util.Map&lt;java.lang.String, org.codehaus.groovy.ast.ClassNode&gt; genericsPlaceholders)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="copyParameters(Map<String, ClassNode>, org.codehaus.groovy.ast.Parameter, List<String>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;org.codehaus.groovy.ast.Parameter[] <strong>copyParameters</strong>(java.util.Map&lt;java.lang.String, org.codehaus.groovy.ast.ClassNode&gt; genericsSpec, org.codehaus.groovy.ast.Parameter[] parameterTypes, java.util.List&lt;java.lang.String&gt; currentMethodGenPlaceholders)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="findAnnotation(org.codehaus.groovy.ast.AnnotatedNode, Class<?>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;org.codehaus.groovy.ast.AnnotationNode <strong>findAnnotation</strong>(org.codehaus.groovy.ast.AnnotatedNode classNode, java.lang.Class&lt;?&gt; type)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="findAnnotation(org.codehaus.groovy.ast.AnnotatedNode, List<AnnotationNode>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;org.codehaus.groovy.ast.AnnotationNode <strong>findAnnotation</strong>(org.codehaus.groovy.ast.AnnotatedNode annotationClassNode, java.util.List&lt;org.codehaus.groovy.ast.AnnotationNode&gt; annotations)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -589,6 +772,50 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <h4>static&nbsp;org.codehaus.groovy.ast.PropertyNode <strong>getPropertyFromHierarchy</strong>(org.codehaus.groovy.ast.ClassNode cn, java.lang.String name)</h4>
                                 <p> Obtains a property from the class hierarchy
      <DL><DT><B>Returns:</B></DT><DD>The property node or null</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>cn</code> -  The class node</DD><DD><code>name</code> -  The property name</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="hasAnnotation(org.codehaus.groovy.ast.MethodNode, Class<? extends Annotation>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;boolean <strong>hasAnnotation</strong>(org.codehaus.groovy.ast.MethodNode methodNode, java.lang.Class&lt;? extends java.lang.annotation.Annotation&gt; annotationClass)</h4>
+                                <p> Returns true if MethodNode is marked with annotationClass
+     <DL><DT><B>Returns:</B></DT><DD>true if classNode is marked with annotationClass, otherwise false</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>methodNode</code> -  A MethodNode to inspect</DD><DD><code>annotationClass</code> -  an annotation to look for</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="hasAnnotation(org.codehaus.groovy.ast.MethodNode, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;boolean <strong>hasAnnotation</strong>(org.codehaus.groovy.ast.MethodNode methodNode, java.lang.String annotationClassName)</h4>
+                                <p> Returns true if MethodNode is marked with annotationClass
+     <DL><DT><B>Returns:</B></DT><DD>true if classNode is marked with annotationClass, otherwise false</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>methodNode</code> -  A MethodNode to inspect</DD><DD><code>annotationClass</code> -  an annotation to look for</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="hasAnnotation(List<AnnotationNode>, org.codehaus.groovy.ast.AnnotationNode)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;boolean <strong>hasAnnotation</strong>(java.util.List&lt;org.codehaus.groovy.ast.AnnotationNode&gt; annotationNodes, org.codehaus.groovy.ast.AnnotationNode annotationNode)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="hasAnnotation(org.codehaus.groovy.ast.ClassNode, Class<? extends Annotation>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;boolean <strong>hasAnnotation</strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.Class&lt;? extends java.lang.annotation.Annotation&gt; annotationClass)</h4>
+                                <p> Returns true if classNode is marked with annotationClass
+     <DL><DT><B>Returns:</B></DT><DD>true if classNode is marked with annotationClass, otherwise false</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>classNode</code> -  A ClassNode to inspect</DD><DD><code>annotationClass</code> -  an annotation to look for</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="hasAnyAnnotations(org.codehaus.groovy.ast.ClassNode, Class<? extends Annotation>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;boolean <strong>hasAnyAnnotations</strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.Class&lt;? extends java.lang.annotation.Annotation&gt;... annotationsToLookFor)</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>true if classNode is marked with any of the annotations in annotationsToLookFor</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>classNode</code> -  a ClassNode to search</DD><DD><code>annotationsToLookFor</code> -  Annotations to look for</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -736,6 +963,14 @@ static&nbsp;org.codehaus.groovy.ast.ClassNode <strong>nonGeneric</strong>(org.co
                             </li>
                         </ul>
                     
+                        <a name="processVariableScopes(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;void <strong>processVariableScopes</strong>(org.codehaus.groovy.control.SourceUnit source, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.MethodNode methodNode)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="replaceGenericsPlaceholders(org.codehaus.groovy.ast.ClassNode, Map<String, ClassNode>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -749,6 +984,15 @@ static&nbsp;org.codehaus.groovy.ast.ClassNode <strong>nonGeneric</strong>(org.co
                             <li class="blockList">
                                 <h4>static&nbsp;org.codehaus.groovy.ast.ClassNode <strong>replaceGenericsPlaceholders</strong>(org.codehaus.groovy.ast.ClassNode type, java.util.Map&lt;java.lang.String, org.codehaus.groovy.ast.ClassNode&gt; genericsPlaceholders, org.codehaus.groovy.ast.ClassNode defaultPlaceholder)</h4>
                                 <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="varThis()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;org.codehaus.groovy.ast.expr.VariableExpression <strong>varThis</strong>()</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>A new this variable</DD></DL></p>
                             </li>
                         </ul>
                     
