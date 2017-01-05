@@ -21,7 +21,6 @@ dependencies {
     compile "org.grails:grails-plugin-testing:$grailsVersion", excludes
 
     compile project(":grails-datastore-gorm"),
-            project(":grails-datastore-simple"),
             project(":grails-datastore-core")
 
     compile "org.grails:grails-test:$grailsVersion",excludes

@@ -27,7 +27,6 @@ dependencies {
         exclude group:"org.grails",module: "grails-test"
         exclude group:"org.grails",module: "grails-datastore-gorm"
         exclude group:"org.grails",module: "grails-datastore-core"
-        exclude group:"org.grails",module: "grails-datastore-simple"
         exclude group:"org.grails",module: "grails-datastore-gorm"
     }
 
@@ -39,13 +38,13 @@ dependencies {
         exclude group:'org.grails',module:'grails-datastore-gorm-support'
         exclude group:'org.grails',module:'grails-datastore-gorm-plugin-support'
     }
-    compile project(":grails-datastore-simple"),
-            project(":grails-datastore-core")
+    compile project(":grails-datastore-core")
 
     compile "org.grails:grails-test:$grails2Version",excludes
     compile "org.grails:grails-core:$grails2Version",excludes
     compile("org.grails:grails-bootstrap:$grails2Version",excludes)
 
+    testCompile project(":grails-datastore-gorm-test")
     testCompile project(":grails-datastore-gorm-tck"), {
         exclude group:'org.grails',module:'grails-datastore-gorm-support'
         exclude group:'org.grails',module:'grails-datastore-gorm-plugin-support'

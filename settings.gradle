@@ -1,5 +1,4 @@
 include ("grails-datastore-core",
-        "grails-datastore-simple",
         "grails-datastore-web",
         'grails-datastore-rest-client',
 
