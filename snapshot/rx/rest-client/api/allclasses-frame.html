@@ -121,6 +121,7 @@
 <li><a href="grails/gorm/rx/CriteriaBuilder.html" title="class in grails.gorm.rx" target="classFrame">CriteriaBuilder</a></li>
 <li><a href="org/grails/datastore/mapping/model/types/Custom.html" title="class in org.grails.datastore.mapping.model.types" target="classFrame">Custom</a></li>
 <li><a href="org/grails/datastore/mapping/engine/types/CustomTypeMarshaller.html" title="interface in org.grails.datastore.mapping.engine.types" target="classFrame"><I>CustomTypeMarshaller</I></a></li>
+<li><a href="org/grails/datastore/mapping/transactions/CustomizableRollbackTransactionAttribute.html" title="class in org.grails.datastore.mapping.transactions" target="classFrame">CustomizableRollbackTransactionAttribute</a></li>
 <li><a href="org/grails/datastore/gorm/jdbc/connections/DataSourceConnectionSource.html" title="class in org.grails.datastore.gorm.jdbc.connections" target="classFrame">DataSourceConnectionSource</a></li>
 <li><a href="org/grails/datastore/gorm/jdbc/connections/DataSourceSettings.html" title="class in org.grails.datastore.gorm.jdbc.connections" target="classFrame">DataSourceSettings</a></li>
 <li><a href="org/grails/datastore/gorm/jdbc/connections/DataSourceSettingsBuilder.html" title="class in org.grails.datastore.gorm.jdbc.connections" target="classFrame">DataSourceSettingsBuilder</a></li>
@@ -319,6 +320,7 @@
 <li><a href="org/grails/datastore/mapping/multitenancy/MultiTenantCapableDatastore.html" title="interface in org.grails.datastore.mapping.multitenancy" target="classFrame"><I>MultiTenantCapableDatastore</I></a></li>
 <li><a href="org/grails/gorm/rx/events/MultiTenantEventListener.html" title="class in org.grails.gorm.rx.events" target="classFrame">MultiTenantEventListener</a></li>
 <li><a href="org/grails/datastore/gorm/multitenancy/MultiTenantEventListener.html" title="class in org.grails.datastore.gorm.multitenancy" target="classFrame">MultiTenantEventListener</a></li>
+<li><a href="org/grails/datastore/mapping/core/connections/MultipleConnectionSourceCapableDatastore.html" title="interface in org.grails.datastore.mapping.core.connections" target="classFrame"><I>MultipleConnectionSourceCapableDatastore</I></a></li>
 <li><a href="org/grails/datastore/mapping/reflect/NameUtils.html" title="class in org.grails.datastore.mapping.reflect" target="classFrame">NameUtils</a></li>
 <li><a href="org/grails/datastore/gorm/query/NamedCriteriaProxy.html" title="class in org.grails.datastore.gorm.query" target="classFrame">NamedCriteriaProxy</a></li>
 <li><a href="org/grails/datastore/gorm/query/NamedQueriesBuilder.html" title="class in org.grails.datastore.gorm.query" target="classFrame">NamedQueriesBuilder</a></li>
@@ -326,6 +328,7 @@
 <li><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.NativeEntryModifyingEntityAccess.html" title="class in org.grails.datastore.mapping.engine.NativeEntryEntityPersister" target="classFrame">NativeEntryEntityPersister.NativeEntryModifyingEntityAccess</a></li>
 <li><a href="org/grails/datastore/mapping/multitenancy/resolvers/NoTenantResolver.html" title="class in org.grails.datastore.mapping.multitenancy.resolvers" target="classFrame">NoTenantResolver</a></li>
 <li><a href="org/grails/datastore/mapping/engine/NonPersistentTypeException.html" title="class in org.grails.datastore.mapping.engine" target="classFrame">NonPersistentTypeException</a></li>
+<li><a href="grails/gorm/transactions/NotTransactional.html" title="annotation type in grails.gorm.transactions" target="classFrame">NotTransactional</a></li>
 <li><a href="grails/gorm/rx/collection/ObservableCollection.html" title="interface in grails.gorm.rx.collection" target="classFrame"><I>ObservableCollection</I></a></li>
 <li><a href="grails/gorm/rx/proxy/ObservableProxy.html" title="interface in grails.gorm.rx.proxy" target="classFrame"><I>ObservableProxy</I></a></li>
 <li><a href="org/grails/datastore/gorm/plugin/support/OnChangeHandler.html" title="class in org.grails.datastore.gorm.plugin.support" target="classFrame">OnChangeHandler</a></li>
@@ -467,6 +470,8 @@
 <li><a href="org/grails/datastore/rx/rest/codecs/RestEntityCodec.html" title="class in org.grails.datastore.rx.rest.codecs" target="classFrame">RestEntityCodec</a></li>
 <li><a href="org/grails/datastore/rx/rest/codecs/RestEntityCodecRegistry.html" title="class in org.grails.datastore.rx.rest.codecs" target="classFrame">RestEntityCodecRegistry</a></li>
 <li><a href="org/grails/datastore/mapping/query/Restrictions.html" title="class in org.grails.datastore.mapping.query" target="classFrame">Restrictions</a></li>
+<li><a href="grails/gorm/transactions/Rollback.html" title="annotation type in grails.gorm.transactions" target="classFrame">Rollback</a></li>
+<li><a href="org/grails/datastore/gorm/transactions/transform/RollbackTransform.html" title="class in org.grails.datastore.gorm.transactions.transform" target="classFrame">RollbackTransform</a></li>
 <li><a href="org/grails/datastore/rx/collection/RxCollection.html" title="trait in org.grails.datastore.rx.collection" target="classFrame"><I>RxCollection</I></a></li>
 <li><a href="org/grails/datastore/rx/collection/RxCollectionUtils.html" title="class in org.grails.datastore.rx.collection" target="classFrame">RxCollectionUtils</a></li>
 <li><a href="org/grails/datastore/rx/RxDatastoreClient.html" title="interface in org.grails.datastore.rx" target="classFrame"><I>RxDatastoreClient</I></a></li>
@@ -553,8 +558,12 @@
 <li><a href="org/grails/datastore/mapping/model/types/ToMany.html" title="class in org.grails.datastore.mapping.model.types" target="classFrame">ToMany</a></li>
 <li><a href="org/grails/datastore/mapping/model/types/ToOne.html" title="class in org.grails.datastore.mapping.model.types" target="classFrame">ToOne</a></li>
 <li><a href="org/grails/datastore/mapping/transactions/Transaction.html" title="interface in org.grails.datastore.mapping.transactions" target="classFrame"><I>Transaction</I></a></li>
+<li><a href="org/grails/datastore/mapping/transactions/TransactionCapableDatastore.html" title="interface in org.grails.datastore.mapping.transactions" target="classFrame"><I>TransactionCapableDatastore</I></a></li>
 <li><a href="org/grails/datastore/mapping/transactions/TransactionObject.html" title="class in org.grails.datastore.mapping.transactions" target="classFrame">TransactionObject</a></li>
+<li><a href="grails/gorm/services/TransactionService.html" title="interface in grails.gorm.services" target="classFrame"><I>TransactionService</I></a></li>
 <li><a href="org/grails/datastore/mapping/transactions/TransactionUtils.html" title="class in org.grails.datastore.mapping.transactions" target="classFrame">TransactionUtils</a></li>
+<li><a href="grails/gorm/transactions/Transactional.html" title="annotation type in grails.gorm.transactions" target="classFrame">Transactional</a></li>
+<li><a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html" title="class in org.grails.datastore.gorm.transactions.transform" target="classFrame">TransactionalTransform</a></li>
 <li><a href="org/grails/datastore/gorm/validation/constraints/builtin/UniqueConstraint.html" title="class in org.grails.datastore.gorm.validation.constraints.builtin" target="classFrame">UniqueConstraint</a></li>
 <li><a href="org/grails/datastore/mapping/validation/ValidatingEventListener.html" title="class in org.grails.datastore.mapping.validation" target="classFrame">ValidatingEventListener</a></li>
 <li><a href="org/grails/datastore/mapping/validation/ValidationErrors.html" title="class in org.grails.datastore.mapping.validation" target="classFrame">ValidationErrors</a></li>
