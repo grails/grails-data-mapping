@@ -182,11 +182,11 @@ class TransactionalTransform extends AbstractASTTransformation {
     }
 
     protected void weaveTransactionManagerAware(SourceUnit source, AnnotationNode annotationNode, ClassNode declaringClassNode) {
-        if ( declaringClassNode.getNodeMetaData(TRANSFORM_APPLIED_MARKER) == APPLIED_MARKER ) {
+        if ( declaringClassNode.getNodeMetaData(APPLIED_MARKER) == APPLIED_MARKER ) {
             return
         }
 
-        declaringClassNode.putNodeMetaData(TRANSFORM_APPLIED_MARKER, APPLIED_MARKER)
+        declaringClassNode.putNodeMetaData(APPLIED_MARKER, APPLIED_MARKER)
 
         Expression connectionName = annotationNode.getMember("connection")
         boolean hasDataSourceProperty = connectionName != null
@@ -337,11 +337,11 @@ class TransactionalTransform extends AbstractASTTransformation {
     }
 
     protected void weaveTransactionalMethod(SourceUnit source, ClassNode classNode, AnnotationNode annotationNode, MethodNode methodNode, String executeMethodName = getTransactionTemplateMethodName()) {
-        if ( methodNode.getNodeMetaData(TRANSFORM_APPLIED_MARKER) == APPLIED_MARKER ) {
+        if ( methodNode.getNodeMetaData(APPLIED_MARKER) == APPLIED_MARKER ) {
             return
         }
 
-        methodNode.putNodeMetaData(TRANSFORM_APPLIED_MARKER, APPLIED_MARKER)
+        methodNode.putNodeMetaData(APPLIED_MARKER, APPLIED_MARKER)
 
         MethodCallExpression originalMethodCall = moveOriginalCodeToNewMethod(source, classNode, methodNode)
 

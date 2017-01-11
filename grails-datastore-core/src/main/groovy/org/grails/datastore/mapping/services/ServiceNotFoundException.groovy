@@ -10,7 +10,9 @@ import org.grails.datastore.mapping.core.DatastoreException
  * @author Graeme Rocher
  * @since 6.1
  */
-@InheritConstructors
 @CompileStatic
 class ServiceNotFoundException extends DatastoreException {
+    ServiceNotFoundException(String s) {
+        super(s)
+    }
 }
