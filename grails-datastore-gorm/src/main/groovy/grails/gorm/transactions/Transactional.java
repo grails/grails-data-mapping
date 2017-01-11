@@ -161,7 +161,7 @@ public @interface Transactional {
      *
      * @return The type of the datastore
      */
-    Class<? extends ConnectionSourcesProvider>[] forDatastore() default {};
+    Class<? extends ConnectionSourcesProvider>[] datastore() default {};
 
     /**
      * The connection to use by default

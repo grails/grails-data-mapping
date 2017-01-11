@@ -84,13 +84,6 @@ class Setup {
             }
         ] as Validator)
 
-        def enhancer = new GormEnhancer(simple, new DatastoreTransactionManager(datastore: simple))
-        enhancer.enhance()
-
-        simple.mappingContext.addMappingContextListener({ e -> enhancer.enhance e } as MappingContext.Listener)
-
-        simple.applicationContext.addApplicationListener new DomainEventListener(simple)
-        simple.applicationContext.addApplicationListener new AutoTimestampEventListener(simple)
 
         simple.connect()
     }

@@ -21,6 +21,7 @@ public class CustomizableRollbackTransactionAttribute extends RuleBasedTransacti
 
     private static final long serialVersionUID = 1L;
     private boolean inheritRollbackOnly = true;
+    private String connection;
 
     public CustomizableRollbackTransactionAttribute() {
         super();
@@ -98,5 +99,16 @@ public class CustomizableRollbackTransactionAttribute extends RuleBasedTransacti
 
     public void setInheritRollbackOnly(boolean inheritRollbackOnly) {
         this.inheritRollbackOnly = inheritRollbackOnly;
+    }
+
+    /**
+     * @return The connection being used
+     */
+    public String getConnection() {
+        return connection;
+    }
+
+    public void setConnection(String connection) {
+        this.connection = connection;
     }
 }

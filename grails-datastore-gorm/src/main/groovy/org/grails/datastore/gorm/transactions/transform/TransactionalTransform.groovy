@@ -24,6 +24,8 @@ import org.codehaus.groovy.classgen.VariableScopeVisitor
 import org.codehaus.groovy.control.ErrorCollector
 import org.codehaus.groovy.transform.AbstractASTTransformation
 import org.grails.datastore.gorm.GormEnhancer
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.core.connections.MultipleConnectionSourceCapableDatastore
 import org.grails.datastore.mapping.transactions.CustomizableRollbackTransactionAttribute
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -110,6 +112,8 @@ class TransactionalTransform extends AbstractASTTransformation {
     private static final String SPEC_CLASS = "spock.lang.Specification";
     public static final String PROPERTY_DATA_SOURCE = "datasource"
     private static final Object APPLIED_MARKER = new Object();
+    private static final String SET_TRANSACTION_MANAGER = "setTransactionManager"
+    public static final String GET_TRANSACTION_MANAGER_METHOD = "getTransactionManager"
 
     @Override
     void visit(ASTNode[] astNodes, SourceUnit source) {
@@ -136,10 +140,6 @@ class TransactionalTransform extends AbstractASTTransformation {
             weaveTransactionalBehavior(source, (ClassNode)parent, annotationNode)
         }
 
-    }
-
-    protected boolean isTransactionAnnotation(AnnotationNode annotationNode) {
-        MY_TYPE.equals(annotationNode.getClassNode()) || annotationNode.getClassNode().getName().equals("grails.transaction.Transactional")
     }
 
     public void weaveTransactionalBehavior(SourceUnit source, ClassNode classNode, AnnotationNode annotationNode) {
@@ -181,30 +181,159 @@ class TransactionalTransform extends AbstractASTTransformation {
         }
     }
 
-    public static boolean isSpockTest(ClassNode classNode) {
-        return isSubclassOf(classNode, SPEC_CLASS);
-    }
-
-    private boolean hasExcludedAnnotation(MethodNode md) {
-        boolean excludedAnnotation = false;
-        for (AnnotationNode annotation : md.getAnnotations()) {
-            if(ANNOTATION_NAME_EXCLUDES.contains(annotation.getClassNode().getName())) {
-                excludedAnnotation = true;
-                break;
-            }
+    protected void weaveTransactionManagerAware(SourceUnit source, AnnotationNode annotationNode, ClassNode declaringClassNode) {
+        if ( declaringClassNode.getNodeMetaData(TRANSFORM_APPLIED_MARKER) == APPLIED_MARKER ) {
+            return
         }
-        excludedAnnotation
-    }
 
-    private boolean hasJunitAnnotation(MethodNode md) {
-        boolean excludedAnnotation = false;
-        for (AnnotationNode annotation : md.getAnnotations()) {
-            if(JUNIT_ANNOTATION_NAMES.contains(annotation.getClassNode().getName())) {
-                excludedAnnotation = true;
-                break;
+        declaringClassNode.putNodeMetaData(TRANSFORM_APPLIED_MARKER, APPLIED_MARKER)
+
+        Expression connectionName = annotationNode.getMember("connection")
+        boolean hasDataSourceProperty = connectionName != null
+
+        //add the transactionManager property
+        if (!hasOrInheritsProperty(declaringClassNode, PROPERTY_TRANSACTION_MANAGER) ) {
+
+            ClassNode transactionManagerClassNode = ClassHelper.make(PlatformTransactionManager)
+
+            /// Add field: PlatformTransactionManager $transactionManager
+            String transactionManagerFieldName = '$' + PROPERTY_TRANSACTION_MANAGER
+            FieldNode transactionManagerField = declaringClassNode.addField(transactionManagerFieldName, Modifier.PROTECTED, transactionManagerClassNode, null)
+
+
+            VariableExpression transactionManagerPropertyExpr = varX(transactionManagerField)
+            BlockStatement getterBody = block()
+
+            // this is a hacky workaround that ensures the transaction manager is also set on the spock shared instance which seems to differ for
+            // some reason
+            if(isSubclassOf(declaringClassNode, "spock.lang.Specification")) {
+                getterBody.addStatement(
+                    stmt(
+                        callX( propX( propX( varThis(), "specificationContext"), "sharedInstance"),
+                                SET_TRANSACTION_MANAGER,
+                                transactionManagerPropertyExpr)
+                    )
+                )
             }
+
+            // Prepare the getTransactionManager() method body
+            ClassExpression gormEnhancerExpr = classX(GormEnhancer)
+            Expression val = annotationNode.getMember("datastore")
+            MethodCallExpression transactionManagerLookupExpr
+            if(val instanceof ClassExpression) {
+                transactionManagerLookupExpr = hasDataSourceProperty ? callX(gormEnhancerExpr, "findTransactionManager", args(val, connectionName)) : callX(gormEnhancerExpr, "findTransactionManager", val)
+                Parameter typeParameter = param(ClassHelper.CLASS_Type, "type")
+                Parameter[] params = hasDataSourceProperty ? params(typeParameter, param(ClassHelper.STRING_TYPE, "connectionName")) : params(typeParameter)
+
+                transactionManagerLookupExpr.setMethodTarget(
+                        gormEnhancerExpr.getType().getDeclaredMethod("findTransactionManager", params )
+                )
+            }
+            else {
+                transactionManagerLookupExpr = hasDataSourceProperty ? callX(gormEnhancerExpr, "findSingleTransactionManager", connectionName) : callX(gormEnhancerExpr, "findSingleTransactionManager")
+                Parameter[] params = hasDataSourceProperty ? params(param(ClassHelper.STRING_TYPE, "connectionName")) : ZERO_PARAMETERS
+                transactionManagerLookupExpr.setMethodTarget(
+                        gormEnhancerExpr.getType().getDeclaredMethod("findSingleTransactionManager", params )
+                )
+            }
+
+            // if($transactionManager != null)
+            //     return $transactionManager
+            // else
+            //     return GormEnhancer.findSingleTransactionManager()
+            Statement ifElse = ifElseS(
+                    notNullX( transactionManagerPropertyExpr ),
+                    returnS( transactionManagerPropertyExpr ),
+                    returnS(transactionManagerLookupExpr)
+            )
+
+            getterBody.addStatement( ifElse )
+
+            // Add Method: PlatformTransactionManager getTransactionManager()
+            declaringClassNode.addMethod(GET_TRANSACTION_MANAGER_METHOD,
+                    Modifier.PUBLIC,
+                    transactionManagerClassNode,
+                    ZERO_PARAMETERS, null,
+                    getterBody)
+
+            // Prepare setter parameters
+            Parameter p = param(transactionManagerClassNode, PROPERTY_TRANSACTION_MANAGER)
+            Parameter[] parameters = params(p)
+            if(declaringClassNode.getMethod(SET_TRANSACTION_MANAGER, parameters) == null) {
+                Statement setterBody = assignS(transactionManagerPropertyExpr, varX(p))
+
+                // Add Setter Method: void setTransactionManager(PlatformTransactionManager transactionManager)
+                declaringClassNode.addMethod(SET_TRANSACTION_MANAGER,
+                        Modifier.PUBLIC,
+                        ClassHelper.VOID_TYPE,
+                        parameters,
+                        null,
+                        setterBody)
+            }
+
+            Expression datastoreAttribute = annotationNode.getMember("datastore")
+            ClassNode defaultType = hasDataSourceProperty ? ClassHelper.make(MultipleConnectionSourceCapableDatastore) : ClassHelper.make(Datastore)
+            boolean hasSpecificDatastore = datastoreAttribute instanceof ClassExpression
+            ClassNode datastoreType = hasSpecificDatastore ? ((ClassExpression)datastoreAttribute).getType().getPlainNodeReference() : defaultType
+
+            FieldNode datastoreField = declaringClassNode.addField('$targetDatastore', Modifier.PROTECTED, datastoreType, null)
+
+            Parameter datastoreParam = param(datastoreType, "datastore")
+            VariableExpression datastoreVar = varX(datastoreParam)
+
+            // if(datastore != null)
+            //     $transactionManager = datastore.getTransactionManager()
+            Statement assignConditional = ifS(notNullX(datastoreVar),
+                                                assignS(transactionManagerPropertyExpr, callX(datastoreVar, GET_TRANSACTION_MANAGER_METHOD)))
+
+            Statement setTargetDatastoreBody
+            VariableExpression datastoreFieldVar = varX(datastoreField)
+            if(hasDataSourceProperty) {
+                // $targetDatastore = datastore
+                // datastore = datastore.getDatastoreForConnection(connectionName)
+                setTargetDatastoreBody = block(
+                    assignS(datastoreFieldVar, datastoreVar),
+                    assignS(datastoreVar, callX(datastoreVar, "getDatastoreForConnection", connectionName )),
+                    assignConditional
+                )
+            }
+            else {
+                setTargetDatastoreBody = block(
+                    assignS(datastoreFieldVar, datastoreVar),
+                    assignConditional
+                )
+            }
+
+            // Add method: @Autowired void setTargetDatastore(Datastore datastore)
+            MethodNode setTargetDatastoreMethod = declaringClassNode.addMethod("setTargetDatastore", Modifier.PUBLIC, ClassHelper.VOID_TYPE, params(datastoreParam), null, setTargetDatastoreBody)
+
+            // Autowire setTargetDatastore via Spring
+            addAnnotationOrGetExisting(setTargetDatastoreMethod, Autowired)
+                    .setMember("required", constX(false))
+
+            // Add method: protected Datastore getTargetDatastore(String connectionName)
+            Parameter connectionNameParam = param(ClassHelper.STRING_TYPE, "connectionName")
+
+            // if($targetDatastore != null)
+            //      return $targetDatastore.getDatastoreForConnection(connectionName)
+            // else
+            //      return GormEnhancer.findSingleDatastore().getDatastoreForConnection(connectionName)
+
+            MethodCallExpression datastoreLookupCall
+
+            if(hasSpecificDatastore) {
+                datastoreLookupCall = callX(callX(gormEnhancerExpr, "findDatastoreByType", classX(datastoreType.getPlainNodeReference())), "getDatastoreForConnection", varX(connectionNameParam))
+            }
+            else {
+                datastoreLookupCall = callX(callX(gormEnhancerExpr, "findSingleDatastore"), "getDatastoreForConnection", varX(connectionNameParam))
+            }
+            declaringClassNode.addMethod("getTargetDatastore", Modifier.PROTECTED, datastoreType, params(connectionNameParam), null,
+                ifElseS(notNullX(datastoreFieldVar),
+                            returnS( callX( datastoreFieldVar, "getDatastoreForConnection", varX(connectionNameParam) ) ),
+                            returnS(datastoreLookupCall)
+            ))
+
         }
-        excludedAnnotation
     }
 
     protected void weaveTransactionalMethod(SourceUnit source, ClassNode classNode, AnnotationNode annotationNode, MethodNode methodNode, String executeMethodName = getTransactionTemplateMethodName()) {
@@ -217,6 +346,9 @@ class TransactionalTransform extends AbstractASTTransformation {
         MethodCallExpression originalMethodCall = moveOriginalCodeToNewMethod(source, classNode, methodNode)
 
         BlockStatement methodBody = block()
+
+        Expression connectionName = annotationNode.getMember("connection")
+        boolean hasDataSourceProperty = connectionName != null
 
         final ClassNode transactionAttributeClassNode = ClassHelper.make(CustomizableRollbackTransactionAttribute)
         final VariableExpression transactionAttributeVar = varX('$transactionAttribute', transactionAttributeClassNode)
@@ -231,8 +363,16 @@ class TransactionalTransform extends AbstractASTTransformation {
         final Parameter[] executeMethodParameterTypes = params(transactionStatusParam)
         final callCallExpression = new ClosureExpression(executeMethodParameterTypes, createTransactionalMethodCallBody(transactionStatusParam, originalMethodCall))
 
+        Expression transactionManagerExpression
+        if(hasDataSourceProperty) {
+            transactionManagerExpression = propX(callX(varX("this"), "getTargetDatastore", connectionName ), PROPERTY_TRANSACTION_MANAGER)
+        }
+        else {
+            transactionManagerExpression = propX(varX("this"), PROPERTY_TRANSACTION_MANAGER)
+        }
+
         final ArgumentListExpression constructorArgs = args(
-            propX(varX("this"), PROPERTY_TRANSACTION_MANAGER),
+            transactionManagerExpression,
             transactionAttributeVar
         )
         final ClassNode transactionTemplateClassNode = ClassHelper.make(GrailsTransactionTemplate)
@@ -282,7 +422,6 @@ class TransactionalTransform extends AbstractASTTransformation {
         final ClassNode rollbackRuleAttributeClassNode = ClassHelper.make(RollbackRuleAttribute)
         final ClassNode noRollbackRuleAttributeClassNode = ClassHelper.make(NoRollbackRuleAttribute)
         final Map<String, Expression> members = annotationNode.getMembers()
-        int rollbackRuleId = 0
         members.each { String name, Expression expr ->
             if (name == 'rollbackFor' || name == 'rollbackForClassName' || name == 'noRollbackFor' || name == 'noRollbackForClassName') {
                 final targetClassNode = (name == 'rollbackFor' || name == 'rollbackForClassName') ? rollbackRuleAttributeClassNode : noRollbackRuleAttributeClassNode
@@ -370,76 +509,36 @@ class TransactionalTransform extends AbstractASTTransformation {
         return originalMethodCall
     }
 
-
-    protected void weaveTransactionManagerAware(SourceUnit source, AnnotationNode annotationNode, ClassNode declaringClassNode) {
-        if ( declaringClassNode.getNodeMetaData(TRANSFORM_APPLIED_MARKER) == APPLIED_MARKER ) {
-            return
-        }
-
-        declaringClassNode.putNodeMetaData(TRANSFORM_APPLIED_MARKER, APPLIED_MARKER)
-
-        Expression connectionName = annotationNode.getMember("connection")
-        boolean hasDataSourceProperty = connectionName != null
-
-        //add the transactionManager property
-        if (!hasOrInheritsProperty(declaringClassNode, PROPERTY_TRANSACTION_MANAGER) ) {
-
-            ClassNode transactionManagerClassNode = ClassHelper.make(PlatformTransactionManager)
-
-            String fieldName = '$' + PROPERTY_TRANSACTION_MANAGER
-            FieldNode field = declaringClassNode.addField(fieldName, Modifier.PROTECTED, transactionManagerClassNode, null)
-
-            Parameter p = param(transactionManagerClassNode, PROPERTY_TRANSACTION_MANAGER)
-            Parameter[] parameters = params(p)
-
-
-            VariableExpression transactionManagerPropertyExpr = varX(field)
-            BlockStatement getterBody = block()
-
-            // this is a hacky workaround that ensures the transaction manager is also set on the spock shared instance which seems to differ for
-            // some reason
-            if(isSubclassOf(declaringClassNode, "spock.lang.Specification")) {
-                getterBody.addStatement(
-                    stmt(
-                        callX( propX( propX( varThis(), "specificationContext"), "sharedInstance"),
-                              "setTransactionManager",
-                               transactionManagerPropertyExpr)
-                    )
-                )
-            }
-
-            ClassExpression gormEnhancerExpr = classX(GormEnhancer)
-            MethodCallExpression transactionManagerLookupExpr = callX(gormEnhancerExpr, "findSingleTransactionManager")
-            transactionManagerLookupExpr.setMethodTarget(
-                gormEnhancerExpr.getType().getDeclaredMethod("findSingleTransactionManager", ZERO_PARAMETERS )
-            )
-            Statement ifElse = ifElseS(
-                notNullX( transactionManagerPropertyExpr ),
-                    returnS( transactionManagerPropertyExpr ),
-                    returnS(transactionManagerLookupExpr)
-            )
-
-            getterBody.addStatement( ifElse )
-            declaringClassNode.addMethod("getTransactionManager",
-                                            Modifier.PUBLIC,
-                                            transactionManagerClassNode,
-                                            ZERO_PARAMETERS, null,
-                                            getterBody)
-
-            Statement setterBody = assignS(transactionManagerPropertyExpr, varX(p))
-            MethodNode methodNode = declaringClassNode.addMethod("setTransactionManager",
-                                                            Modifier.PUBLIC,
-                                                            ClassHelper.VOID_TYPE,
-                                                            parameters,
-                                                            null,
-                                                            setterBody)
-
-            AnnotationNode autowired = addAnnotationOrGetExisting(methodNode, Autowired)
-            autowired.setMember("required", constX(false))
-            if(hasDataSourceProperty) {
-                def qualifier = addAnnotationOrGetExisting(methodNode, Qualifier)
-                qualifier.addMember("value", constX("transactionManager_" + connectionName.text))
-            }
-        }
+    public static boolean isSpockTest(ClassNode classNode) {
+        return isSubclassOf(classNode, SPEC_CLASS);
     }
+
+    protected boolean isTransactionAnnotation(AnnotationNode annotationNode) {
+        MY_TYPE.equals(annotationNode.getClassNode()) || annotationNode.getClassNode().getName().equals("grails.transaction.Transactional")
+    }
+
+    private boolean hasExcludedAnnotation(MethodNode md) {
+        boolean excludedAnnotation = false;
+        for (AnnotationNode annotation : md.getAnnotations()) {
+            if(ANNOTATION_NAME_EXCLUDES.contains(annotation.getClassNode().getName())) {
+                excludedAnnotation = true;
+                break;
+            }
+        }
+        excludedAnnotation
+    }
+
+    private boolean hasJunitAnnotation(MethodNode md) {
+        boolean excludedAnnotation = false;
+        for (AnnotationNode annotation : md.getAnnotations()) {
+            if(JUNIT_ANNOTATION_NAMES.contains(annotation.getClassNode().getName())) {
+                excludedAnnotation = true;
+                break;
+            }
+        }
+        excludedAnnotation
+    }
+
+
+
 }

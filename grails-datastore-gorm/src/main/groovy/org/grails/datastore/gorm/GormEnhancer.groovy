@@ -32,6 +32,7 @@ import org.grails.datastore.mapping.core.connections.ConnectionSource
 import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
 import org.grails.datastore.mapping.core.connections.ConnectionSourcesProvider
 import org.grails.datastore.mapping.core.connections.ConnectionSourcesSupport
+import org.grails.datastore.mapping.core.connections.MultipleConnectionSourceCapableDatastore
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.multitenancy.MultiTenancySettings
@@ -346,12 +347,9 @@ class GormEnhancer implements Closeable {
      * @throws TransactionSystemException If the current implementation does not support transactions
      * @throws IllegalStateException If no GORM implementation has been bootstrapped and configured
      */
-    static PlatformTransactionManager findSingleTransactionManager() {
+    static PlatformTransactionManager findSingleTransactionManager(String connectionName = ConnectionSource.DEFAULT) {
         Datastore datastore = findSingleDatastore()
-        if(datastore instanceof TransactionCapableDatastore)  {
-            return ((TransactionCapableDatastore)datastore).getTransactionManager()
-        }
-        throw new TransactionSystemException("Datastore implementation ${datastore.getClass().getName()} does not support transactions!")
+        return getTransactionManagerForConnection(datastore, connectionName)
     }
 
     /**
@@ -362,12 +360,9 @@ class GormEnhancer implements Closeable {
      * @throws TransactionSystemException If the current implementation does not support transactions
      * @throws IllegalStateException If no GORM implementation has been bootstrapped and configured
      */
-    static PlatformTransactionManager findTransactionManager(Class<? extends Datastore> datastoreType) {
+    static PlatformTransactionManager findTransactionManager(Class<? extends Datastore> datastoreType, String connectionName = ConnectionSource.DEFAULT) {
         Datastore datastore = findDatastoreByType(datastoreType)
-        if(datastore instanceof TransactionCapableDatastore)  {
-            return ((TransactionCapableDatastore)datastore).getTransactionManager()
-        }
-        throw new TransactionSystemException("Datastore implementation ${datastore.getClass().getName()} does not support transactions!")
+        return getTransactionManagerForConnection(datastore, connectionName)
     }
 
     /**
@@ -408,6 +403,18 @@ class GormEnhancer implements Closeable {
             }
             registry.removeMetaClass(cls)
         }
+    }
+
+    private static PlatformTransactionManager getTransactionManagerForConnection(Datastore datastore, String connectionName) {
+        if (datastore instanceof TransactionCapableDatastore && ConnectionSource.DEFAULT.equals(connectionName)) {
+            return ((TransactionCapableDatastore) datastore).getTransactionManager()
+        } else if (datastore instanceof MultipleConnectionSourceCapableDatastore) {
+            Datastore datastoreForConnection = ((MultipleConnectionSourceCapableDatastore) datastore).getDatastoreForConnection(connectionName)
+            if (datastoreForConnection instanceof TransactionCapableDatastore) {
+                return ((TransactionCapableDatastore) datastoreForConnection).getTransactionManager()
+            }
+        }
+        throw new TransactionSystemException("Datastore implementation ${datastore.getClass().getName()} does not support transactions!")
     }
 
     private static IllegalStateException stateException(Class entity) {

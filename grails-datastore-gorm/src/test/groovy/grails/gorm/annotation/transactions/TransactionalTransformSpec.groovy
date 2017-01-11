@@ -4,6 +4,7 @@ package grails.gorm.annotation.transactions
 import grails.core.DefaultGrailsApplication
 import grails.spring.BeanBuilder
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
+import org.grails.datastore.mapping.core.connections.MultipleConnectionSourceCapableDatastore
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -310,9 +311,7 @@ class DemoSpec extends Specification {
 
         then: "It implements TransactionManagerAware"
         bookService.getClass().getMethod("setTransactionManager", PlatformTransactionManager)
-        bookService.getClass().getMethod("setTransactionManager", PlatformTransactionManager).getAnnotation(Autowired)
-        bookService.getClass().getMethod("setTransactionManager", PlatformTransactionManager).getAnnotation(Qualifier)
-        bookService.getClass().getMethod("setTransactionManager", PlatformTransactionManager).getAnnotation(Qualifier).value() == 'transactionManager_foo'
+        bookService.getClass().getMethod("setTargetDatastore", MultipleConnectionSourceCapableDatastore).getAnnotation(Autowired)
 
 
     }
