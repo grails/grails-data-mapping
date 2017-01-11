@@ -27,6 +27,10 @@ import org.grails.datastore.mapping.model.PropertyMapping;
 import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.grails.datastore.mapping.reflect.FieldEntityAccess;
+import org.grails.datastore.mapping.services.DefaultServiceRegistry;
+import org.grails.datastore.mapping.services.Service;
+import org.grails.datastore.mapping.services.ServiceNotFoundException;
+import org.grails.datastore.mapping.services.ServiceRegistry;
 import org.grails.datastore.mapping.transactions.SessionHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,12 +53,12 @@ import java.util.Map;
  * @since 1.0
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class AbstractDatastore implements Datastore, StatelessDatastore {
+public abstract class AbstractDatastore implements Datastore, StatelessDatastore, ServiceRegistry {
     protected static final Logger LOG = LoggerFactory.getLogger(AbstractDatastore.class);
-
     private ApplicationContext applicationContext;
 
     protected final MappingContext mappingContext;
+    protected final ServiceRegistry serviceRegistry;
     protected final PropertyResolver connectionDetails;
     protected final TPCacheAdapterRepository cacheAdapterRepository;
 
@@ -79,6 +83,7 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
         this.connectionDetails = connectionDetails;
         setApplicationContext(ctx);
         this.cacheAdapterRepository = cacheAdapterRepository;
+        this.serviceRegistry = new DefaultServiceRegistry(this);
     }
 
     public AbstractDatastore(MappingContext mappingContext, Map<String, Object> connectionDetails,
@@ -88,6 +93,11 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
 
     protected static PropertyResolver mapToPropertyResolver(Map<String,Object> connectionDetails) {
         return DatastoreUtils.createPropertyResolver(connectionDetails);
+    }
+
+    @Override
+    public <T extends Service> T getService(Class<T> interfaceType) throws ServiceNotFoundException {
+        return serviceRegistry.getService(interfaceType);
     }
 
     @PreDestroy

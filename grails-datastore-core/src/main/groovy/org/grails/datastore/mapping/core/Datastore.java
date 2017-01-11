@@ -16,6 +16,7 @@ package org.grails.datastore.mapping.core;
 
 import groovy.lang.Closure;
 import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.services.ServiceRegistry;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -30,7 +31,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author Guillaume Laforge
  * @author Graeme Rocher
  */
-public interface Datastore {
+public interface Datastore extends ServiceRegistry {
 
     /**
      * Connects to the datastore with the default connection details, normally provided via the datastore implementations constructor
