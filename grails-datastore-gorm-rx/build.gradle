@@ -18,6 +18,7 @@ dependencies {
         exclude group:"org.springframework", module:'spring-beans'
     }
     documentation "org.grails:grails-async:$grailsVersion"
+    documentation "org.springframework:spring-beans:$springVersion"
     compileOnly "org.springframework:spring-beans:$springVersion"
     compileOnly("org.hibernate:hibernate-validator:$hibernateValidatorVersion")
     compile 'io.reactivex:rxjava:1.2.1'
