@@ -18,6 +18,7 @@ class ServiceTransformSpec extends Specification {
         reg.getService(TestService) != null
         reg.getService(TestService2) != null
         reg.getService(TestService).datastore != null
+        reg.getService(TransactionService) != null
     }
 }
 

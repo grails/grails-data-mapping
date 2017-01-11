@@ -17,6 +17,8 @@
 package grails.gorm.transactions
 
 import groovy.transform.CompileStatic
+import groovy.transform.stc.ClosureParams
+import groovy.transform.stc.SimpleType
 import org.grails.datastore.mapping.transactions.CustomizableRollbackTransactionAttribute
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionDefinition
@@ -58,7 +60,7 @@ class GrailsTransactionTemplate {
         this.transactionTemplate = new org.springframework.transaction.support.TransactionTemplate(transactionManager, this.transactionAttribute)
     }
 
-    Object executeAndRollback(Closure action) throws TransactionException {
+    public <T> T executeAndRollback(@ClosureParams(value = SimpleType.class, options = "org.springframework.transaction.TransactionStatus") Closure<T> action) throws TransactionException {
         try {
             Object result = transactionTemplate.execute(new TransactionCallback() {
                 Object doInTransaction(TransactionStatus status) {
@@ -84,7 +86,7 @@ class GrailsTransactionTemplate {
         }
     }
 
-    public <T> T execute(Closure<T> action) throws TransactionException {
+    public <T> T execute(@ClosureParams(value = SimpleType.class, options = "org.springframework.transaction.TransactionStatus") Closure<T> action) throws TransactionException {
         try {
             Object result = transactionTemplate.execute(new TransactionCallback() {
                 Object doInTransaction(TransactionStatus status) {
