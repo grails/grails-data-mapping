@@ -216,13 +216,23 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>boolean</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#isInheritRollbackOnly()">isInheritRollbackOnly</a></strong>()</code><br></td>
+                            <td class="colFirst"><code>java.lang.String</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getConnection()">getConnection</a></strong>()</code><br>@return The connection being used</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#isInheritRollbackOnly()">isInheritRollbackOnly</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#rollbackOn(java.lang.Throwable)">rollbackOn</a></strong>(java.lang.Throwable ex)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#setConnection(java.lang.String)">setConnection</a></strong>(java.lang.String connection)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -246,11 +256,11 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>class org.springframework.transaction.interceptor.RuleBasedTransactionAttribute</strong></code></td>
-                            <td class="colLast"><code>org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#getRollbackRules(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#rollbackOn(java.lang.Throwable), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#setRollbackRules(java.util.List), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#toString(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#setQualifier(java.lang.String), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#getQualifier(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#getTimeout(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#setPropagationBehaviorName(java.lang.String), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#setPropagationBehavior(int), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#setIsolationLevelName(java.lang.String), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#setIsolationLevel(int), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#setTimeout(int), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#getPropagationBehavior(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#getIsolationLevel(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#equals(java.lang.Object), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#hashCode(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#getName(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#setReadOnly(boolean), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#setName(java.lang.String), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#isReadOnly(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#wait(long, int), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#wait(long), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#wait(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#getClass(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#notify(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#notifyAll()</code></td>
+                            <td class="colLast"><code>org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#setRollbackRules(java.util.List), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#getRollbackRules(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#rollbackOn(java.lang.Throwable), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#toString(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#setQualifier(java.lang.String), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#getQualifier(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#getTimeout(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#setPropagationBehaviorName(java.lang.String), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#setPropagationBehavior(int), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#setIsolationLevelName(java.lang.String), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#setIsolationLevel(int), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#setTimeout(int), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#getPropagationBehavior(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#getIsolationLevel(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#equals(java.lang.Object), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#hashCode(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#getName(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#setReadOnly(boolean), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#setName(java.lang.String), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#isReadOnly(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#wait(long, int), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#wait(long), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#wait(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#getClass(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#notify(), org.springframework.transaction.interceptor.RuleBasedTransactionAttribute#notifyAll()</code></td>
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class org.springframework.transaction.interceptor.DefaultTransactionAttribute</strong></code></td>
-                            <td class="colLast"><code>org.springframework.transaction.interceptor.DefaultTransactionAttribute#setQualifier(java.lang.String), org.springframework.transaction.interceptor.DefaultTransactionAttribute#getQualifier(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#rollbackOn(java.lang.Throwable), org.springframework.transaction.interceptor.DefaultTransactionAttribute#getTimeout(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#setPropagationBehaviorName(java.lang.String), org.springframework.transaction.interceptor.DefaultTransactionAttribute#setPropagationBehavior(int), org.springframework.transaction.interceptor.DefaultTransactionAttribute#setIsolationLevelName(java.lang.String), org.springframework.transaction.interceptor.DefaultTransactionAttribute#setIsolationLevel(int), org.springframework.transaction.interceptor.DefaultTransactionAttribute#setTimeout(int), org.springframework.transaction.interceptor.DefaultTransactionAttribute#getPropagationBehavior(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#getIsolationLevel(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#equals(java.lang.Object), org.springframework.transaction.interceptor.DefaultTransactionAttribute#toString(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#hashCode(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#getName(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#setReadOnly(boolean), org.springframework.transaction.interceptor.DefaultTransactionAttribute#setName(java.lang.String), org.springframework.transaction.interceptor.DefaultTransactionAttribute#isReadOnly(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#wait(long, int), org.springframework.transaction.interceptor.DefaultTransactionAttribute#wait(long), org.springframework.transaction.interceptor.DefaultTransactionAttribute#wait(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#getClass(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#notify(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#notifyAll()</code></td>
+                            <td class="colLast"><code>org.springframework.transaction.interceptor.DefaultTransactionAttribute#setQualifier(java.lang.String), org.springframework.transaction.interceptor.DefaultTransactionAttribute#rollbackOn(java.lang.Throwable), org.springframework.transaction.interceptor.DefaultTransactionAttribute#getQualifier(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#getTimeout(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#setPropagationBehaviorName(java.lang.String), org.springframework.transaction.interceptor.DefaultTransactionAttribute#setPropagationBehavior(int), org.springframework.transaction.interceptor.DefaultTransactionAttribute#setIsolationLevelName(java.lang.String), org.springframework.transaction.interceptor.DefaultTransactionAttribute#setIsolationLevel(int), org.springframework.transaction.interceptor.DefaultTransactionAttribute#setTimeout(int), org.springframework.transaction.interceptor.DefaultTransactionAttribute#getPropagationBehavior(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#getIsolationLevel(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#equals(java.lang.Object), org.springframework.transaction.interceptor.DefaultTransactionAttribute#toString(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#hashCode(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#getName(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#setReadOnly(boolean), org.springframework.transaction.interceptor.DefaultTransactionAttribute#setName(java.lang.String), org.springframework.transaction.interceptor.DefaultTransactionAttribute#isReadOnly(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#wait(long, int), org.springframework.transaction.interceptor.DefaultTransactionAttribute#wait(long), org.springframework.transaction.interceptor.DefaultTransactionAttribute#wait(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#getClass(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#notify(), org.springframework.transaction.interceptor.DefaultTransactionAttribute#notifyAll()</code></td>
                         </tr>
                     </table>
                    </ul>
@@ -342,6 +352,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Method Detail</h3>
                     
+                        <a name="getConnection()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;java.lang.String <strong>getConnection</strong>()</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>The connection being used</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="isInheritRollbackOnly()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -355,6 +374,14 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>@java.lang.Override
 public&nbsp;boolean <strong>rollbackOn</strong>(java.lang.Throwable ex)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="setConnection(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;void <strong>setConnection</strong>(java.lang.String connection)</h4>
                                 <p></p>
                             </li>
                         </ul>
