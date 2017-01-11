@@ -1,4 +1,4 @@
-package grails.gorm.services
+package grails.gorm.transactions
 
 import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.SimpleType

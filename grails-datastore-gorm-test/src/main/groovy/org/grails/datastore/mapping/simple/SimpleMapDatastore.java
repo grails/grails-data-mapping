@@ -116,7 +116,11 @@ public class SimpleMapDatastore extends AbstractDatastore implements Closeable, 
     }
 
     public SimpleMapDatastore(final Iterable<String> dataSourceNames, Class...classes) {
-        this(createMultipleDataSources(dataSourceNames),new DefaultApplicationEventPublisher(), classes);
+        this(createMultipleDataSources(dataSourceNames, DatastoreUtils.createPropertyResolver(null)),new DefaultApplicationEventPublisher(), classes);
+    }
+
+    public SimpleMapDatastore(PropertyResolver configuration, final Iterable<String> dataSourceNames, Class...classes) {
+        this(createMultipleDataSources(dataSourceNames, configuration),new DefaultApplicationEventPublisher(), classes);
     }
 
     /**
@@ -153,8 +157,7 @@ public class SimpleMapDatastore extends AbstractDatastore implements Closeable, 
         return ctx;
     }
 
-    protected static InMemoryConnectionSources<Map<String, Map>, ConnectionSourceSettings> createMultipleDataSources(final Iterable<String> dataSourceNames) {
-        PropertyResolver propertyResolver = DatastoreUtils.createPropertyResolver(null);
+    protected static InMemoryConnectionSources<Map<String, Map>, ConnectionSourceSettings> createMultipleDataSources(final Iterable<String> dataSourceNames, PropertyResolver propertyResolver) {
         SimpleMapConnectionSourceFactory simpleMapConnectionSourceFactory = new SimpleMapConnectionSourceFactory();
         return new InMemoryConnectionSources<Map<String, Map>, ConnectionSourceSettings>(
                 simpleMapConnectionSourceFactory.create(ConnectionSource.DEFAULT, propertyResolver),

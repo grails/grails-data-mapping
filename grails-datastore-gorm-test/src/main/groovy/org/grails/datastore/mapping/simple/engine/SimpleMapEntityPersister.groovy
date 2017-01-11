@@ -55,13 +55,14 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
         family = getFamily(entity, entity.getMapping())
         final identity = entity.getIdentity()
         def idType = identity?.type
+        if (this.datastore[family] == null) this.datastore[family] = [:]
+
         if (idType == Integer) {
-            lastKey = 0
+            lastKey = this.datastore[family].size()
         }
         else {
-            lastKey = 0L
+            lastKey = this.datastore[family].size().longValue()
         }
-        if (this.datastore[family] == null) this.datastore[family] = [:]
     }
 
     protected PersistentEntity discriminatePersistentEntity(PersistentEntity persistentEntity, Map nativeEntry) {
@@ -264,7 +265,6 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
             def key
             if (isRoot) {
                 key = ++lastKey
-
             }
             else {
                 def root = persistentEntity.rootEntity

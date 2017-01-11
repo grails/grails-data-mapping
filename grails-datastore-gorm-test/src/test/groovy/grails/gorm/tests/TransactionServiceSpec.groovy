@@ -1,6 +1,6 @@
 package grails.gorm.tests
 
-import grails.gorm.services.TransactionService
+import grails.gorm.transactions.TransactionService
 import org.grails.datastore.mapping.simple.SimpleMapDatastore
 import org.springframework.transaction.TransactionStatus
 import spock.lang.AutoCleanup

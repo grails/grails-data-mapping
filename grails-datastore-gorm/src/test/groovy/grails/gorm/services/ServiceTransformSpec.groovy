@@ -1,5 +1,7 @@
 package grails.gorm.services
 
+import grails.gorm.multitenancy.TenantService
+import grails.gorm.transactions.TransactionService
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.services.DefaultServiceRegistry
 import org.grails.datastore.mapping.services.ServiceRegistry
@@ -19,6 +21,7 @@ class ServiceTransformSpec extends Specification {
         reg.getService(TestService2) != null
         reg.getService(TestService).datastore != null
         reg.getService(TransactionService) != null
+        reg.getService(TenantService) != null
     }
 }
 
