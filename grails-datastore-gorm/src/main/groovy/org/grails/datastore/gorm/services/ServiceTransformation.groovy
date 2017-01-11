@@ -51,10 +51,22 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
         File servicesDir = new File(targetDirectory, "META-INF/services")
         servicesDir.mkdirs()
 
+        String className = classNode.name
         try {
-            new File(servicesDir, "/$org.grails.datastore.mapping.services.Service.name").text = classNode.name
+            def descriptor = new File(servicesDir, org.grails.datastore.mapping.services.Service.name)
+            if(descriptor.exists()) {
+                String ls = System.getProperty('line.separator')
+                String contents = descriptor.text
+                def entries = contents.split('\\n')
+                if(!entries.contains(className)) {
+                    descriptor.append("${ ls}${className}")
+                }
+            }
+            else {
+                descriptor.text = className
+            }
         } catch (Throwable e) {
-            AstUtils.warning(sourceUnit, classNode, "Error generating service loader descriptor for class [$classNode.name]: $e.message")
+            AstUtils.warning(sourceUnit, classNode, "Error generating service loader descriptor for class [${className}]: $e.message")
         }
     }
 }

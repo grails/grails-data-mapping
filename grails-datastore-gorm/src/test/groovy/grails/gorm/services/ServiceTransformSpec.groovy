@@ -16,12 +16,19 @@ class ServiceTransformSpec extends Specification {
         expect:
         org.grails.datastore.mapping.services.Service.isAssignableFrom(TestService)
         reg.getService(TestService) != null
+        reg.getService(TestService2) != null
+        reg.getService(TestService).datastore != null
     }
 }
 
 @Service
 class TestService {
     void doStuff() {
+    }
+}
 
+@Service
+class TestService2 {
+    void doStuff() {
     }
 }
