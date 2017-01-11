@@ -315,7 +315,7 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;org.springframework.transaction.PlatformTransactionManager</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#findSingleTransactionManager()">findSingleTransactionManager</a></strong>()</code><br>Finds a single available transaction manager</td>
+                            <td class="colLast"><code><strong><a href="#findSingleTransactionManager(java.lang.String)">findSingleTransactionManager</a></strong>(java.lang.String connectionName = ConnectionSource.DEFAULT)</code><br>Finds a single available transaction manager</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -330,7 +330,7 @@ extends java.lang.Object
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;org.springframework.transaction.PlatformTransactionManager</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#findTransactionManager(Class<? extends Datastore>)">findTransactionManager</a></strong>(java.lang.Class&lt;? extends <a href='../../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt; datastoreType)</code><br>Finds a single available transaction manager</td>
+                            <td class="colLast"><code><strong><a href="#findTransactionManager(Class<? extends Datastore>, java.lang.String)">findTransactionManager</a></strong>(java.lang.Class&lt;? extends <a href='../../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt; datastoreType, java.lang.String connectionName = ConnectionSource.DEFAULT)</code><br>Finds a single available transaction manager</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -685,10 +685,10 @@ void <strong>enhance</strong>(<a href='../../../../org/grails/datastore/mapping/
                             </li>
                         </ul>
                     
-                        <a name="findSingleTransactionManager()"><!-- --></a>
+                        <a name="findSingleTransactionManager(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.springframework.transaction.PlatformTransactionManager <strong>findSingleTransactionManager</strong>()</h4>
+                                <h4>static&nbsp;org.springframework.transaction.PlatformTransactionManager <strong>findSingleTransactionManager</strong>(java.lang.String connectionName = ConnectionSource.DEFAULT)</h4>
                                 <p> Finds a single available transaction manager<DL><DT><B>throws:</B></DT><DD>TransactionSystemException If the current implementation does not support transactions</DD></DL><DL><DT><B>throws:</B></DT><DD>IllegalStateException If no GORM implementation has been bootstrapped and configured</DD></DL>
      <DL><DT><B>Returns:</B></DT><DD>The transaction manager</DD></DL></p>
                             </li>
@@ -711,10 +711,10 @@ void <strong>enhance</strong>(<a href='../../../../org/grails/datastore/mapping/
                             </li>
                         </ul>
                     
-                        <a name="findTransactionManager(Class<? extends Datastore>)"><!-- --></a>
+                        <a name="findTransactionManager(Class<? extends Datastore>, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.springframework.transaction.PlatformTransactionManager <strong>findTransactionManager</strong>(java.lang.Class&lt;? extends <a href='../../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt; datastoreType)</h4>
+                                <h4>static&nbsp;org.springframework.transaction.PlatformTransactionManager <strong>findTransactionManager</strong>(java.lang.Class&lt;? extends <a href='../../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt; datastoreType, java.lang.String connectionName = ConnectionSource.DEFAULT)</h4>
                                 <p> Finds a single available transaction manager<DL><DT><B>throws:</B></DT><DD>TransactionSystemException If the current implementation does not support transactions</DD></DL><DL><DT><B>throws:</B></DT><DD>IllegalStateException If no GORM implementation has been bootstrapped and configured</DD></DL>
      <DL><DT><B>Returns:</B></DT><DD>The transaction manager</DD></DL></p>
                             </li>

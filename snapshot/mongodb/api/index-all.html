@@ -1551,6 +1551,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/multitenancy/MultiTenantEventListener.html#datastore" title="Field in MultiTenantEventListener">datastore</a></span> - Field in <a href="org/grails/datastore/gorm/multitenancy/MultiTenantEventListener.html">MultiTenantEventListener</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/gorm/transactions/Transactional.html#datastore" title="Field in Transactional">datastore</a></span> - Field in <a href="grails/gorm/transactions/Transactional.html">Transactional</a>
+</dt><dd> <div class="block">If you are using multiple GORM implementations and wish to create a transaction for a specific implementation then use this. </div></dd>
 <dt><span class="strong"><a href="grails/mongodb/bootstrap/MongoDbDataStoreSpringInitializer.html#DATASTORE_TYPE" title="Field in MongoDbDataStoreSpringInitializer">DATASTORE_TYPE</a></span> - Field in <a href="grails/mongodb/bootstrap/MongoDbDataStoreSpringInitializer.html">MongoDbDataStoreSpringInitializer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/DatastoreAware.html" title="Interface in org.grails.datastore.mapping.core">DatastoreAware</a></span> - Interface in <a href="./org/grails/datastore/mapping/core/package-summary.html">org.grails.datastore.mapping.core</a>
@@ -2527,13 +2529,13 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#findSingleDatastore()" title="Method in GormEnhancer">findSingleDatastore()</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
 </dt><dd> <div class="block">Finds a single datastore</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#findSingleTransactionManager()" title="Method in GormEnhancer">findSingleTransactionManager()</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#findSingleTransactionManager(java.lang.String)" title="Method in GormEnhancer">findSingleTransactionManager(String)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
 </dt><dd> <div class="block">Finds a single available transaction manager</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#findStaticApi(Class<D>, java.lang.String)" title="Method in GormEnhancer">findStaticApi(Class&lt;D&gt;, String)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
 </dt><dd> <div class="block">Find a static API for the give entity type and qualifier (the connection name)</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#findTenantId(java.lang.Class)" title="Method in GormEnhancer">findTenantId(Class)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
 </dt><dd> <div class="block">Find the tenant id for the given entity</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#findTransactionManager(Class<? extends Datastore>)" title="Method in GormEnhancer">findTransactionManager(Class&lt;? extends Datastore&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#findTransactionManager(Class<? extends Datastore>, java.lang.String)" title="Method in GormEnhancer">findTransactionManager(Class&lt;? extends Datastore&gt;, String)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
 </dt><dd> <div class="block">Finds a single available transaction manager</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#findValidationApi(Class<D>, java.lang.String)" title="Method in GormEnhancer">findValidationApi(Class&lt;D&gt;, String)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
 </dt><dd> <div class="block">Find a validation API for the give entity type and qualifier (the connection name)</div></dd>
@@ -2624,8 +2626,6 @@ if (location.href.indexOf('is-external=true') == -1) {
  and execute them one by one. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/mongo/MongoSession.html#flushPendingUpdates(Map<PersistentEntity, Collection<PendingUpdate>>)" title="Method in MongoSession">flushPendingUpdates(Map&lt;PersistentEntity, Collection&lt;PendingUpdate&gt;&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/mongo/MongoSession.html">MongoSession</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="grails/gorm/transactions/Transactional.html#forDatastore" title="Field in Transactional">forDatastore</a></span> - Field in <a href="grails/gorm/transactions/Transactional.html">Transactional</a>
-</dt><dd> <div class="block">If you are using multiple GORM implementations and wish to create a transaction for a specific implementation then use this. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/javax/GormValidatorAdapter.html#forExecutables()" title="Method in GormValidatorAdapter">forExecutables()</a></span> - Method in <a href="org/grails/datastore/gorm/validation/javax/GormValidatorAdapter.html">GormValidatorAdapter</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/validation/ValidationException.html#formatErrors(org.springframework.validation.Errors, java.lang.String)" title="Method in ValidationException">formatErrors(Errors, String)</a></span> - Method in <a href="org/grails/datastore/mapping/validation/ValidationException.html">ValidationException</a>
@@ -2777,6 +2777,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/multitenancy/Tenants.CurrentTenant.html#get()" title="Method in Tenants.CurrentTenant">get()</a></span> - Method in <a href="grails/gorm/multitenancy/Tenants.CurrentTenant.html">Tenants.CurrentTenant</a>
 </dt><dd> <div class="block">@return Obtain the current tenant</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html#GET_TRANSACTION_MANAGER_METHOD" title="Field in TransactionalTransform">GET_TRANSACTION_MANAGER_METHOD</a></span> - Field in <a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html">TransactionalTransform</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/Property.html#getAccessType()" title="Method in Property">getAccessType()</a></span> - Method in <a href="org/grails/datastore/mapping/config/Property.html">Property</a>
 </dt><dd> <div class="block">@return The default access type to use to read and write property values</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html#getAdditionalBeansConfiguration(org.springframework.beans.factory.support.BeanDefinitionRegistry, java.lang.String)" title="Method in AbstractDatastoreInitializer">getAdditionalBeansConfiguration(BeanDefinitionRegistry, String)</a></span> - Method in <a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html">AbstractDatastoreInitializer</a>
@@ -2951,6 +2953,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Return all defined compound indices</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/plugin/support/SpringConfigurer.html#getConfiguration()" title="Method in SpringConfigurer">getConfiguration()</a></span> - Method in <a href="org/grails/datastore/gorm/plugin/support/SpringConfigurer.html">SpringConfigurer</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/transactions/CustomizableRollbackTransactionAttribute.html#getConnection()" title="Method in CustomizableRollbackTransactionAttribute">getConnection()</a></span> - Method in <a href="org/grails/datastore/mapping/transactions/CustomizableRollbackTransactionAttribute.html">CustomizableRollbackTransactionAttribute</a>
+</dt><dd> <div class="block">@return The connection being used</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/mongo/connections/MongoConnectionSources.html#getConnectionsCollection(ConnectionSource<MongoClient, MongoConnectionSourceSettings>)" title="Method in MongoConnectionSources">getConnectionsCollection(ConnectionSource&lt;MongoClient, MongoConnectionSourceSettings&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/mongo/connections/MongoConnectionSources.html">MongoConnectionSources</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/connections/ConnectionSources.html#getConnectionSource(java.lang.String)" title="Method in ConnectionSources">getConnectionSource(String)</a></span> - Method in <a href="org/grails/datastore/mapping/core/connections/ConnectionSources.html">ConnectionSources</a>
@@ -7309,6 +7313,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/mongo/config/MongoCollection.html#setCompoundIndex(java.util.Map)" title="Method in MongoCollection">setCompoundIndex(Map)</a></span> - Method in <a href="org/grails/datastore/mapping/mongo/config/MongoCollection.html">MongoCollection</a>
 </dt><dd> <div class="block">Sets a compound index definition</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/transactions/CustomizableRollbackTransactionAttribute.html#setConnection(java.lang.String)" title="Method in CustomizableRollbackTransactionAttribute">setConnection(String)</a></span> - Method in <a href="org/grails/datastore/mapping/transactions/CustomizableRollbackTransactionAttribute.html">CustomizableRollbackTransactionAttribute</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/mongo/bean/factory/MongoClientFactoryBean.html#setConnectionString(java.lang.String)" title="Method in MongoClientFactoryBean">setConnectionString(String)</a></span> - Method in <a href="org/grails/datastore/gorm/mongo/bean/factory/MongoClientFactoryBean.html">MongoClientFactoryBean</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/AbstractGormMappingFactory.html#setContextObject(java.lang.Object)" title="Method in AbstractGormMappingFactory">setContextObject(Object)</a></span> - Method in <a href="org/grails/datastore/mapping/config/AbstractGormMappingFactory.html">AbstractGormMappingFactory</a>
