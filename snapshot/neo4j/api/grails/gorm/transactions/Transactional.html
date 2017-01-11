@@ -155,7 +155,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.Class&lt;? extends <a href='../../../org/grails/datastore/mapping/core/connections/ConnectionSourcesProvider.html' title='ConnectionSourcesProvider'>ConnectionSourcesProvider</a>&gt;[]</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#forDatastore">forDatastore</a></code><br>If you are using multiple GORM implementations and wish to create a transaction for a specific implementation then use this. </td>
+                            <td class="colLast"><code><a href="#datastore">datastore</a></code><br>If you are using multiple GORM implementations and wish to create a transaction for a specific implementation then use this. </td>
                         </tr>
                         
                         <tr class="altColor">
@@ -283,10 +283,10 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="forDatastore"><!-- --></a>
+                        <a name="datastore"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;java.lang.Class&lt;? extends <a href='../../../org/grails/datastore/mapping/core/connections/ConnectionSourcesProvider.html' title='ConnectionSourcesProvider'>ConnectionSourcesProvider</a>&gt;[] <strong>forDatastore</strong></h4>
+                                <h4>public&nbsp;java.lang.Class&lt;? extends <a href='../../../org/grails/datastore/mapping/core/connections/ConnectionSourcesProvider.html' title='ConnectionSourcesProvider'>ConnectionSourcesProvider</a>&gt;[] <strong>datastore</strong></h4>
                                 <p> If you are using multiple GORM implementations and wish to create a transaction for a specific implementation then use this. For example <CODE>@Transactional(forDatastore=HibernateDatastore) </CODE>
  @default {}<DL><DT><B>Returns:</B></DT><DD>The type of the datastore</DD></DL></p>
                             </li>
