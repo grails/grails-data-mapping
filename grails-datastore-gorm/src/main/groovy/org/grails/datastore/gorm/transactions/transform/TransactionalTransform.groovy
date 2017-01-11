@@ -463,8 +463,10 @@ class TransactionalTransform extends AbstractASTTransformation {
         String renamedMethodName = '$tt__' + methodNode.getName()
         final Parameter transactionStatusParameter = param(ClassHelper.make(TransactionStatus), "transactionStatus")
         def newParameters = methodNode.getParameters() ? (copyParameters(((methodNode.getParameters() as List) + [transactionStatusParameter]) as Parameter[])) : [transactionStatusParameter] as Parameter[]
+        return moveOriginalCodeToNewMethod(methodNode, renamedMethodName, newParameters, classNode, source)
+    }
 
-
+    protected MethodCallExpression moveOriginalCodeToNewMethod(MethodNode methodNode, String renamedMethodName, Parameter[] newParameters, ClassNode classNode, SourceUnit source) {
         Statement body = methodNode.code
         MethodNode renamedMethodNode = new MethodNode(
                 renamedMethodName,
@@ -476,12 +478,12 @@ class TransactionalTransform extends AbstractASTTransformation {
 
 
         def newVariableScope = new VariableScope()
-        for(p in newParameters) {
+        for (p in newParameters) {
             newVariableScope.putDeclaredVariable(p)
         }
 
         renamedMethodNode.setVariableScope(
-            newVariableScope
+                newVariableScope
         )
 
         // GrailsCompileStatic and GrailsTypeChecked are not explicitly addressed
@@ -495,7 +497,7 @@ class TransactionalTransform extends AbstractASTTransformation {
 
         // Use a dummy source unit to process the variable scopes to avoid the issue where this is run twice producing an error
         VariableScopeVisitor scopeVisitor = new VariableScopeVisitor(new SourceUnit("dummy", "dummy", source.getConfiguration(), source.getClassLoader(), new ErrorCollector(source.getConfiguration())));
-        if(methodNode == null) {
+        if (methodNode == null) {
             scopeVisitor.visitClass(classNode)
         } else {
             scopeVisitor.prepareVisit(classNode)
