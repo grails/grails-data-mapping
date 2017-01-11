@@ -187,6 +187,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">Abstract GORM API provider.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/AbstractGormApi.html#AbstractGormApi(Class<D>, org.grails.datastore.mapping.model.MappingContext)" title="Constructor in AbstractGormApi">AbstractGormApi(Class&lt;D&gt;, MappingContext)</a></span> - Constructor in <a href="org/grails/datastore/gorm/AbstractGormApi.html">AbstractGormApi</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractGormASTTransformation.html" title="Class in org.grails.datastore.gorm.transform">AbstractGormASTTransformation</a></span> - Class in <a href="./org/grails/datastore/gorm/transform/package-summary.html">org.grails.datastore.gorm.transform</a>
+</dt><dd><div class="block">Abstract base class for GORM AST transformations</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/AbstractGormMappingFactory.html" title="Class in org.grails.datastore.mapping.config">AbstractGormMappingFactory</a></span> - Class in <a href="./org/grails/datastore/mapping/config/package-summary.html">org.grails.datastore.mapping.config</a>
 </dt><dd><div class="block">Abstract GORM implementation that uses the GORM MappingConfigurationBuilder to configure entity mappings.</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/proxy/AbstractGroovyAwareJavassistProxyFactory.html" title="Class in org.grails.orm.hibernate.proxy">AbstractGroovyAwareJavassistProxyFactory</a></span> - Class in <a href="./org/grails/orm/hibernate/proxy/package-summary.html">org.grails.orm.hibernate.proxy</a>
@@ -286,6 +288,8 @@ if (location.href.indexOf('is-external=true') == -1) {
  to save, update and delete instances</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/AbstractSession.html#AbstractSession(org.grails.datastore.mapping.core.Datastore, org.grails.datastore.mapping.model.MappingContext, org.springframework.context.ApplicationEventPublisher, org.grails.datastore.mapping.cache.TPCacheAdapterRepository, boolean)" title="Constructor in AbstractSession">AbstractSession(Datastore, MappingContext, ApplicationEventPublisher, TPCacheAdapterRepository, boolean)</a></span> - Constructor in <a href="org/grails/datastore/mapping/core/AbstractSession.html">AbstractSession</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html" title="Class in org.grails.datastore.gorm.transform">AbstractTraitApplyingGormASTTransformation</a></span> - Class in <a href="./org/grails/datastore/gorm/transform/package-summary.html">org.grails.datastore.gorm.transform</a>
+</dt><dd><div class="block">An abstract transformation that applies a Trait</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html#add(org.grails.datastore.mapping.query.Query.Criterion)" title="Method in AbstractDetachedCriteria">add(Criterion)</a></span> - Method in <a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html">AbstractDetachedCriteria</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/query/AbstractHibernateQuery.html#add(org.hibernate.criterion.Criterion)" title="Method in AbstractHibernateQuery">add(Criterion)</a></span> - Method in <a href="org/grails/orm/hibernate/query/AbstractHibernateQuery.html">AbstractHibernateQuery</a>
@@ -1936,6 +1940,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">Resolves the schema names</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/jdbc/schema/DefaultSchemaHandler.html#DefaultSchemaHandler(java.lang.String, java.lang.String, java.lang.String)" title="Constructor in DefaultSchemaHandler">DefaultSchemaHandler(String, String, String)</a></span> - Constructor in <a href="org/grails/datastore/gorm/jdbc/schema/DefaultSchemaHandler.html">DefaultSchemaHandler</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/services/DefaultServiceRegistry.html" title="Class in org.grails.datastore.mapping.services">DefaultServiceRegistry</a></span> - Class in <a href="./org/grails/datastore/mapping/services/package-summary.html">org.grails.datastore.mapping.services</a>
+</dt><dd><div class="block">The default <a href='../../../../../org/grails/datastore/mapping/services/ServiceRegistry.html' title='ServiceRegistry'>ServiceRegistry</a> implementation</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/services/DefaultServiceRegistry.html#DefaultServiceRegistry(org.grails.datastore.mapping.core.Datastore)" title="Constructor in DefaultServiceRegistry">DefaultServiceRegistry(Datastore)</a></span> - Constructor in <a href="org/grails/datastore/mapping/services/DefaultServiceRegistry.html">DefaultServiceRegistry</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/timestamp/DefaultTimestampProvider.html" title="Class in org.grails.datastore.gorm.timestamp">DefaultTimestampProvider</a></span> - Class in <a href="./org/grails/datastore/gorm/timestamp/package-summary.html">org.grails.datastore.gorm.timestamp</a>
 </dt><dd><div class="block">***************************************************************************
  Copyright 2014 original authors</div></dd>
@@ -2994,6 +3002,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/HibernateMappingContextSessionFactoryBean.html#getAnnotatedPackages()" title="Method in HibernateMappingContextSessionFactoryBean">getAnnotatedPackages()</a></span> - Method in <a href="org/grails/orm/hibernate/HibernateMappingContextSessionFactoryBean.html">HibernateMappingContextSessionFactoryBean</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractGormASTTransformation.html#getAnnotationType()" title="Method in AbstractGormASTTransformation">getAnnotationType()</a></span> - Method in <a href="org/grails/datastore/gorm/transform/AbstractGormASTTransformation.html">AbstractGormASTTransformation</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/services/ServiceTransformation.html#getAnnotationType()" title="Method in ServiceTransformation">getAnnotationType()</a></span> - Method in <a href="org/grails/datastore/gorm/services/ServiceTransformation.html">ServiceTransformation</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/AbstractDatastore.html#getApplicationContext()" title="Method in AbstractDatastore">getApplicationContext()</a></span> - Method in <a href="org/grails/datastore/mapping/core/AbstractDatastore.html">AbstractDatastore</a>
 </dt><dd> <div class="block">@deprecated  Deprecated, will be removed in a future version of GORM</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/Datastore.html#getApplicationContext()" title="Method in Datastore">getApplicationContext()</a></span> - Method in <a href="org/grails/datastore/mapping/core/Datastore.html">Datastore</a>
@@ -3002,6 +3014,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/Datastore.html#getApplicationEventPublisher()" title="Method in Datastore">getApplicationEventPublisher()</a></span> - Method in <a href="org/grails/datastore/mapping/core/Datastore.html">Datastore</a>
 </dt><dd> <div class="block">Get the application event publisher.</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractGormASTTransformation.html#getAppliedMarker()" title="Method in AbstractGormASTTransformation">getAppliedMarker()</a></span> - Method in <a href="org/grails/datastore/gorm/transform/AbstractGormASTTransformation.html">AbstractGormASTTransformation</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/services/ServiceTransformation.html#getAppliedMarker()" title="Method in ServiceTransformation">getAppliedMarker()</a></span> - Method in <a href="org/grails/datastore/gorm/services/ServiceTransformation.html">ServiceTransformation</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/finders/DynamicFinderInvocation.html#getArguments()" title="Method in DynamicFinderInvocation">getArguments()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/DynamicFinderInvocation.html">DynamicFinderInvocation</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.html#getArguments()" title="Method in MethodExpression">getArguments()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.html">MethodExpression</a>
@@ -4037,6 +4053,12 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">@return The scale</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/cfg/PropertyConfig.html#getScale()" title="Method in PropertyConfig">getScale()</a></span> - Method in <a href="org/grails/orm/hibernate/cfg/PropertyConfig.html">PropertyConfig</a>
 </dt><dd> <div class="block">Shortcut to get the scale of this property's column.</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/core/AbstractDatastore.html#getService(Class<T>)" title="Method in AbstractDatastore">getService(Class&lt;T&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/core/AbstractDatastore.html">AbstractDatastore</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/services/DefaultServiceRegistry.html#getService(Class<T>)" title="Method in DefaultServiceRegistry">getService(Class&lt;T&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/services/DefaultServiceRegistry.html">DefaultServiceRegistry</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/services/ServiceRegistry.html#getService(Class<T>)" title="Method in ServiceRegistry">getService(Class&lt;T&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/services/ServiceRegistry.html">ServiceRegistry</a>
+</dt><dd> <div class="block">Obtain a service for the given interface</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/support/AbstractDatastorePersistenceContextInterceptor.html#getSession()" title="Method in AbstractDatastorePersistenceContextInterceptor">getSession()</a></span> - Method in <a href="org/grails/datastore/gorm/support/AbstractDatastorePersistenceContextInterceptor.html">AbstractDatastorePersistenceContextInterceptor</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/EntityPersister.html#getSession()" title="Method in EntityPersister">getSession()</a></span> - Method in <a href="org/grails/datastore/mapping/engine/EntityPersister.html">EntityPersister</a>
@@ -4146,6 +4168,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/cache/TPCacheAdapterRepository.html#getTPCacheAdapter(org.grails.datastore.mapping.model.PersistentEntity)" title="Method in TPCacheAdapterRepository">getTPCacheAdapter(PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/mapping/cache/TPCacheAdapterRepository.html">TPCacheAdapterRepository</a>
 </dt><dd> <div class="block">Returns <a href='../../../../../org/grails/datastore/mapping/cache/TPCacheAdapter.html' title='TPCacheAdapter'>TPCacheAdapter</a> for the specified <a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/cache/impl/TPCacheAdapterRepositoryImpl.html#getTPCacheAdapter(org.grails.datastore.mapping.model.PersistentEntity)" title="Method in TPCacheAdapterRepositoryImpl">getTPCacheAdapter(PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/mapping/cache/impl/TPCacheAdapterRepositoryImpl.html">TPCacheAdapterRepositoryImpl</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html#getTraitClass()" title="Method in AbstractTraitApplyingGormASTTransformation">getTraitClass()</a></span> - Method in <a href="org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html">AbstractTraitApplyingGormASTTransformation</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/services/ServiceTransformation.html#getTraitClass()" title="Method in ServiceTransformation">getTraitClass()</a></span> - Method in <a href="org/grails/datastore/gorm/services/ServiceTransformation.html">ServiceTransformation</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/AbstractHibernateSession.html#getTransaction()" title="Method in AbstractHibernateSession">getTransaction()</a></span> - Method in <a href="org/grails/orm/hibernate/AbstractHibernateSession.html">AbstractHibernateSession</a>
 </dt><dd> <div class="block"></div></dd>
@@ -5562,6 +5588,8 @@ if (location.href.indexOf('is-external=true') == -1) {
  to be unique.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/Property.html#isUniqueWithinGroup()" title="Method in Property">isUniqueWithinGroup()</a></span> - Method in <a href="org/grails/datastore/mapping/config/Property.html">Property</a>
 </dt><dd> <div class="block">@return Whether the property is unique within a group</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/services/DefaultServiceRegistry.html#isValidInterface(java.lang.Class)" title="Method in DefaultServiceRegistry">isValidInterface(Class)</a></span> - Method in <a href="org/grails/datastore/mapping/services/DefaultServiceRegistry.html">DefaultServiceRegistry</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEventListener.html#isValidSource(org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent)" title="Method in AbstractPersistenceEventListener">isValidSource(AbstractPersistenceEvent)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEventListener.html">AbstractPersistenceEventListener</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/Entity.html#isVersioned()" title="Method in Entity">isVersioned()</a></span> - Method in <a href="org/grails/datastore/mapping/config/Entity.html">Entity</a>
@@ -5864,6 +5892,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#loadEmbeddedCollectionKeys(org.grails.datastore.mapping.model.types.Association, org.grails.datastore.mapping.engine.EntityAccess, T)" title="Method in NativeEntryEntityPersister">loadEmbeddedCollectionKeys(Association, EntityAccess, T)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block">Implementors who want to support one-to-many associations embedded should implement this method</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html#loadInverseChildKeys(org.grails.datastore.mapping.core.Session, java.lang.Class, java.util.Collection)" title="Method in AbstractPersistentCollection">loadInverseChildKeys(Session, Class, Collection)</a></span> - Method in <a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html">AbstractPersistentCollection</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/services/DefaultServiceRegistry.html#loadServices()" title="Method in DefaultServiceRegistry">loadServices()</a></span> - Method in <a href="org/grails/datastore/mapping/services/DefaultServiceRegistry.html">DefaultServiceRegistry</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/orm/HibernateCriteriaBuilder.html#LOCALE" title="Field in HibernateCriteriaBuilder">LOCALE</a></span> - Field in <a href="grails/orm/HibernateCriteriaBuilder.html">HibernateCriteriaBuilder</a>
 </dt><dd> <div class="block"></div></dd>
@@ -6266,7 +6296,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Computes the min value of a property</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/plugin/support/PersistenceContextInterceptorAggregator.html#moveInterceptorBeansToManagedList(org.springframework.beans.factory.support.BeanDefinitionRegistry, Collection<String>)" title="Method in PersistenceContextInterceptorAggregator">moveInterceptorBeansToManagedList(BeanDefinitionRegistry, Collection&lt;String&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/plugin/support/PersistenceContextInterceptorAggregator.html">PersistenceContextInterceptorAggregator</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html#moveOriginalCodeToNewMethod(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)" title="Method in TransactionalTransform">moveOriginalCodeToNewMethod(SourceUnit, ClassNode, MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html">TransactionalTransform</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html#moveOriginalCodeToNewMethod(org.codehaus.groovy.ast.MethodNode, java.lang.String, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.control.SourceUnit)" title="Method in TransactionalTransform">moveOriginalCodeToNewMethod(MethodNode, String, Parameter, ClassNode, SourceUnit)</a></span> - Method in <a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html">TransactionalTransform</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/connections/MultipleConnectionSourceCapableDatastore.html" title="Interface in org.grails.datastore.mapping.core.connections">MultipleConnectionSourceCapableDatastore</a></span> - Interface in <a href="./org/grails/datastore/mapping/core/connections/package-summary.html">org.grails.datastore.mapping.core.connections</a>
 </dt><dd><div class="block">A <a href='../../../../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a> capable of configuring multiple <a href='../../../../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a> with individually named <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a> instances</div></dd>
@@ -7740,6 +7770,21 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/orm/HibernateCriteriaBuilder.html#SERIALIZABLE" title="Field in HibernateCriteriaBuilder">SERIALIZABLE</a></span> - Field in <a href="grails/orm/HibernateCriteriaBuilder.html">HibernateCriteriaBuilder</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/services/Service.html" title="Trait in org.grails.datastore.mapping.services">Service</a></span> - Trait in <a href="./org/grails/datastore/mapping/services/package-summary.html">org.grails.datastore.mapping.services</a>
+</dt><dd><div class="block">Represents a service available exposed by the GORM <a href='../../../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/services/ServiceNotFoundException.html" title="Class in org.grails.datastore.mapping.services">ServiceNotFoundException</a></span> - Class in <a href="./org/grails/datastore/mapping/services/package-summary.html">org.grails.datastore.mapping.services</a>
+</dt><dd><div class="block">Thrown when a service cannot be found for the given type</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/services/ServiceNotFoundException.html#ServiceNotFoundException(java.lang.String)" title="Constructor in ServiceNotFoundException">ServiceNotFoundException(String)</a></span> - Constructor in <a href="org/grails/datastore/mapping/services/ServiceNotFoundException.html">ServiceNotFoundException</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/services/ServiceRegistry.html" title="Interface in org.grails.datastore.mapping.services">ServiceRegistry</a></span> - Interface in <a href="./org/grails/datastore/mapping/services/package-summary.html">org.grails.datastore.mapping.services</a>
+</dt><dd><div class="block">Represents a registry of GORM services</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/core/AbstractDatastore.html#serviceRegistry" title="Field in AbstractDatastore">serviceRegistry</a></span> - Field in <a href="org/grails/datastore/mapping/core/AbstractDatastore.html">AbstractDatastore</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/services/DefaultServiceRegistry.html#servicesByInterface" title="Field in DefaultServiceRegistry">servicesByInterface</a></span> - Field in <a href="org/grails/datastore/mapping/services/DefaultServiceRegistry.html">DefaultServiceRegistry</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/services/ServiceTransformation.html" title="Class in org.grails.datastore.gorm.services">ServiceTransformation</a></span> - Class in <a href="./org/grails/datastore/gorm/services/package-summary.html">org.grails.datastore.gorm.services</a>
+</dt><dd><div class="block">Makes a class implement the <a href='../../../../../org/grails/datastore/mapping/services/Service.html' title='Service'>Service</a> trait and generates the necessary
+ service loader META-INF/services file.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/Session.html" title="Interface in org.grails.datastore.mapping.core">Session</a></span> - Interface in <a href="./org/grails/datastore/mapping/core/package-summary.html">org.grails.datastore.mapping.core</a>
 </dt><dd><div class="block">The Session represents the active interaction with a datastore.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html#session" title="Field in AbstractPersistentCollection">session</a></span> - Field in <a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html">AbstractPersistentCollection</a>
@@ -8953,6 +8998,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/AbstractGormMappingFactory.html#versionByDefault" title="Field in AbstractGormMappingFactory">versionByDefault</a></span> - Field in <a href="org/grails/datastore/mapping/config/AbstractGormMappingFactory.html">AbstractGormMappingFactory</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractGormASTTransformation.html#visit(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode)" title="Method in AbstractGormASTTransformation">visit(SourceUnit, AnnotationNode, ClassNode)</a></span> - Method in <a href="org/grails/datastore/gorm/transform/AbstractGormASTTransformation.html">AbstractGormASTTransformation</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html#visit(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode)" title="Method in AbstractTraitApplyingGormASTTransformation">visit(SourceUnit, AnnotationNode, ClassNode)</a></span> - Method in <a href="org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html">AbstractTraitApplyingGormASTTransformation</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/compiler/gorm/AdditionalGormEntityTransformation.html#visit(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.control.SourceUnit)" title="Method in AdditionalGormEntityTransformation">visit(ClassNode, SourceUnit)</a></span> - Method in <a href="org/grails/compiler/gorm/AdditionalGormEntityTransformation.html">AdditionalGormEntityTransformation</a>
 </dt><dd> <div class="block">Visit the transform</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaASTTransformation.html#visit(org.codehaus.groovy.ast.ASTNode, org.codehaus.groovy.control.SourceUnit)" title="Method in DetachedCriteriaASTTransformation">visit(ASTNode, SourceUnit)</a></span> - Method in <a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaASTTransformation.html">DetachedCriteriaASTTransformation</a>
@@ -8972,6 +9021,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/compiler/gorm/JpaGormEntityTransformation.html#visit(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.control.SourceUnit)" title="Method in JpaGormEntityTransformation">visit(ClassNode, SourceUnit)</a></span> - Method in <a href="org/grails/compiler/gorm/JpaGormEntityTransformation.html">JpaGormEntityTransformation</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html#visit(org.codehaus.groovy.ast.ASTNode, org.codehaus.groovy.control.SourceUnit)" title="Method in TransactionalTransform">visit(ASTNode, SourceUnit)</a></span> - Method in <a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html">TransactionalTransform</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html#visitAfterTraitApplied(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode)" title="Method in AbstractTraitApplyingGormASTTransformation">visitAfterTraitApplied(SourceUnit, AnnotationNode, ClassNode)</a></span> - Method in <a href="org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html">AbstractTraitApplyingGormASTTransformation</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/services/ServiceTransformation.html#visitAfterTraitApplied(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode)" title="Method in ServiceTransformation">visitAfterTraitApplied(SourceUnit, AnnotationNode, ClassNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/ServiceTransformation.html">ServiceTransformation</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaTransformer.html#visitClass(org.codehaus.groovy.ast.ClassNode)" title="Method in DetachedCriteriaTransformer">visitClass(ClassNode)</a></span> - Method in <a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaTransformer.html">DetachedCriteriaTransformer</a>
 </dt><dd> <div class="block"></div></dd>

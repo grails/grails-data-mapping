@@ -34,9 +34,11 @@ org.grails.datastore.gorm.query
 org.grails.datastore.gorm.query.criteria
 org.grails.datastore.gorm.query.transform
 org.grails.datastore.gorm.schemaless
+org.grails.datastore.gorm.services
 org.grails.datastore.gorm.support
 org.grails.datastore.gorm.timestamp
 org.grails.datastore.gorm.transactions.transform
+org.grails.datastore.gorm.transform
 org.grails.datastore.gorm.utils
 org.grails.datastore.gorm.validation
 org.grails.datastore.gorm.validation.constraints
@@ -84,6 +86,7 @@ org.grails.datastore.mapping.query.order
 org.grails.datastore.mapping.query.projections
 org.grails.datastore.mapping.rdbms
 org.grails.datastore.mapping.reflect
+org.grails.datastore.mapping.services
 org.grails.datastore.mapping.transactions
 org.grails.datastore.mapping.transactions.support
 org.grails.datastore.mapping.validation
