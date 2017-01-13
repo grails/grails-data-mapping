@@ -57,7 +57,7 @@ class JpaMappingSyntaxTests extends Specification {
         def props = strategy.getPersistentProperties(JpaTestEntity,context)
         
         then:
-        props.size() == 4
+        props.size() == 5
     }
     
     void "test unidirectional one to one"() {
