@@ -84,6 +84,43 @@ class JpaMappingSyntaxTests extends Specification {
         toOne.owningSide
     }
 
+    void "test bidirectional one to one"() {
+        given:
+        def context = new TestMappingContext()
+        context.addPersistentEntity(JpaTestEntity)
+
+        expect:
+        assert 2 == context.persistentEntities.size()
+
+        when:
+        def testEntity = context.getPersistentEntity(JpaTestEntity.name)
+        def association = testEntity.getPropertyByName("third")
+        org.grails.datastore.mapping.model.types.OneToOne toOne = association
+
+        then:
+        association != null
+        (association instanceof org.grails.datastore.mapping.model.types.OneToOne)
+        !toOne.foreignKeyInChild
+        toOne.associatedEntity != null
+        toOne.associatedEntity == context.getPersistentEntity(JpaSecondEntity.name)
+        toOne.referencedPropertyName == "testEntity"
+        toOne.bidirectional
+        !toOne.owningSide
+
+        when:
+        association = toOne.inverseSide
+
+        then:
+        association != null
+        (association instanceof org.grails.datastore.mapping.model.types.OneToOne)
+        ((org.grails.datastore.mapping.model.types.OneToOne)association).foreignKeyInChild
+        association.associatedEntity != null
+        association.associatedEntity == context.getPersistentEntity(JpaTestEntity.name)
+        association.referencedPropertyName == "third"
+        association.bidirectional
+        association.owningSide
+    }
+
 
     void "test uni-directional one to many"() {
         given:
@@ -105,7 +142,7 @@ class JpaMappingSyntaxTests extends Specification {
         (oneToMany instanceof org.grails.datastore.mapping.model.types.OneToMany)
     }
 
-    void "test many to one association"() {
+    void "test bidirectional one to many"() {
         given:
         def context = new TestMappingContext()
         context.addPersistentEntity(JpaBook)
@@ -133,6 +170,37 @@ class JpaMappingSyntaxTests extends Specification {
         inverse.inverseSide != null
         inverse.bidirectional
         (inverse instanceof org.grails.datastore.mapping.model.types.OneToMany)
+        inverse.owningSide
+    }
+
+    void "test many to many"() {
+        given:
+        def context = new TestMappingContext()
+        context.addPersistentEntity(JpaAuthority)
+
+        expect:
+        2 == context.persistentEntities.size()
+
+        when:
+        def authority = context.getPersistentEntity(JpaAuthority.name)
+        Association userAssociation = authority.getPropertyByName("users")
+        Association inverse = userAssociation.inverseSide
+
+
+        then:
+        authority != null
+        userAssociation != null
+        (userAssociation instanceof org.grails.datastore.mapping.model.types.ManyToMany)
+        userAssociation.bidirectional
+        !userAssociation.owningSide
+
+        inverse != null
+
+        "roles" == inverse.name
+        JpaPerson == inverse.owner.javaClass
+        inverse.inverseSide != null
+        inverse.bidirectional
+        (inverse instanceof org.grails.datastore.mapping.model.types.ManyToMany)
         inverse.owningSide
     }
 
@@ -179,6 +247,29 @@ class JpaMappingSyntaxTests extends Specification {
 }
 
 @javax.persistence.Entity
+class JpaPerson {
+    @Id
+    Long id
+
+    String name
+
+    @ManyToMany(mappedBy = 'users')
+    Set<JpaAuthority> roles
+}
+
+@javax.persistence.Entity
+class JpaAuthority {
+    @Id
+    Long id
+
+    String name
+
+    @ManyToMany
+    Set<JpaPerson> users
+}
+
+
+@javax.persistence.Entity
 class JpaBook {
     @Id
     Long id
@@ -223,6 +314,9 @@ class JpaTestEntity {
 
     @OneToOne
     JpaSecondEntity second
+
+    @OneToOne
+    JpaSecondEntity third
 }
 
 @javax.persistence.Entity
@@ -234,6 +328,9 @@ class JpaSecondEntity {
 
     @Transient
     String bar
+
+    @OneToOne(mappedBy = 'third')
+    JpaTestEntity testEntity
 }
 
 @javax.persistence.Entity
