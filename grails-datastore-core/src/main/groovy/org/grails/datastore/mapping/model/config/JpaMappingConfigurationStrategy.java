@@ -9,10 +9,6 @@ import org.grails.datastore.mapping.model.types.EmbeddedCollection;
 import org.grails.datastore.mapping.model.types.Simple;
 import org.grails.datastore.mapping.model.types.ToOne;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
-import org.grails.datastore.mapping.reflect.ReflectionUtils;
-import org.springframework.util.StringUtils;
-
-import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -72,13 +68,13 @@ public class JpaMappingConfigurationStrategy extends GormMappingConfigurationStr
 
             Class<?> propertyType = descriptor.getPropertyType();
 
-            if(getAnnotation(readMethod, field, Id.class) != null) {
+            if(hasAnnotation(readMethod, field, Id.class)) {
                 persistentProperties.add( propertyFactory.createIdentity(entity, context, descriptor));
             }
-            else if(getAnnotation(readMethod, field, EmbeddedId.class) != null) {
+            else if(hasAnnotation(readMethod, field, EmbeddedId.class)) {
                 persistentProperties.add( propertyFactory.createIdentity(entity, context, descriptor));
             }
-            else if (getAnnotation(readMethod, field, Embedded.class) != null) {
+            else if (hasAnnotation(readMethod, field, Embedded.class)) {
                 if (isCollectionType(propertyType)) {
                     final Association association = establishRelationshipForCollection(descriptor, field, entity, context, true);
                     if (association != null) {
@@ -109,7 +105,7 @@ public class JpaMappingConfigurationStrategy extends GormMappingConfigurationStr
             }
             else if (propertyFactory.isSimpleType(propertyType)) {
                 Simple simpleProperty = propertyFactory.createSimple(entity, context, descriptor);
-                if(getAnnotation(readMethod, field, GeneratedValue.class) != null) {
+                if(hasAnnotation(readMethod, field, GeneratedValue.class)) {
                     simpleProperty.getMapping().getMappedForm().setDerived(true);
                 }
                 persistentProperties.add(simpleProperty);
@@ -164,6 +160,7 @@ public class JpaMappingConfigurationStrategy extends GormMappingConfigurationStr
             ManyToMany manyToMany = getAnnotation(readMethod, field, ManyToMany.class);
             if (!manyToMany.mappedBy().equals("")) {
                 ((org.grails.datastore.mapping.model.types.ManyToMany)association).setInversePropertyName(manyToMany.mappedBy());
+                referencedPropertyName = manyToMany.mappedBy();
             } else {
                 List<PropertyDescriptor> descriptors = referencedCpf.getPropertiesAssignableToType(Collection.class);
                 if (descriptors.size() > 0) {
@@ -173,9 +170,10 @@ public class JpaMappingConfigurationStrategy extends GormMappingConfigurationStr
                         if (relatedGenericClass == null) {
                             relatedGenericClass = relatedManyToMany.targetEntity();
                         }
-                        if (relatedGenericClass == genericClass) {
+                        if (relatedGenericClass == javaClass) {
                             if (relatedManyToMany != null && relatedManyToMany.mappedBy().equals(property.getName())) {
                                 entity.addOwner(relatedClassType);
+                                referencedPropertyName = descriptor.getName();
                                 break;
                             }
                         }
@@ -262,6 +260,7 @@ public class JpaMappingConfigurationStrategy extends GormMappingConfigurationStr
                         if (relatedOneToOne != null && relatedOneToOne.mappedBy().equals(property.getName())) {
                             association.setForeignKeyInChild(false);
                             entity.addOwner(propType);
+                            relatedClassPropertyName = descriptor.getName();
                             break;
                         }
                     }
