@@ -175,8 +175,8 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst">
-                                <code><a href="#DataSourceFactoryBean(org.grails.orm.hibernate.AbstractHibernateDatastore, java.lang.String)">DataSourceFactoryBean</a></strong>
-                                (org.grails.orm.hibernate.AbstractHibernateDatastore datastore, java.lang.String connectionName)</code><br></td>
+                                <code><a href="#DataSourceFactoryBean(java.lang.String)">DataSourceFactoryBean</a></strong>
+                                (java.lang.String connectionName)</code><br></td>
                         </tr>
                         
                     </table>
@@ -268,7 +268,9 @@ extends java.lang.Object
                         <a name="datastore"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.grails.orm.hibernate.AbstractHibernateDatastore <strong>datastore</strong></h4>
+                                <h4>@org.springframework.beans.factory.annotation.Autowired
+@org.springframework.beans.factory.annotation.Qualifier('hibernateDatastore')
+org.grails.orm.hibernate.AbstractHibernateDatastore <strong>datastore</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -287,10 +289,10 @@ extends java.lang.Object
                 </a>
                     <h3>Constructor Detail</h3>
                     
-                        <a name="DataSourceFactoryBean(org.grails.orm.hibernate.AbstractHibernateDatastore, java.lang.String)"><!-- --></a>
+                        <a name="DataSourceFactoryBean(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><strong>DataSourceFactoryBean</strong>(org.grails.orm.hibernate.AbstractHibernateDatastore datastore, java.lang.String connectionName)</h4>
+                                <h4><strong>DataSourceFactoryBean</strong>(java.lang.String connectionName)</h4>
                                 <p></p>
                             </li>
                         </ul>
