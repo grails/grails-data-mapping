@@ -3,6 +3,8 @@ package org.grails.orm.hibernate.support
 import org.grails.orm.hibernate.AbstractHibernateDatastore
 import org.grails.orm.hibernate.connections.HibernateConnectionSource
 import org.springframework.beans.factory.FactoryBean
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 
 import javax.sql.DataSource
 
@@ -13,11 +15,13 @@ import javax.sql.DataSource
  */
 class DataSourceFactoryBean implements FactoryBean<DataSource> {
 
+    @Autowired
+    @Qualifier('hibernateDatastore')
     AbstractHibernateDatastore datastore
+
     String connectionName
 
-    DataSourceFactoryBean(AbstractHibernateDatastore datastore, String connectionName) {
-        this.datastore = datastore
+    DataSourceFactoryBean(String connectionName) {
         this.connectionName = connectionName
     }
 
