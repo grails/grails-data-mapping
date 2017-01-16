@@ -319,7 +319,7 @@ class DemoSpec extends Specification {
     @Issue('GRAILS-10402')
     void "Test @Transactional annotation with inheritance"() {
         given: "A new instance of a class with a @Transactional method is created that subclasses another transactional class"
-        def bookService = new GroovyShell().evaluate('''
+        def bookService = new GroovyShell().evaluate(/**/'''
     import grails.gorm.transactions.*
     import org.springframework.transaction.PlatformTransactionManager
     import org.springframework.transaction.TransactionStatus
