@@ -17,6 +17,7 @@ package org.grails.datastore.mapping.reflect
 
 import groovy.transform.CompileStatic
 import groovy.transform.Memoized
+import groovy.transform.TypeChecked
 import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.AnnotatedNode
 import org.codehaus.groovy.ast.AnnotationNode
@@ -55,9 +56,13 @@ import static org.codehaus.groovy.ast.tools.GenericsUtils.correctToGenericsSpecR
  */
 @CompileStatic
 class AstUtils {
+    private static final String SPEC_CLASS = "spock.lang.Specification";
+    private static final Set<String> JUNIT_ANNOTATION_NAMES = new HashSet<String>(Arrays.asList("org.junit.Before", "org.junit.After"));
     private static final Class<?>[] EMPTY_JAVA_CLASS_ARRAY = [];
     private static final Class<?>[] OBJECT_CLASS_ARG = [Object.class];
 
+    public static final ClassNode COMPILE_STATIC_TYPE = ClassHelper.make(CompileStatic)
+    public static final ClassNode TYPE_CHECKED_TYPE = ClassHelper.make(TypeChecked)
     public static final Object TRANSFORM_APPLIED_MARKER = new Object();
     public static final String DOMAIN_TYPE = "Domain"
     public static final Parameter[] ZERO_PARAMETERS = new Parameter[0];
@@ -160,12 +165,12 @@ class AstUtils {
     }
 
     public static void processVariableScopes(SourceUnit source, ClassNode classNode, MethodNode methodNode) {
-        VariableScopeVisitor scopeVisitor = new VariableScopeVisitor(source);
+        VariableScopeVisitor scopeVisitor = new VariableScopeVisitor(source)
         if(methodNode == null) {
-            scopeVisitor.visitClass(classNode);
+            scopeVisitor.visitClass(classNode)
         } else {
-            scopeVisitor.prepareVisit(classNode);
-            scopeVisitor.visitMethod(methodNode);
+            scopeVisitor.prepareVisit(classNode)
+            scopeVisitor.visitMethod(methodNode)
         }
     }
 
@@ -178,6 +183,32 @@ class AstUtils {
     public static boolean hasAnnotation(final MethodNode methodNode, final Class<? extends Annotation> annotationClass) {
         return !methodNode.getAnnotations(new ClassNode(annotationClass)).isEmpty();
     }
+
+    /**
+     * Whether the class is a Spock test
+     *
+     * @param classNode The class node
+     * @return True if it is
+     */
+    public static boolean isSpockTest(ClassNode classNode) {
+        return isSubclassOf(classNode, SPEC_CLASS);
+    }
+
+    /**
+     * Whether the method node has any JUnit annotations
+     *
+     * @param md The method node
+     * @return True if it does
+     */
+    public static boolean hasJunitAnnotation(MethodNode md) {
+        for (AnnotationNode annotation in md.getAnnotations()) {
+            if(JUNIT_ANNOTATION_NAMES.contains(annotation.getClassNode().getName())) {
+                return true
+            }
+        }
+        return false
+    }
+
 
     /**
      * Returns true if MethodNode is marked with annotationClass

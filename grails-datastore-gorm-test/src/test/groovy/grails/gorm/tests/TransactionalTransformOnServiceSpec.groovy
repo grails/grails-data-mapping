@@ -5,7 +5,7 @@ import grails.gorm.transactions.Transactional
 /**
  * Created by graemerocher on 05/01/2017.
  */
-class TransactionalTransformSpec extends GormDatastoreSpec {
+class TransactionalTransformOnServiceSpec extends GormDatastoreSpec {
 
     void "test transaction manager lookup with @Transactional and unassigned transaction manager"() {
         expect:
