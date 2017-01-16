@@ -135,44 +135,56 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><strong>static&nbsp;org.codehaus.groovy.ast.ClassNode</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#COMPILE_STATIC_TYPE">COMPILE_STATIC_TYPE</a></code></td>
+                            <td class="colLast"></code></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>static&nbsp;java.util.regex.Pattern</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#DOMAIN_PATH_PATTERN">DOMAIN_PATH_PATTERN</a></code></td>
                             <td class="colLast"></code></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>static&nbsp;java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#DOMAIN_TYPE">DOMAIN_TYPE</a></code></td>
                             <td class="colLast"></code></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>static&nbsp;org.codehaus.groovy.ast.ClassNode[]</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#EMPTY_CLASS_ARRAY">EMPTY_CLASS_ARRAY</a></code></td>
                             <td class="colLast"></code></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>static&nbsp;java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#GRAILS_APP_DIR">GRAILS_APP_DIR</a></code></td>
                             <td class="colLast">The name of the Grails application directory</code></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>static&nbsp;org.codehaus.groovy.ast.ClassNode</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#OBJECT_CLASS_NODE">OBJECT_CLASS_NODE</a></code></td>
                             <td class="colLast"></code></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>static&nbsp;java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#REGEX_FILE_SEPARATOR">REGEX_FILE_SEPARATOR</a></code></td>
                             <td class="colLast"></code></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>static&nbsp;java.lang.Object</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#TRANSFORM_APPLIED_MARKER">TRANSFORM_APPLIED_MARKER</a></code></td>
+                            <td class="colLast"></code></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>static&nbsp;org.codehaus.groovy.ast.ClassNode</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#TYPE_CHECKED_TYPE">TYPE_CHECKED_TYPE</a></code></td>
                             <td class="colLast"></code></td>
                         </tr>
                         
@@ -349,62 +361,72 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#hasOrInheritsProperty(org.codehaus.groovy.ast.ClassNode, java.lang.String)">hasOrInheritsProperty</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.String propertyName)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#hasJunitAnnotation(org.codehaus.groovy.ast.MethodNode)">hasJunitAnnotation</a></strong>(org.codehaus.groovy.ast.MethodNode md)</code><br>Whether the method node has any JUnit annotations</td>
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#hasOrInheritsProperty(org.codehaus.groovy.ast.ClassNode, java.lang.String)">hasOrInheritsProperty</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.String propertyName)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#hasProperty(org.codehaus.groovy.ast.ClassNode, java.lang.String)">hasProperty</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.String propertyName)</code><br>Returns whether a classNode has the specified property or not</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#implementsInterface(org.codehaus.groovy.ast.ClassNode, java.lang.String)">implementsInterface</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.String interfaceName)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#implementsOrInheritsZeroArgMethod(org.codehaus.groovy.ast.ClassNode, java.lang.String)">implementsOrInheritsZeroArgMethod</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.String methodName)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#implementsZeroArgMethod(org.codehaus.groovy.ast.ClassNode, java.lang.String)">implementsZeroArgMethod</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.String methodName)</code><br>Tests whether the ClasNode implements the specified method name.</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#injectTrait(org.codehaus.groovy.ast.ClassNode, java.lang.Class)">injectTrait</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.Class traitClass)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isDomainClass(java.net.URL)">isDomainClass</a></strong>(java.net.URL url)</code><br>Checks whether the file referenced by the given url is a domain class</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isDomainClass(org.codehaus.groovy.ast.ClassNode)">isDomainClass</a></strong>(org.codehaus.groovy.ast.ClassNode classNode)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isEnum(org.codehaus.groovy.ast.ClassNode)">isEnum</a></strong>(org.codehaus.groovy.ast.ClassNode classNode)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isGetter(org.codehaus.groovy.ast.MethodNode)">isGetter</a></strong>(org.codehaus.groovy.ast.MethodNode declaredMethod)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isGroovyType(org.codehaus.groovy.ast.ClassNode)">isGroovyType</a></strong>(org.codehaus.groovy.ast.ClassNode type)</code><br>Whether the given type is a Groovy object</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isSetter(org.codehaus.groovy.ast.MethodNode)">isSetter</a></strong>(org.codehaus.groovy.ast.MethodNode declaredMethod)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#isSpockTest(org.codehaus.groovy.ast.ClassNode)">isSpockTest</a></strong>(org.codehaus.groovy.ast.ClassNode classNode)</code><br>Whether the class is a Spock test</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -506,6 +528,14 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="COMPILE_STATIC_TYPE"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;static&nbsp;final&nbsp;org.codehaus.groovy.ast.ClassNode <strong>COMPILE_STATIC_TYPE</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="DOMAIN_PATH_PATTERN"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -559,6 +589,14 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;static&nbsp;final&nbsp;java.lang.Object <strong>TRANSFORM_APPLIED_MARKER</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="TYPE_CHECKED_TYPE"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;static&nbsp;final&nbsp;org.codehaus.groovy.ast.ClassNode <strong>TYPE_CHECKED_TYPE</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -819,6 +857,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="hasJunitAnnotation(org.codehaus.groovy.ast.MethodNode)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;boolean <strong>hasJunitAnnotation</strong>(org.codehaus.groovy.ast.MethodNode md)</h4>
+                                <p> Whether the method node has any JUnit annotations
+     <DL><DT><B>Returns:</B></DT><DD>True if it does</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>md</code> -  The method node</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="hasOrInheritsProperty(org.codehaus.groovy.ast.ClassNode, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -918,6 +965,15 @@ static&nbsp;boolean <strong>isDomainClass</strong>(org.codehaus.groovy.ast.Class
                             <li class="blockList">
                                 <h4>static&nbsp;boolean <strong>isSetter</strong>(org.codehaus.groovy.ast.MethodNode declaredMethod)</h4>
                                 <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="isSpockTest(org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;boolean <strong>isSpockTest</strong>(org.codehaus.groovy.ast.ClassNode classNode)</h4>
+                                <p> Whether the class is a Spock test
+     <DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>classNode</code> -  The class node</DD></DL></p>
                             </li>
                         </ul>
                     
