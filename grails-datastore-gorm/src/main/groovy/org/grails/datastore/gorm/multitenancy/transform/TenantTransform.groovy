@@ -23,6 +23,7 @@ import org.codehaus.groovy.ast.AnnotatedNode
 import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
+import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.expr.ClassExpression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
@@ -32,9 +33,13 @@ import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.GroovyASTTransformation
 import org.grails.datastore.gorm.transform.AbstractGormASTTransformation
 import org.grails.datastore.gorm.transform.AbstractMethodDecoratingTransformation
+import org.springframework.core.Ordered
+import org.springframework.transaction.TransactionStatus
 
 import static org.codehaus.groovy.ast.tools.GeneralUtils.*
 import static org.codehaus.groovy.ast.ClassHelper.*
+import static org.grails.datastore.mapping.reflect.AstUtils.copyParameters
+
 /**
  * Implementation of {@link grails.gorm.multitenancy.Tenant}
  *
@@ -43,13 +48,17 @@ import static org.codehaus.groovy.ast.ClassHelper.*
  */
 @CompileStatic
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
-class TenantTransform extends AbstractMethodDecoratingTransformation {
+class TenantTransform extends AbstractMethodDecoratingTransformation implements Ordered {
     private static final Object APPLIED_MARKER = new Object()
     private static final ClassExpression CURRENT_TENANT_ANNOTATION_TYPE_EXPR = classX(CurrentTenant)
     private static final ClassExpression TENANT_ANNOTATION_TYPE_EXPR = classX(Tenant)
-    private static final ClassNode TENANT_ANNOTATION_TYPE = TENANT_ANNOTATION_TYPE_EXPR.getType()
-    private static final ClassNode CURRENT_TENANT_ANNOTATION_TYPE = CURRENT_TENANT_ANNOTATION_TYPE_EXPR.getType()
+    public static final ClassNode TENANT_ANNOTATION_TYPE = TENANT_ANNOTATION_TYPE_EXPR.getType()
+    public  static final ClassNode CURRENT_TENANT_ANNOTATION_TYPE = CURRENT_TENANT_ANNOTATION_TYPE_EXPR.getType()
+    public static final AnnotationNode TENANT_ANNOTATION = new AnnotationNode( TENANT_ANNOTATION_TYPE )
+    public static final AnnotationNode CURRENT_TENANT_ANNOTATION = new AnnotationNode( CURRENT_TENANT_ANNOTATION_TYPE )
+
     private static final String RENAMED_METHOD_PREFIX = '$mt__'
+    public static final String VAR_TENANT_ID = "tenantId"
 
     @Override
     protected String getRenamedMethodPrefix() {
@@ -63,9 +72,15 @@ class TenantTransform extends AbstractMethodDecoratingTransformation {
         newMethodBody.addStatement(
             declS(tenantServiceVar, callX(varX("targetDatastore"), "getService", classX(tenantServiceClassNode) ) )
         )
-        return makeDelegatingClosureCall( tenantServiceVar, "withCurrent", params( param( make(Serializable), "tenantId")), originalMethodCallExpr)
+        return makeDelegatingClosureCall( tenantServiceVar, "withCurrent", params( param( make(Serializable), VAR_TENANT_ID)), originalMethodCallExpr)
     }
 
+    @Override
+    protected Parameter[] prepareNewMethodParameters(MethodNode methodNode) {
+        final Parameter tenantIdParameter = param(make(Serializable), VAR_TENANT_ID)
+        Parameter[] newParameters = methodNode.getParameters() ? (copyParameters(((methodNode.getParameters() as List) + [tenantIdParameter]) as Parameter[])) : [tenantIdParameter] as Parameter[]
+        return newParameters
+    }
     @Override
     protected boolean isValidAnnotation(AnnotationNode annotationNode, AnnotatedNode classNode) {
         TENANT_ANNOTATION_TYPE.equals(annotationNode.getClassNode()) || CURRENT_TENANT_ANNOTATION_TYPE.equals(annotationNode.getClassNode())
@@ -79,5 +94,10 @@ class TenantTransform extends AbstractMethodDecoratingTransformation {
     @Override
     protected Object getAppliedMarker() {
         return APPLIED_MARKER
+    }
+
+    @Override
+    int getOrder() {
+        return Ordered.HIGHEST_PRECEDENCE + 100
     }
 }

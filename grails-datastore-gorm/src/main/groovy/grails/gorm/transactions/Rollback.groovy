@@ -1,6 +1,8 @@
 package grails.gorm.transactions
 
 import org.codehaus.groovy.transform.GroovyASTTransformationClass
+import org.grails.datastore.gorm.transactions.transform.RollbackTransform
+import org.grails.datastore.gorm.transform.GormASTTransformationClass
 
 import java.lang.annotation.Documented
 import java.lang.annotation.ElementType
@@ -19,7 +21,8 @@ import java.lang.annotation.Target
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-@GroovyASTTransformationClass("org.grails.datastore.gorm.transactions.transform.RollbackTransform")
+@GroovyASTTransformationClass("org.grails.datastore.gorm.transform.OrderedGormTransformation")
+@GormASTTransformationClass("org.grails.datastore.gorm.transactions.transform.RollbackTransform")
 public @interface Rollback {
     /**
      * Whether or not the transaction for the annotated method should be rolled

@@ -16,6 +16,8 @@
 package grails.gorm.multitenancy;
 
 import org.codehaus.groovy.transform.GroovyASTTransformationClass;
+import org.grails.datastore.gorm.multitenancy.transform.TenantTransform;
+import org.grails.datastore.gorm.transform.GormASTTransformationClass;
 
 import java.lang.annotation.*;
 
@@ -38,6 +40,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-@GroovyASTTransformationClass("org.grails.datastore.gorm.multitenancy.transform.TenantTransform")
+@GroovyASTTransformationClass("org.grails.datastore.gorm.transform.OrderedGormTransformation")
+@GormASTTransformationClass("org.grails.datastore.gorm.multitenancy.transform.TenantTransform")
 public @interface CurrentTenant {
 }

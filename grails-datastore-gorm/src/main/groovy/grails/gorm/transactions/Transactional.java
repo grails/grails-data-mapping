@@ -16,6 +16,8 @@
 package grails.gorm.transactions;
 
 import org.codehaus.groovy.transform.GroovyASTTransformationClass;
+import org.grails.datastore.gorm.transactions.transform.TransactionalTransform;
+import org.grails.datastore.gorm.transform.GormASTTransformationClass;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.connections.ConnectionSource;
 import org.grails.datastore.mapping.core.connections.ConnectionSourcesProvider;
@@ -55,7 +57,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-@GroovyASTTransformationClass("org.grails.datastore.gorm.transactions.transform.TransactionalTransform")
+@GroovyASTTransformationClass("org.grails.datastore.gorm.transform.OrderedGormTransformation")
+@GormASTTransformationClass("org.grails.datastore.gorm.transactions.transform.TransactionalTransform")
 public @interface Transactional {
 
     /**

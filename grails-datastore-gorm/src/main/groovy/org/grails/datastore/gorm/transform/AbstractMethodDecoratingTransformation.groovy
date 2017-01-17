@@ -15,43 +15,27 @@
  */
 package org.grails.datastore.gorm.transform
 
-import grails.gorm.transactions.NotTransactional
-import grails.gorm.transactions.Rollback
-import grails.gorm.transactions.Transactional
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.ast.ASTNode
-import org.codehaus.groovy.ast.AnnotatedNode
-import org.codehaus.groovy.ast.AnnotationNode
-import org.codehaus.groovy.ast.ClassNode
-import org.codehaus.groovy.ast.FieldNode
-import org.codehaus.groovy.ast.MethodNode
-import org.codehaus.groovy.ast.Parameter
-import org.codehaus.groovy.ast.VariableScope
-import org.codehaus.groovy.ast.expr.ClassExpression
-import org.codehaus.groovy.ast.expr.ClosureExpression
-import org.codehaus.groovy.ast.expr.Expression
-import org.codehaus.groovy.ast.expr.MethodCallExpression
-import org.codehaus.groovy.ast.expr.VariableExpression
+import org.codehaus.groovy.ast.*
+import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.Statement
 import org.codehaus.groovy.classgen.VariableScopeVisitor
 import org.codehaus.groovy.control.ErrorCollector
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.sc.StaticCompileTransformation
-import org.codehaus.groovy.transform.sc.transformers.StaticCompilationTransformer
 import org.codehaus.groovy.transform.trait.Traits
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.connections.MultipleConnectionSourceCapableDatastore
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.transaction.TransactionStatus
 
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import java.lang.reflect.Modifier
 
-import static org.codehaus.groovy.ast.tools.GeneralUtils.*
 import static org.codehaus.groovy.ast.ClassHelper.*
+import static org.codehaus.groovy.ast.tools.GeneralUtils.*
 import static org.grails.datastore.mapping.reflect.AstUtils.*
 
 /**
@@ -66,7 +50,7 @@ import static org.grails.datastore.mapping.reflect.AstUtils.*
 abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTransformation {
 
     private static final Set<String> METHOD_NAME_EXCLUDES = new HashSet<String>(Arrays.asList("afterPropertiesSet", "destroy"));
-    private static final Set<String> ANNOTATION_NAME_EXCLUDES = new HashSet<String>(Arrays.asList(PostConstruct.class.getName(), PreDestroy.class.getName(), Transactional.class.getName(), "grails.transaction.Rollback", Rollback.class.getName(), "grails.web.controllers.ControllerMethod", NotTransactional.class.getName(), "grails.transaction.NotTransactional"));
+    private static final Set<String> ANNOTATION_NAME_EXCLUDES = new HashSet<String>(Arrays.asList(PostConstruct.class.getName(), PreDestroy.class.getName(), "grails.web.controllers.ControllerMethod"));
     public static final String FIELD_TARGET_DATASTORE = '$targetDatastore'
     public static final String METHOD_GET_TARGET_DATASTORE = "getTargetDatastore"
 
@@ -125,7 +109,7 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
                 )
             }
 
-            weaveSetTargetDatastoreBody(sourceUnit, annotationNode, declaringClassNode, datastoreVar, setTargetDatastoreBody)
+            weaveSetTargetDatastoreBody(source, annotationNode, declaringClassNode, datastoreVar, setTargetDatastoreBody)
 
             // Add method: @Autowired void setTargetDatastore(Datastore datastore)
             Parameter[] setTargetDatastoreParams = params(datastoreParam)
@@ -135,6 +119,8 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
                 // Autowire setTargetDatastore via Spring
                 addAnnotationOrGetExisting(setTargetDatastoreMethod, Autowired)
                         .setMember("required", constX(false))
+
+                compileMethodStatically(source, setTargetDatastoreMethod)
             }
 
             // Add method:
@@ -156,18 +142,21 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
 
             Parameter[] getTargetDatastoreParams = params(connectionNameParam)
             if(declaringClassNode.getMethod(METHOD_GET_TARGET_DATASTORE, getTargetDatastoreParams) == null) {
-                declaringClassNode.addMethod(METHOD_GET_TARGET_DATASTORE, Modifier.PROTECTED, datastoreType, getTargetDatastoreParams, null,
+                MethodNode mn = declaringClassNode.addMethod(METHOD_GET_TARGET_DATASTORE, Modifier.PROTECTED, datastoreType, getTargetDatastoreParams, null,
                         ifElseS(notNullX(datastoreFieldVar),
                                 returnS( callX( datastoreFieldVar, "getDatastoreForConnection", varX(connectionNameParam) ) ),
                                 returnS(datastoreLookupCall)
                         ))
+                compileMethodStatically(source, mn)
             }
             if(declaringClassNode.getMethod(METHOD_GET_TARGET_DATASTORE, ZERO_PARAMETERS) == null) {
-                declaringClassNode.addMethod(METHOD_GET_TARGET_DATASTORE, Modifier.PROTECTED,  datastoreType, ZERO_PARAMETERS, null,
+                MethodNode mn = declaringClassNode.addMethod(METHOD_GET_TARGET_DATASTORE, Modifier.PROTECTED,  datastoreType, ZERO_PARAMETERS, null,
                     ifElseS( notNullX(datastoreFieldVar ),
                                 returnS(datastoreFieldVar),
                                 returnS(datastoreLookupDefaultCall))
                 )
+
+                compileMethodStatically(source, mn)
             }
         }
 
@@ -237,6 +226,7 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
 
         weaveDatastoreAware(sourceUnit, annotationNode, classNode)
 
+
         // Move the existing logic into a new method called "$tt_methodName()"
         String renamedMethodName = getRenamedMethodPrefix() + methodNode.getName()
         Parameter[] newParameters = prepareNewMethodParameters(methodNode)
@@ -258,19 +248,24 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
 
         if(methodNode.getReturnType() != VOID_TYPE) {
             methodBody.addStatement(
-                    returnS(
-                            castX(methodNode.getReturnType(), executeMethodCallExpression)
-                    )
+                returnS(
+                        castX(methodNode.getReturnType(), executeMethodCallExpression)
+                )
             )
         } else {
             methodBody.addStatement(
-                    stmt(executeMethodCallExpression)
+                stmt(executeMethodCallExpression)
             )
         }
 
         methodNode.setCode(methodBody)
         processVariableScopes(sourceUnit, classNode, methodNode)
-        if(compilationUnit != null) {
+        compileMethodStatically(sourceUnit, methodNode)
+    }
+
+    protected void compileMethodStatically(SourceUnit sourceUnit, MethodNode methodNode) {
+        if (compilationUnit != null) {
+            addAnnotationIfNecessary(methodNode, CompileStatic)
             def staticCompileTransformation = new StaticCompileTransformation(compilationUnit: compilationUnit)
             staticCompileTransformation.visit([new AnnotationNode(COMPILE_STATIC_TYPE), methodNode] as ASTNode[], sourceUnit)
         }
@@ -360,14 +355,20 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
     }
 
     protected boolean hasExcludedAnnotation(MethodNode md) {
+        def excludes = ANNOTATION_NAME_EXCLUDES
+        return hasExcludedAnnotation(md, excludes)
+    }
+
+    protected boolean hasExcludedAnnotation(MethodNode md, Set<String> excludes) {
         boolean excludedAnnotation = false
         for (AnnotationNode annotation : md.getAnnotations()) {
-            if(ANNOTATION_NAME_EXCLUDES.contains(annotation.getClassNode().getName())) {
+            AnnotationNode gormTransform = findAnnotation( annotation.classNode, GormASTTransformationClass)
+            if (gormTransform != null || excludes.contains(annotation.getClassNode().getName())) {
                 excludedAnnotation = true
-                break;
+                break
             }
         }
-        excludedAnnotation
+        return excludedAnnotation
     }
 
 }

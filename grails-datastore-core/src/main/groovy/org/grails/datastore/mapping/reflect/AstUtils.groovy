@@ -181,7 +181,12 @@ class AstUtils {
      * @return true if classNode is marked with annotationClass, otherwise false
      */
     public static boolean hasAnnotation(final MethodNode methodNode, final Class<? extends Annotation> annotationClass) {
-        return !methodNode.getAnnotations(new ClassNode(annotationClass)).isEmpty();
+        def classNode = new ClassNode(annotationClass)
+        return hasAnnotation(methodNode, classNode)
+    }
+
+    public static boolean hasAnnotation(MethodNode methodNode, ClassNode annotationClassNode) {
+        return !methodNode.getAnnotations(annotationClassNode).isEmpty();
     }
 
     /**

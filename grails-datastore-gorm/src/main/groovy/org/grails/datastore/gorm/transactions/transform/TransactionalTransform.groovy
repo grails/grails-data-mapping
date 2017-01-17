@@ -15,6 +15,8 @@
 package org.grails.datastore.gorm.transactions.transform
 
 import grails.gorm.transactions.GrailsTransactionTemplate
+import grails.gorm.transactions.NotTransactional
+import grails.gorm.transactions.Rollback
 import grails.gorm.transactions.Transactional
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.*
@@ -25,12 +27,11 @@ import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.GroovyASTTransformation
 import org.grails.datastore.gorm.GormEnhancer
+import org.grails.datastore.gorm.multitenancy.transform.TenantTransform
 import org.grails.datastore.gorm.transform.AbstractMethodDecoratingTransformation
-import org.grails.datastore.mapping.core.Datastore
-import org.grails.datastore.mapping.core.connections.MultipleConnectionSourceCapableDatastore
 import org.grails.datastore.mapping.transactions.CustomizableRollbackTransactionAttribute
 import org.grails.datastore.mapping.transactions.TransactionCapableDatastore
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.Ordered
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionStatus
 import org.springframework.transaction.annotation.Propagation
@@ -39,9 +40,10 @@ import org.springframework.transaction.interceptor.RollbackRuleAttribute
 
 import java.lang.reflect.Modifier
 
+import static org.codehaus.groovy.ast.ClassHelper.*
 import static org.codehaus.groovy.ast.tools.GeneralUtils.*
 import static org.grails.datastore.mapping.reflect.AstUtils.*
-import static org.codehaus.groovy.ast.ClassHelper.*
+
 /**
  * <p>This AST transform reads the {@link Transactional} annotation and transforms method calls by
  * wrapping the body of the method in an execution of {@link GrailsTransactionTemplate}.</p>
@@ -89,7 +91,8 @@ import static org.codehaus.groovy.ast.ClassHelper.*
  */
 @CompileStatic
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
-class TransactionalTransform extends AbstractMethodDecoratingTransformation {
+class TransactionalTransform extends AbstractMethodDecoratingTransformation implements Ordered {
+    private static final Set<String> ANNOTATION_NAME_EXCLUDES = new HashSet<String>([Transactional.class.getName(), "grails.transaction.Rollback", Rollback.class.getName(), NotTransactional.class.getName(), "grails.transaction.NotTransactional"]);
     public static final ClassNode MY_TYPE = new ClassNode(Transactional)
     private static final String PROPERTY_TRANSACTION_MANAGER = "transactionManager"
     private static final String METHOD_EXECUTE = "execute"
@@ -249,7 +252,12 @@ class TransactionalTransform extends AbstractMethodDecoratingTransformation {
         // apply @Transaction attributes to properties of $transactionAttribute
         applyTransactionalAttributeSettings(annotationNode, transactionAttributeVar, newMethodBody)
 
-        final Expression connectionName = annotationNode.getMember("connection")
+        Expression connectionName = annotationNode.getMember("connection")
+        if(connectionName == null) {
+            if(hasAnnotation(methodNode, TenantTransform.CURRENT_TENANT_ANNOTATION_TYPE) || this.hasAnnotation(classNode, TenantTransform.CURRENT_TENANT_ANNOTATION_TYPE)) {
+                connectionName = varX("tenantId")
+            }
+        }
         final boolean hasDataSourceProperty = connectionName != null
 
         // $transactionManager = connection != null ? getTargetDatastore(connection).getTransactionManager() : getTransactionManager()
@@ -332,7 +340,18 @@ class TransactionalTransform extends AbstractMethodDecoratingTransformation {
     }
 
     @Override
+    protected boolean hasExcludedAnnotation(MethodNode md) {
+        return super.hasExcludedAnnotation(md) || hasExcludedAnnotation(md, ANNOTATION_NAME_EXCLUDES)
+    }
+
+    @Override
     protected String getRenamedMethodPrefix() {
         return '$tt__'
+    }
+
+    @Override
+    int getOrder() {
+        // neutral
+        return 0
     }
 }
