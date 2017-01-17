@@ -15,13 +15,11 @@ import javax.sql.DataSource
  */
 class DataSourceFactoryBean implements FactoryBean<DataSource> {
 
-    @Autowired
-    @Qualifier('hibernateDatastore')
     AbstractHibernateDatastore datastore
-
     String connectionName
 
-    DataSourceFactoryBean(String connectionName) {
+    DataSourceFactoryBean(AbstractHibernateDatastore datastore, String connectionName) {
+        this.datastore = datastore
         this.connectionName = connectionName
     }
 
