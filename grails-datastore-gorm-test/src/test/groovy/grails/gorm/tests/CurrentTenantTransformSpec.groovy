@@ -64,7 +64,7 @@ class CurrentTenantTransformSpec  extends Specification {
 class TeamService {
 
     List<Team> listTeams() {
-        Team.list()
+        Team.list(max:15)
     }
 
     @Transactional

@@ -19,6 +19,7 @@ import grails.gorm.transactions.NotTransactional
 import grails.gorm.transactions.Rollback
 import grails.gorm.transactions.Transactional
 import groovy.transform.CompileStatic
+import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.AnnotatedNode
 import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassNode
@@ -36,6 +37,8 @@ import org.codehaus.groovy.ast.stmt.Statement
 import org.codehaus.groovy.classgen.VariableScopeVisitor
 import org.codehaus.groovy.control.ErrorCollector
 import org.codehaus.groovy.control.SourceUnit
+import org.codehaus.groovy.transform.sc.StaticCompileTransformation
+import org.codehaus.groovy.transform.sc.transformers.StaticCompilationTransformer
 import org.codehaus.groovy.transform.trait.Traits
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.mapping.core.Datastore
@@ -243,6 +246,7 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
         // Start constructing new method body
         BlockStatement methodBody = block()
 
+
         MethodCallExpression executeMethodCallExpression = buildDelegatingMethodCall(
                 sourceUnit,
                 annotationNode,
@@ -266,7 +270,10 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
 
         methodNode.setCode(methodBody)
         processVariableScopes(sourceUnit, classNode, methodNode)
-
+        if(compilationUnit != null) {
+            def staticCompileTransformation = new StaticCompileTransformation(compilationUnit: compilationUnit)
+            staticCompileTransformation.visit([new AnnotationNode(COMPILE_STATIC_TYPE), methodNode] as ASTNode[], sourceUnit)
+        }
     }
 
     protected Parameter[] prepareNewMethodParameters(MethodNode methodNode) {

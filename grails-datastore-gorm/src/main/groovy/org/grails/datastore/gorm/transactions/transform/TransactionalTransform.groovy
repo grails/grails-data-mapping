@@ -29,6 +29,7 @@ import org.grails.datastore.gorm.transform.AbstractMethodDecoratingTransformatio
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.connections.MultipleConnectionSourceCapableDatastore
 import org.grails.datastore.mapping.transactions.CustomizableRollbackTransactionAttribute
+import org.grails.datastore.mapping.transactions.TransactionCapableDatastore
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionStatus
@@ -254,10 +255,11 @@ class TransactionalTransform extends AbstractMethodDecoratingTransformation {
         // $transactionManager = connection != null ? getTargetDatastore(connection).getTransactionManager() : getTransactionManager()
         Expression transactionManagerExpression
         if(hasDataSourceProperty) {
-            transactionManagerExpression = propX(callX(varX("this"), "getTargetDatastore", connectionName ), PROPERTY_TRANSACTION_MANAGER)
+            def targetDatastoreExpr = castX( make(TransactionCapableDatastore), callX(varX("this"), "getTargetDatastore", connectionName) )
+            transactionManagerExpression = castX( make(PlatformTransactionManager), propX(targetDatastoreExpr, PROPERTY_TRANSACTION_MANAGER) )
         }
         else {
-            transactionManagerExpression = propX(varX("this"), PROPERTY_TRANSACTION_MANAGER)
+            transactionManagerExpression = propX( varX("this"), PROPERTY_TRANSACTION_MANAGER)
         }
 
         // GrailsTransactionTemplate $transactionTemplate
