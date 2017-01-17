@@ -1,5 +1,7 @@
 package org.grails.datastore.mapping.core.grailsversion
 
+import org.grails.datastore.mapping.reflect.ClassUtils
+
 
 /**
  * A class to represent a version of Grails for comparison
@@ -26,6 +28,14 @@ class GrailsVersion implements Comparable<GrailsVersion> {
             this.patch = parts[2].toInteger()
         } else {
             throw new IllegalArgumentException("GrailsVersion only supports comparison of versions with 3 or 4 parts")
+        }
+    }
+
+    static GrailsVersion getCurrent() {
+        if (ClassUtils.isPresent("grails.util.BuildSettings")) {
+            new GrailsVersion(Class.forName("grails.util.BuildSettings").package.implementationVersion)
+        } else {
+            null
         }
     }
 
