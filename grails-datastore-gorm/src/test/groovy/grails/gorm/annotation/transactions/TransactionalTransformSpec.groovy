@@ -311,7 +311,7 @@ class DemoSpec extends Specification {
 
         then: "It implements TransactionManagerAware"
         bookService.getClass().getMethod("setTransactionManager", PlatformTransactionManager)
-        bookService.getClass().getMethod("setTargetDatastore", MultipleConnectionSourceCapableDatastore).getAnnotation(Autowired)
+        bookService.getClass().getMethod("setTargetDatastore", MultipleConnectionSourceCapableDatastore[]).getAnnotation(Autowired)
 
 
     }
@@ -526,6 +526,11 @@ class BookService {
     int add(int a, int b) {
         a + b
     }
+    
+    @ReadOnly
+    boolean testReadOnly() {
+        transactionStatus.isReadOnly()
+    }
 }
 
 new BookService()
@@ -557,7 +562,7 @@ new BookService()
 
         then: "The transaction definition is read-only"
         status.isReadOnly()
-
+        bookService.testReadOnly()
     }
 
     @Issue("GRAILS-10557")

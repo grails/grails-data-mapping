@@ -16,6 +16,7 @@ package org.grails.datastore.gorm.transactions.transform
 
 import grails.gorm.transactions.GrailsTransactionTemplate
 import grails.gorm.transactions.NotTransactional
+import grails.gorm.transactions.ReadOnly
 import grails.gorm.transactions.Rollback
 import grails.gorm.transactions.Transactional
 import groovy.transform.CompileStatic
@@ -95,11 +96,17 @@ import static org.grails.datastore.mapping.reflect.AstUtils.*
 class TransactionalTransform extends AbstractMethodDecoratingTransformation implements Ordered {
     private static final Set<String> ANNOTATION_NAME_EXCLUDES = new HashSet<String>([Transactional.class.getName(), "grails.transaction.Rollback", Rollback.class.getName(), NotTransactional.class.getName(), "grails.transaction.NotTransactional"]);
     public static final ClassNode MY_TYPE = new ClassNode(Transactional)
+    public static final ClassNode READ_ONLY_TYPE = new ClassNode(ReadOnly)
     private static final String PROPERTY_TRANSACTION_MANAGER = "transactionManager"
     private static final String METHOD_EXECUTE = "execute"
     private static final Object APPLIED_MARKER = new Object();
     private static final String SET_TRANSACTION_MANAGER = "setTransactionManager"
     public static final String GET_TRANSACTION_MANAGER_METHOD = "getTransactionManager"
+
+    @Override
+    protected boolean isValidAnnotation(AnnotationNode annotationNode, AnnotatedNode classNode) {
+        return super.isValidAnnotation(annotationNode, classNode) || READ_ONLY_TYPE.equals(annotationNode.classNode)
+    }
 
     @Override
     protected ClassNode getAnnotationType() {
@@ -304,6 +311,12 @@ class TransactionalTransform extends AbstractMethodDecoratingTransformation impl
         final ClassNode rollbackRuleAttributeClassNode = make(RollbackRuleAttribute)
         final ClassNode noRollbackRuleAttributeClassNode = make(NoRollbackRuleAttribute)
         final Map<String, Expression> members = annotationNode.getMembers()
+        if(READ_ONLY_TYPE.equals(annotationNode.classNode)) {
+            methodBody.addStatement(
+                assignS(propX(transactionAttributeVar, "readOnly"), ConstantExpression.TRUE)
+            )
+        }
+
         members.each { String name, Expression expr ->
             if (name == 'rollbackFor' || name == 'rollbackForClassName' || name == 'noRollbackFor' || name == 'noRollbackForClassName') {
                 final targetClassNode = (name == 'rollbackFor' || name == 'rollbackForClassName') ? rollbackRuleAttributeClassNode : noRollbackRuleAttributeClassNode
