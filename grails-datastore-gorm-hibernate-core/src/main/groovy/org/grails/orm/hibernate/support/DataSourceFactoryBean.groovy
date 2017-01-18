@@ -1,12 +1,17 @@
 package org.grails.orm.hibernate.support
 
 import org.grails.orm.hibernate.AbstractHibernateDatastore
+import org.grails.orm.hibernate.connections.HibernateConnectionSource
 import org.springframework.beans.factory.FactoryBean
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 
 import javax.sql.DataSource
 
 /**
- * Created by jameskleeh on 1/13/17.
+ * A factory class to retrieve a {@link javax.sql.DataSource} from the Hibernate datastore
+ *
+ * @author James Kleeh
  */
 class DataSourceFactoryBean implements FactoryBean<DataSource> {
 
@@ -20,7 +25,7 @@ class DataSourceFactoryBean implements FactoryBean<DataSource> {
 
     @Override
     DataSource getObject() throws Exception {
-        (DataSource)datastore.connectionSources.getConnectionSource(connectionName).source
+        ((HibernateConnectionSource)datastore.connectionSources.getConnectionSource(connectionName)).dataSource
     }
 
     @Override
