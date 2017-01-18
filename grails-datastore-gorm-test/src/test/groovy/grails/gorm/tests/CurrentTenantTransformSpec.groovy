@@ -106,7 +106,7 @@ return TestService
 class TeamService {
 
     List<Team> listTeams() {
-        Team.list(max:10)
+        Team.list(max:15)
     }
 
     @Transactional

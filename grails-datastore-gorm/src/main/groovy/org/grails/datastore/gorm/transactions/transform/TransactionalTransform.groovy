@@ -29,6 +29,7 @@ import org.codehaus.groovy.transform.GroovyASTTransformation
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.multitenancy.transform.TenantTransform
 import org.grails.datastore.gorm.transform.AbstractMethodDecoratingTransformation
+import org.grails.datastore.gorm.transform.AstMethodDispatchUtils
 import org.grails.datastore.mapping.transactions.CustomizableRollbackTransactionAttribute
 import org.grails.datastore.mapping.transactions.TransactionCapableDatastore
 import org.springframework.core.Ordered
@@ -41,7 +42,7 @@ import org.springframework.transaction.interceptor.RollbackRuleAttribute
 import java.lang.reflect.Modifier
 
 import static org.codehaus.groovy.ast.ClassHelper.*
-import static org.codehaus.groovy.ast.tools.GeneralUtils.*
+import static org.grails.datastore.gorm.transform.AstMethodDispatchUtils.*
 import static org.grails.datastore.mapping.reflect.AstUtils.*
 
 /**
@@ -263,7 +264,8 @@ class TransactionalTransform extends AbstractMethodDecoratingTransformation impl
         // $transactionManager = connection != null ? getTargetDatastore(connection).getTransactionManager() : getTransactionManager()
         Expression transactionManagerExpression
         if(hasDataSourceProperty) {
-            def targetDatastoreExpr = castX( make(TransactionCapableDatastore), callX(varX("this"), "getTargetDatastore", connectionName) )
+            // callX(varX("this"), "getTargetDatastore", connectionName)
+            def targetDatastoreExpr = castX( make(TransactionCapableDatastore), callThisD(classNode, "getTargetDatastore", connectionName) )
             transactionManagerExpression = castX( make(PlatformTransactionManager), propX(targetDatastoreExpr, PROPERTY_TRANSACTION_MANAGER) )
         }
         else {

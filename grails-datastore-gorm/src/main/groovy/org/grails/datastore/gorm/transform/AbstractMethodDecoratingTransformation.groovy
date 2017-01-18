@@ -347,7 +347,7 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
             scopeVisitor.visitMethod(renamedMethodNode)
         }
 
-        final originalMethodCall = callX(varX("this"), renamedMethodName, args(renamedMethodNode.parameters))
+        final originalMethodCall = callX(varX("this", classNode), renamedMethodName, args(renamedMethodNode.parameters))
         originalMethodCall.setImplicitThis(false)
         originalMethodCall.setMethodTarget(renamedMethodNode)
 

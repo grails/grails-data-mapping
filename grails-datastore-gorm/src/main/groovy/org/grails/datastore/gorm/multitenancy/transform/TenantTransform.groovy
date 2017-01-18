@@ -33,13 +33,15 @@ import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.GroovyASTTransformation
 import org.grails.datastore.gorm.transform.AbstractGormASTTransformation
 import org.grails.datastore.gorm.transform.AbstractMethodDecoratingTransformation
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.services.ServiceRegistry
 import org.springframework.core.Ordered
 import org.springframework.transaction.TransactionStatus
 
 import static org.codehaus.groovy.ast.tools.GeneralUtils.*
 import static org.codehaus.groovy.ast.ClassHelper.*
 import static org.grails.datastore.mapping.reflect.AstUtils.copyParameters
-
+import static org.grails.datastore.gorm.transform.AstMethodDispatchUtils.*
 /**
  * Implementation of {@link grails.gorm.multitenancy.Tenant}
  *
@@ -70,7 +72,7 @@ class TenantTransform extends AbstractMethodDecoratingTransformation implements 
         ClassNode tenantServiceClassNode = make(TenantService)
         VariableExpression tenantServiceVar = varX('$tenantService', tenantServiceClassNode)
         newMethodBody.addStatement(
-            declS(tenantServiceVar, callX(varX("targetDatastore"), "getService", classX(tenantServiceClassNode) ) )
+            declS(tenantServiceVar, callD(ServiceRegistry, "targetDatastore", "getService", classX(tenantServiceClassNode) ) )
         )
         return makeDelegatingClosureCall( tenantServiceVar, "withCurrent", params( param( make(Serializable), VAR_TENANT_ID)), originalMethodCallExpr)
     }
