@@ -26,6 +26,7 @@ import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.sc.StaticCompileTransformation
 import org.codehaus.groovy.transform.trait.Traits
 import org.grails.datastore.gorm.GormEnhancer
+import org.grails.datastore.gorm.internal.RuntimeSupport
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.connections.MultipleConnectionSourceCapableDatastore
 import org.springframework.beans.factory.annotation.Autowired
@@ -88,31 +89,30 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
         if(datastoreField == null) {
             datastoreField = declaringClassNode.addField(FIELD_TARGET_DATASTORE, Modifier.PROTECTED, datastoreType, null)
 
-            Parameter datastoreParam = param(datastoreType, "datastore")
-            VariableExpression datastoreVar = varX(datastoreParam)
-
-
+            Parameter datastoresParam = param(datastoreType.makeArray(), "datastores")
+            VariableExpression datastoresVar = varX(datastoresParam)
 
             BlockStatement setTargetDatastoreBody
             VariableExpression datastoreFieldVar = varX(datastoreField)
+            Statement assignTargetDatastore = assignS(datastoreFieldVar, callD(classX(RuntimeSupport), "findDefaultDatastore", datastoresVar))
             if(hasDataSourceProperty) {
-                // $targetDatastore = datastore
+                // $targetDatastore = RuntimeSupport.findDefaultDatastore(datastores)
                 // datastore = datastore.getDatastoreForConnection(connectionName)
                 setTargetDatastoreBody = block(
-                        assignS(datastoreFieldVar, datastoreVar),
-                        assignS(datastoreVar, callX(datastoreVar, "getDatastoreForConnection", connectionName ))
+                    assignTargetDatastore,
+                    assignS(datastoreFieldVar, callX(datastoreFieldVar, "getDatastoreForConnection", connectionName ))
                 )
             }
             else {
                 setTargetDatastoreBody = block(
-                        assignS(datastoreFieldVar, datastoreVar)
+                    assignTargetDatastore
                 )
             }
 
-            weaveSetTargetDatastoreBody(source, annotationNode, declaringClassNode, datastoreVar, setTargetDatastoreBody)
+            weaveSetTargetDatastoreBody(source, annotationNode, declaringClassNode, datastoresVar, setTargetDatastoreBody)
 
-            // Add method: @Autowired void setTargetDatastore(Datastore datastore)
-            Parameter[] setTargetDatastoreParams = params(datastoreParam)
+            // Add method: @Autowired void setTargetDatastore(Datastore[] datastores)
+            Parameter[] setTargetDatastoreParams = params(datastoresParam)
             if( declaringClassNode.getMethod("setTargetDatastore", setTargetDatastoreParams) == null) {
                 MethodNode setTargetDatastoreMethod = declaringClassNode.addMethod("setTargetDatastore", Modifier.PUBLIC, VOID_TYPE, setTargetDatastoreParams, null, setTargetDatastoreBody)
 

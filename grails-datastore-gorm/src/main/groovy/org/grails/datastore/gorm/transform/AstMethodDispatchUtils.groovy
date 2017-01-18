@@ -47,7 +47,7 @@ class AstMethodDispatchUtils extends GeneralUtils {
      *
      * @return The expression
      */
-    static MethodCallExpression callD(VariableExpression var, String methodName, Expression arguments = ZERO_ARGUMENTS) {
+    static MethodCallExpression callD(Expression var, String methodName, Expression arguments = ZERO_ARGUMENTS) {
         MethodCallExpression methodCall = callX(var, methodName, arguments)
         Parameter[] params = paramsForArgs(arguments)
         MethodNode mn = var.getType()?.getDeclaredMethod(methodName, params)

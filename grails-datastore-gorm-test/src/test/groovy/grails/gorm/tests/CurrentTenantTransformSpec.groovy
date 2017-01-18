@@ -6,12 +6,14 @@ import grails.gorm.multitenancy.Tenants
 import grails.gorm.multitenancy.WithoutTenant
 import grails.gorm.transactions.Transactional
 import org.grails.datastore.mapping.config.Settings
+import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.DatastoreUtils
 import org.grails.datastore.mapping.core.connections.ConnectionSource
 import org.grails.datastore.mapping.multitenancy.MultiTenancySettings
 import org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException
 import org.grails.datastore.mapping.multitenancy.resolvers.SystemPropertyTenantResolver
 import org.grails.datastore.mapping.simple.SimpleMapDatastore
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.TransactionStatus
 import spock.lang.AutoCleanup
 import spock.lang.Shared
@@ -60,6 +62,9 @@ class TestService {
 
 return TestService
 ''')
+        TeamService teamService = new TeamService()
+        teamService.setTargetDatastore(Mock(Datastore))
+
         expect:
         testServiceClass.getDeclaredMethod('$tt__addTeam', String, TransactionStatus)
         testServiceClass.getDeclaredMethod('$mt__addTeam', String, Serializable)
@@ -145,7 +150,7 @@ class TeamService {
     }
 
     List<Team> listTeams() {
-        Team.list(max:15)
+        Team.list(max:10)
     }
 
     @Transactional

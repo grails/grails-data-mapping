@@ -17,6 +17,7 @@ package grails.gorm.multitenancy;
 
 import org.codehaus.groovy.transform.GroovyASTTransformationClass;
 import org.grails.datastore.gorm.transform.GormASTTransformationClass;
+import org.grails.datastore.mapping.core.connections.ConnectionSourcesProvider;
 
 import java.lang.annotation.*;
 
@@ -43,4 +44,10 @@ import java.lang.annotation.*;
 @GroovyASTTransformationClass("org.grails.datastore.gorm.transform.OrderedGormTransformation")
 @GormASTTransformationClass("org.grails.datastore.gorm.multitenancy.transform.TenantTransform")
 public @interface WithoutTenant {
+    /**
+     * If you are using multiple GORM implementations and wish to create a transaction for a specific implementation then use this. For example {@code @Transactional(forDatastore=HibernateDatastore) }
+     *
+     * @return The type of the datastore
+     */
+    Class<? extends ConnectionSourcesProvider>[] datastore() default {};
 }
