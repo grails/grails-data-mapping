@@ -70,7 +70,7 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            <li><a href="#required_element_summary">Required</a></li>&nbsp;&nbsp;&nbsp;Optional&nbsp;&nbsp;&nbsp;
+            <li><a href="#required_element_summary">Required</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#optional_element_summary">Optional</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
@@ -151,6 +151,22 @@ if (location.href.indexOf('is-external=true') == -1) {
                     </table>
                    </ul>
                    <a name="optional_element_summary"><!--   --></a>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Optional Element Summary table">
+                        <caption><span>Optional Element Summary</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Type</th>
+                            <th class="colLast" scope="col">Name and Description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>java.lang.Class&lt;? extends <a href='../../../org/grails/datastore/mapping/core/connections/ConnectionSourcesProvider.html' title='ConnectionSourcesProvider'>ConnectionSourcesProvider</a>&gt;[]</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#datastore">datastore</a></code><br>If you are using multiple GORM implementations and wish to create a transaction for a specific implementation then use this. </td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+                   
                 </li>
         </ul>
         
@@ -202,6 +218,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Element Detail</h3>
                     
+                        <a name="datastore"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;java.lang.Class&lt;? extends <a href='../../../org/grails/datastore/mapping/core/connections/ConnectionSourcesProvider.html' title='ConnectionSourcesProvider'>ConnectionSourcesProvider</a>&gt;[] <strong>datastore</strong></h4>
+                                <p> If you are using multiple GORM implementations and wish to create a transaction for a specific implementation then use this. For example <CODE>@Transactional(forDatastore=HibernateDatastore) </CODE>
+ @default {}<DL><DT><B>Returns:</B></DT><DD>The type of the datastore</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="value"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -249,7 +274,7 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            <li><a href="#required_element_summary">Required</a></li>&nbsp;&nbsp;&nbsp;Optional&nbsp;&nbsp;&nbsp;
+            <li><a href="#required_element_summary">Required</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#optional_element_summary">Optional</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
