@@ -1,6 +1,7 @@
 package grails.gorm.tests
 
 import grails.gorm.multitenancy.CurrentTenant
+import grails.gorm.multitenancy.Tenant
 import grails.gorm.multitenancy.Tenants
 import grails.gorm.transactions.Transactional
 import org.grails.datastore.mapping.config.Settings
@@ -33,11 +34,16 @@ class CurrentTenantTransformSpec  extends Specification {
         given:
         Class testServiceClass = new GroovyShell().evaluate('''
 import grails.gorm.multitenancy.CurrentTenant
+import grails.gorm.multitenancy.Tenant
 import grails.gorm.transactions.Transactional
 
 @CurrentTenant
 class TestService {
-
+    @Tenant({ "two" }) 
+    List<String> listTwoTeams() {
+        return ["Manchester United"]
+    }   
+    
     List<String> listTeams() {
         return ["Arsenal"]
     }
@@ -46,6 +52,8 @@ class TestService {
     void addTeam(String name) {
         println "good"
     }
+    
+
 }
 
 return TestService
@@ -53,6 +61,7 @@ return TestService
         expect:
         testServiceClass.getDeclaredMethod('$tt__addTeam', String, TransactionStatus)
         testServiceClass.getDeclaredMethod('$mt__addTeam', String, Serializable)
+        testServiceClass.getDeclaredMethod('$mt__listTwoTeams',  Serializable)
 
     }
 
@@ -78,6 +87,12 @@ return TestService
         then:"An exception is thrown because no tenant is present"
         thrown(TenantNotFoundException)
 
+        when:"A method that uses @Tenant is used"
+        results = teamService.allTwoTeams()
+
+        then:"A tenant id was resolved for that method"
+        results.isEmpty()
+
         when:"A tenant is set"
         System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "two")
         results = teamService.listTeams()
@@ -99,11 +114,23 @@ return TestService
 
         then:"An exception is thrown"
         thrown(TenantNotFoundException)
+
+        when:"A method that uses @Tenant is used"
+        results = teamService.allTwoTeams()
+
+        then:"A tenant id was resolved for that method"
+        results.size() == 1
+
     }
 }
 
 @CurrentTenant
 class TeamService {
+
+    @Tenant({"two"})
+    List<Team> allTwoTeams() {
+        Team.list()
+    }
 
     List<Team> listTeams() {
         Team.list(max:15)

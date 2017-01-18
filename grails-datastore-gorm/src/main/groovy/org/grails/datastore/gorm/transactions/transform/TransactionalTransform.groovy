@@ -293,7 +293,7 @@ class TransactionalTransform extends AbstractMethodDecoratingTransformation impl
         // }
         Parameter transactionStatusParam = param(make(TransactionStatus), "transactionStatus")
         Parameter[] parameters = params(transactionStatusParam)
-        return makeDelegatingClosureCall(transactionTemplateVar, executeMethodName, parameters, originalMethodCall )
+        return makeDelegatingClosureCall(transactionTemplateVar, executeMethodName, parameters, originalMethodCall, methodNode.getVariableScope() )
     }
 
     protected String getTransactionTemplateMethodName() {

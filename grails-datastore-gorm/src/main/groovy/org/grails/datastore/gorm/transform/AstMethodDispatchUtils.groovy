@@ -9,6 +9,7 @@ import org.codehaus.groovy.ast.expr.ClassExpression
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.TupleExpression
+import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.tools.GeneralUtils
 
 import static org.codehaus.groovy.ast.ClassHelper.make
@@ -37,10 +38,20 @@ class AstMethodDispatchUtils extends GeneralUtils {
      * @return The expression
      */
     static MethodCallExpression callD(ClassNode targetType, String var, String methodName, Expression arguments = ZERO_ARGUMENTS) {
-        MethodCallExpression methodCall = callX(varX(var, targetType), methodName, arguments)
+        VariableExpression varExpression = varX(var, targetType)
+        return callD(varExpression, methodName, arguments)
+    }
+
+    /**
+     * Make a direct method call on this object for the given name and arguments
+     *
+     * @return The expression
+     */
+    static MethodCallExpression callD(VariableExpression var, String methodName, Expression arguments = ZERO_ARGUMENTS) {
+        MethodCallExpression methodCall = callX(var, methodName, arguments)
         Parameter[] params = paramsForArgs(arguments)
-        MethodNode mn = targetType.getDeclaredMethod(methodName, params)
-        if(mn != null) {
+        MethodNode mn = var.getType()?.getDeclaredMethod(methodName, params)
+        if (mn != null) {
             methodCall.setMethodTarget(mn)
         }
         return methodCall

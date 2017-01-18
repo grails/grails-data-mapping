@@ -54,7 +54,7 @@ class OrderedGormTransformation extends AbstractASTTransformation implements Com
         }
 
         AnnotatedNode annotatedNode = (AnnotatedNode) astNodes[1];
-        Iterable<TransformationInvocation> astTransformations = collectAndOrderGormTransformations(annotatedNode)
+         Iterable<TransformationInvocation> astTransformations = collectAndOrderGormTransformations(annotatedNode)
         for(transform in astTransformations) {
             transform.invoke(source, annotatedNode)
         }
@@ -65,24 +65,18 @@ class OrderedGormTransformation extends AbstractASTTransformation implements Com
         if(annotatedNode instanceof MethodNode) {
             MethodNode mn = (MethodNode)annotatedNode
             for(classAnn in mn.getDeclaringClass().getAnnotations()) {
-                if(!annotations.any() { AnnotationNode ann -> ann.classNode.name == classAnn.classNode.name}) {
+                if(!annotations.any() { AnnotationNode ann ->
+                    ann.classNode.name == classAnn.classNode.name ||
+                        findTransformName(ann) == findTransformName(classAnn)
+                }) {
                     annotations.add(classAnn)
                 }
             }
         }
         List<TransformationInvocation> transforms = []
         for(ann in annotations) {
-            AnnotationNode gormTransform = findAnnotation( ann.classNode, GormASTTransformationClass)
-            def expr = gormTransform?.getMember("value")
-            if(expr instanceof ListExpression) {
-                ListExpression le = (ListExpression)expr
-                def expressions = le.getExpressions()
-                if(!expressions.isEmpty()) {
-                    expr = expressions.get(0)
-                }
-            }
-            if(expr instanceof ConstantExpression) {
-                String transformName = expr.getText()
+            String transformName = findTransformName(ann)
+            if(transformName) {
                 try {
                     def newTransform = ClassUtils.forName(transformName).newInstance()
                     if(newTransform instanceof ASTTransformation) {
@@ -99,6 +93,12 @@ class OrderedGormTransformation extends AbstractASTTransformation implements Com
         return transforms.sort { TransformationInvocation a, TransformationInvocation b ->
             new OrderComparator().compare(a.transform, b.transform)
         }.reverse()
+    }
+
+    protected String findTransformName(AnnotationNode ann) {
+        AnnotationNode gormTransform = findAnnotation(ann.classNode, GormASTTransformationClass)
+        String transformName = gormTransform?.getMember("value")?.text
+        transformName
     }
 
     private static class TransformationInvocation {

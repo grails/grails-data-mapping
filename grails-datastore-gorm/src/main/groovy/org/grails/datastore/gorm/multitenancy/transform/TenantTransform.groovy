@@ -19,29 +19,28 @@ import grails.gorm.multitenancy.CurrentTenant
 import grails.gorm.multitenancy.Tenant
 import grails.gorm.multitenancy.TenantService
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.ast.AnnotatedNode
-import org.codehaus.groovy.ast.AnnotationNode
-import org.codehaus.groovy.ast.ClassNode
-import org.codehaus.groovy.ast.MethodNode
-import org.codehaus.groovy.ast.Parameter
+import org.codehaus.groovy.ast.*
 import org.codehaus.groovy.ast.expr.ClassExpression
+import org.codehaus.groovy.ast.expr.ClosureExpression
+import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.GroovyASTTransformation
-import org.grails.datastore.gorm.transform.AbstractGormASTTransformation
 import org.grails.datastore.gorm.transform.AbstractMethodDecoratingTransformation
-import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException
 import org.grails.datastore.mapping.services.ServiceRegistry
 import org.springframework.core.Ordered
-import org.springframework.transaction.TransactionStatus
 
+import static org.codehaus.groovy.ast.ClassHelper.CLOSURE_TYPE
+import static org.codehaus.groovy.ast.ClassHelper.make
 import static org.codehaus.groovy.ast.tools.GeneralUtils.*
-import static org.codehaus.groovy.ast.ClassHelper.*
+import static org.grails.datastore.gorm.transform.AstMethodDispatchUtils.callD
 import static org.grails.datastore.mapping.reflect.AstUtils.copyParameters
-import static org.grails.datastore.gorm.transform.AstMethodDispatchUtils.*
+import static org.grails.datastore.mapping.reflect.AstUtils.varThis
+
 /**
  * Implementation of {@link grails.gorm.multitenancy.Tenant}
  *
@@ -70,11 +69,47 @@ class TenantTransform extends AbstractMethodDecoratingTransformation implements 
     @Override
     MethodCallExpression buildDelegatingMethodCall(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode, MethodCallExpression originalMethodCallExpr, BlockStatement newMethodBody) {
         ClassNode tenantServiceClassNode = make(TenantService)
+        VariableScope variableScope = methodNode.getVariableScope()
         VariableExpression tenantServiceVar = varX('$tenantService', tenantServiceClassNode)
+        variableScope.putDeclaredVariable( tenantServiceVar )
         newMethodBody.addStatement(
             declS(tenantServiceVar, callD(ServiceRegistry, "targetDatastore", "getService", classX(tenantServiceClassNode) ) )
         )
-        return makeDelegatingClosureCall( tenantServiceVar, "withCurrent", params( param( make(Serializable), VAR_TENANT_ID)), originalMethodCallExpr)
+
+        ClassNode serializableClassNode = make(Serializable)
+        if(CURRENT_TENANT_ANNOTATION_TYPE.equals(annotationNode.classNode)) {
+            return makeDelegatingClosureCall( tenantServiceVar, "withCurrent", params( param(serializableClassNode, VAR_TENANT_ID)), originalMethodCallExpr, variableScope)
+        }
+        else {
+            // must be @Tenant
+            Expression annValue = annotationNode.getMember("value")
+            if(annValue instanceof ClosureExpression) {
+                VariableExpression closureVar = varX('$tenantResolver', CLOSURE_TYPE)
+                VariableExpression tenantIdVar = varX('$tenantId', serializableClassNode)
+                tenantIdVar.setClosureSharedVariable(true)
+                variableScope.putDeclaredVariable( closureVar )
+                variableScope.putReferencedLocalVariable( tenantIdVar )
+                variableScope.putDeclaredVariable( tenantIdVar )
+                // Generates:
+                // Closure $tenantResolver = ...
+                // $tenantResolver = $tenantResolver.clone()
+                // $tenantResolver.setDelegate(this)
+                // Serializable $tenantId = (Serializable)$tenantResolver.call()
+                // if($tenantId == null) throw new TenantNotFoundException(..)
+                newMethodBody.addStatement  declS( closureVar, annValue)
+                newMethodBody.addStatement  assignS( closureVar, callD( closureVar, "clone"))
+                newMethodBody.addStatement  stmt( callD( closureVar, "setDelegate", varThis() ) )
+                newMethodBody.addStatement  declS( tenantIdVar, castX( serializableClassNode, callD( closureVar, "call") ))
+                newMethodBody.addStatement ifS( equalsNullX(tenantIdVar),
+                    throwS( ctorX( make(TenantNotFoundException), constX("Tenant id resolved from @Tenant is null")) )
+                )
+                return makeDelegatingClosureCall( tenantServiceVar, "withId", args(tenantIdVar), params( param(serializableClassNode, VAR_TENANT_ID)), originalMethodCallExpr, variableScope)
+            }
+            else {
+                addError("@Tenant value should be a closure", annotationNode)
+                return makeDelegatingClosureCall( tenantServiceVar, "withCurrent", params( param(serializableClassNode, VAR_TENANT_ID)), originalMethodCallExpr, variableScope)
+            }
+        }
     }
 
     @Override

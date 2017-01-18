@@ -35,7 +35,7 @@ import javax.annotation.PreDestroy
 import java.lang.reflect.Modifier
 
 import static org.codehaus.groovy.ast.ClassHelper.*
-import static org.codehaus.groovy.ast.tools.GeneralUtils.*
+import static org.grails.datastore.gorm.transform.AstMethodDispatchUtils.*
 import static org.grails.datastore.mapping.reflect.AstUtils.*
 
 /**
@@ -289,15 +289,40 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
      */
     protected abstract MethodCallExpression buildDelegatingMethodCall(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode, MethodCallExpression originalMethodCallExpr, BlockStatement newMethodBody)
 
+    /**
+     * Construct a method call that wraps an original call with a closure invocation
+     *
+     * @param targetObject The target object
+     * @param executeMethodName The method that accepts a closure
+     * @param closureParameters The parameters for the closure
+     * @param originalMethodCall The original method call to delegate to
+     * @return The MethodCallExpression
+     */
+    protected MethodCallExpression makeDelegatingClosureCall(VariableExpression targetObject, String executeMethodName,  Parameter[] closureParameters, MethodCallExpression originalMethodCall, VariableScope variableScope ) {
+        return makeDelegatingClosureCall(targetObject, executeMethodName, new ArgumentListExpression(), closureParameters, originalMethodCall, variableScope)
+    }
 
-    protected MethodCallExpression makeDelegatingClosureCall(VariableExpression targetObject,String executeMethodName,  Parameter[] parameters, MethodCallExpression originalMethodCall ) {
-        final ClosureExpression callCallExpression = closureX(parameters, createDelegingMethodBody(parameters, originalMethodCall))
+    /**
+     * Construct a method call that wraps an original call with a closure invocation
+     *
+     * @param targetObject The target object
+     * @param executeMethodName The method that accepts a closure
+     * @param closureParameters The parameters for the closure
+     * @param originalMethodCall The original method call to delegate to
+     * @return The MethodCallExpression
+     */
+    protected MethodCallExpression makeDelegatingClosureCall(VariableExpression targetObject, String executeMethodName, ArgumentListExpression arguments, Parameter[] closureParameters, MethodCallExpression originalMethodCall, VariableScope variableScope ) {
+        final ClosureExpression closureExpression = closureX(closureParameters, createDelegingMethodBody(closureParameters, originalMethodCall))
+        closureExpression.setVariableScope(
+            variableScope
+        )
+        arguments.addExpression(closureExpression)
         final MethodCallExpression executeMethodCallExpression = callX(
                 targetObject,
                 executeMethodName,
-                args(callCallExpression))
+                arguments)
 
-        final MethodNode executeMethodNode = targetObject.getType().getMethod(executeMethodName, params(param(CLOSURE_TYPE, null)))
+        final MethodNode executeMethodNode = targetObject.getType().getMethod(executeMethodName, paramsForArgs(arguments))
         if (executeMethodNode != null) {
             executeMethodCallExpression.setMethodTarget(executeMethodNode)
         }
