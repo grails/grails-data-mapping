@@ -3,6 +3,7 @@ package grails.gorm.tests
 import grails.gorm.multitenancy.CurrentTenant
 import grails.gorm.multitenancy.Tenant
 import grails.gorm.multitenancy.Tenants
+import grails.gorm.multitenancy.WithoutTenant
 import grails.gorm.transactions.Transactional
 import org.grails.datastore.mapping.config.Settings
 import org.grails.datastore.mapping.core.DatastoreUtils
@@ -26,8 +27,9 @@ class CurrentTenantTransformSpec  extends Specification {
                     (Settings.SETTING_MULTI_TENANCY_MODE): MultiTenancySettings.MultiTenancyMode.DATABASE,
                     (Settings.SETTING_MULTI_TENANT_RESOLVER): new SystemPropertyTenantResolver()
             ),
-            [ConnectionSource.DEFAULT, 'two'],
-            Team
+            [ConnectionSource.DEFAULT, 'one','two'],
+            Team,
+            Player
     )
 
     void "Test parsing of @CurrentTenant"() {
@@ -121,11 +123,21 @@ return TestService
         then:"A tenant id was resolved for that method"
         results.size() == 1
 
+        when:"A method that used @WithoutTenant is used"
+        int playerCount = teamService.countPlayers()
+
+        then:"It executed corretly without throwing an exception"
+        playerCount == 0
     }
 }
 
 @CurrentTenant
 class TeamService {
+
+    @WithoutTenant
+    int countPlayers() {
+        Player.count()
+    }
 
     @Tenant({"two"})
     List<Team> allTwoTeams() {

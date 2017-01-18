@@ -18,6 +18,7 @@ package org.grails.datastore.gorm.multitenancy.transform
 import grails.gorm.multitenancy.CurrentTenant
 import grails.gorm.multitenancy.Tenant
 import grails.gorm.multitenancy.TenantService
+import grails.gorm.multitenancy.WithoutTenant
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.*
 import org.codehaus.groovy.ast.expr.ClassExpression
@@ -38,6 +39,7 @@ import static org.codehaus.groovy.ast.ClassHelper.CLOSURE_TYPE
 import static org.codehaus.groovy.ast.ClassHelper.make
 import static org.codehaus.groovy.ast.tools.GeneralUtils.*
 import static org.grails.datastore.gorm.transform.AstMethodDispatchUtils.callD
+import static org.grails.datastore.mapping.reflect.AstUtils.ZERO_PARAMETERS
 import static org.grails.datastore.mapping.reflect.AstUtils.copyParameters
 import static org.grails.datastore.mapping.reflect.AstUtils.varThis
 
@@ -53,10 +55,11 @@ class TenantTransform extends AbstractMethodDecoratingTransformation implements 
     private static final Object APPLIED_MARKER = new Object()
     private static final ClassExpression CURRENT_TENANT_ANNOTATION_TYPE_EXPR = classX(CurrentTenant)
     private static final ClassExpression TENANT_ANNOTATION_TYPE_EXPR = classX(Tenant)
+    private static final ClassExpression WITHOUT_TENANT_ANNOTATION_TYPE_EXPR = classX(WithoutTenant)
+
     public static final ClassNode TENANT_ANNOTATION_TYPE = TENANT_ANNOTATION_TYPE_EXPR.getType()
     public  static final ClassNode CURRENT_TENANT_ANNOTATION_TYPE = CURRENT_TENANT_ANNOTATION_TYPE_EXPR.getType()
-    public static final AnnotationNode TENANT_ANNOTATION = new AnnotationNode( TENANT_ANNOTATION_TYPE )
-    public static final AnnotationNode CURRENT_TENANT_ANNOTATION = new AnnotationNode( CURRENT_TENANT_ANNOTATION_TYPE )
+    public  static final ClassNode WITHOUT_TENANT_ANNOTATION_TYPE = WITHOUT_TENANT_ANNOTATION_TYPE_EXPR.getType()
 
     private static final String RENAMED_METHOD_PREFIX = '$mt__'
     public static final String VAR_TENANT_ID = "tenantId"
@@ -77,8 +80,12 @@ class TenantTransform extends AbstractMethodDecoratingTransformation implements 
         )
 
         ClassNode serializableClassNode = make(Serializable)
-        if(CURRENT_TENANT_ANNOTATION_TYPE.equals(annotationNode.classNode)) {
+        ClassNode annotationClassNode = annotationNode.classNode
+        if(CURRENT_TENANT_ANNOTATION_TYPE.equals(annotationClassNode)) {
             return makeDelegatingClosureCall( tenantServiceVar, "withCurrent", params( param(serializableClassNode, VAR_TENANT_ID)), originalMethodCallExpr, variableScope)
+        }
+        else if(WITHOUT_TENANT_ANNOTATION_TYPE.equals(annotationClassNode)) {
+            return makeDelegatingClosureCall( tenantServiceVar, "withoutId", ZERO_PARAMETERS, originalMethodCallExpr, variableScope)
         }
         else {
             // must be @Tenant
@@ -114,13 +121,19 @@ class TenantTransform extends AbstractMethodDecoratingTransformation implements 
 
     @Override
     protected Parameter[] prepareNewMethodParameters(MethodNode methodNode) {
-        final Parameter tenantIdParameter = param(make(Serializable), VAR_TENANT_ID)
-        Parameter[] newParameters = methodNode.getParameters() ? (copyParameters(((methodNode.getParameters() as List) + [tenantIdParameter]) as Parameter[])) : [tenantIdParameter] as Parameter[]
-        return newParameters
+        if(methodNode.getAnnotations(WITHOUT_TENANT_ANNOTATION_TYPE).isEmpty()) {
+            final Parameter tenantIdParameter = param(make(Serializable), VAR_TENANT_ID)
+            Parameter[] newParameters = methodNode.getParameters() ? (copyParameters(((methodNode.getParameters() as List) + [tenantIdParameter]) as Parameter[])) : [tenantIdParameter] as Parameter[]
+            return newParameters
+        }
+        else {
+            return copyParameters(methodNode.getParameters())
+        }
     }
     @Override
     protected boolean isValidAnnotation(AnnotationNode annotationNode, AnnotatedNode classNode) {
-        TENANT_ANNOTATION_TYPE.equals(annotationNode.getClassNode()) || CURRENT_TENANT_ANNOTATION_TYPE.equals(annotationNode.getClassNode())
+        ClassNode annotationClassNode = annotationNode.getClassNode()
+        TENANT_ANNOTATION_TYPE.equals(annotationClassNode) || CURRENT_TENANT_ANNOTATION_TYPE.equals(annotationClassNode) || WITHOUT_TENANT_ANNOTATION_TYPE.equals(annotationClassNode)
     }
 
     @Override
