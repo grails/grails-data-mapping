@@ -676,6 +676,36 @@ HibernateDatastore datastore = <span class="keyword">new</span> HibernateDatasto
 </div>
 </div>
 <div class="sect2">
+<h3 id="_automatic_escaping_for_hql_queries">Automatic Escaping for HQL Queries</h3>
+<div class="paragraph">
+<p>You can now pass Groovy&#8217;s <code>GString</code> instances directly as HQL queries and these will be automatically escaped avoiding HQL-injection attacks:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">String</span> name = <span class="string"><span class="delimiter">'</span><span class="content">coffee</span><span class="delimiter">'</span></span>
+Product p = Product.find(<span class="string"><span class="delimiter">&quot;</span><span class="content">from Product as p where p.name = </span><span class="inline"><span class="inline-delimiter">$</span>name</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_support_for_native_sql_queries">Support for Native SQL Queries</h3>
+<div class="paragraph">
+<p>By implementing the <code>HibernateEntity</code> trait you can gain additional methods for using native SQL queries that feature the same automatic escaping for GString instances to avoid SQL-injection attacks:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.gorm.hibernate.*</span>
+
+<span class="type">class</span> <span class="class">Product</span> <span class="directive">implements</span> HibernateEntity&lt;Product&gt; {
+    ...
+}
+
+<span class="predefined-type">String</span> name = <span class="string"><span class="delimiter">'</span><span class="content">coffee</span><span class="delimiter">'</span></span>
+Product p = Product.findWithSql(<span class="string"><span class="delimiter">&quot;</span><span class="content">select * from product p where p.name = </span><span class="inline"><span class="inline-delimiter">$</span>name</span><span class="delimiter">&quot;</span></span>)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_smart_hibernate_dirty_checking">Smart Hibernate Dirty Checking</h3>
 <div class="paragraph">
 <p>GORM&#8217;s <code>DirtyCheckable</code> AST transformations have been integrated with Hibernate&#8217;s custom dirty checking API improving performance and increasing efficiency when doing large updates.</p>
@@ -823,7 +853,7 @@ castMember.save(<span class="key">flush</span>:<span class="predefined-constant"
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-01-19 07:35:37 UTC
+Last updated 2017-01-19 07:52:56 UTC
 </div>
 </div>
 </body>
