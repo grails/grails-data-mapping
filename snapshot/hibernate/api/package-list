@@ -1,4 +1,5 @@
 example
+functional.tests
 grails.gorm
 grails.gorm.annotation
 grails.gorm.api
