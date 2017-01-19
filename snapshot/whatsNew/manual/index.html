@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.3">
 <meta name="author" content="Graeme Rocher">
-<title>What&#8217;s New in GORM 6?</title>
+<title>What&#8217;s New in GORM 6.1?</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -512,7 +512,7 @@ table.CodeRay td.code>pre{padding:0}
 </head>
 <body class="article">
 <div id="header">
-<h1>What&#8217;s New in GORM 6?</h1>
+<h1>What&#8217;s New in GORM 6.1?</h1>
 <div class="details">
 <span id="author" class="author">Graeme Rocher</span><br>
 <span id="email" class="email"><a href="mailto:graeme.rocher@gmail.com">graeme.rocher@gmail.com</a></span><br>
@@ -523,300 +523,299 @@ table.CodeRay td.code>pre{padding:0}
 <h2 id="_introduction">Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>GORM 6 is a major new release of the GORM toolkit. This guide will take you through the changes and new features in GORM.</p>
+<p>GORM 6.1 builds on the concepts introduced in GORM 6 around Multi-Tenancy and includes a number of notable improvements.</p>
 </div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+To see all of the features introduced in GORM 6, see the <a href="http://gorm.grails.org/6.0.x/whatsNew/manual/">What&#8217;s New guide for GORM 6.0</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The following sections cover the new features in GORM 6.1.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_new_general_features">New General Features</h2>
+<div class="sectionbody">
 <div class="sect2">
-<h3 id="_spring_container_free_bootstrapping">Spring Container-free Bootstrapping</h3>
+<h3 id="_multi_tenancy_transformations">Multi-Tenancy Transformations</h3>
 <div class="paragraph">
-<p>Previous versions of GORM relied on the Spring container to load and configure GORM. As of GORM 6 the Spring container is no longer required to use GORM. You can trivially load GORM using the constructor of each implementation.</p>
+<p>There are new transformations that can be applied to any class that simplify greatly the development of Multi-Tenant applications. These include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>@CurrentTenant</code> - Resolve the current tenant for the context of a class or method</p>
+</li>
+<li>
+<p><code>@Tenant</code> - Use a specific tenant for the context of a class or method</p>
+</li>
+<li>
+<p><code>@WithoutTenant</code> - Execute logic without a specific tenant (using the default connection)</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>For example given the following GORM entity:</p>
+<p>For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.gorm.annotation.*</span>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.gorm.multitenancy.*</span>
 
-<span class="annotation">@Entity</span>
-<span class="type">class</span> <span class="class">Person</span> {
+<span class="comment">// resolve the current tenant for every method</span>
+<span class="annotation">@CurrentTenant</span>
+<span class="type">class</span> <span class="class">TeamService</span> {
+
+    <span class="comment">// execute the countPlayers method without a tenant id</span>
+    <span class="annotation">@WithoutTenant</span>
+    <span class="type">int</span> countPlayers() {
+        Player.count()
+    }
+
+    <span class="comment">// use the tenant id &quot;another&quot; for all GORM logic within the method</span>
+    <span class="annotation">@Tenant</span>({<span class="string"><span class="delimiter">&quot;</span><span class="content">two</span><span class="delimiter">&quot;</span></span>})
+    <span class="predefined-type">List</span>&lt;Team&gt; allTwoTeams() {
+        Team.list()
+    }
+
+    <span class="predefined-type">List</span>&lt;Team&gt; listTeams() {
+        Team.list(<span class="key">max</span>:<span class="integer">10</span>)
+    }
+
+    <span class="annotation">@Transactional</span>
+    <span class="type">void</span> addTeam(<span class="predefined-type">String</span> name) {
+        <span class="keyword">new</span> Team(<span class="key">name</span>:name).save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_support_for_bean_validation_api">Support for Bean Validation API</h3>
+<div class="paragraph">
+<p>If you prefer to use the standard <a href="http://beanvalidation.org">Bean Validation API</a> for validation, this is now possible with GORM. If you are using GORM for Hibernate simply add the necessary annotations to your entity:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">javax.validation.constraints.*</span>
+
+<span class="type">class</span> <span class="class">Product</span> {
     <span class="predefined-type">String</span> name
+    <span class="annotation">@Digits</span>
+    <span class="predefined-type">String</span> price
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>To load GORM for Hibernate you can do:</p>
+<p>If you are using another implementation you will need to add the <code>hibernate-validator</code> dependency to your <code>build.gradle</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile(<span class="string"><span class="delimiter">'</span><span class="content">org.hibernate:hibernate-validator:5.2.4.Final</span><span class="delimiter">'</span></span>)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_support_for_scanning_packages">Support for Scanning Packages</h3>
+<div class="paragraph">
+<p>The constructors for <code>HibernateDatastore</code>, <code>MongoDatastore</code> and <code>Neo4jDatastore</code> have been updated to support an array of <code>Package</code> instances representing the packages to scan for entities. This makes it easier to setup GORM outside of Grails or within unit tests. For example for Hibernate:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.grails.orm.hibernate.*</span>
 
-HibernateDatastore datastore = <span class="keyword">new</span> HibernateDatastore(Person)
-
-println Person.count()</code></pre>
+HibernateDatastore datastore = <span class="keyword">new</span> HibernateDatastore(<span class="predefined-type">Package</span>.getPackage(<span class="string"><span class="delimiter">&quot;</span><span class="content">foo.bar</span><span class="delimiter">&quot;</span></span>))</code></pre>
 </div>
 </div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_new_hibernate_features">New Hibernate Features</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_hibernate_5_2_support">Hibernate 5.2 Support</h3>
 <div class="paragraph">
-<p>To load GORM for Neo4j:</p>
+<p>Support for Hibernate 5.2 has been added (requires Java 8 minimum) and can be enabled by declaring an explicit dependency on Hibernate 5.2:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.grails.datastore.gorm.neo4j.*</span>
-
-Neo4jDatastore datastore = <span class="keyword">new</span> Neo4jDatastore(Person)
-
-println Person.count()</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile(<span class="string"><span class="delimiter">&quot;</span><span class="content">org.hibernate:hibernate-core:5.2.0.Final</span><span class="delimiter">&quot;</span></span>)</code></pre>
 </div>
-</div>
-<div class="paragraph">
-<p>To load GORM for MongoDB:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.grails.datastore.mapping.mongo.*</span>
-
-MongoDatastore datastore = <span class="keyword">new</span> MongoDatastore(Person)
-
-println Person.count()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Configuration can be passed as a map to the first argument of the constructor.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_improved_unit_testing">Improved Unit Testing</h3>
+<h3 id="_jpa_mapping_support">JPA Mapping Support</h3>
 <div class="paragraph">
-<p>Thanks to the improvements around bootstrapping and dropping of the requirement for a Spring container it is much easier to unit test GORM without requiring special framework support.</p>
-</div>
-<div class="paragraph">
-<p>For example the following Spock specification can be used to test GORM for Hibernate:</p>
+<p>Support for using JPA-annotated entites instead of GORM&#8217;s DSL for entities written in Groovy has been added. For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">spock.lang.*</span>
-<span class="keyword">import</span> <span class="include">grails.gorm.annotation.Entity</span>
-<span class="keyword">import</span> <span class="include">grails.transaction.Rollback</span>
-<span class="keyword">import</span> <span class="include">org.grails.orm.hibernate.HibernateDatastore</span>
-<span class="keyword">import</span> <span class="include">org.springframework.transaction.PlatformTransactionManager</span>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">javax.persistence.*</span>
+<span class="keyword">import</span> <span class="include">javax.validation.constraints.*</span>
 
-<span class="type">class</span> <span class="class">ExampleSpec</span> <span class="directive">extends</span> Specification {
+<span class="annotation">@Entity</span>
+<span class="type">class</span> <span class="class">Product</span> {
+    <span class="annotation">@Id</span>
+    <span class="annotation">@GeneratedValue</span>
+    <span class="predefined-type">Long</span> id
+    <span class="predefined-type">String</span> name
 
-    <span class="annotation">@Shared</span> <span class="annotation">@AutoCleanup</span> HibernateDatastore hibernateDatastore
-    <span class="annotation">@Shared</span> PlatformTransactionManager transactionManager
-
-    <span class="type">void</span> setupSpec() {
-       hibernateDatastore = <span class="keyword">new</span> HibernateDatastore(Person)
-       transactionManager = hibernateDatastore.getTransactionManager()
-    }
-
-    <span class="annotation">@Rollback</span>
-    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test execute GORM standalone in a unit test</span><span class="delimiter">&quot;</span></span>() {
-       <span class="comment">// your logic here</span>
-    }
+    <span class="annotation">@Digits</span>(integer = <span class="integer">6</span>, fraction = <span class="integer">2</span>)
+    <span class="predefined-type">String</span> price
 }</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_unified_configuration_model">Unified Configuration Model</h3>
+<h3 id="_smart_hibernate_dirty_checking">Smart Hibernate Dirty Checking</h3>
 <div class="paragraph">
-<p>In previous versions of GORM each implementation was responsible for implementing the reading of configuration separately. In GORM 6 a new unified configuration model has been introduced to reduce inconsistencies.</p>
-</div>
-<div class="paragraph">
-<p>The <a href="../../hibernate/api/org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html">ConnectionSourceSettings</a> represents common configuration across all implementations and has subclasses such as <a href="../../hibernate/api/org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.html">HibernateConnectionSourceSettings</a> for each implementation of GORM.</p>
-</div>
-<div class="paragraph">
-<p>You can obtain the materialized configuration of any implementation using the new <code>ConnectionSources</code> API (discussed in the next section). For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">HibernateDatastore datastore = .. <span class="comment">// obtain the datastore</span>
-HibernateConnectionSourceSettings settings =
-    datastore.connectionSources.defaultConnectionSource.settings</code></pre>
-</div>
+<p>GORM&#8217;s <code>DirtyCheckable</code> AST transformations have been integrated with Hibernate&#8217;s custom dirty checking API improving performance and increasing efficiency when doing large updates.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_new_connectionsources_api">New ConnectionSources API</h3>
+<h3 id="_hibernate_managed_entity_transform">Hibernate Managed Entity Transform</h3>
 <div class="paragraph">
-<p>The logic for setting up multiple data sources was previously hardcoded within the Hibernate plugin. This has been abstracted out into the new <a href="../../hibernate/api/org/grails/datastore/mapping/core/connections/ConnectionSources.html">ConnectionSources</a> API which operates in conjuction with the aforementioned configuration API to provide a consistent implementation across all GORM implementations.</p>
-</div>
-<div class="paragraph">
-<p>You can use the <code>ConnectionSources</code> API to iterate over the configured data sources and introspect the state the configured GORM datastore:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">HibernateDatastore datastore = .. <span class="comment">// obtain the datastore</span>
-
-<span class="keyword">for</span>(ConnectionSource&lt;SessionFactory, HibernateConnectionSourceSettings&gt; connectionSource <span class="keyword">in</span> datastore.connectionSources) {
-    <span class="predefined-type">String</span> name = connectionSource.name
-    SessionFactory sessionFactory = connectionSource.source
-    <span class="comment">// perform an operation with the session factory</span>
-}</code></pre>
-</div>
+<p>An optional <code>@ManagedEntity</code> transformation has been added which can be applied to Hibernate entities which performs the same enhancements as Hibernate&#8217;s <a href="https://docs.jboss.org/hibernate/orm/5.0/topical/html/bytecode/BytecodeEnhancement.html">Build time byte code enhancement</a> without the need for an additional Gradle plugin.</p>
 </div>
 <div class="paragraph">
-<p>Or in Neo4j:</p>
+<p>By applying <code>@ManagedEntity</code> to a class the class benefits from:</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">Neo4jDatastore datastore = .. <span class="comment">// obtain the datastore</span>
-
-<span class="keyword">for</span>(ConnectionSource&lt;<span class="predefined-type">Driver</span>, Neo4jConnectionSourceSettings&gt; connectionSource <span class="keyword">in</span> datastore.connectionSources) {
-    <span class="predefined-type">String</span> name = connectionSource.name
-    <span class="predefined-type">Driver</span> boltDriver = connectionSource.source
-    <span class="comment">// perform an operation with the Bolt driver</span>
-}</code></pre>
-</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Lazy state initialization</p>
+</li>
+<li>
+<p>Dirtiness tracking</p>
+</li>
+<li>
+<p>Automatic bi-directional association management</p>
+</li>
+<li>
+<p>Performance optimizations</p>
+</li>
+</ol>
 </div>
 <div class="paragraph">
-<p>Or in MongoDB:</p>
+<p>This includes eliminating the need to generate proxies for the entity.</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">MongoDatastore datastore = .. <span class="comment">// obtain the datastore</span>
-
-<span class="keyword">for</span>(ConnectionSource&lt;MongoClient, MongoConnectionSourceSettings&gt; connectionSource <span class="keyword">in</span> datastore.connectionSources) {
-    <span class="predefined-type">String</span> name = connectionSource.name
-    MongoClient mongoClient = connectionSource.source
-    <span class="comment">// perform an operation with MongoDB client</span>
-}</code></pre>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+There are some behavioural differences in lazy loading between <code>@ManagedEntity</code> enhanced entities and normal entities, hence why these enhancements are not applied by default and are opt-in.
+</td>
+</tr>
+</table>
 </div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_new_mongodb_features">New MongoDB Features</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_decimal128_support">Decimal128 Support</h3>
+<div class="paragraph">
+<p>Support for MongoDB 3.4&#8217;s new <code>Decimal128</code> type for representing <code>BigDecimal</code> values in Java has been added.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_multiple_data_sources_support_in_mongodb_and_neo4j">Multiple Data Sources support in MongoDB and Neo4j</h3>
+<h3 id="_new_findoneanddelete_method">New findOneAndDelete Method</h3>
 <div class="paragraph">
-<p>GORM for Hibernate has had support for multiple data sources for while now, however this feature was missing in other GORM implementations.</p>
-</div>
-<div class="paragraph">
-<p>Building on the <code>ConnectionSources</code> API multiple data sources support has been implemented in MongoDB and Neo4j. For example for MongoDB:</p>
-</div>
-<div class="listingblock">
-<div class="title">grails-app/conf/application.yml</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
-    <span class="key">mongodb</span>:
-        <span class="key">url</span>: <span class="string"><span class="content">mongodb://localhost/books</span></span>
-        <span class="key">connections</span>:
-            <span class="key">moreBooks</span>:
-                <span class="key">url</span>: <span class="string"><span class="content">mongodb://localhost/moreBooks</span></span>
-            <span class="key">evenMoreBooks</span>:
-                <span class="key">url</span>: <span class="string"><span class="content">mongodb://localhost/moreBooks</span></span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can then switch to a different connection at runtime with the <code>withConnection</code> method:</p>
+<p>A new method to simplify using <code>findOneAndDelete</code> with native queries has been added:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.withConnection(<span class="string"><span class="delimiter">&quot;</span><span class="content">moreBooks</span><span class="delimiter">&quot;</span></span>) {
-    <span class="predefined-type">Book</span>.list()
-}</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">com.mongodb.client.model.Filters.*</span>
+
+Product p = Product.findOneAndDelete(eq(<span class="string"><span class="delimiter">&quot;</span><span class="content">title</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">coffee</span><span class="delimiter">&quot;</span></span>))</code></pre>
 </div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_new_neo4j_features">New Neo4j Features</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_relationship_entity_support">Relationship Entity Support</h3>
+<div class="paragraph">
+<p>In addition to being able to map a domain class to a Neo4j <code>Node</code>, since 6.1 you are able to map a domain class to a Neo4j <code>Relationship</code>.</p>
 </div>
 <div class="paragraph">
-<p>And map domain classes to specific connections:</p>
+<p>For example consider the following domain model:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Book</span> {
-    ObjectId id
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.neo4j.*</span>
+
+<span class="type">class</span> <span class="class">Movie</span> {
     <span class="predefined-type">String</span> title
+    <span class="directive">static</span> hasMany = [<span class="key">cast</span>:CastMember]
+}
+
+<span class="type">class</span> <span class="class">CastMember</span> <span class="directive">implements</span> Relationship&lt;Person, Movie&gt; {
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; roles = <span class="type">[]</span>
+}
+
+<span class="type">class</span> <span class="class">Person</span> {
+    <span class="predefined-type">String</span> name
+    <span class="directive">static</span> hasMany = [<span class="key">appearances</span>:CastMember]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>CastMember</code> class implements the <code>Relationship</code> trait which takes two generic arguments: The class that represents the start of the relationship and the class that represents the end.</p>
+</div>
+<div class="paragraph">
+<p>You can then use regular GORM methods to query the <code>CastMember</code> relationship. In addition because Neo4j relationships are dynamic you can assign additional properties to them at runtime. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> castMember = <span class="keyword">new</span> CastMember(
+    <span class="key">from</span>: <span class="keyword">new</span> Person(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Keanu</span><span class="delimiter">&quot;</span></span>),
+    <span class="key">to</span>: <span class="keyword">new</span> Movie(<span class="key">title</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">The Matrix</span><span class="delimiter">&quot;</span></span>),
+    <span class="key">roles</span>: [<span class="string"><span class="delimiter">&quot;</span><span class="content">Neo</span><span class="delimiter">&quot;</span></span>])
+
+castMember[<span class="string"><span class="delimiter">'</span><span class="content">realName</span><span class="delimiter">'</span></span>] = <span class="string"><span class="delimiter">&quot;</span><span class="content">Thomas Anderson</span><span class="delimiter">&quot;</span></span>
+castMember.save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_relationship_mapping_support">Relationship Mapping Support</h3>
+<div class="paragraph">
+<p>More control over how relationships are mapped has been added via the <code>mapping</code> block. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">grails.neo4j.Direction.*</span>
+
+<span class="type">class</span> <span class="class">Owner</span> {
+    <span class="predefined-type">String</span> name
+    <span class="directive">static</span> hasMany = [<span class="key">pets</span>:Pet]
+
     <span class="directive">static</span> mapping = {
-        connections <span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">moreBooks</span><span class="delimiter">&quot;</span></span>
+         pets <span class="key">type</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">PETZ</span><span class="delimiter">&quot;</span></span>, <span class="key">direction</span>:BOTH
     }
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The same feature has been implemented for GORM for Neo4j:</p>
-</div>
-<div class="listingblock">
-<div class="title">grails-app/conf/application.yml</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
-    <span class="key">neo4j</span>:
-        <span class="key">url</span>: <span class="string"><span class="content">bolt://localhost:7687</span></span>
-        <span class="key">connections</span>:
-            <span class="key">moreBooks</span>:
-                <span class="key">url</span>: <span class="string"><span class="content">bolt://localhost:7688</span></span>
-            <span class="key">evenMoreBooks</span>:
-                <span class="key">url</span>: <span class="string"><span class="content">bolt://localhost:7689</span></span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The syntax for mapping domain classes is the same as for MongoDB.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_multi_tenancy_support">Multi-Tenancy Support</h3>
-<div class="paragraph">
-<p>Support for <a href="../../hibernate/manual/index.html#multiTenancy">Multi-Tenancy</a> has been added for GORM for Hibernate, MongoDB and Neo4j.</p>
-</div>
-<div class="paragraph">
-<p>Three different modes are supported in this release:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>DATABASE</code> - A separate database with a separate connection pool is used to store each tenants data (supported in GORM for Hibernate, MongoDB and Neo4j).</p>
-</li>
-<li>
-<p><code>SCHEMA</code> - The same database, but different schemas are used to store each tenants data (supported in GORM for MongoDB and Hibernate).</p>
-</li>
-<li>
-<p><code>DISCRIMINATOR</code> - The same database is used with a discriminator used to partition and isolate data (supported in GORM for Hibernate, MongoDB and Neo4j).</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>For more information, see the documentation on <a href="../hibernate/manual/index.html#multiTenancy">Multi-Tenancy</a> in the user guide.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_gorm_for_neo4j_3_x_bolt_driver">GORM for Neo4j 3.x Bolt Driver</h3>
-<div class="paragraph">
-<p>GORM for Neo4j has been upgraded to Neo4j 3.x and the Bolt Java driver. Bolt is a high performance binary protocol for the Neo4j graph, which means that GORM for Neo4j is now better suited for applications that require Neo4j to be running in server mode (as opposed to embedded).</p>
-</div>
-<div class="paragraph">
-<p>See the <a href="../../neo4j/manual/index.html">GORM for Neo4j</a> documentation for more information about GORM and Neo4j 3.x Bolt.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_rxgorm_gorm_for_rxjava">RxGORM - GORM for RxJava</h3>
-<div class="paragraph">
-<p>A new GORM API called RxGORM has been implemented that rethinks how object mapping libraries can be written for Reactive applications.</p>
-</div>
-<div class="paragraph">
-<p>RxGORM builds on the hugely popular (and pretty much industry standard), RxJava framework to provide a reactive, stateless, non-blocking implementation of GORM.</p>
-</div>
-<div class="paragraph">
-<p>The initial release of RxGORM includes two backend implementations. RxGORM for MongoDB and RxGORM for REST, with more planned for the future.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_rxgorm_for_mongodb">RxGORM for MongoDB</h3>
-<div class="paragraph">
-<p><a href="../../rx/manual/index.html">RxGORM for MongoDB</a> builds on the MongoDB Rx driver and provides a non-blocking RxGORM API for MongoDB.</p>
-</div>
-<div class="paragraph">
-<p>All of the new GORM features are also supported including multiple data sources, multi tenancy and so on.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_rxgorm_for_rest">RxGORM for REST</h3>
-<div class="paragraph">
-<p><a href="/latest/rx/rest-client/index.html">RxGORM for REST</a> builds on RxNetty and provides an advanced REST client for communicating with backend REST applications.</p>
-</div>
-<div class="paragraph">
-<p>RxGORM for REST is built on the same JSON encoding/decoding engine as GORM for MongoDB and hence is already robust and performant.</p>
-</div>
-<div class="paragraph">
-<p>In addition it has builtin understanding of common JSON formats such as HAL to automatically implemented eager fetching and common features associated with object mapping libraries.</p>
-</div>
-<div class="paragraph">
-<p>See the documentation for <a href="/latest/rx/rest-client/index.html">RxGORM for REST</a> for more information.</p>
+<p>The <code>type</code> and <code>direction</code> settings can be used to specify the relationship type and direction.</p>
 </div>
 </div>
 </div>
@@ -824,7 +823,7 @@ HibernateConnectionSourceSettings settings =
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-10-27 07:06:58 UTC
+Last updated 2017-01-19 07:35:37 UTC
 </div>
 </div>
 </body>
