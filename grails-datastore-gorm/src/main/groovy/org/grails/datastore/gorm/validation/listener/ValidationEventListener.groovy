@@ -1,9 +1,12 @@
 package org.grails.datastore.gorm.validation.listener
 
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormValidateable
+import org.grails.datastore.gorm.GormValidationApi
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.core.connections.ConnectionSourcesProvider
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEventListener
 import org.grails.datastore.mapping.engine.event.PreInsertEvent
@@ -42,7 +45,16 @@ class ValidationEventListener extends AbstractPersistenceEventListener{
                 FlushModeType previousFlushMode = currentSession.flushMode
                 try {
                     currentSession.setFlushMode(FlushModeType.COMMIT)
-                    if( !gormValidateable.validate() ) {
+                    boolean hasErrors = false
+                    if(source instanceof ConnectionSourcesProvider) {
+                        def connectionSourceName = ((ConnectionSourcesProvider) source).connectionSources.defaultConnectionSource.name
+                        GormValidationApi validationApi = GormEnhancer.findValidationApi(entityObject.getClass(), connectionSourceName)
+                        hasErrors = !validationApi.validate((Object)entityObject)
+                    }
+                    else {
+                        hasErrors = !gormValidateable.validate()
+                    }
+                    if( hasErrors ) {
                         event.cancel()
                     }
                 } finally {
