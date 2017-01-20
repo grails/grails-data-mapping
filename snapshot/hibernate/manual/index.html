@@ -906,9 +906,10 @@ grails.gorm.default.mapping = {
 </div>
 </div>
 <div class="paragraph">
-<p>If you are using a version of Grails 3 earlier than 3.2 then you may need to enforce the GORM version by adding the following block:</p>
+<p>If you are using a version of Grails 3 earlier than 3.3 then you may need to enforce the GORM version by adding the following block directly above the <code>dependencies</code> block:</p>
 </div>
 <div class="listingblock">
+<div class="title">build.gradle</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">configurations.all {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
@@ -917,6 +918,9 @@ grails.gorm.default.mapping = {
             details.useVersion("6.1.0.BUILD-SNAPSHOT")
         }
     }
+}
+dependencies {
+    ...
 }</code></pre>
 </div>
 </div>
