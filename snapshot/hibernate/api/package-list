@@ -1,5 +1,4 @@
 example
-functional.tests
 grails.gorm
 grails.gorm.annotation
 grails.gorm.api
@@ -101,6 +100,7 @@ org.grails.orm.hibernate.datasource
 org.grails.orm.hibernate.dirty
 org.grails.orm.hibernate.exceptions
 org.grails.orm.hibernate.multitenancy
+org.grails.orm.hibernate.persister.entity
 org.grails.orm.hibernate.proxy
 org.grails.orm.hibernate.query
 org.grails.orm.hibernate.support
