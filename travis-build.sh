@@ -5,6 +5,8 @@ EXIT_STATUS=0
 
 if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
     echo "Tagged Release Skipping Tests for Publish"
+    ./gradlew --stop
+    ./travis-publish.sh || EXIT_STATUS=$?
 else
     ./gradlew compileGroovy || EXIT_STATUS=$?
     ./gradlew --stop
@@ -15,11 +17,6 @@ else
     if [[ $EXIT_STATUS -eq 0 ]]; then
         ./gradlew --refresh-dependencies check || EXIT_STATUS=$?
     fi
-fi
-
-if [[ $EXIT_STATUS -eq 0 && $TRAVIS_BRANCH =~ ^master|[1234567]\..\.x$ ]]; then
-    ./gradlew --stop
-    ./travis-publish.sh || EXIT_STATUS=$?
 fi
 
 exit $EXIT_STATUS
