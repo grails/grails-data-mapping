@@ -818,6 +818,41 @@ table.CodeRay td.code>pre{padding:0}
 <p>If you are upgrading from a previous version of the plugin to the 6.1.0.BUILD-SNAPSHOT, you will need to take into account the following changes.</p>
 </div>
 <div class="sect3">
+<h4 id="_removal_of_grails_datastore_simple">Removal of grails-datastore-simple</h4>
+<div class="paragraph">
+<p>The <code>grails-datastore-simple</code> and <code>grails-datastore-gorm-test</code> dependencies have been combined into a single <code>grails-datastore-gorm-test</code> dependency.</p>
+</div>
+<div class="paragraph">
+<p>Unfortunately existing versions of Grails still depend on the old <code>grails-datastore-simple</code> dependency. And you may receive an error such as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">> Could not resolve all dependencies for configuration ':example:runtime'.
+   > Could not find org.grails:grails-datastore-simple:6.1.0.BUILD-SNAPSHOT.
+     Searched in the following locations:
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.0.BUILD-SNAPSHOT/grails-datastore-simple-6.1.0.BUILD-SNAPSHOT.pom
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.0.BUILD-SNAPSHOT/grails-datastore-simple-6.1.0.BUILD-SNAPSHOT.jar
+     Required by:
+         project :example > org.grails:grails-dependencies:3.2.4 >
+            ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are upgrading you will need to exclude this dependency using the following Gradle syntax directly before the <code>dependencies</code> block:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">configurations.all { <span class="predefined-type">Configuration</span> c -&gt;
+    c.exclude(<span class="key">group</span>:<span class="string"><span class="delimiter">'</span><span class="content">org.grails</span><span class="delimiter">'</span></span>,<span class="key">module</span>:<span class="string"><span class="delimiter">'</span><span class="content">grails-datastore-simple</span><span class="delimiter">'</span></span>)
+}
+dependencies {
+    ....
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_native_identifiers_by_default">Native Identifiers by Default</h4>
 <div class="paragraph">
 <p>Since 6.1, GORM for Neo4j uses native node and relationship identifiers by default for ids instead of the prevous snowflake id generation strategy. If you wish to revert to the previous strategy you can do so by applying the following configuration:</p>
