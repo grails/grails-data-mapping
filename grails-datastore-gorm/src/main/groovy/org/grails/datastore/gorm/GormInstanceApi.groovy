@@ -313,6 +313,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> implements GormInstanceOpera
     protected D doSave(D instance, Map params, Session session, boolean isInsert = false) {
         boolean hasErrors = false
         boolean validate = params?.containsKey("validate") ? params.validate : true
+        boolean shouldFlush = params?.flush ? params.flush : false
         if(instance instanceof GormValidateable) {
 
             def validateable = (GormValidateable) instance
@@ -326,6 +327,11 @@ class GormInstanceApi<D> extends AbstractGormApi<D> implements GormInstanceOpera
                 else {
                     hasErrors = !validateable.validate()
                 }
+                // don't revalidate
+                if(shouldFlush) {
+                    validateable.skipValidation(true)
+                }
+
             } else {
                 validateable.skipValidation(true)
                 validateable.clearErrors()
@@ -349,7 +355,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> implements GormInstanceOpera
             }
             session.persist(instance)
         }
-        if (params?.flush) {
+        if (shouldFlush) {
             session.flush()
         }
         return instance
