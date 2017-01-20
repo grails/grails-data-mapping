@@ -433,27 +433,11 @@ uses by default a <code>MongoClient</code> instance that connects to a MongoDB i
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.test.mongodb.MongoSpec
-import grails.validation.ValidationException
 
 class LocalMongoUnitSpec extends MongoSpec {
 
     // Specs ...
-    @Override
-    void setup() {
-        Book.DB.drop()
-    }
 
-
-    void "test fail on error"() {
-
-        when:
-        def invalid = new Book(title: "")
-        invalid.save()
-
-        then:
-        thrown ValidationException
-        invalid.hasErrors()
-    }
 }</code></pre>
 </div>
 </div>
@@ -479,7 +463,7 @@ class BookUnitSpec extends MongoSpec {
     void "Test low-level API extensions"() {
         when:
         def db = createMongoClient().getDatabase("test")
-        db.drop()
+//        db.drop()
         // Insert a document
         db['languages'].insert([name: 'Groovy'])
         // A less verbose way to do it
