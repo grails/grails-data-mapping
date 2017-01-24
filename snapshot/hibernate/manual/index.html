@@ -658,38 +658,7 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="releaseHistory">1.1. Release History</h3>
 <div class="sect3">
-<h4 id="_gorm_6_1">1.1.1. GORM 6.1</h4>
-<div class="paragraph">
-<p>GORM 6.1 includes a variety of enhancements to GORM 6.0 including:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Multi-Tenancy Transformations</p>
-</li>
-<li>
-<p>Support for Bean Validation API</p>
-</li>
-<li>
-<p>Built-in Package Scanning</p>
-</li>
-<li>
-<p>JPA Annotation Mapping Support</p>
-</li>
-<li>
-<p>Hibernate transformations for dirty checking, managed entities and so on</p>
-</li>
-<li>
-<p>HQL &amp; SQL query escaping for GString queries</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>See the <a href="http://gorm.grails.org/6.1.x/whatsNew/manual">What&#8217;s New in GORM 6.1</a> guide for more information.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_gorm_6_0">1.1.2. GORM 6.0</h4>
+<h4 id="_gorm_6_0">1.1.1. GORM 6.0</h4>
 <div class="paragraph">
 <p>GORM 6.0 continues to evolve the new trait based model and includes the following new features:</p>
 </div>
@@ -720,7 +689,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_5_0">1.1.3. GORM 5.0</h4>
+<h4 id="_gorm_5_0">1.1.2. GORM 5.0</h4>
 <div class="paragraph">
 <p>GORM 5.0 replaced the majority of the custom AST transformations that power GORM with <a href="http://docs.groovy-lang.org/next/html/documentation/core-traits.html">Groovy Traits</a>.</p>
 </div>
@@ -729,7 +698,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_4_0">1.1.4. GORM 4.0</h4>
+<h4 id="_gorm_4_0">1.1.3. GORM 4.0</h4>
 <div class="paragraph">
 <p>GORM 4.0 continued to separate the GORM API from the Grails core APIs and was the first version to be support standalone execution outside of Grails.</p>
 </div>
@@ -741,7 +710,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_3_0">1.1.5. GORM 3.0</h4>
+<h4 id="_gorm_3_0">1.1.4. GORM 3.0</h4>
 <div class="paragraph">
 <p>GORM 3.0 was the first release of GORM that was released separately to the Grails framework itself and was introduced in Grails 2.1.</p>
 </div>
@@ -753,7 +722,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_2_0">1.1.6. GORM 2.0</h4>
+<h4 id="_gorm_2_0">1.1.5. GORM 2.0</h4>
 <div class="paragraph">
 <p>GORM 2.0 evolved as part of Grails 2.0 and re-engineered some of the metaprogramming logic that relied on ExpandoMetaClass into a set of <a href="http://groovy-lang.org/metaprogramming.html#_compile_time_metaprogramming">Groovy AST transformations</a>.</p>
 </div>
@@ -762,7 +731,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_1_0">1.1.7. GORM 1.0</h4>
+<h4 id="_gorm_1_0">1.1.6. GORM 1.0</h4>
 <div class="paragraph">
 <p>The first version of GORM was a series of meta-programming functions that built on the capabilities of Groovy&#8217;s <a href="http://groovy-lang.org/metaprogramming.html#metaprogramming_emc">ExpandoMetaClass</a>.</p>
 </div>
@@ -774,116 +743,13 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="upgradeNotes">1.2. Upgrade Notes</h3>
 <div class="sect3">
-<h4 id="_separation_of_gorm_async">1.2.1. Separation of GORM Async</h4>
-<div class="paragraph">
-<p>GORM Async has been separated from GORM core and is no longer added by default to entities.</p>
-</div>
-<div class="paragraph">
-<p>This was done in order to reduce the number of dependencies necessary to use GORM and to add flexibility in terms of the Async API used in the future.</p>
-</div>
-<div class="paragraph">
-<p>In order to enable GORM Async you need to add the necessary dependency to <code>build.gradle</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-async:6.1.0.BUILD-SNAPSHOT"</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And make your entities implement the <code>AsyncEntity</code> trait:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.gorm.async.*</span>
-
-<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> AsyncEntity&lt;Person&gt; {
-  ...
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_changes_to_configuration_model">1.2.2. Changes to Configuration Model</h4>
+<h4 id="_changes_to_configuration_model">1.2.1. Changes to Configuration Model</h4>
 <div class="paragraph">
 <p>In preparation for Hibernate 5.2 support the previous "SessionFactoryBean" notion has been removed. Now if you wish to customize <code>SessionFactory</code> creation you should instead register a custom <code>org.grails.orm.hibernate.connections.HibernateConnectionSourceFactory</code> in Spring.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_identityenumtype_handling_changed">1.2.3. IdentityEnumType Handling Changed</h4>
-<div class="paragraph">
-<p>Previous versions of GORM shipped with a <code>org.grails.orm.hibernate.cfg.IdentityEnumType</code> class for altering the handling of enums. In order to support different versions of Hibernate 5.x which feature different signatures for the <code>org.hibernate.usertype.UserType</code> interface this class has been removed.</p>
-</div>
-<div class="paragraph">
-<p>If you wish to obtain the same functionality you need to change your <code>mapping</code> block to:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">static</span> mapping = {
-   myEnum <span class="key">enumType</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">identity</span><span class="delimiter">&quot;</span></span>
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_changes_to_support_hibernate_5_2">1.2.4. Changes to Support Hibernate 5.2</h4>
-<div class="paragraph">
-<p>Hibernate 5.2 includes many breaking API changes, in order to support Hibernate 5.2 several classes have been removed or rewritten. Including:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>org.grails.orm.hibernate.proxy.GroovyAwareJavassistLazyInitializer</code></p>
-</li>
-<li>
-<p><code>org.grails.orm.hibernate.proxy.GroovyAwareJavassistProxyFactory</code></p>
-</li>
-<li>
-<p><code>org.grails.orm.hibernate.persister.entity.GroovyAwareJoinedSubclassEntityPersister</code></p>
-</li>
-<li>
-<p><code>org.grails.orm.hibernate.persister.entity.GroovyAwareSingleTableEntityPersister</code></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Most of these classes are considered internal, however if you have extended or references these classes you may need to modify your code appropriately.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_domain_autowiring_disabled_by_default">1.2.5. Domain Autowiring Disabled by Default</h4>
-<div class="paragraph">
-<p>Spring autowiring of domain instances has been disabled by default because it represents a performance bottleneck. If you are autowiring services into your domain instances you will need to re-enable using the <code>mapping</code> block:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">static</span> mapping = {
-   autowire <span class="predefined-constant">true</span>
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Note that if enabled read performance will degrade.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_field_accesstype_by_default">1.2.6. Field AccessType by Default</h4>
-<div class="paragraph">
-<p>Previous versions of GORM used property access to read and write values to entities by default. In other words the respective getters and setters were used when reflecting on the instances. GORM 6.1 uses field access by default instead, which means the field is used when reading and writing data via reflection to instances.</p>
-</div>
-<div class="paragraph">
-<p>If you wish to continue to use property access this can be configured by altering the default mapping in your configuration:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">javax.persistence.*</span>
-grails.gorm.default.mapping = {
-   <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span>(<span class="key">accessType</span>: AccessType.PROPERTY)
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_fail_on_error_package_setting_renamed">1.2.7. Fail on Error Package Setting Renamed</h4>
+<h4 id="_fail_on_error_package_setting_renamed">1.2.2. Fail on Error Package Setting Renamed</h4>
 <div class="paragraph">
 <p>The <code>grails.gorm.failOnError</code> setting can no longer be used to configure the packages to enable fail on error. Instead <code>grails.gorm.failOnErrorPackages</code> should be used.</p>
 </div>
@@ -895,39 +761,35 @@ grails.gorm.default.mapping = {
 <h2 id="gettingStarted">2. Getting Started</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To use GORM 6.1.0.BUILD-SNAPSHOT for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
+<p>To use GORM 6.0.5 for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile "org.grails.plugins:hibernate5:6.1.0.BUILD-SNAPSHOT"
+    compile "org.grails.plugins:hibernate5:6.0.5"
     compile "org.hibernate:hibernate-ehcache"
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>If you are using a version of Grails 3 earlier than 3.3 then you may need to enforce the GORM version by adding the following block directly above the <code>dependencies</code> block:</p>
+<p>If you are using a version of Grails 3 earlier than 3.2 then you may need to enforce the GORM version by adding the following block:</p>
 </div>
 <div class="listingblock">
-<div class="title">build.gradle</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">configurations.all {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("6.1.0.BUILD-SNAPSHOT")
+            details.useVersion("6.0.5.RELEASE")
         }
     }
-}
-dependencies {
-    ...
 }</code></pre>
 </div>
 </div>
 <div class="sect2">
 <h3 id="hibernateVersions">2.1. Configuring Different Hibernate Versions</h3>
 <div class="paragraph">
-<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.1.0.BUILD-SNAPSHOT.</p>
+<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.0.5.RELEASE.</p>
 </div>
 <div class="sect3">
 <h4 id="_grails_3_2_x_and_above_with_hibernate_4">2.1.1. Grails 3.2.x and above with Hibernate 4</h4>
@@ -993,7 +855,7 @@ configurations.all {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.1.0.BUILD-SNAPSHOT")
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.0.5.RELEASE")
 compile "org.hibernate:hibernate-core:5.1.0.Final"
 compile "org.hibernate:hibernate-ehcache:5.1.0.Final"
 runtime "com.h2database:h2:1.4.192"
@@ -1126,7 +988,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:6.1.0.BUILD-SNAPSHOT"
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:6.0.5.RELEASE"
 runtime "com.h2database:h2:1.4.192"
 runtime "org.apache.tomcat:tomcat-jdbc:8.5.0"
 runtime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"
@@ -4059,11 +3921,11 @@ Pet.where {
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>lower</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Converts a string property to lower case</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Converts a string property to upper case</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>upper</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Converts a string property to upper case</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Converts a string property to lower case</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>length</strong></p></td>
@@ -7503,7 +7365,7 @@ sessionFactory.openSession()</code></pre>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:6.1.0.BUILD-SNAPSHOT"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:6.0.5.RELEASE"</code></pre>
 </div>
 </div>
 </div>
