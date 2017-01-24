@@ -73,6 +73,10 @@ class Project {
         return list
     }
 
+    def setup() {
+        FieldEntityAccess.clearReflectors()
+    }
+
 //   TODO: Fix RHS function calls
 //    @Ignore
 //    def "Test year function with to-one association"() {
@@ -264,7 +268,6 @@ class Project {
     }
 
     def "Test a static method that calls where"() {
-
         when:"a static method call, calls into where"
             def Todo = this.gcl.loadClass("Todo")
             Todo.newInstance(title:"blah").save()
