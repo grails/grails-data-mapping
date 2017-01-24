@@ -19,8 +19,10 @@ import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
+import org.codehaus.groovy.transform.trait.Traits;
 import org.grails.datastore.mapping.collection.PersistentCollection;
 import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.engine.AssociationQueryExecutor;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.grails.datastore.mapping.reflect.ReflectionUtils;
@@ -47,6 +49,8 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
     private static final Class[] EMPTY_CLASS_ARRAY = {};
 
     private static final Set<String> EXCLUDES = new HashSet(Arrays.asList("$getStaticMetaClass"));
+    private static final String DATASTORE_PACKAGE_PREFIX = "org.grails.datastore.";
+    private static final String DATASTORE_PACKAGE_UNDER_SCORE_PREFIX = DATASTORE_PACKAGE_PREFIX.replace('.', '_');
 
     public boolean isProxy(Object object) {
         return object instanceof EntityProxy || object instanceof PersistentCollection;
@@ -159,8 +163,16 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
             pf.setInterfaces(getProxyInterfaces());
             pf.setFilter(new MethodFilter() {
                 public boolean isHandled(Method method) {
+                    Traits.TraitBridge traitBridge = method.getAnnotation(Traits.TraitBridge.class);
+                    if(traitBridge != null) {
+                        Class traitClass = traitBridge.traitClass();
+                        // ignore core traits
+                        if(traitClass.getPackage().getName().startsWith(DATASTORE_PACKAGE_PREFIX)) {
+                            return false;
+                        }
+                    }
                     final String methodName = method.getName();
-                    if (methodName.indexOf("super$") > -1) {
+                    if (methodName.contains("super$") || methodName.startsWith(DATASTORE_PACKAGE_UNDER_SCORE_PREFIX)) {
                         return false;
                     }
                     if (method.getParameterTypes().length == 0 && (methodName.equals("finalize"))) {

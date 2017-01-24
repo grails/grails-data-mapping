@@ -1,6 +1,7 @@
 package org.grails.datastore.mapping.dirty.checking
 
 import groovy.transform.CompileStatic
+import org.grails.datastore.mapping.proxy.EntityProxy
 
 /**
  * Interface to classes that are able to track changes to their internal state.
@@ -28,7 +29,12 @@ public trait DirtyCheckable {
      * @return True if the instance has any changes
      */
     boolean hasChanged() {
-        $changedProperties == null || $changedProperties
+        if(this instanceof EntityProxy && !((EntityProxy)this).isInitialized()) {
+            return false
+        }
+        else {
+            return $changedProperties == null || $changedProperties
+        }
     }
 
     /**
@@ -36,7 +42,12 @@ public trait DirtyCheckable {
      * @return True if the given property has any changes
      */
     boolean hasChanged(String propertyName) {
-        $changedProperties == null ||  $changedProperties && $changedProperties.containsKey(propertyName)
+        if(this instanceof EntityProxy && !((EntityProxy)this).isInitialized()) {
+            return false
+        }
+        else {
+            return $changedProperties == null ||  $changedProperties && $changedProperties.containsKey(propertyName)
+        }
     }
 
     /**
@@ -87,6 +98,10 @@ public trait DirtyCheckable {
      * @return A list of the dirty property names
      */
     List<String> listDirtyPropertyNames() {
+        if(this instanceof EntityProxy && !((EntityProxy)this).isInitialized()) {
+            return Collections.emptyList()
+        }
+
         def className = getClass().name
         if($changedProperties != null) {
             return Collections.unmodifiableList(
