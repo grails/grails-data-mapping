@@ -98,7 +98,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
     protected TPCacheAdapterRepository cacheAdapterRepository;
 
-    private Collection<Integer> objectsPendingOperations = new ConcurrentLinkedQueue<Integer>();
+    private Collection<Serializable> objectsPendingOperations = new ConcurrentLinkedQueue<>();
     private Map<PersistentEntity, Collection<PendingInsert>> pendingInserts =
         new Builder<PersistentEntity, Collection<PendingInsert>>()
            .listener(EXCEPTION_THROWING_INSERT_LISTENER)
@@ -179,15 +179,30 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
     @Override
     public boolean isPendingAlready(Object obj) {
-        return objectsPendingOperations.contains(System.identityHashCode(obj));
+        Serializable id = getPersister(obj).getObjectIdentifier(obj);
+        if(id != null) {
+            return objectsPendingOperations.contains(id);
+        }
+        else {
+            return objectsPendingOperations.contains(System.identityHashCode(obj));
+        }
     }
 
     @Override
     public void registerPending(Object obj) {
         if(obj != null) {
-            final int identityHashCode = System.identityHashCode(obj);
-            if(!objectsPendingOperations.contains(identityHashCode)) {
-                objectsPendingOperations.add(identityHashCode);
+            Serializable id = getPersister(obj).getObjectIdentifier(obj);
+            if(id != null) {
+                if(!objectsPendingOperations.contains(id)) {
+                    objectsPendingOperations.add(id);
+                }
+            }
+            else {
+
+                final int identityHashCode = System.identityHashCode(obj);
+                if(!objectsPendingOperations.contains(identityHashCode)) {
+                    objectsPendingOperations.add(identityHashCode);
+                }
             }
         }
     }
