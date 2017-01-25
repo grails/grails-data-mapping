@@ -493,6 +493,9 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
             property.nullable = namedArgs.nullable instanceof Boolean ? namedArgs.nullable : property.nullable
             property.maxSize = namedArgs.maxSize instanceof Number ? namedArgs.maxSize : property.maxSize
             property.minSize = namedArgs.minSize instanceof Number ? namedArgs.minSize : property.minSize
+            if(namedArgs.size instanceof IntRange) {
+                property.size = (IntRange)namedArgs.size
+            }
             property.max = namedArgs.max instanceof Comparable ? namedArgs.max : property.max
             property.min = namedArgs.min instanceof Comparable ? namedArgs.min : property.min
             property.range = namedArgs.range instanceof ObjectRange ? namedArgs.range : null
