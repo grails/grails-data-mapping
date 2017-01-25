@@ -91,7 +91,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li>org.grails.datastore.gorm.neo4j.mapping.config.RelationshipConfig
+<li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li>org.grails.datastore.gorm.neo4j.mapping.config.RelationshipConfig
 </ul>
 <div class="description">
     <ul class="blockList">
@@ -152,7 +152,12 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code><strong><a href='../../../../../../../grails/neo4j/Direction.html'>Direction</a></strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#direction">direction</a></code><br></td>
+                            <td class="colLast"><code><a href="#direction">direction</a></code><br>The default relationship direction</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#type">type</a></code><br>The default relationship type</td>
                         </tr>
                         
                     </table>
@@ -180,6 +185,10 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <th class="colLast" scope="col">Name</th>
                         </tr>
                         
+                        <tr class="altColor">
+                            <td class="colFirst"><code>class <a href='../../../../../../../org/grails/datastore/gorm/neo4j/mapping/config/NodeConfig.html'>NodeConfig</a></strong></code></td>
+                            <td class="colLast"><code><a href='../../../../../../../org/grails/datastore/gorm/neo4j/mapping/config/NodeConfig.html#getLabels()'>getLabels</a>, <a href='../../../../../../../org/grails/datastore/gorm/neo4j/mapping/config/NodeConfig.html#isDynamicAssociations()'>isDynamicAssociations</a>, <a href='../../../../../../../org/grails/datastore/gorm/neo4j/mapping/config/NodeConfig.html#setDynamicAssociations(boolean)'>setDynamicAssociations</a>, <a href='../../../../../../../org/grails/datastore/gorm/neo4j/mapping/config/NodeConfig.html#setLabels(java.lang.Object)'>setLabels</a></code></td>
+                        </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></strong></code></td>
                             <td class="colLast"><code><a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#connection(java.lang.String)'>connection</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#connections(java.lang.String)'>connections</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#connections(List<String>)'>connections</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#datasource(java.lang.String)'>datasource</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#getSort()'>getSort</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#isVersioned()'>isVersioned</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#setSort(java.lang.Object)'>setSort</a></code></td>
@@ -217,7 +226,17 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../../../../grails/neo4j/Direction.html'>Direction</a> <strong>direction</strong></h4>
-                                <p></p>
+                                <p> The default relationship direction
+     </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="type"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.lang.String <strong>type</strong></h4>
+                                <p> The default relationship type
+     </p>
                             </li>
                         </ul>
                     

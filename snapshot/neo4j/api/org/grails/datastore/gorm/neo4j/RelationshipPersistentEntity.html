@@ -146,6 +146,18 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <td class="colLast">The relationship type</code></td>
                         </tr>
                         
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>protected&nbsp;<a href='../../../../../grails/neo4j/Direction.html'>Direction</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#direction">direction</a></code></td>
+                            <td class="colLast"></code></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>protected&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#type">type</a></code></td>
+                            <td class="colLast"></code></td>
+                        </tr>
+                        
                     </table>
                    </ul>
                 </li>
@@ -216,52 +228,62 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>java.lang.String</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#buildMatch(java.lang.String)">buildMatch</a></strong>(java.lang.String var = "r")</code><br></td>
+                            <td class="colLast"><code><strong><a href="#buildMatch(java.lang.String, java.lang.String)">buildMatch</a></strong>(java.lang.String type = this.type(, java.lang.String var = "r")</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code>java.lang.String</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#buildMatchForType(java.lang.String, java.lang.String)">buildMatchForType</a></strong>(java.lang.String type, java.lang.String var = "r")</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>java.lang.String</strong></code></td>
                             <td class="colLast"><code><strong><a href="#buildToMatch(java.lang.String)">buildToMatch</a></strong>(java.lang.String var = "r")</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#getFrom()">getFrom</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html'>GraphPersistentEntity</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#getFromEntity()">getFromEntity</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#getTo()">getTo</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html'>GraphPersistentEntity</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#getToEntity()">getToEntity</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.String</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getVariableName()">getVariableName</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#initialize()">initialize</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isRelationshipAssociation(org.grails.datastore.mapping.model.PersistentProperty)">isRelationshipAssociation</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> association)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isVersioned()">isVersioned</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>java.lang.String</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#type()">type</a></strong>()</code><br></td>
                         </tr>
                         
                     </table>
@@ -284,7 +306,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class org.grails.datastore.mapping.model.AbstractPersistentEntity</strong></code></td>
-                            <td class="colLast"><code>org.grails.datastore.mapping.model.AbstractPersistentEntity#isExternal(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isRoot(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getVersion(), org.grails.datastore.mapping.model.AbstractPersistentEntity#hasProperty(java.lang.String, java.lang.Class), org.grails.datastore.mapping.model.AbstractPersistentEntity#isInitialized(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getJavaClass(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isVersioned(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getReflector(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isIdentityName(java.lang.String), org.grails.datastore.mapping.model.AbstractPersistentEntity#getParentEntity(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getDiscriminator(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getRootEntity(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isOwningEntity(org.grails.datastore.mapping.model.PersistentEntity), org.grails.datastore.mapping.model.AbstractPersistentEntity#getDecapitalizedName(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getPersistentPropertyNames(), org.grails.datastore.mapping.model.AbstractPersistentEntity#addOwner(java.lang.Class), org.grails.datastore.mapping.model.AbstractPersistentEntity#getMapping(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getIdentity(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isMultiTenant(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getCompositeIdentity(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getTenantId(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getMappingStrategy(), org.grails.datastore.mapping.model.AbstractPersistentEntity#setExternal(boolean), org.grails.datastore.mapping.model.AbstractPersistentEntity#getMappingContext(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getPropertyByName(java.lang.String), org.grails.datastore.mapping.model.AbstractPersistentEntity#getAssociations(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getPersistentProperties(), org.grails.datastore.mapping.model.AbstractPersistentEntity#equals(java.lang.Object), org.grails.datastore.mapping.model.AbstractPersistentEntity#toString(), org.grails.datastore.mapping.model.AbstractPersistentEntity#hashCode(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isInstance(java.lang.Object), org.grails.datastore.mapping.model.AbstractPersistentEntity#getName(), org.grails.datastore.mapping.model.AbstractPersistentEntity#newInstance(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isAbstract(), org.grails.datastore.mapping.model.AbstractPersistentEntity#initialize(), org.grails.datastore.mapping.model.AbstractPersistentEntity#wait(long, int), org.grails.datastore.mapping.model.AbstractPersistentEntity#wait(long), org.grails.datastore.mapping.model.AbstractPersistentEntity#wait(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getClass(), org.grails.datastore.mapping.model.AbstractPersistentEntity#notify(), org.grails.datastore.mapping.model.AbstractPersistentEntity#notifyAll()</code></td>
+                            <td class="colLast"><code>org.grails.datastore.mapping.model.AbstractPersistentEntity#isExternal(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getVersion(), org.grails.datastore.mapping.model.AbstractPersistentEntity#hasProperty(java.lang.String, java.lang.Class), org.grails.datastore.mapping.model.AbstractPersistentEntity#isRoot(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isVersioned(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isInitialized(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getJavaClass(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getMappingContext(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getPropertyByName(java.lang.String), org.grails.datastore.mapping.model.AbstractPersistentEntity#getAssociations(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getMapping(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getIdentity(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getPersistentProperties(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isMultiTenant(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getCompositeIdentity(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getTenantId(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getMappingStrategy(), org.grails.datastore.mapping.model.AbstractPersistentEntity#setExternal(boolean), org.grails.datastore.mapping.model.AbstractPersistentEntity#getReflector(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isIdentityName(java.lang.String), org.grails.datastore.mapping.model.AbstractPersistentEntity#getParentEntity(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getDiscriminator(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getRootEntity(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isOwningEntity(org.grails.datastore.mapping.model.PersistentEntity), org.grails.datastore.mapping.model.AbstractPersistentEntity#getDecapitalizedName(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getPersistentPropertyNames(), org.grails.datastore.mapping.model.AbstractPersistentEntity#addOwner(java.lang.Class), org.grails.datastore.mapping.model.AbstractPersistentEntity#equals(java.lang.Object), org.grails.datastore.mapping.model.AbstractPersistentEntity#toString(), org.grails.datastore.mapping.model.AbstractPersistentEntity#hashCode(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isInstance(java.lang.Object), org.grails.datastore.mapping.model.AbstractPersistentEntity#getName(), org.grails.datastore.mapping.model.AbstractPersistentEntity#newInstance(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isAbstract(), org.grails.datastore.mapping.model.AbstractPersistentEntity#initialize(), org.grails.datastore.mapping.model.AbstractPersistentEntity#wait(long, int), org.grails.datastore.mapping.model.AbstractPersistentEntity#wait(long), org.grails.datastore.mapping.model.AbstractPersistentEntity#wait(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getClass(), org.grails.datastore.mapping.model.AbstractPersistentEntity#notify(), org.grails.datastore.mapping.model.AbstractPersistentEntity#notifyAll()</code></td>
                         </tr>
                     </table>
                    </ul>
@@ -336,6 +358,22 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="direction"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;<a href='../../../../../grails/neo4j/Direction.html'>Direction</a> <strong>direction</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="type"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;java.lang.String <strong>type</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                 </li>
             </ul>
             
@@ -373,10 +411,18 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Method Detail</h3>
                     
-                        <a name="buildMatch(java.lang.String)"><!-- --></a>
+                        <a name="buildMatch(java.lang.String, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.String <strong>buildMatch</strong>(java.lang.String var = "r")</h4>
+                                <h4>java.lang.String <strong>buildMatch</strong>(java.lang.String type = this.type(, java.lang.String var = "r")</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="buildMatchForType(java.lang.String, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.lang.String <strong>buildMatchForType</strong>(java.lang.String type, java.lang.String var = "r")</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -452,6 +498,14 @@ void <strong>initialize</strong>()</h4>
                             <li class="blockList">
                                 <h4>@java.lang.Override
 boolean <strong>isVersioned</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="type()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.lang.String <strong>type</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>

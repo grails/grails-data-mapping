@@ -535,7 +535,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#standalone">GORM for Neo4j without Grails</a></li>
 </ul>
 </li>
-<li><a href="#mapping">Mapping Domain Classes to Neo4j Nodes</a>
+<li><a href="#mapping">Mapping Domain Classes to Nodes</a>
 <ul class="sectlevel2">
 <li><a href="#idGeneration">Neo4j ID generators</a></li>
 <li><a href="#associations">Understanding Association Mapping</a></li>
@@ -543,6 +543,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#schemaless">Dynamic Properties and Associations</a></li>
 </ul>
 </li>
+<li><a href="#relationships">Mapping Domain Classes to Relationships</a></li>
 <li><a href="#querying">Querying with GORM for Neo4j</a>
 <ul class="sectlevel2">
 <li><a href="#lazyLoading">Understanding Lazy Loading</a></li>
@@ -671,6 +672,22 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="releaseNotes">Release History</h3>
 <div class="sect3">
+<h4 id="_6_1_x">6.1.x</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Support for mapping entities to Neo4j Relationships</p>
+</li>
+<li>
+<p>Support for lists and maps of basic types</p>
+</li>
+<li>
+<p>Upgrade to Neo4j Bolt Driver 1.1</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_6_0_x">6.0.x</h4>
 <div class="ulist">
 <ul>
@@ -798,7 +815,55 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="upgrading">Upgrading from previous versions</h3>
 <div class="paragraph">
-<p>If you are upgrading from a previous version of the plugin to the 6.0.6.BUILD-SNAPSHOT, you will need to take into account the following changes.</p>
+<p>If you are upgrading from a previous version of the plugin to the 6.1.0.BUILD-SNAPSHOT, you will need to take into account the following changes.</p>
+</div>
+<div class="sect3">
+<h4 id="_removal_of_grails_datastore_simple">Removal of grails-datastore-simple</h4>
+<div class="paragraph">
+<p>The <code>grails-datastore-simple</code> and <code>grails-datastore-gorm-test</code> dependencies have been combined into a single <code>grails-datastore-gorm-test</code> dependency.</p>
+</div>
+<div class="paragraph">
+<p>Unfortunately existing versions of Grails still depend on the old <code>grails-datastore-simple</code> dependency. And you may receive an error such as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">> Could not resolve all dependencies for configuration ':example:runtime'.
+   > Could not find org.grails:grails-datastore-simple:6.1.0.BUILD-SNAPSHOT.
+     Searched in the following locations:
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.0.BUILD-SNAPSHOT/grails-datastore-simple-6.1.0.BUILD-SNAPSHOT.pom
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.0.BUILD-SNAPSHOT/grails-datastore-simple-6.1.0.BUILD-SNAPSHOT.jar
+     Required by:
+         project :example > org.grails:grails-dependencies:3.2.4 >
+            ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are upgrading you will need to exclude this dependency using the following Gradle syntax directly before the <code>dependencies</code> block:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">configurations.all { <span class="predefined-type">Configuration</span> c -&gt;
+    c.exclude(<span class="key">group</span>:<span class="string"><span class="delimiter">'</span><span class="content">org.grails</span><span class="delimiter">'</span></span>,<span class="key">module</span>:<span class="string"><span class="delimiter">'</span><span class="content">grails-datastore-simple</span><span class="delimiter">'</span></span>)
+}
+dependencies {
+    ....
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_native_identifiers_by_default">Native Identifiers by Default</h4>
+<div class="paragraph">
+<p>Since 6.1, GORM for Neo4j uses native node and relationship identifiers by default for ids instead of the prevous snowflake id generation strategy. If you wish to revert to the previous strategy you can do so by applying the following configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grails.gorm.neo4j.default.mapping = {
+    id <span class="key">generator</span>:<span class="string"><span class="delimiter">'</span><span class="content">snowflake</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_configuration_changes">Configuration Changes</h4>
@@ -861,7 +926,7 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect3">
 <h4 id="_general_neo4j_3_x_changes">General Neo4j 3.x Changes</h4>
 <div class="paragraph">
-<p>Since GORM for Neo4j 6.0.6.BUILD-SNAPSHOT is based on Neo4j 3.x, if you are upgrading from Neo4j 2.x there will be other changes related to Neo4j 3 that you may need to make. These are described in the <a href="https://neo4j.com/guides/upgrade/">upgrade guide</a> on the Neo4j website.</p>
+<p>Since GORM for Neo4j 6.1.0.BUILD-SNAPSHOT is based on Neo4j 3.x, if you are upgrading from Neo4j 2.x there will be other changes related to Neo4j 3 that you may need to make. These are described in the <a href="https://neo4j.com/guides/upgrade/">upgrade guide</a> on the Neo4j website.</p>
 </div>
 </div>
 </div>
@@ -877,9 +942,29 @@ table.CodeRay td.code>pre{padding:0}
 <p>For Grails 3.x you need to edit your <code>build.gradle</code> file and add the plugin as a dependency:</p>
 </div>
 <div class="listingblock">
+<div class="title">build.gradle</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-	compile 'org.grails.plugins:neo4j:6.0.6.BUILD-SNAPSHOT'
+	compile 'org.grails.plugins:neo4j:6.1.0.BUILD-SNAPSHOT'
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are using a version of Grails 3 earlier than 3.3 then you may need to enforce the GORM version by adding the following block directly above the <code>dependencies</code> block:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        if( details.requested.group == 'org.grails' &&
+            details.requested.name.startsWith('grails-datastore')) {
+            details.useVersion("6.1.0.BUILD-SNAPSHOT")
+        }
+    }
+}
+dependencies {
+    ...
 }</code></pre>
 </div>
 </div>
@@ -901,7 +986,7 @@ GORM for Neo4j requires Grails 2.5.x or above and Neo4j 3.0.x or above, if you w
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">plugins {
-    compile ':neo4j:6.0.6.BUILD-SNAPSHOT'
+    compile ':neo4j:6.1.0.BUILD-SNAPSHOT'
     build ':tomcat:8.22'
 }</code></pre>
 </div>
@@ -1040,7 +1125,7 @@ The Neo4j server uses Jetty, so when you add Neo4j as embedded Grails will also 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-neo4j-spring-boot:6.0.6.BUILD-SNAPSHOT")</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-neo4j-spring-boot:6.1.0.BUILD-SNAPSHOT")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1100,7 +1185,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-neo4j:6.0.6.BUILD-SNAPSHOT"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-neo4j:6.1.0.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1153,7 +1238,7 @@ println Person.count()</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="mapping">Mapping Domain Classes to Neo4j Nodes</h2>
+<h2 id="mapping">Mapping Domain Classes to Nodes</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>GORM for Neo4j will map each Grails domain instance to a Node in the node space. For example given the following domain class:</p>
@@ -1428,6 +1513,105 @@ For more information on defining relationships with GORM, see the <a href="http:
 </div>
 <div class="paragraph">
 <p>The downside of dynamic associations is that GORM has to issue a separate query for each loaded instance when retrieving entities. If you have a small amount of data this is not a problem, but for larger data sets it is not recommended.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="relationships">Mapping Domain Classes to Relationships</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In addition to being able to map a domain class to a Neo4j <code>Node</code>, since 6.1 you are able to map a domain class to a Neo4j <code>Relationship</code>.</p>
+</div>
+<div class="paragraph">
+<p>For example consider the following domain model:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.neo4j.*</span>
+
+<span class="type">class</span> <span class="class">Movie</span> {
+    <span class="predefined-type">String</span> title
+    <span class="directive">static</span> hasMany = [<span class="key">cast</span>:CastMember]
+}
+
+<span class="type">class</span> <span class="class">CastMember</span> <span class="directive">implements</span> Relationship&lt;Person, Movie&gt; {
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; roles = <span class="type">[]</span>
+}
+
+<span class="type">class</span> <span class="class">Person</span> {
+    <span class="predefined-type">String</span> name
+    <span class="directive">static</span> hasMany = [<span class="key">appearances</span>:CastMember]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>CastMember</code> class implements the <a href="../api/grails/neo4j/Relationship.html">Relationship</a> trait which takes two generic arguments: The class that represents the start of the relationship and the class that represents the end.</p>
+</div>
+<div class="paragraph">
+<p>You can then use regular GORM methods to query the <code>CastMember</code> relationship. In addition because Neo4j relationships are dynamic you can assign additional properties to them at runtime. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> castMember = <span class="keyword">new</span> CastMember(
+    <span class="key">from</span>: <span class="keyword">new</span> Person(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Keanu</span><span class="delimiter">&quot;</span></span>),
+    <span class="key">to</span>: <span class="keyword">new</span> Movie(<span class="key">title</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">The Matrix</span><span class="delimiter">&quot;</span></span>),
+    <span class="key">roles</span>: [<span class="string"><span class="delimiter">&quot;</span><span class="content">Neo</span><span class="delimiter">&quot;</span></span>])
+
+castMember[<span class="string"><span class="delimiter">'</span><span class="content">realName</span><span class="delimiter">'</span></span>] = <span class="string"><span class="delimiter">&quot;</span><span class="content">Thomas Anderson</span><span class="delimiter">&quot;</span></span>
+castMember.save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above example the <code>roles</code> property is saved as a property of the relationship, as is the dynamic <code>realName</code> property.</p>
+</div>
+<div class="paragraph">
+<p>You can then query relationships using these properties:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">CastMember cm = CastMember.findByRoles([<span class="string"><span class="delimiter">'</span><span class="content">Neo</span><span class="delimiter">'</span></span>])
+Person person = cm.from
+println person.name</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example will produce a Cypher query that queries the relationship rather than the nodes:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>MATCH (n:Celeb)-[r:CASTMEMBER]-&gt;(to:Movie) WHERE ( r.roles={1} ) RETURN r as rel, n as from, to as to
+ ] for params [[1:[Neo]]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice that the relationship type is <code>CASTMEMBER</code>. By default GORM uses the class name for the relationship type. You can configure an alternative default using the <code>mapping</code> block if necessary:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">static</span> mapping = {
+   type <span class="string"><span class="delimiter">&quot;</span><span class="content">ACTED_IN</span><span class="delimiter">&quot;</span></span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also assign a per instance relationship type overriding the default:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> castMember = <span class="keyword">new</span> CastMember(
+    <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">DIRECTED</span><span class="delimiter">&quot;</span></span>
+    <span class="key">from</span>: <span class="keyword">new</span> Person(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Lana Wachowski</span><span class="delimiter">&quot;</span></span>),
+    <span class="key">to</span>: <span class="keyword">new</span> Movie(<span class="key">title</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">The Matrix</span><span class="delimiter">&quot;</span></span>))
+    .save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And then later use the type in queries:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;CastMember&gt; directors = CastMember.findAllByType(<span class="string"><span class="delimiter">&quot;</span><span class="content">DIRECTED</span><span class="delimiter">&quot;</span></span>)</code></pre>
 </div>
 </div>
 </div>
