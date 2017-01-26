@@ -302,6 +302,11 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             public PropertyMapping getMapping() {
                 return propertyMapping;
             }
+
+            @Override
+            public String toString() {
+                return associationtoString("one-to-one: ", this);
+            }
         };
     }
 

@@ -619,7 +619,9 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                             }
                         }
                         else {
-                            String classNameAsProperty = Introspector.decapitalize(propType.getName());
+                            // in this case no mappedBy is found so check if the the property name is the same as the class name (eg. 'Foo' would be come 'foo')
+                            // using this convention we consider this the default property to map to 
+                            String classNameAsProperty = Introspector.decapitalize(propType.getSimpleName());
                             if (property.getName().equals(classNameAsProperty) && !mappedBy.containsKey(relatedClassPropertyName)) {
                                 relatedClassPropertyType = relatedCpf.getPropertyType(relatedClassPropertyName);
                             }
@@ -665,7 +667,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         if (association != null) {
             PersistentEntity associatedEntity = getOrCreateAssociatedEntity(entity, context, propType);
             association.setAssociatedEntity(associatedEntity);
-            if (relatedClassPropertyName != null ) {
+            if (relatedClassPropertyName != null && relatedClassPropertyType != null) {
                 association.setReferencedPropertyName(relatedClassPropertyName);
             }
         }
