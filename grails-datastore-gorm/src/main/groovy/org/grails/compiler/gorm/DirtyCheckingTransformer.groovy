@@ -65,7 +65,6 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
 
         }
 
-        println "PROCESSING CLASS $classNode.name"
         // Now we go through all the properties, if the property is a persistent property and change tracking has been initiated then we add to the setter of the property
         // code that will mark the property as dirty. Note that if the property has no getter we have to add one, since only adding the setter results in a read-only property
         final propertyNodes = classNode.getProperties()
@@ -132,7 +131,6 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
                     final setterBody = new BlockStatement()
                     MethodCallExpression markDirtyMethodCall = createMarkDirtyMethodCall(markDirtyMethodNode, propertyName, setterParameter)
 
-                    println "WEAVING markDirty('$propertyName',value) FOR PROPERTY"
                     setterBody.addStatement( stmt(markDirtyMethodCall) )
                     setterBody.addStatement( assignS( propX( varX("this"), fieldName ), varX( setterParameter )))
 
