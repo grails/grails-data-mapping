@@ -857,6 +857,9 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 if (pd != null) {
                     identifiers[i] = propertyFactory.createIdentity(entity, context, pd);
                 }
+                else {
+                    throw new IllegalMappingException("Invalid composite id mapping. Could not resolve property ["+name+"] for entity ["+javaClass.getName()+"]");
+                }
             }
 
         }
