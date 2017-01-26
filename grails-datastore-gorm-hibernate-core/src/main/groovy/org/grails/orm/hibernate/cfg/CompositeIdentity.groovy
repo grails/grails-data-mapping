@@ -24,6 +24,12 @@ import org.grails.datastore.mapping.config.Property
  * @since 1.0
  */
 class CompositeIdentity extends Property {
+    /**
+     * The property names that make up the custom identity
+     */
     String[] propertyNames
+    /**
+     * The composite id class
+     */
     Class compositeClass
 }

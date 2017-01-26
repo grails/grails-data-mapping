@@ -2391,12 +2391,26 @@ public abstract class AbstractGrailsDomainBinder {
         String[] propertyNames = compositeId.getPropertyNames();
         PropertyConfig config = getPropertyConfig(property);
 
-        if (config.getColumns().size() != propertyNames.length) {
+        List<ColumnConfig> columns = config.getColumns();
+        int i = columns.size();
+        if (i != propertyNames.length) {
+            int j = 0;
             for (String propertyName : propertyNames) {
-                final ColumnConfig cc = new ColumnConfig();
-                cc.setName(addUnderscore(namingStrategy.classToTableName(refDomainClass.getJavaClass().getSimpleName()),
-                        getDefaultColumnName(refDomainClass.getPropertyByName(propertyName), sessionFactoryBeanName)));
-                config.getColumns().add(cc);
+                ColumnConfig cc;
+                if(j == 0 && i > 0) {
+                    cc = columns.get(j++);
+                    if(cc.getName() == null) {
+                        cc.setName(addUnderscore(namingStrategy.classToTableName(refDomainClass.getJavaClass().getSimpleName()),
+                                getDefaultColumnName(refDomainClass.getPropertyByName(propertyName), sessionFactoryBeanName)));
+                    }
+                }
+                else {
+                    cc = new ColumnConfig();
+                    cc.setName(addUnderscore(namingStrategy.classToTableName(refDomainClass.getJavaClass().getSimpleName()),
+                            getDefaultColumnName(refDomainClass.getPropertyByName(propertyName), sessionFactoryBeanName)));
+
+                }
+                columns.add(cc);
             }
         }
         bindSimpleValue(property, value, path, config, sessionFactoryBeanName);

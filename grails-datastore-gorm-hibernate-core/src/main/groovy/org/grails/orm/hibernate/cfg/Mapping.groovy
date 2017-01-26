@@ -17,6 +17,7 @@ package org.grails.orm.hibernate.cfg
 
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.config.Entity
+import org.grails.datastore.mapping.config.Property
 
 /**
  * Models the mapping from GORM classes to the db.
@@ -89,7 +90,7 @@ class Mapping extends Entity {
     /**
      * The identity definition
      */
-    def identity = new Identity()
+    Property identity = new Identity()
 
     /**
      * Caching config

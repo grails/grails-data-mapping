@@ -477,6 +477,7 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
 
             PropertyConfig property = mapping.columns[name] ?: newConfig
             property.name = namedArgs.name ?: property.name
+            property.generator = namedArgs.generator ?: property.generator
             property.formula = namedArgs.formula ?: property.formula
             property.accessType = namedArgs.accessType instanceof AccessType ? namedArgs.accessType : property.accessType
             property.type = namedArgs.type ?: property.type

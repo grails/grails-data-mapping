@@ -25,17 +25,53 @@ import groovy.transform.AutoClone
  */
 @AutoClone
 class ColumnConfig {
+    /**
+     * The column name
+     */
     String name
+    /**
+     * The SQL type
+     */
     String sqlType
+    /**
+     * The enum type
+     */
     String enumType = 'default'
+    /**
+     * The index, can be either a boolean or a string for the name of the index
+     */
     def index
+    /**
+     * Whether the column is unique
+     */
     boolean unique = false
+    /**
+     * The length of the column
+     */
     int length = -1
+    /**
+     * The precision of the column
+     */
     int precision = -1
+    /**
+     * The scale of the column
+     */
     int scale = -1
+    /**
+     * The default value
+     */
     String defaultValue
+    /**
+     * A comment to apply to the column
+     */
     String comment
+    /**
+     * A custom read string
+     */
     String read
+    /**
+     * A custom write sstring
+     */
     String write
 
     String toString() {
