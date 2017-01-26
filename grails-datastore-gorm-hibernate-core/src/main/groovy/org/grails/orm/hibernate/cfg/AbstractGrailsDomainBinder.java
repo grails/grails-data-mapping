@@ -2620,7 +2620,7 @@ public abstract class AbstractGrailsDomainBinder {
 
     protected boolean getUpdateableness(PersistentProperty grailsProperty) {
         PropertyConfig config = getPropertyConfig(grailsProperty);
-        return config == null || config.getUpdateable();
+        return config == null || config.getUpdatable();
     }
 
     protected boolean isBidirectionalManyToOneWithListMapping(PersistentProperty grailsProperty, Property prop) {

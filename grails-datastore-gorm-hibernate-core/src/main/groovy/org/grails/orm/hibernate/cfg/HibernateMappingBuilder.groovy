@@ -483,7 +483,8 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
             property.type = namedArgs.type ?: property.type
             property.setLazy( namedArgs.lazy instanceof Boolean ? namedArgs.lazy : property.getLazy() )
             property.insertable = namedArgs.insertable != null ? namedArgs.insertable : property.insertable
-            property.updateable = namedArgs.updateable != null ? namedArgs.updateable : property.updateable
+            property.updatable = namedArgs.updateable != null ? namedArgs.updateable : property.updatable
+            property.updatable = namedArgs.updatable != null ? namedArgs.updatable : property.updatable
             property.cascade = namedArgs.cascade ?: property.cascade
             property.sort = namedArgs.sort ?: property.sort
             property.order = namedArgs.order ?: property.order

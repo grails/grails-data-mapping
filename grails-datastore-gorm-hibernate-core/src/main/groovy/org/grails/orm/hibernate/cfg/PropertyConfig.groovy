@@ -77,9 +77,28 @@ class PropertyConfig extends Property {
     boolean insertable = true
 
     /**
-    * Whether or not this column is updateable by hibernate
+    * Whether or not this column is updatable by hibernate
      */
-    boolean updateable = true
+    boolean updatable = true
+
+    /**
+     * Whether or not this column is updatable by hibernate
+     *
+     * @deprecated Use updatable instead
+     */
+    @Deprecated
+    boolean getUpdateable() {
+        return updatable
+    }
+
+    /**
+     * Whether or not this column is updatable by hibernate
+     * @deprecated Use updatable instead
+     */
+    @Deprecated
+    void setUpdateable(boolean updateable) {
+        this.updatable = updateable
+    }
 
     List<ColumnConfig> columns = []
 
