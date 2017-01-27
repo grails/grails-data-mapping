@@ -2384,8 +2384,8 @@ public abstract class AbstractGrailsDomainBinder {
     }
 
     protected void bindCompositeIdentifierToManyToOne(Association property,
-            SimpleValue value, CompositeIdentity compositeId, PersistentEntity refDomainClass,
-            String path, String sessionFactoryBeanName) {
+                                                      SimpleValue value, CompositeIdentity compositeId, PersistentEntity refDomainClass,
+                                                      String path, String sessionFactoryBeanName) {
 
         NamingStrategy namingStrategy = getNamingStrategy(sessionFactoryBeanName);
 
@@ -2394,27 +2394,75 @@ public abstract class AbstractGrailsDomainBinder {
 
         List<ColumnConfig> columns = config.getColumns();
         int i = columns.size();
-        if (i != propertyNames.length) {
+        int expectedForeignKeyColumnLength = calculateForeignKeyColumnCount(refDomainClass, propertyNames);
+        if (i != expectedForeignKeyColumnLength) {
             int j = 0;
             for (String propertyName : propertyNames) {
                 ColumnConfig cc;
-                if(j == 0 && i > 0) {
+                // if a column configuration exists in the mapping use it
+                if(j < i) {
                     cc = columns.get(j++);
-                    if(cc.getName() == null) {
-                        cc.setName(addUnderscore(namingStrategy.classToTableName(refDomainClass.getJavaClass().getSimpleName()),
-                                getDefaultColumnName(refDomainClass.getPropertyByName(propertyName), sessionFactoryBeanName)));
-                    }
                 }
+                // otherwise create a new one to represent the composite column
                 else {
                     cc = new ColumnConfig();
-                    cc.setName(addUnderscore(namingStrategy.classToTableName(refDomainClass.getJavaClass().getSimpleName()),
-                            getDefaultColumnName(refDomainClass.getPropertyByName(propertyName), sessionFactoryBeanName)));
-
                 }
-                columns.add(cc);
+                // if the name is null then configure the name by convention
+                if(cc.getName() == null) {
+                    // use the referenced table name as a prefix
+                    String prefix = getTableName(refDomainClass, sessionFactoryBeanName);
+                    PersistentProperty referencedProperty = refDomainClass.getPropertyByName(propertyName);
+
+                    // if the referenced property is a ToOne and it has a composite id
+                    // then a column is needed for each property that forms the composite id
+                    if(referencedProperty instanceof ToOne) {
+                        ToOne toOne = (ToOne) referencedProperty;
+                        PersistentProperty[] compositeIdentity = toOne.getAssociatedEntity().getCompositeIdentity();
+                        if(compositeIdentity != null) {
+                            for (PersistentProperty cip : compositeIdentity) {
+                                // for each property of a composite id by default we use the table name and the property name as a prefix
+                                String compositeIdPrefix = addUnderscore(prefix, namingStrategy.propertyToColumnName(referencedProperty.getName()));
+                                String suffix = getDefaultColumnName(cip, sessionFactoryBeanName);
+                                String finalColumnName = addUnderscore(compositeIdPrefix, suffix);
+                                cc = new ColumnConfig();
+                                cc.setName(finalColumnName);
+                                columns.add(cc);
+                            }
+                            continue;
+                        }
+                    }
+
+                    String suffix = getDefaultColumnName(referencedProperty, sessionFactoryBeanName);
+                    String finalColumnName = addUnderscore(prefix, suffix);
+                    cc.setName(finalColumnName);
+                    columns.add(cc);
+                }
             }
         }
         bindSimpleValue(property, value, path, config, sessionFactoryBeanName);
+    }
+
+    // each property may consist of one or many columns (due to composite ids) so in order to get the
+    // number of columns required for a column key we have to perform the calculation here
+    private int calculateForeignKeyColumnCount(PersistentEntity refDomainClass, String[] propertyNames) {
+        int expectedForeignKeyColumnLength = 0;
+        for (String propertyName : propertyNames) {
+            PersistentProperty referencedProperty = refDomainClass.getPropertyByName(propertyName);
+            if(referencedProperty instanceof ToOne) {
+                ToOne toOne = (ToOne) referencedProperty;
+                PersistentProperty[] compositeIdentity = toOne.getAssociatedEntity().getCompositeIdentity();
+                if(compositeIdentity != null) {
+                    expectedForeignKeyColumnLength += compositeIdentity.length;
+                }
+                else {
+                    expectedForeignKeyColumnLength++;
+                }
+            }
+            else {
+                expectedForeignKeyColumnLength++;
+            }
+        }
+        return expectedForeignKeyColumnLength;
     }
 
     protected boolean hasCompositeIdentifier(Mapping mapping) {
