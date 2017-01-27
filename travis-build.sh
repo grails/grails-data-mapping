@@ -19,6 +19,14 @@ else
     fi
 fi
 
+if [[ $EXIT_STATUS -eq 0 && $TRAVIS_PULL_REQUEST == 'false']; then
+    if [[ -n $TRAVIS_TAG ]] || [[ $TRAVIS_BRANCH == 'master' ]]; then
+        ./gradlew --stop
+        ./travis-publish.sh || EXIT_STATUS=$?
+    fi
+fi
+
+
 exit $EXIT_STATUS
 
 
