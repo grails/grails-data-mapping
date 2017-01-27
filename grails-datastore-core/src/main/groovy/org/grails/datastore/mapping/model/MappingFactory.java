@@ -14,11 +14,16 @@
  */
 package org.grails.datastore.mapping.model;
 
-import java.beans.IntrospectionException;
+import groovy.lang.MetaProperty;
+import org.grails.datastore.mapping.config.Entity;
+import org.grails.datastore.mapping.config.Property;
+import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
+import org.grails.datastore.mapping.model.config.GormProperties;
+import org.grails.datastore.mapping.model.types.*;
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
+
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
@@ -30,20 +35,6 @@ import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import groovy.lang.MetaBeanProperty;
-import groovy.lang.MetaMethod;
-import groovy.lang.MetaProperty;
-import org.codehaus.groovy.reflection.CachedMethod;
-import org.codehaus.groovy.runtime.metaclass.MultipleSetterProperty;
-import org.grails.datastore.mapping.config.Entity;
-import org.grails.datastore.mapping.config.Property;
-import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
-import org.grails.datastore.mapping.model.config.GormProperties;
-import org.grails.datastore.mapping.model.types.*;
-import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
-import org.grails.datastore.mapping.reflect.NameUtils;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * <p>An abstract factory for creating persistent property instances.</p>
