@@ -624,7 +624,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                                 }
                             }
                         }
-                        else {
+                        else if(relatedClassPropertyName != null) {
                             // in this case no mappedBy is found so check if the the property name is the same as the class name (eg. 'Foo' would be come 'foo')
                             // using this convention we consider this the default property to map to 
                             String classNameAsProperty = Introspector.decapitalize(propType.getSimpleName());
