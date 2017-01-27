@@ -477,12 +477,14 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
 
             PropertyConfig property = mapping.columns[name] ?: newConfig
             property.name = namedArgs.name ?: property.name
+            property.generator = namedArgs.generator ?: property.generator
             property.formula = namedArgs.formula ?: property.formula
             property.accessType = namedArgs.accessType instanceof AccessType ? namedArgs.accessType : property.accessType
             property.type = namedArgs.type ?: property.type
             property.setLazy( namedArgs.lazy instanceof Boolean ? namedArgs.lazy : property.getLazy() )
             property.insertable = namedArgs.insertable != null ? namedArgs.insertable : property.insertable
-            property.updateable = namedArgs.updateable != null ? namedArgs.updateable : property.updateable
+            property.updatable = namedArgs.updateable != null ? namedArgs.updateable : property.updatable
+            property.updatable = namedArgs.updatable != null ? namedArgs.updatable : property.updatable
             property.cascade = namedArgs.cascade ?: property.cascade
             property.sort = namedArgs.sort ?: property.sort
             property.order = namedArgs.order ?: property.order
@@ -493,6 +495,9 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
             property.nullable = namedArgs.nullable instanceof Boolean ? namedArgs.nullable : property.nullable
             property.maxSize = namedArgs.maxSize instanceof Number ? namedArgs.maxSize : property.maxSize
             property.minSize = namedArgs.minSize instanceof Number ? namedArgs.minSize : property.minSize
+            if(namedArgs.size instanceof IntRange) {
+                property.size = (IntRange)namedArgs.size
+            }
             property.max = namedArgs.max instanceof Comparable ? namedArgs.max : property.max
             property.min = namedArgs.min instanceof Comparable ? namedArgs.min : property.min
             property.range = namedArgs.range instanceof ObjectRange ? namedArgs.range : null

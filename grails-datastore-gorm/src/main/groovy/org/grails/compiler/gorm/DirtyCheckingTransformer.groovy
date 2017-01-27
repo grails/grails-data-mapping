@@ -7,7 +7,6 @@ import org.codehaus.groovy.ast.*
 import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.ast.stmt.*
 import org.codehaus.groovy.ast.tools.GeneralUtils
-import org.codehaus.groovy.ast.tools.GenericsUtils
 import org.codehaus.groovy.classgen.GeneratorContext
 import org.codehaus.groovy.control.CompilationUnit
 import org.codehaus.groovy.control.SourceUnit
@@ -26,6 +25,8 @@ import java.lang.reflect.Modifier
 
 import static java.lang.reflect.Modifier.*
 import static org.grails.datastore.mapping.reflect.AstUtils.*
+import static org.codehaus.groovy.ast.tools.GeneralUtils.*
+
 /**
  *
  * Transforms a domain class making it possible for the domain class to take responsibility of tracking changes to itself, thus removing the responsibility from the ORM system which would have to maintain parallel state
@@ -206,37 +207,32 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
                         returnType = originalReturnType
                     }
                     boolean booleanProperty = ClassHelper.boolean_TYPE.getName().equals(returnType.getName())
-                    def getter = classNode.addMethod(NameUtils.getGetterName(propertyName, false), PUBLIC, returnType, ZERO_PARAMETERS, null, new ReturnStatement(new VariableExpression(propertyField.getName())))
+                    String fieldName = propertyField.getName()
+                    String getterName = NameUtils.getGetterName(propertyName, false)
+
+                    def getter = classNode.addMethod(getterName, PUBLIC, returnType, ZERO_PARAMETERS, null, returnS(varX(fieldName)))
                     getter.addAnnotation(DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE)
                     staticCompilationVisitor.visitMethod(
-                        getter
+                            getter
                     )
-
                     if(booleanProperty) {
-                        classNode.addMethod(NameUtils.getGetterName(propertyName, true), PUBLIC, returnType, ZERO_PARAMETERS, null, new ReturnStatement(new VariableExpression(propertyField.getName())))
+                        classNode.addMethod(NameUtils.getGetterName(propertyName, true), PUBLIC, returnType, ZERO_PARAMETERS, null, returnS(varX(fieldName)))
                     }
 
                     // now add the setter that tracks changes. Each setters becomes:
                     // void setFoo(String foo) { markDirty("foo", foo); this.foo = foo }
                     final setterName = NameUtils.getSetterName(propertyName)
-                    final setterParameter = new Parameter(returnType, propertyName)
+                    final setterParameter = param(returnType, propertyName)
                     final setterBody = new BlockStatement()
                     MethodCallExpression markDirtyMethodCall = createMarkDirtyMethodCall(markDirtyMethodNode, propertyName, setterParameter)
-                    setterBody.addStatement(new ExpressionStatement(markDirtyMethodCall))
-                    setterBody.addStatement(  new ExpressionStatement(
-                            new BinaryExpression(new PropertyExpression(new VariableExpression("this"), propertyField.name),
-                                    Token.newSymbol(Types.EQUAL, 0, 0),
-                                    new VariableExpression(setterParameter))
-                    )
-                    )
+                    setterBody.addStatement( stmt(markDirtyMethodCall) )
+                    setterBody.addStatement( assignS( propX( varX("this"), fieldName ), varX( setterParameter )))
 
-
-                    def setter = classNode.addMethod(setterName, PUBLIC, ClassHelper.VOID_TYPE, [setterParameter] as Parameter[], null, setterBody)
+                    MethodNode setter = classNode.addMethod(setterName, PUBLIC, ClassHelper.VOID_TYPE, params(setterParameter), null, setterBody)
                     setter.addAnnotation(DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE)
                     staticCompilationVisitor.visitMethod(
-                        setter
+                            setter
                     )
-
                 }
                 else if(getterAndSetter.hasBoth()) {
                     // if both a setter and getter are present, we get hold of the setter and weave the markDirty method call into it
@@ -338,17 +334,18 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
         final currentBody = setterMethod.code
         final setterParameter = setterMethod.getParameters()[0]
         MethodCallExpression markDirtyMethodCall = createMarkDirtyMethodCall(markDirtyMethodNode, propertyName, setterParameter)
-        final newBody = new BlockStatement()
-        newBody.addStatement(new ExpressionStatement(markDirtyMethodCall))
-        newBody.addStatement(currentBody)
+        final newBody = block(
+            stmt( markDirtyMethodCall ),
+            currentBody
+        )
         setterMethod.code = newBody
     }
 
     protected MethodCallExpression createMarkDirtyMethodCall(MethodNode markDirtyMethodNode, String propertyName, Variable value) {
-        def args = new ArgumentListExpression(new ConstantExpression(propertyName), new VariableExpression(value))
-        final markDirtyMethodCall = new MethodCallExpression(new VariableExpression("this"), markDirtyMethodNode.name, args)
+        def args = args(constX(propertyName), varX(value))
+        final markDirtyMethodCall = callX(varX("this"), markDirtyMethodNode.name, args)
         markDirtyMethodCall.methodTarget = markDirtyMethodNode
-        markDirtyMethodCall
+        return markDirtyMethodCall
     }
 
     protected GetterAndSetter getGetterAndSetterForPropertyName(LinkedHashMap<String, GetterAndSetter> gettersAndSetters, String propertyName) {
@@ -357,7 +354,7 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
             getterAndSetter = new GetterAndSetter()
             gettersAndSetters[propertyName] = getterAndSetter
         }
-        getterAndSetter
+        return getterAndSetter
     }
 
 

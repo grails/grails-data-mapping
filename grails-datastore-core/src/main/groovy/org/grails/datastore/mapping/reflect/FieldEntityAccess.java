@@ -185,7 +185,9 @@ public class FieldEntityAccess implements EntityAccess {
                 identifierWriter = readerAndWriterMaker.getPropertyWriter();
 
                 readerMap.put(identifierName, identifierReader);
-                writerMap.put(identifierName, identifierWriter);
+                if(identifierWriter != null) {
+                    writerMap.put(identifierName, identifierWriter);
+                }
             }
             else {
                 this.identifierName = null;
@@ -497,9 +499,11 @@ public class FieldEntityAccess implements EntityAccess {
                         }
                     }
                     else {
-                        Method writeMethod = descriptor.getWriteMethod();
                         propertyReader = new FastMethodReader(fastClass.getMethod(readMethod));
-                        propertyWriter = new FastMethodWriter(fastClass.getMethod(writeMethod), descriptor.getPropertyType());
+                        Method writeMethod = descriptor.getWriteMethod();
+                        if(writeMethod != null) {
+                            propertyWriter = new FastMethodWriter(fastClass.getMethod(writeMethod), descriptor.getPropertyType());
+                        }
                     }
                 }
                 return this;

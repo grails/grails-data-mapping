@@ -180,8 +180,10 @@ public class Property implements Cloneable {
 
 
     public void setSize(IntRange maxSize) {
-        this.maxSize = maxSize.getTo();
-        this.minSize = maxSize.getFrom();
+        if(maxSize != null) {
+            this.maxSize = maxSize.getTo();
+            this.minSize = maxSize.getFrom();
+        }
     }
 
     /**

@@ -1,6 +1,7 @@
 package org.grails.datastore.mapping.dirty.checking
 
 import groovy.transform.CompileStatic
+import org.grails.datastore.mapping.proxy.EntityProxy
 
 import javax.persistence.Transient
 
@@ -35,7 +36,12 @@ trait DirtyCheckable {
      * @return True if the instance has any changes
      */
     boolean hasChanged() {
-        $changedProperties == null || DirtyCheckingSupport.DIRTY_CLASS_MARKER.is($changedProperties) || !$changedProperties.isEmpty()
+        if(this instanceof EntityProxy && !((EntityProxy)this).isInitialized()) {
+            return false
+        }
+        else {
+            return $changedProperties == null || DirtyCheckingSupport.DIRTY_CLASS_MARKER.is($changedProperties) || !$changedProperties.isEmpty()
+        }
     }
 
     /**
@@ -43,7 +49,12 @@ trait DirtyCheckable {
      * @return True if the given property has any changes
      */
     boolean hasChanged(String propertyName) {
-        $changedProperties == null || DirtyCheckingSupport.DIRTY_CLASS_MARKER.is($changedProperties) || $changedProperties?.containsKey(propertyName)
+        if(this instanceof EntityProxy && !((EntityProxy)this).isInitialized()) {
+            return false
+        }
+        else {
+            return $changedProperties == null || DirtyCheckingSupport.DIRTY_CLASS_MARKER.is($changedProperties) || $changedProperties?.containsKey(propertyName)
+        }
     }
 
     /**
@@ -96,6 +107,10 @@ trait DirtyCheckable {
      * @return A list of the dirty property names
      */
     List<String> listDirtyPropertyNames() {
+        if(this instanceof EntityProxy && !((EntityProxy)this).isInitialized()) {
+            return Collections.emptyList()
+        }
+
         if($changedProperties != null) {
             return Collections.unmodifiableList(
                 $changedProperties.keySet().toList()

@@ -220,13 +220,20 @@ class GormEnhancer implements Closeable {
      * @return
      */
     protected static String findTenantId(Class entity) {
-        Datastore defaultDatastore = findDatastore(entity, ConnectionSource.DEFAULT)
-        if(MultiTenant.isAssignableFrom(entity) && (defaultDatastore instanceof MultiTenantCapableDatastore)) {
-            MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore)defaultDatastore
-            if(multiTenantCapableDatastore.getMultiTenancyMode() == MultiTenancySettings.MultiTenancyMode.DATABASE) {
-                return Tenants.currentId( (Class<Datastore>) defaultDatastore.getClass() )
+        if(MultiTenant.isAssignableFrom(entity)) {
+            Datastore defaultDatastore = findDatastore(entity, ConnectionSource.DEFAULT)
+            if((defaultDatastore instanceof MultiTenantCapableDatastore)) {
+
+                MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore)defaultDatastore
+                if(multiTenantCapableDatastore.getMultiTenancyMode() == MultiTenancySettings.MultiTenancyMode.DATABASE) {
+                    return Tenants.currentId( (Class<Datastore>) defaultDatastore.getClass() )
+                }
+                else {
+                    return ConnectionSource.DEFAULT
+                }
             }
             else {
+                log.debug("Return default tenant id for non-multitenant capable datastore")
                 return ConnectionSource.DEFAULT
             }
         }
