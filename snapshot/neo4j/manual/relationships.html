@@ -482,38 +482,8 @@ println person.name</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>MATCH (n:Celeb)-[r:CASTMEMBER]-&gt;(to:Movie) WHERE ( r.roles={1} ) RETURN r as rel, n as from, to as to
+<pre>MATCH (n:Person)-[from:CASTMEMBER]-&gt;(to:Movie) WHERE ( r.roles={1} ) RETURN r as rel, from as from, to as to
  ] for params [[1:[Neo]]</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Notice that the relationship type is <code>CASTMEMBER</code>. By default GORM uses the class name for the relationship type. You can configure an alternative default using the <code>mapping</code> block if necessary:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">static mapping = {
-   type "ACTED_IN"
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can also assign a per instance relationship type overriding the default:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">def castMember = new CastMember(
-    type: "DIRECTED"
-    from: new Person(name: "Lana Wachowski"),
-    to: new Movie(title: "The Matrix"))
-    .save(flush:true)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And then later use the type in queries:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">List&lt;CastMember&gt; directors = CastMember.findAllByType("DIRECTED")</code></pre>
 </div>
 </div>
 </div>
