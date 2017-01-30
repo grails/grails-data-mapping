@@ -126,13 +126,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code><strong>static&nbsp;class</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.FormDataBuilder.html'>HttpClientRequestBuilder.FormDataBuilder</a></code></td>
-                            <td class="colLast"></code></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code><strong>static&nbsp;class</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.MultipartBuilder.html'>HttpClientRequestBuilder.MultipartBuilder</a></code></td>
-                            <td class="colLast">Helps with building multipart requests</code></td>
+                            <td class="colLast">Builds form data</code></td>
                         </tr>
                         
                     </table>
@@ -238,7 +232,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;java.util.Observable</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#createBodyWriter(groovy.lang.Closure)">createBodyWriter</a></strong>(groovy.lang.Closure callable)</code><br>//     * Builds a form
+                            <td class="colLast"><code><strong><a href="#createBodyWriter(groovy.lang.Closure)">createBodyWriter</a></strong>(groovy.lang.Closure callable)</code><br>//     * Builds a multipart form
 //     * @return this object
 //<DL><DT><B>Parameters:</B></DT><DD><code>formDefinition</code> -  The form definition
 //     *</DD></DL></td>
@@ -246,37 +240,47 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a></strong></code></td>
-                            <td class="colLast"><code><strong><a href="#header(java.lang.CharSequence, def)">header</a></strong>(java.lang.CharSequence name, java.lang.Object value)</code><br>Sets a request header</td>
+                            <td class="colLast"><code><strong><a href="#form(groovy.lang.Closure)">form</a></strong>(groovy.lang.Closure formDefinition)</code><br>Builds a form</td>
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#header(java.lang.CharSequence, def)">header</a></strong>(java.lang.CharSequence name, java.lang.Object value)</code><br>Sets a request header</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#json(groovy.lang.Closure)">json</a></strong>(groovy.lang.Closure callable)</code><br>Adds JSON to the body of the request</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#json(java.util.List)">json</a></strong>(java.util.List array)</code><br>Adds JSON to the body of the request</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#json(java.util.Map)">json</a></strong>(java.util.Map json)</code><br>Adds JSON to the body of the request</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#json(java.lang.String)">json</a></strong>(java.lang.String json)</code><br>Adds JSON to the body of the request</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#method(java.lang.CharSequence)">method</a></strong>(java.lang.CharSequence method)</code><br>Sets the method of the request</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#uri(java.lang.CharSequence)">uri</a></strong>(java.lang.CharSequence uri)</code><br>Sets the URI of the request</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withBody(groovy.lang.Closure)">withBody</a></strong>(groovy.lang.Closure callable)</code><br>Execute the given logic with receiving a write to write to</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -441,10 +445,19 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>protected&nbsp;java.util.Observable <strong>createBodyWriter</strong>(groovy.lang.Closure callable)</h4>
                                 <p>
-//     * Builds a form
+//     * Builds a multipart form
 //     *     <DL><DT><B>Returns:</B></DT><DD>this object
 //</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>formDefinition</code> -  The form definition
 //     *</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="form(groovy.lang.Closure)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a> <strong>form</strong>(@groovy.lang.DelegatesTo(FormDataBuilder) groovy.lang.Closure formDefinition)</h4>
+                                <p> Builds a form
+     <DL><DT><B>Returns:</B></DT><DD>this object</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>formDefinition</code> -  The form definition</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -507,6 +520,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <h4><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a> <strong>uri</strong>(java.lang.CharSequence uri)</h4>
                                 <p> Sets the URI of the request
      <DL><DT><B>Returns:</B></DT><DD>the request</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>uri</code> -  The uriTemplate of the request</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="withBody(groovy.lang.Closure)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a> <strong>withBody</strong>(@groovy.transform.stc.ClosureParams(value=SimpleType.class, options="java.io.BufferedWriter") groovy.lang.Closure callable)</h4>
+                                <p> Execute the given logic with receiving a write to write to
+     <DL><DT><B>Returns:</B></DT><DD>The builder</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable that accepts a BufferedWriter</DD></DL></p>
                             </li>
                         </ul>
                     

@@ -1211,7 +1211,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html#createAlias(java.lang.String, java.lang.String)" title="Method in AbstractDetachedCriteria">createAlias(String, String)</a></span> - Method in <a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html">AbstractDetachedCriteria</a>
 </dt><dd> <div class="block">If the underlying datastore supports aliases, then an alias is created for the given association</div></dd>
 <dt><span class="strong"><a href="grails/http/client/builder/HttpClientRequestBuilder.html#createBodyWriter(groovy.lang.Closure)" title="Method in HttpClientRequestBuilder">createBodyWriter(Closure)</a></span> - Method in <a href="grails/http/client/builder/HttpClientRequestBuilder.html">HttpClientRequestBuilder</a>
-</dt><dd> <div class="block">//     * Builds a form
+</dt><dd> <div class="block">//     * Builds a multipart form
 //     * @return this object
 //<DL><DT><B>Parameters:</B></DT><DD><code>formDefinition</code> -  The form definition
 //     *</DD></DL></div></dd>
@@ -2219,8 +2219,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">Uses field reflection or CGlib to improve performance</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/FieldEntityAccess.html#FieldEntityAccess(org.grails.datastore.mapping.model.PersistentEntity, java.lang.Object, org.springframework.core.convert.ConversionService)" title="Constructor in FieldEntityAccess">FieldEntityAccess(PersistentEntity, Object, ConversionService)</a></span> - Constructor in <a href="org/grails/datastore/mapping/reflect/FieldEntityAccess.html">FieldEntityAccess</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="grails/http/client/builder/HttpClientRequestBuilder.MultipartBuilder.html#file(java.lang.String, java.lang.String, java.lang.CharSequence, java.lang.String, java.nio.charset.Charset)" title="Method in HttpClientRequestBuilder.MultipartBuilder">file(String, String, CharSequence, String, Charset)</a></span> - Method in <a href="grails/http/client/builder/HttpClientRequestBuilder.MultipartBuilder.html">HttpClientRequestBuilder.MultipartBuilder</a>
-</dt><dd> <div class="block">Adds a file for the given name, filename and text</div></dd>
 <dt><span class="strong"><a href="grails/http/client/builder/HttpRequestBuilder.MultipartBuilder.html#file(java.lang.String, java.lang.String, java.lang.CharSequence, java.lang.String, java.nio.charset.Charset)" title="Method in HttpRequestBuilder.MultipartBuilder">file(String, String, CharSequence, String, Charset)</a></span> - Method in <a href="grails/http/client/builder/HttpRequestBuilder.MultipartBuilder.html">HttpRequestBuilder.MultipartBuilder</a>
 </dt><dd> <div class="block">Adds a file for the given name, filename and text</div></dd>
 <dt><span class="strong"><a href="grails/gorm/rx/CriteriaBuilder.html#find(groovy.lang.Closure)" title="Method in CriteriaBuilder">find(Closure)</a></span> - Method in <a href="grails/gorm/rx/CriteriaBuilder.html">CriteriaBuilder</a>
@@ -2490,6 +2488,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Sets an FORBIDDEN status</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/javax/GormValidatorAdapter.html#forExecutables()" title="Method in GormValidatorAdapter">forExecutables()</a></span> - Method in <a href="org/grails/datastore/gorm/validation/javax/GormValidatorAdapter.html">GormValidatorAdapter</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/http/client/builder/HttpClientRequestBuilder.html#form(groovy.lang.Closure)" title="Method in HttpClientRequestBuilder">form(Closure)</a></span> - Method in <a href="grails/http/client/builder/HttpClientRequestBuilder.html">HttpClientRequestBuilder</a>
+</dt><dd> <div class="block">Builds a form</div></dd>
 <dt><span class="strong"><a href="grails/http/client/builder/HttpRequestBuilder.html#form(groovy.lang.Closure)" title="Method in HttpRequestBuilder">form(Closure)</a></span> - Method in <a href="grails/http/client/builder/HttpRequestBuilder.html">HttpRequestBuilder</a>
 </dt><dd> <div class="block">Builds a form</div></dd>
 <dt><span class="strong"><a href="grails/http/MediaType.html#FORM" title="Field in MediaType">FORM</a></span> - Field in <a href="grails/http/MediaType.html">MediaType</a>
@@ -3952,11 +3952,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/rx/rest/RestDetachedCriteria.html#gtSome(java.lang.String, Closure<?>)" title="Method in RestDetachedCriteria">gtSome(String, Closure&lt;?&gt;)</a></span> - Method in <a href="grails/gorm/rx/rest/RestDetachedCriteria.html">RestDetachedCriteria</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="grails/http/client/builder/HttpClientRequestBuilder.MultipartBuilder.html#guessContentType(java.lang.String, boolean)" title="Method in HttpClientRequestBuilder.MultipartBuilder">guessContentType(String, boolean)</a></span> - Method in <a href="grails/http/client/builder/HttpClientRequestBuilder.MultipartBuilder.html">HttpClientRequestBuilder.MultipartBuilder</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/http/client/builder/HttpRequestBuilder.MultipartBuilder.html#guessContentType(java.lang.String, boolean)" title="Method in HttpRequestBuilder.MultipartBuilder">guessContentType(String, boolean)</a></span> - Method in <a href="grails/http/client/builder/HttpRequestBuilder.MultipartBuilder.html">HttpRequestBuilder.MultipartBuilder</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="grails/http/client/builder/HttpClientRequestBuilder.MultipartBuilder.html#guessIsText(java.lang.String)" title="Method in HttpClientRequestBuilder.MultipartBuilder">guessIsText(String)</a></span> - Method in <a href="grails/http/client/builder/HttpClientRequestBuilder.MultipartBuilder.html">HttpClientRequestBuilder.MultipartBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/http/client/builder/HttpRequestBuilder.MultipartBuilder.html#guessIsText(java.lang.String)" title="Method in HttpRequestBuilder.MultipartBuilder">guessIsText(String)</a></span> - Method in <a href="grails/http/client/builder/HttpRequestBuilder.MultipartBuilder.html">HttpRequestBuilder.MultipartBuilder</a>
 </dt><dd> <div class="block"></div></dd>
@@ -4104,12 +4100,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="grails/http/client/builder/HttpClientRequestBuilder.html" title="Class in grails.http.client.builder">HttpClientRequestBuilder</a></span> - Class in <a href="./grails/http/client/builder/package-summary.html">grails.http.client.builder</a>
 </dt><dd><div class="block">@author Graeme Rocher</div></dd>
 <dt><span class="strong"><a href="grails/http/client/builder/HttpClientRequestBuilder.FormDataBuilder.html" title="Class in grails.http.client.builder.HttpClientRequestBuilder">HttpClientRequestBuilder.FormDataBuilder</a></span> - Class in <a href="./grails/http/client/builder/package-summary.html">grails.http.client.builder</a>
-</dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="grails/http/client/builder/HttpClientRequestBuilder.FormDataBuilder.html#HttpClientRequestBuilder.FormDataBuilder(io.netty.handler.codec.http.multipart.HttpPostRequestEncoder, java.nio.charset.Charset, boolean)" title="Constructor in HttpClientRequestBuilder.FormDataBuilder">HttpClientRequestBuilder.FormDataBuilder(HttpPostRequestEncoder, Charset, boolean)</a></span> - Constructor in <a href="grails/http/client/builder/HttpClientRequestBuilder.FormDataBuilder.html">HttpClientRequestBuilder.FormDataBuilder</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="grails/http/client/builder/HttpClientRequestBuilder.MultipartBuilder.html" title="Class in grails.http.client.builder.HttpClientRequestBuilder">HttpClientRequestBuilder.MultipartBuilder</a></span> - Class in <a href="./grails/http/client/builder/package-summary.html">grails.http.client.builder</a>
-</dt><dd><div class="block">Helps with building multipart requests</div></dd>
-<dt><span class="strong"><a href="grails/http/client/builder/HttpClientRequestBuilder.MultipartBuilder.html#HttpClientRequestBuilder.MultipartBuilder(io.netty.handler.codec.http.multipart.HttpPostRequestEncoder, java.nio.charset.Charset)" title="Constructor in HttpClientRequestBuilder.MultipartBuilder">HttpClientRequestBuilder.MultipartBuilder(HttpPostRequestEncoder, Charset)</a></span> - Constructor in <a href="grails/http/client/builder/HttpClientRequestBuilder.MultipartBuilder.html">HttpClientRequestBuilder.MultipartBuilder</a>
+</dt><dd><div class="block">Builds form data</div></dd>
+<dt><span class="strong"><a href="grails/http/client/builder/HttpClientRequestBuilder.FormDataBuilder.html#HttpClientRequestBuilder.FormDataBuilder(java.nio.charset.Charset, boolean)" title="Constructor in HttpClientRequestBuilder.FormDataBuilder">HttpClientRequestBuilder.FormDataBuilder(Charset, boolean)</a></span> - Constructor in <a href="grails/http/client/builder/HttpClientRequestBuilder.FormDataBuilder.html">HttpClientRequestBuilder.FormDataBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/http/client/builder/HttpClientRequestBuilder.html#HttpClientRequestBuilder(io.reactivex.netty.protocol.http.client.HttpClientRequest, java.nio.charset.Charset)" title="Constructor in HttpClientRequestBuilder">HttpClientRequestBuilder(HttpClientRequest, Charset)</a></span> - Constructor in <a href="grails/http/client/builder/HttpClientRequestBuilder.html">HttpClientRequestBuilder</a>
 </dt><dd> <div class="block"></div></dd>
@@ -7419,8 +7411,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/http/client/builder/HttpClientRequestBuilder.FormDataBuilder.html#setProperty(java.lang.String, java.lang.Object)" title="Method in HttpClientRequestBuilder.FormDataBuilder">setProperty(String, Object)</a></span> - Method in <a href="grails/http/client/builder/HttpClientRequestBuilder.FormDataBuilder.html">HttpClientRequestBuilder.FormDataBuilder</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="grails/http/client/builder/HttpClientRequestBuilder.MultipartBuilder.html#setProperty(java.lang.String, java.lang.Object)" title="Method in HttpClientRequestBuilder.MultipartBuilder">setProperty(String, Object)</a></span> - Method in <a href="grails/http/client/builder/HttpClientRequestBuilder.MultipartBuilder.html">HttpClientRequestBuilder.MultipartBuilder</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/http/client/builder/HttpRequestBuilder.FormDataBuilder.html#setProperty(java.lang.String, java.lang.Object)" title="Method in HttpRequestBuilder.FormDataBuilder">setProperty(String, Object)</a></span> - Method in <a href="grails/http/client/builder/HttpRequestBuilder.FormDataBuilder.html">HttpRequestBuilder.FormDataBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/http/client/builder/HttpRequestBuilder.MultipartBuilder.html#setProperty(java.lang.String, java.lang.Object)" title="Method in HttpRequestBuilder.MultipartBuilder">setProperty(String, Object)</a></span> - Method in <a href="grails/http/client/builder/HttpRequestBuilder.MultipartBuilder.html">HttpRequestBuilder.MultipartBuilder</a>
@@ -8410,6 +8400,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/gorm/rx/api/multitenancy/TenantDelegatingRxGormOperations.html#whereLazy(groovy.lang.Closure)" title="Method in TenantDelegatingRxGormOperations">whereLazy(Closure)</a></span> - Method in <a href="org/grails/gorm/rx/api/multitenancy/TenantDelegatingRxGormOperations.html">TenantDelegatingRxGormOperations</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/http/client/builder/HttpClientRequestBuilder.html#withBody(groovy.lang.Closure)" title="Method in HttpClientRequestBuilder">withBody(Closure)</a></span> - Method in <a href="grails/http/client/builder/HttpClientRequestBuilder.html">HttpClientRequestBuilder</a>
+</dt><dd> <div class="block">Execute the given logic with receiving a write to write to</div></dd>
 <dt><span class="strong"><a href="grails/gorm/rx/RxEntity.html#withConnection(java.lang.String, Closure<T>)" title="Method in RxEntity">withConnection(String, Closure&lt;T&gt;)</a></span> - Method in <a href="grails/gorm/rx/RxEntity.html">RxEntity</a>
 </dt><dd> <div class="block">Switches to given named connection within the context of the closure. </div></dd>
 <dt><span class="strong"><a href="grails/gorm/rx/rest/RxRestEntity.html#withConnection(java.lang.String, Closure<T>)" title="Method in RxRestEntity">withConnection(String, Closure&lt;T&gt;)</a></span> - Method in <a href="grails/gorm/rx/rest/RxRestEntity.html">RxRestEntity</a>
