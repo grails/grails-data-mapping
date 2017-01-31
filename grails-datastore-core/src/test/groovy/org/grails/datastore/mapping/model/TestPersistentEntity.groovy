@@ -1,5 +1,6 @@
 package org.grails.datastore.mapping.model
 
+import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.config.Entity
 
 /**
@@ -7,6 +8,7 @@ import org.grails.datastore.mapping.config.Entity
  * @since 1.1
  */
 @SuppressWarnings("unchecked")
+@CompileStatic
 class TestPersistentEntity extends AbstractPersistentEntity {
     private TestClassMapping classMapping
 

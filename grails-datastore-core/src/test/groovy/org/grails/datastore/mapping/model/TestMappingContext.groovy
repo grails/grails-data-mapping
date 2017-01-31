@@ -1,11 +1,13 @@
 package org.grails.datastore.mapping.model
 
+import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy
 
 /**
  * @author Graeme Rocher
  * @since 1.0
  */
+@CompileStatic
 class TestMappingContext extends AbstractMappingContext {
     MappingFactory mappingFactory = new TestMappedPropertyFactory()
     MappingConfigurationStrategy mappingSyntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory)

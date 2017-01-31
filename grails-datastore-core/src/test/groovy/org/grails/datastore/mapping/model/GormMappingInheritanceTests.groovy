@@ -9,6 +9,18 @@ import static org.junit.Assert.*
  * Tests for correct mapping of entities with inheritance.
  */
 class GormMappingInheritanceTests {
+
+    @Test
+    void testInheritedMultiLevelMapping() {
+        def context = new TestMappingContext()
+        context.addPersistentEntities(DerivedEntityChildA, DerivedEntity, DerivedEntityChildB, DerivedEntityChildC)
+        assertEquals 2, context.persistentEntitiesByDiscriminator.size()
+        def secondEntityMappingKey = context.persistentEntitiesByDiscriminator.keySet().find { it.decapitalizedName == 'secondEntity' }
+        assertNotNull secondEntityMappingKey
+        def secondEntityMappings = context.persistentEntitiesByDiscriminator.get(secondEntityMappingKey)
+        assertEquals 4, secondEntityMappings.size()
+    }
+
     @Test
     void testInheritedMappedBy() {
         def context = new TestMappingContext()
@@ -165,3 +177,14 @@ class MappingTest2 extends MappingTest {
     }
 }
 
+@grails.persistence.Entity
+class DerivedEntityChildA extends DerivedEntity {
+}
+
+@grails.persistence.Entity
+class DerivedEntityChildB extends DerivedEntity {
+}
+
+@grails.persistence.Entity
+class DerivedEntityChildC extends DerivedEntity {
+}
