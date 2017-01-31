@@ -265,7 +265,7 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
     }
 
     public Collection<PersistentEntity> addPersistentEntities(Class... javaClasses) {
-        Collection<PersistentEntity> entities = new ArrayList<PersistentEntity>();
+        Collection<PersistentEntity> entities = new ArrayList<>();
 
         for (Class javaClass : javaClasses) {
             PersistentEntity entity = createPersistentEntity(javaClass);
@@ -367,6 +367,10 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
             directChildren.add(entity);
 
             while (parent != null) {
+                if(!parent.isInitialized()) {
+                    parent.initialize();
+                }
+
                 Map<String, PersistentEntity> children = persistentEntitiesByDiscriminator.get(parent);
                 if (children == null) {
                     children = new ConcurrentHashMap<>();
