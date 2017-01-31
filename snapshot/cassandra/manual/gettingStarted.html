@@ -437,23 +437,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="paragraph">
-<p>Note that if you get exceptions during startup or execution for newer versions of Grails 3.x (3.1 and above) you may need to enforce the dependencies:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">dependencies {
-    compile 'org.grails.plugins:cassandra:VERSION'
-    compile("com.datastax.cassandra:cassandra-driver-core:2.0.4")
-    compile "org.springframework.data:spring-data-commons:1.8.4.RELEASE"
-    compile("org.springframework.data:spring-data-cassandra:1.0.4.RELEASE") {
-        exclude group:'org.apache.cassandra',module:'cassandra-all'
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
 <p>The next step is to setup a running Cassandra server.
-Refer to the <a href="#ref-orgcassandra-getting-started-Apache Cassandra Getting Started Guide">Apache Cassandra Getting Started Guide</a> for an explanation on how to setup and startup a Cassandra instance.
+Refer to the <a href="http://cassandra.apache.org/doc/latest/getting_started/index.html">Apache Cassandra Getting Started Guide</a> for an explanation on how to setup and startup a Cassandra instance.
 Once installed, starting Cassandra is typically a matter of executing the following command:</p>
 </div>
 <div class="listingblock">
@@ -491,10 +476,38 @@ INFO 00:11:17,042 Listening for thrift clients...</code></pre>
 }</code></pre>
 </div>
 </div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Spring Boot 1.4.x and above includes <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-nosql.html#boot-features-cassandra">Cassandra Auto Configuration</a> and by default in Grails 3.2.x above you will need to configure Cassandra using the appropriate Spring Boot configuration unless you exclude the auto configuration in your <code>Application</code> class. For example:
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import org.springframework.boot.autoconfigure.cassandra.*
+import org.springframework.boot.autoconfigure.data.cassandra.*
+import grails.boot.GrailsApp
+import grails.boot.config.GrailsAutoConfiguration
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration
+
+@EnableAutoConfiguration(exclude=[CassandraAutoConfiguration, CassandraDataAutoConfiguration])
+class Application extends GrailsAutoConfiguration {
+    static void main(String[] args) {
+        GrailsApp.run(Application, args)
+    }
+}</code></pre>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-01-23 16:51:23 UTC
+Last updated 2017-01-31 15:39:35 UTC
 </div>
 </div>
 </body>
