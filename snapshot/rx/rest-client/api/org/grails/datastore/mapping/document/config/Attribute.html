@@ -87,7 +87,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
     <div class="subTitle">Package: <strong>org.grails.datastore.mapping.document.config</strong></div>
 
-    <h2 title="[Java] Class Attribute" class="title">[Java] Class Attribute</h2>
+    <h2 title="[Groovy] Class Attribute" class="title">[Groovy] Class Attribute</h2>
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
@@ -141,6 +141,16 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#attr(java.lang.String)">attr</a></strong>(java.lang.String name)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#attribute(java.lang.String)">attribute</a></strong>(java.lang.String name)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#setAttr(java.lang.String)">setAttr</a></strong>(java.lang.String name)</code><br></td>
                         </tr>
                         
@@ -165,7 +175,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../../../org/grails/datastore/mapping/config/Property.html'>Property</a></strong></code></td>
-                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/config/Property.html#clone()'>clone</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#getEnumType()'>getEnumType</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#getEnumTypeObject()'>getEnumTypeObject</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#getLazy()'>getLazy</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#getName()'>getName</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#getUniquenessGroup()'>getUniquenessGroup</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#isLazy()'>isLazy</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#isUnique()'>isUnique</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#isUniqueWithinGroup()'>isUniqueWithinGroup</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#setEnumType(javax.persistence.EnumType)'>setEnumType</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#setEnumType(java.lang.String)'>setEnumType</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#setFetch(java.lang.String)'>setFetch</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#setLazy(java.lang.Boolean)'>setLazy</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#setName(java.lang.String)'>setName</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#setRange(groovy.lang.ObjectRange)'>setRange</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#setSize(groovy.lang.IntRange)'>setSize</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#setUnique(boolean)'>setUnique</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#setUnique(java.lang.String)'>setUnique</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#setUnique(List<String>)'>setUnique</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#unique(boolean)'>unique</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#unique(java.lang.String)'>unique</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#unique(List<String>)'>unique</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/config/Property.html#clone()'>clone</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#configureExisting(T, groovy.lang.Closure)'>configureExisting</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#configureExisting(T, java.util.Map)'>configureExisting</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#getEnumType()'>getEnumType</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#getEnumTypeObject()'>getEnumTypeObject</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#getLazy()'>getLazy</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#getName()'>getName</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#getUniquenessGroup()'>getUniquenessGroup</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#isLazy()'>isLazy</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#isUnique()'>isUnique</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#isUniqueWithinGroup()'>isUniqueWithinGroup</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#setEnumType(javax.persistence.EnumType)'>setEnumType</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#setEnumType(java.lang.String)'>setEnumType</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#setFetch(java.lang.String)'>setFetch</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#setLazy(java.lang.Boolean)'>setLazy</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#setName(java.lang.String)'>setName</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#setRange(groovy.lang.ObjectRange)'>setRange</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#setSize(groovy.lang.IntRange)'>setSize</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#setUnique(boolean)'>setUnique</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#setUnique(java.lang.String)'>setUnique</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#setUnique(List<String>)'>setUnique</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#unique(boolean)'>unique</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#unique(java.lang.String)'>unique</a>, <a href='../../../../../../org/grails/datastore/mapping/config/Property.html#unique(List<String>)'>unique</a></code></td>
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class java.lang.Object</strong></code></td>
@@ -203,10 +213,26 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Method Detail</h3>
                     
+                        <a name="attr(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>void <strong>attr</strong>(java.lang.String name)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="attribute(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>void <strong>attribute</strong>(java.lang.String name)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="setAttr(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>setAttr</strong>(java.lang.String name)</h4>
+                                <h4>void <strong>setAttr</strong>(java.lang.String name)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -214,7 +240,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="setAttribute(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>setAttribute</strong>(java.lang.String name)</h4>
+                                <h4>void <strong>setAttribute</strong>(java.lang.String name)</h4>
                                 <p></p>
                             </li>
                         </ul>
