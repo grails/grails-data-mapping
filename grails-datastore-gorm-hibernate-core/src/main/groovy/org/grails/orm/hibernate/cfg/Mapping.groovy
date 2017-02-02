@@ -33,7 +33,7 @@ import org.springframework.validation.DataBinder
  */
 @CompileStatic
 @Builder(builderStrategy = SimpleStrategy, prefix = '')
-class Mapping extends Entity {
+class Mapping extends Entity<PropertyConfig> {
 
     /**
      * Custom hibernate user types
@@ -115,6 +115,7 @@ class Mapping extends Entity {
     /**
      * Obtains a PropertyConfig object for the given name
      */
+    @Override
     PropertyConfig getPropertyConfig(String name) { columns[name] }
 
     /**
@@ -147,6 +148,10 @@ class Mapping extends Entity {
         this.tablePerConcreteClass = tablePerConcreteClass
     }
 
+    @Override
+    Map<String, PropertyConfig> getPropertyConfigs() {
+        return columns
+    }
     /**
      * Define the table name
      * @param name The table name
@@ -183,6 +188,7 @@ class Mapping extends Entity {
      * @param identityConfig The id config
      * @return This mapping
      */
+    @Override
     Mapping id(Map identityConfig) {
         if(identity instanceof Identity) {
             Identity.configureExisting((Identity)identity, identityConfig)
@@ -194,6 +200,7 @@ class Mapping extends Entity {
      * @param identityConfig The id config
      * @return This mapping
      */
+    @Override
     Mapping id(@DelegatesTo(Identity) Closure identityConfig) {
         if(identity instanceof Identity) {
             Identity.configureExisting((Identity)identity, identityConfig)
@@ -206,6 +213,7 @@ class Mapping extends Entity {
      * @param identityConfig The id config
      * @return This mapping
      */
+
     Mapping id(CompositeIdentity compositeIdentity) {
         this.identity = compositeIdentity
         return this
@@ -336,18 +344,7 @@ class Mapping extends Entity {
      * @param isVersioned True if a version property should be configured
      */
     @CompileStatic
-    Mapping version(@DelegatesTo(PropertyConfig) Closure versionConfig) {
-        PropertyConfig pc = getOrInitializePropertyConfig(GormProperties.VERSION)
-        PropertyConfig.configureExisting(pc, versionConfig)
-        return this
-    }
-    /**
-     * <p>Configures the name of the version column
-     * <code> { version 'foo' }
-     *
-     * @param isVersioned True if a version property should be configured
-     */
-    @CompileStatic
+    @Override
     Mapping version(Map versionConfig) {
         PropertyConfig pc = getOrInitializePropertyConfig(GormProperties.VERSION)
         PropertyConfig.configureExisting(pc, versionConfig)
@@ -367,16 +364,6 @@ class Mapping extends Entity {
         return this
     }
 
-    /**
-     * Sets the tenant id
-     *
-     * @param tenantIdProperty The tenant id property
-     */
-    Mapping tenantId(String tenantIdProperty) {
-        PropertyConfig pc = getOrInitializePropertyConfig(GormProperties.TENANT_IDENTITY)
-        pc.name == tenantIdProperty
-        return this
-    }
 
     /**
      * Configure a property
@@ -384,6 +371,7 @@ class Mapping extends Entity {
      * @param propertyConfig The property config
      * @return This mapping
      */
+    @Override
     Mapping property(String name, @DelegatesTo(PropertyConfig) Closure propertyConfig) {
         PropertyConfig pc = getOrInitializePropertyConfig(name)
         PropertyConfig.configureExisting(pc, propertyConfig)
@@ -396,6 +384,7 @@ class Mapping extends Entity {
      * @param propertyConfig The property config
      * @return This mapping
      */
+    @Override
     Mapping property(String name, Map propertyConfig) {
         PropertyConfig pc = getOrInitializePropertyConfig(name)
         PropertyConfig.configureExisting(pc, propertyConfig)
@@ -408,6 +397,7 @@ class Mapping extends Entity {
      * @param propertyConfig The property config
      * @return This mapping
      */
+    @Override
     PropertyConfig property(@DelegatesTo(PropertyConfig) Closure propertyConfig) {
         if(columns.containsKey('*')) {
             PropertyConfig cloned = cloneGlobalConstraint()
@@ -424,6 +414,7 @@ class Mapping extends Entity {
      * @param propertyConfig The property config
      * @return This mapping
      */
+    @Override
     PropertyConfig property( Map propertyConfig) {
         if(columns.containsKey('*')) {
             // apply global constraints constraints
@@ -471,6 +462,8 @@ class Mapping extends Entity {
         config.call()
         return mapping
     }
+
+    @Override
     def propertyMissing(String name, Object val) {
         if(val instanceof Closure) {
             property(name, (Closure)val)
@@ -484,6 +477,7 @@ class Mapping extends Entity {
     }
 
     @CompileDynamic
+    @Override
     def methodMissing(String name, Object args) {
         if(args && args.getClass().isArray()) {
             if(args[0] instanceof Closure) {
@@ -513,6 +507,7 @@ class Mapping extends Entity {
         }
     }
 
+    @Override
     protected PropertyConfig getOrInitializePropertyConfig(String name) {
         PropertyConfig pc = columns[name]
         if(pc == null && columns.containsKey('*')) {
@@ -535,6 +530,7 @@ class Mapping extends Entity {
         return pc
     }
 
+    @Override
     protected PropertyConfig cloneGlobalConstraint() {
         // apply global constraints constraints
         PropertyConfig globalConstraints = columns.get('*')

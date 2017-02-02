@@ -23,8 +23,4 @@ interface MappingDefinition<E extends Entity, P extends Property> {
      */
     E build()
 
-    /**
-     * @return The properties of this definition
-     */
-    Map<String,P> getProperties()
 }

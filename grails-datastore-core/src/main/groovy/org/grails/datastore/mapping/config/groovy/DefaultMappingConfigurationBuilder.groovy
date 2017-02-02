@@ -41,6 +41,13 @@ class DefaultMappingConfigurationBuilder implements MappingConfigurationBuilder 
         propertyClass.metaClass.propertyMissing = { String name, val -> }
     }
 
+    Map<String, Property> getProperties() {
+        if(!target.propertyConfigs.isEmpty()) {
+            properties.putAll( target.propertyConfigs )
+        }
+        return properties
+    }
+
     def invokeMethod(String name, args) {
         if (args.size() == 0) {
             return

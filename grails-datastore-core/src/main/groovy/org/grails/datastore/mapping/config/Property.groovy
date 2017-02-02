@@ -18,6 +18,8 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.builder.Builder
 import groovy.transform.builder.SimpleStrategy
+import org.springframework.beans.MutablePropertyValues
+import org.springframework.validation.DataBinder
 
 import javax.persistence.AccessType
 import javax.persistence.EnumType
@@ -122,7 +124,7 @@ class Property implements Cloneable {
     }
 
     Boolean isLazy() {
-        return lazy
+        return lazy == Boolean.TRUE
     }
 
     void setLazy(Boolean lazy) {
@@ -243,5 +245,31 @@ class Property implements Cloneable {
 
     void setEnumType(String enumType) {
         this.enumType = EnumType.valueOf(enumType.toUpperCase())
+    }
+
+    /**
+     * Configures an existing PropertyConfig instance
+     *
+     * @param config The configuration
+     * @return The new instance
+     */
+    static <T extends Property>  T configureExisting(T property, @DelegatesTo(Property) Closure config) {
+        config.setDelegate(property)
+        config.setResolveStrategy(Closure.DELEGATE_ONLY)
+        config.call()
+        return property
+    }
+
+    /**
+     * Configures an existing PropertyConfig instance
+     *
+     * @param config The configuration
+     * @return The new instance
+     */
+    static <T extends Property> T configureExisting(T property, Map config) {
+        DataBinder dataBinder = new DataBinder(property)
+        dataBinder.bind(new MutablePropertyValues(config))
+
+        return property
     }
 }

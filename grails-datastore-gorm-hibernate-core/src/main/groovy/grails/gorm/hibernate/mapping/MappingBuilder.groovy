@@ -48,13 +48,5 @@ class MappingBuilder {
             }
             return mapping
         }
-
-        @Override
-        Map<String, PropertyConfig> getProperties() {
-            if(mapping == null) {
-                throw new IllegalStateException("Call configure(..) or build() first")
-            }
-            return mapping.columns
-        }
     }
 }

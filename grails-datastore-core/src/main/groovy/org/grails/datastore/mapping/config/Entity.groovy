@@ -14,10 +14,12 @@
  */
 package org.grails.datastore.mapping.config
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.builder.Builder
 import groovy.transform.builder.SimpleStrategy
 import org.grails.datastore.mapping.core.connections.ConnectionSource
+import org.grails.datastore.mapping.model.config.GormProperties
 
 /**
  * Base class for classes returned from {@link org.grails.datastore.mapping.model.ClassMapping#getMappedForm()}
@@ -27,18 +29,24 @@ import org.grails.datastore.mapping.core.connections.ConnectionSource
  */
 @CompileStatic
 @Builder(builderStrategy = SimpleStrategy, prefix = '')
-class Entity {
+class Entity<P extends Property> {
 
     /**
      * @deprecated Use {@link ConnectionSource#DEFAULT} instead
      */
     @Deprecated
     public static final String ALL_DATA_SOURCES = ConnectionSource.ALL
+
     /**
      * @deprecated Use {@link ConnectionSource#ALL} instead
      */
     @Deprecated
     public static final String DEFAULT_DATA_SOURCE = ConnectionSource.DEFAULT
+
+    /**
+     * The configuration for each property
+     */
+    protected Map<String, P> propertyConfigs = [:]
 
     /**
      * @return Whether the entity state should be held in the session or not
@@ -63,6 +71,12 @@ class Entity {
      */
     boolean version = true
 
+    /**
+     * @return The property configurations
+     */
+    Map<String, P> getPropertyConfigs() {
+        return propertyConfigs
+    }
 
     Object getSort() {
         return defaultSort
@@ -132,5 +146,213 @@ class Entity {
      */
     boolean isVersioned() {
         return version
+    }
+
+    /**
+     * Get a property config
+     * @param name The name of the property
+     * @return
+     */
+    P getPropertyConfig(String name) { propertyConfigs[name] }
+
+    /**
+     * Define the identity config
+     * @param identityConfig The id config
+     * @return This mapping
+     */
+    Entity<P> id(Map identityConfig) {
+        Property.configureExisting(
+            getOrInitializePropertyConfig(GormProperties.IDENTITY),
+            identityConfig
+        )
+        return this
+    }
+    /**
+     * Define the identity config
+     * @param identityConfig The id config
+     * @return This mapping
+     */
+    Entity<P> id(@DelegatesTo(P) Closure identityConfig) {
+        Property.configureExisting(
+                getOrInitializePropertyConfig(GormProperties.IDENTITY),
+                identityConfig
+        )
+        return this
+    }
+    /**
+     * <p>Configures the name of the version column
+     * <code> { version 'foo' }
+     *
+     * @param isVersioned True if a version property should be configured
+     */
+    Entity version(@DelegatesTo(P) Closure versionConfig) {
+        P pc = getOrInitializePropertyConfig(GormProperties.VERSION)
+        Property.configureExisting(pc, versionConfig)
+        return this
+    }
+    /**
+     * <p>Configures the name of the version column
+     * <code> { version 'foo' }
+     *
+     * @param isVersioned True if a version property should be configured
+     */
+    Entity version(Map versionConfig) {
+        P pc = getOrInitializePropertyConfig(GormProperties.VERSION)
+        Property.configureExisting(pc, versionConfig)
+        return this
+    }
+
+    /**
+     * Sets the tenant id
+     *
+     * @param tenantIdProperty The tenant id property
+     */
+    Entity tenantId(String tenantIdProperty) {
+        P pc = getOrInitializePropertyConfig(GormProperties.TENANT_IDENTITY)
+        pc.name == tenantIdProperty
+        return this
+    }
+    /**
+     * Configure a property
+     * @param name The name of the property
+     * @param propertyConfig The property config
+     * @return This mapping
+     */
+    Entity property(String name, @DelegatesTo(P) Closure propertyConfig) {
+        P pc = getOrInitializePropertyConfig(name)
+        Property.configureExisting(pc, propertyConfig)
+        return this
+    }
+
+    /**
+     * Configure a property
+     * @param name The name of the property
+     * @param propertyConfig The property config
+     * @return This mapping
+     */
+    Entity property(String name, Map propertyConfig) {
+        P pc = getOrInitializePropertyConfig(name)
+        Property.configureExisting(pc, propertyConfig)
+        return this
+    }
+
+    /**
+     * Configure a new property
+     * @param name The name of the property
+     * @param propertyConfig The property config
+     * @return This mapping
+     */
+    P property(@DelegatesTo(P) Closure propertyConfig) {
+        if(propertyConfigs.containsKey('*')) {
+            P cloned = cloneGlobalConstraint()
+            return Property.configureExisting(cloned, propertyConfig)
+        }
+        else {
+            P prop = newProperty()
+            return Property.configureExisting(prop, propertyConfig)
+        }
+    }
+
+    /**
+     * Configure a new property
+     * @param name The name of the property
+     * @param propertyConfig The property config
+     * @return This mapping
+     */
+    P property( Map propertyConfig) {
+        if(propertyConfigs.containsKey('*')) {
+            // apply global constraints constraints
+            P cloned = cloneGlobalConstraint()
+            return Property.configureExisting(cloned, propertyConfig)
+        }
+        else {
+            P prop = newProperty()
+            return Property.configureExisting(prop, propertyConfig)
+        }
+    }
+
+    /**
+     * Configures an existing Mapping instance
+     *
+     * @param config The configuration
+     * @return The new instance
+     */
+    static <T extends Entity> T configureExisting(T mapping, @DelegatesTo(T) Closure config) {
+        config.setDelegate(mapping)
+        config.setResolveStrategy(Closure.DELEGATE_ONLY)
+        config.call()
+        return mapping
+    }
+
+    def propertyMissing(String name, Object val) {
+        if(val instanceof Closure) {
+            property(name, (Closure)val)
+        }
+        else if(val instanceof P) {
+            propertyConfigs[name] =((P)val)
+        }
+        else {
+            throw new MissingPropertyException(name, Entity)
+        }
+    }
+
+    @CompileDynamic
+    def methodMissing(String name, Object args) {
+        if(args && args.getClass().isArray()) {
+            if(args[0] instanceof Closure) {
+                property(name, (Closure)args[0])
+            }
+            else if(args[0] instanceof P) {
+                propertyConfigs[name] = (P)args[0]
+            }
+            else if(args[0] instanceof Map) {
+                P property = getOrInitializePropertyConfig(name)
+                Map namedArgs = (Map) args[0]
+                if(args[-1] instanceof Closure) {
+                    Property.configureExisting(
+                            property,
+                            ((Closure)args[-1])
+                    )
+
+                }
+                Property.configureExisting(property, namedArgs)
+            }
+            else {
+                throw new MissingMethodException(name, getClass(), args)
+            }
+        }
+        else {
+            throw new MissingMethodException(name, getClass(), args)
+        }
+    }
+
+    protected P getOrInitializePropertyConfig(String name) {
+        P pc = propertyConfigs[name]
+        if(pc == null && propertyConfigs.containsKey('*')) {
+            // apply global constraints constraints
+            P globalConstraints = propertyConfigs.get('*')
+            if(globalConstraints != null) {
+                pc = (P)globalConstraints.clone()
+            }
+        }
+        else {
+            pc = propertyConfigs[name]
+        }
+        if (pc == null) {
+            pc = newProperty()
+            propertyConfigs[name] = pc
+        }
+        return pc
+    }
+
+    protected P newProperty() {
+        (P)new Property()
+    }
+
+    protected P cloneGlobalConstraint() {
+        // apply global constraints constraints
+        P globalConstraints = propertyConfigs.get('*')
+        P cloned = (P) globalConstraints.clone()
+        return cloned
     }
 }

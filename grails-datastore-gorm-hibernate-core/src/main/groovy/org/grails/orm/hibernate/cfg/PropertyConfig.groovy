@@ -218,7 +218,7 @@ class PropertyConfig extends Property {
     void setUnique(boolean unique) {
         super.setUnique(unique)
         if(columns.size() == 1) {
-            columns[0].unique = true
+            columns[0].unique = unique
         }
     }
     /**
