@@ -9,6 +9,7 @@ grails.mongodb
 grails.mongodb.api
 grails.mongodb.bootstrap
 grails.mongodb.geo
+grails.mongodb.mapping
 grails.plugins.mongodb
 grails.plugins.rx.mongodb
 grails.test.mongodb
@@ -87,7 +88,6 @@ org.grails.datastore.mapping.mongo.config
 org.grails.datastore.mapping.mongo.connections
 org.grails.datastore.mapping.mongo.engine
 org.grails.datastore.mapping.mongo.engine.codecs
-org.grails.datastore.mapping.mongo.query
 org.grails.datastore.mapping.multitenancy
 org.grails.datastore.mapping.multitenancy.exceptions
 org.grails.datastore.mapping.multitenancy.resolvers
