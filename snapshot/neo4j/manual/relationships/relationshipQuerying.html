@@ -455,10 +455,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
     from.name == "Keanu"
 } <i class="conum" data-value="1"></i><b>(1)</b>
 int totalKeanuMovies = baseQuery.projections {
-    countDistinct("movie.title")
+    countDistinct("to.title")
 }.get() <i class="conum" data-value="2"></i><b>(2)</b>
 
-List&lt;String&gt; keanuMovieTitles = baseQuery.property('movie.title').list() <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+List&lt;String&gt; keanuMovieTitles = baseQuery.property('to.title').list() <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">

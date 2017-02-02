@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;Method&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;Method&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -87,7 +87,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
     <div class="subTitle">Package: <strong>org.grails.datastore.gorm.neo4j.mapping.config</strong></div>
 
-    <h2 title="[Java] Class NodeConfig" class="title">[Java] Class NodeConfig</h2>
+    <h2 title="[Groovy] Class NodeConfig" class="title">[Groovy] Class NodeConfig</h2>
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
@@ -127,7 +127,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                                                 <tr class="altColor">
                             <td class="colFirst"><strong><code>class <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></code></strong></td>
-                            <td class="colLast"><code><a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#ALL_DATA_SOURCES'>ALL_DATA_SOURCES</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#DEFAULT_DATA_SOURCE'>DEFAULT_DATA_SOURCE</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#ALL_DATA_SOURCES'>ALL_DATA_SOURCES</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#DEFAULT_DATA_SOURCE'>DEFAULT_DATA_SOURCE</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#propertyConfigs'>propertyConfigs</a></code></td>
                         </tr>
 
                     </table>
@@ -139,6 +139,32 @@ if (location.href.indexOf('is-external=true') == -1) {
 
         <!-- =========== PROPERTY SUMMARY =========== -->
         
+         <ul class="blockList">
+                <li class="blockList"><a name="property_summary"><!--   --></a>
+                    <h3>Properties Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Properties Summary table, listing nested classes, and an explanation">
+                        <caption><span>Properties</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Type</th>
+                            <th class="colLast" scope="col">Name and description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#dynamicAssociations">dynamicAssociations</a></code><br>Whether this entity supports dynamic associations. </td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>java.lang.Object</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#labels">labels</a></code><br>@return The label definitions for the entity</td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+                </li>
+            </ul>
+        
 
         <!-- =========== ELEMENT SUMMARY =========== -->
         
@@ -148,40 +174,6 @@ if (location.href.indexOf('is-external=true') == -1) {
         
         <!-- ========== METHOD SUMMARY =========== -->
         <ul class="blockList">
-            
-            <li class="blockList"><a name="method_summary"><!--   --></a>
-                    <h3>Methods Summary</h3>
-                    <ul class="blockList">
-                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Methods Summary table">
-                        <caption><span>Methods</span><span class="tabEnd">&nbsp;</span></caption>
-                        <tr>
-                            <th class="colFirst" scope="col">Type</th>
-                            <th class="colLast" scope="col">Name and description</th>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code>java.lang.Object</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#getLabels()">getLabels</a></strong>()</code><br>@return The label definitions for the entity</td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code>boolean</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#isDynamicAssociations()">isDynamicAssociations</a></strong>()</code><br>Whether this entity supports dynamic associations. </td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#setDynamicAssociations(boolean)">setDynamicAssociations</a></strong>(boolean dynamicAssociations)</code><br>@see #isDynamicAssociations()</td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#setLabels(java.lang.Object)">setLabels</a></strong>(java.lang.Object labels)</code><br>Sets the label definition</td>
-                        </tr>
-                        
-                    </table>
-                   </ul>
-              </li>
             
             <li class="blockList"><a name="method_summary"><!--   --></a>
                     <h3>Inherited Methods Summary</h3>
@@ -195,7 +187,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></strong></code></td>
-                            <td class="colLast"><code><a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#connection(java.lang.String)'>connection</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#connections(java.lang.String)'>connections</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#connections(List<String>)'>connections</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#datasource(java.lang.String)'>datasource</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#getSort()'>getSort</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#isVersioned()'>isVersioned</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#setSort(java.lang.Object)'>setSort</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#cloneGlobalConstraint()'>cloneGlobalConstraint</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#configureExisting(T, groovy.lang.Closure)'>configureExisting</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#connection(java.lang.String)'>connection</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#connections(java.lang.String)'>connections</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#connections(List<String>)'>connections</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#datasource(java.lang.String)'>datasource</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#getOrInitializePropertyConfig(java.lang.String)'>getOrInitializePropertyConfig</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#getPropertyConfig(java.lang.String)'>getPropertyConfig</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#getPropertyConfigs()'>getPropertyConfigs</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#getSort()'>getSort</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#id(java.util.Map)'>id</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#id(groovy.lang.Closure)'>id</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#isVersioned()'>isVersioned</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#methodMissing(java.lang.String, java.lang.Object)'>methodMissing</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#newProperty()'>newProperty</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#property(java.lang.String, groovy.lang.Closure)'>property</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#property(java.lang.String, java.util.Map)'>property</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#property(groovy.lang.Closure)'>property</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#property(java.util.Map)'>property</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#propertyMissing(java.lang.String, java.lang.Object)'>propertyMissing</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#setSort(java.lang.Object)'>setSort</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#tenantId(java.lang.String)'>tenantId</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#version(groovy.lang.Closure)'>version</a>, <a href='../../../../../../../org/grails/datastore/mapping/config/Entity.html#version(java.util.Map)'>version</a></code></td>
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class java.lang.Object</strong></code></td>
@@ -219,33 +211,17 @@ if (location.href.indexOf('is-external=true') == -1) {
             
 
             
-
-            
-
-            
-
-
-            
-            <!-- =========== METHOD DETAIL =========== -->
+            <!-- =========== PROPERTY DETAIL =========== -->
             <ul class="blockList">
-                <li class="blockList"><a name="method_detail">
+                <li class="blockList"><a name="prop_detail">
                     <!--   -->
                 </a>
-                    <h3>Method Detail</h3>
+                    <h3>Property Detail</h3>
                     
-                        <a name="getLabels()"><!-- --></a>
+                        <a name="dynamicAssociations"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;java.lang.Object <strong>getLabels</strong>()</h4>
-                                <p>
-     <DL><DT><B>Returns:</B></DT><DD>The label definitions for the entity</DD></DL></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="isDynamicAssociations()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>public&nbsp;boolean <strong>isDynamicAssociations</strong>()</h4>
+                                <h4>boolean <strong>dynamicAssociations</strong></h4>
                                 <p> Whether this entity supports dynamic associations. The default is false. Setting this to true will allow Grails to load dynamic relationships, however
  at the cost of N+1. For each loaded entity Grails has to execute a separate query to establish the associations. This is contrary to non-dynamic associations
  which can be loaded using an OPTIONAL MATCH
@@ -253,26 +229,24 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="setDynamicAssociations(boolean)"><!-- --></a>
+                        <a name="labels"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>setDynamicAssociations</strong>(boolean dynamicAssociations)</h4>
+                                <h4>java.lang.Object <strong>labels</strong></h4>
                                 <p>
-     <DL><DT><B>See Also:</B></DT><DD><a href='#isDynamicAssociations()'>isDynamicAssociations()</a></DD></DL></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="setLabels(java.lang.Object)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>public&nbsp;void <strong>setLabels</strong>(java.lang.Object labels)</h4>
-                                <p> Sets the label definition
-     </p>
+     <DL><DT><B>Returns:</B></DT><DD>The label definitions for the entity</DD></DL></p>
                             </li>
                         </ul>
                     
                 </li>
             </ul>
+            
+
+            
+
+            
+
+
             
         </li>
     </ul>
@@ -305,11 +279,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;Method&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;Method&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     
