@@ -21,6 +21,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -156,7 +157,9 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 // indexed property
                 continue;
             }
-            if (descriptor.getReadMethod() == null || descriptor.getWriteMethod() == null) {
+
+            Method readMethod = descriptor.getReadMethod();
+            if (readMethod == null || descriptor.getWriteMethod() == null) {
                 // non-persistent getter or setter
                 continue;
             }
@@ -167,6 +170,9 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
 
             Field field = cpf.getDeclaredField(propertyName);
             if (field != null && java.lang.reflect.Modifier.isTransient(field.getModifiers())) {
+                continue;
+            }
+            if (java.lang.reflect.Modifier.isTransient(readMethod.getModifiers())) {
                 continue;
             }
             if (isExcludedProperty(propertyName, classMapping, transients, includeIdentifiers)) continue;
