@@ -12,23 +12,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.grails.datastore.mapping.keyvalue.mapping.config
 
-package org.grails.datastore.mapping.document.config;
-
-import org.grails.datastore.mapping.config.Property;
+import groovy.transform.CompileStatic
+import org.grails.datastore.mapping.config.Property
 
 /**
- * Configures how a Java property maps to a Document attribute
+ * <p>A KeyValue is a used to define the key used for a particular value</p>
  *
  * @author Graeme Rocher
+ * @since 1.0
  */
-public class Attribute extends Property {
+@CompileStatic
+class KeyValue extends Property {
 
-    public void setAttr(String name) {
-        setTargetName(name);
+    KeyValue() {
     }
 
-    public void setAttribute(String name) {
-        setTargetName(name);
+    KeyValue(String key) {
+        setTargetName(key)
+    }
+
+    String getKey() {
+        return getTargetName()
+    }
+
+    void setKey(String key) {
+        setTargetName(key)
+    }
+
+    void key(String key) {
+        setTargetName(key)
     }
 }

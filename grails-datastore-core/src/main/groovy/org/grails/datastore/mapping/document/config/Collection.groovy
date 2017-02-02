@@ -12,30 +12,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.mapping.keyvalue.mapping.config;
 
-import org.grails.datastore.mapping.config.Property;
+package org.grails.datastore.mapping.document.config
+
+import groovy.transform.CompileStatic
+import groovy.transform.builder.Builder
+import groovy.transform.builder.SimpleStrategy
+import org.grails.datastore.mapping.config.Entity
 
 /**
- * <p>A KeyValue is a used to define the key used for a particular value</p>
+ * Configures how an entity is mapped onto a Document collection
  *
  * @author Graeme Rocher
- * @since 1.0
  */
-public class KeyValue extends Property {
+@CompileStatic
+@Builder(builderStrategy = SimpleStrategy, prefix = '')
+class Collection extends Entity<Attribute> {
 
-    public KeyValue() {
-    }
+    /**
+     * The name of the collection
+     * @return The name of the collection
+     */
+    String collection
 
-    public KeyValue(String key) {
-        setTargetName(key);
-    }
-
-    public String getKey() {
-        return getTargetName();
-    }
-
-    public void setKey(String key) {
-        setTargetName(key);
+    @Override
+    protected Attribute newProperty() {
+        return new Attribute()
     }
 }

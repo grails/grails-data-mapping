@@ -12,9 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.mapping.keyvalue.mapping.config;
+package org.grails.datastore.mapping.keyvalue.mapping.config
 
-import org.grails.datastore.mapping.config.Entity;
+import groovy.transform.CompileStatic
+import groovy.transform.builder.Builder
+import groovy.transform.builder.SimpleStrategy
+import org.grails.datastore.mapping.config.Entity
+import org.grails.datastore.mapping.config.Property
 
 /**
  * <p>A Family is a grouping of KeyValue pairs and is typically composed
@@ -28,32 +32,23 @@ import org.grails.datastore.mapping.config.Entity;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class Family extends Entity{
+@CompileStatic
+@Builder(builderStrategy = SimpleStrategy, prefix = '')
+class Family extends Entity<KeyValue> {
 
-    private String keyspace;
-    private String family;
+    String keyspace
+    String family
 
-    public Family() {
+    Family() {
     }
 
-    public Family(String keyspace, String family) {
-        this.keyspace = keyspace;
-        this.family = family;
+    Family(String keyspace, String family) {
+        this.keyspace = keyspace
+        this.family = family
     }
 
-    public String getKeyspace() {
-        return keyspace;
-    }
-
-    public String getFamily() {
-        return family;
-    }
-
-    public void setKeyspace(String keyspace) {
-        this.keyspace = keyspace;
-    }
-
-    public void setFamily(String family) {
-        this.family = family;
+    @Override
+    protected KeyValue newProperty() {
+        return new KeyValue()
     }
 }
