@@ -16,6 +16,9 @@
 package org.grails.orm.hibernate.cfg
 
 import groovy.transform.AutoClone
+import groovy.transform.CompileStatic
+import groovy.transform.builder.Builder
+import groovy.transform.builder.SimpleStrategy
 
 /**
  * Represents a Join table in Grails mapping. It has a name which represents the name of the table, a key
@@ -25,10 +28,54 @@ import groovy.transform.AutoClone
  * @since 1.0
  */
 @AutoClone
-class JoinTable {
-    String catalog
-    String schema
-    String name
+@Builder(builderStrategy = SimpleStrategy, prefix = '')
+@CompileStatic
+class JoinTable extends Table {
+    /**
+     * The foreign key column
+     */
     ColumnConfig key
+    /**
+     * The child id column
+     */
     ColumnConfig column
+
+    /**
+     * Configures the column
+     * @param columnConfig The column config
+     * @return This join table config
+     */
+    JoinTable key(@DelegatesTo(ColumnConfig) Closure columnConfig) {
+        key = ColumnConfig.configureNew(columnConfig)
+        return this
+    }
+    /**
+     * Configures the column
+     * @param columnConfig The column config
+     * @return This join table config
+     */
+    JoinTable column(@DelegatesTo(ColumnConfig) Closure columnConfig) {
+        column = ColumnConfig.configureNew(columnConfig)
+        return this
+    }
+
+    /**
+     * Configures the column
+     * @param columnName the column name
+     * @return This join table config
+     */
+    JoinTable key(String columnName) {
+        key = new ColumnConfig(name: columnName)
+        return this
+    }
+
+    /**
+     * Configures the column
+     * @param columnName the column name
+     * @return This join table config
+     */
+    JoinTable column(String columnName) {
+        column = new ColumnConfig(name: columnName)
+        return this
+    }
 }

@@ -142,7 +142,8 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
     */
     @CompileStatic
     void discriminator(String name) {
-        mapping.discriminator = name
+        mapping.discriminator = new DiscriminatorConfig()
+        mapping.discriminator.value = name
     }
 
     /**
@@ -153,19 +154,21 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
      */
     @CompileStatic
     void discriminator(Map args) {
-        mapping.discriminator = args?.remove('value')
+        def discriminatorConfig = new DiscriminatorConfig()
+        mapping.discriminator = discriminatorConfig
+        discriminatorConfig.value = args?.remove('value')?.toString()
         if (args.column instanceof String) {
-            mapping.discriminatorColumn = new ColumnConfig(name:args.column.toString())
+            discriminatorConfig.column = new ColumnConfig(name:args.column.toString())
         }
         else if (args.column instanceof Map) {
             ColumnConfig config = new ColumnConfig()
             DataBinder dataBinder = new DataBinder(config)
             dataBinder.bind(new MutablePropertyValues((Map)args.column))
-            mapping.discriminatorColumn = config
+            discriminatorConfig.column = config
         }
-        mapping.discriminatorMap.type = args?.remove('type')
-        mapping.discriminatorMap.insert = args?.remove('insert')
-        mapping.discriminatorMap.formula = args?.remove('formula')
+        discriminatorConfig.type = args?.remove('type')
+        discriminatorConfig.insert = args?.remove('insert')
+        discriminatorConfig.formula = args?.remove('formula')
     }
 
     /**
@@ -271,7 +274,7 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
      */
     @CompileStatic
     void version(boolean isVersioned) {
-        mapping.versioned = isVersioned
+        mapping.version(isVersioned)
     }
 
     /**
@@ -282,12 +285,7 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
      */
     @CompileStatic
     void version(String versionColumn) {
-        PropertyConfig pc = mapping.getPropertyConfig(GormProperties.VERSION)
-        if (!pc) {
-            pc = new PropertyConfig()
-            mapping.columns[GormProperties.VERSION] = pc
-        }
-        pc.columns << new ColumnConfig(name:versionColumn)
+        mapping.version(versionColumn)
     }
 
     /**
@@ -296,14 +294,7 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
      * @param tenantIdProperty The tenant id property
      */
     void tenantId(String tenantIdProperty) {
-        PropertyConfig pc = mapping.getPropertyConfig(GormProperties.TENANT_IDENTITY)
-        if (pc == null) {
-            pc = new PropertyConfig(name: tenantIdProperty)
-            mapping.columns[GormProperties.TENANT_IDENTITY] = pc
-        }
-        else {
-            pc.name == tenantIdProperty
-        }
+        mapping.tenantId(tenantIdProperty)
     }
 
     /**
@@ -461,14 +452,14 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
 
             def newConfig = new PropertyConfig()
             if(defaultConstraints != null && namedArgs.containsKey('shared')) {
-                def sharedConstraints = mapping.columns.get(namedArgs.shared)
+                PropertyConfig sharedConstraints = mapping.columns.get(namedArgs.shared)
                 if(sharedConstraints != null) {
                     newConfig = (PropertyConfig)sharedConstraints.clone()
                 }
             }
             else if(mapping.columns.containsKey('*')) {
                 // apply global constraints constraints
-                def globalConstraints = mapping.columns.get('*')
+                PropertyConfig globalConstraints = mapping.columns.get('*')
                 if(globalConstraints != null) {
                     newConfig = (PropertyConfig)globalConstraints.clone()
                 }

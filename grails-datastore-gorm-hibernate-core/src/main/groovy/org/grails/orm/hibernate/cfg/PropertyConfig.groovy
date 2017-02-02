@@ -16,8 +16,13 @@
 package org.grails.orm.hibernate.cfg
 
 import groovy.transform.CompileStatic
+import groovy.transform.PackageScope
+import groovy.transform.builder.Builder
+import groovy.transform.builder.SimpleStrategy
 import org.grails.datastore.mapping.config.Property
 import org.hibernate.FetchMode
+import org.springframework.beans.MutablePropertyValues
+import org.springframework.validation.DataBinder
 
 import javax.persistence.FetchType
 
@@ -29,11 +34,16 @@ import javax.persistence.FetchType
  * @author pledbrook
  */
 @CompileStatic
+@Builder(builderStrategy = SimpleStrategy, prefix = '')
 class PropertyConfig extends Property {
 
     PropertyConfig() {
         setFetchStrategy(null)
     }
+
+    @PackageScope
+    // Whether the first column is created from cloning this instance
+    boolean firstColumnIsColumnCopy = false
 
     boolean explicitSaveUpdateCascade;
 
@@ -100,10 +110,131 @@ class PropertyConfig extends Property {
         this.updatable = updateable
     }
 
+    /**
+     * The columns
+     */
     List<ColumnConfig> columns = []
 
+    /**
+     * Configure a column
+     * @param columnDef The column definition
+     * @return This property config
+     */
+    PropertyConfig column(@DelegatesTo(ColumnConfig) Closure columnDef) {
+        if(columns.size() == 1 && firstColumnIsColumnCopy) {
+            firstColumnIsColumnCopy = false
+            ColumnConfig.configureExisting(columns[0], columnDef)
+        }
+        else {
+            columns.add( ColumnConfig.configureNew(columnDef) )
+        }
+        return this
+    }
+
+    /**
+     * Configure a column
+     * @param columnDef The column definition
+     * @return This property config
+     */
+    PropertyConfig column( Map columnDef ) {
+        if(columns.size() == 1 && firstColumnIsColumnCopy) {
+            firstColumnIsColumnCopy = false
+            ColumnConfig.configureExisting(columns[0], columnDef)
+        }
+        else {
+            columns.add( ColumnConfig.configureNew(columnDef) )
+        }
+        return this
+    }
+
+    /**
+     * Configure a column
+     * @param columnDef The column definition
+     * @return This property config
+     */
+    PropertyConfig column( String columnDef ) {
+        if(columns.size() == 1 && firstColumnIsColumnCopy) {
+            firstColumnIsColumnCopy = false
+            columns[0].name = columnDef
+        }
+        else {
+            columns.add( ColumnConfig.configureNew(name: columnDef) )
+        }
+        return this
+    }
+    /**
+     * The cache configuration
+     */
     CacheConfig cache
+
+    /**
+     * Define the cache config
+     * @param cacheConfig The cache config
+     * @return This mapping
+     */
+    PropertyConfig cache(@DelegatesTo(CacheConfig) Closure cacheConfig) {
+        if(this.cache == null) {
+            this.cache = new CacheConfig()
+        }
+        CacheConfig.configureExisting(cache, cacheConfig)
+        return this
+    }
+
+    /**
+     * Define the cache config
+     * @param cacheConfig The cache config
+     * @return This mapping
+     */
+    PropertyConfig cache(Map cacheConfig) {
+        if(this.cache == null) {
+            this.cache = new CacheConfig()
+        }
+        CacheConfig.configureExisting(cache, cacheConfig)
+        return this
+    }
+
+    /**
+     * The join table configuration
+     */
     JoinTable joinTable = new JoinTable()
+
+    /**
+     * The join table configuration
+     */
+    PropertyConfig joinTable(@DelegatesTo(JoinTable) Closure joinTableDef) {
+        JoinTable.configureExisting(joinTable, joinTableDef)
+        return this
+    }
+
+    /**
+     * The join table configuration
+     */
+    PropertyConfig joinTable(String tableName) {
+        joinTable.name == tableName
+        return this
+    }
+
+    @Override
+    void setUnique(boolean unique) {
+        super.setUnique(unique)
+        if(columns.size() == 1) {
+            columns[0].unique = true
+        }
+    }
+    /**
+     * The join table configuration
+     */
+    PropertyConfig joinTable(Map joinTableDef) {
+        DataBinder dataBinder = new DataBinder(joinTable)
+        dataBinder.bind(new MutablePropertyValues(joinTableDef))
+        if(joinTableDef.key) {
+            joinTable.key(joinTableDef.key.toString())
+        }
+        if(joinTableDef.column) {
+            joinTable.column(joinTableDef.column.toString())
+        }
+        return this
+    }
 
     /**
      * @param fetch The Hibernate {@link FetchMode}
@@ -140,6 +271,75 @@ class PropertyConfig extends Property {
     PropertyConfig indexColumn
 
     /**
+     * The column used to produce the index for index based collections (lists and maps)
+     */
+    PropertyConfig indexColumn(@DelegatesTo(PropertyConfig) Closure indexColumnConfig) {
+        this.indexColumn = configureNew(indexColumnConfig)
+        return this
+    }
+
+    /**
+     * Configures a new PropertyConfig instance
+     *
+     * @param config The configuration
+     * @return The new instance
+     */
+    static PropertyConfig configureNew(@DelegatesTo(PropertyConfig) Closure config) {
+        PropertyConfig property = new PropertyConfig()
+        return configureExisting(property, config)
+    }
+
+
+    /**
+     * Configures a new PropertyConfig instance
+     *
+     * @param config The configuration
+     * @return The new instance
+     */
+    static PropertyConfig configureNew(Map config) {
+        PropertyConfig property = new PropertyConfig()
+        return configureExisting(property, config)
+    }
+
+    /**
+     * Configures an existing PropertyConfig instance
+     *
+     * @param config The configuration
+     * @return The new instance
+     */
+    static PropertyConfig configureExisting(PropertyConfig property, Map config) {
+        DataBinder dataBinder = new DataBinder(property)
+        dataBinder.bind(new MutablePropertyValues(config))
+
+        ColumnConfig cc
+        if (property.columns) {
+            cc = property.columns[0]
+        }
+        else {
+            cc = new ColumnConfig()
+            property.columns.add cc
+        }
+        if(config.column) {
+            config.name = config.column
+        }
+        ColumnConfig.configureExisting(cc, config)
+
+        return property
+    }
+    /**
+     * Configures an existing PropertyConfig instance
+     *
+     * @param config The configuration
+     * @return The new instance
+     */
+    static PropertyConfig configureExisting(PropertyConfig property, @DelegatesTo(PropertyConfig) Closure config) {
+        config.setDelegate(property)
+        config.setResolveStrategy(Closure.DELEGATE_ONLY)
+        config.call()
+        return property
+    }
+
+    /**
      * Shortcut to get the column name for this property.
      * @throws RuntimeException if this property maps to more than one
      * column.
@@ -172,7 +372,7 @@ class PropertyConfig extends Property {
      * @throws RuntimeException if this property maps to more than one
      * column.
      */
-    String getIndex() {
+    String getIndexName() {
         checkHasSingleColumn()
         if(columns.isEmpty()) return null
         return columns[0].index?.toString()

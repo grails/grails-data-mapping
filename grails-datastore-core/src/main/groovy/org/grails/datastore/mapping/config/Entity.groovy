@@ -16,8 +16,8 @@ package org.grails.datastore.mapping.config
 
 import groovy.transform.CompileStatic
 import groovy.transform.builder.Builder
-import groovy.transform.builder.SimpleStrategy;
-import org.grails.datastore.mapping.core.connections.ConnectionSource;
+import groovy.transform.builder.SimpleStrategy
+import org.grails.datastore.mapping.core.connections.ConnectionSource
 
 /**
  * Base class for classes returned from {@link org.grails.datastore.mapping.model.ClassMapping#getMappedForm()}
@@ -27,7 +27,7 @@ import org.grails.datastore.mapping.core.connections.ConnectionSource;
  */
 @CompileStatic
 @Builder(builderStrategy = SimpleStrategy, prefix = '')
-public class Entity {
+class Entity {
 
     /**
      * @deprecated Use {@link ConnectionSource#DEFAULT} instead
@@ -43,7 +43,7 @@ public class Entity {
     /**
      * @return Whether the entity state should be held in the session or not
      */
-    boolean stateless = false;
+    boolean stateless = false
     /**
      * @return Whether automatic time stamps should be applied to 'lastUpdate' and 'dateCreated' properties
      */
@@ -64,12 +64,12 @@ public class Entity {
     boolean version = true
 
 
-    public Object getSort() {
-        return defaultSort;
+    Object getSort() {
+        return defaultSort
     }
 
-    public Entity setSort(Object defaultSort) {
-        this.defaultSort = defaultSort;
+    Entity setSort(Object defaultSort) {
+        this.defaultSort = defaultSort
         return this
     }
 
@@ -85,7 +85,7 @@ public class Entity {
      * @param name
      * @return
      */
-    public Entity datasource(String name) {
+    Entity datasource(String name) {
         this.datasources = [name]
         return this
     }
@@ -97,7 +97,7 @@ public class Entity {
      * @param name
      * @return
      */
-    public Entity connection(String name) {
+    Entity connection(String name) {
         this.datasources = [name]
         return this
     }
@@ -109,7 +109,7 @@ public class Entity {
      * @param name
      * @return
      */
-    public Entity connections(String...names) {
+    Entity connections(String...names) {
         connections(Arrays.asList(names))
         return this
     }
@@ -120,9 +120,9 @@ public class Entity {
      * @param name
      * @return
      */
-    public Entity connections(List<String> names) {
+    Entity connections(List<String> names) {
         if(names != null && names.size() > 0) {
-            this.datasources = names;
+            this.datasources = names
         }
         return this
     }

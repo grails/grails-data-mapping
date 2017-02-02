@@ -26,7 +26,6 @@ import org.grails.datastore.mapping.config.groovy.DefaultMappingConfigurationBui
 import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
 import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.config.GormProperties;
-import org.grails.datastore.mapping.model.types.TenantId;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.springframework.beans.BeanUtils;
 
@@ -81,12 +80,18 @@ public abstract class AbstractGormMappingFactory<R extends Entity, T extends Pro
             if (defaultConstraints != null) {
                 evaluateWithContext(builder, defaultConstraints);
             }
-            List<Closure> values = ClassPropertyFetcher.getStaticPropertyValuesFromInheritanceHierarchy(entity.getJavaClass(),GormProperties.MAPPING, Closure.class);
-            for (Closure value : values) {
-                evaluateWithContext(builder, value);
+            List<Object> values = ClassPropertyFetcher.getStaticPropertyValuesFromInheritanceHierarchy(entity.getJavaClass(),GormProperties.MAPPING, Object.class);
+            for (Object value : values) {
+                if(value instanceof MappingDefinition) {
+                    MappingDefinition definition = (MappingDefinition) value;
+                    definition.configure(family);
+                }
+                else if(value instanceof Closure) {
+                    evaluateWithContext(builder, (Closure) value);
+                }
             }
-            values = ClassPropertyFetcher.getStaticPropertyValuesFromInheritanceHierarchy(entity.getJavaClass(),GormProperties.CONSTRAINTS, Closure.class);
-            for (Closure value : values) {
+            List<Closure> constraintValues = ClassPropertyFetcher.getStaticPropertyValuesFromInheritanceHierarchy(entity.getJavaClass(),GormProperties.CONSTRAINTS, Closure.class);
+            for (Closure value : constraintValues) {
                 evaluateWithContext(builder, value);
             }
             Map properties = builder.getProperties();

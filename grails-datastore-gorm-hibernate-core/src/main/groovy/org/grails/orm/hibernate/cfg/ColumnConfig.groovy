@@ -16,6 +16,11 @@
 package org.grails.orm.hibernate.cfg
 
 import groovy.transform.AutoClone
+import groovy.transform.CompileStatic
+import groovy.transform.builder.Builder
+import groovy.transform.builder.SimpleStrategy
+import org.springframework.beans.MutablePropertyValues
+import org.springframework.validation.DataBinder
 
 /**
  * Defines a column within the mapping.
@@ -24,6 +29,8 @@ import groovy.transform.AutoClone
  * @since 1.0
  */
 @AutoClone
+@CompileStatic
+@Builder(builderStrategy = SimpleStrategy, prefix = '')
 class ColumnConfig {
     /**
      * The column name
@@ -76,5 +83,51 @@ class ColumnConfig {
 
     String toString() {
         "column[name:$name, index:$index, unique:$unique, length:$length, precision:$precision, scale:$scale]"
+    }
+
+    /**
+     * Configures a new PropertyConfig instance
+     *
+     * @param config The configuration
+     * @return The new instance
+     */
+    static ColumnConfig configureNew(@DelegatesTo(ColumnConfig) Closure config) {
+        ColumnConfig property = new ColumnConfig()
+        return configureExisting(property, config)
+    }
+
+    /**
+     * Configures a new PropertyConfig instance
+     *
+     * @param config The configuration
+     * @return The new instance
+     */
+    static ColumnConfig configureNew(Map config) {
+        ColumnConfig property = new ColumnConfig()
+        return configureExisting(property, config)
+    }
+    /**
+     * Configures an existing PropertyConfig instance
+     *
+     * @param config The configuration
+     * @return The new instance
+     */
+    static ColumnConfig configureExisting(ColumnConfig property, @DelegatesTo(ColumnConfig) Closure config) {
+        config.setDelegate(property)
+        config.setResolveStrategy(Closure.DELEGATE_ONLY)
+        config.call()
+        return property
+    }
+
+    /**
+     * Configures an existing PropertyConfig instance
+     *
+     * @param config The configuration
+     * @return The new instance
+     */
+    static ColumnConfig configureExisting(ColumnConfig column, Map config) {
+        DataBinder dataBinder = new DataBinder(column)
+        dataBinder.bind(new MutablePropertyValues(config))
+        return column
     }
 }

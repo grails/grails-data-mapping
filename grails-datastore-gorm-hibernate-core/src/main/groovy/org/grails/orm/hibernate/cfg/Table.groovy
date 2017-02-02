@@ -15,14 +15,66 @@
  */
 package org.grails.orm.hibernate.cfg
 
+import groovy.transform.CompileStatic
+import groovy.transform.builder.Builder
+import groovy.transform.builder.SimpleStrategy
+import org.springframework.beans.MutablePropertyValues
+import org.springframework.validation.DataBinder
+
 /**
  * Represents a table definition in GORM.
  *
  * @author Graeme Rocher
  * @since 1.1
  */
+@Builder(builderStrategy = SimpleStrategy, prefix = '')
+@CompileStatic
 class Table {
+    /**
+     * The table name
+     */
     String name
+    /**
+     * The table catalog
+     */
     String catalog
+    /**
+     * The table schema
+     */
     String schema
+
+    /**
+     * Configures a new Table instance
+     *
+     * @param config The configuration
+     * @return The new instance
+     */
+    static Table configureNew(@DelegatesTo(Table) Closure config) {
+        Table table = new Table()
+        return configureExisting(table, config)
+    }
+
+    /**
+     * Configures an existing Table instance
+     *
+     * @param config The configuration
+     * @return The new instance
+     */
+    static Table configureExisting(Table table, Map config) {
+        DataBinder dataBinder = new DataBinder(table)
+        dataBinder.bind(new MutablePropertyValues(config))
+        return table
+    }
+    /**
+     * Configures an existing PropertyConfig instance
+     *
+     * @param config The configuration
+     * @return The new instance
+     */
+    static Table configureExisting(Table table, @DelegatesTo(Table) Closure config) {
+        config.setDelegate(table)
+        config.setResolveStrategy(Closure.DELEGATE_ONLY)
+        config.call()
+        return table
+    }
 }

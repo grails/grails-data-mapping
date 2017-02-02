@@ -16,6 +16,11 @@
 package org.grails.orm.hibernate.cfg
 
 import groovy.transform.AutoClone
+import groovy.transform.CompileStatic
+import groovy.transform.builder.Builder
+import groovy.transform.builder.SimpleStrategy
+import org.springframework.beans.MutablePropertyValues
+import org.springframework.validation.DataBinder
 
 /**
  * Defines the cache configuration.
@@ -24,11 +29,57 @@ import groovy.transform.AutoClone
  * @since 1.0
  */
 @AutoClone
-class CacheConfig implements Cloneable{
+@CompileStatic
+@Builder(builderStrategy = SimpleStrategy, prefix = '')
+class CacheConfig implements Cloneable {
     static final List USAGE_OPTIONS = ['read-only', 'read-write','nonstrict-read-write','transactional']
     static final List INCLUDE_OPTIONS = ['all', 'non-lazy']
 
+    /**
+     * The cache usage
+     */
     String usage = "read-write"
+    /**
+     * Whether caching is enabled
+     */
     boolean enabled = false
+    /**
+     * What to include in caching
+     */
     String include = "all"
+
+    /**
+     * Configures a new CacheConfig instance
+     *
+     * @param config The configuration
+     * @return The new instance
+     */
+    static CacheConfig configureNew(@DelegatesTo(CacheConfig) Closure config) {
+        CacheConfig cacheConfig = new CacheConfig()
+        return configureExisting(cacheConfig, config)
+    }
+
+    /**
+     * Configures an existing CacheConfig instance
+     *
+     * @param config The configuration
+     * @return The new instance
+     */
+    static CacheConfig configureExisting(CacheConfig cacheConfig, Map config) {
+        DataBinder dataBinder = new DataBinder(cacheConfig)
+        dataBinder.bind(new MutablePropertyValues(config))
+        return cacheConfig
+    }
+    /**
+     * Configures an existing PropertyConfig instance
+     *
+     * @param config The configuration
+     * @return The new instance
+     */
+    static CacheConfig configureExisting(CacheConfig cacheConfig, @DelegatesTo(CacheConfig) Closure config) {
+        config.setDelegate(cacheConfig)
+        config.setResolveStrategy(Closure.DELEGATE_ONLY)
+        config.call()
+        return cacheConfig
+    }
 }

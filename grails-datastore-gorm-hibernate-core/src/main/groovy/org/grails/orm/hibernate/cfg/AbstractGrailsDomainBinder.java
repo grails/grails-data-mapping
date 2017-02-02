@@ -438,12 +438,15 @@ public abstract class AbstractGrailsDomainBinder {
                 String discriminatorColumnName = RootClass.DEFAULT_DISCRIMINATOR_COLUMN_NAME;
 
                 if (rootMapping != null) {
-                    final ColumnConfig discriminatorColumn = rootMapping.getDiscriminatorColumn();
-                    if (discriminatorColumn != null) {
-                        discriminatorColumnName = discriminatorColumn.getName();
-                    }
-                    if (rootMapping.getDiscriminatorMap().get("formula") != null) {
-                        discriminatorColumnName = (String)m.getDiscriminatorMap().get("formula");
+                    DiscriminatorConfig discriminatorConfig = rootMapping.getDiscriminator();
+                    if(discriminatorConfig != null) {
+                        final ColumnConfig discriminatorColumn = discriminatorConfig.getColumn();
+                        if (discriminatorColumn != null) {
+                            discriminatorColumnName = discriminatorColumn.getName();
+                        }
+                        if (discriminatorConfig.getFormula() != null) {
+                            discriminatorColumnName = discriminatorConfig.getFormula();
+                        }
                     }
                 }
                 //NOTE: this will build the set for the in clause if it has sublcasses
@@ -646,12 +649,16 @@ public abstract class AbstractGrailsDomainBinder {
         Mapping mapping = domainClass.getMapping().getMappedForm();
         String discriminator = domainClass.getName();
         if (mapping != null && mapping.getDiscriminator() != null) {
-            discriminator = mapping.getDiscriminator();
+            DiscriminatorConfig discriminatorConfig = mapping.getDiscriminator();
+            if(discriminatorConfig.getValue() != null) {
+                discriminator = discriminatorConfig.getValue();
+            }
         }
         Mapping rootMapping = getRootMapping(domainClass);
         String quote = "'";
-        if (rootMapping != null && rootMapping.getDiscriminatorMap() != null &&
-            rootMapping.getDiscriminatorMap().get("type") != null && rootMapping.getDiscriminatorMap().get("type") != "string") {
+        if (rootMapping != null && rootMapping.getDatasources() != null) {
+            DiscriminatorConfig discriminatorConfig = rootMapping.getDiscriminator();
+            if(discriminatorConfig != null && discriminatorConfig.getType() != null && !discriminatorConfig.getType().equals("string"))
             quote = "";
         }
         theSet.add(quote + discriminator + quote);
@@ -1548,7 +1555,9 @@ public abstract class AbstractGrailsDomainBinder {
             // value used by Hibernate to decide what the type of the class is
             // to perform polymorphic queries
             Mapping subMapping = getMapping(sub);
-            subClass.setDiscriminatorValue(subMapping != null && subMapping.getDiscriminator() != null ? subMapping.getDiscriminator() : fullName);
+            DiscriminatorConfig discriminatorConfig = subMapping != null ? subMapping.getDiscriminator() : null;
+
+            subClass.setDiscriminatorValue(discriminatorConfig != null && discriminatorConfig.getValue() != null ? discriminatorConfig.getValue() : fullName);
             if (subMapping != null) {
                 configureDerivedProperties(sub, subMapping);
             }
@@ -1699,24 +1708,36 @@ public abstract class AbstractGrailsDomainBinder {
         Mapping m = getMapping(entity.getMappedClass());
         SimpleValue d = new SimpleValue(mappings, table);
         entity.setDiscriminator(d);
-        entity.setDiscriminatorValue(m != null && m.getDiscriminator() != null ? m.getDiscriminator() : entity.getClassName());
+        DiscriminatorConfig discriminatorConfig = m != null ? m.getDiscriminator() : null;
 
-        if (m != null && m.getDiscriminatorMap().get("insert") != null) {
-            entity.setDiscriminatorInsertable((Boolean)m.getDiscriminatorMap().get("insert"));
-        }
-        if (m != null && m.getDiscriminatorMap().get("type") != null) {
-            d.setTypeName((String)m.getDiscriminatorMap().get("type"));
+        boolean hasDiscriminatorConfig = discriminatorConfig != null;
+        entity.setDiscriminatorValue(hasDiscriminatorConfig ? discriminatorConfig.getValue() : entity.getClassName());
+
+        if(hasDiscriminatorConfig) {
+            if (discriminatorConfig.getInsertable() != null) {
+                entity.setDiscriminatorInsertable(discriminatorConfig.getInsertable());
+            }
+            Object type = discriminatorConfig.getType();
+            if (type != null) {
+                if(type instanceof Class) {
+                    d.setTypeName(((Class)type).getName());
+                }
+                else {
+                    d.setTypeName(type.toString());
+                }
+            }
         }
 
-        if (m != null && m.getDiscriminatorMap().get("formula") != null) {
+
+        if (hasDiscriminatorConfig && discriminatorConfig.getFormula() != null) {
             Formula formula = new Formula();
-            formula.setFormula((String)m.getDiscriminatorMap().get("formula"));
+            formula.setFormula(discriminatorConfig.getFormula());
             d.addFormula(formula);
         }
         else{
             bindSimpleValue(STRING_TYPE, d, false, RootClass.DEFAULT_DISCRIMINATOR_COLUMN_NAME, mappings);
 
-            ColumnConfig cc = m == null ? null : m.getDiscriminatorColumn();
+            ColumnConfig cc = !hasDiscriminatorConfig ? null : discriminatorConfig.getColumn();
             if (cc != null) {
                 Column c = (Column) d.getColumnIterator().next();
                 if (cc.getName() != null) {

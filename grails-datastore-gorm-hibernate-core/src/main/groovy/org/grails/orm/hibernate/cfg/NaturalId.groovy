@@ -15,11 +15,23 @@
  */
 package org.grails.orm.hibernate.cfg
 
+import groovy.transform.CompileStatic
+import groovy.transform.builder.Builder
+import groovy.transform.builder.SimpleStrategy
+
 /**
  * @author Graeme Rocher
  * @since 1.1
  */
+@CompileStatic
+@Builder(builderStrategy = SimpleStrategy, prefix = '')
 class NaturalId {
+    /**
+     * The property names that make up the natural id
+     */
     List<String> propertyNames = []
+    /**
+     * Whether the natural id is mutable
+     */
     boolean mutable = false
 }
