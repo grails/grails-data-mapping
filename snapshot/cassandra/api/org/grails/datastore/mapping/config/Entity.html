@@ -87,7 +87,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
     <div class="subTitle">Package: <strong>org.grails.datastore.mapping.config</strong></div>
 
-    <h2 title="[Groovy] Class Entity" class="title">[Groovy] Class Entity</h2>
+    <h2 title="[Groovy] Class Entity&lt;P&gt;" class="title">[Groovy] Class Entity&lt;P&gt;</h2>
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
@@ -138,6 +138,12 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <td class="colFirst"><code><strong>static&nbsp;java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#DEFAULT_DATA_SOURCE">DEFAULT_DATA_SOURCE</a></code></td>
                             <td class="colLast">@deprecated Use <a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html#ALL' title='ConnectionSource.ALL'>ConnectionSource.ALL</a> instead</code></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>protected&nbsp;java.util.Map&lt;java.lang.String, P&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#propertyConfigs">propertyConfigs</a></code></td>
+                            <td class="colLast">The configuration for each property</code></td>
                         </tr>
                         
                     </table>
@@ -216,6 +222,16 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>protected&nbsp;P</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#cloneGlobalConstraint()">cloneGlobalConstraint</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#configureExisting(T, groovy.lang.Closure)">configureExisting</a></strong>(T mapping, groovy.lang.Closure config)</code><br>Configures an existing Mapping instance</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#connection(java.lang.String)">connection</a></strong>(java.lang.String name)</code><br>Sets the datastore to use</td>
                         </tr>
@@ -236,18 +252,93 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>protected&nbsp;P</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getOrInitializePropertyConfig(java.lang.String)">getOrInitializePropertyConfig</a></strong>(java.lang.String name)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>P</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getPropertyConfig(java.lang.String)">getPropertyConfig</a></strong>(java.lang.String name)</code><br>Get a property config</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>java.util.Map&lt;java.lang.String, P&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getPropertyConfigs()">getPropertyConfigs</a></strong>()</code><br>@return The property configurations</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.Object</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getSort()">getSort</a></strong>()</code><br></td>
                         </tr>
                         
+                        <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html' title='Entity'>Entity</a>&lt;P&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#id(java.util.Map)">id</a></strong>(java.util.Map identityConfig)</code><br>Define the identity config</td>
+                        </tr>
+                        
                         <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html' title='Entity'>Entity</a>&lt;P&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#id(groovy.lang.Closure)">id</a></strong>(groovy.lang.Closure identityConfig)</code><br>Define the identity config</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isVersioned()">isVersioned</a></strong>()</code><br>@return Whether this entity is versioned</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>java.lang.Object</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#methodMissing(java.lang.String, java.lang.Object)">methodMissing</a></strong>(java.lang.String name, java.lang.Object args)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>protected&nbsp;P</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#newProperty()">newProperty</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#property(java.lang.String, groovy.lang.Closure)">property</a></strong>(java.lang.String name, groovy.lang.Closure propertyConfig)</code><br>Configure a property</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#property(java.lang.String, java.util.Map)">property</a></strong>(java.lang.String name, java.util.Map propertyConfig)</code><br>Configure a property</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>P</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#property(groovy.lang.Closure)">property</a></strong>(groovy.lang.Closure propertyConfig)</code><br>Configure a new property</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>P</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#property(java.util.Map)">property</a></strong>(java.util.Map propertyConfig)</code><br>Configure a new property</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>java.lang.Object</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#propertyMissing(java.lang.String, java.lang.Object)">propertyMissing</a></strong>(java.lang.String name, java.lang.Object val)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#setSort(java.lang.Object)">setSort</a></strong>(java.lang.Object defaultSort)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#tenantId(java.lang.String)">tenantId</a></strong>(java.lang.String tenantIdProperty)</code><br>Sets the tenant id</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#version(groovy.lang.Closure)">version</a></strong>(groovy.lang.Closure versionConfig)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#version(java.util.Map)">version</a></strong>(java.util.Map versionConfig)</code><br></td>
                         </tr>
                         
                     </table>
@@ -307,6 +398,15 @@ public&nbsp;static&nbsp;final&nbsp;java.lang.String <strong>ALL_DATA_SOURCES</st
                                 <h4>@java.lang.Deprecated
 public&nbsp;static&nbsp;final&nbsp;java.lang.String <strong>DEFAULT_DATA_SOURCE</strong></h4>
                                 <p><DL><DT><B>deprecated:</B></DT><DD>Use <a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html#ALL' title='ConnectionSource.ALL'>ConnectionSource.ALL</a> instead</DD></DL>
+     </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="propertyConfigs"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;java.util.Map&lt;java.lang.String, P&gt; <strong>propertyConfigs</strong></h4>
+                                <p> The configuration for each property
      </p>
                             </li>
                         </ul>
@@ -394,6 +494,23 @@ public&nbsp;static&nbsp;final&nbsp;java.lang.String <strong>DEFAULT_DATA_SOURCE<
                 </a>
                     <h3>Method Detail</h3>
                     
+                        <a name="cloneGlobalConstraint()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;P <strong>cloneGlobalConstraint</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="configureExisting(T, groovy.lang.Closure)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;T <strong>configureExisting</strong>(T mapping, @groovy.lang.DelegatesTo(T) groovy.lang.Closure config)</h4>
+                                <p> Configures an existing Mapping instance
+     <DL><DT><B>Parameters:</B></DT><DD><code>config</code> -  The configuration</DD></DL><DL><DT><B>Returns:</B></DT><DD>The new instance</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="connection(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -426,11 +543,54 @@ public&nbsp;static&nbsp;final&nbsp;java.lang.String <strong>DEFAULT_DATA_SOURCE<
                             </li>
                         </ul>
                     
+                        <a name="getOrInitializePropertyConfig(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;P <strong>getOrInitializePropertyConfig</strong>(java.lang.String name)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getPropertyConfig(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>P <strong>getPropertyConfig</strong>(java.lang.String name)</h4>
+                                <p> Get a property config <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property</DD></DL><DL><DT><B>Returns:</B></DT><DD></DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getPropertyConfigs()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.util.Map&lt;java.lang.String, P&gt; <strong>getPropertyConfigs</strong>()</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>The property configurations</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getSort()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>java.lang.Object <strong>getSort</strong>()</h4>
                                 <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="id(java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../../org/grails/datastore/mapping/config/Entity.html' title='Entity'>Entity</a>&lt;P&gt; <strong>id</strong>(java.util.Map identityConfig)</h4>
+                                <p> Define the identity config
+     <DL><DT><B>Parameters:</B></DT><DD><code>identityConfig</code> -  The id config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="id(groovy.lang.Closure)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../../org/grails/datastore/mapping/config/Entity.html' title='Entity'>Entity</a>&lt;P&gt; <strong>id</strong>(@groovy.lang.DelegatesTo(P) groovy.lang.Closure identityConfig)</h4>
+                                <p> Define the identity config
+     <DL><DT><B>Parameters:</B></DT><DD><code>identityConfig</code> -  The id config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -443,11 +603,101 @@ public&nbsp;static&nbsp;final&nbsp;java.lang.String <strong>DEFAULT_DATA_SOURCE<
                             </li>
                         </ul>
                     
+                        <a name="methodMissing(java.lang.String, java.lang.Object)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@groovy.transform.CompileDynamic
+java.lang.Object <strong>methodMissing</strong>(java.lang.String name, java.lang.Object args)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="newProperty()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;P <strong>newProperty</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="property(java.lang.String, groovy.lang.Closure)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a> <strong>property</strong>(java.lang.String name, @groovy.lang.DelegatesTo(P) groovy.lang.Closure propertyConfig)</h4>
+                                <p> Configure a property
+     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property</DD><DD><code>propertyConfig</code> -  The property config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="property(java.lang.String, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a> <strong>property</strong>(java.lang.String name, java.util.Map propertyConfig)</h4>
+                                <p> Configure a property
+     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property</DD><DD><code>propertyConfig</code> -  The property config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="property(groovy.lang.Closure)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>P <strong>property</strong>(@groovy.lang.DelegatesTo(P) groovy.lang.Closure propertyConfig)</h4>
+                                <p> Configure a new property
+     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property</DD><DD><code>propertyConfig</code> -  The property config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="property(java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>P <strong>property</strong>(java.util.Map propertyConfig)</h4>
+                                <p> Configure a new property
+     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property</DD><DD><code>propertyConfig</code> -  The property config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="propertyMissing(java.lang.String, java.lang.Object)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.lang.Object <strong>propertyMissing</strong>(java.lang.String name, java.lang.Object val)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="setSort(java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a> <strong>setSort</strong>(java.lang.Object defaultSort)</h4>
                                 <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="tenantId(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a> <strong>tenantId</strong>(java.lang.String tenantIdProperty)</h4>
+                                <p> Sets the tenant id
+     <DL><DT><B>Parameters:</B></DT><DD><code>tenantIdProperty</code> -  The tenant id property</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="version(groovy.lang.Closure)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a> <strong>version</strong>(@groovy.lang.DelegatesTo(P) groovy.lang.Closure versionConfig)</h4>
+                                <p> <p>Configures the name of the version column
+ <code> { version 'foo' }
+     <DL><DT><B>Parameters:</B></DT><DD><code>isVersioned</code> -  True if a version property should be configured</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="version(java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a> <strong>version</strong>(java.util.Map versionConfig)</h4>
+                                <p> <p>Configures the name of the version column
+ <code> { version 'foo' }
+     <DL><DT><B>Parameters:</B></DT><DD><code>isVersioned</code> -  True if a version property should be configured</DD></DL></p>
                             </li>
                         </ul>
                     
