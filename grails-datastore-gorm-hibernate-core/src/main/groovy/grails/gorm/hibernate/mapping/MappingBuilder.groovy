@@ -45,10 +45,7 @@ class MappingBuilder {
 
         @Override
         Mapping configure(Mapping existing) {
-            if(mapping == null) {
-                mapping = Mapping.configureExisting(existing, definition)
-            }
-            return mapping
+            return Mapping.configureExisting(existing, definition)
         }
 
         @Override
