@@ -24,6 +24,16 @@ class MappingBuilder {
         new ClosureMappingDefinition(mappingDefinition)
     }
 
+    /**
+     * Build a Hibernate mapping
+     *
+     * @param mappingDefinition The closure defining the mapping
+     * @return The mapping
+     */
+    static MappingDefinition<Mapping, PropertyConfig> orm(@DelegatesTo(Mapping) Closure mappingDefinition) {
+        new ClosureMappingDefinition(mappingDefinition)
+    }
+
     @CompileStatic
     private static class ClosureMappingDefinition implements MappingDefinition<Mapping, PropertyConfig> {
         final Closure definition
