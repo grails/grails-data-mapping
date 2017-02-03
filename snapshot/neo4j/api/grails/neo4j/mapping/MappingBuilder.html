@@ -141,12 +141,12 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;<a href='../../../org/grails/datastore/mapping/config/MappingDefinition.html' title='MappingDefinition'>MappingDefinition</a>&lt;<a href='../../../org/grails/datastore/gorm/neo4j/mapping/config/NodeConfig.html' title='NodeConfig'>NodeConfig</a>, <a href='../../../org/grails/datastore/gorm/neo4j/mapping/config/Attribute.html' title='Attribute'>Attribute</a>&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#node(groovy.lang.Closure)">node</a></strong>(groovy.lang.Closure mappingDefinition)</code><br>Build a Hibernate mapping</td>
+                            <td class="colLast"><code><strong><a href="#node(groovy.lang.Closure)">node</a></strong>(groovy.lang.Closure mappingDefinition)</code><br>Build a Neo4j node mapping</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;<a href='../../../org/grails/datastore/mapping/config/MappingDefinition.html' title='MappingDefinition'>MappingDefinition</a>&lt;<a href='../../../org/grails/datastore/gorm/neo4j/mapping/config/RelationshipConfig.html' title='RelationshipConfig'>RelationshipConfig</a>, <a href='../../../org/grails/datastore/gorm/neo4j/mapping/config/Attribute.html' title='Attribute'>Attribute</a>&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#relationship(groovy.lang.Closure)">relationship</a></strong>(groovy.lang.Closure mappingDefinition)</code><br>Build a Hibernate mapping</td>
+                            <td class="colLast"><code><strong><a href="#relationship(groovy.lang.Closure)">relationship</a></strong>(groovy.lang.Closure mappingDefinition)</code><br>Build a Neo4j relationship mapping</td>
                         </tr>
                         
                     </table>
@@ -203,7 +203,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>static&nbsp;<a href='../../../org/grails/datastore/mapping/config/MappingDefinition.html' title='MappingDefinition'>MappingDefinition</a>&lt;<a href='../../../org/grails/datastore/gorm/neo4j/mapping/config/NodeConfig.html' title='NodeConfig'>NodeConfig</a>, <a href='../../../org/grails/datastore/gorm/neo4j/mapping/config/Attribute.html' title='Attribute'>Attribute</a>&gt; <strong>node</strong>(@groovy.lang.DelegatesTo(NodeConfig) groovy.lang.Closure mappingDefinition)</h4>
-                                <p> Build a Hibernate mapping
+                                <p> Build a Neo4j node mapping
      <DL><DT><B>Returns:</B></DT><DD>The mapping</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>mappingDefinition</code> -  The closure defining the mapping</DD></DL></p>
                             </li>
                         </ul>
@@ -212,7 +212,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>static&nbsp;<a href='../../../org/grails/datastore/mapping/config/MappingDefinition.html' title='MappingDefinition'>MappingDefinition</a>&lt;<a href='../../../org/grails/datastore/gorm/neo4j/mapping/config/RelationshipConfig.html' title='RelationshipConfig'>RelationshipConfig</a>, <a href='../../../org/grails/datastore/gorm/neo4j/mapping/config/Attribute.html' title='Attribute'>Attribute</a>&gt; <strong>relationship</strong>(@groovy.lang.DelegatesTo(RelationshipConfig) groovy.lang.Closure mappingDefinition)</h4>
-                                <p> Build a Hibernate mapping
+                                <p> Build a Neo4j relationship mapping
      <DL><DT><B>Returns:</B></DT><DD>The mapping</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>mappingDefinition</code> -  The closure defining the mapping</DD></DL></p>
                             </li>
                         </ul>
