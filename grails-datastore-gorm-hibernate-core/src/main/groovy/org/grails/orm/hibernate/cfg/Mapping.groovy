@@ -316,6 +316,40 @@ class Mapping extends Entity<PropertyConfig> {
     }
 
     /**
+     * Configures the discriminator
+     * @param discriminatorDef The discriminator
+     * @return This mapping
+     */
+    Mapping discriminator(Map args) {
+        if(args != null) {
+            if(discriminator == null) {
+                discriminator = new DiscriminatorConfig()
+            }
+
+            String value = args.remove('value')?.toString()
+            discriminator.value = value
+            if (args.column instanceof String) {
+                discriminator.column = new ColumnConfig(name:args.column.toString())
+            }
+            else if (args.column instanceof Map) {
+                ColumnConfig config = new ColumnConfig()
+                DataBinder dataBinder = new DataBinder(config)
+                dataBinder.bind(new MutablePropertyValues((Map)args.column))
+                discriminator.column = config
+            }
+            discriminator.type(args.remove('type'))
+            if(args.containsKey('insert')) {
+                discriminator.insertable( args.remove('insert') as Boolean )
+            }
+            if(args.containsKey('insertable')) {
+                discriminator.insertable( args.remove('insertable') as Boolean )
+            }
+            discriminator.formula(args.remove('formula')?.toString())
+        }
+        return this
+    }
+
+    /**
      * Define a new composite id
      * @param propertyNames
      * @return

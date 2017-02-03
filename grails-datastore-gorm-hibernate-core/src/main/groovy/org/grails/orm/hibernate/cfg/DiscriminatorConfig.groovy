@@ -38,6 +38,11 @@ class DiscriminatorConfig {
      */
     String formula
 
+    /**
+     * Whether it is insertable
+     *
+     * @param insertable True if it is insertable
+     */
     void setInsert(boolean insertable) {
         this.insertable = insertable
     }

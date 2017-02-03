@@ -20,11 +20,9 @@ import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.hibernate.FetchMode
-import org.hibernate.InvalidMappingException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.MutablePropertyValues
-import org.springframework.context.ApplicationContext
 import org.springframework.validation.DataBinder
 
 import javax.persistence.AccessType
@@ -142,33 +140,18 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
     */
     @CompileStatic
     void discriminator(String name) {
-        mapping.discriminator = new DiscriminatorConfig()
-        mapping.discriminator.value = name
+        mapping.discriminator(name)
     }
 
     /**
      * <p>Configures the discriminator name. Example:
-     * <code> { discriminator name:'foo', column:'type' }
+     * <code> { discriminator value:'foo', column:'type' }
      *
      * @param name The name of the table
      */
     @CompileStatic
     void discriminator(Map args) {
-        def discriminatorConfig = new DiscriminatorConfig()
-        mapping.discriminator = discriminatorConfig
-        discriminatorConfig.value = args?.remove('value')?.toString()
-        if (args.column instanceof String) {
-            discriminatorConfig.column = new ColumnConfig(name:args.column.toString())
-        }
-        else if (args.column instanceof Map) {
-            ColumnConfig config = new ColumnConfig()
-            DataBinder dataBinder = new DataBinder(config)
-            dataBinder.bind(new MutablePropertyValues((Map)args.column))
-            discriminatorConfig.column = config
-        }
-        discriminatorConfig.type = args?.remove('type')
-        discriminatorConfig.insert = args?.remove('insert')
-        discriminatorConfig.formula = args?.remove('formula')
+        mapping.discriminator(args)
     }
 
     /**
