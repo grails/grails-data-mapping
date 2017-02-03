@@ -181,6 +181,27 @@ class Property implements Cloneable {
     }
 
     /**
+     * Configure the fetch strategy
+     *
+     * @param name The name of the fetch strategy
+     * @return
+     */
+    Property fetch(String name) {
+        setFetch(name)
+        return this
+    }
+
+    /**
+     * Configure the fetch strategy
+     *
+     * @param type The type of the fetch strategy
+     * @return
+     */
+    Property fetch(FetchType type) {
+        setFetchStrategy(type)
+        return this
+    }
+    /**
      * @return Whether the property should be unique
      */
     boolean isUnique() {
