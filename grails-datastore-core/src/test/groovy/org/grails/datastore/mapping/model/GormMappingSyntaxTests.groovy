@@ -192,6 +192,11 @@ class TestEntity {
     String bar
 
     SecondEntity second
+
+    transient String getTransientMethodProperty() {}
+
+    transient void setTransientMethodProperty(String value) {}
+
     static hasOne = [second:SecondEntity]
     static transients = ['bar']
 }
