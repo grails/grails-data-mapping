@@ -743,13 +743,32 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="upgradeNotes">1.2. Upgrade Notes</h3>
 <div class="sect3">
-<h4 id="_changes_to_configuration_model">1.2.1. Changes to Configuration Model</h4>
+<h4 id="_flush_mode_now_commit_by_default">1.2.1. Flush Mode Now COMMIT by Default</h4>
+<div class="paragraph">
+<p>In previous versions of GORM the flush mode defaulted to AUTO. With this setting the session would be flushed with or without the presence of a transaction and before every query.</p>
+</div>
+<div class="paragraph">
+<p>The frequent flushing of the session before queries can lead to unintended performance consequences if the behaviour of the <code>AUTO</code> is not fully understood by the developer.</p>
+</div>
+<div class="paragraph">
+<p>With this in mind <code>COMMIT</code> is the new default flush mode in GORM 6, which will flush the session on transaction commit. You can restore the previous behaviour by configuring the flush mode in your application configuration (for example <code>application.yml</code>):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">hibernate</span>:
+    <span class="key">flush</span>:
+        <span class="key">mode</span>: <span class="string"><span class="content">AUTO</span></span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_changes_to_configuration_model">1.2.2. Changes to Configuration Model</h4>
 <div class="paragraph">
 <p>In preparation for Hibernate 5.2 support the previous "SessionFactoryBean" notion has been removed. Now if you wish to customize <code>SessionFactory</code> creation you should instead register a custom <code>org.grails.orm.hibernate.connections.HibernateConnectionSourceFactory</code> in Spring.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_fail_on_error_package_setting_renamed">1.2.2. Fail on Error Package Setting Renamed</h4>
+<h4 id="_fail_on_error_package_setting_renamed">1.2.3. Fail on Error Package Setting Renamed</h4>
 <div class="paragraph">
 <p>The <code>grails.gorm.failOnError</code> setting can no longer be used to configure the packages to enable fail on error. Instead <code>grails.gorm.failOnErrorPackages</code> should be used.</p>
 </div>
