@@ -20,9 +20,13 @@ class ClassPropertyFetcherTests  {
 
     @Test
     void testGetStaticPropertyInheritance() {
-        def cpf = ClassPropertyFetcher.forClass(TransientChild)
+        def tc = ClassPropertyFetcher.forClass(TransientChild)
+        def tp = ClassPropertyFetcher.forClass(TransientParent)
+        def tsc = ClassPropertyFetcher.forClass(TransientSubChild)
 
-        assert cpf.getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.TRANSIENT, Collection) == [[], ["transientProperty"]]
+        assert tp.getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.TRANSIENT, Collection) == [[]]
+        assert tc.getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.TRANSIENT, Collection) == [[], ["transientProperty"]]
+        assert tsc.getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.TRANSIENT, Collection) == [[], ["transientProperty"], [], ["bar"]]
     }
 
 
@@ -34,7 +38,6 @@ class ClassPropertyFetcherTests  {
 }
 
 class TransientParent {
-
 
     static mapWith = 'neo4j'
     static transients = []
@@ -52,4 +55,12 @@ class TransientChild extends TransientParent {
         this.transientProperty = transientProperty
     }
     static transients = ["transientProperty"]
+}
+
+class TransientSubChild extends TransientChild {
+
+    String foo
+    String bar
+
+    static transients = ["bar"]
 }

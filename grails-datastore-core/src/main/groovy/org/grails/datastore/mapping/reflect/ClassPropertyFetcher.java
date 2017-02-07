@@ -102,7 +102,11 @@ public class ClassPropertyFetcher {
         while (superclass != Object.class && superclass != Script.class && superclass != GroovyObjectSupport.class && superclass != null) {
             ClassPropertyFetcher superFetcher = ClassPropertyFetcher.forClass(superclass);
             for (Map.Entry<String, List<PropertyFetcher>> entry : superFetcher.staticFetchers.entrySet()) {
-                staticFetchers.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+                if (!staticFetchers.containsKey(entry.getKey())) {
+                    staticFetchers.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+                } else {
+                    staticFetchers.get(entry.getKey()).addAll(new ArrayList<>(entry.getValue()));
+                }
             }
             instanceFetchers.putAll(superFetcher.instanceFetchers);
             superclass = superclass.getSuperclass();
