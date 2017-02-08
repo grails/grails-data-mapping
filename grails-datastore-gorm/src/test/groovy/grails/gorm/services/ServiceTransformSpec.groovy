@@ -17,6 +17,61 @@ import java.lang.reflect.Type
  */
 class ServiceTransformSpec extends Specification {
 
+    void "test implement abstract class"() {
+        when:"The service transform is applied to an abstract class"
+        Class service = new GroovyClassLoader().parseClass('''
+import grails.gorm.services.*
+import grails.gorm.annotation.Entity
+
+@Service(expose=false, value=Foo)
+abstract class AbstractMyService implements MyService {}
+ 
+interface MyService {
+    Number deleteMoreFoos(String title)
+    
+    void deleteFoos(String title)
+//    Foo get(Serializable id)
+    
+    Foo delete(Serializable id)
+    
+    List<Foo> listFoos()
+    
+    Foo[] listMoreFoos()
+    
+    Iterable<Foo> listEvenMoreFoos()
+    
+    List<Foo> findByTitle(String title)
+    
+    List<Foo> findByTitleLike(String title)
+    
+    Foo saveFoo(String title)
+}
+@Entity
+class Foo {
+    String title
+}
+
+''')
+        then:
+        !service.isInterface()
+        println service.classLoader.loadedClasses
+
+        when:"the impl is obtained"
+        Class impl = service.classLoader.loadClass("\$AbstractMyServiceImplementation")
+
+        then:"The impl is valid"
+        impl.getMethod("deleteMoreFoos", String).getAnnotation(Transactional) != null
+        impl.genericInterfaces.find() { Type t -> t.typeName == "org.grails.datastore.mapping.services.Service<Foo>" } != null
+        org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
+
+        when:
+        impl.newInstance().listFoos()
+
+        then:
+        def e = thrown(IllegalStateException)
+        e.message == 'No GORM implementations configured. Ensure GORM has been initialized correctly'
+    }
+
     void "test implement list method"() {
         when:"The service transform is applied to an interface it can't implement"
         Class service = new GroovyClassLoader().parseClass('''
@@ -84,7 +139,7 @@ interface MyService {
 
         then:"A compilation error occurred"
         def e = thrown(MultipleCompilationErrorsException)
-        e.message.contains '''No implementations possible for method. Please use an abstract class instead and provide an implementation.
+        e.message.contains '''No implementations possible for method 'void foo()'. Please use an abstract class instead and provide an implementation.
  @ line 6, column 5.
        void foo()
        ^'''

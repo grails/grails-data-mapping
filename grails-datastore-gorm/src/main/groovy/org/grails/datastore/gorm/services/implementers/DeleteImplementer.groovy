@@ -5,9 +5,11 @@ import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
+import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
+import org.codehaus.groovy.ast.stmt.Statement
 import org.grails.datastore.gorm.transactions.transform.TransactionalTransform
 import org.grails.datastore.mapping.reflect.AstUtils
 
@@ -46,7 +48,33 @@ class DeleteImplementer extends AbstractDetachedCriteriaServiceImplementor {
     }
 
     @Override
-    void implementWithQuery(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode, BlockStatement body, VariableExpression detachedCriteriaVar) {
+    void implementById(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode, BlockStatement body, Expression byIdLookup) {
+        boolean isVoidReturnType = ClassHelper.VOID_TYPE.equals(newMethodNode.returnType)
+        VariableExpression obj = varX('$obj')
+        Statement deleteStatement = stmt(callX(obj, "delete"))
+        if(!isVoidReturnType) {
+            deleteStatement = block(
+                deleteStatement,
+                returnS(constX(1))
+            )
+        }
+
+        body.addStatements([
+            declS(obj, byIdLookup),
+            ifS(
+                notNullX(obj),
+                deleteStatement
+            )
+        ])
+        if(!isVoidReturnType) {
+            body.addStatement(
+                returnS(constX(0))
+            )
+        }
+    }
+
+    @Override
+    void implementWithQuery(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode, BlockStatement body, VariableExpression detachedCriteriaVar, Expression queryArgs) {
 
         MethodCallExpression deleteCall = callX(detachedCriteriaVar, "deleteAll" )
         boolean isVoidReturnType = ClassHelper.VOID_TYPE.equals(newMethodNode.returnType)

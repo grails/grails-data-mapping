@@ -40,6 +40,7 @@ import org.codehaus.groovy.runtime.MetaClassHelper
 import org.codehaus.groovy.syntax.SyntaxException
 import org.codehaus.groovy.syntax.Token
 import org.codehaus.groovy.syntax.Types
+import org.codehaus.groovy.transform.trait.Traits
 import org.springframework.util.StringUtils
 
 import javax.persistence.Entity
@@ -114,6 +115,46 @@ class AstUtils {
         if (url == null) return false
 
         return DOMAIN_PATH_PATTERN.matcher(url.getFile()).find()
+    }
+
+    /**
+     * Finds all the abstract methods for the give class node
+     * @param classNode The class node
+     * @return The abstract method
+     */
+    static List<MethodNode> findPublicAbstractMethods(ClassNode classNode) {
+        List<MethodNode> methods = []
+        findAbstractMethodsInternal(classNode, methods)
+        return methods
+    }
+
+    protected static void findAbstractMethodsInternal(ClassNode classNode, List<MethodNode> methods) {
+        if(classNode == null || classNode == ClassHelper.GROOVY_OBJECT_TYPE || Traits.isTrait(classNode) || classNode.name.indexOf('$') > -1) {
+            return
+        }
+        if (classNode.isInterface()) {
+            methods.addAll(classNode.methods)
+        }
+        else {
+            for(MethodNode m in classNode.getMethods()) {
+                int modifiers = m.modifiers
+                def traitBridge = findAnnotation(m, Traits.TraitBridge)
+                boolean isInternal = m.name.indexOf('$') > -1
+                if(traitBridge != null || isInternal) {
+                    continue
+                }
+                if(Modifier.isPublic(modifiers) && Modifier.isAbstract(modifiers) && !m.isSynthetic()) {
+                    methods.add(m)
+                }
+            }
+            ClassNode superClass = classNode.getSuperClass()
+            if(superClass != ClassHelper.OBJECT_TYPE) {
+                findAbstractMethodsInternal(superClass, methods)
+            }
+        }
+        for(i in classNode.getInterfaces()) {
+            findAbstractMethodsInternal(i, methods)
+        }
     }
 
     /**

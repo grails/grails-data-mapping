@@ -17,8 +17,14 @@ package org.grails.datastore.gorm.services.implementers
 
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.ClassNode
+import org.codehaus.groovy.ast.MethodNode
+import org.codehaus.groovy.ast.expr.Expression
+import org.codehaus.groovy.ast.expr.MethodCallExpression
+import org.codehaus.groovy.ast.expr.VariableExpression
+import org.codehaus.groovy.ast.stmt.BlockStatement
+import org.codehaus.groovy.ast.stmt.Statement
 import org.grails.datastore.mapping.reflect.AstUtils
-
+import static org.codehaus.groovy.ast.tools.GeneralUtils.*
 /**
  * An implementer that implements logic for finding a single entity
  *
@@ -26,7 +32,7 @@ import org.grails.datastore.mapping.reflect.AstUtils
  * @since 6.1
  */
 @CompileStatic
-class FindOneImplementer extends FindAllImplementer {
+class FindOneImplementer extends AbstractDetachedCriteriaServiceImplementor {
     static final List<String> HANDLED_PREFIXES = ['retrieve','get', 'find']
 
     @Override
@@ -35,22 +41,28 @@ class FindOneImplementer extends FindAllImplementer {
     }
 
     @Override
-    protected ClassNode resolveDomainClassForReturnType(ClassNode returnType, boolean isArray) {
-        return returnType
-    }
-
-    @Override
-    protected String getNoArgumentsMethodName() {
-        return "first"
-    }
-
-    @Override
-    protected String getQueryMethodName() {
-        return "findWhere"
-    }
-
-    @Override
     Iterable<String> getHandledPrefixes() {
         return HANDLED_PREFIXES
+    }
+
+    @Override
+    void implementById(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode, BlockStatement body, Expression byIdLookup) {
+        body.addStatement(
+            buildReturnStatement(domainClassNode, null, byIdLookup)
+        )
+    }
+
+    @Override
+    void implementWithQuery(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode, BlockStatement body, VariableExpression detachedCriteriaVar, Expression queryArgs) {
+        MethodCallExpression findCall = queryArgs != null ? callX(detachedCriteriaVar, "find", queryArgs) : callX(detachedCriteriaVar, "find")
+        body.addStatement(
+            buildReturnStatement(domainClassNode, queryArgs, findCall)
+        )
+    }
+
+    protected Statement buildReturnStatement(ClassNode targetDomainClass, Expression args, Expression queryMethodCall) {
+        returnS(
+            queryMethodCall
+        )
     }
 }

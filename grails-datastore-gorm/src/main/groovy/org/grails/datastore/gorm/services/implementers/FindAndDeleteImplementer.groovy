@@ -36,8 +36,8 @@ class FindAndDeleteImplementer extends FindOneImplementer {
     }
 
     @Override
-    protected Statement buildReturnStatement(Expression queryMethodCall, Expression args) {
-        VariableExpression var = varX('$obj')
+    protected Statement buildReturnStatement(ClassNode targetDomainClass, Expression args, Expression queryMethodCall) {
+        VariableExpression var = varX('$obj', targetDomainClass)
         MethodCallExpression deleteCall = args != null ? callX(var, "delete", args) : callX(var, "delete")
 
         deleteCall.setSafe(true) // null safe
@@ -57,14 +57,14 @@ class FindAndDeleteImplementer extends FindOneImplementer {
     Iterable<String> getHandledPrefixes() {
         return DeleteImplementer.HANDLED_PREFIXES
     }
-
-    @Override
-    protected String getNoArgumentsMethodName() {
-        return "first"
-    }
-
-    @Override
-    protected String getQueryMethodName() {
-        return "findWhere"
-    }
+//
+//    @Override
+//    protected String getNoArgumentsMethodName() {
+//        return "first"
+//    }
+//
+//    @Override
+//    protected String getQueryMethodName() {
+//        return "findWhere"
+//    }
 }

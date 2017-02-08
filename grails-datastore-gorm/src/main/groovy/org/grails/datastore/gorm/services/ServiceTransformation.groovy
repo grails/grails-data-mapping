@@ -44,6 +44,9 @@ import org.grails.datastore.gorm.services.implementers.FindOneImplementer
 import org.grails.datastore.gorm.services.implementers.SaveImplementer
 import org.grails.datastore.gorm.transform.AbstractTraitApplyingGormASTTransformation
 import org.grails.datastore.mapping.core.order.OrderedComparator
+import org.grails.datastore.mapping.reflect.AstUtils
+
+import java.lang.reflect.Modifier
 
 import static org.grails.datastore.mapping.reflect.AstUtils.*
 
@@ -88,17 +91,25 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
     }
 
     @Override
+    boolean shouldWeave(AnnotationNode annotationNode, ClassNode classNode) {
+        return !Modifier.isAbstract(classNode.modifiers)
+    }
+
+    @Override
     void visitAfterTraitApplied(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode) {
         // if the class node is an interface we are going to try and generate an implementation
         // and add the implementation as an inner class. If any method of the interface cannot be implemented
         // a compilation error occurs
-        if(classNode.isInterface()) {
+        boolean isInterface = classNode.isInterface()
+        if(isInterface || Modifier.isAbstract(classNode.modifiers)) {
             // create a new class to represent the implementation
             String packageName = classNode.packageName ? "${classNode.packageName}." : ""
+            ClassNode[] interfaces = isInterface ? [classNode.plainNodeReference] as ClassNode[] : new ClassNode[0]
+            ClassNode superClass = isInterface ? ClassHelper.OBJECT_TYPE : classNode.plainNodeReference
             ClassNode impl = new ClassNode("${packageName}\$${classNode.nameWithoutPackage}Implementation", // class name
                                             ACC_PUBLIC, // public
-                                            ClassHelper.OBJECT_TYPE,
-                                            [classNode.plainNodeReference] as ClassNode[])
+                                            superClass,
+                                            interfaces)
             // add compile static by default
             impl.addAnnotation(new AnnotationNode(COMPILE_STATIC_TYPE))
             // weave the trait class
@@ -107,10 +118,13 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             // weave with generic argument
             weaveTrait(impl, sourceUnit, getTraitClass(), targetDomainClass)
 
-            List<MethodNode> methods = classNode.getMethods()
+            List<MethodNode> methods = findPublicAbstractMethods(classNode)
             Iterable<ServiceImplementer> implementors = findServiceImplementors()
 
             for(MethodNode method in methods) {
+                if(!Modifier.isAbstract(method.modifiers) || !Modifier.isPublic(method.modifiers)) {
+                    continue
+                }
                 MethodNode methodImpl = null
 
                 for(ServiceImplementer implementer in implementors) {
@@ -138,7 +152,7 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
                 }
 
                 if(methodImpl == null) {
-                    addError(NO_IMPLEMENTATIONS_MESSAGE, method)
+                    error(sourceUnit, classNode.isPrimaryClassNode() ? method : classNode, "No implementations possible for method '${method.typeDescriptor}'. Please use an abstract class instead and provide an implementation.")
                     break
                 }
             }

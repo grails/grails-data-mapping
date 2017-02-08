@@ -110,6 +110,26 @@ class ServiceImplSpec extends Specification {
 
     }
 
+    void "test delete with void return type"() {
+        given:
+        Product p1 = new Product(name: "Apple", type:"Fruit").save(flush:true)
+        Product p2 = new Product(name: "Orange", type:"Fruit").save(flush:true)
+        ProductService productService = datastore.getService(ProductService)
+
+        when:
+        Product found = productService.get(p1.id)
+
+        then:
+        found != null
+
+        when:
+        Number deleted = productService.remove(p1.id)
+
+        then:
+        deleted == 1
+        productService.get(p1.id) == null
+    }
+
     void "test save entity"() {
         given:
         ProductService productService = datastore.getService(ProductService)
@@ -139,6 +159,26 @@ class ServiceImplSpec extends Specification {
         then:
         thrown(ValidationException)
     }
+
+    void "test abstract class service impl"() {
+        given:
+        AnotherProductService productService = (AnotherProductService)datastore.getService(AnotherProductInterface)
+
+        when:
+        Product p = productService.saveProduct("Apple", "Fruit")
+
+        then:
+        p.id != null
+        productService.get(p.id) != null
+
+        when:
+        productService.delete(p.id)
+
+        then:
+        productService.get(p.id) == null
+        productService.getByName("blah").name == "BLAH"
+
+    }
 }
 
 @Entity
@@ -151,6 +191,22 @@ class Product {
     }
 }
 
+interface AnotherProductInterface {
+    Product saveProduct(String name, String type)
+
+    Number delete(Serializable id)
+}
+
+@Service(Product)
+abstract class AnotherProductService implements AnotherProductInterface{
+
+    abstract Product get(Serializable id)
+
+    Product getByName(String name) {
+        return new Product(name:name.toUpperCase())
+    }
+}
+
 @Service(Product)
 interface ProductService {
 
@@ -159,6 +215,8 @@ interface ProductService {
     Number deleteProducts(String name)
 
     Product delete(String name)
+
+    Number remove(Serializable id)
 
     Product deleteProduct(Serializable id)
 

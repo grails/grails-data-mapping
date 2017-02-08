@@ -49,8 +49,14 @@ abstract class AbstractTraitApplyingGormASTTransformation extends AbstractGormAS
     void visit(SourceUnit source, AnnotationNode annotationNode, ClassNode classNode) {
         this.sourceUnit = source
         Class traitJavaClass = getTraitClass()
-        weaveTrait(classNode, source, traitJavaClass)
+        if(shouldWeave(annotationNode, classNode)) {
+            weaveTrait(classNode, source, traitJavaClass)
+        }
         visitAfterTraitApplied(source, annotationNode, classNode)
+    }
+
+    boolean shouldWeave(AnnotationNode annotationNode, ClassNode classNode) {
+        return true
     }
 
     /**
@@ -64,12 +70,7 @@ abstract class AbstractTraitApplyingGormASTTransformation extends AbstractGormAS
         if(classNode.isInterface()) return
 
         ClassNode traitClassNode = ClassHelper.make(traitJavaClass)
-        ClassNode superClass = classNode.getSuperClass()
-        boolean shouldWeave = superClass.equals(OBJECT_CLASS_NODE)
-
-        if (!shouldWeave) {
-            shouldWeave = !classNode.implementsInterface(traitClassNode)
-        }
+        boolean shouldWeave = !classNode.implementsInterface(traitClassNode)
 
         if (shouldWeave) {
             GenericsType[] genericsTypes = traitClassNode.genericsTypes
