@@ -1,6 +1,7 @@
 package org.grails.datastore.mapping.services
 
 import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
 import org.grails.datastore.mapping.core.Datastore
 import org.springframework.util.ClassUtils
 
@@ -11,6 +12,7 @@ import org.springframework.util.ClassUtils
  * @since 6.1
  */
 @CompileStatic
+@Slf4j
 class DefaultServiceRegistry implements ServiceRegistry {
     /**
      * The datastore this service relates to
@@ -18,17 +20,26 @@ class DefaultServiceRegistry implements ServiceRegistry {
     final Datastore datastore
     protected final Map<Class,Service> servicesByInterface
 
-    DefaultServiceRegistry(Datastore datastore) {
+    DefaultServiceRegistry(Datastore datastore, boolean exceptionOnLoadError = true) {
         this.datastore = datastore
         Iterable<Service> services = loadServices()
         Map<Class,Service> serviceMap = [:]
-        for(Service service in services) {
-            service.datastore = datastore
-            def allInterfaces = ClassUtils.getAllInterfaces(service)
-            serviceMap.put(service.getClass(), service)
-            for(Class i in allInterfaces) {
-                if(isValidInterface(i)) {
-                    serviceMap.put(i, service)
+        Iterator<Service> serviceIterator = services.iterator()
+        while(serviceIterator.hasNext()) {
+            try {
+                Service service = serviceIterator.next()
+                service.datastore = datastore
+                def allInterfaces = ClassUtils.getAllInterfaces(service)
+                serviceMap.put(service.getClass(), service)
+                for(Class i in allInterfaces) {
+                    if(isValidInterface(i)) {
+                        serviceMap.put(i, service)
+                    }
+                }
+            } catch (Throwable e) {
+                log.error("Could not load GORM service: ${e.message}", e)
+                if(exceptionOnLoadError) {
+                    throw e
                 }
             }
         }

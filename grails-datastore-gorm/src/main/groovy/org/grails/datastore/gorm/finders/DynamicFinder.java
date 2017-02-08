@@ -53,13 +53,13 @@ import org.grails.datastore.mapping.query.api.QueryArgumentsAware;
 import org.grails.datastore.mapping.reflect.ClassUtils;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 /**
  * Abstract base class for dynamic finders.
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class DynamicFinder extends AbstractFinder implements QueryBuildingFinder {
-
 
     public static final String ARGUMENT_FETCH_SIZE = "fetchSize";
     public static final String ARGUMENT_TIMEOUT = "timeout";
@@ -75,14 +75,17 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
     public static final String ARGUMENT_IGNORE_CASE = "ignoreCase";
     public static final String ARGUMENT_CACHE = "cache";
     public static final String ARGUMENT_LOCK = "lock";
-
-
-
     protected Pattern pattern;
+
+    private static final String OPERATOR_OR = "Or";
+    private static final String OPERATOR_AND = "And";
+    private static final String[] DEFAULT_OPERATORS = {OPERATOR_AND, OPERATOR_OR};
     private Pattern[] operatorPatterns;
     private String[] operators;
 
     private static Pattern methodExpressinPattern;
+
+    private static final Pattern[] defaultOperationPatterns;
     private static final Object[] EMPTY_OBJECT_ARRAY = {};
 
     private static final String NOT = "Not";
@@ -90,6 +93,12 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
     protected final MappingContext mappingContext;
 
     static {
+        defaultOperationPatterns = new Pattern[2];
+        for (int i = 0; i < DEFAULT_OPERATORS.length; i++) {
+            String defaultOperator = DEFAULT_OPERATORS[i];
+            defaultOperationPatterns[i] = Pattern.compile("(\\w+)(" + defaultOperator + ")(\\p{Upper})(\\w+)");
+        }
+
         // populate the default method expressions
         try {
             Class[] classes = {
@@ -160,6 +169,63 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
                     e.getMessage(), e);
         }
     }
+
+    public static MatchSpec buildMatchSpec(String prefix, String methodName, int parameterCount) {
+        String methodPattern = "("+prefix+")([A-Z]\\w*)";
+        Matcher matcher = Pattern.compile(methodPattern).matcher(methodName);
+        if(matcher.find()) {
+            int totalRequiredArguments = 0;
+            List<MethodExpression> expressions = new ArrayList<>();
+            if (matcher.groupCount() == 2) {
+                String querySequence = matcher.group(2);
+                String operatorInUse;
+                boolean containsOperator = false;
+                String[] queryParameters;
+                for (int i = 0; i < DEFAULT_OPERATORS.length; i++) {
+                    Matcher currentMatcher = defaultOperationPatterns[i].matcher(querySequence);
+                    if (currentMatcher.find()) {
+                        containsOperator = true;
+                        operatorInUse = DEFAULT_OPERATORS[i];
+
+                        queryParameters = querySequence.split(operatorInUse);
+                        // loop through query parameters and create expressions
+                        // calculating the number of arguments required for the expression
+                        for (String queryParameter : queryParameters) {
+                            MethodExpression currentExpression = findMethodExpression(queryParameter);
+                            // add to list of expressions
+                            totalRequiredArguments += currentExpression.argumentsRequired;
+                            expressions.add(currentExpression);
+                        }
+                        break;
+                    }
+                }
+
+                // otherwise there is only one expression
+                if (!containsOperator && querySequence != null) {
+                    MethodExpression solo =findMethodExpression(querySequence);
+
+                    final int requiredArguments = solo.getArgumentsRequired();
+                    if (requiredArguments  > parameterCount) {
+                        return null;
+                    }
+
+                    totalRequiredArguments += requiredArguments;
+                    expressions.add(solo);
+                }
+
+                // if the total of all the arguments necessary does not equal the number of arguments
+                // return null
+                if (totalRequiredArguments > parameterCount) {
+                    return null;
+                }
+                else {
+                    return new MatchSpec(methodName,prefix, querySequence, totalRequiredArguments, expressions);
+                }
+            }
+        }
+        return null;
+    }
+
 
     public void setPattern(String pattern) {
         this.pattern = Pattern.compile(pattern);
@@ -319,7 +385,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
      */
     private MethodExpression getInitializedExpression(MethodExpression expression, Object[] arguments) {
         if (expression instanceof Equal && arguments.length == 1 && arguments[0] == null) {
-            expression = new IsNull(expression.targetClass, expression.propertyName);
+            expression = new IsNull(expression.propertyName);
         } else {
             expression.setArguments(arguments);
         }
@@ -341,6 +407,26 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         }
         if (me == null) {
             me = new Equal(clazz, calcPropertyName(expression, Equal.class.getSimpleName()));
+        }
+
+        return me;
+    }
+
+    protected static MethodExpression findMethodExpression(String expression) {
+        MethodExpression me = null;
+        final Matcher matcher = methodExpressinPattern.matcher(expression);
+
+        if (matcher.find()) {
+            Constructor constructor = methodExpressions.get(matcher.group(1));
+            try {
+                me = (MethodExpression) constructor.newInstance(null,
+                        calcPropertyName(expression, constructor.getDeclaringClass().getSimpleName()));
+            } catch (Exception e) {
+                // ignore
+            }
+        }
+        if (me == null) {
+            me = new Equal(calcPropertyName(expression, Equal.class.getSimpleName()));
         }
 
         return me;

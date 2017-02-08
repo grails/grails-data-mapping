@@ -7,6 +7,8 @@ import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.expr.ClassExpression
 import org.codehaus.groovy.ast.expr.Expression
+import org.codehaus.groovy.ast.expr.MapEntryExpression
+import org.codehaus.groovy.ast.expr.MapExpression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.TupleExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
@@ -22,6 +24,24 @@ import static org.grails.datastore.mapping.reflect.AstUtils.ZERO_ARGUMENTS
 @CompileStatic
 class AstMethodDispatchUtils extends GeneralUtils {
 
+    /**
+     * Create named arguments
+     *
+     * @param args The args
+     * @return The MapExpression
+     */
+    static MapExpression namedArgs(Map<String, ? extends Expression> args) {
+        def expression = new MapExpression()
+        for(entry in args) {
+            expression.addMapEntryExpression(
+                new MapEntryExpression(
+                    constX(entry.key),
+                    entry.value
+                )
+            )
+        }
+        return expression
+    }
     /**
      * Make a direct method call on this object for the given name and arguments
      *

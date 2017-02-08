@@ -29,7 +29,7 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 /**
- * A generic configuration builder that implementors can implement to construct the configuration from the source {@link PropertyResolver}
+ * A generic configuration builder that implementers can implement to construct the configuration from the source {@link PropertyResolver}
  *
  * @param <B> The builder type (examples are MongoClientSettings.Builder or Neo4j Bolt's Config.ConfigBuilder
  * @param <C> The finalized configuration constructions from the builder (examples are MongoClientSettings or Neo4j Bolt's Config)

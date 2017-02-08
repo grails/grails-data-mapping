@@ -31,6 +31,7 @@ import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.multitenancy.transform.TenantTransform
 import org.grails.datastore.gorm.transform.AbstractMethodDecoratingTransformation
 import org.grails.datastore.gorm.transform.AstMethodDispatchUtils
+import org.grails.datastore.gorm.transform.GormASTTransformationClass
 import org.grails.datastore.mapping.transactions.CustomizableRollbackTransactionAttribute
 import org.grails.datastore.mapping.transactions.TransactionCapableDatastore
 import org.springframework.core.Ordered
@@ -357,6 +358,21 @@ class TransactionalTransform extends AbstractMethodDecoratingTransformation impl
     @Override
     protected boolean hasExcludedAnnotation(MethodNode md) {
         return super.hasExcludedAnnotation(md) || hasExcludedAnnotation(md, ANNOTATION_NAME_EXCLUDES)
+    }
+
+    /**
+     * Whether the given method has a transactional annotation
+     *
+     * @param md The method node
+     * @return
+     */
+    static boolean hasTransactionalAnnotation(MethodNode md) {
+        for (AnnotationNode annotation : md.getAnnotations()) {
+            if(ANNOTATION_NAME_EXCLUDES.any() { String n -> n == annotation.classNode.name}) {
+                return true
+            }
+        }
+        return false
     }
 
     @Override

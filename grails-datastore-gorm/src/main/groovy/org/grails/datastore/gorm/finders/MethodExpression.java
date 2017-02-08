@@ -35,13 +35,20 @@ public abstract class MethodExpression {
     protected String propertyName;
     protected Object[] arguments;
     protected int argumentsRequired = 1;
+    /**
+     * @deprecated  Do not use
+     */
+    @Deprecated
     protected Class<?> targetClass;
 
     public abstract Query.Criterion createCriterion();
 
     protected MethodExpression(Class<?> targetClass, String propertyName) {
         this.propertyName = propertyName;
-        this.targetClass = targetClass;
+    }
+
+    protected MethodExpression(String propertyName) {
+        this.propertyName = propertyName;
     }
 
     public int getArgumentsRequired() {
@@ -101,6 +108,10 @@ public abstract class MethodExpression {
             super(targetClass, propertyName);
         }
 
+        public GreaterThan(String propertyName) {
+            super(propertyName);
+        }
+
         @Override
         public Query.Criterion createCriterion() {
             return Restrictions.gt(propertyName, arguments[0]);
@@ -110,6 +121,10 @@ public abstract class MethodExpression {
     public static class GreaterThanEquals extends MethodExpression {
         public GreaterThanEquals(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
+        }
+
+        public GreaterThanEquals(String propertyName) {
+            super(propertyName);
         }
 
         @Override
@@ -123,6 +138,10 @@ public abstract class MethodExpression {
             super(targetClass, propertyName);
         }
 
+        public LessThan(String propertyName) {
+            super(propertyName);
+        }
+
         @Override
         public Query.Criterion createCriterion() {
             return Restrictions.lt(propertyName, arguments[0]);
@@ -132,6 +151,10 @@ public abstract class MethodExpression {
     public static class LessThanEquals extends MethodExpression {
         public LessThanEquals(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
+        }
+
+        public LessThanEquals(String propertyName) {
+            super(propertyName);
         }
 
         @Override
@@ -145,6 +168,10 @@ public abstract class MethodExpression {
             super(targetClass, propertyName);
         }
 
+        public Like(String propertyName) {
+            super(propertyName);
+        }
+
         @Override
         public Query.Criterion createCriterion() {
             return Restrictions.like(propertyName, arguments[0].toString());
@@ -154,6 +181,10 @@ public abstract class MethodExpression {
     public static class Ilike extends MethodExpression {
         public Ilike(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
+        }
+
+        public Ilike(String propertyName) {
+            super(propertyName);
         }
 
         @Override
@@ -167,6 +198,10 @@ public abstract class MethodExpression {
             super(targetClass, propertyName);
         }
 
+        public Rlike(String propertyName) {
+            super(propertyName);
+        }
+
         @Override
         public Query.Criterion createCriterion() {
             return Restrictions.rlike(propertyName, arguments[0].toString());
@@ -176,6 +211,10 @@ public abstract class MethodExpression {
     public static class InList extends MethodExpression {
         public InList(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
+        }
+
+        public InList(String propertyName) {
+            super(propertyName);
         }
 
         @Override
@@ -232,6 +271,11 @@ public abstract class MethodExpression {
             argumentsRequired = 2;
         }
 
+        public Between(String propertyName) {
+            super(propertyName);
+            argumentsRequired = 2;
+        }
+
         @Override
         public Query.Criterion createCriterion() {
             return Restrictions.between(propertyName, arguments[0], arguments[1]);
@@ -250,6 +294,11 @@ public abstract class MethodExpression {
     public static class InRange extends MethodExpression {
         public InRange(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
+            argumentsRequired = 1;
+        }
+
+        public InRange(String propertyName) {
+            super(propertyName);
             argumentsRequired = 1;
         }
 
@@ -280,6 +329,11 @@ public abstract class MethodExpression {
             argumentsRequired = 0;
         }
 
+        public IsNull(String propertyName) {
+            super(propertyName);
+            argumentsRequired = 0;
+        }
+
         @Override
         public Criterion createCriterion() {
             return Restrictions.isNull(propertyName);
@@ -293,6 +347,11 @@ public abstract class MethodExpression {
             argumentsRequired = 0;
         }
 
+        public IsNotNull(String propertyName) {
+            super(propertyName);
+            argumentsRequired = 0;
+        }
+
         @Override
         public Criterion createCriterion() {
             return Restrictions.isNotNull(propertyName);
@@ -302,6 +361,11 @@ public abstract class MethodExpression {
     public static class IsEmpty extends MethodExpression {
         public IsEmpty(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
+            argumentsRequired = 0;
+        }
+
+        public IsEmpty(String propertyName) {
+            super(propertyName);
             argumentsRequired = 0;
         }
 
@@ -318,6 +382,12 @@ public abstract class MethodExpression {
             argumentsRequired = 0;
         }
 
+        public IsNotEmpty(String propertyName) {
+            super(propertyName);
+            argumentsRequired = 0;
+        }
+
+
         @Override
         public Criterion createCriterion() {
             return Restrictions.isNotEmpty(propertyName);
@@ -329,6 +399,10 @@ public abstract class MethodExpression {
             super(targetClass, propertyName);
         }
 
+        public Equal(String propertyName) {
+            super(propertyName);
+        }
+
         @Override
         public Query.Criterion createCriterion() {
             return Restrictions.eq(propertyName, arguments[0]);
@@ -338,6 +412,10 @@ public abstract class MethodExpression {
     public static class NotEqual extends MethodExpression {
         public NotEqual(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
+        }
+
+        public NotEqual(String propertyName) {
+            super(propertyName);
         }
 
         @Override

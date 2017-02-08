@@ -22,8 +22,10 @@ import org.grails.datastore.mapping.core.Datastore
  *
  * @author Graeme Rocher
  * @since 6.1
+ *
+ * <T> The domain class type this service operates with
  */
-trait Service {
+trait Service<T> {
 
     /**
      * The datastore that this service is related to

@@ -44,6 +44,11 @@ import java.lang.annotation.*;
 @GroovyASTTransformationClass("org.grails.datastore.gorm.transform.OrderedGormTransformation")
 @GormASTTransformationClass("org.grails.datastore.gorm.multitenancy.transform.TenantTransform")
 public @interface Tenant {
+    /**
+     * The tenant resolver
+     *
+     * @return A closure that resolves the tenant id
+     */
     Class value();
 
     /**

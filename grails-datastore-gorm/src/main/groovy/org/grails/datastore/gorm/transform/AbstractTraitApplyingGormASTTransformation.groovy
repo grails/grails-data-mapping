@@ -20,9 +20,14 @@ import org.codehaus.groovy.ast.AnnotatedNode
 import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
+import org.codehaus.groovy.ast.GenericsType
+import org.codehaus.groovy.ast.tools.GenericsUtils
 import org.codehaus.groovy.control.SourceUnit
+import org.codehaus.groovy.transform.trait.TraitComposer
+import org.grails.datastore.mapping.reflect.AstUtils
 
 import static org.grails.datastore.mapping.reflect.AstUtils.OBJECT_CLASS_NODE
+import static org.grails.datastore.mapping.reflect.AstUtils.error
 
 /**
  * An abstract transformation that applies a Trait
@@ -35,28 +40,73 @@ abstract class AbstractTraitApplyingGormASTTransformation extends AbstractGormAS
 
     @Override
     void visit(SourceUnit source, AnnotationNode annotationNode, AnnotatedNode annotatedNode) {
+        this.sourceUnit = source
         if(annotatedNode instanceof ClassNode) {
             visit(source, annotationNode, (ClassNode)annotatedNode)
         }
     }
 
     void visit(SourceUnit source, AnnotationNode annotationNode, ClassNode classNode) {
-        ClassNode traitClassNode = ClassHelper.make(getTraitClass()).getPlainNodeReference()
-        ClassNode superClass = classNode.getSuperClass()
-        final shouldWeave = superClass.equals(OBJECT_CLASS_NODE)
+        this.sourceUnit = source
+        Class traitJavaClass = getTraitClass()
+        weaveTrait(classNode, source, traitJavaClass)
+        visitAfterTraitApplied(source, annotationNode, classNode)
+    }
 
-        if(!shouldWeave) {
+    /**
+     * Weave the given trait into the given ClassNode
+     *
+     * @param classNode The class node
+     * @param source The source unit
+     * @param traitJavaClass The trait java class
+     */
+    protected void weaveTrait(ClassNode classNode, SourceUnit source, Class traitJavaClass, ClassNode... genericArguments) {
+        if(classNode.isInterface()) return
+
+        ClassNode traitClassNode = ClassHelper.make(traitJavaClass)
+        ClassNode superClass = classNode.getSuperClass()
+        boolean shouldWeave = superClass.equals(OBJECT_CLASS_NODE)
+
+        if (!shouldWeave) {
             shouldWeave = !classNode.implementsInterface(traitClassNode)
         }
 
-        if(shouldWeave ) {
-            classNode.addInterface(traitClassNode)
-            if(compilationUnit != null) {
-                org.codehaus.groovy.transform.trait.TraitComposer.doExtendTraits(classNode, source, compilationUnit);
+        if (shouldWeave) {
+            GenericsType[] genericsTypes = traitClassNode.genericsTypes
+            if(genericsTypes != null && genericsTypes.length != genericArguments.length) {
+                ClassNode[] newGenericArguments = new ClassNode[genericsTypes.length]
+                int i = 0
+                for (GenericsType gt in genericsTypes) {
+                    if (i < genericArguments.length) {
+                        newGenericArguments[i] = genericArguments[i].plainNodeReference
+                    } else {
+                        newGenericArguments[i] = ClassHelper.OBJECT_TYPE.plainNodeReference
+                    }
+                    i++
+                }
+                genericArguments = newGenericArguments
+            }
+
+            if(genericArguments.length > 0) {
+                ClassNode originTraitClassNode = traitClassNode
+                traitClassNode = GenericsUtils.makeClassSafeWithGenerics(originTraitClassNode, genericsTypes)
+                final Map<String, ClassNode> parameterNameToParameterValue = new LinkedHashMap<String, ClassNode>()
+                if(genericsTypes != null) {
+                    int j = 0
+                    for(GenericsType gt : traitClassNode.genericsTypes) {
+                        parameterNameToParameterValue.put(gt.getName(), genericArguments[j++])
+                    }
+                }
+                classNode.addInterface(AstUtils.replaceGenericsPlaceholders(traitClassNode, parameterNameToParameterValue))
+                classNode.setUsingGenerics(true)
+            }
+            else {
+                classNode.addInterface(traitClassNode.plainNodeReference)
+            }
+            if (compilationUnit != null) {
+                TraitComposer.doExtendTraits(classNode, source, compilationUnit);
             }
         }
-
-        visitAfterTraitApplied(source, annotationNode, classNode)
     }
 
     void visitAfterTraitApplied(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode) {

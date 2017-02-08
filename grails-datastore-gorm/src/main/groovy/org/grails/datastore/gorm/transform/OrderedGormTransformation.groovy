@@ -21,22 +21,20 @@ import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.AnnotatedNode
 import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.MethodNode
-import org.codehaus.groovy.ast.expr.ConstantExpression
-import org.codehaus.groovy.ast.expr.ListExpression
 import org.codehaus.groovy.control.CompilationUnit
 import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.AbstractASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
+import org.grails.datastore.mapping.core.order.OrderedComparator
 import org.grails.datastore.mapping.reflect.ClassUtils
-import org.springframework.core.OrderComparator
 
 import static org.grails.datastore.mapping.reflect.AstUtils.findAnnotation
 
 /**
  * Central AST transformation that ensures that GORM AST Transformations are executed in the correct order.
- * Each GORM transform can implement the {@link org.springframework.core.Ordered} interface to achieve property placement.
+ * Each GORM transform can implement the {@link org.grails.datastore.mapping.core.Ordered} interface to achieve property placement.
  *
  * @author Graeme Rocher
  * @since 6.1
@@ -91,7 +89,7 @@ class OrderedGormTransformation extends AbstractASTTransformation implements Com
             }
         }
         return transforms.sort { TransformationInvocation a, TransformationInvocation b ->
-            new OrderComparator().compare(a.transform, b.transform)
+            new OrderedComparator<>().compare(a.transform, b.transform)
         }.reverse()
     }
 

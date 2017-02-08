@@ -119,6 +119,11 @@ public class SimpleMapDatastore extends AbstractDatastore implements Closeable, 
         this(createMultipleDataSources(dataSourceNames, DatastoreUtils.createPropertyResolver(null)),new DefaultApplicationEventPublisher(), classes);
     }
 
+    public SimpleMapDatastore(Class...classes) {
+        this(DatastoreUtils.createPropertyResolver(null),new DefaultApplicationEventPublisher(), classes);
+    }
+
+
     public SimpleMapDatastore(PropertyResolver configuration, final Iterable<String> dataSourceNames, Class...classes) {
         this(createMultipleDataSources(dataSourceNames, configuration),new DefaultApplicationEventPublisher(), classes);
     }

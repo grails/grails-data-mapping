@@ -31,9 +31,10 @@ import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.GroovyASTTransformation
 import org.grails.datastore.gorm.transform.AbstractMethodDecoratingTransformation
+import org.grails.datastore.mapping.core.Ordered
+import org.grails.datastore.mapping.core.order.OrderedComparator
 import org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException
 import org.grails.datastore.mapping.services.ServiceRegistry
-import org.springframework.core.Ordered
 
 import static org.codehaus.groovy.ast.ClassHelper.CLOSURE_TYPE
 import static org.codehaus.groovy.ast.ClassHelper.make
@@ -148,6 +149,6 @@ class TenantTransform extends AbstractMethodDecoratingTransformation implements 
 
     @Override
     int getOrder() {
-        return Ordered.HIGHEST_PRECEDENCE + 100
+        return OrderedComparator.HIGHEST_PRECEDENCE + 100
     }
 }

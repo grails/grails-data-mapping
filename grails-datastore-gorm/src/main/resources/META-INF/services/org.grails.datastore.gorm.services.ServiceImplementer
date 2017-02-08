@@ -1,0 +1,5 @@
+org.grails.datastore.gorm.services.implementers.FindAllImplementer
+org.grails.datastore.gorm.services.implementers.FindOneImplementer
+org.grails.datastore.gorm.services.implementers.FindOneByImplementer
+org.grails.datastore.gorm.services.implementers.FindAndDeleteImplementer
+org.grails.datastore.gorm.services.implementers.FindByImplementer
