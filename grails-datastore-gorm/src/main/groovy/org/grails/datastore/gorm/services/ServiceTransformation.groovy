@@ -145,7 +145,7 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
                     }
                     else if(implementer instanceof ServiceEnhancer) {
                         ServiceEnhancer enhancer = ((ServiceEnhancer)implementer)
-                        if(enhancer.doesEnhance(targetDomainClass, method)) {
+                        if(enhancer.doesEnhance(targetDomainClass, method) && methodImpl != null) {
                             enhancer.enhance(targetDomainClass, method, methodImpl, impl)
                         }
                     }
