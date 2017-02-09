@@ -944,7 +944,7 @@ Embedded documents may also require updating.
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile 'org.grails.plugins:mongodb:6.0.7.BUILD-SNAPSHOT'
+    compile 'org.grails.plugins:mongodb:6.0.8.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
@@ -958,7 +958,7 @@ Embedded documents may also require updating.
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("6.0.7.BUILD-SNAPSHOT")
+            details.useVersion("6.0.8.BUILD-SNAPSHOT")
         }
     }
 }
@@ -973,7 +973,7 @@ dependencies {
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">plugins {
-    compile ':mongodb:6.0.7.BUILD-SNAPSHOT'
+    compile ':mongodb:6.0.8.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
@@ -1177,7 +1177,7 @@ dependencies {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-mongodb-spring-boot:6.0.7.BUILD-SNAPSHOT")</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-mongodb-spring-boot:6.0.8.BUILD-SNAPSHOT")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1234,7 +1234,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-mongodb:6.0.7.BUILD-SNAPSHOT"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-mongodb:6.0.8.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 <div class="paragraph">
