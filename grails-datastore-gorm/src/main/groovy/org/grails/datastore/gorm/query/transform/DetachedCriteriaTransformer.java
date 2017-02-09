@@ -81,6 +81,7 @@ import org.grails.datastore.mapping.reflect.ReflectionUtils;
 public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
     private static final Class<?>[] EMPTY_JAVA_CLASS_ARRAY = {};
+    private static final Object TRANSFORMED_MARKER = new Object();
     public static final String AND_OPERATOR = "&";
     public static final String OR_OPERATOR = "|";
     public static final ClassNode DETACHED_CRITERIA_CLASS_NODE = ClassHelper.make(DetachedCriteria.class);
@@ -155,11 +156,10 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     protected Map<String, Object> aliases = new HashMap<String, Object>();
     protected Map<String, ClassNode> staticDetachedCriteriaVariables = new HashMap<String, ClassNode>();
     protected Map<String, Map<String, ClassNode>> cachedClassProperties = new HashMap<String, Map<String, ClassNode>>();
-    protected Set<ClosureExpression> transformedExpressions = new HashSet<ClosureExpression>();
     protected Set<Expression> aliasExpressions = new HashSet<Expression>();
     protected ClassNode currentClassNode;
 
-    DetachedCriteriaTransformer(SourceUnit sourceUnit) {
+    public DetachedCriteriaTransformer(SourceUnit sourceUnit) {
         this.sourceUnit = sourceUnit;
     }
 
@@ -173,7 +173,6 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         } finally {
             currentClassNode = null;
             detachedCriteriaVariables.clear();
-            transformedExpressions.clear();
         }
     }
 
@@ -501,8 +500,8 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         super.visitStaticMethodCallExpression(call);
     }
 
-    protected void transformClosureExpression(ClassNode classNode, ClosureExpression closureExpression) {
-        if (transformedExpressions.contains(closureExpression)) return;
+    public void transformClosureExpression(ClassNode classNode, ClosureExpression closureExpression) {
+        if (closureExpression.getNodeMetaData(TRANSFORMED_MARKER) !=  null) return;
         ClassNode previousClassNode = this.currentClassNode;
         try {
             this.currentClassNode = classNode;
@@ -519,7 +518,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             }
 
             if (!newCode.getStatements().isEmpty()) {
-                transformedExpressions.add(closureExpression);
+                closureExpression.putNodeMetaData(TRANSFORMED_MARKER, Boolean.TRUE);
                 closureExpression.setCode(newCode);
             }
         } finally {

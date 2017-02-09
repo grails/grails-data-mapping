@@ -223,6 +223,24 @@ class ServiceImplSpec extends Specification {
         then:
         productService.listProductName("Vegetable").size() == 2
     }
+
+    void "test @where annotation"() {
+        given:
+        ProductService productService = datastore.getService(ProductService)
+
+        when:
+        productService.saveProduct("Carrot", "Vegetable")
+        productService.saveProduct("Pumpkin", "Vegetable")
+        productService.saveProduct("Tomato", "Fruit")
+
+        Product p = productService.searchByType("Veg%")
+
+        then:
+        p != null
+        p.name == 'Carrot'
+        productService.searchByType("Stuf%") == null
+
+    }
 }
 
 @Entity
@@ -253,6 +271,10 @@ abstract class AnotherProductService implements AnotherProductInterface{
 
 @Service(Product)
 interface ProductService {
+
+    @Where({ type ==~ pattern })
+    Product searchByType(String pattern)
+
     List<String> listProductName(String type)
 
     String findProductType(Serializable id)

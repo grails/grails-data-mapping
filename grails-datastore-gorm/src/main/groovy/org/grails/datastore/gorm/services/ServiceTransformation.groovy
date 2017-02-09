@@ -44,6 +44,7 @@ import org.grails.datastore.gorm.services.implementers.FindOnePropertyProjection
 import org.grails.datastore.gorm.services.implementers.FindPropertyProjectImplementer
 import org.grails.datastore.gorm.services.implementers.SaveImplementer
 import org.grails.datastore.gorm.services.implementers.UpdateOneImplementer
+import org.grails.datastore.gorm.services.implementers.WhereImplementer
 import org.grails.datastore.gorm.transform.AbstractTraitApplyingGormASTTransformation
 import org.grails.datastore.mapping.core.order.OrderedComparator
 
@@ -74,7 +75,8 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             new SaveImplementer(),
             new UpdateOneImplementer(),
             new FindOnePropertyProjectionImplementer(),
-            new FindPropertyProjectImplementer()] as List<ServiceImplementer>
+            new FindPropertyProjectImplementer(),
+            new WhereImplementer()] as List<ServiceImplementer>
 
     private static Iterable<ServiceImplementer> LOADED_IMPLEMENTORS = null
     public static final String NO_IMPLEMENTATIONS_MESSAGE = "No implementations possible for method. Please use an abstract class instead and provide an implementation."

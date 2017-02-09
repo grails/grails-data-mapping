@@ -37,7 +37,7 @@ abstract class AbstractDetachedCriteriaServiceImplementor extends AbstractReadOp
             VariableExpression queryVar = varX('$query')
             // def query = new DetachedCriteria(Foo)
             body.addStatement(
-                    declS(queryVar, ctorX(ClassHelper.make(DetachedCriteria), args(classX(domainClassNode.plainNodeReference))))
+                declS(queryVar, ctorX(ClassHelper.make(DetachedCriteria), args(classX(domainClassNode.plainNodeReference))))
             )
 
             if (parameterCount > 0) {

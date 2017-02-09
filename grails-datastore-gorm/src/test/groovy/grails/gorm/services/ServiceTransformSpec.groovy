@@ -1,6 +1,5 @@
 package grails.gorm.services
 
-import grails.gorm.annotation.Entity
 import grails.gorm.multitenancy.TenantService
 import grails.gorm.transactions.ReadOnly
 import grails.gorm.transactions.TransactionService
@@ -17,6 +16,36 @@ import java.lang.reflect.Type
  * Created by graemerocher on 11/01/2017.
  */
 class ServiceTransformSpec extends Specification {
+
+    void 'test @Where annotation'() {
+        when:"The service transform is applied to an interface it can't implement"
+        Class service = new GroovyClassLoader().parseClass('''
+import grails.gorm.services.*
+import grails.gorm.annotation.Entity
+
+@Service(Foo)
+interface MyService {
+
+    @Where({ title ==~ pattern  }) 
+    Foo searchByTitle(String pattern)
+}
+@Entity
+class Foo {
+    String title
+}
+
+''')
+
+        then:
+        service.isInterface()
+        println service.classLoader.loadedClasses
+
+        when:"the impl is obtained"
+        Class impl = service.classLoader.loadClass("\$MyServiceImplementation")
+
+        then:"The impl is valid"
+        org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
+    }
 
     void "test implement abstract class"() {
         when:"The service transform is applied to an abstract class"
@@ -184,6 +213,8 @@ class Foo {
  @ line 8, column 5.
        List<Foo> findByTitLike(String title)'''
     }
+
+
     void "test service transform applied with a dynamic finder for a property of the wrong type"() {
         when:"The service transform is applied to an interface it can't implement"
         new GroovyClassLoader().parseClass('''
