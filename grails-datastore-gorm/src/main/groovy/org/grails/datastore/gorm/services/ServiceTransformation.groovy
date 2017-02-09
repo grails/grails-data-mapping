@@ -42,6 +42,7 @@ import org.grails.datastore.gorm.services.implementers.FindByImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneByImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneImplementer
 import org.grails.datastore.gorm.services.implementers.SaveImplementer
+import org.grails.datastore.gorm.services.implementers.UpdateOneImplementer
 import org.grails.datastore.gorm.transform.AbstractTraitApplyingGormASTTransformation
 import org.grails.datastore.mapping.core.order.OrderedComparator
 import org.grails.datastore.mapping.reflect.AstUtils
@@ -70,7 +71,8 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             new FindOneByImplementer(),
             new FindAndDeleteImplementer(),
             new DeleteImplementer(),
-            new SaveImplementer()] as List<ServiceImplementer>
+            new SaveImplementer(),
+            new UpdateOneImplementer()] as List<ServiceImplementer>
 
     private static Iterable<ServiceImplementer> LOADED_IMPLEMENTORS = null
     public static final String NO_IMPLEMENTATIONS_MESSAGE = "No implementations possible for method. Please use an abstract class instead and provide an implementation."
@@ -118,16 +120,41 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             // weave with generic argument
             weaveTrait(impl, sourceUnit, getTraitClass(), targetDomainClass)
 
-            List<MethodNode> methods = findPublicAbstractMethods(classNode)
-            Iterable<ServiceImplementer> implementors = findServiceImplementors()
+            List<MethodNode> abstractMethods = findPublicAbstractMethods(classNode)
+            Iterable<ServiceImplementer> implementers = findServiceImplementors()
 
-            for(MethodNode method in methods) {
+            // first go through the existing implemented methods
+            if(!isInterface) {
+                for(MethodNode existing in classNode.methods) {
+                    int modifiers = existing.modifiers
+                    if(!Modifier.isAbstract(modifiers) && Modifier.isPublic(modifiers) && !existing.isStatic()) {
+                        for(ServiceImplementer implementer in implementers) {
+                            if(implementer instanceof ServiceEnhancer) {
+                                ServiceEnhancer enhancer = (ServiceEnhancer)implementer
+                                if(enhancer.doesEnhance(targetDomainClass, existing)) {
+                                    enhancer.enhance(targetDomainClass, existing, existing, impl)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // go through the abstract methods and implement them
+            for(MethodNode method in abstractMethods) {
                 if(!Modifier.isAbstract(method.modifiers) || !Modifier.isPublic(method.modifiers)) {
                     continue
                 }
-                MethodNode methodImpl = null
 
-                for(ServiceImplementer implementer in implementors) {
+                // is the method already implemented?
+                MethodNode existing = classNode.getMethod(method.name, method.parameters)
+                if(existing!= null && !Modifier.isAbstract(existing.modifiers)) {
+                    continue
+                }
+
+                // find an implementer that implements the method
+                MethodNode methodImpl = null
+                for(ServiceImplementer implementer in implementers) {
                     if(implementer.doesImplement(targetDomainClass, method)) {
                         if(methodImpl == null) {
 
@@ -151,11 +178,13 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
                     }
                 }
 
+                // the method couldn't be implemented so error
                 if(methodImpl == null) {
                     error(sourceUnit, classNode.isPrimaryClassNode() ? method : classNode, "No implementations possible for method '${method.typeDescriptor}'. Please use an abstract class instead and provide an implementation.")
                     break
                 }
             }
+
 
             Expression exposeExpr = annotationNode.getMember("expose")
             if( exposeExpr == null || (exposeExpr instanceof ConstantExpression && exposeExpr == ConstantExpression.TRUE) ) {

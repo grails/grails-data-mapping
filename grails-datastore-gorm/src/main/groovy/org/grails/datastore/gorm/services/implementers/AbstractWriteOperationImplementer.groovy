@@ -4,6 +4,7 @@ import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
+import org.grails.datastore.gorm.services.ServiceEnhancer
 import org.grails.datastore.gorm.transactions.transform.TransactionalTransform
 
 /**
@@ -13,7 +14,7 @@ import org.grails.datastore.gorm.transactions.transform.TransactionalTransform
  * @since 6.1
  */
 @CompileStatic
-abstract class AbstractWriteOperationImplementer extends AbstractServiceImplementer {
+abstract class AbstractWriteOperationImplementer extends AbstractServiceImplementer implements ServiceEnhancer {
     /**
      * Subclasses should override to add the logic that implements the method
      *
@@ -34,5 +35,18 @@ abstract class AbstractWriteOperationImplementer extends AbstractServiceImplemen
 
         doImplement(domainClassNode, abstractMethodNode, newMethodNode, targetClassNode)
         abstractMethodNode.putNodeMetaData(IMPLEMENTED, Boolean.TRUE)
+    }
+
+    @Override
+    boolean doesEnhance(ClassNode domainClass, MethodNode methodNode) {
+        return doesImplement(domainClass, methodNode)
+    }
+
+    @Override
+    void enhance(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode) {
+        if(!TransactionalTransform.hasTransactionalAnnotation(newMethodNode)) {
+            // read-only transaction by default
+            newMethodNode.addAnnotation( new AnnotationNode(TransactionalTransform.MY_TYPE) )
+        }
     }
 }

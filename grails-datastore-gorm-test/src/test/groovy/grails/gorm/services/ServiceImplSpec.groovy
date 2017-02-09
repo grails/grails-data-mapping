@@ -179,6 +179,26 @@ class ServiceImplSpec extends Specification {
         productService.getByName("blah").name == "BLAH"
 
     }
+
+    void "test update one method"() {
+        given:
+        ProductService productService = datastore.getService(ProductService)
+
+        when:
+        productService.saveProduct("Tomato", "Vegetable")
+
+        then:
+        productService.find("Tomato", "Vegetable") != null
+
+        when:
+        Product product = productService.find("Tomato", "Vegetable")
+        productService.updateProduct(product.id, "Fruit")
+
+        then:
+        productService.find("Tomato", "Vegetable") == null
+        productService.find("Tomato", "Fruit") != null
+
+    }
 }
 
 @Entity
@@ -209,6 +229,8 @@ abstract class AnotherProductService implements AnotherProductInterface{
 
 @Service(Product)
 interface ProductService {
+
+    Product updateProduct(Serializable id, String type)
 
     Product saveProduct(String name, String type)
 

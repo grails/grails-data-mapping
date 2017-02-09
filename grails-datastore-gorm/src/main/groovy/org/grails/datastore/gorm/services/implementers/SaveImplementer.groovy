@@ -36,7 +36,7 @@ import static org.grails.datastore.gorm.transform.AstMethodDispatchUtils.namedAr
  * @since 6.1
  */
 @CompileStatic
-class SaveImplementer extends AbstractWriteOperationImplementer {
+class SaveImplementer extends AbstractSaveImplementer {
     static final List<String> HANDLED_PREFIXES = ['save', 'store', 'persist']
 
     @Override
@@ -60,45 +60,14 @@ class SaveImplementer extends AbstractWriteOperationImplementer {
             )
         }
         else {
-            Expression argsExpression = null
             VariableExpression entityVar = varX('$entity')
             body.addStatement(
                 declS(entityVar, ctorX(domainClassNode))
             )
-
-            for (Parameter parameter in parameters) {
-                String parameterName = parameter.name
-                if (isValidParameter(domainClassNode, parameter, parameterName)) {
-                    body.addStatement(
-                        assignS( propX(entityVar, parameterName), varX(parameter) )
-                    )
-                } else if (parameter.type == ClassHelper.MAP_TYPE && parameterName == 'args') {
-                    argsExpression = varX(parameter)
-                } else {
-                    AstUtils.error(
-                            abstractMethodNode.declaringClass.module.context,
-                            abstractMethodNode,
-                            "Cannot implement method for argument [${parameterName}]. No property exists on domain class [$domainClassNode.name]"
-                    )
-                }
-            }
-            Expression saveArgs
-            if(argsExpression != null) {
-                saveArgs = varX('$args')
-                body.addStatement(
-                    declS( saveArgs, namedArgs(failOnError: ConstantExpression.TRUE))
-                )
-                body.addStatement(
-                    stmt( callX( saveArgs, "putAll", argsExpression) )
-                )
-            }
-            else {
-                saveArgs = namedArgs(failOnError: ConstantExpression.TRUE)
-            }
-
             body.addStatement(
-                returnS( callX( entityVar, "save", saveArgs ) )
+                bindParametersAndSave(domainClassNode, abstractMethodNode, parameters, body, entityVar)
             )
+
         }
     }
 

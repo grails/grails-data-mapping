@@ -2,6 +2,7 @@ package grails.gorm.services
 
 import grails.gorm.annotation.Entity
 import grails.gorm.multitenancy.TenantService
+import grails.gorm.transactions.ReadOnly
 import grails.gorm.transactions.TransactionService
 import grails.gorm.transactions.Transactional
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
@@ -23,8 +24,21 @@ class ServiceTransformSpec extends Specification {
 import grails.gorm.services.*
 import grails.gorm.annotation.Entity
 
-@Service(expose=false, value=Foo)
-abstract class AbstractMyService implements MyService {}
+@Service(Foo)
+abstract class AbstractMyService implements MyService {
+
+    Foo readFoo(Serializable id) {
+        Foo.read(id)
+    }
+    
+    @Override
+    Foo delete(Serializable id) {
+        def foo = Foo.get(id)
+        foo?.delete()
+        foo?.title = "DELETED"
+        return foo
+    }
+}
  
 interface MyService {
     Number deleteMoreFoos(String title)
@@ -61,6 +75,8 @@ class Foo {
 
         then:"The impl is valid"
         impl.getMethod("deleteMoreFoos", String).getAnnotation(Transactional) != null
+        impl.getMethod("delete", Serializable).getAnnotation(Transactional) != null
+        impl.getMethod("readFoo", Serializable).getAnnotation(ReadOnly) != null
         impl.genericInterfaces.find() { Type t -> t.typeName == "org.grails.datastore.mapping.services.Service<Foo>" } != null
         org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
 

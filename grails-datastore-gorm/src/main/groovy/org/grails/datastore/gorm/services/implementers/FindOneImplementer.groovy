@@ -33,7 +33,7 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.*
  */
 @CompileStatic
 class FindOneImplementer extends AbstractDetachedCriteriaServiceImplementor {
-    static final List<String> HANDLED_PREFIXES = ['retrieve','get', 'find']
+    static final List<String> HANDLED_PREFIXES = ['retrieve','get', 'find', 'read']
 
     @Override
     protected boolean isCompatibleReturnType(ClassNode returnType) {
