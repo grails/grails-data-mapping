@@ -38,7 +38,7 @@ abstract class AbstractArrayOrIterableResultImplementer extends AbstractReadOper
      * @return True if it is a compatible return type
      */
     @Override
-    protected boolean isCompatibleReturnType(ClassNode returnType) {
+    protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
         boolean isCompatibleReturnType = false
         if (returnType.name == Iterable.name || implementsInterface(returnType, Iterable.name)) {
             GenericsType[] genericsTypes = returnType.genericsTypes

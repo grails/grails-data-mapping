@@ -36,7 +36,7 @@ class FindOneImplementer extends AbstractDetachedCriteriaServiceImplementor {
     static final List<String> HANDLED_PREFIXES = ['retrieve','get', 'find', 'read']
 
     @Override
-    protected boolean isCompatibleReturnType(ClassNode returnType) {
+    protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
         return AstUtils.isDomainClass(returnType) && !returnType.isArray()
     }
 

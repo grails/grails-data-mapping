@@ -23,9 +23,10 @@ abstract class AbstractServiceImplementer implements ServiceImplementer, Ordered
     @Override
     boolean doesImplement(ClassNode domainClass, MethodNode methodNode) {
         def alreadyImplemented = methodNode.getNodeMetaData(IMPLEMENTED)
-        if(!alreadyImplemented && handledPrefixes.any() { methodNode.name.startsWith(it) }) {
+        String prefix = handledPrefixes.find() { String it -> methodNode.name.startsWith(it) }
+        if(!alreadyImplemented && prefix != null) {
             ClassNode returnType = methodNode.returnType
-            return isCompatibleReturnType(returnType)
+            return isCompatibleReturnType(domainClass, methodNode, returnType, prefix)
 
         }
         return false
@@ -34,10 +35,12 @@ abstract class AbstractServiceImplementer implements ServiceImplementer, Ordered
     /**
      * Return true if the provided return type is compatible with this implementor.
      *
+     * @param domainClass The domain class this method applies to
+     * @param methodNode The method
      * @param returnType The return type
      * @return True if it is a compatible return type
      */
-    protected abstract boolean isCompatibleReturnType(ClassNode returnType)
+    protected abstract boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix)
 
     /**
      * @return The method prefixes handled by this method

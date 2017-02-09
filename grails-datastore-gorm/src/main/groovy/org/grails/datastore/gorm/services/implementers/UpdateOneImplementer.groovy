@@ -19,7 +19,6 @@ import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.Parameter
-import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.StaticMethodCallExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
@@ -52,7 +51,7 @@ class UpdateOneImplementer extends AbstractSaveImplementer {
     }
 
     @Override
-    protected boolean isCompatibleReturnType(ClassNode returnType) {
+    protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
         return AstUtils.isDomainClass(returnType)
     }
 

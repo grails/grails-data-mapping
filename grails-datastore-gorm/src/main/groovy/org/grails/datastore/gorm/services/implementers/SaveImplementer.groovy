@@ -16,12 +16,10 @@
 package org.grails.datastore.gorm.services.implementers
 
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.expr.ConstantExpression
-import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.grails.datastore.mapping.reflect.AstUtils
@@ -72,7 +70,7 @@ class SaveImplementer extends AbstractSaveImplementer {
     }
 
     @Override
-    protected boolean isCompatibleReturnType(ClassNode returnType) {
+    protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
         return AstUtils.isDomainClass(returnType)
     }
 

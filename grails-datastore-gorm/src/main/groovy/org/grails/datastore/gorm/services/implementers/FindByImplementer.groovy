@@ -40,6 +40,7 @@ class FindByImplementer extends AbstractArrayOrIterableResultImplementer impleme
     static final List<String> HANDLED_PREFIXES = ['listBy','findBy', 'findAllBy']
     public static final int POSITION = -100
 
+    // position before FindAllImplementer
     @Override
     int getOrder() {
         return POSITION

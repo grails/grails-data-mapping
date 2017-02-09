@@ -31,7 +31,7 @@ class FindAndDeleteImplementer extends FindOneImplementer {
     }
 
     @Override
-    protected boolean isCompatibleReturnType(ClassNode returnType) {
+    protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
         return AstUtils.isDomainClass(returnType)
     }
 
@@ -57,14 +57,4 @@ class FindAndDeleteImplementer extends FindOneImplementer {
     Iterable<String> getHandledPrefixes() {
         return DeleteImplementer.HANDLED_PREFIXES
     }
-//
-//    @Override
-//    protected String getNoArgumentsMethodName() {
-//        return "first"
-//    }
-//
-//    @Override
-//    protected String getQueryMethodName() {
-//        return "findWhere"
-//    }
 }

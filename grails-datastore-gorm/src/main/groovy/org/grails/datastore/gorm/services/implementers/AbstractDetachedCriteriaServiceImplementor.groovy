@@ -27,7 +27,7 @@ abstract class AbstractDetachedCriteriaServiceImplementor extends AbstractReadOp
         BlockStatement body = (BlockStatement) newMethodNode.getCode()
         Parameter[] parameters = newMethodNode.parameters
         int parameterCount = parameters.length
-        if(parameterCount == 1 && parameters[0].name == GormProperties.IDENTITY) {
+        if(lookupById() && parameterCount == 1 && parameters[0].name == GormProperties.IDENTITY) {
             // optimize query by id
             Expression byId = callX( classX(domainClassNode), "get", varX(parameters[0]))
             implementById(domainClassNode,abstractMethodNode,newMethodNode, targetClassNode, body, byId)
@@ -72,6 +72,13 @@ abstract class AbstractDetachedCriteriaServiceImplementor extends AbstractReadOp
         }
     }
 
+    /**
+     * Whether lookup by id is allowed by this implementation
+     * @return True if it is
+     */
+    protected boolean lookupById() {
+        return true
+    }
     /**
      * Provide an implementation in the case querying for a single instance by id
      *

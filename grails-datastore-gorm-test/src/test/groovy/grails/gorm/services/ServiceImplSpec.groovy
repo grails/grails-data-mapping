@@ -199,6 +199,30 @@ class ServiceImplSpec extends Specification {
         productService.find("Tomato", "Fruit") != null
 
     }
+
+    void 'test property projection'() {
+        given:
+        ProductService productService = datastore.getService(ProductService)
+
+        when:
+        Product p = productService.saveProduct("Tomato", "Vegetable")
+
+        then:
+        productService.findProductType(p.id) == "Vegetable"
+    }
+
+    void 'test property projection return all types'() {
+        given:
+        ProductService productService = datastore.getService(ProductService)
+
+        when:
+        productService.saveProduct("Carrot", "Vegetable")
+        productService.saveProduct("Pumpkin", "Vegetable")
+        productService.saveProduct("Tomato", "Fruit")
+
+        then:
+        productService.listProductName("Vegetable").size() == 2
+    }
 }
 
 @Entity
@@ -229,6 +253,9 @@ abstract class AnotherProductService implements AnotherProductInterface{
 
 @Service(Product)
 interface ProductService {
+    List<String> listProductName(String type)
+
+    String findProductType(Serializable id)
 
     Product updateProduct(Serializable id, String type)
 
@@ -262,5 +289,5 @@ interface ProductService {
 
     Iterable<Product> findEvenMoreProducts()
 
-    Iterable<Product> findByName(String name)
+    Iterable<Product> findByName(String n)
 }

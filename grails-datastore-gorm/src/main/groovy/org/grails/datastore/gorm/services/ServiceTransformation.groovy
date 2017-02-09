@@ -31,7 +31,6 @@ import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.control.io.FileReaderSource
 import org.codehaus.groovy.control.io.ReaderSource
-import org.codehaus.groovy.control.io.StringReaderSource
 import org.codehaus.groovy.control.io.URLReaderSource
 import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
@@ -41,11 +40,12 @@ import org.grails.datastore.gorm.services.implementers.FindAllImplementer
 import org.grails.datastore.gorm.services.implementers.FindByImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneByImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneImplementer
+import org.grails.datastore.gorm.services.implementers.FindOnePropertyProjectionImplementer
+import org.grails.datastore.gorm.services.implementers.FindPropertyProjectImplementer
 import org.grails.datastore.gorm.services.implementers.SaveImplementer
 import org.grails.datastore.gorm.services.implementers.UpdateOneImplementer
 import org.grails.datastore.gorm.transform.AbstractTraitApplyingGormASTTransformation
 import org.grails.datastore.mapping.core.order.OrderedComparator
-import org.grails.datastore.mapping.reflect.AstUtils
 
 import java.lang.reflect.Modifier
 
@@ -72,7 +72,9 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             new FindAndDeleteImplementer(),
             new DeleteImplementer(),
             new SaveImplementer(),
-            new UpdateOneImplementer()] as List<ServiceImplementer>
+            new UpdateOneImplementer(),
+            new FindOnePropertyProjectionImplementer(),
+            new FindPropertyProjectImplementer()] as List<ServiceImplementer>
 
     private static Iterable<ServiceImplementer> LOADED_IMPLEMENTORS = null
     public static final String NO_IMPLEMENTATIONS_MESSAGE = "No implementations possible for method. Please use an abstract class instead and provide an implementation."
