@@ -743,13 +743,32 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="upgradeNotes">1.2. Upgrade Notes</h3>
 <div class="sect3">
-<h4 id="_changes_to_configuration_model">1.2.1. Changes to Configuration Model</h4>
+<h4 id="_flush_mode_now_commit_by_default">1.2.1. Flush Mode Now COMMIT by Default</h4>
+<div class="paragraph">
+<p>In previous versions of GORM the flush mode defaulted to AUTO. With this setting the session would be flushed with or without the presence of a transaction and before every query.</p>
+</div>
+<div class="paragraph">
+<p>The frequent flushing of the session before queries can lead to unintended performance consequences if the behaviour of the <code>AUTO</code> is not fully understood by the developer.</p>
+</div>
+<div class="paragraph">
+<p>With this in mind <code>COMMIT</code> is the new default flush mode in GORM 6, which will flush the session on transaction commit. You can restore the previous behaviour by configuring the flush mode in your application configuration (for example <code>application.yml</code>):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">hibernate</span>:
+    <span class="key">flush</span>:
+        <span class="key">mode</span>: <span class="string"><span class="content">AUTO</span></span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_changes_to_configuration_model">1.2.2. Changes to Configuration Model</h4>
 <div class="paragraph">
 <p>In preparation for Hibernate 5.2 support the previous "SessionFactoryBean" notion has been removed. Now if you wish to customize <code>SessionFactory</code> creation you should instead register a custom <code>org.grails.orm.hibernate.connections.HibernateConnectionSourceFactory</code> in Spring.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_fail_on_error_package_setting_renamed">1.2.2. Fail on Error Package Setting Renamed</h4>
+<h4 id="_fail_on_error_package_setting_renamed">1.2.3. Fail on Error Package Setting Renamed</h4>
 <div class="paragraph">
 <p>The <code>grails.gorm.failOnError</code> setting can no longer be used to configure the packages to enable fail on error. Instead <code>grails.gorm.failOnErrorPackages</code> should be used.</p>
 </div>
@@ -761,12 +780,12 @@ table.CodeRay td.code>pre{padding:0}
 <h2 id="gettingStarted">2. Getting Started</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To use GORM 6.0.6 for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
+<p>To use GORM 6.0.7 for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile "org.grails.plugins:hibernate5:6.0.6"
+    compile "org.grails.plugins:hibernate5:6.0.7"
     compile "org.hibernate:hibernate-ehcache"
 }</code></pre>
 </div>
@@ -780,7 +799,7 @@ table.CodeRay td.code>pre{padding:0}
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("6.0.6.RELEASE")
+            details.useVersion("6.0.7.RELEASE")
         }
     }
 }</code></pre>
@@ -789,7 +808,7 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="hibernateVersions">2.1. Configuring Different Hibernate Versions</h3>
 <div class="paragraph">
-<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.0.6.RELEASE.</p>
+<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.0.7.RELEASE.</p>
 </div>
 <div class="sect3">
 <h4 id="_grails_3_2_x_and_above_with_hibernate_4">2.1.1. Grails 3.2.x and above with Hibernate 4</h4>
@@ -855,7 +874,7 @@ configurations.all {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.0.6.RELEASE")
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.0.7.RELEASE")
 compile "org.hibernate:hibernate-core:5.1.0.Final"
 compile "org.hibernate:hibernate-ehcache:5.1.0.Final"
 runtime "com.h2database:h2:1.4.192"
@@ -988,7 +1007,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:6.0.6.RELEASE"
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:6.0.7.RELEASE"
 runtime "com.h2database:h2:1.4.192"
 runtime "org.apache.tomcat:tomcat-jdbc:8.5.0"
 runtime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"
@@ -7365,7 +7384,7 @@ sessionFactory.openSession()</code></pre>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:6.0.6.RELEASE"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:6.0.7.RELEASE"</code></pre>
 </div>
 </div>
 </div>
