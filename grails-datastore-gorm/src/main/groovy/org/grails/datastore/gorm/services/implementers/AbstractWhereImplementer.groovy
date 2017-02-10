@@ -8,6 +8,7 @@ import org.codehaus.groovy.ast.expr.ClosureExpression
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
+import org.codehaus.groovy.ast.stmt.Statement
 import org.codehaus.groovy.control.SourceUnit
 import org.grails.datastore.gorm.query.transform.DetachedCriteriaTransformer
 import org.grails.datastore.mapping.reflect.AstUtils
@@ -16,13 +17,13 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.*
 import static org.grails.datastore.mapping.reflect.AstUtils.processVariableScopes
 
 /**
- * Implements support for the {@link Where} annotation on {@link grails.gorm.services.Service} instances
+ * Abstract implementation for queries annotated with {@link Where}
  *
  * @author Graeme Rocher
  * @since 6.1
  */
 @CompileStatic
-class WhereImplementer extends AbstractReadOperationImplementer {
+abstract class AbstractWhereImplementer extends AbstractReadOperationImplementer{
 
     @Override
     int getOrder() {
@@ -81,7 +82,7 @@ class WhereImplementer extends AbstractReadOperationImplementer {
                 }
             }
             variableTransformer.visitClosureExpression(closureExpression)
-            transformer.transformClosureExpression( newMethodNode.returnType, closureExpression)
+            transformer.transformClosureExpression( domainClassNode, closureExpression)
 
             BlockStatement body = (BlockStatement)newMethodNode.getCode()
 
@@ -89,14 +90,15 @@ class WhereImplementer extends AbstractReadOperationImplementer {
             VariableExpression queryVar = varX('$query')
             // def query = new DetachedCriteria(Foo)
             body.addStatement(
-                declS(queryVar, ctorX(ClassHelper.make(DetachedCriteria), args(classX(domainClassNode.plainNodeReference))))
+                    declS(queryVar, ctorX(ClassHelper.make(DetachedCriteria), args(classX(domainClassNode.plainNodeReference))))
             )
 
             body.addStatement(
-                assignS(queryVar, callX(queryVar, "build", closureExpression))
+                    assignS(queryVar, callX(queryVar, "build", closureExpression))
             )
+            Expression queryExpression = callX(queryVar, getQueryMethodToExecute(), argsExpression != null ? argsExpression : AstUtils.ZERO_ARGUMENTS)
             body.addStatement(
-                returnS(callX(queryVar, "find", argsExpression != null ? argsExpression : AstUtils.ZERO_ARGUMENTS))
+                buildReturnStatement(domainClassNode, newMethodNode, queryExpression)
             )
             processVariableScopes(sourceUnit, targetClassNode, newMethodNode)
         }
@@ -105,9 +107,12 @@ class WhereImplementer extends AbstractReadOperationImplementer {
         }
     }
 
-    @Override
-    protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
-        return AstUtils.isDomainClass(returnType)
+    protected Statement buildReturnStatement(ClassNode domainClass, MethodNode methodNode, Expression queryExpression) {
+        returnS(castX(methodNode.returnType, queryExpression))
+    }
+
+    protected String getQueryMethodToExecute() {
+        "find"
     }
 
     @Override

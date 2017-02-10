@@ -45,7 +45,7 @@ abstract class AbstractStringQueryImplementer extends AbstractReadOperationImple
         if(expr instanceof GStringExpression) {
             GStringExpression gstring = (GStringExpression)expr
             QueryStringTransformer transformer = new QueryStringTransformer(abstractMethodNode.declaringClass.module.context, scope)
-            Expression transformed = transformer.transform(gstring)
+            Expression transformed = transformer.transformQuery(gstring)
             BlockStatement body = (BlockStatement)newMethodNode.code
             Expression argMap = findArgsExpression(newMethodNode)
             if(argMap != null) {

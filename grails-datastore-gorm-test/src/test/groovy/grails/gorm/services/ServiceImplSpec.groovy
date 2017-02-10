@@ -241,6 +241,8 @@ class ServiceImplSpec extends Specification {
         p != null
         p.name == 'Carrot'
         productService.searchByType("Stuf%") == null
+        productService.searchProducts("Veg%").size() == 2
+        productService.howManyProducts("Veg%") == 2
 
     }
 
@@ -257,6 +259,13 @@ class ServiceImplSpec extends Specification {
 
         when:
         productService.searchAllWithQuery("Veg%")
+
+        then:
+        e = thrown(UnsupportedOperationException)
+        e.message == "String-based queries like [findAll] are currently not supported in this implementation of GORM. Use criteria instead."
+
+        when:
+        productService.searchProductNames("Ve%")
 
         then:
         e = thrown(UnsupportedOperationException)
@@ -307,8 +316,17 @@ interface ProductService {
     @Query("from ${Product p} where $p.name like $pattern")
     List<Product> searchAllWithQuery(String pattern)
 
+    @Query("select $p.name from ${Product p} where $p.name like $pattern")
+    List<String> searchProductNames(String pattern)
+
     @Where({ type ==~ pattern })
     Product searchByType(String pattern)
+
+    @Where({ type ==~ pattern })
+    Set<Product> searchProducts(String pattern)
+
+    @Where({ type ==~ pattern })
+    Number howManyProducts(String pattern)
 
     List<String> listProductName(String type)
 

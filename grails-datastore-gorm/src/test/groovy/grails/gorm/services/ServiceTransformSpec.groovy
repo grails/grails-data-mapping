@@ -241,8 +241,8 @@ import grails.gorm.annotation.Entity
 @Service(Foo)
 interface MyService {
 
-    @Query("from ${Foo f} where $f.title like $pattern") 
-    Foo searchByTitle(String pattern)
+    @Query("select $f.title from ${Foo f} where $f.title like $pattern") 
+    List<String> searchByTitle(String pattern)
 }
 @Entity
 class Foo {
@@ -300,6 +300,10 @@ interface MyService {
 
     @Where({ title ==~ pattern  }) 
     Foo searchByTitle(String pattern)
+    
+    @Where({ title ==~ pattern })
+    Set<Foo> searchFoos(String pattern)
+
 }
 @Entity
 class Foo {

@@ -38,8 +38,10 @@ import org.grails.datastore.gorm.services.ServiceEnhancer
 import org.grails.datastore.gorm.services.ServiceImplementer
 import org.grails.datastore.gorm.services.implementers.CountByImplementer
 import org.grails.datastore.gorm.services.implementers.CountImplementer
+import org.grails.datastore.gorm.services.implementers.CountWhereImplementer
 import org.grails.datastore.gorm.services.implementers.DeleteImplementer
 import org.grails.datastore.gorm.services.implementers.FindAllStringQueryImplementer
+import org.grails.datastore.gorm.services.implementers.FindAllWhereImplementer
 import org.grails.datastore.gorm.services.implementers.FindAndDeleteImplementer
 import org.grails.datastore.gorm.services.implementers.FindAllImplementer
 import org.grails.datastore.gorm.services.implementers.FindByImplementer
@@ -50,10 +52,9 @@ import org.grails.datastore.gorm.services.implementers.FindPropertyProjectImplem
 import org.grails.datastore.gorm.services.implementers.SaveImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneStringQueryImplementer
 import org.grails.datastore.gorm.services.implementers.UpdateOneImplementer
-import org.grails.datastore.gorm.services.implementers.WhereImplementer
+import org.grails.datastore.gorm.services.implementers.FindOneWhereImplementer
 import org.grails.datastore.gorm.transform.AbstractTraitApplyingGormASTTransformation
 import org.grails.datastore.mapping.core.order.OrderedComparator
-import org.grails.datastore.mapping.reflect.AstUtils
 
 import java.beans.Introspector
 import java.lang.reflect.Modifier
@@ -84,10 +85,13 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             new UpdateOneImplementer(),
             new FindOnePropertyProjectionImplementer(),
             new FindPropertyProjectImplementer(),
-            new WhereImplementer(),
+            new FindOneWhereImplementer(),
+            new FindAllWhereImplementer(),
             new FindOneStringQueryImplementer(),
             new FindAllStringQueryImplementer(),
-            new CountImplementer(), new CountByImplementer()] as List<ServiceImplementer>
+            new CountImplementer(),
+            new CountByImplementer(),
+            new CountWhereImplementer()] as List<ServiceImplementer>
 
     private static Iterable<ServiceImplementer> LOADED_IMPLEMENTORS = null
     public static final String NO_IMPLEMENTATIONS_MESSAGE = "No implementations possible for method. Please use an abstract class instead and provide an implementation."

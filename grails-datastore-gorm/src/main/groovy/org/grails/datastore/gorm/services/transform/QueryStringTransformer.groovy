@@ -15,7 +15,8 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.constX
 import static org.codehaus.groovy.ast.tools.GeneralUtils.varX
 
 /**
- * Optimize
+ * This class handles type checking of HQL queries declared in {@link grails.gorm.services.Query} annotations
+ *
  * @author Graeme Rocher
  * @since 6.1
  */
@@ -31,6 +32,44 @@ class QueryStringTransformer extends ClassCodeExpressionTransformer {
         this.variableScope = variableScope
     }
 
+    GStringExpression transformQuery(GStringExpression query) {
+        Expression transformed = transform(query)
+        transformed = transformPropertyExpressions(transformed)
+        GStringExpression transformedGString = (GStringExpression)transformed
+
+        int i = 0
+        List<ConstantExpression> newStrings = []
+        List<Expression> newValues = []
+        ConstantExpression currentConstant
+        List<Expression> values = transformedGString.values
+        for(ConstantExpression exp in transformedGString.strings) {
+            if(i < values.size()) {
+                Expression valueExpr = values[i++]
+                if(valueExpr instanceof ConstantExpression) {
+                    ConstantExpression valueConstant = (ConstantExpression)valueExpr
+                    String newConstant = exp.value.toString() + valueConstant.value.toString()
+                    if(currentConstant != null) {
+                        currentConstant = constX(currentConstant.value.toString() + newConstant )
+                    }
+                    else {
+                        currentConstant = constX(newConstant)
+                    }
+                }
+                else if(currentConstant != null) {
+                    currentConstant = constX(currentConstant.value.toString() + exp.text)
+                    newStrings.add(currentConstant)
+                    newValues.add(valueExpr)
+                    currentConstant = null
+                }
+            }
+            else {
+                newStrings.add(exp)
+            }
+        }
+
+        return new GStringExpression(transformedGString.text, newStrings, newValues)
+    }
+
     @Override
     Expression transform(Expression exp) {
         if(exp instanceof ClassExpression) {
@@ -43,21 +82,7 @@ class QueryStringTransformer extends ClassCodeExpressionTransformer {
             }
         }
         else if(exp instanceof PropertyExpression) {
-            PropertyExpression pe = (PropertyExpression)exp
-            Expression targetObject = pe.objectExpression
-            if( targetObject instanceof VariableExpression) {
-                VariableExpression var = (VariableExpression)targetObject
-                ClassNode domainType = declaredQueryTargets.get(var.name)
-                if(domainType != null) {
-                    String propertyName = pe.propertyAsString
-                    if( AstUtils.hasProperty(domainType, propertyName) ) {
-                        return constX("${var.name}.$propertyName".toString())
-                    }
-                    else {
-                        AstUtils.error(sourceUnit, exp, "No property [$propertyName] existing for domain class [$domainType.name]")
-                    }
-                }
-            }
+            return transformPropertyExpressions(exp)
         }
         else if(exp instanceof MethodCallExpression) {
             MethodCallExpression mce = (MethodCallExpression)exp
@@ -95,6 +120,27 @@ class QueryStringTransformer extends ClassCodeExpressionTransformer {
             def declared = variableScope.getDeclaredVariable(var.name)
             if(declared != null) {
                 return varX(declared)
+            }
+        }
+        return super.transform(exp)
+    }
+
+    Expression transformPropertyExpressions(Expression exp) {
+        if(exp instanceof PropertyExpression) {
+            PropertyExpression pe = (PropertyExpression)exp
+            Expression targetObject = pe.objectExpression
+            if( targetObject instanceof VariableExpression) {
+                VariableExpression var = (VariableExpression)targetObject
+                ClassNode domainType = declaredQueryTargets.get(var.name)
+                if(domainType != null) {
+                    String propertyName = pe.propertyAsString
+                    if( AstUtils.hasProperty(domainType, propertyName) ) {
+                        return constX("${var.name}.$propertyName".toString())
+                    }
+                    else {
+                        AstUtils.error(sourceUnit, exp, "No property [$propertyName] existing for domain class [$domainType.name]")
+                    }
+                }
             }
         }
         return super.transform(exp)
