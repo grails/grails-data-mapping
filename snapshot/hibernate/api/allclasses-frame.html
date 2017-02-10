@@ -85,6 +85,7 @@
 <li><a href="org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">AbstractServiceImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/AbstractStringQueryImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">AbstractStringQueryImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html" title="class in org.grails.datastore.gorm.transform" target="classFrame">AbstractTraitApplyingGormASTTransformation</a></li>
+<li><a href="org/grails/datastore/gorm/services/implementers/AbstractWhereImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">AbstractWhereImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/AbstractWriteOperationImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">AbstractWriteOperationImplementer</a></li>
 <li><a href="org/grails/compiler/gorm/AdditionalGormEntityTransformation.html" title="interface in org.grails.compiler.gorm" target="classFrame"><I>AdditionalGormEntityTransformation</I></a></li>
 <li><a href="org/grails/datastore/gorm/timestamp/AggregateTimestampProvider.html" title="class in org.grails.datastore.gorm.timestamp" target="classFrame">AggregateTimestampProvider</a></li>
@@ -146,6 +147,7 @@
 <li><a href="org/grails/datastore/gorm/finders/CountByFinder.html" title="class in org.grails.datastore.gorm.finders" target="classFrame">CountByFinder</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/CountByImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">CountByImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/CountImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">CountImplementer</a></li>
+<li><a href="org/grails/datastore/gorm/services/implementers/CountWhereImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">CountWhereImplementer</a></li>
 <li><a href="org/grails/datastore/mapping/query/api/Criteria.html" title="interface in org.grails.datastore.mapping.query.api" target="classFrame"><I>Criteria</I></a></li>
 <li><a href="grails/gorm/CriteriaBuilder.html" title="class in grails.gorm" target="classFrame">CriteriaBuilder</a></li>
 <li><a href="grails/gorm/multitenancy/CurrentTenant.html" title="annotation type in grails.gorm.multitenancy" target="classFrame">CurrentTenant</a></li>
@@ -228,6 +230,7 @@
 <li><a href="org/grails/datastore/gorm/finders/FindAllByFinder.html" title="class in org.grails.datastore.gorm.finders" target="classFrame">FindAllByFinder</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindAllImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindAllImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindAllStringQueryImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindAllStringQueryImplementer</a></li>
+<li><a href="org/grails/datastore/gorm/services/implementers/FindAllWhereImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindAllWhereImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindAndDeleteImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindAndDeleteImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/finders/FindByBooleanFinder.html" title="class in org.grails.datastore.gorm.finders" target="classFrame">FindByBooleanFinder</a></li>
 <li><a href="org/grails/datastore/gorm/finders/FindByFinder.html" title="class in org.grails.datastore.gorm.finders" target="classFrame">FindByFinder</a></li>
@@ -236,6 +239,7 @@
 <li><a href="org/grails/datastore/gorm/services/implementers/FindOneImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindOneImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindOnePropertyProjectionImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindOnePropertyProjectionImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindOneStringQueryImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindOneStringQueryImplementer</a></li>
+<li><a href="org/grails/datastore/gorm/services/implementers/FindOneWhereImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindOneWhereImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/finders/FindOrCreateByFinder.html" title="class in org.grails.datastore.gorm.finders" target="classFrame">FindOrCreateByFinder</a></li>
 <li><a href="org/grails/datastore/gorm/finders/FindOrSaveByFinder.html" title="class in org.grails.datastore.gorm.finders" target="classFrame">FindOrSaveByFinder</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindPropertyProjectImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindPropertyProjectImplementer</a></li>
@@ -566,7 +570,6 @@
 <li><a href="org/grails/datastore/mapping/model/ValueGenerator.html" title="enum in org.grails.datastore.mapping.model" target="classFrame">ValueGenerator</a></li>
 <li><a href="org/grails/datastore/mapping/core/VoidSessionCallback.html" title="interface in org.grails.datastore.mapping.core" target="classFrame"><I>VoidSessionCallback</I></a></li>
 <li><a href="grails/gorm/services/Where.html" title="annotation type in grails.gorm.services" target="classFrame">Where</a></li>
-<li><a href="org/grails/datastore/gorm/services/implementers/WhereImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">WhereImplementer</a></li>
 <li><a href="grails/gorm/multitenancy/WithoutTenant.html" title="annotation type in grails.gorm.multitenancy" target="classFrame">WithoutTenant</a></li>
 
         </ul>
