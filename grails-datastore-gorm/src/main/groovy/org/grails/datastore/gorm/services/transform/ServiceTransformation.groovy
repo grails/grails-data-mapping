@@ -36,6 +36,8 @@ import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 import org.grails.datastore.gorm.services.ServiceEnhancer
 import org.grails.datastore.gorm.services.ServiceImplementer
+import org.grails.datastore.gorm.services.implementers.CountByImplementer
+import org.grails.datastore.gorm.services.implementers.CountImplementer
 import org.grails.datastore.gorm.services.implementers.DeleteImplementer
 import org.grails.datastore.gorm.services.implementers.FindAllStringQueryImplementer
 import org.grails.datastore.gorm.services.implementers.FindAndDeleteImplementer
@@ -82,7 +84,8 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             new FindPropertyProjectImplementer(),
             new WhereImplementer(),
             new FindOneStringQueryImplementer(),
-            new FindAllStringQueryImplementer()] as List<ServiceImplementer>
+            new FindAllStringQueryImplementer(),
+            new CountImplementer(), new CountByImplementer()] as List<ServiceImplementer>
 
     private static Iterable<ServiceImplementer> LOADED_IMPLEMENTORS = null
     public static final String NO_IMPLEMENTATIONS_MESSAGE = "No implementations possible for method. Please use an abstract class instead and provide an implementation."

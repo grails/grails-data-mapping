@@ -222,6 +222,8 @@ class ServiceImplSpec extends Specification {
 
         then:
         productService.listProductName("Vegetable").size() == 2
+        productService.countProducts("Vegetable") == 2
+        productService.countByType("Vegetable") == 2
     }
 
     void "test @where annotation"() {
@@ -311,6 +313,10 @@ interface ProductService {
     List<String> listProductName(String type)
 
     String findProductType(Serializable id)
+
+    Number countByType(String t)
+
+    Number countProducts(String type)
 
     Product updateProduct(Serializable id, String type)
 

@@ -67,7 +67,7 @@ abstract class AbstractArrayOrIterableResultImplementer extends AbstractReadOper
     final void doImplement(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode) {
         ClassNode returnType = abstractMethodNode.returnType
         boolean isArray = returnType.isArray()
-        doImplement(resolveDomainClassForReturnType(returnType, isArray), targetClassNode, abstractMethodNode, newMethodNode, isArray)
+        doImplement(resolveDomainClassForReturnType(domainClassNode, isArray, returnType), targetClassNode, abstractMethodNode, newMethodNode, isArray)
     }
 
     /**
@@ -78,9 +78,17 @@ abstract class AbstractArrayOrIterableResultImplementer extends AbstractReadOper
      * @param isArray Whether the return type is an array
      * @return The domain class type
      */
-    protected ClassNode resolveDomainClassForReturnType(ClassNode returnType, boolean isArray) {
-        ClassNode domainClassNode = isArray ? returnType.componentType : returnType.genericsTypes[0].type
-        return domainClassNode
+    protected ClassNode resolveDomainClassForReturnType(ClassNode currentDomainClass, boolean isArray, ClassNode returnType) {
+        if(returnType.isArray()) {
+            return returnType.componentType
+        }
+        else {
+            GenericsType[] genericTypes = returnType.genericsTypes
+            if(genericTypes) {
+                return genericTypes[0].type
+            }
+        }
+        return currentDomainClass
     }
 
     /**

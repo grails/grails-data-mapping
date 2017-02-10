@@ -68,9 +68,13 @@ abstract class AbstractProjectionImplementer extends AbstractDetachedCriteriaSer
         assert propertyName != null : "Bug in ${getClass().name} transform logic. Method implement should never be called before doesImplement(..) check"
 
         body.addStatements([
-            assignS(detachedCriteriaVar, callX(detachedCriteriaVar, "property", constX(propertyName))),
-            returnS(callX(detachedCriteriaVar, getQueryMethodToInvoke(), queryArgs != null ? queryArgs : AstUtils.ZERO_ARGUMENTS))
+                assignS(detachedCriteriaVar, callX(detachedCriteriaVar, getProjectionName(), constX(propertyName))),
+                returnS(callX(detachedCriteriaVar, getQueryMethodToInvoke(), queryArgs != null ? queryArgs : AstUtils.ZERO_ARGUMENTS))
         ])
+    }
+
+    protected String getProjectionName() {
+        "property"
     }
 
     protected String getQueryMethodToInvoke() {

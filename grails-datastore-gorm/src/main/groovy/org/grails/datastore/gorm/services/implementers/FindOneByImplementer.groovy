@@ -64,7 +64,7 @@ class FindOneByImplementer extends FindByImplementer {
     }
 
     @Override
-    protected ClassNode resolveDomainClassForReturnType(ClassNode returnType, boolean isArray) {
+    protected ClassNode resolveDomainClassForReturnType(ClassNode currentDomainClass, boolean isArray, ClassNode returnType) {
         return returnType
     }
 

@@ -16,6 +16,36 @@ import java.lang.reflect.Type
  * Created by graemerocher on 11/01/2017.
  */
 class ServiceTransformSpec extends Specification {
+    void "test countBy method"() {
+        when:"The service transform is applied to an interface it can't implement"
+        Class service = new GroovyClassLoader().parseClass('''
+import grails.gorm.services.*
+import grails.gorm.annotation.Entity
+import static javax.persistence.criteria.JoinType.*
+
+@Service(Foo)
+interface MyService {
+    Number countByTitle(String title)
+    
+}
+@Entity
+class Foo {
+    String title
+}
+
+''')
+
+        then:
+        service.isInterface()
+        println service.classLoader.loadedClasses
+
+        when:"the impl is obtained"
+        Class impl = service.classLoader.loadClass("\$MyServiceImplementation")
+
+        then:"The impl is valid"
+        impl.getMethod("countByTitle", String).getAnnotation(ReadOnly) != null
+        impl.genericInterfaces.find() { Type t -> t.typeName == "org.grails.datastore.mapping.services.Service<Foo>" }
+    }
 
     void "test simple list method"() {
         when:"The service transform is applied to an interface it can't implement"
