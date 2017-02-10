@@ -7,6 +7,8 @@ grails.gorm.services
 grails.gorm.transactions
 grails.neo4j
 grails.neo4j.bootstrap
+grails.neo4j.mapping
+grails.test.neo4j
 org.grails.compiler.gorm
 org.grails.datastore.gorm
 org.grails.datastore.gorm.bootstrap
@@ -40,6 +42,8 @@ org.grails.datastore.gorm.query.criteria
 org.grails.datastore.gorm.query.transform
 org.grails.datastore.gorm.schemaless
 org.grails.datastore.gorm.services
+org.grails.datastore.gorm.services.implementers
+org.grails.datastore.gorm.services.transform
 org.grails.datastore.gorm.support
 org.grails.datastore.gorm.timestamp
 org.grails.datastore.gorm.transactions.transform
@@ -64,6 +68,7 @@ org.grails.datastore.mapping.core.connections
 org.grails.datastore.mapping.core.exceptions
 org.grails.datastore.mapping.core.grailsversion
 org.grails.datastore.mapping.core.impl
+org.grails.datastore.mapping.core.order
 org.grails.datastore.mapping.dirty.checking
 org.grails.datastore.mapping.document
 org.grails.datastore.mapping.document.config
