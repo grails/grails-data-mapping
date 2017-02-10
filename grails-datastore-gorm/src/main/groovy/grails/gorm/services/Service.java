@@ -13,6 +13,7 @@ import java.lang.annotation.Target;
  * @since 6.1
  * @author Graeme Rocher
  */
+// TODO: RxJava,Promises, Where queries, interface projections
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @GroovyASTTransformationClass("org.grails.datastore.gorm.services.transform.ServiceTransformation")
@@ -22,11 +23,4 @@ public @interface Service {
      * @return The domain class this service operates with
      */
     Class value() default Object.class;
-
-    /**
-     * Whether to make the service available to GORM. Defaults to true, which will generate the appropriate META-INF/services file at compile time.
-     *
-     * @return True if it should be made available
-     */
-    boolean expose() default true;
 }

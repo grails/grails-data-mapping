@@ -16,6 +16,40 @@ import java.lang.reflect.Type
  * Created by graemerocher on 11/01/2017.
  */
 class ServiceTransformSpec extends Specification {
+
+    void "test count method"() {
+        when:"The service transform is applied to an interface it can't implement"
+        Class service = new GroovyClassLoader().parseClass('''
+import grails.gorm.services.*
+import grails.gorm.annotation.Entity
+import static javax.persistence.criteria.JoinType.*
+
+@Service(Foo)
+interface MyService {
+    Number count(String title)
+    
+    Integer countFoos(String title)
+}
+@Entity
+class Foo {
+    String title
+    String name
+}
+
+''')
+
+        then:
+        service.isInterface()
+        println service.classLoader.loadedClasses
+
+        when:"the impl is obtained"
+        Class impl = service.classLoader.loadClass("\$MyServiceImplementation")
+
+        then:"The impl is valid"
+        impl.getMethod("count", String).getAnnotation(ReadOnly) != null
+        impl.genericInterfaces.find() { Type t -> t.typeName == "org.grails.datastore.mapping.services.Service<Foo>" }
+    }
+
     void "test countBy method"() {
         when:"The service transform is applied to an interface it can't implement"
         Class service = new GroovyClassLoader().parseClass('''
@@ -25,12 +59,14 @@ import static javax.persistence.criteria.JoinType.*
 
 @Service(Foo)
 interface MyService {
-    Number countByTitle(String title)
+    Number countByTitle(String t)
     
+    Integer countName(String n)
 }
 @Entity
 class Foo {
     String title
+    String name
 }
 
 ''')
@@ -362,7 +398,7 @@ class Foo {
 import grails.gorm.services.*
 import grails.gorm.annotation.Entity
 
-@Service(expose=false, value=Foo)
+@Service(Foo)
 interface MyService {
     Number deleteMoreFoos(String title)
     

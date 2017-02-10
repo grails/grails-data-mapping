@@ -34,7 +34,7 @@ class DeleteImplementer extends AbstractDetachedCriteriaServiceImplementor {
 
     @Override
     protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
-        return ClassHelper.VOID_TYPE.equals(returnType) || AstUtils.implementsInterface(returnType, "java.lang.Number")
+        return ClassHelper.VOID_TYPE.equals(returnType) || AstUtils.isSubclassOfOrImplementsInterface(returnType, Number.name)
     }
 
     @Override

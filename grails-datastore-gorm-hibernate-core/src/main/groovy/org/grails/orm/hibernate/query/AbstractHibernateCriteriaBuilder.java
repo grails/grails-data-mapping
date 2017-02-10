@@ -19,6 +19,7 @@ import org.hibernate.type.Type;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.convert.ConversionService;
 
+import javax.persistence.criteria.JoinType;
 import java.beans.PropertyDescriptor;
 import java.util.*;
 
@@ -259,6 +260,13 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
         criteria.setFetchMode(calculatePropertyName(associationPath), FetchMode.JOIN);
         return this;
     }
+
+    @Override
+    public BuildableCriteria join(String property, JoinType joinType) {
+        criteria.setFetchMode(calculatePropertyName(property), FetchMode.JOIN);
+        return this;
+    }
+
 
     /**
      * Whether a pessimistic lock should be obtained.
@@ -1964,6 +1972,7 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
     public abstract Criteria createAlias(String associationPath, String alias, int joinType);
 
     protected abstract Class getClassForAssociationType(AssociationType type);
+
 
     /**
      * instances of this class are pushed onto the logicalExpressionStack

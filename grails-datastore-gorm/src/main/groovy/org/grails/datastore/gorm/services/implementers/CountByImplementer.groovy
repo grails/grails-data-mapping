@@ -27,7 +27,7 @@ class CountByImplementer extends FindByImplementer {
 
     @Override
     protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
-        return AstUtils.implementsInterface(returnType, "java.lang.Number")
+        return AstUtils.isSubclassOfOrImplementsInterface(returnType, Number.name)
     }
 
     @Override
