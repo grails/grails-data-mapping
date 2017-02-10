@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.FetchType;
+import javax.persistence.criteria.JoinType;
 
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.proxy.ProxyHandler;
@@ -501,12 +502,13 @@ public abstract class AbstractHibernateQuery extends Query {
             subCriteria = createdAssociationPaths.get(associationName);
         }
         else {
+            JoinType joinType = joinTypes.get(associationName);
             if(parentCriteria != null) {
-                Criteria sc = parentCriteria.createAlias(associationPath, alias);
+                Criteria sc = parentCriteria.createAlias(associationPath, alias, resolveJoinType(joinType));
                 subCriteria = new CriteriaAndAlias(sc, alias, associationPath);
             }
             else if(detachedCriteria != null) {
-                DetachedCriteria sc = detachedCriteria.createAlias(associationPath, alias);
+                DetachedCriteria sc = detachedCriteria.createAlias(associationPath, alias, resolveJoinType(joinType));
                 subCriteria = new CriteriaAndAlias(sc, alias, associationPath);
             }
             if(subCriteria != null) {
@@ -516,6 +518,20 @@ public abstract class AbstractHibernateQuery extends Query {
             }
         }
         return subCriteria;
+    }
+
+    private org.hibernate.sql.JoinType resolveJoinType(JoinType joinType) {
+        if(joinType  == null) {
+            return org.hibernate.sql.JoinType.INNER_JOIN;
+        }
+        switch (joinType) {
+            case LEFT:
+                return org.hibernate.sql.JoinType.LEFT_OUTER_JOIN;
+            case RIGHT:
+                return org.hibernate.sql.JoinType.RIGHT_OUTER_JOIN;
+            default:
+                return org.hibernate.sql.JoinType.INNER_JOIN;
+        }
     }
 
     @Override

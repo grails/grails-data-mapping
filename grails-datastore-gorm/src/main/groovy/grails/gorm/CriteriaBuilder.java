@@ -26,6 +26,7 @@ import org.grails.datastore.mapping.query.api.BuildableCriteria;
 import org.grails.datastore.mapping.query.api.Criteria;
 import org.grails.datastore.mapping.query.api.ProjectionList;
 
+import javax.persistence.criteria.JoinType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -75,11 +76,19 @@ public class CriteriaBuilder extends AbstractCriteriaBuilder implements Buildabl
         return this;
     }
 
+    @Override
     public BuildableCriteria join(String property) {
         query.join(property);
         return this;
     }
 
+    @Override
+    public BuildableCriteria join(String property, JoinType joinType) {
+        query.join(property, joinType);
+        return this;
+    }
+
+    @Override
     public BuildableCriteria select(String property) {
         query.select(property);
         return this;

@@ -32,6 +32,7 @@ import org.springframework.util.StringUtils;
 import javax.persistence.FetchType;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
+import javax.persistence.criteria.JoinType;
 import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -52,9 +53,10 @@ public abstract class Query implements Cloneable{
     protected ProjectionList projections = new ProjectionList();
     protected int max = -1;
     protected int offset = 0;
-    protected List<Order> orderBy = new ArrayList<Order>();
+    protected List<Order> orderBy = new ArrayList<>();
     protected boolean uniqueResult;
-    protected Map<String, FetchType> fetchStrategies = new HashMap<String,FetchType>();
+    protected Map<String, FetchType> fetchStrategies = new HashMap<>();
+    protected Map<String, JoinType> joinTypes = new HashMap<>();
     protected Boolean queryCache;
     protected LockModeType lockResult;
 
@@ -89,6 +91,18 @@ public abstract class Query implements Cloneable{
      */
     public Query join(String property) {
         fetchStrategies.put(property, FetchType.EAGER);
+        return this;
+    }
+
+    /**
+     * Specifies whether a join query should be used (if join queries are supported by the underlying datastore)
+     *
+     * @param property The property
+     * @return The query
+     */
+    public Query join(String property, JoinType joinType) {
+        fetchStrategies.put(property, FetchType.EAGER);
+        joinTypes.put(property, joinType);
         return this;
     }
 

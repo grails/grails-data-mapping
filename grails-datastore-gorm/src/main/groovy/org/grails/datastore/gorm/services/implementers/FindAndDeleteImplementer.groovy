@@ -36,6 +36,11 @@ class FindAndDeleteImplementer extends FindOneImplementer {
     }
 
     @Override
+    protected ClassNode resolveDomainClassFromSignature(ClassNode currentDomainClassNode, MethodNode methodNode) {
+        return methodNode.returnType
+    }
+
+    @Override
     protected Statement buildReturnStatement(ClassNode targetDomainClass, Expression args, Expression queryMethodCall) {
         VariableExpression var = varX('$obj', targetDomainClass)
         MethodCallExpression deleteCall = args != null ? callX(var, "delete", args) : callX(var, "delete")

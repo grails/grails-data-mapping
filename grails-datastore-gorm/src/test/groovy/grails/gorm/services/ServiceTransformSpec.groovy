@@ -17,6 +17,76 @@ import java.lang.reflect.Type
  */
 class ServiceTransformSpec extends Specification {
 
+    void "test simple list method"() {
+        when:"The service transform is applied to an interface it can't implement"
+        Class service = new GroovyClassLoader().parseClass('''
+import grails.gorm.services.*
+import grails.gorm.annotation.Entity
+import static javax.persistence.criteria.JoinType.*
+
+@Service(Foo)
+interface MyService {
+    List<Foo> listFoos()
+    
+}
+@Entity
+class Foo {
+    String title
+}
+
+''')
+
+        then:
+        service.isInterface()
+        println service.classLoader.loadedClasses
+
+        when:"the impl is obtained"
+        Class impl = service.classLoader.loadClass("\$MyServiceImplementation")
+
+        then:"The impl is valid"
+        impl.getMethod("listFoos").getAnnotation(ReadOnly) != null
+        impl.genericInterfaces.find() { Type t -> t.typeName == "org.grails.datastore.mapping.services.Service<Foo>" }
+    }
+
+    void "test @Join on finder"() {
+        when:"The service transform is applied to an interface it can't implement"
+        Class service = new GroovyClassLoader().parseClass('''
+import grails.gorm.services.*
+import grails.gorm.annotation.Entity
+import static javax.persistence.criteria.JoinType.*
+
+@Service(Foo)
+interface MyService {
+    @Join('bars')
+    Foo find(String title)
+    
+    @Join(value='bars', type=LEFT)
+    Foo findFoo(String title)
+    
+}
+@Entity
+class Foo {
+    String title
+    static hasMany = [bars:Bar]
+}
+@Entity
+class Bar {
+    
+}
+
+''')
+
+        then:
+        service.isInterface()
+        println service.classLoader.loadedClasses
+
+        when:"the impl is obtained"
+        Class impl = service.classLoader.loadClass("\$MyServiceImplementation")
+
+        then:"The impl is valid"
+        impl.genericInterfaces.find() { Type t -> t.typeName == "org.grails.datastore.mapping.services.Service<Foo>" }
+    }
+
     void "test @Query invalid property"() {
         when:"The service transform is applied to an interface it can't implement"
         new GroovyClassLoader().parseClass('''

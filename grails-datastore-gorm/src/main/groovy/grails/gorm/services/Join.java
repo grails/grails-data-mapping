@@ -9,8 +9,6 @@ import java.lang.annotation.Target;
 /**
  * Allow specifying the join to services
  *
- * TODO: implement support for joins
- *
  * @author Graeme Rocher
  * @since 6.1
  */

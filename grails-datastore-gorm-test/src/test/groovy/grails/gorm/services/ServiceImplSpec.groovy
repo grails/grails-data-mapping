@@ -268,9 +268,16 @@ class Product {
     String name
     String type
 
+    static hasMany = [attributes:Attribute]
+
     static constraints = {
         name blank:false
     }
+}
+
+@Entity
+class Attribute {
+    String name
 }
 
 interface AnotherProductInterface {
@@ -325,6 +332,7 @@ interface ProductService {
 
     Product find(String name, String type, Map args)
 
+    @Join('attributes')
     List<Product> findProducts(String name)
 
     List<Product> findProducts(String name, String type)

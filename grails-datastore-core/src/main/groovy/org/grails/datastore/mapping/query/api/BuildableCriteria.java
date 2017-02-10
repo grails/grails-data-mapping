@@ -18,6 +18,7 @@ package org.grails.datastore.mapping.query.api;
 import groovy.lang.Closure;
 import groovy.lang.DelegatesTo;
 
+import javax.persistence.criteria.JoinType;
 import java.util.Map;
 
 /**
@@ -58,6 +59,14 @@ public interface BuildableCriteria extends Criteria {
      */
     BuildableCriteria join(String property);
 
+    /**
+     * Whether to join on an association
+     *
+     * @param property The property to join on
+     * @param joinType The type of join
+     * @return This criteria
+     */
+    BuildableCriteria join(String property, JoinType joinType);
     /**
      * Whether to select on an association
      *

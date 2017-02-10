@@ -16,6 +16,7 @@ import org.grails.datastore.mapping.query.api.ProjectionList
 import org.grails.datastore.mapping.query.api.QueryableCriteria
 
 import javax.persistence.FetchType
+import javax.persistence.criteria.JoinType
 
 /**
  * Abstract super class for DetachedCriteria implementations
@@ -37,6 +38,7 @@ abstract class AbstractDetachedCriteria<T> implements Criteria, Cloneable {
     protected List<Query.Junction> junctions = []
     protected PersistentEntity persistentEntity
     protected Map<String, FetchType> fetchStrategies = [:]
+    protected Map<String, JoinType> joinTypes = [:]
     protected Closure lazyQuery
     protected String alias;
     protected Map<String, DetachedAssociationCriteria> associationCriteriaMap = [:]
@@ -55,11 +57,19 @@ abstract class AbstractDetachedCriteria<T> implements Criteria, Cloneable {
         this.alias = alias
     }
 
-
+    /**
+     * @return Obtain the fetch strategies for each property
+     */
     Map<String, FetchType> getFetchStrategies() {
-        return fetchStrategies
+        return Collections.unmodifiableMap( fetchStrategies )
     }
 
+    /**
+     * @return Obtain the join types
+     */
+    Map<String, JoinType> getJoinTypes() {
+        return Collections.unmodifiableMap( joinTypes )
+    }
     /**
      * @return The root alias to be used for the query
      */
@@ -128,6 +138,20 @@ abstract class AbstractDetachedCriteria<T> implements Criteria, Cloneable {
      */
     Criteria join(String property) {
         fetchStrategies[property] = FetchType.EAGER
+        return this
+    }
+
+
+    /**
+     * Specifies whether a join query should be used (if join queries are supported by the underlying datastore)
+     *
+     * @param property The property
+     * @param joinType The join type
+     * @return The query
+     */
+    Criteria join(String property, JoinType joinType) {
+        fetchStrategies[property] = FetchType.EAGER
+        joinTypes[property] = joinType
         return this
     }
 

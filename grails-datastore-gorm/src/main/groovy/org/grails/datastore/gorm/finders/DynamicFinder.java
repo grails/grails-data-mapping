@@ -24,6 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.persistence.FetchType;
+import javax.persistence.criteria.JoinType;
 
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.grails.datastore.gorm.finders.MethodExpression.Between;
@@ -472,13 +473,17 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
             Map fetch = (Map)fetchObj;
             for (Object o : fetch.keySet()) {
                 String associationName = (String) o;
-                FetchType fetchType = getFetchMode(fetch.get(associationName));
-                switch(fetchType) {
-                    case LAZY:
-                        q.select(associationName);
-                        break;
-                    case EAGER:
-                        q.join(associationName);
+                Object fetchValue = fetch.get(associationName);
+                if(fetchValue instanceof FetchType) {
+                    FetchType fetchType = (FetchType)fetchValue;
+                    handleFetchType(q, associationName, fetchType);
+                }
+                else if(fetchValue instanceof JoinType) {
+                    JoinType joinType = (JoinType)fetchValue;
+                    q.join(associationName, joinType);
+                } else {
+                    FetchType fetchType = getFetchMode(fetchValue);
+                    handleFetchType(q, associationName, fetchType);
                 }
             }
         }
@@ -542,13 +547,17 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
             Map fetch = (Map)fetchObj;
             for (Object o : fetch.keySet()) {
                 String associationName = (String) o;
-                FetchType fetchType = getFetchMode(fetch.get(associationName));
-                switch(fetchType) {
-                    case LAZY:
-                       q.select(associationName);
-                    break;
-                    case EAGER:
-                        q.join(associationName);
+                Object fetchValue = fetch.get(associationName);
+                if(fetchValue instanceof FetchType) {
+                    FetchType fetchType = (FetchType)fetchValue;
+                    handleFetchType(q, associationName, fetchType);
+                }
+                else if(fetchValue instanceof JoinType) {
+                    JoinType joinType = (JoinType)fetchValue;
+                    q.join(associationName, joinType);
+                } else {
+                    FetchType fetchType = getFetchMode(fetchValue);
+                    handleFetchType(q, associationName, fetchType);
                 }
             }
         }
@@ -589,7 +598,25 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         }
     }
 
+    private static void handleFetchType(Query q, String associationName, FetchType fetchType) {
+        switch(fetchType) {
+            case LAZY:
+                q.select(associationName);
+                break;
+            case EAGER:
+                q.join(associationName);
+        }
+    }
 
+    private static void handleFetchType(BuildableCriteria q, String associationName, FetchType fetchType) {
+        switch(fetchType) {
+            case LAZY:
+                q.select(associationName);
+                break;
+            case EAGER:
+                q.join(associationName);
+        }
+    }
     private static void addSimpleSort(Query q, String sort, String order, boolean ignoreCase) {
         Query.Order o;
         if (ORDER_DESC.equalsIgnoreCase(order)) {
@@ -658,11 +685,19 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
 
             Map<String, FetchType> fetchStrategies = detachedCriteria.getFetchStrategies();
             for (Map.Entry<String, FetchType> entry : fetchStrategies.entrySet()) {
+                String property = entry.getKey();
                 switch(entry.getValue()) {
                     case EAGER:
-                        q.join(entry.getKey()); break;
+                        JoinType joinType = (JoinType) detachedCriteria.getJoinTypes().get(property);
+                        if(joinType != null) {
+                            q.join(property, joinType);
+                        }
+                        else {
+                            q.join(property);
+                        }
+                        break;
                     case LAZY:
-                        q.select(entry.getKey());
+                        q.select(property);
                 }
             }
         }

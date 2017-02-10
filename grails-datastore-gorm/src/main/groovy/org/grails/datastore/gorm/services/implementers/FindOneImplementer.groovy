@@ -46,6 +46,11 @@ class FindOneImplementer extends AbstractDetachedCriteriaServiceImplementor {
     }
 
     @Override
+    protected ClassNode resolveDomainClassFromSignature(ClassNode currentDomainClassNode, MethodNode methodNode) {
+        return methodNode.returnType
+    }
+
+    @Override
     void implementById(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode, BlockStatement body, Expression byIdLookup) {
         body.addStatement(
             buildReturnStatement(domainClassNode, null, byIdLookup)

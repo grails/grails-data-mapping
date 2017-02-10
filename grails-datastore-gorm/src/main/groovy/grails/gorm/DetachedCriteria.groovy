@@ -27,6 +27,9 @@ import org.grails.datastore.mapping.query.api.ProjectionList
 import org.grails.datastore.mapping.query.api.QueryAliasAwareSession
 import org.grails.datastore.mapping.query.api.QueryArgumentsAware
 import org.grails.datastore.mapping.query.api.QueryableCriteria
+
+import javax.persistence.criteria.JoinType
+
 /**
  * Represents criteria that is not bound to the current connection and can be built up and re-used at a later date.
  *
@@ -148,6 +151,11 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<T> implements GormOpe
     @Override
     DetachedCriteria<T> join(String property) {
         return (DetachedCriteria<T>)super.join(property)
+    }
+
+    @Override
+    DetachedCriteria<T> join(String property, JoinType joinType) {
+        return (DetachedCriteria<T>)super.join(property, joinType)
     }
 
     @Override

@@ -24,6 +24,7 @@ import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.tools.GeneralUtils
 import org.grails.datastore.gorm.services.ServiceEnhancer
 import org.grails.datastore.gorm.transactions.transform.TransactionalTransform
+import org.grails.datastore.mapping.reflect.AstUtils
 
 /**
  * Abstract implementor for read operations
@@ -52,8 +53,20 @@ abstract class AbstractReadOperationImplementer extends AbstractServiceImplement
             applyDefaultTransactionHandling(newMethodNode)
         }
 
+        domainClassNode = resolveDomainClassFromSignature(domainClassNode, abstractMethodNode)
         doImplement(domainClassNode, abstractMethodNode, newMethodNode, targetClassNode)
         abstractMethodNode.putNodeMetaData(IMPLEMENTED, Boolean.TRUE)
+    }
+
+    /**
+     * Subclasses can override to provide resolution of the domain class from the method signature
+     *
+     * @param currentDomainClassNode The current defined domain class node
+     * @param methodNode The method node
+     * @return The resolved domain class
+     */
+    protected ClassNode resolveDomainClassFromSignature(ClassNode currentDomainClassNode, MethodNode methodNode) {
+        return currentDomainClassNode
     }
 
     protected void applyDefaultTransactionHandling(MethodNode newMethodNode) {

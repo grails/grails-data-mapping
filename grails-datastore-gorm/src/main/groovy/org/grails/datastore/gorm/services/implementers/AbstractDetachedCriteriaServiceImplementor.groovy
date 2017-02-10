@@ -1,12 +1,16 @@
 package org.grails.datastore.gorm.services.implementers
 
 import grails.gorm.DetachedCriteria
+import grails.gorm.services.Join
 import groovy.transform.CompileStatic
+import groovy.transform.PackageScope
+import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.expr.Expression
+import org.codehaus.groovy.ast.expr.PropertyExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.grails.datastore.mapping.model.config.GormProperties
@@ -27,34 +31,36 @@ abstract class AbstractDetachedCriteriaServiceImplementor extends AbstractReadOp
         BlockStatement body = (BlockStatement) newMethodNode.getCode()
         Parameter[] parameters = newMethodNode.parameters
         int parameterCount = parameters.length
-        if(lookupById() && parameterCount == 1 && parameters[0].name == GormProperties.IDENTITY) {
+        AnnotationNode joinAnnotation = AstUtils.findAnnotation(abstractMethodNode, Join)
+        if(lookupById() && joinAnnotation == null && parameterCount == 1 && parameters[0].name == GormProperties.IDENTITY) {
             // optimize query by id
             Expression byId = callX( classX(domainClassNode), "get", varX(parameters[0]))
             implementById(domainClassNode,abstractMethodNode,newMethodNode, targetClassNode, body, byId)
         }
         else {
-            Expression argsExpression = null
+            Expression argsExpression = AstUtils.ZERO_ARGUMENTS
             VariableExpression queryVar = varX('$query')
             // def query = new DetachedCriteria(Foo)
             body.addStatement(
                 declS(queryVar, ctorX(ClassHelper.make(DetachedCriteria), args(classX(domainClassNode.plainNodeReference))))
             )
+            handleJoinAnnotation(joinAnnotation, body, queryVar)
 
             if (parameterCount > 0) {
                 for (Parameter parameter in parameters) {
                     String parameterName = parameter.name
                     if(parameterName == GormProperties.IDENTITY) {
                         body.addStatement(
-                                stmt(
-                                        callX(queryVar, "idEq", varX(parameter))
-                                )
+                            stmt(
+                                callX(queryVar, "idEq", varX(parameter))
+                            )
                         )
                     }
                     else if (isValidParameter(domainClassNode, parameter, parameterName)) {
                         body.addStatement(
-                                stmt(
-                                        callX(queryVar, "eq", args( constX(parameterName), varX(parameter) ))
-                                )
+                            stmt(
+                                callX(queryVar, "eq", args( constX(parameterName), varX(parameter) ))
+                            )
                         )
                     } else if (parameter.type == ClassHelper.MAP_TYPE && parameterName == 'args') {
                         argsExpression = varX(parameter)
@@ -67,7 +73,26 @@ abstract class AbstractDetachedCriteriaServiceImplementor extends AbstractReadOp
                     }
                 }
 
-                implementWithQuery(domainClassNode, abstractMethodNode, newMethodNode, targetClassNode, body, queryVar, argsExpression)
+            }
+            implementWithQuery(domainClassNode, abstractMethodNode, newMethodNode, targetClassNode, body, queryVar, argsExpression)
+        }
+    }
+
+    @PackageScope
+    static void handleJoinAnnotation(AnnotationNode joinAnnotation, BlockStatement body, VariableExpression queryVar) {
+        if (joinAnnotation != null) {
+            Expression joinValue = joinAnnotation.getMember("value")
+            if (joinValue != null) {
+                Expression joinType = joinAnnotation.getMember("type")
+                if (joinType instanceof PropertyExpression) {
+                    body.addStatement(
+                            stmt(callX(queryVar, "join", args(joinValue, joinType)))
+                    )
+                } else {
+                    body.addStatement(
+                            stmt(callX(queryVar, "join", joinValue))
+                    )
+                }
             }
         }
     }

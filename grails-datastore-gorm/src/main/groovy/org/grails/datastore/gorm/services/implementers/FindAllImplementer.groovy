@@ -23,6 +23,7 @@ import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.MapEntryExpression
 import org.codehaus.groovy.ast.expr.MapExpression
+import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.Statement
 import org.grails.datastore.mapping.core.Ordered
@@ -38,9 +39,14 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.*
  * @since 6.1
  */
 @CompileStatic
-class FindAllImplementer extends AbstractArrayOrIterableResultImplementer implements Ordered {
+class FindAllImplementer extends AbstractDetachedCriteriaServiceImplementor implements Ordered {
 
     static final List<String> HANDLED_PREFIXES = ['list', 'find', 'get', 'retrieve']
+
+    @Override
+    protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
+        return AbstractArrayOrIterableResultImplementer.isIterableOrArrayOfDomainClasses(returnType)
+    }
 
     @Override
     Iterable<String> getHandledPrefixes() {
@@ -48,84 +54,35 @@ class FindAllImplementer extends AbstractArrayOrIterableResultImplementer implem
     }
 
     @Override
-    void doImplement(ClassNode domainClassNode, ClassNode targetClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, boolean isArray) {
-        BlockStatement body = (BlockStatement)newMethodNode.getCode()
-        Expression argsToMethod = AstUtils.ZERO_ARGUMENTS
-        String methodToInvoke = getNoArgumentsMethodName()
-        Parameter[] parameters = newMethodNode.parameters
-        int parameterCount = parameters.length
-        Expression argsExpression = null
-        if(parameterCount > 0) {
-            if(parameterCount == 1) {
-                Parameter parameter = parameters[0]
-                String parameterName = parameter.name
-                if(parameter.type == ClassHelper.MAP_TYPE && parameterName == 'args') {
-                    argsToMethod = args( parameters )
-                }
-                else {
-                    if(isValidParameter(domainClassNode, parameter, parameterName)) {
-                        methodToInvoke = getQueryMethodName()
-                        argsToMethod = args( new MapExpression([new MapEntryExpression(
-                            constX(parameterName),
-                            varX(parameter)
-                        )]) )
-                    }
-                    else {
-                        AstUtils.error(
-                            abstractMethodNode.declaringClass.module.context,
-                            abstractMethodNode,
-                            "Cannot implement method for argument [${parameterName}]. No property exists on domain class [$domainClassNode.name]"
-                        )
-                    }
-                }
-            }
-            else {
-                methodToInvoke = getQueryMethodName()
-                List<MapEntryExpression> queryParameters = []
-                for(Parameter parameter in parameters) {
-                    if(domainClassNode.hasProperty(parameter.name)) {
-                        queryParameters.add new MapEntryExpression(
-                                constX(parameter.name),
-                                varX(parameter)
-                        )
-                    }
-                    else if(parameter.type == ClassHelper.MAP_TYPE && parameter.name == 'args') {
-                        argsExpression = varX( parameter )
-                    }
-                    else {
-                        AstUtils.error(
-                                abstractMethodNode.declaringClass.module.context,
-                                abstractMethodNode,
-                                "Cannot implement method for argument [$parameter.name]. No property exists on domain class [$domainClassNode.name]"
-                        )
-                    }
-                }
-                argsToMethod = argsExpression != null ? args( new MapExpression(queryParameters), argsExpression ) : args( new MapExpression(queryParameters) )
-            }
+    protected boolean lookupById() {
+        return false
+    }
+
+    @Override
+    protected ClassNode resolveDomainClassFromSignature(ClassNode currentDomainClassNode, MethodNode methodNode) {
+        ClassNode returnType = methodNode.returnType
+        if(returnType.isArray()) {
+            return returnType.componentType
         }
-        // add a method that invokes list()
-        Expression queryMethodCall = callX(classX(domainClassNode.plainNodeReference), methodToInvoke, argsToMethod)
-        if(isArray) {
-            // handle array cast
-            ClassNode returnType = newMethodNode.returnType
-            queryMethodCall = castX( returnType.plainNodeReference, queryMethodCall )
+        else {
+            return returnType.genericsTypes[0].type
+        }
+    }
+
+    @Override
+    void implementById(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode, BlockStatement body, Expression byIdLookup) {
+        // no-op
+    }
+
+    @Override
+    void implementWithQuery(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode, BlockStatement body, VariableExpression detachedCriteriaVar, Expression queryArgs) {
+        ClassNode returnType = newMethodNode.returnType
+        Expression methodCall = callX(detachedCriteriaVar, "list", queryArgs)
+        if(returnType.isArray()) {
+            methodCall = castX(returnType.plainNodeReference, methodCall)
         }
         body.addStatement(
-            buildReturnStatement(queryMethodCall, argsExpression)
+            returnS(methodCall)
         )
     }
-
-
-    protected Statement buildReturnStatement(Expression queryMethodCall, Expression args) {
-        returnS queryMethodCall
-    }
-
-    protected String getQueryMethodName() {
-        'findAllWhere'
-    }
-
-    protected String getNoArgumentsMethodName() {
-        "list"
-    }
-
 }
