@@ -47,7 +47,6 @@ class Foo {
 
         then:"The impl is valid"
         impl.getMethod("count", String).getAnnotation(ReadOnly) != null
-        impl.genericInterfaces.find() { Type t -> t.typeName == "org.grails.datastore.mapping.services.Service<Foo>" }
     }
 
     void "test countBy method"() {
@@ -80,7 +79,6 @@ class Foo {
 
         then:"The impl is valid"
         impl.getMethod("countByTitle", String).getAnnotation(ReadOnly) != null
-        impl.genericInterfaces.find() { Type t -> t.typeName == "org.grails.datastore.mapping.services.Service<Foo>" }
     }
 
     void "test simple list method"() {
@@ -111,7 +109,6 @@ class Foo {
 
         then:"The impl is valid"
         impl.getMethod("listFoos").getAnnotation(ReadOnly) != null
-        impl.genericInterfaces.find() { Type t -> t.typeName == "org.grails.datastore.mapping.services.Service<Foo>" }
     }
 
     void "test @Join on finder"() {
@@ -150,7 +147,7 @@ class Bar {
         Class impl = service.classLoader.loadClass("\$MyServiceImplementation")
 
         then:"The impl is valid"
-        impl.genericInterfaces.find() { Type t -> t.typeName == "org.grails.datastore.mapping.services.Service<Foo>" }
+        impl.getMethod("find", String).getAnnotation(ReadOnly) != null
     }
 
     void "test @Query invalid property"() {
@@ -381,7 +378,6 @@ class Foo {
         impl.getMethod("deleteMoreFoos", String).getAnnotation(Transactional) != null
         impl.getMethod("delete", Serializable).getAnnotation(Transactional) != null
         impl.getMethod("readFoo", Serializable).getAnnotation(ReadOnly) != null
-        impl.genericInterfaces.find() { Type t -> t.typeName == "org.grails.datastore.mapping.services.Service<Foo>" } != null
         org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
 
         when:
@@ -437,7 +433,6 @@ class Foo {
         impl.getAnnotation(Service) != null
         impl.getAnnotation(Service).name() == 'myService'
         impl.getMethod("deleteMoreFoos", String).getAnnotation(Transactional) != null
-        impl.genericInterfaces.find() { Type t -> t.typeName == "org.grails.datastore.mapping.services.Service<Foo>" } != null
         org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
 
         when:
