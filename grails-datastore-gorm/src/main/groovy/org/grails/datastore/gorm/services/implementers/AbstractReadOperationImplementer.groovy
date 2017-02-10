@@ -17,8 +17,11 @@ package org.grails.datastore.gorm.services.implementers
 
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.AnnotationNode
+import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
+import org.codehaus.groovy.ast.expr.Expression
+import org.codehaus.groovy.ast.tools.GeneralUtils
 import org.grails.datastore.gorm.services.ServiceEnhancer
 import org.grails.datastore.gorm.transactions.transform.TransactionalTransform
 
@@ -68,5 +71,15 @@ abstract class AbstractReadOperationImplementer extends AbstractServiceImplement
             // read-only transaction by default
             applyDefaultTransactionHandling(newMethodNode)
         }
+    }
+
+    protected Expression findArgsExpression(MethodNode newMethodNode) {
+        Expression argsExpression = null
+        for (parameter in newMethodNode.parameters) {
+            if (parameter.name == 'args' && parameter.type == ClassHelper.MAP_TYPE) {
+                argsExpression = GeneralUtils.varX(parameter)
+            }
+        }
+        argsExpression
     }
 }

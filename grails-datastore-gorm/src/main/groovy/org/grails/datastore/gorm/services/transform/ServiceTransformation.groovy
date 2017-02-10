@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.gorm.services
+package org.grails.datastore.gorm.services.transform
 
 import grails.gorm.services.Service
 import groovy.transform.CompilationUnitAware
@@ -34,7 +34,10 @@ import org.codehaus.groovy.control.io.ReaderSource
 import org.codehaus.groovy.control.io.URLReaderSource
 import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
+import org.grails.datastore.gorm.services.ServiceEnhancer
+import org.grails.datastore.gorm.services.ServiceImplementer
 import org.grails.datastore.gorm.services.implementers.DeleteImplementer
+import org.grails.datastore.gorm.services.implementers.FindAllStringQueryImplementer
 import org.grails.datastore.gorm.services.implementers.FindAndDeleteImplementer
 import org.grails.datastore.gorm.services.implementers.FindAllImplementer
 import org.grails.datastore.gorm.services.implementers.FindByImplementer
@@ -43,6 +46,7 @@ import org.grails.datastore.gorm.services.implementers.FindOneImplementer
 import org.grails.datastore.gorm.services.implementers.FindOnePropertyProjectionImplementer
 import org.grails.datastore.gorm.services.implementers.FindPropertyProjectImplementer
 import org.grails.datastore.gorm.services.implementers.SaveImplementer
+import org.grails.datastore.gorm.services.implementers.FindOneStringQueryImplementer
 import org.grails.datastore.gorm.services.implementers.UpdateOneImplementer
 import org.grails.datastore.gorm.services.implementers.WhereImplementer
 import org.grails.datastore.gorm.transform.AbstractTraitApplyingGormASTTransformation
@@ -76,7 +80,9 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             new UpdateOneImplementer(),
             new FindOnePropertyProjectionImplementer(),
             new FindPropertyProjectImplementer(),
-            new WhereImplementer()] as List<ServiceImplementer>
+            new WhereImplementer(),
+            new FindOneStringQueryImplementer(),
+            new FindAllStringQueryImplementer()] as List<ServiceImplementer>
 
     private static Iterable<ServiceImplementer> LOADED_IMPLEMENTORS = null
     public static final String NO_IMPLEMENTATIONS_MESSAGE = "No implementations possible for method. Please use an abstract class instead and provide an implementation."

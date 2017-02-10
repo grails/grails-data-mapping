@@ -17,6 +17,145 @@ import java.lang.reflect.Type
  */
 class ServiceTransformSpec extends Specification {
 
+    void "test @Query invalid property"() {
+        when:"The service transform is applied to an interface it can't implement"
+        new GroovyClassLoader().parseClass('''
+import grails.gorm.services.*
+import grails.gorm.annotation.Entity
+
+@Service(Foo)
+interface MyService {
+
+    @Query("from $Foo as f where f.title like $wrong") 
+    Foo searchByTitle(String pattern)
+}
+@Entity
+class Foo {
+    String title
+}
+''')
+
+        then:"A compilation error occurred"
+        def e = thrown(MultipleCompilationErrorsException)
+        e.message.contains '''[Static type checking] - The variable [wrong] is undeclared.
+ @ line 8, column 48.
+   $Foo as f where f.title like $wrong")'''
+    }
+
+    void "test @Query invalid domain"() {
+        when:"The service transform is applied to an interface it can't implement"
+        new GroovyClassLoader().parseClass('''
+import grails.gorm.services.*
+import grails.gorm.annotation.Entity
+
+@Service(Foo)
+interface MyService {
+
+    @Query("from $String as f where f.title like $pattern") 
+    Foo searchByTitle(String pattern)
+}
+@Entity
+class Foo {
+    String title
+}
+''')
+
+        then:"A compilation error occurred"
+        def e = thrown(MultipleCompilationErrorsException)
+        e.message.contains '''Invalid query class [java.lang.String]. Referenced classes in queries must be domain classes
+ @ line 8, column 19.
+       @Query("from $String as f where f.title like $pattern") 
+                     ^'''
+    }
+
+    void "test simple @Query annotation"() {
+        when:"The service transform is applied to an interface it can't implement"
+        Class service = new GroovyClassLoader().parseClass('''
+import grails.gorm.services.*
+import grails.gorm.annotation.Entity
+
+@Service(Foo)
+interface MyService {
+
+    @Query("from $Foo as f where f.title like $pattern") 
+    Foo searchByTitle(String pattern)
+}
+@Entity
+class Foo {
+    String title
+}
+
+''')
+
+        then:
+        service.isInterface()
+        println service.classLoader.loadedClasses
+
+        when:"the impl is obtained"
+        Class impl = service.classLoader.loadClass("\$MyServiceImplementation")
+
+        then:"The impl is valid"
+        org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
+    }
+
+
+    void "test @Query annotation with declared variables"() {
+        when:"The service transform is applied to an interface it can't implement"
+        Class service = new GroovyClassLoader().parseClass('''
+import grails.gorm.services.*
+import grails.gorm.annotation.Entity
+
+@Service(Foo)
+interface MyService {
+
+    @Query("from ${Foo f} where $f.title like $pattern") 
+    Foo searchByTitle(String pattern)
+}
+@Entity
+class Foo {
+    String title
+}
+
+''')
+
+        then:
+        service.isInterface()
+        println service.classLoader.loadedClasses
+
+        when:"the impl is obtained"
+        Class impl = service.classLoader.loadClass("\$MyServiceImplementation")
+
+        then:"The impl is valid"
+        org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
+    }
+
+
+    void "test @Query invalid variable property"() {
+        when:"The service transform is applied to an interface it can't implement"
+        new GroovyClassLoader().parseClass('''
+import grails.gorm.services.*
+import grails.gorm.annotation.Entity
+
+@Service(Foo)
+interface MyService {
+
+    @Query("from ${Foo f} where $f.tit like $pattern") 
+    Foo searchByTitle(String pattern)
+}
+@Entity
+class Foo {
+    String title
+}
+''')
+
+        then:"A compilation error occurred"
+        def e = thrown(MultipleCompilationErrorsException)
+        e.message.contains '''No property [tit] existing for domain class [Foo]
+ @ line 8, column 34.
+       @Query("from ${Foo f} where $f.tit like $pattern") 
+                                    ^'''
+    }
+
     void 'test @Where annotation'() {
         when:"The service transform is applied to an interface it can't implement"
         Class service = new GroovyClassLoader().parseClass('''

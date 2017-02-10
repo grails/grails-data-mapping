@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@GroovyASTTransformationClass("org.grails.datastore.gorm.services.ServiceTransformation")
+@GroovyASTTransformationClass("org.grails.datastore.gorm.services.transform.ServiceTransformation")
 public @interface Service {
 
     /**

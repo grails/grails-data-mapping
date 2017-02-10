@@ -16,6 +16,7 @@
 package org.grails.datastore.gorm.services.implementers
 
 import groovy.transform.CompileStatic
+import groovy.transform.PackageScope
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.GenericsType
 import org.codehaus.groovy.ast.MethodNode
@@ -39,6 +40,11 @@ abstract class AbstractArrayOrIterableResultImplementer extends AbstractReadOper
      */
     @Override
     protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
+        isIterableOrArrayOfDomainClasses(returnType)
+    }
+
+    @PackageScope
+    static boolean isIterableOrArrayOfDomainClasses(ClassNode returnType) {
         boolean isCompatibleReturnType = false
         if (returnType.name == Iterable.name || implementsInterface(returnType, Iterable.name)) {
             GenericsType[] genericsTypes = returnType.genericsTypes
@@ -54,7 +60,7 @@ abstract class AbstractArrayOrIterableResultImplementer extends AbstractReadOper
                 isCompatibleReturnType = true
             }
         }
-        isCompatibleReturnType
+        return isCompatibleReturnType
     }
 
     @Override

@@ -23,7 +23,7 @@ import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.MatchSpec
-import org.grails.datastore.gorm.services.ServiceTransformation
+import org.grails.datastore.gorm.services.transform.ServiceTransformation
 import org.grails.datastore.mapping.core.Ordered
 import org.grails.datastore.mapping.reflect.AstUtils
 

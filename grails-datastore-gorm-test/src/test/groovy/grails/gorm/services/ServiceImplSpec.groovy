@@ -241,6 +241,26 @@ class ServiceImplSpec extends Specification {
         productService.searchByType("Stuf%") == null
 
     }
+
+    void "test @query annotation"() {
+        given:
+        ProductService productService = datastore.getService(ProductService)
+
+        when:
+        productService.searchWithQuery("Veg%")
+
+        then:
+        def e = thrown(UnsupportedOperationException)
+        e.message == "String-based queries like [find] are currently not supported in this implementation of GORM. Use criteria instead."
+
+        when:
+        productService.searchAllWithQuery("Veg%")
+
+        then:
+        e = thrown(UnsupportedOperationException)
+        e.message == "String-based queries like [findAll] are currently not supported in this implementation of GORM. Use criteria instead."
+
+    }
 }
 
 @Entity
@@ -271,6 +291,12 @@ abstract class AnotherProductService implements AnotherProductInterface{
 
 @Service(Product)
 interface ProductService {
+
+    @Query("from ${Product p} where $p.name like $pattern")
+    Product searchWithQuery(String pattern)
+
+    @Query("from ${Product p} where $p.name like $pattern")
+    List<Product> searchAllWithQuery(String pattern)
 
     @Where({ type ==~ pattern })
     Product searchByType(String pattern)
