@@ -61,7 +61,7 @@ import static javax.persistence.criteria.JoinType.*
 interface MyService {
     Number countByTitle(String t)
     
-    Integer countName(String n)
+    Integer countName(String name)
 }
 @Entity
 class Foo {
@@ -392,7 +392,7 @@ class Foo {
         e.message == 'No GORM implementations configured. Ensure GORM has been initialized correctly'
     }
 
-    void "test implement list method"() {
+    void "test implement interface"() {
         when:"The service transform is applied to an interface it can't implement"
         Class service = new GroovyClassLoader().parseClass('''
 import grails.gorm.services.*
@@ -434,6 +434,8 @@ class Foo {
         Class impl = service.classLoader.loadClass("\$MyServiceImplementation")
 
         then:"The impl is valid"
+        impl.getAnnotation(Service) != null
+        impl.getAnnotation(Service).name() == 'myService'
         impl.getMethod("deleteMoreFoos", String).getAnnotation(Transactional) != null
         impl.genericInterfaces.find() { Type t -> t.typeName == "org.grails.datastore.mapping.services.Service<Foo>" } != null
         org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)

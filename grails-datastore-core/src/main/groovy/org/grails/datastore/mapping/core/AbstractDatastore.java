@@ -100,6 +100,11 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
         return serviceRegistry.getService(interfaceType);
     }
 
+    @Override
+    public <T extends Service> Iterable<T> getServices() {
+        return serviceRegistry.getServices();
+    }
+
     @PreDestroy
     public void destroy() throws Exception {
         FieldEntityAccess.clearReflectors();

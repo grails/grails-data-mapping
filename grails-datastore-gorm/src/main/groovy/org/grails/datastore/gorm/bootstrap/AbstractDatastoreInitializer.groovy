@@ -3,6 +3,7 @@ package org.grails.datastore.gorm.bootstrap
 import grails.gorm.annotation.Entity
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.bootstrap.support.ServiceRegistryFactoryBean
 import org.grails.datastore.gorm.events.ConfigurableApplicationContextEventPublisher
 import org.grails.datastore.gorm.events.DefaultApplicationEventPublisher
 import org.grails.datastore.gorm.plugin.support.PersistenceContextInterceptorAggregator
@@ -305,6 +306,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
                 datastore = ref("${type}Datastore")
             }
 
+            "${type}DatastoreServiceRegistry"(ServiceRegistryFactoryBean, ref("${type}Datastore"))
 
             def transactionManagerBeanName = TRANSACTION_MANAGER_BEAN
             if (!containsRegisteredBean(delegate, registry, transactionManagerBeanName)) {

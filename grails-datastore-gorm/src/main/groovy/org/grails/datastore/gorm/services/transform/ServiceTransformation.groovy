@@ -53,7 +53,9 @@ import org.grails.datastore.gorm.services.implementers.UpdateOneImplementer
 import org.grails.datastore.gorm.services.implementers.WhereImplementer
 import org.grails.datastore.gorm.transform.AbstractTraitApplyingGormASTTransformation
 import org.grails.datastore.mapping.core.order.OrderedComparator
+import org.grails.datastore.mapping.reflect.AstUtils
 
+import java.beans.Introspector
 import java.lang.reflect.Modifier
 
 import static org.grails.datastore.mapping.reflect.AstUtils.*
@@ -121,10 +123,15 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             String packageName = classNode.packageName ? "${classNode.packageName}." : ""
             ClassNode[] interfaces = isInterface ? [classNode.plainNodeReference] as ClassNode[] : new ClassNode[0]
             ClassNode superClass = isInterface ? ClassHelper.OBJECT_TYPE : classNode.plainNodeReference
-            ClassNode impl = new ClassNode("${packageName}\$${classNode.nameWithoutPackage}Implementation", // class name
+            String serviceClassName = classNode.nameWithoutPackage
+            ClassNode impl = new ClassNode("${packageName}\$${ serviceClassName}Implementation", // class name
                                             ACC_PUBLIC, // public
                                             superClass,
                                             interfaces)
+
+            copyAnnotations(classNode, impl)
+            findAnnotation(impl, Service)
+                    .addMember("name", new ConstantExpression(Introspector.decapitalize(serviceClassName)))
             // add compile static by default
             impl.addAnnotation(new AnnotationNode(COMPILE_STATIC_TYPE))
             // weave the trait class

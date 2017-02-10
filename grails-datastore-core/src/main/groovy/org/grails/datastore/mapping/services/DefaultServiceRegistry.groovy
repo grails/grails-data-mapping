@@ -3,7 +3,13 @@ package org.grails.datastore.mapping.services
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.reflect.NameUtils
+import org.springframework.beans.factory.BeanFactory
+import org.springframework.beans.factory.BeanFactoryAware
+import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.util.ClassUtils
+
+import java.beans.Introspector
 
 /**
  * The default {@link ServiceRegistry} implementation
@@ -18,7 +24,9 @@ class DefaultServiceRegistry implements ServiceRegistry {
      * The datastore this service relates to
      */
     final Datastore datastore
+
     protected final Map<Class,Service> servicesByInterface
+    protected final Collection<Service> services = []
 
     DefaultServiceRegistry(Datastore datastore, boolean exceptionOnLoadError = true) {
         this.datastore = datastore
@@ -29,6 +37,7 @@ class DefaultServiceRegistry implements ServiceRegistry {
             try {
                 Service service = serviceIterator.next()
                 service.datastore = datastore
+                this.services.add(service)
                 def allInterfaces = ClassUtils.getAllInterfaces(service)
                 serviceMap.put(service.getClass(), service)
                 for(Class i in allInterfaces) {
@@ -47,6 +56,11 @@ class DefaultServiceRegistry implements ServiceRegistry {
         servicesByInterface = Collections.unmodifiableMap(
             serviceMap
         )
+    }
+
+    @Override
+    Collection<Service> getServices() {
+        return Collections.unmodifiableCollection(services)
     }
 
     @Override

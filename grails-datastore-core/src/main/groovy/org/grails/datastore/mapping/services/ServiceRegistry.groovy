@@ -9,6 +9,10 @@ package org.grails.datastore.mapping.services
 interface ServiceRegistry {
 
     /**
+     * @return An iterable of the available services
+     */
+    public <T extends Service> Iterable<T> getServices()
+    /**
      * Obtain a service for the given interface
      *
      * @param interfaceType The interface type
