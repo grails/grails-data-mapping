@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>GORM 6.1</title>
+<title>Writing a Simple Data Service</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -423,119 +423,67 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="sect3">
-<h4 id="_gorm_6_1">GORM 6.1</h4>
+<h4 id="_writing_a_simple_data_service">Writing a Simple Data Service</h4>
 <div class="paragraph">
-<p>GORM 6.1 includes a variety of enhancements to GORM 6.0 including:</p>
+<p>To write a Data Service you should create either an interface (although abstract classes can also be used, more about that later) and annotate it with the <code>grails.gorm.services.Service</code> annotation with the domain class the service applies to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Service(Book)
+interface BookService {
+    Book getBook(Serializable id)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>@Service</code> annotation is an AST transformation that will automatically implement the service for you. You can then obtain the service via Spring autowiring:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Autowired BookService bookService</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or if you are using GORM standalone by looking it up from the <code>HibernateDatastore</code> instance:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">BookService bookService = datastore.getService(BookService)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_how_does_it_work">How Does it Work?</h4>
+<div class="paragraph">
+<p>The <code>@Service</code> transformation will look at the the method signatures of the interface and make a best effort to find a way to implement each method.</p>
+</div>
+<div class="paragraph">
+<p>If a method cannot be implemented then a compilation error will occur. At this point you have the option to use an abstract class instead and provide an implementation yourself.</p>
+</div>
+<div class="paragraph">
+<p>The <code>@Service</code> transformation will also generate a <code>META-INF/services</code> file for the service so it can be discovered via the standard Java service loader. So no additional configuration is necessary.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_advantages_of_data_services">Advantages of Data Services</h4>
+<div class="paragraph">
+<p>There are several advantages to Data Services that make them worth considering to abstract your persistence logic.</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>GORM Data Services</p>
+<p><strong>Type Safety</strong> - Data service method signatures are compile time checked and compilation will fail if the types of any parameters don&#8217;t match up with properties in your domain class</p>
 </li>
 <li>
-<p>Multi-Tenancy Transformations</p>
+<p><strong>Testing</strong> - Since Data Services are interfaces this makes them easy to test via <a href="http://spockframework.org/spock/docs/1.0/interaction_based_testing.html">Spock Mocks</a></p>
 </li>
 <li>
-<p>Support for Bean Validation API</p>
+<p><strong>Performance</strong> - The generates services are statically compiled and unlike competing technologies in the Java space no proxies are created so runtime performance doesn&#8217;t suffer</p>
 </li>
 <li>
-<p>Built-in Package Scanning</p>
-</li>
-<li>
-<p>JPA Annotation Mapping Support</p>
-</li>
-<li>
-<p>Hibernate transformations for dirty checking, managed entities and so on</p>
-</li>
-<li>
-<p>HQL &amp; SQL query escaping for GString queries</p>
+<p><strong>Transaction Management</strong> - Each method in a Data Service is wrapped in an appropriate transaction (a read-only transaction in the case of read operations) that can be easily overridden.</p>
 </li>
 </ul>
-</div>
-<div class="paragraph">
-<p>See the <a href="http://gorm.grails.org/6.1.x/whatsNew/manual">What&#8217;s New in GORM 6.1</a> guide for more information.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_gorm_6_0">GORM 6.0</h4>
-<div class="paragraph">
-<p>GORM 6.0 continues to evolve the new trait based model and includes the following new features:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Support for MongoDB 3.2.x drivers</p>
-</li>
-<li>
-<p>Support for Neo4j 3.x drivers</p>
-</li>
-<li>
-<p>Unified configuration model across all implementations</p>
-</li>
-<li>
-<p>Unified Multiple Data Sources support for Hibernate, MongoDB and Neo4j</p>
-</li>
-<li>
-<p>Multi Tenancy support for Hibernate, MongoDB and Neo4j</p>
-</li>
-<li>
-<p>RxGORM for MongoDB built on MongoDB Rx drivers</p>
-</li>
-<li>
-<p>RxGORM for REST built on RxNetty</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_gorm_5_0">GORM 5.0</h4>
-<div class="paragraph">
-<p>GORM 5.0 replaced the majority of the custom AST transformations that power GORM with <a href="http://docs.groovy-lang.org/next/html/documentation/core-traits.html">Groovy Traits</a>.</p>
-</div>
-<div class="paragraph">
-<p>Support for the MongoDB 3.x drivers, Neo4j 2.3.x and Hibernate 5.x was added.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_gorm_4_0">GORM 4.0</h4>
-<div class="paragraph">
-<p>GORM 4.0 continued to separate the GORM API from the Grails core APIs and was the first version to be support standalone execution outside of Grails.</p>
-</div>
-<div class="paragraph">
-<p>GORM 4.0 was released in conjunction with Grails 3.0 and also featured auto configuration starters for Spring Boot.</p>
-</div>
-<div class="paragraph">
-<p>Support was introduced for MongoDB 2.x drivers, Neo4j 2.2.x and Hibernate 4.3.x.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_gorm_3_0">GORM 3.0</h4>
-<div class="paragraph">
-<p>GORM 3.0 was the first release of GORM that was released separately to the Grails framework itself and was introduced in Grails 2.1.</p>
-</div>
-<div class="paragraph">
-<p>More of the metaprogramming functions were refactored and replaced with AST transformations and APIs introduced that allowed GORM to operate against multiple database implementations including MongoDB.</p>
-</div>
-<div class="paragraph">
-<p>The GORM API was separated from Hibernate and an SDK and TCK released for building compatible implementations.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_gorm_2_0">GORM 2.0</h4>
-<div class="paragraph">
-<p>GORM 2.0 evolved as part of Grails 2.0 and re-engineered some of the metaprogramming logic that relied on ExpandoMetaClass into a set of <a href="http://groovy-lang.org/metaprogramming.html#_compile_time_metaprogramming">Groovy AST transformations</a>.</p>
-</div>
-<div class="paragraph">
-<p>These AST transformations relied on the Grails 2.x compiler infrastructure and hence this version of GORM was also only usable from within Grails.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_gorm_1_0">GORM 1.0</h4>
-<div class="paragraph">
-<p>The first version of GORM was a series of meta-programming functions that built on the capabilities of Groovy&#8217;s <a href="http://groovy-lang.org/metaprogramming.html#metaprogramming_emc">ExpandoMetaClass</a>.</p>
-</div>
-<div class="paragraph">
-<p>It was purely dynamic and integrated into the <a href="http://grails.org">Grails framework</a> and not usable without Grails and hence no actual distribution exists for this version and it is only available as part of Grails.</p>
 </div>
 </div>
 </div>
