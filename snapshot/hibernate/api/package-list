@@ -1,4 +1,6 @@
+another
 example
+functional.tests
 grails.gorm
 grails.gorm.annotation
 grails.gorm.api
@@ -37,6 +39,8 @@ org.grails.datastore.gorm.query.criteria
 org.grails.datastore.gorm.query.transform
 org.grails.datastore.gorm.schemaless
 org.grails.datastore.gorm.services
+org.grails.datastore.gorm.services.implementers
+org.grails.datastore.gorm.services.transform
 org.grails.datastore.gorm.support
 org.grails.datastore.gorm.timestamp
 org.grails.datastore.gorm.transactions.transform
@@ -61,6 +65,7 @@ org.grails.datastore.mapping.core.connections
 org.grails.datastore.mapping.core.exceptions
 org.grails.datastore.mapping.core.grailsversion
 org.grails.datastore.mapping.core.impl
+org.grails.datastore.mapping.core.order
 org.grails.datastore.mapping.dirty.checking
 org.grails.datastore.mapping.document
 org.grails.datastore.mapping.document.config
@@ -101,7 +106,6 @@ org.grails.orm.hibernate.datasource
 org.grails.orm.hibernate.dirty
 org.grails.orm.hibernate.exceptions
 org.grails.orm.hibernate.multitenancy
-org.grails.orm.hibernate.persister.entity
 org.grails.orm.hibernate.proxy
 org.grails.orm.hibernate.query
 org.grails.orm.hibernate.support
