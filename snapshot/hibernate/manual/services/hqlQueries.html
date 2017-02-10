@@ -423,7 +423,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>If you need even more flexibility, then HQL queries can be used by the <code>@Query</code> method:</p>
+<p>If you need even more flexibility, then HQL queries can be used via the <code>@Query</code> annotation:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -435,7 +435,7 @@ Book searchByTitle(String pattern)</code></pre>
 <p>Note that in the example above, if you misspell the <code>pattern</code> parameter passed to the query a compilation error will occur.</p>
 </div>
 <div class="paragraph">
-<p>However, if you were to incorrectly input the <code>title</code> property no error would occur.</p>
+<p>However, if you were to incorrectly input the <code>title</code> property no error would occur since it is part of the String and not a variable.</p>
 </div>
 <div class="paragraph">
 <p>You can resolve this by declaring the value of <code>book</code> within the passed GString:</p>
@@ -447,7 +447,7 @@ Book searchByTitle(String pattern)</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>In the above example if you mispell the <code>title</code> property then a compilation error will occur.</p>
+<p>In the above example if you mispell the <code>title</code> property then a compilation error will occur. This is extremely powerful as it gives you the ability to type check HQL queries, which has always been one of the disadvantages of using them in comparison to criteria.</p>
 </div>
 </div>
 <div id="footer">

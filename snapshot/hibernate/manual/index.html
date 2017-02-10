@@ -586,7 +586,7 @@ table.CodeRay td.code>pre{padding:0}
 </ul>
 </li>
 <li><a href="#programmaticTransactions">9. Programmatic Transactions</a></li>
-<li><a href="#dataSources">10. GORM Data Services</a>
+<li><a href="#dataServices">10. GORM Data Services</a>
 <ul class="sectlevel2">
 <li><a href="#_data_service_basics">10.1. Data Service Basics</a></li>
 <li><a href="#_data_service_queries">10.2. Data Service Queries</a></li>
@@ -6971,7 +6971,7 @@ These mappings will not work for default unidirectional one-to-many or many-to-m
 </div>
 </div>
 <div class="sect1">
-<h2 id="dataSources">10. GORM Data Services</h2>
+<h2 id="dataServices">10. GORM Data Services</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Introduced in GORM 6.1, Data Services take the work out of implemented service layer logic by adding the ability to automatically implement abstract classes or interfaces using GORM logic.</p>
@@ -7037,7 +7037,7 @@ These mappings will not work for default unidirectional one-to-many or many-to-m
 <p><strong>Testing</strong> - Since Data Services are interfaces this makes them easy to test via <a href="http://spockframework.org/spock/docs/1.0/interaction_based_testing.html">Spock Mocks</a></p>
 </li>
 <li>
-<p><strong>Performance</strong> - The generates services are statically compiled and unlike competing technologies in the Java space no proxies are created so runtime performance doesn&#8217;t suffer</p>
+<p><strong>Performance</strong> - The generated services are statically compiled and unlike competing technologies in the Java space no proxies are created so runtime performance doesn&#8217;t suffer</p>
 </li>
 <li>
 <p><strong>Transaction Management</strong> - Each method in a Data Service is wrapped in an appropriate transaction (a read-only transaction in the case of read operations) that can be easily overridden.</p>
@@ -7226,7 +7226,7 @@ In this case the names of the properties to query are inferred from the method s
 </div>
 </div>
 <div class="paragraph">
-<p>With the <code>@Where</code> annotation the method can be anything you want and query is expressed within a closure passed with the <code>@Where</code> annotation.</p>
+<p>With the <code>@Where</code> annotation the method name can be anything you want and query is expressed within a closure passed with the <code>@Where</code> annotation.</p>
 </div>
 <div class="paragraph">
 <p>The query will be type checked against the parameters and compilation will fail if you misspell a parameter or property name.</p>
@@ -7270,7 +7270,7 @@ In this case the names of the properties to query are inferred from the method s
 <div class="sect3">
 <h4 id="_hql_queries">10.3.1. HQL Queries</h4>
 <div class="paragraph">
-<p>If you need even more flexibility, then HQL queries can be used by the <code>@Query</code> method:</p>
+<p>If you need even more flexibility, then HQL queries can be used via the <code>@Query</code> annotation:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -7282,7 +7282,7 @@ In this case the names of the properties to query are inferred from the method s
 <p>Note that in the example above, if you misspell the <code>pattern</code> parameter passed to the query a compilation error will occur.</p>
 </div>
 <div class="paragraph">
-<p>However, if you were to incorrectly input the <code>title</code> property no error would occur.</p>
+<p>However, if you were to incorrectly input the <code>title</code> property no error would occur since it is part of the String and not a variable.</p>
 </div>
 <div class="paragraph">
 <p>You can resolve this by declaring the value of <code>book</code> within the passed GString:</p>
@@ -7294,7 +7294,7 @@ In this case the names of the properties to query are inferred from the method s
 </div>
 </div>
 <div class="paragraph">
-<p>In the above example if you mispell the <code>title</code> property then a compilation error will occur.</p>
+<p>In the above example if you mispell the <code>title</code> property then a compilation error will occur. This is extremely powerful as it gives you the ability to type check HQL queries, which has always been one of the disadvantages of using them in comparison to criteria.</p>
 </div>
 </div>
 </div>
