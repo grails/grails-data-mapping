@@ -46,6 +46,7 @@ import org.grails.datastore.gorm.services.implementers.FindAndDeleteImplementer
 import org.grails.datastore.gorm.services.implementers.FindAllImplementer
 import org.grails.datastore.gorm.services.implementers.FindByImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneByImplementer
+import org.grails.datastore.gorm.services.implementers.FindOneByInterfaceProjectionImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneInterfaceProjectionImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneInterfaceProjectionStringQueryImplementer
@@ -83,6 +84,7 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             new FindOneImplementer(),
             new FindByImplementer(),
             new FindOneByImplementer(),
+            new FindOneByInterfaceProjectionImplementer(),
             new FindOneInterfaceProjectionImplementer(),
             new FindAndDeleteImplementer(),
             new DeleteImplementer(),

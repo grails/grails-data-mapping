@@ -1,23 +1,13 @@
 package org.grails.datastore.gorm.services.implementers
 
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.ast.ASTNode
-import org.codehaus.groovy.ast.AnnotationNode
-import org.codehaus.groovy.ast.ClassHelper
-import org.codehaus.groovy.ast.ClassNode
-import org.codehaus.groovy.ast.ConstructorNode
-import org.codehaus.groovy.ast.FieldNode
-import org.codehaus.groovy.ast.InnerClassNode
-import org.codehaus.groovy.ast.MethodNode
-import org.codehaus.groovy.ast.ModuleNode
-import org.codehaus.groovy.ast.Parameter
+import org.codehaus.groovy.ast.*
 import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.ListExpression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.Statement
-import org.codehaus.groovy.ast.tools.GeneralUtils
 import org.codehaus.groovy.transform.DelegateASTTransformation
 import org.grails.datastore.gorm.transform.AstPropertyResolveUtils
 import org.grails.datastore.mapping.reflect.AstUtils
@@ -88,13 +78,17 @@ trait SingleResultInterfaceProjectionBuilder {
             methodTarget = innerClassNode.getMethod('$setTarget', params)
         }
 
-        def delegateVar = varX('$delegate', innerClassNode)
-        MethodCallExpression setTargetCall = callX(delegateVar, '$setTarget', castX(targetDomainClass, queryMethodCall) )
+        VariableExpression delegateVar = varX('$delegate', innerClassNode)
+        VariableExpression targetVar = varX('$target', targetDomainClass)
+        MethodCallExpression setTargetCall = callX(delegateVar, '$setTarget', targetVar )
         setTargetCall.setMethodTarget(methodTarget)
         block(
             declS(delegateVar, ctorX(innerClassNode)),
-            stmt(setTargetCall),
-            returnS(delegateVar)
+            declS(targetVar, queryMethodCall),
+            ifS(notNullX(targetVar), block(
+                stmt(setTargetCall),
+                returnS(delegateVar)
+            ))
         )
 
     }

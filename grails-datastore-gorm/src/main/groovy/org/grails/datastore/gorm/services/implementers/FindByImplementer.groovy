@@ -21,6 +21,7 @@ import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.stmt.BlockStatement
+import org.codehaus.groovy.ast.stmt.Statement
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.MatchSpec
 import org.grails.datastore.gorm.services.transform.ServiceTransformation
@@ -103,11 +104,16 @@ class FindByImplementer extends AbstractArrayOrIterableResultImplementer impleme
             findCall = castX( returnType.plainNodeReference, findCall)
         }
         body.addStatement(
-            returnS(
-                findCall
-            )
+            buildReturnStatement(domainClassNode, abstractMethodNode, newMethodNode, findCall)
         )
     }
+
+    protected Statement buildReturnStatement(ClassNode domainClass, MethodNode abstractMethodNode, MethodNode newMethodNode, Expression queryExpression) {
+        returnS(
+            queryExpression
+        )
+    }
+
 
     protected String getDynamicFinderPrefix() {
         return "findAllBy"

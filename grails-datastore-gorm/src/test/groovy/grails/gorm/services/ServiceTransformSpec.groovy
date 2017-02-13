@@ -16,6 +16,38 @@ import java.lang.reflect.Type
  * Created by graemerocher on 11/01/2017.
  */
 class ServiceTransformSpec extends Specification {
+    void "test dynamic finder interface projection"() {
+        when:"The service transform is applied to an interface it can't implement"
+        Class service = new GroovyClassLoader().parseClass('''
+import grails.gorm.services.*
+import grails.gorm.annotation.Entity
+import static javax.persistence.criteria.JoinType.*
+
+@Service(Foo)
+interface MyService {
+    IFoo findByNameLike(String n)
+}
+@Entity
+class Foo {
+    String title
+    String name
+}
+
+interface IFoo {
+    String getTitle()
+}
+''')
+
+        then:
+        service.isInterface()
+        println service.classLoader.loadedClasses
+
+        when:"the impl is obtained"
+        Class impl = service.classLoader.loadClass("\$MyServiceImplementation")
+
+        then:"The impl is valid"
+        impl.getMethod("findByNameLike", String).getAnnotation(ReadOnly) != null
+    }
     void "test interface projection with @Query"() {
         when:"The service transform is applied to an interface it can't implement"
         Class service = new GroovyClassLoader().parseClass('''

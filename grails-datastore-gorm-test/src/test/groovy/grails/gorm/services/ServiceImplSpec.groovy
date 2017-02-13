@@ -292,7 +292,9 @@ class ServiceImplSpec extends Specification {
         result == '{"name":"Pumpkin"}'
         info != null
         info.name == "Pumpkin"
-        productService.searchProductInfoByName("Pump%")
+        productService.searchProductInfoByName("Pump%") != null
+        productService.findByTypeLike("Veg%") != null
+        productService.findByTypeLike("Jun%")  == null
 
         when:
         productService.searchProductInfo("Pum%").name == "Pumpkin"
@@ -346,6 +348,8 @@ interface ProductService {
 
     @Query("from ${Product p} where $p.name like $pattern")
     ProductInfo searchProductInfo(String pattern)
+
+    ProductInfo findByTypeLike(String type)
 
     @Where({ name ==~ pattern })
     ProductInfo searchProductInfoByName(String pattern)
