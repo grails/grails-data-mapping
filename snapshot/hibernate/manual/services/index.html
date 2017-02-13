@@ -494,6 +494,34 @@ interface BookService {
 </ul>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_abstract_class_support">Abstract Class Support</h4>
+<div class="paragraph">
+<p>If you come across a method that GORM doesn&#8217;t know how to implement, then you can provide an implementation by using an abstract class.</p>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">interface IBookService {
+    Book getBook(Serializable id)
+    Date someOtherMethod()
+}
+@Service(Book)
+abstract class BookService implements IBookService {
+
+   @Override
+   Date someOtherMethod() {
+      // impl
+   }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case GORM will implement the interface methods that have not been defined by the abstract class.</p>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_data_service_queries">Data Service Queries</h3>
@@ -670,8 +698,8 @@ In this case the names of the properties to query are inferred from the method s
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">    @Where({ title ==~ pattern })
-    Book searchBooks(String pattern)</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">    @Where({ title ==~ pattern &amp;&amp; releaseDate &gt; fromDate })
+    Book searchBooks(String pattern, Date fromDate)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -717,7 +745,7 @@ interface BookService {
 </table>
 </div>
 <div class="sect3">
-<h4 id="_hql_queries">HQL Queries</h4>
+<h4 id="_jpa_ql_queries">JPA-QL Queries</h4>
 <div class="paragraph">
 <p>If you need even more flexibility, then HQL queries can be used via the <code>@Query</code> annotation:</p>
 </div>
@@ -743,7 +771,138 @@ Book searchByTitle(String pattern)</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>In the above example if you mispell the <code>title</code> property then a compilation error will occur. This is extremely powerful as it gives you the ability to type check HQL queries, which has always been one of the disadvantages of using them in comparison to criteria.</p>
+<p>In the above example if you misspell the <code>title</code> property then a compilation error will occur. This is extremely powerful as it gives you the ability to type check HQL queries, which has always been one of the disadvantages of using them in comparison to criteria.</p>
+</div>
+<div class="paragraph">
+<p>This support for type checked queries extends to joins. For example consider this query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Query("""
+ from ${Book book} <i class="conum" data-value="1"></i><b>(1)</b>
+ inner join ${Author author = book.author} <i class="conum" data-value="2"></i><b>(2)</b>
+ where $book.title = $title and $author.name = $author""") <i class="conum" data-value="3"></i><b>(3)</b>
+Book find(String title, String author)</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Using <code>from</code> to define the root query</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Use inner join and a declaration to define the association to join on</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Apply any conditions in the <code>where</code> clause</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_query_projections">Query Projections</h4>
+<div class="paragraph">
+<p>There are a few ways to implement projections. One way is to is to use the convention <code>T find[Domain Class][Property]</code>. For example say the <code>Book</code> class has a <code>releaseDate</code> property of type <code>Date</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Service(Book)
+interface BookService {
+   Date findBookReleaseDate(String title)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This also works for multiple results:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Service(Book)
+interface BookService {
+   List&lt;Date&gt; findBookReleaseDate(String publisher)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And you can use the <code>Map</code> argument to provide ordering and pagination if necessary:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Service(Book)
+interface BookService {
+   List&lt;Date&gt; findBookReleaseDate(String publisher, Map args)
+}</code></pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_jpa_ql_projections">JPA-QL Projections</h5>
+<div class="paragraph">
+<p>You can also use a JPA-QL query to perform a projection:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Service(Book)
+interface BookService {
+   @Query("select $b.releaseDate from ${Book b} where $b.publisher = $publisher order by $b.releaseDate")
+   List&lt;Date&gt; findBookReleaseDates(String publisher)
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_interface_projections">Interface Projections</h5>
+<div class="paragraph">
+<p>Sometimes you want to expose a more limited set of a data to the calling class. In this case it is possible to use interface projections.</p>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Author {
+    String name
+    Date dateOfBirth <i class="conum" data-value="1"></i><b>(1)</b>
+}
+interface AuthorInfo {
+    String getName() <i class="conum" data-value="2"></i><b>(2)</b>
+}
+@Service(Author)
+interface AuthorService {
+   AuthorInfo find(String name) <i class="conum" data-value="3"></i><b>(3)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The domain class <code>Author</code> has a property called <code>dateOfBirth</code> that we do not want to make available to the client</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>You can define an interface that only exposes the properties you want to expose</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Return the interface from the service.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If a property exists on the interface but not on the domain class you will receive a compilation error.
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>
@@ -802,6 +961,15 @@ interface BookService {
 <div class="paragraph">
 <p>If a validation error occurs then a <code>ValidationException</code> will be thrown from the service.</p>
 </div>
+<div class="paragraph">
+<p>You can also implement update operations using JPA-QL:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Query("update ${Book book} set ${book.title} = $newTitle where book.title = $oldTitle")
+Number updateTitle(String newTitle, String oldTitle)</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_delete">Delete</h4>
@@ -812,10 +980,28 @@ interface BookService {
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">@Service(Book)
 interface BookService {
-    Book deleteAll(String title)
+    Number deleteAll(String title)
 
     void delete(Serializable id)
 }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also implement delete operations using JPA-QL:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Query("delete ${Book book} where $book.title = $title")
+void delete(String title)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or via where queries:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Where({ title == title &amp;&amp; releaseDate &gt; date })
+void delete(String title, Date date)</code></pre>
 </div>
 </div>
 </div>

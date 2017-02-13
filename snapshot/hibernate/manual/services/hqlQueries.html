@@ -447,7 +447,35 @@ Book searchByTitle(String pattern)</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>In the above example if you mispell the <code>title</code> property then a compilation error will occur. This is extremely powerful as it gives you the ability to type check HQL queries, which has always been one of the disadvantages of using them in comparison to criteria.</p>
+<p>In the above example if you misspell the <code>title</code> property then a compilation error will occur. This is extremely powerful as it gives you the ability to type check HQL queries, which has always been one of the disadvantages of using them in comparison to criteria.</p>
+</div>
+<div class="paragraph">
+<p>This support for type checked queries extends to joins. For example consider this query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Query("""
+ from ${Book book} <i class="conum" data-value="1"></i><b>(1)</b>
+ inner join ${Author author = book.author} <i class="conum" data-value="2"></i><b>(2)</b>
+ where $book.title = $title and $author.name = $author""") <i class="conum" data-value="3"></i><b>(3)</b>
+Book find(String title, String author)</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Using <code>from</code> to define the root query</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Use inner join and a declaration to define the association to join on</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Apply any conditions in the <code>where</code> clause</td>
+</tr>
+</table>
 </div>
 </div>
 <div id="footer">

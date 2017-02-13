@@ -475,6 +475,15 @@ interface BookService {
 <div class="paragraph">
 <p>If a validation error occurs then a <code>ValidationException</code> will be thrown from the service.</p>
 </div>
+<div class="paragraph">
+<p>You can also implement update operations using JPA-QL:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Query("update ${Book book} set ${book.title} = $newTitle where book.title = $oldTitle")
+Number updateTitle(String newTitle, String oldTitle)</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_delete">Delete</h4>
@@ -485,10 +494,28 @@ interface BookService {
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">@Service(Book)
 interface BookService {
-    Book deleteAll(String title)
+    Number deleteAll(String title)
 
     void delete(Serializable id)
 }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also implement delete operations using JPA-QL:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Query("delete ${Book book} where $book.title = $title")
+void delete(String title)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or via where queries:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Where({ title == title &amp;&amp; releaseDate &gt; date })
+void delete(String title, Date date)</code></pre>
 </div>
 </div>
 </div>

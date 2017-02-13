@@ -7045,6 +7045,34 @@ These mappings will not work for default unidirectional one-to-many or many-to-m
 </ul>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_abstract_class_support">10.1.4. Abstract Class Support</h4>
+<div class="paragraph">
+<p>If you come across a method that GORM doesn&#8217;t know how to implement, then you can provide an implementation by using an abstract class.</p>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">interface</span> IBookService {
+    <span class="predefined-type">Book</span> getBook(<span class="predefined-type">Serializable</span> id)
+    <span class="predefined-type">Date</span> someOtherMethod()
+}
+<span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
+<span class="directive">abstract</span> <span class="type">class</span> <span class="class">BookService</span> <span class="directive">implements</span> IBookService {
+
+   <span class="annotation">@Override</span>
+   <span class="predefined-type">Date</span> someOtherMethod() {
+      <span class="comment">// impl</span>
+   }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case GORM will implement the interface methods that have not been defined by the abstract class.</p>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_data_service_queries">10.2. Data Service Queries</h3>
@@ -7221,8 +7249,8 @@ In this case the names of the properties to query are inferred from the method s
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="annotation">@Where</span>({ title ==~ pattern })
-    <span class="predefined-type">Book</span> searchBooks(<span class="predefined-type">String</span> pattern)</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="annotation">@Where</span>({ title ==~ pattern &amp;&amp; releaseDate &gt; fromDate })
+    <span class="predefined-type">Book</span> searchBooks(<span class="predefined-type">String</span> pattern, <span class="predefined-type">Date</span> fromDate)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -7268,7 +7296,7 @@ In this case the names of the properties to query are inferred from the method s
 </table>
 </div>
 <div class="sect3">
-<h4 id="_hql_queries">10.3.1. HQL Queries</h4>
+<h4 id="_jpa_ql_queries">10.3.1. JPA-QL Queries</h4>
 <div class="paragraph">
 <p>If you need even more flexibility, then HQL queries can be used via the <code>@Query</code> annotation:</p>
 </div>
@@ -7294,7 +7322,138 @@ In this case the names of the properties to query are inferred from the method s
 </div>
 </div>
 <div class="paragraph">
-<p>In the above example if you mispell the <code>title</code> property then a compilation error will occur. This is extremely powerful as it gives you the ability to type check HQL queries, which has always been one of the disadvantages of using them in comparison to criteria.</p>
+<p>In the above example if you misspell the <code>title</code> property then a compilation error will occur. This is extremely powerful as it gives you the ability to type check HQL queries, which has always been one of the disadvantages of using them in comparison to criteria.</p>
+</div>
+<div class="paragraph">
+<p>This support for type checked queries extends to joins. For example consider this query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;&quot;&quot;</span><span class="content">
+ from </span><span class="inline"><span class="inline-delimiter">${</span><span class="predefined-type">Book</span> book<span class="inline-delimiter">}</span></span><span class="content"> <i class="conum" data-value="1"></i><b>(1)</b>
+ inner join </span><span class="inline"><span class="inline-delimiter">${</span>Author author = book.author<span class="inline-delimiter">}</span></span><span class="content"> <i class="conum" data-value="2"></i><b>(2)</b>
+ where </span><span class="inline"><span class="inline-delimiter">$</span>book</span><span class="content">.title = </span><span class="inline"><span class="inline-delimiter">$</span>title</span><span class="content"> and </span><span class="inline"><span class="inline-delimiter">$</span>author</span><span class="content">.name = </span><span class="inline"><span class="inline-delimiter">$</span>author</span><span class="delimiter">&quot;&quot;&quot;</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
+<span class="predefined-type">Book</span> find(<span class="predefined-type">String</span> title, <span class="predefined-type">String</span> author)</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Using <code>from</code> to define the root query</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Use inner join and a declaration to define the association to join on</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Apply any conditions in the <code>where</code> clause</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_query_projections">10.3.2. Query Projections</h4>
+<div class="paragraph">
+<p>There are a few ways to implement projections. One way is to is to use the convention <code>T find[Domain Class][Property]</code>. For example say the <code>Book</code> class has a <code>releaseDate</code> property of type <code>Date</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
+<span class="type">interface</span> BookService {
+   <span class="predefined-type">Date</span> findBookReleaseDate(<span class="predefined-type">String</span> title)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This also works for multiple results:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
+<span class="type">interface</span> BookService {
+   <span class="predefined-type">List</span>&lt;<span class="predefined-type">Date</span>&gt; findBookReleaseDate(<span class="predefined-type">String</span> publisher)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And you can use the <code>Map</code> argument to provide ordering and pagination if necessary:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
+<span class="type">interface</span> BookService {
+   <span class="predefined-type">List</span>&lt;<span class="predefined-type">Date</span>&gt; findBookReleaseDate(<span class="predefined-type">String</span> publisher, <span class="predefined-type">Map</span> args)
+}</code></pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_jpa_ql_projections">JPA-QL Projections</h5>
+<div class="paragraph">
+<p>You can also use a JPA-QL query to perform a projection:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
+<span class="type">interface</span> BookService {
+   <span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">select </span><span class="inline"><span class="inline-delimiter">$</span>b</span><span class="content">.releaseDate from </span><span class="inline"><span class="inline-delimiter">${</span><span class="predefined-type">Book</span> b<span class="inline-delimiter">}</span></span><span class="content"> where </span><span class="inline"><span class="inline-delimiter">$</span>b</span><span class="content">.publisher = </span><span class="inline"><span class="inline-delimiter">$</span>publisher</span><span class="content"> order by </span><span class="inline"><span class="inline-delimiter">$</span>b</span><span class="content">.releaseDate</span><span class="delimiter">&quot;</span></span>)
+   <span class="predefined-type">List</span>&lt;<span class="predefined-type">Date</span>&gt; findBookReleaseDates(<span class="predefined-type">String</span> publisher)
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_interface_projections">Interface Projections</h5>
+<div class="paragraph">
+<p>Sometimes you want to expose a more limited set of a data to the calling class. In this case it is possible to use interface projections.</p>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Author</span> {
+    <span class="predefined-type">String</span> name
+    <span class="predefined-type">Date</span> dateOfBirth <i class="conum" data-value="1"></i><b>(1)</b>
+}
+<span class="type">interface</span> AuthorInfo {
+    <span class="predefined-type">String</span> getName() <i class="conum" data-value="2"></i><b>(2)</b>
+}
+<span class="annotation">@Service</span>(Author)
+<span class="type">interface</span> AuthorService {
+   AuthorInfo find(<span class="predefined-type">String</span> name) <i class="conum" data-value="3"></i><b>(3)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The domain class <code>Author</code> has a property called <code>dateOfBirth</code> that we do not want to make available to the client</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>You can define an interface that only exposes the properties you want to expose</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Return the interface from the service.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If a property exists on the interface but not on the domain class you will receive a compilation error.
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>
@@ -7353,6 +7512,15 @@ In this case the names of the properties to query are inferred from the method s
 <div class="paragraph">
 <p>If a validation error occurs then a <code>ValidationException</code> will be thrown from the service.</p>
 </div>
+<div class="paragraph">
+<p>You can also implement update operations using JPA-QL:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">update </span><span class="inline"><span class="inline-delimiter">${</span><span class="predefined-type">Book</span> book<span class="inline-delimiter">}</span></span><span class="content"> set </span><span class="inline"><span class="inline-delimiter">${</span>book.title<span class="inline-delimiter">}</span></span><span class="content"> = </span><span class="inline"><span class="inline-delimiter">$</span>newTitle</span><span class="content"> where book.title = </span><span class="inline"><span class="inline-delimiter">$</span>oldTitle</span><span class="delimiter">&quot;</span></span>)
+<span class="predefined-type">Number</span> updateTitle(<span class="predefined-type">String</span> newTitle, <span class="predefined-type">String</span> oldTitle)</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_delete_2">10.4.3. Delete</h4>
@@ -7363,10 +7531,28 @@ In this case the names of the properties to query are inferred from the method s
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
 <span class="type">interface</span> BookService {
-    <span class="predefined-type">Book</span> deleteAll(<span class="predefined-type">String</span> title)
+    <span class="predefined-type">Number</span> deleteAll(<span class="predefined-type">String</span> title)
 
     <span class="type">void</span> delete(<span class="predefined-type">Serializable</span> id)
 }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also implement delete operations using JPA-QL:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">delete </span><span class="inline"><span class="inline-delimiter">${</span><span class="predefined-type">Book</span> book<span class="inline-delimiter">}</span></span><span class="content"> where </span><span class="inline"><span class="inline-delimiter">$</span>book</span><span class="content">.title = </span><span class="inline"><span class="inline-delimiter">$</span>title</span><span class="delimiter">&quot;</span></span>)
+<span class="type">void</span> delete(<span class="predefined-type">String</span> title)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or via where queries:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Where</span>({ title == title &amp;&amp; releaseDate &gt; date })
+<span class="type">void</span> delete(<span class="predefined-type">String</span> title, <span class="predefined-type">Date</span> date)</code></pre>
 </div>
 </div>
 </div>

@@ -427,8 +427,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">    @Where({ title ==~ pattern })
-    Book searchBooks(String pattern)</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">    @Where({ title ==~ pattern &amp;&amp; releaseDate &gt; fromDate })
+    Book searchBooks(String pattern, Date fromDate)</code></pre>
 </div>
 </div>
 <div class="paragraph">
