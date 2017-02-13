@@ -341,6 +341,9 @@ interface MyService {
 
     @Query("update ${Foo foo} set ${foo.title} = $newTitle where $foo.title = $oldTitle") 
     Number updateTitle(String newTitle, String oldTitle)
+    
+    @Query("delete ${Foo foo} where $foo.title = $title")
+    void kill(String title)
 }
 @Entity
 class Foo {
