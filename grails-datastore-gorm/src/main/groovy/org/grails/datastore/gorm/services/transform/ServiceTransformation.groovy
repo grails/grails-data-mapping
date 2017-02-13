@@ -47,6 +47,9 @@ import org.grails.datastore.gorm.services.implementers.FindAllImplementer
 import org.grails.datastore.gorm.services.implementers.FindByImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneByImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneImplementer
+import org.grails.datastore.gorm.services.implementers.FindOneInterfaceProjectionImplementer
+import org.grails.datastore.gorm.services.implementers.FindOneInterfaceProjectionStringQueryImplementer
+import org.grails.datastore.gorm.services.implementers.FindOneInterfaceProjectionWhereImplementer
 import org.grails.datastore.gorm.services.implementers.FindOnePropertyProjectionImplementer
 import org.grails.datastore.gorm.services.implementers.FindPropertyProjectImplementer
 import org.grails.datastore.gorm.services.implementers.SaveImplementer
@@ -80,6 +83,7 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             new FindOneImplementer(),
             new FindByImplementer(),
             new FindOneByImplementer(),
+            new FindOneInterfaceProjectionImplementer(),
             new FindAndDeleteImplementer(),
             new DeleteImplementer(),
             new SaveImplementer(),
@@ -87,8 +91,10 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             new FindOnePropertyProjectionImplementer(),
             new FindPropertyProjectImplementer(),
             new FindOneWhereImplementer(),
+            new FindOneInterfaceProjectionWhereImplementer(),
             new FindAllWhereImplementer(),
             new FindOneStringQueryImplementer(),
+            new FindOneInterfaceProjectionStringQueryImplementer(),
             new FindAllStringQueryImplementer(),
             new UpdateStringQueryImplementer(),
             new CountImplementer(),

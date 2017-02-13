@@ -52,7 +52,7 @@ abstract class AbstractStringQueryImplementer extends AbstractReadOperationImple
                 transformed = args( transformed, argMap )
             }
             body.addStatement(
-                buildQueryReturnStatement(domainClassNode, newMethodNode, transformed)
+                buildQueryReturnStatement(domainClassNode, abstractMethodNode, newMethodNode, transformed)
             )
             annotationNode.setMember("value", constX("IMPLEMENTED"))
         }
@@ -65,7 +65,7 @@ abstract class AbstractStringQueryImplementer extends AbstractReadOperationImple
      * @param args The arguments
      * @return The statement
      */
-    protected abstract Statement buildQueryReturnStatement(ClassNode domainClassNode, MethodNode newMethodNode, Expression args)
+    protected abstract Statement buildQueryReturnStatement(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, Expression args)
 
     @Override
     protected Iterable<String> getHandledPrefixes() {

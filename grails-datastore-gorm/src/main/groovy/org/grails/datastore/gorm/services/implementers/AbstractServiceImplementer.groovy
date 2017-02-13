@@ -7,6 +7,7 @@ import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.transform.trait.Traits
 import org.grails.datastore.gorm.services.ServiceImplementer
+import org.grails.datastore.gorm.transform.AstPropertyResolveUtils
 import org.grails.datastore.mapping.core.Ordered
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.AstUtils
@@ -75,7 +76,7 @@ abstract class AbstractServiceImplementer implements ServiceImplementer, Ordered
             return true
         }
         else {
-            ClassNode propertyType = AstUtils.getPropertyType(domainClassNode, parameterName)
+            ClassNode propertyType = AstPropertyResolveUtils.getPropertyType(domainClassNode, parameterName)
             if(propertyType != null && (propertyType == parameter.type || AstUtils.isSubclassOf(parameter.type, propertyType.name))) {
                 return true
             }

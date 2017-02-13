@@ -4,6 +4,7 @@ import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.GenericsType
 import org.codehaus.groovy.ast.MethodNode
+import org.grails.datastore.gorm.transform.AstPropertyResolveUtils
 import org.grails.datastore.mapping.reflect.AstUtils
 
 import static org.grails.datastore.mapping.reflect.AstUtils.implementsInterface
@@ -23,7 +24,7 @@ class FindPropertyProjectImplementer extends AbstractProjectionImplementer {
         String propertyName = establishPropertyName(methodNode, prefix, domainClass)
         if(propertyName == null) return false
 
-        ClassNode propertyType = AstUtils.getPropertyType(domainClass, propertyName)
+        ClassNode propertyType = AstPropertyResolveUtils.getPropertyType(domainClass, propertyName)
         if(propertyType == null) return false
 
         if (returnType.name == Iterable.name || implementsInterface(returnType, Iterable.name)) {

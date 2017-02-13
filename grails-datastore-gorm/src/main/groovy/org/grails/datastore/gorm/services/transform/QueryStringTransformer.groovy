@@ -10,6 +10,7 @@ import org.codehaus.groovy.ast.stmt.ExpressionStatement
 import org.codehaus.groovy.ast.stmt.ReturnStatement
 import org.codehaus.groovy.ast.stmt.Statement
 import org.codehaus.groovy.control.SourceUnit
+import org.grails.datastore.gorm.transform.AstPropertyResolveUtils
 import org.grails.datastore.mapping.reflect.AstUtils
 
 import static org.codehaus.groovy.ast.tools.GeneralUtils.constX
@@ -168,7 +169,7 @@ class QueryStringTransformer extends ClassCodeExpressionTransformer {
                             AstUtils.error(sourceUnit, dec, "Invalid property path $path in query")
                         }
                         else {
-                            currentType = AstUtils.getPropertyType(currentType, pp)
+                            currentType = AstPropertyResolveUtils.getPropertyType(currentType, pp)
                         }
                     }
                     if(currentType != null) {

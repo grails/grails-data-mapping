@@ -6,7 +6,7 @@ import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
-
+import org.grails.datastore.gorm.transform.AstPropertyResolveUtils
 import org.grails.datastore.mapping.reflect.AstUtils
 
 import java.beans.Introspector
@@ -26,8 +26,8 @@ class FindOnePropertyProjectionImplementer extends AbstractProjectionImplementer
     @Override
     protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
         String propertyName = establishPropertyName(methodNode, prefix, domainClass)
-        if(propertyName != null) {
-            ClassNode propertyType = AstUtils.getPropertyType(domainClass, propertyName)
+        if(propertyName) {
+            ClassNode propertyType = AstPropertyResolveUtils.getPropertyType(domainClass, propertyName)
             if(isValidPropertyType(returnType, propertyType)) {
                 return true
             }

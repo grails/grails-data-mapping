@@ -98,7 +98,7 @@ abstract class AbstractWhereImplementer extends AbstractReadOperationImplementer
             )
             Expression queryExpression = callX(queryVar, getQueryMethodToExecute(), argsExpression != null ? argsExpression : AstUtils.ZERO_ARGUMENTS)
             body.addStatement(
-                buildReturnStatement(domainClassNode, newMethodNode, queryExpression)
+                buildReturnStatement(domainClassNode, abstractMethodNode, newMethodNode, queryExpression)
             )
             processVariableScopes(sourceUnit, targetClassNode, newMethodNode)
         }
@@ -107,8 +107,8 @@ abstract class AbstractWhereImplementer extends AbstractReadOperationImplementer
         }
     }
 
-    protected Statement buildReturnStatement(ClassNode domainClass, MethodNode methodNode, Expression queryExpression) {
-        returnS(castX(methodNode.returnType, queryExpression))
+    protected Statement buildReturnStatement(ClassNode domainClass, MethodNode abstractMethodNode, MethodNode methodNode, Expression queryExpression) {
+        returnS(queryExpression)
     }
 
     protected String getQueryMethodToExecute() {

@@ -53,7 +53,7 @@ class FindOneImplementer extends AbstractDetachedCriteriaServiceImplementor {
     @Override
     void implementById(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode, BlockStatement body, Expression byIdLookup) {
         body.addStatement(
-            buildReturnStatement(domainClassNode, null, byIdLookup)
+            buildReturnStatement(domainClassNode, abstractMethodNode, byIdLookup, null, newMethodNode)
         )
     }
 
@@ -61,11 +61,11 @@ class FindOneImplementer extends AbstractDetachedCriteriaServiceImplementor {
     void implementWithQuery(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode, BlockStatement body, VariableExpression detachedCriteriaVar, Expression queryArgs) {
         MethodCallExpression findCall = queryArgs != null ? callX(detachedCriteriaVar, "find", queryArgs) : callX(detachedCriteriaVar, "find")
         body.addStatement(
-            buildReturnStatement(domainClassNode, queryArgs, findCall)
+            buildReturnStatement(domainClassNode, abstractMethodNode, findCall, queryArgs, newMethodNode)
         )
     }
 
-    protected Statement buildReturnStatement(ClassNode targetDomainClass, Expression args, Expression queryMethodCall) {
+    protected Statement buildReturnStatement(ClassNode targetDomainClass, MethodNode abstractMethodNode, Expression queryMethodCall, Expression args, MethodNode newMethodNode) {
         returnS(
             queryMethodCall
         )

@@ -4,7 +4,12 @@ import grails.gorm.services.Where
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
+import org.codehaus.groovy.ast.expr.Expression
+import org.codehaus.groovy.ast.stmt.Statement
 import org.grails.datastore.mapping.reflect.AstUtils
+
+import static org.codehaus.groovy.ast.tools.GeneralUtils.castX
+import static org.codehaus.groovy.ast.tools.GeneralUtils.returnS
 
 /**
  * Implements support for the {@link Where} annotation on {@link grails.gorm.services.Service} instances that return a single result
@@ -27,4 +32,10 @@ class FindOneWhereImplementer extends AbstractWhereImplementer {
     protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
         return AstUtils.isDomainClass(returnType)
     }
+
+    @Override
+    protected Statement buildReturnStatement(ClassNode domainClass, MethodNode abstractMethodNode, MethodNode methodNode, Expression queryExpression) {
+        return returnS(queryExpression)
+    }
+
 }

@@ -15,61 +15,21 @@
 package org.grails.datastore.gorm.query.transform;
 
 import grails.gorm.DetachedCriteria;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.ClassCodeVisitorSupport;
-import org.codehaus.groovy.ast.ClassHelper;
-import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.FieldNode;
-import org.codehaus.groovy.ast.GenericsType;
-import org.codehaus.groovy.ast.MethodNode;
-import org.codehaus.groovy.ast.Parameter;
-import org.codehaus.groovy.ast.PropertyNode;
-import org.codehaus.groovy.ast.Variable;
-import org.codehaus.groovy.ast.VariableScope;
-import org.codehaus.groovy.ast.expr.ArgumentListExpression;
-import org.codehaus.groovy.ast.expr.BinaryExpression;
-import org.codehaus.groovy.ast.expr.BitwiseNegationExpression;
-import org.codehaus.groovy.ast.expr.CastExpression;
-import org.codehaus.groovy.ast.expr.ClassExpression;
-import org.codehaus.groovy.ast.expr.ClosureExpression;
-import org.codehaus.groovy.ast.expr.ConstantExpression;
-import org.codehaus.groovy.ast.expr.ConstructorCallExpression;
-import org.codehaus.groovy.ast.expr.DeclarationExpression;
-import org.codehaus.groovy.ast.expr.Expression;
-import org.codehaus.groovy.ast.expr.GStringExpression;
-import org.codehaus.groovy.ast.expr.MapEntryExpression;
-import org.codehaus.groovy.ast.expr.MapExpression;
-import org.codehaus.groovy.ast.expr.MethodCallExpression;
-import org.codehaus.groovy.ast.expr.NotExpression;
-import org.codehaus.groovy.ast.expr.PropertyExpression;
-import org.codehaus.groovy.ast.expr.RangeExpression;
-import org.codehaus.groovy.ast.expr.StaticMethodCallExpression;
-import org.codehaus.groovy.ast.expr.VariableExpression;
+import org.codehaus.groovy.ast.*;
+import org.codehaus.groovy.ast.expr.*;
 import org.codehaus.groovy.ast.stmt.*;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.messages.LocatedMessage;
-import org.codehaus.groovy.transform.trait.Traits;
 import org.codehaus.groovy.syntax.Token;
-import org.grails.datastore.mapping.model.config.GormProperties;
+import org.codehaus.groovy.transform.trait.Traits;
+import org.grails.datastore.gorm.transform.AstPropertyResolveUtils;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.criteria.FunctionCallingCriterion;
 import org.grails.datastore.mapping.reflect.AstUtils;
-import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
-import org.grails.datastore.mapping.reflect.NameUtils;
-import org.grails.datastore.mapping.reflect.ReflectionUtils;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.*;
 
 /**
  * ClassCodeVisitorSupport that transforms where methods into detached criteria queries
@@ -155,7 +115,6 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     protected Map<String, ClassNode> detachedCriteriaVariables = new HashMap<String, ClassNode>();
     protected Map<String, Object> aliases = new HashMap<String, Object>();
     protected Map<String, ClassNode> staticDetachedCriteriaVariables = new HashMap<String, ClassNode>();
-    protected Map<String, Map<String, ClassNode>> cachedClassProperties = new HashMap<String, Map<String, ClassNode>>();
     protected Set<Expression> aliasExpressions = new HashSet<Expression>();
     protected ClassNode currentClassNode;
 
@@ -368,7 +327,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 String propName = pe.getPropertyAsString();
                 ClassNode classNode = pe.getObjectExpression().getType();
                 if (AstUtils.isDomainClass(classNode)) {
-                    ClassNode propertyType = getPropertyType(classNode, propName);
+                    ClassNode propertyType = AstPropertyResolveUtils.getPropertyType(classNode, propName);
                     if (propertyType != null && DETACHED_CRITERIA_CLASS_NODE.equals(propertyType)) {
                         visitMethodCall(classNode, arguments);
                     }
@@ -505,7 +464,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         ClassNode previousClassNode = this.currentClassNode;
         try {
             this.currentClassNode = classNode;
-            List<String> propertyNames = getPropertyNames(classNode);
+            List<String> propertyNames = AstPropertyResolveUtils.getPropertyNames(classNode);
             Statement code = closureExpression.getCode();
             BlockStatement newCode = new BlockStatement();
             boolean addAll = false;
@@ -526,90 +485,6 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         }
     }
 
-    private List<String> getPropertyNames(ClassNode classNode) {
-        String className = classNode.getName();
-        Map<String, ClassNode> cachedProperties = cachedClassProperties.get(className);
-        if (cachedProperties == null) {
-            cachedProperties = new HashMap<String, ClassNode>();
-            cachedProperties.put(GormProperties.IDENTITY, new ClassNode(Long.class));
-            cachedProperties.put(GormProperties.VERSION, new ClassNode(Long.class));
-            cachedClassProperties.put(className, cachedProperties);
-            ClassNode currentNode = classNode;
-            while (currentNode != null && !currentNode.equals(ClassHelper.OBJECT_TYPE)) {
-                populatePropertiesForClassNode(currentNode, cachedProperties);
-                currentNode = currentNode.getSuperClass();
-            }
-        }
-        return new ArrayList<String>(cachedProperties.keySet());
-    }
-
-    private void populatePropertiesForClassNode(ClassNode classNode, Map<String, ClassNode> cachedProperties) {
-        List<MethodNode> methods = classNode.getMethods();
-        for (MethodNode method : methods) {
-            String methodName = method.getName();
-            if (!method.isAbstract() && isGetter(methodName, method)) {
-                String propertyName = NameUtils.getPropertyNameForGetterOrSetter(methodName);
-                if(GormProperties.META_CLASS.equals(propertyName)) continue;
-                if (GormProperties.HAS_MANY.equals(propertyName) || GormProperties.BELONGS_TO.equals(propertyName) || GormProperties.HAS_ONE.equals(propertyName)) {
-                    FieldNode field = classNode.getField(propertyName);
-                    if (field != null) {
-                        populatePropertiesForInitialExpression(cachedProperties, field.getInitialExpression());
-                    }
-                } else if (!method.isStatic()) {
-                    cachedProperties.put(propertyName, method.getReturnType());
-                }
-            }
-        }
-        List<PropertyNode> properties = classNode.getProperties();
-        for (PropertyNode property : properties) {
-
-            String propertyName = property.getName();
-            if(propertyName.equals(GormProperties.META_CLASS)) continue;
-            if (GormProperties.HAS_MANY.equals(propertyName) || GormProperties.BELONGS_TO.equals(propertyName) || GormProperties.HAS_ONE.equals(propertyName)) {
-                Expression initialExpression = property.getInitialExpression();
-                populatePropertiesForInitialExpression(cachedProperties, initialExpression);
-            } else {
-                cachedProperties.put(propertyName, property.getType());
-            }
-        }
-
-        if (classNode.isResolved()) {
-            ClassPropertyFetcher propertyFetcher = ClassPropertyFetcher.forClass(classNode.getTypeClass());
-            cachePropertiesForAssociationMetadata(cachedProperties, propertyFetcher, GormProperties.HAS_MANY);
-            cachePropertiesForAssociationMetadata(cachedProperties, propertyFetcher, GormProperties.BELONGS_TO);
-            cachePropertiesForAssociationMetadata(cachedProperties, propertyFetcher, GormProperties.HAS_ONE);
-        }
-
-    }
-
-    private void cachePropertiesForAssociationMetadata(Map<String, ClassNode> cachedProperties, ClassPropertyFetcher propertyFetcher, String associationMetadataName) {
-        if (propertyFetcher.isReadableProperty(associationMetadataName)) {
-            Object propertyValue = propertyFetcher.getPropertyValue(associationMetadataName);
-            if (propertyValue instanceof Map) {
-                Map hasManyMap = (Map) propertyValue;
-                for (Object propertyName : hasManyMap.keySet()) {
-                    Object val = hasManyMap.get(propertyName);
-                    if (val instanceof Class) {
-                        cachedProperties.put(propertyName.toString(), ClassHelper.make((Class) val).getPlainNodeReference());
-                    }
-                }
-            }
-        }
-    }
-
-    private void populatePropertiesForInitialExpression(Map<String, ClassNode> cachedProperties, Expression initialExpression) {
-        if (initialExpression instanceof MapExpression) {
-            MapExpression me = (MapExpression) initialExpression;
-            List<MapEntryExpression> mapEntryExpressions = me.getMapEntryExpressions();
-            for (MapEntryExpression mapEntryExpression : mapEntryExpressions) {
-                Expression keyExpression = mapEntryExpression.getKeyExpression();
-                Expression valueExpression = mapEntryExpression.getValueExpression();
-                if (valueExpression instanceof ClassExpression) {
-                    cachedProperties.put(keyExpression.getText(), valueExpression.getType());
-                }
-            }
-        }
-    }
 
     private void addBlockStatementToNewQuery(BlockStatement blockStatement, BlockStatement newCode, boolean addAll, List<String> propertyNames, VariableScope variableScope) {
         List<Statement> statements = blockStatement.getStatements();
@@ -779,7 +654,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     }
                 }
                 if (associationPropertyNames == null) {
-                    associationPropertyNames = getPropertyNames(type);
+                    associationPropertyNames = AstPropertyResolveUtils.getPropertyNames(type);
                 }
 
                 ClassNode existing = currentClassNode;
@@ -788,7 +663,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
                         type = getAssociationTypeFromGenerics(type);
                         if (type != null) {
-                            associationPropertyNames = getPropertyNames(type);
+                            associationPropertyNames = AstPropertyResolveUtils.getPropertyNames(type);
                         }
                     }
                     if (type != null) {
@@ -813,11 +688,11 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         List<String> associationPropertyNames = Collections.emptyList();
         if (type != null) {
             if (AstUtils.isDomainClass(type)) {
-                associationPropertyNames = getPropertyNames(type);
+                associationPropertyNames = AstPropertyResolveUtils.getPropertyNames(type);
             } else {
                 ClassNode associationType = getAssociationTypeFromGenerics(type);
                 if (associationType != null) {
-                    associationPropertyNames = getPropertyNames(associationType);
+                    associationPropertyNames = AstPropertyResolveUtils.getPropertyNames(associationType);
                 }
             }
         }
@@ -836,31 +711,9 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
     private ClassNode getPropertyType(String prop) {
         ClassNode classNode = this.currentClassNode;
-        return getPropertyType(classNode, prop);
+        return AstPropertyResolveUtils.getPropertyType(classNode, prop);
     }
 
-    private ClassNode getPropertyType(ClassNode classNode, String prop) {
-        Map<String, ClassNode> cachedProperties = cachedClassProperties.get(classNode.getName());
-        if (cachedProperties != null && cachedProperties.containsKey(prop)) {
-            return cachedProperties.get(prop);
-        }
-        ClassNode type = null;
-        PropertyNode property = classNode.getProperty(prop);
-        if (property != null) {
-            type = property.getType();
-        } else {
-            MethodNode methodNode = currentClassNode.getMethod(NameUtils.getGetterName(prop), new Parameter[0]);
-            if (methodNode != null) {
-                type = methodNode.getReturnType();
-            } else {
-                FieldNode fieldNode = classNode.getDeclaredField(prop);
-                if (fieldNode != null) {
-                    type = fieldNode.getType();
-                }
-            }
-        }
-        return type;
-    }
 
     private boolean isAssociationMethodCall(List<String> propertyNames, String methodName, ArgumentListExpression arguments) {
         return propertyNames.contains(methodName) && hasClosureArgument(arguments);
@@ -1098,7 +951,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
                     if(AstUtils.isGroovyType(type)) {
                         // an embedded property
-                        List<String> associationPropertyNames = getPropertyNames(type);
+                        List<String> associationPropertyNames = AstPropertyResolveUtils.getPropertyNames(type);
                         boolean hasNoProperties = associationPropertyNames.isEmpty();
                         if (!hasNoProperties && !associationPropertyNames.contains(associationProperty)) {
                             sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot query property \"" + associationProperty + "\" - no such property on class " + type.getName() + " exists.", Token.newString(propertyName, pe.getLineNumber(), pe.getColumnNumber()), sourceUnit));
@@ -1174,7 +1027,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
 
     private ClassNode getPropertyTypeFromGenerics(String propertyName, ClassNode classNode) {
-        ClassNode type = getPropertyType(classNode, propertyName);
+        ClassNode type = AstPropertyResolveUtils.getPropertyType(classNode, propertyName);
         if (type != null && !AstUtils.isDomainClass(type)) {
             ClassNode associationTypeFromGenerics = getAssociationTypeFromGenerics(type);
             if (associationTypeFromGenerics != null && AstUtils.isDomainClass(associationTypeFromGenerics)) {
@@ -1242,7 +1095,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                         int argCount = expressions.size();
                         if (argCount == 1) {
                             Expression expression = expressions.get(0);
-                            String aggregatePropertyName = null;
+                            String aggregatePropertyName;
                             if (expression instanceof VariableExpression || expression instanceof ConstantExpression) {
                                 aggregatePropertyName = expression.getText();
                             } else {
@@ -1382,10 +1235,6 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     @Override
     protected SourceUnit getSourceUnit() {
         return this.sourceUnit;
-    }
-
-    private boolean isGetter(String methodName, MethodNode declaredMethod) {
-        return declaredMethod.getParameters().length == 0 && ReflectionUtils.isGetter(methodName, EMPTY_JAVA_CLASS_ARRAY);
     }
 
     private class ClosureAndArguments {

@@ -3,12 +3,15 @@ package grails.gorm.services
 import grails.gorm.annotation.Entity
 import grails.gorm.validation.PersistentEntityValidator
 import grails.validation.ValidationException
+import groovy.json.JsonOutput
 import org.grails.datastore.gorm.validation.constraints.eval.DefaultConstraintEvaluator
 import org.grails.datastore.gorm.validation.constraints.registry.DefaultConstraintRegistry
 import org.grails.datastore.mapping.simple.SimpleMapDatastore
 import org.springframework.context.support.StaticMessageSource
 import spock.lang.AutoCleanup
 import spock.lang.Specification
+
+import java.beans.Introspector
 
 /**
  * Created by graemerocher on 06/02/2017.
@@ -272,6 +275,35 @@ class ServiceImplSpec extends Specification {
         e.message == "String-based queries like [findAll] are currently not supported in this implementation of GORM. Use criteria instead."
 
     }
+
+    void "test interface projection"() {
+        given:
+        ProductService productService = datastore.getService(ProductService)
+
+        when:
+        productService.saveProduct("Carrot", "Vegetable")
+        productService.saveProduct("Pumpkin", "Vegetable")
+        productService.saveProduct("Tomato", "Fruit")
+
+        ProductInfo info = productService.findProductInfo("Pumpkin", "Vegetable")
+
+        def result = JsonOutput.toJson(info)
+        then:
+        result == '{"name":"Pumpkin"}'
+        info != null
+        info.name == "Pumpkin"
+        productService.searchProductInfoByName("Pump%")
+
+        when:
+        productService.searchProductInfo("Pum%").name == "Pumpkin"
+
+        then:
+        thrown(UnsupportedOperationException)
+    }
+}
+
+interface ProductInfo {
+    String getName()
 }
 
 @Entity
@@ -309,6 +341,14 @@ abstract class AnotherProductService implements AnotherProductInterface{
 
 @Service(Product)
 interface ProductService {
+
+    ProductInfo findProductInfo(String name, String type)
+
+    @Query("from ${Product p} where $p.name like $pattern")
+    ProductInfo searchProductInfo(String pattern)
+
+    @Where({ name ==~ pattern })
+    ProductInfo searchProductInfoByName(String pattern)
 
     @Query("from ${Product p} where $p.name like $pattern")
     Product searchWithQuery(String pattern)

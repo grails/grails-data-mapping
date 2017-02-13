@@ -51,7 +51,7 @@ class UpdateStringQueryImplementer extends AbstractStringQueryImplementer {
     }
 
     @Override
-    protected Statement buildQueryReturnStatement(ClassNode domainClassNode, MethodNode newMethodNode, Expression args) {
+    protected Statement buildQueryReturnStatement(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, Expression args) {
         ClassNode returnType = newMethodNode.returnType
         Expression methodCall = callX(domainClassNode, "executeUpdate", args)
         methodCall = castX(returnType.plainNodeReference, methodCall)
