@@ -232,6 +232,37 @@ class Foo {
     }
 
 
+    void "test @Query update annotation"() {
+        when:"The service transform is applied to an interface it can't implement"
+        Class service = new GroovyClassLoader().parseClass('''
+import grails.gorm.services.*
+import grails.gorm.annotation.Entity
+
+@Service(Foo)
+interface MyService {
+
+    @Query("update ${Foo foo} set ${foo.title} = $newTitle where $foo.title = $oldTitle") 
+    Number updateTitle(String newTitle, String oldTitle)
+}
+@Entity
+class Foo {
+    String title
+}
+
+''')
+
+        then:
+        service.isInterface()
+        println service.classLoader.loadedClasses
+
+        when:"the impl is obtained"
+        Class impl = service.classLoader.loadClass("\$MyServiceImplementation")
+
+        then:"The impl is valid"
+        impl.getMethod("updateTitle", String, String).getAnnotation(Transactional)
+        org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
+    }
+
     void "test @Query annotation with declared variables"() {
         when:"The service transform is applied to an interface it can't implement"
         Class service = new GroovyClassLoader().parseClass('''

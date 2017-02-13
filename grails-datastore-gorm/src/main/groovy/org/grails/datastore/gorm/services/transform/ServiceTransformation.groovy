@@ -53,6 +53,7 @@ import org.grails.datastore.gorm.services.implementers.SaveImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneStringQueryImplementer
 import org.grails.datastore.gorm.services.implementers.UpdateOneImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneWhereImplementer
+import org.grails.datastore.gorm.services.implementers.UpdateStringQueryImplementer
 import org.grails.datastore.gorm.transform.AbstractTraitApplyingGormASTTransformation
 import org.grails.datastore.mapping.core.order.OrderedComparator
 
@@ -89,6 +90,7 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             new FindAllWhereImplementer(),
             new FindOneStringQueryImplementer(),
             new FindAllStringQueryImplementer(),
+            new UpdateStringQueryImplementer(),
             new CountImplementer(),
             new CountByImplementer(),
             new CountWhereImplementer()] as List<ServiceImplementer>
