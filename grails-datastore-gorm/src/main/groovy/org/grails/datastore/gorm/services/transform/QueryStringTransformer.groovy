@@ -7,6 +7,7 @@ import org.codehaus.groovy.ast.VariableScope
 import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.ExpressionStatement
+import org.codehaus.groovy.ast.stmt.ReturnStatement
 import org.codehaus.groovy.ast.stmt.Statement
 import org.codehaus.groovy.control.SourceUnit
 import org.grails.datastore.mapping.reflect.AstUtils
@@ -63,7 +64,14 @@ class QueryStringTransformer extends ClassCodeExpressionTransformer {
                 }
             }
             else {
-                newStrings.add(exp)
+                if(currentConstant != null) {
+                    currentConstant = constX(currentConstant.value.toString() + exp.text)
+                    newStrings.add(currentConstant)
+                    currentConstant = null
+                }
+                else {
+                    newStrings.add(exp)
+                }
             }
         }
 
@@ -97,17 +105,13 @@ class QueryStringTransformer extends ClassCodeExpressionTransformer {
                             if(stmt instanceof ExpressionStatement) {
                                 def stmtExpr = ((ExpressionStatement)stmt).expression
                                 if(stmtExpr instanceof DeclarationExpression) {
-                                    DeclarationExpression dec = (DeclarationExpression)stmtExpr
-                                    if(dec.leftExpression instanceof VariableExpression && dec.rightExpression instanceof EmptyExpression) {
-                                        VariableExpression declaredVar = (VariableExpression)dec.leftExpression
-                                        ClassNode variableType = declaredVar.type
-                                        String variableName = declaredVar.name
-                                        declaredQueryTargets.put(variableName, variableType)
-                                        if(AstUtils.isDomainClass(variableType)) {
-                                            return constX("${variableType.name} as $variableName".toString())
-                                        }
-                                    }
-
+                                    return transformDeclarationExpression((DeclarationExpression)stmtExpr)
+                                }
+                            }
+                            else if(stmt instanceof ReturnStatement) {
+                                def stmtExpr = ((ReturnStatement)stmt).expression
+                                if(stmtExpr instanceof DeclarationExpression) {
+                                    return transformDeclarationExpression((DeclarationExpression)stmtExpr)
                                 }
                             }
                         }
@@ -115,6 +119,7 @@ class QueryStringTransformer extends ClassCodeExpressionTransformer {
                 }
             }
         }
+
         if(exp instanceof VariableExpression) {
             VariableExpression var = (VariableExpression)exp
             def declared = variableScope.getDeclaredVariable(var.name)
@@ -125,6 +130,74 @@ class QueryStringTransformer extends ClassCodeExpressionTransformer {
         return super.transform(exp)
     }
 
+    Expression transformDeclarationExpression(DeclarationExpression dec) {
+        if(dec.leftExpression instanceof VariableExpression && dec.rightExpression instanceof EmptyExpression) {
+            VariableExpression declaredVar = (VariableExpression)dec.leftExpression
+            ClassNode variableType = declaredVar.type
+            String variableName = declaredVar.name
+            if(AstUtils.isDomainClass(variableType)) {
+                declaredQueryTargets.put(variableName, variableType)
+                return constX("${variableType.name} as $variableName".toString())
+            }
+        }
+        else if(dec.leftExpression instanceof VariableExpression && dec.rightExpression instanceof PropertyExpression) {
+            VariableExpression declaredVar = (VariableExpression)dec.leftExpression
+            ClassNode variableType = declaredVar.type
+            String variableName = declaredVar.name
+            if(AstUtils.isDomainClass(variableType)) {
+                PropertyExpression pe = (PropertyExpression)dec.rightExpression
+                Expression obj = pe.objectExpression
+                String currentProperty = pe.propertyAsString
+                StringBuilder path = new StringBuilder()
+                if(obj instanceof  VariableExpression) {
+                    VariableExpression ve = (VariableExpression)obj
+                    ClassNode declaredType = declaredQueryTargets.get(ve.name)
+                    if(declaredType == null) {
+                        AstUtils.error(sourceUnit, dec, "Invalid property path $path in query")
+                    }
+                    else {
+                        declaredQueryTargets.put(variableName, variableType)
+                        return constX("${ve.name}.${currentProperty} as $variableName".toString())
+                    }
+                }
+                else if(obj instanceof PropertyExpression) {
+                    List<String> propertyPath = calculatePropertyPath(pe)
+                    ClassNode currentType = declaredQueryTargets.get(propertyPath[0])
+                    for(String pp in propertyPath[1..-1]) {
+                        if(currentType == null) {
+                            AstUtils.error(sourceUnit, dec, "Invalid property path $path in query")
+                        }
+                        else {
+                            currentType = AstUtils.getPropertyType(currentType, pp)
+                        }
+                    }
+                    if(currentType != null) {
+                        declaredQueryTargets.put(variableName, currentType)
+                        return constX("${propertyPath.join('.')} as $variableName".toString())
+                    }
+                    else {
+                        AstUtils.error(sourceUnit, dec, "Invalid property path ${propertyPath.join('.')} in query")
+                    }
+                }
+            }
+        }
+        return dec
+    }
+
+    List<String> calculatePropertyPath(PropertyExpression p) {
+        List<String> propertyPath = []
+        propertyPath.add(p.propertyAsString)
+        Expression obj = p.objectExpression
+        while(obj instanceof PropertyExpression) {
+            PropertyExpression nextProperty = (PropertyExpression)obj
+            propertyPath.add(nextProperty.propertyAsString)
+            obj = nextProperty.objectExpression
+        }
+        if(obj instanceof VariableExpression) {
+            propertyPath.add(((VariableExpression)obj).name)
+        }
+        return propertyPath.reverse()
+    }
     Expression transformPropertyExpressions(Expression exp) {
         if(exp instanceof PropertyExpression) {
             PropertyExpression pe = (PropertyExpression)exp
