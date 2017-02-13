@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  * @since 6.1
  * @author Graeme Rocher
  */
-// TODO: RxJava,Promises, Where queries, interface projections
+// TODO: RxJava,Promises
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @GroovyASTTransformationClass("org.grails.datastore.gorm.services.transform.ServiceTransformation")

@@ -40,6 +40,7 @@ import org.grails.datastore.gorm.services.implementers.CountByImplementer
 import org.grails.datastore.gorm.services.implementers.CountImplementer
 import org.grails.datastore.gorm.services.implementers.CountWhereImplementer
 import org.grails.datastore.gorm.services.implementers.DeleteImplementer
+import org.grails.datastore.gorm.services.implementers.DeleteWhereImplementer
 import org.grails.datastore.gorm.services.implementers.FindAllStringQueryImplementer
 import org.grails.datastore.gorm.services.implementers.FindAllWhereImplementer
 import org.grails.datastore.gorm.services.implementers.FindAndDeleteImplementer
@@ -88,6 +89,7 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             new FindOneInterfaceProjectionImplementer(),
             new FindAndDeleteImplementer(),
             new DeleteImplementer(),
+            new DeleteWhereImplementer(),
             new SaveImplementer(),
             new UpdateOneImplementer(),
             new FindOnePropertyProjectionImplementer(),

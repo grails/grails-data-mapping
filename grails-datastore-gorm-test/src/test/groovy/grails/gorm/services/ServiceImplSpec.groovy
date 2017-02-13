@@ -301,6 +301,12 @@ class ServiceImplSpec extends Specification {
 
         then:
         thrown(UnsupportedOperationException)
+
+        when:
+        productService.deleteSomeProducts("Vegetable")
+
+        then:
+        productService.findByTypeLike("Veg%") == null
     }
 }
 
@@ -386,6 +392,8 @@ interface ProductService {
 
     Number deleteProducts(String name)
 
+    @Where({ type == type })
+    Number deleteSomeProducts(String type)
     Product delete(String name)
 
     Number remove(Serializable id)

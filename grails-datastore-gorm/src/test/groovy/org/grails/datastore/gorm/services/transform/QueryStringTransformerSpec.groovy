@@ -30,11 +30,16 @@ class QueryStringTransformerSpec extends Specification {
 
     void 'test tranform hql with inner join declaration'() {
         given:
-        GStringExpression query = transformedQuery('from ${Book b} inner join ${Author a = b.author} where $b.title = $title and $a.name = $name', varX("title"))
+        GStringExpression query = transformedQuery('''\
+from ${Book b} 
+inner join ${Author a = b.author} 
+where $b.title = $title and $a.name = $name''', varX("title"))
 
         expect:
         query.values.size() == 2
-        query.asConstantString().text == 'from org.grails.datastore.gorm.services.transform.Book as b inner join b.author as a where b.title =  and a.name = '
+        query.asConstantString().text == '''from org.grails.datastore.gorm.services.transform.Book as b 
+inner join b.author as a 
+where b.title =  and a.name = '''
 
     }
 
@@ -79,7 +84,7 @@ class QueryStringTransformerSpec extends Specification {
     GStringExpression transformedQuery(SourceUnit sourceUnit, String query, Variable...vars) {
         def nodes = new AstBuilder().buildFromString("""
 import org.grails.datastore.gorm.services.transform.*
-\"$query\"
+\"\"\"$query\"\"\"
 """)
 
         BlockStatement statement = nodes[0]
