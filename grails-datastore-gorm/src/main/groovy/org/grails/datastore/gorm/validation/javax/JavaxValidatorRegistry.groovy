@@ -7,11 +7,14 @@ import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.reflect.ClassUtils
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory
+import org.springframework.context.ApplicationContext
 import org.springframework.context.MessageSource
 import org.springframework.context.support.StaticMessageSource
 import org.springframework.validation.Validator
 import org.springframework.validation.annotation.Validated
 import org.springframework.validation.beanvalidation.MessageSourceResourceBundleLocator
+import org.springframework.validation.beanvalidation.SpringConstraintValidatorFactory
 
 import javax.validation.Configuration
 import javax.validation.ConstraintValidatorFactory
@@ -51,9 +54,17 @@ class JavaxValidatorRegistry extends DefaultValidatorRegistry implements Validat
     protected Configuration<?> buildConfiguration() {
         Configuration validatorConfiguration  = Validation.byDefaultProvider()
                                                 .configure()
-        return validatorConfiguration.ignoreXmlConfiguration()
+        validatorConfiguration = validatorConfiguration.ignoreXmlConfiguration()
                                      .traversableResolver(new MappingContextTraversableResolver(mappingContext))
                                      .messageInterpolator(new ResourceBundleMessageInterpolator(new MessageSourceResourceBundleLocator(messageSource)))
+
+        if(messageSource instanceof ApplicationContext) {
+            validatorConfiguration = validatorConfiguration.constraintValidatorFactory(
+                new SpringConstraintValidatorFactory(((ApplicationContext)messageSource).autowireCapableBeanFactory)
+            )
+        }
+
+        return validatorConfiguration
     }
 
     /**
