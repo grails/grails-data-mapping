@@ -192,25 +192,16 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
                 MethodNode methodImpl = null
                 for(ServiceImplementer implementer in implementers) {
                     if(implementer.doesImplement(targetDomainClass, method)) {
-                        if(methodImpl == null) {
-
-                            methodImpl = new MethodNode(
-                                    method.name,
-                                    ACC_PUBLIC,
-                                    method.returnType.plainNodeReference,
-                                    copyParameters(method.parameters),
-                                    method.exceptions,
-                                    new BlockStatement())
-                            impl.addMethod(methodImpl)
-                        }
-
+                        methodImpl = new MethodNode(
+                                method.name,
+                                ACC_PUBLIC,
+                                method.returnType.plainNodeReference,
+                                copyParameters(method.parameters),
+                                method.exceptions,
+                                new BlockStatement())
+                        impl.addMethod(methodImpl)
                         implementer.implement(targetDomainClass, method, methodImpl, impl)
-                    }
-                    else if(implementer instanceof ServiceEnhancer) {
-                        ServiceEnhancer enhancer = ((ServiceEnhancer)implementer)
-                        if(enhancer.doesEnhance(targetDomainClass, method) && methodImpl != null) {
-                            enhancer.enhance(targetDomainClass, method, methodImpl, impl)
-                        }
+                        break
                     }
                 }
 
@@ -218,6 +209,16 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
                 if(methodImpl == null) {
                     error(sourceUnit, classNode.isPrimaryClassNode() ? method : classNode, "No implementations possible for method '${method.typeDescriptor}'. Please use an abstract class instead and provide an implementation.")
                     break
+                }
+                else {
+                    for(ServiceImplementer implementer in implementers) {
+                        if(implementer instanceof ServiceEnhancer) {
+                            ServiceEnhancer enhancer = ((ServiceEnhancer)implementer)
+                            if(enhancer.doesEnhance(targetDomainClass, method)) {
+                                enhancer.enhance(targetDomainClass, method, methodImpl, impl)
+                            }
+                        }
+                    }
                 }
             }
 

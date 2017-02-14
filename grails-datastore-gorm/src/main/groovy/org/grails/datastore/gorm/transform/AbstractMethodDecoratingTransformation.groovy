@@ -29,6 +29,7 @@ import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.internal.RuntimeSupport
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.connections.MultipleConnectionSourceCapableDatastore
+import org.grails.datastore.mapping.transactions.TransactionCapableDatastore
 import org.springframework.beans.factory.annotation.Autowired
 
 import javax.annotation.PostConstruct
@@ -54,6 +55,7 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
     private static final Set<String> ANNOTATION_NAME_EXCLUDES = new HashSet<String>(Arrays.asList(PostConstruct.class.getName(), PreDestroy.class.getName(), "grails.web.controllers.ControllerMethod"));
     public static final String FIELD_TARGET_DATASTORE = '$targetDatastore'
     public static final String METHOD_GET_TARGET_DATASTORE = "getTargetDatastore"
+    protected static final String METHOD_GET_DATASTORE_FOR_CONNECTION = "getDatastoreForConnection"
 
     @Override
     void visit(SourceUnit source, AnnotationNode annotationNode, AnnotatedNode annotatedNode) {
@@ -83,82 +85,117 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
         ClassNode defaultType = hasDataSourceProperty ? make(MultipleConnectionSourceCapableDatastore) : make(Datastore)
         boolean hasSpecificDatastore = datastoreAttribute instanceof ClassExpression
         ClassNode datastoreType = hasSpecificDatastore ? ((ClassExpression)datastoreAttribute).getType().getPlainNodeReference() : defaultType
+        Parameter connectionNameParam = param(STRING_TYPE, "connectionName")
+        MethodCallExpression datastoreLookupCall
+        MethodCallExpression datastoreLookupDefaultCall
+        if(hasSpecificDatastore) {
+            datastoreLookupDefaultCall = callD(gormEnhancerExpr, "findDatastoreByType", classX(datastoreType.getPlainNodeReference()))
+        }
+        else {
+            datastoreLookupDefaultCall = callD(gormEnhancerExpr, "findSingleDatastore")
+        }
+        datastoreLookupCall = callD(datastoreLookupDefaultCall, METHOD_GET_DATASTORE_FOR_CONNECTION, varX(connectionNameParam))
 
-
-        FieldNode datastoreField = declaringClassNode.getField(FIELD_TARGET_DATASTORE)
-        if(datastoreField == null) {
-            datastoreField = declaringClassNode.addField(FIELD_TARGET_DATASTORE, Modifier.PROTECTED, datastoreType, null)
-
-            Parameter datastoresParam = param(datastoreType.makeArray(), "datastores")
-            VariableExpression datastoresVar = varX(datastoresParam)
-
-            BlockStatement setTargetDatastoreBody
-            VariableExpression datastoreFieldVar = varX(datastoreField)
-            Statement assignTargetDatastore = assignS(datastoreFieldVar, callD(classX(RuntimeSupport), "findDefaultDatastore", datastoresVar))
-            if(hasDataSourceProperty) {
-                // $targetDatastore = RuntimeSupport.findDefaultDatastore(datastores)
-                // datastore = datastore.getDatastoreForConnection(connectionName)
-                setTargetDatastoreBody = block(
-                    assignTargetDatastore,
-                    assignS(datastoreFieldVar, callX(datastoreFieldVar, "getDatastoreForConnection", connectionName ))
-                )
-            }
-            else {
-                setTargetDatastoreBody = block(
-                    assignTargetDatastore
-                )
-            }
-
-            weaveSetTargetDatastoreBody(source, annotationNode, declaringClassNode, datastoresVar, setTargetDatastoreBody)
-
-            // Add method: @Autowired void setTargetDatastore(Datastore[] datastores)
-            Parameter[] setTargetDatastoreParams = params(datastoresParam)
-            if( declaringClassNode.getMethod("setTargetDatastore", setTargetDatastoreParams) == null) {
-                MethodNode setTargetDatastoreMethod = declaringClassNode.addMethod("setTargetDatastore", Modifier.PUBLIC, VOID_TYPE, setTargetDatastoreParams, null, setTargetDatastoreBody)
-
-                // Autowire setTargetDatastore via Spring
-                addAnnotationOrGetExisting(setTargetDatastoreMethod, Autowired)
-                        .setMember("required", constX(false))
-
-                compileMethodStatically(source, setTargetDatastoreMethod)
-            }
+        if(implementsInterface(declaringClassNode, "org.grails.datastore.mapping.services.Service")) {
+            // simplify logic for services
+            Parameter[] getTargetDatastoreParams = params(connectionNameParam)
+            VariableExpression datastoreVar = varX("datastore", make(Datastore))
 
             // Add method:
             // protected Datastore getTargetDatastore(String connectionName)
-            //    if($targetDatastore != null)
-            //      return $targetDatastore.getDatastoreForConnection(connectionName)
+            //    if(datastore != null)
+            //      return datastore.getDatastoreForConnection(connectionName)
             //    else
             //      return GormEnhancer.findSingleDatastore().getDatastoreForConnection(connectionName)
-            Parameter connectionNameParam = param(STRING_TYPE, "connectionName")
-            MethodCallExpression datastoreLookupCall
-            MethodCallExpression datastoreLookupDefaultCall
-            if(hasSpecificDatastore) {
-                datastoreLookupDefaultCall = callX(gormEnhancerExpr, "findDatastoreByType", classX(datastoreType.getPlainNodeReference()))
-            }
-            else {
-                datastoreLookupDefaultCall = callX(gormEnhancerExpr, "findSingleDatastore")
-            }
-            datastoreLookupCall = callX(datastoreLookupDefaultCall, "getDatastoreForConnection", varX(connectionNameParam))
 
-            Parameter[] getTargetDatastoreParams = params(connectionNameParam)
             if(declaringClassNode.getMethod(METHOD_GET_TARGET_DATASTORE, getTargetDatastoreParams) == null) {
                 MethodNode mn = declaringClassNode.addMethod(METHOD_GET_TARGET_DATASTORE, Modifier.PROTECTED, datastoreType, getTargetDatastoreParams, null,
-                        ifElseS(notNullX(datastoreFieldVar),
-                                returnS( callX( datastoreFieldVar, "getDatastoreForConnection", varX(connectionNameParam) ) ),
+                        ifElseS(notNullX(datastoreVar),
+                                returnS( callD( castX(make(MultipleConnectionSourceCapableDatastore), datastoreVar ), METHOD_GET_DATASTORE_FOR_CONNECTION, varX(connectionNameParam) ) ),
                                 returnS(datastoreLookupCall)
                         ))
                 compileMethodStatically(source, mn)
             }
             if(declaringClassNode.getMethod(METHOD_GET_TARGET_DATASTORE, ZERO_PARAMETERS) == null) {
                 MethodNode mn = declaringClassNode.addMethod(METHOD_GET_TARGET_DATASTORE, Modifier.PROTECTED,  datastoreType, ZERO_PARAMETERS, null,
-                    ifElseS( notNullX(datastoreFieldVar ),
-                                returnS(datastoreFieldVar),
+                        ifElseS( notNullX(datastoreVar ),
+                                returnS(datastoreVar),
                                 returnS(datastoreLookupDefaultCall))
                 )
 
                 compileMethodStatically(source, mn)
             }
         }
+        else {
+            FieldNode datastoreField = declaringClassNode.getField(FIELD_TARGET_DATASTORE)
+            if(datastoreField == null) {
+                datastoreField = declaringClassNode.addField(FIELD_TARGET_DATASTORE, Modifier.PROTECTED, datastoreType, null)
+
+                Parameter datastoresParam = param(datastoreType.makeArray(), "datastores")
+                VariableExpression datastoresVar = varX(datastoresParam)
+
+                BlockStatement setTargetDatastoreBody
+                VariableExpression datastoreFieldVar = varX(datastoreField)
+                Statement assignTargetDatastore = assignS(datastoreFieldVar, callD(classX(RuntimeSupport), "findDefaultDatastore", datastoresVar))
+                if(hasDataSourceProperty) {
+                    // $targetDatastore = RuntimeSupport.findDefaultDatastore(datastores)
+                    // datastore = datastore.getDatastoreForConnection(connectionName)
+                    setTargetDatastoreBody = block(
+                            assignTargetDatastore,
+                            assignS(datastoreFieldVar, callX(datastoreFieldVar, METHOD_GET_DATASTORE_FOR_CONNECTION, connectionName ))
+                    )
+                }
+                else {
+                    setTargetDatastoreBody = block(
+                            assignTargetDatastore
+                    )
+                }
+
+                weaveSetTargetDatastoreBody(source, annotationNode, declaringClassNode, datastoresVar, setTargetDatastoreBody)
+
+                // Add method: @Autowired void setTargetDatastore(Datastore[] datastores)
+                Parameter[] setTargetDatastoreParams = params(datastoresParam)
+                if( declaringClassNode.getMethod("setTargetDatastore", setTargetDatastoreParams) == null) {
+                    MethodNode setTargetDatastoreMethod = declaringClassNode.addMethod("setTargetDatastore", Modifier.PUBLIC, VOID_TYPE, setTargetDatastoreParams, null, setTargetDatastoreBody)
+
+                    // Autowire setTargetDatastore via Spring
+                    addAnnotationOrGetExisting(setTargetDatastoreMethod, Autowired)
+                            .setMember("required", constX(false))
+
+                    compileMethodStatically(source, setTargetDatastoreMethod)
+                }
+
+                // Add method:
+                // protected Datastore getTargetDatastore(String connectionName)
+                //    if($targetDatastore != null)
+                //      return $targetDatastore.getDatastoreForConnection(connectionName)
+                //    else
+                //      return GormEnhancer.findSingleDatastore().getDatastoreForConnection(connectionName)
+
+
+
+                Parameter[] getTargetDatastoreParams = params(connectionNameParam)
+                if(declaringClassNode.getMethod(METHOD_GET_TARGET_DATASTORE, getTargetDatastoreParams) == null) {
+                    MethodNode mn = declaringClassNode.addMethod(METHOD_GET_TARGET_DATASTORE, Modifier.PROTECTED, datastoreType, getTargetDatastoreParams, null,
+                            ifElseS(notNullX(datastoreFieldVar),
+                                    returnS( callX( datastoreFieldVar, METHOD_GET_DATASTORE_FOR_CONNECTION, varX(connectionNameParam) ) ),
+                                    returnS(datastoreLookupCall)
+                            ))
+                    compileMethodStatically(source, mn)
+                }
+                if(declaringClassNode.getMethod(METHOD_GET_TARGET_DATASTORE, ZERO_PARAMETERS) == null) {
+                    MethodNode mn = declaringClassNode.addMethod(METHOD_GET_TARGET_DATASTORE, Modifier.PROTECTED,  datastoreType, ZERO_PARAMETERS, null,
+                            ifElseS( notNullX(datastoreFieldVar ),
+                                    returnS(datastoreFieldVar),
+                                    returnS(datastoreLookupDefaultCall))
+                    )
+
+                    compileMethodStatically(source, mn)
+                }
+            }
+
+        }
+
 
 
     }

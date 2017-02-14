@@ -306,7 +306,7 @@ class ServiceImplSpec extends Specification {
         productService.deleteSomeProducts("Vegetable")
 
         then:
-        productService.findByTypeLike("Veg%") == null
+        productService.findByTypeLike("Vege%") == null
     }
 }
 

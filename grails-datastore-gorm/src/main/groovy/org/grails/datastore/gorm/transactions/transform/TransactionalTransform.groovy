@@ -32,6 +32,7 @@ import org.grails.datastore.gorm.multitenancy.transform.TenantTransform
 import org.grails.datastore.gorm.transform.AbstractMethodDecoratingTransformation
 import org.grails.datastore.gorm.transform.AstMethodDispatchUtils
 import org.grails.datastore.gorm.transform.GormASTTransformationClass
+import org.grails.datastore.mapping.core.connections.MultipleConnectionSourceCapableDatastore
 import org.grails.datastore.mapping.transactions.CustomizableRollbackTransactionAttribute
 import org.grails.datastore.mapping.transactions.TransactionCapableDatastore
 import org.springframework.core.Ordered
@@ -95,7 +96,7 @@ import static org.grails.datastore.mapping.reflect.AstUtils.*
 @CompileStatic
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
 class TransactionalTransform extends AbstractMethodDecoratingTransformation implements Ordered {
-    private static final Set<String> ANNOTATION_NAME_EXCLUDES = new HashSet<String>([Transactional.class.getName(), "grails.transaction.Rollback", Rollback.class.getName(), NotTransactional.class.getName(), "grails.transaction.NotTransactional"]);
+    private static final Set<String> ANNOTATION_NAME_EXCLUDES = new HashSet<String>([Transactional.class.getName(), "grails.transaction.Rollback", Rollback.class.getName(), NotTransactional.class.getName(), "grails.transaction.NotTransactional", "grails.gorm.transactions.ReadOnly"]);
     public static final ClassNode MY_TYPE = new ClassNode(Transactional)
     public static final ClassNode READ_ONLY_TYPE = new ClassNode(ReadOnly)
     private static final String PROPERTY_TRANSACTION_MANAGER = "transactionManager"
@@ -172,27 +173,7 @@ class TransactionalTransform extends AbstractMethodDecoratingTransformation impl
 
             ClassNode transactionManagerClassNode = make(PlatformTransactionManager)
 
-            /// Add field: PlatformTransactionManager $transactionManager
-            String transactionManagerFieldName = '$' + PROPERTY_TRANSACTION_MANAGER
-            FieldNode transactionManagerField = declaringClassNode.addField(transactionManagerFieldName, Modifier.PROTECTED, transactionManagerClassNode, null)
-
-
-            VariableExpression transactionManagerPropertyExpr = varX(transactionManagerField)
-            BlockStatement getterBody = block()
-
-            // this is a hacky workaround that ensures the transaction manager is also set on the spock shared instance which seems to differ for
-            // some reason
-            if(isSubclassOf(declaringClassNode, "spock.lang.Specification")) {
-                getterBody.addStatement(
-                    stmt(
-                        callX( propX( propX( varThis(), "specificationContext"), "sharedInstance"),
-                                SET_TRANSACTION_MANAGER,
-                                transactionManagerPropertyExpr)
-                    )
-                )
-            }
-
-            // Prepare the getTransactionManager() method body
+            // build a static lookup in the case of no property set
             ClassExpression gormEnhancerExpr = classX(GormEnhancer)
             Expression val = annotationNode.getMember("datastore")
             MethodCallExpression transactionManagerLookupExpr
@@ -213,39 +194,90 @@ class TransactionalTransform extends AbstractMethodDecoratingTransformation impl
                 )
             }
 
-            // if($transactionManager != null)
-            //     return $transactionManager
-            // else
-            //     return GormEnhancer.findSingleTransactionManager()
-            Statement ifElse = ifElseS(
-                notNullX( transactionManagerPropertyExpr ),
-                returnS( transactionManagerPropertyExpr ),
-                returnS(transactionManagerLookupExpr)
-            )
+            // simply logic for classes that implement Service
+            if(implementsInterface(declaringClassNode, "org.grails.datastore.mapping.services.Service")) {
+                // Add Method: PlatformTransactionManager getTransactionManager()
+                // if(datastore != null)
+                //     return datastore.transactionManager
+                // else
+                //     return GormEnhancer.findSingleTransactionManager()
+                VariableExpression datastoreVar = varX("datastore", make(TransactionCapableDatastore))
+                Expression datastoreLookupExpr = datastoreVar
+                if(hasDataSourceProperty) {
+                    datastoreLookupExpr = callD(castX(make(MultipleConnectionSourceCapableDatastore), datastoreVar), "getDatastoreForConnection", connectionName )
+                }
+                Statement ifElse = ifElseS(
+                        notNullX(datastoreVar),
+                        returnS( propX(datastoreLookupExpr, PROPERTY_TRANSACTION_MANAGER) ),
+                        returnS( transactionManagerLookupExpr )
+                )
 
-            getterBody.addStatement( ifElse )
-
-            // Add Method: PlatformTransactionManager getTransactionManager()
-            declaringClassNode.addMethod(GET_TRANSACTION_MANAGER_METHOD,
-                    Modifier.PUBLIC,
-                    transactionManagerClassNode,
-                    ZERO_PARAMETERS, null,
-                    getterBody)
-
-            // Prepare setter parameters
-            Parameter p = param(transactionManagerClassNode, PROPERTY_TRANSACTION_MANAGER)
-            Parameter[] parameters = params(p)
-            if(declaringClassNode.getMethod(SET_TRANSACTION_MANAGER, parameters) == null) {
-                Statement setterBody = assignS(transactionManagerPropertyExpr, varX(p))
-
-                // Add Setter Method: void setTransactionManager(PlatformTransactionManager transactionManager)
-                declaringClassNode.addMethod(SET_TRANSACTION_MANAGER,
+                declaringClassNode.addMethod(GET_TRANSACTION_MANAGER_METHOD,
                         Modifier.PUBLIC,
-                        VOID_TYPE,
-                        parameters,
-                        null,
-                        setterBody)
+                        transactionManagerClassNode,
+                        ZERO_PARAMETERS, null,
+                        ifElse)
+
             }
+            else {
+                /// Add field: PlatformTransactionManager $transactionManager
+                String transactionManagerFieldName = '$' + PROPERTY_TRANSACTION_MANAGER
+                FieldNode transactionManagerField = declaringClassNode.addField(transactionManagerFieldName, Modifier.PROTECTED, transactionManagerClassNode, null)
+
+
+                VariableExpression transactionManagerPropertyExpr = varX(transactionManagerField)
+                BlockStatement getterBody = block()
+
+                // this is a hacky workaround that ensures the transaction manager is also set on the spock shared instance which seems to differ for
+                // some reason
+                if(isSubclassOf(declaringClassNode, "spock.lang.Specification")) {
+                    getterBody.addStatement(
+                            stmt(
+                                    callX( propX( propX( varThis(), "specificationContext"), "sharedInstance"),
+                                            SET_TRANSACTION_MANAGER,
+                                            transactionManagerPropertyExpr)
+                            )
+                    )
+                }
+
+
+                // Prepare the getTransactionManager() method body
+                // if($transactionManager != null)
+                //     return $transactionManager
+                // else
+                //     return GormEnhancer.findSingleTransactionManager()
+                Statement ifElse = ifElseS(
+                        notNullX( transactionManagerPropertyExpr ),
+                        returnS( transactionManagerPropertyExpr ),
+                        returnS(transactionManagerLookupExpr)
+                )
+
+                getterBody.addStatement( ifElse )
+
+                // Add Method: PlatformTransactionManager getTransactionManager()
+                declaringClassNode.addMethod(GET_TRANSACTION_MANAGER_METHOD,
+                        Modifier.PUBLIC,
+                        transactionManagerClassNode,
+                        ZERO_PARAMETERS, null,
+                        getterBody)
+
+                // Prepare setter parameters
+                Parameter p = param(transactionManagerClassNode, PROPERTY_TRANSACTION_MANAGER)
+                Parameter[] parameters = params(p)
+                if(declaringClassNode.getMethod(SET_TRANSACTION_MANAGER, parameters) == null) {
+                    Statement setterBody = assignS(transactionManagerPropertyExpr, varX(p))
+
+                    // Add Setter Method: void setTransactionManager(PlatformTransactionManager transactionManager)
+                    declaringClassNode.addMethod(SET_TRANSACTION_MANAGER,
+                            Modifier.PUBLIC,
+                            VOID_TYPE,
+                            parameters,
+                            null,
+                            setterBody)
+                }
+            }
+
+
         }
     }
 
