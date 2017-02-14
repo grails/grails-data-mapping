@@ -7,8 +7,6 @@ grails.gorm.services
 grails.gorm.transactions
 grails.neo4j
 grails.neo4j.bootstrap
-grails.neo4j.mapping
-grails.test.neo4j
 org.grails.compiler.gorm
 org.grails.datastore.gorm
 org.grails.datastore.gorm.bootstrap
