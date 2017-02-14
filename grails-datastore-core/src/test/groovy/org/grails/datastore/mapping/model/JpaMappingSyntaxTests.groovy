@@ -128,7 +128,7 @@ class JpaMappingSyntaxTests extends Specification {
         context.addPersistentEntity(JpaPublisher)
 
         expect:
-        3 == context.persistentEntities.size()
+        4 == context.persistentEntities.size()
 
         when:
         def publisher = context.getPersistentEntity(JpaPublisher.name)
@@ -142,13 +142,33 @@ class JpaMappingSyntaxTests extends Specification {
         (oneToMany instanceof org.grails.datastore.mapping.model.types.OneToMany)
     }
 
+    void "test uni-directional many to one"() {
+        given:
+        def context = new TestMappingContext()
+        context.addPersistentEntity(JpaBook)
+
+        expect:
+        3 == context.persistentEntities.size()
+
+        when:
+        def book = context.getPersistentEntity(JpaBook.name)
+        Association manyToOne = book.getPropertyByName("simple")
+
+        then:
+        book != null
+        manyToOne != null
+        !manyToOne.bidirectional
+        manyToOne.owningSide
+        (manyToOne instanceof org.grails.datastore.mapping.model.types.ManyToOne)
+    }
+
     void "test bidirectional one to many"() {
         given:
         def context = new TestMappingContext()
         context.addPersistentEntity(JpaBook)
 
         expect:
-        2 == context.persistentEntities.size()
+        3 == context.persistentEntities.size()
 
         when:
         def book = context.getPersistentEntity(JpaBook.name)
@@ -278,6 +298,9 @@ class JpaBook {
     
     @ManyToOne
     JpaAuthor author
+
+    @ManyToOne
+    JpaSimpleEntity simple
 }
 
 @javax.persistence.Entity
@@ -367,4 +390,14 @@ class JpaCompositeIdEntity {
     @Id
     Long second
     String name
+}
+
+@Entity
+class JpaSimpleEntity {
+    @Id
+    Long id
+
+    String name
+
+    List foos
 }
