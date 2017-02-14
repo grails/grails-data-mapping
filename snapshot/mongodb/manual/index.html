@@ -835,41 +835,6 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
 <div class="sect2">
 <h3 id="upgradeNotes">Upgrade Notes</h3>
 <div class="sect3">
-<h4 id="_removal_of_grails_datastore_simple">Removal of grails-datastore-simple</h4>
-<div class="paragraph">
-<p>The <code>grails-datastore-simple</code> and <code>grails-datastore-gorm-test</code> dependencies have been combined into a single <code>grails-datastore-gorm-test</code> dependency.</p>
-</div>
-<div class="paragraph">
-<p>Unfortunately existing versions of Grails still depend on the old <code>grails-datastore-simple</code> dependency. And you may receive an error such as:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">> Could not resolve all dependencies for configuration ':example:runtime'.
-   > Could not find org.grails:grails-datastore-simple:6.1.0.BUILD-SNAPSHOT.
-     Searched in the following locations:
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.0.BUILD-SNAPSHOT/grails-datastore-simple-6.1.0.BUILD-SNAPSHOT.pom
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.0.BUILD-SNAPSHOT/grails-datastore-simple-6.1.0.BUILD-SNAPSHOT.jar
-     Required by:
-         project :example > org.grails:grails-dependencies:3.2.4 >
-            ...</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If you are upgrading you will need to exclude this dependency using the following Gradle syntax directly before the <code>dependencies</code> block:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">configurations.all { <span class="predefined-type">Configuration</span> c -&gt;
-    c.exclude(<span class="key">group</span>:<span class="string"><span class="delimiter">'</span><span class="content">org.grails</span><span class="delimiter">'</span></span>,<span class="key">module</span>:<span class="string"><span class="delimiter">'</span><span class="content">grails-datastore-simple</span><span class="delimiter">'</span></span>)
-}
-dependencies {
-    ....
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
 <h4 id="_configuration_properties">Configuration Properties</h4>
 <div class="paragraph">
 <p>In previous versions of the plugin configuration was specified using the <code>grails.mongo</code> prefix. This is now <code>grails.mongodb</code> instead. For example, the following configuration in <code>application.groovy</code> or <code>Config.groovy</code>:</p>
@@ -979,7 +944,7 @@ Embedded documents may also require updating.
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile 'org.grails.plugins:mongodb:6.1.0.BUILD-SNAPSHOT'
+    compile 'org.grails.plugins:mongodb:6.0.8.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
@@ -993,7 +958,7 @@ Embedded documents may also require updating.
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("6.1.0.BUILD-SNAPSHOT")
+            details.useVersion("6.0.8.BUILD-SNAPSHOT")
         }
     }
 }
@@ -1008,7 +973,7 @@ dependencies {
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">plugins {
-    compile ':mongodb:6.1.0.BUILD-SNAPSHOT'
+    compile ':mongodb:6.0.8.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
@@ -1212,7 +1177,7 @@ dependencies {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-mongodb-spring-boot:6.1.0.BUILD-SNAPSHOT")</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-mongodb-spring-boot:6.0.8.BUILD-SNAPSHOT")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1269,7 +1234,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-mongodb:6.1.0.BUILD-SNAPSHOT"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-mongodb:6.0.8.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1553,90 +1518,8 @@ dirty checking and prevent the property from being updated.</p>
 </div>
 <div class="sect2">
 <h3 id="queryIndexes">Querying Indexing</h3>
-<div class="sect3">
-<h4 id="_basics">Basics</h4>
 <div class="paragraph">
-<p>MongoDB doesn&#8217;t require that you specify indices to query, but like a relational database without specifying indices your queries will be significantly slower.</p>
-</div>
-<div class="paragraph">
-<p>With that in mind it is important to specify the properties you plan to query using the mapping block:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Person</span> {
-    <span class="predefined-type">String</span> name
-    <span class="directive">static</span> mapping = {
-        name <span class="key">index</span>:<span class="predefined-constant">true</span>
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>With the above mapping a MongoDB index will be automatically created for you. You can customize the index options using the <code>indexAttributes</code> configuration parameter:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Person</span> {
-    <span class="predefined-type">String</span> name
-    <span class="directive">static</span> mapping = {
-        name <span class="key">index</span>:<span class="predefined-constant">true</span>, <span class="key">indexAttributes</span>: [<span class="key">unique</span>:<span class="predefined-constant">true</span>, <span class="key">dropDups</span>:<span class="predefined-constant">true</span>]
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can use MongoDB <a href="http://docs.mongodb.org/manual/reference/operator/meta/hint/">Query Hints</a> by passing the <code>hint</code> argument to any dynamic finder:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> people = Person.findByName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Bob</span><span class="delimiter">&quot;</span></span>, [<span class="key">hint</span>:[<span class="key">name</span>:<span class="integer">1</span>]])</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Or in a criteria query using the query "arguments" method</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">Person.withCriteria {
-        eq <span class="string"><span class="delimiter">'</span><span class="content">firstName</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">Bob</span><span class="delimiter">'</span></span>
-    arguments <span class="key">hint</span>:[<span class="integer">1</span>][firstName] }</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_compound_indices">Compound Indices</h4>
-<div class="paragraph">
-<p>MongoDB supports the notion of <a href="http://docs.mongodb.org/manual/core/index-compound/">compound keys</a>. GORM for MongoDB enables this feature at the mapping level using the <code>compoundIndex</code> mapping:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Person</span> {
-    ...
-    static mapping = {
-        compoundIndex <span class="key">name</span>:<span class="integer">1</span>, <span class="key">age</span>:-<span class="integer">1</span>
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>As per the MongoDB docs 1 is for ascending and -1 is for descending.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_indexing_using_the_em_index_em_method">Indexing using the <em>index</em> method</h4>
-<div class="paragraph">
-<p>In addition to the convenience features described above you can use the <code>index</code> method to define any index you want. For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">static</span> mapping = {
-    index( [<span class="integer">1</span>],[person.address.postCode] [<span class="key">unique</span>:<span class="predefined-constant">true</span>] )
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In the above example I define an index on an embedded attribtue of the document. In fact what arguments you pass to the <code>index</code> method get passed to the underlying MongoDB <a href="http://api.mongodb.org/java/2.12/com/mongodb/DBCollection.html#createIndex(com.mongodb.DBObject,%20com.mongodb.DBObject)">createIndex</a> method.</p>
-</div>
+<p>Unresolved directive in index.adoc - include::objectMapping/queryIndexes.adoc[]</p>
 </div>
 </div>
 <div class="sect2">
@@ -3020,7 +2903,7 @@ as shown in the following example:</p>
     <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Test low-level API extensions</span><span class="delimiter">&quot;</span></span>() {
         <span class="key">when</span>:
         <span class="keyword">def</span> db = createMongoClient().getDatabase(<span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>)
-<span class="comment">//        db.drop()</span>
+        db.drop()
         <span class="comment">// Insert a document</span>
         db[<span class="string"><span class="delimiter">'</span><span class="content">languages</span><span class="delimiter">'</span></span>].insert([<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Groovy</span><span class="delimiter">'</span></span>])
         <span class="comment">// A less verbose way to do it</span>
