@@ -19,6 +19,23 @@ import org.grails.datastore.mapping.reflect.AstUtils
  */
 @CompileStatic
 class DeleteWhereImplementer extends AbstractWhereImplementer {
+
+    public static final int POSITION = AbstractWhereImplementer.POSITION - 100
+
+    @Override
+    int getOrder() {
+        return POSITION
+    }
+
+    @Override
+    boolean doesImplement(ClassNode domainClass, MethodNode methodNode) {
+        String prefix = handledPrefixes.find() { String it -> methodNode.name.startsWith(it) }
+        if(prefix != null) {
+            return super.doesImplement(domainClass, methodNode)
+        }
+        return false
+    }
+
     @Override
     protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
         return ClassHelper.VOID_TYPE.equals(returnType) || AstUtils.isSubclassOfOrImplementsInterface(returnType, Number.name)
@@ -48,5 +65,10 @@ class DeleteWhereImplementer extends AbstractWhereImplementer {
     @Override
     protected String getQueryMethodToExecute() {
         return "deleteAll"
+    }
+
+    @Override
+    protected Iterable<String> getHandledPrefixes() {
+        return DeleteImplementer.HANDLED_PREFIXES
     }
 }

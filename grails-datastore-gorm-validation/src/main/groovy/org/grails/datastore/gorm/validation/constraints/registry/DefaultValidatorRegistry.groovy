@@ -34,22 +34,14 @@ class DefaultValidatorRegistry implements ValidatorRegistry, ConstraintRegistry 
     final ConstraintsEvaluator constraintsEvaluator
     final @Delegate ConstraintRegistry constraintRegistry
     final MessageSource messageSource
-
-    /**
-     * @deprecated Here for compatibility, will be removed in a future version of GORM
-     */
-    @Deprecated
-    DefaultValidatorRegistry(MappingContext mappingContext, PropertyResolver configuration, MessageSource messageSource = new StaticMessageSource()) {
-        this.constraintRegistry = new DefaultConstraintRegistry(messageSource)
-        this.messageSource = messageSource
-        this.constraintsEvaluator = new DefaultConstraintEvaluator(constraintRegistry, mappingContext, null)
-    }
+    final MappingContext mappingContext
 
     DefaultValidatorRegistry(MappingContext mappingContext, ConnectionSourceSettings connectionSourceSettings, MessageSource messageSource = new StaticMessageSource()) {
         this.constraintRegistry = new DefaultConstraintRegistry(messageSource)
         this.messageSource = messageSource
         Map<String, Object> defaultConstraintsMap = resolveDefaultConstraints(connectionSourceSettings)
         this.constraintsEvaluator = new DefaultConstraintEvaluator(constraintRegistry, mappingContext, defaultConstraintsMap)
+        this.mappingContext = mappingContext
     }
 
     protected Map<String, Object> resolveDefaultConstraints( ConnectionSourceSettings connectionSourceSettings ) {

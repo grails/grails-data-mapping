@@ -9,11 +9,11 @@ import org.grails.datastore.mapping.reflect.ClassUtils
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator
 import org.springframework.context.MessageSource
 import org.springframework.context.support.StaticMessageSource
-import org.springframework.core.env.PropertyResolver
 import org.springframework.validation.Validator
 import org.springframework.validation.annotation.Validated
 import org.springframework.validation.beanvalidation.MessageSourceResourceBundleLocator
 
+import javax.validation.Configuration
 import javax.validation.ConstraintValidatorFactory
 import javax.validation.MessageInterpolator
 import javax.validation.ParameterNameProvider
@@ -39,12 +39,31 @@ class JavaxValidatorRegistry extends DefaultValidatorRegistry implements Validat
     JavaxValidatorRegistry(MappingContext mappingContext, ConnectionSourceSettings settings, MessageSource messageSource = new StaticMessageSource()) {
         super(mappingContext, settings, messageSource)
 
-        def validatorConfiguration = Validation.byDefaultProvider()
-                .configure()
-        validatorConfiguration.ignoreXmlConfiguration()
-        validatorConfiguration.messageInterpolator(new ResourceBundleMessageInterpolator(new MessageSourceResourceBundleLocator(messageSource)))
+        Configuration validatorConfiguration = buildConfiguration()
+        validatorFactory = buildValidatorFactoryAdapter(validatorConfiguration)
+    }
 
-        validatorFactory = new GormValidatorFactoryAdapter( validatorConfiguration.buildValidatorFactory() )
+    /**
+     * Builds the default Validator configuration
+     *
+     * @return The configuration
+     */
+    protected Configuration<?> buildConfiguration() {
+        Configuration validatorConfiguration  = Validation.byDefaultProvider()
+                                                .configure()
+        return validatorConfiguration.ignoreXmlConfiguration()
+                                     .traversableResolver(new MappingContextTraversableResolver(mappingContext))
+                                     .messageInterpolator(new ResourceBundleMessageInterpolator(new MessageSourceResourceBundleLocator(messageSource)))
+    }
+
+    /**
+     * Build the validator factory from the validator configuration
+     *
+     * @param validatorConfiguration The configuration
+     * @return The adapter
+     */
+    protected GormValidatorFactoryAdapter buildValidatorFactoryAdapter(Configuration validatorConfiguration) {
+        new GormValidatorFactoryAdapter(validatorConfiguration.buildValidatorFactory())
     }
 
     @Override

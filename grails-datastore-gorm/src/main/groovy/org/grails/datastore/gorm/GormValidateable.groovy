@@ -55,7 +55,7 @@ trait GormValidateable {
      */
     boolean shouldSkipValidation() {
         // skip validation if validation set to true or validation handled by javax.validation
-        return this.skipValidate || getClass().getAnnotation(Validated);
+        return this.skipValidate || getClass().getAnnotation(Validated) != null
     }
 
 
