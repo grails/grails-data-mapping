@@ -59,10 +59,15 @@ class FindOneImplementer extends AbstractDetachedCriteriaServiceImplementor {
 
     @Override
     void implementWithQuery(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode, BlockStatement body, VariableExpression detachedCriteriaVar, Expression queryArgs) {
-        MethodCallExpression findCall = queryArgs != null ? callX(detachedCriteriaVar, "find", queryArgs) : callX(detachedCriteriaVar, "find")
+        String findMethod = findMethodToInvoke(domainClassNode, newMethodNode)
+        MethodCallExpression findCall = queryArgs != null ? callX(detachedCriteriaVar, findMethod, queryArgs) : callX(detachedCriteriaVar, findMethod)
         body.addStatement(
             buildReturnStatement(domainClassNode, abstractMethodNode, findCall, queryArgs, newMethodNode)
         )
+    }
+
+    protected String findMethodToInvoke(ClassNode domainClassNode, MethodNode newMethodNode) {
+        "find"
     }
 
     protected Statement buildReturnStatement(ClassNode targetDomainClass, MethodNode abstractMethodNode, Expression queryMethodCall, Expression args, MethodNode newMethodNode) {

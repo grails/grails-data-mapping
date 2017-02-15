@@ -23,6 +23,7 @@ import org.grails.datastore.gorm.validation.javax.ConfigurableParameterNameProvi
 import org.grails.datastore.gorm.validation.javax.JavaxValidatorRegistry
 import org.grails.datastore.gorm.validation.javax.MethodKey
 import org.grails.datastore.gorm.validation.javax.services.ValidatedService
+import org.grails.datastore.mapping.reflect.ClassUtils
 
 import javax.validation.Constraint
 import javax.validation.ParameterNameProvider
@@ -56,7 +57,7 @@ class MethodValidationImplementer implements ServiceEnhancer {
 
     @Override
     boolean doesEnhance(ClassNode domainClass, MethodNode methodNode) {
-        if(JavaxValidatorRegistry.isAvailable()) {
+        if(ClassUtils.isPresent("javax.validation.Validation")) {
             for(Parameter p in methodNode.parameters) {
                 if( p.annotations.any() { AnnotationNode ann ->
                     def constraintAnn = findAnnotation(ann.classNode, Constraint)

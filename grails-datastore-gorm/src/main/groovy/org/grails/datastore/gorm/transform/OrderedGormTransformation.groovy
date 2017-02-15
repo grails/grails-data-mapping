@@ -52,7 +52,7 @@ class OrderedGormTransformation extends AbstractASTTransformation implements Com
         }
 
         AnnotatedNode annotatedNode = (AnnotatedNode) astNodes[1];
-         Iterable<TransformationInvocation> astTransformations = collectAndOrderGormTransformations(annotatedNode)
+        Iterable<TransformationInvocation> astTransformations = collectAndOrderGormTransformations(annotatedNode)
         for(transform in astTransformations) {
             transform.invoke(source, annotatedNode)
         }

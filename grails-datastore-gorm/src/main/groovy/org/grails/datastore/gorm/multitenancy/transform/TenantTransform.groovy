@@ -30,6 +30,7 @@ import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.GroovyASTTransformation
+import org.grails.datastore.gorm.transactions.transform.TransactionalTransform
 import org.grails.datastore.gorm.transform.AbstractMethodDecoratingTransformation
 import org.grails.datastore.mapping.core.Ordered
 import org.grails.datastore.mapping.core.order.OrderedComparator
@@ -62,8 +63,12 @@ class TenantTransform extends AbstractMethodDecoratingTransformation implements 
     public  static final ClassNode CURRENT_TENANT_ANNOTATION_TYPE = CURRENT_TENANT_ANNOTATION_TYPE_EXPR.getType()
     public  static final ClassNode WITHOUT_TENANT_ANNOTATION_TYPE = WITHOUT_TENANT_ANNOTATION_TYPE_EXPR.getType()
 
-    private static final String RENAMED_METHOD_PREFIX = '$mt__'
+    public static final String RENAMED_METHOD_PREFIX = '$mt__'
     public static final String VAR_TENANT_ID = "tenantId"
+    /**
+     * The position of the transform. Before the transactional transform
+     */
+    public static final int POSITION = TransactionalTransform.POSITION - 100
 
     @Override
     protected String getRenamedMethodPrefix() {
@@ -149,6 +154,6 @@ class TenantTransform extends AbstractMethodDecoratingTransformation implements 
 
     @Override
     int getOrder() {
-        return OrderedComparator.HIGHEST_PRECEDENCE + 100
+        return POSITION
     }
 }

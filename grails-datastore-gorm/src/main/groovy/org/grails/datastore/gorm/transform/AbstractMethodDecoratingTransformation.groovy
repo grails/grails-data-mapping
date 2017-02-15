@@ -55,6 +55,10 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
     private static final Set<String> ANNOTATION_NAME_EXCLUDES = new HashSet<String>(Arrays.asList(PostConstruct.class.getName(), PreDestroy.class.getName(), "grails.web.controllers.ControllerMethod"));
     public static final String FIELD_TARGET_DATASTORE = '$targetDatastore'
     public static final String METHOD_GET_TARGET_DATASTORE = "getTargetDatastore"
+    /**
+     * Key used to store within the original method node metadata, all previous decorated methods
+     */
+    public static final String DECORATED_METHODS = '$DECORATED'
     protected static final String METHOD_GET_DATASTORE_FOR_CONNECTION = "getDatastoreForConnection"
 
     @Override
@@ -286,7 +290,7 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
         if(methodNode.getReturnType() != VOID_TYPE) {
             methodBody.addStatement(
                 returnS(
-                        castX(methodNode.getReturnType(), executeMethodCallExpression)
+                    castX(methodNode.getReturnType(), executeMethodCallExpression)
                 )
             )
         } else {
@@ -335,7 +339,7 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
      * @param originalMethodCall The original method call to delegate to
      * @return The MethodCallExpression
      */
-    protected MethodCallExpression makeDelegatingClosureCall(VariableExpression targetObject, String executeMethodName,  Parameter[] closureParameters, MethodCallExpression originalMethodCall, VariableScope variableScope ) {
+    protected MethodCallExpression makeDelegatingClosureCall(Expression targetObject, String executeMethodName,  Parameter[] closureParameters, MethodCallExpression originalMethodCall, VariableScope variableScope ) {
         return makeDelegatingClosureCall(targetObject, executeMethodName, new ArgumentListExpression(), closureParameters, originalMethodCall, variableScope)
     }
 
@@ -348,7 +352,7 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
      * @param originalMethodCall The original method call to delegate to
      * @return The MethodCallExpression
      */
-    protected MethodCallExpression makeDelegatingClosureCall(VariableExpression targetObject, String executeMethodName, ArgumentListExpression arguments, Parameter[] closureParameters, MethodCallExpression originalMethodCall, VariableScope variableScope ) {
+    protected MethodCallExpression makeDelegatingClosureCall(Expression targetObject, String executeMethodName, ArgumentListExpression arguments, Parameter[] closureParameters, MethodCallExpression originalMethodCall, VariableScope variableScope ) {
         final ClosureExpression closureExpression = closureX(closureParameters, createDelegingMethodBody(closureParameters, originalMethodCall))
         closureExpression.setVariableScope(
             variableScope
@@ -375,11 +379,18 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
         Statement body = methodNode.code
         MethodNode renamedMethodNode = new MethodNode(
                 renamedMethodName,
-                Modifier.PROTECTED, methodNode.getReturnType().getPlainNodeReference(),
+                Modifier.PROTECTED, resolveReturnTypeForNewMethod(methodNode),
                 newParameters,
                 EMPTY_CLASS_ARRAY,
                 body
         )
+
+        List<MethodNode> decoratedMethods = (List<MethodNode>)methodNode.getNodeMetaData(DECORATED_METHODS)
+        if(decoratedMethods == null) {
+            decoratedMethods = []
+            methodNode.putNodeMetaData(DECORATED_METHODS, decoratedMethods)
+        }
+        decoratedMethods.add(renamedMethodNode)
 
 
         def newVariableScope = new VariableScope()
@@ -414,6 +425,10 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
         originalMethodCall.setMethodTarget(renamedMethodNode)
 
         return originalMethodCall
+    }
+
+    protected ClassNode resolveReturnTypeForNewMethod(MethodNode methodNode) {
+        methodNode.getReturnType().getPlainNodeReference()
     }
 
     protected boolean hasExcludedAnnotation(MethodNode md) {

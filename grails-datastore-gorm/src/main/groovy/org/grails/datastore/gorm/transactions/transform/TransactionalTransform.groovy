@@ -32,10 +32,10 @@ import org.grails.datastore.gorm.multitenancy.transform.TenantTransform
 import org.grails.datastore.gorm.transform.AbstractMethodDecoratingTransformation
 import org.grails.datastore.gorm.transform.AstMethodDispatchUtils
 import org.grails.datastore.gorm.transform.GormASTTransformationClass
+import org.grails.datastore.mapping.core.Ordered
 import org.grails.datastore.mapping.core.connections.MultipleConnectionSourceCapableDatastore
 import org.grails.datastore.mapping.transactions.CustomizableRollbackTransactionAttribute
 import org.grails.datastore.mapping.transactions.TransactionCapableDatastore
-import org.springframework.core.Ordered
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionStatus
 import org.springframework.transaction.annotation.Propagation
@@ -104,6 +104,11 @@ class TransactionalTransform extends AbstractMethodDecoratingTransformation impl
     private static final Object APPLIED_MARKER = new Object();
     private static final String SET_TRANSACTION_MANAGER = "setTransactionManager"
     public static final String GET_TRANSACTION_MANAGER_METHOD = "getTransactionManager"
+    /**
+     * The position of the transform in terms ordering
+     */
+    public static final int POSITION = 0
+    public static final String RENAMED_METHOD_PREFIX = '$tt__'
 
     @Override
     protected boolean isValidAnnotation(AnnotationNode annotationNode, AnnotatedNode classNode) {
@@ -409,12 +414,6 @@ class TransactionalTransform extends AbstractMethodDecoratingTransformation impl
 
     @Override
     protected String getRenamedMethodPrefix() {
-        return '$tt__'
-    }
-
-    @Override
-    int getOrder() {
-        // neutral
-        return 0
+        return RENAMED_METHOD_PREFIX
     }
 }

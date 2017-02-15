@@ -27,6 +27,7 @@ import org.codehaus.groovy.ast.expr.ClassExpression
 import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.stmt.BlockStatement
+import org.codehaus.groovy.ast.tools.GenericsUtils
 import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.control.io.FileReaderSource
@@ -198,7 +199,7 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
                         methodImpl = new MethodNode(
                                 method.name,
                                 ACC_PUBLIC,
-                                method.returnType.plainNodeReference,
+                                GenericsUtils.makeClassSafeWithGenerics(method.returnType, method.returnType.genericsTypes),
                                 copyParameters(method.parameters),
                                 method.exceptions,
                                 new BlockStatement())
