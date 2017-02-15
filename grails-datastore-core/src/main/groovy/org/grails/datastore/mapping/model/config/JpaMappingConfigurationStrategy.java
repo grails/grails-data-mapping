@@ -167,7 +167,7 @@ public class JpaMappingConfigurationStrategy extends GormMappingConfigurationStr
                     for (PropertyDescriptor descriptor : descriptors) {
                         Class relatedGenericClass = MappingUtils.getGenericTypeForProperty(relatedClassType, descriptor.getName());
                         ManyToMany relatedManyToMany = getAnnotation(referencedCpf, descriptor, ManyToMany.class);
-                        if (relatedGenericClass == null) {
+                        if (relatedGenericClass == null && relatedManyToMany != null) {
                             relatedGenericClass = relatedManyToMany.targetEntity();
                         }
                         if (relatedGenericClass == javaClass) {
@@ -231,7 +231,7 @@ public class JpaMappingConfigurationStrategy extends GormMappingConfigurationStr
                 for (PropertyDescriptor descriptor : descriptors) {
                     Class genericClass = MappingUtils.getGenericTypeForProperty(propType, descriptor.getName());
                     OneToMany relatedOneToMany = getAnnotation(relatedCpf, descriptor, OneToMany.class);
-                    if (genericClass == null) {
+                    if (genericClass == null && relatedOneToMany != null) {
                         genericClass = relatedOneToMany.targetEntity();
                     }
                     if (genericClass == entity.getJavaClass()) {
