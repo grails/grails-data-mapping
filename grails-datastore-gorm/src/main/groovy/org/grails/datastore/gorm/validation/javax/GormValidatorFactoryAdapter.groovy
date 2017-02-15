@@ -19,7 +19,7 @@ import javax.validation.ValidatorFactory
 @CompileStatic
 class GormValidatorFactoryAdapter implements ValidatorFactory  {
 
-    @Delegate final ValidatorFactory factory
+    final ValidatorFactory factory
 
     GormValidatorFactoryAdapter(ValidatorFactory factory) {
         this.factory = factory
@@ -31,8 +31,38 @@ class GormValidatorFactoryAdapter implements ValidatorFactory  {
     }
 
     @Override
+    void close() {
+        factory.close()
+    }
+
+    @Override
     ValidatorContext usingContext() {
         return new GormValidatorContext(factory.usingContext())
+    }
+
+    @Override
+    MessageInterpolator getMessageInterpolator() {
+        factory.getMessageInterpolator()
+    }
+
+    @Override
+    TraversableResolver getTraversableResolver() {
+        return factory.getTraversableResolver()
+    }
+
+    @Override
+    ConstraintValidatorFactory getConstraintValidatorFactory() {
+        return factory.getConstraintValidatorFactory()
+    }
+
+    @Override
+    ParameterNameProvider getParameterNameProvider() {
+        return factory.getParameterNameProvider()
+    }
+
+    @Override
+    def <T> T unwrap(Class<T> type) {
+        return factory.unwrap(type)
     }
 
     static class GormValidatorContext implements ValidatorContext {
