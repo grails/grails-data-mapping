@@ -1,6 +1,7 @@
 package grails.gorm.services;
 
 import org.codehaus.groovy.transform.GroovyASTTransformationClass;
+import org.grails.datastore.gorm.services.ServiceImplementer;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -28,4 +29,9 @@ public @interface Service {
      * @return The name of the service, by default this will the class name decapitalized. ie. BookService = bookService
      */
     String name() default "";
+
+    /**
+     * @return Any additional implementers to apply
+     */
+    Class<? extends ServiceImplementer>[] implementers() default {};
 }

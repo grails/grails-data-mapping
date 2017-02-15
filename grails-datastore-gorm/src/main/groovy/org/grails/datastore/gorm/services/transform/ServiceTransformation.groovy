@@ -26,6 +26,7 @@ import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.expr.ClassExpression
 import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.Expression
+import org.codehaus.groovy.ast.expr.ListExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.tools.GenericsUtils
 import org.codehaus.groovy.control.CompilePhase
@@ -162,8 +163,17 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
 
             List<MethodNode> abstractMethods = findPublicAbstractMethods(classNode)
             Iterable<ServiceImplementer> implementers = findServiceImplementors()
+            Expression additionalImplementers = annotationNode.getMember("implementers")
+            if(additionalImplementers instanceof ListExpression) {
+                for(Expression exp in ((ListExpression)additionalImplementers).expressions) {
+                    implementers = addClassExpressionToImplementers(exp, implementers)
+                }
+            }
+            else if(additionalImplementers instanceof ClassExpression) {
+                implementers = addClassExpressionToImplementers(additionalImplementers, implementers)
+            }
 
-            // first go through the existing implemented methods
+            // first go through the existing implemented methods and just enhance them
             if(!isInterface) {
                 for(MethodNode existing in classNode.methods) {
                     int modifiers = existing.modifiers
@@ -244,6 +254,19 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
                 generateServiceDescriptor(sourceUnit, classNode)
             }
         }
+    }
+
+    private Iterable<ServiceImplementer> addClassExpressionToImplementers(Expression exp, Iterable<ServiceImplementer> implementers) {
+        if (exp instanceof ClassExpression) {
+            ClassNode cn = ((ClassExpression) exp).type
+            if (!cn.isPrimaryClassNode()) {
+                Class cls = cn.typeClass
+                if (cls != null && ServiceImplementer.isAssignableFrom(cls)) {
+                    implementers += (ServiceImplementer) cls.newInstance()
+                }
+            }
+        }
+        implementers
     }
 
     @Memoized

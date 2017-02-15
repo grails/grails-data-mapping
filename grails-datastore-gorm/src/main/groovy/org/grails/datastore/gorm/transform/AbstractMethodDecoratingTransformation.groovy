@@ -257,7 +257,16 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
         // no-op
     }
 
-    protected void weaveNewMethod(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode) {
+    /**
+     * Weaves a new method
+     *
+     * @param sourceUnit The source unit
+     * @param annotationNode The annotation node
+     * @param classNode The class node
+     * @param methodNode The original method that will delete to the new method
+     * @return The new method's body
+     */
+    protected MethodNode weaveNewMethod(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode) {
         Object appliedMarker = getAppliedMarker()
         if ( methodNode.getNodeMetaData(appliedMarker) == appliedMarker ) {
             return
@@ -271,8 +280,8 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
         // Move the existing logic into a new method called "$tt_methodName()"
         String renamedMethodName = getRenamedMethodPrefix() + methodNode.getName()
         Parameter[] newParameters = prepareNewMethodParameters(methodNode)
-
-        MethodCallExpression originalMethodCall = moveOriginalCodeToNewMethod(methodNode, renamedMethodName, newParameters, classNode, sourceUnit)
+        MethodNode renamedMethod = moveOriginalCodeToNewMethod(methodNode, renamedMethodName, newParameters, classNode, sourceUnit)
+        MethodCallExpression originalMethodCall = buildCallToOriginalMethod(classNode, renamedMethod)
 
         // Start constructing new method body
         BlockStatement methodBody = block()
@@ -302,6 +311,7 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
         methodNode.setCode(methodBody)
         processVariableScopes(sourceUnit, classNode, methodNode)
         compileMethodStatically(sourceUnit, methodNode)
+        return renamedMethod
     }
 
     protected void compileMethodStatically(SourceUnit sourceUnit, MethodNode methodNode) {
@@ -375,7 +385,7 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
     }
 
 
-    protected MethodCallExpression moveOriginalCodeToNewMethod(MethodNode methodNode, String renamedMethodName, Parameter[] newParameters, ClassNode classNode, SourceUnit source) {
+    protected MethodNode moveOriginalCodeToNewMethod(MethodNode methodNode, String renamedMethodName, Parameter[] newParameters, ClassNode classNode, SourceUnit source) {
         Statement body = methodNode.code
         MethodNode renamedMethodNode = new MethodNode(
                 renamedMethodName,
@@ -420,7 +430,11 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
             scopeVisitor.visitMethod(renamedMethodNode)
         }
 
-        final originalMethodCall = callX(varX("this", classNode), renamedMethodName, args(renamedMethodNode.parameters))
+        return renamedMethodNode
+    }
+
+    protected MethodCallExpression buildCallToOriginalMethod(ClassNode classNode, MethodNode renamedMethodNode) {
+        final MethodCallExpression originalMethodCall = callX(varX("this", classNode), renamedMethodNode.name, args(renamedMethodNode.parameters))
         originalMethodCall.setImplicitThis(false)
         originalMethodCall.setMethodTarget(renamedMethodNode)
 

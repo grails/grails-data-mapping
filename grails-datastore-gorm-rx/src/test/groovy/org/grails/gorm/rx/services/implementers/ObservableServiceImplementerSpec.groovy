@@ -21,7 +21,7 @@ import rx.Observable
 class Book {
   String title
 }
-@Service(Book)
+@Service(value=Book,implementers = [org.grails.gorm.rx.services.implementers.FindOneObservableImplementer])
 interface BookService {
     Observable<Book> find(String title)
 }
@@ -50,13 +50,13 @@ return Book.classLoader
     }
 }
 
-@Entity
-class Book {
-  String title
-}
-
-
-@Service(Book)
-interface BookService {
-    Observable<Book> find(String title)
-}
+//@Entity
+//class Book {
+//  String title
+//}
+//
+//
+//@Service(Book)
+//interface BookService {
+//    Observable<Book> find(String title)
+//}

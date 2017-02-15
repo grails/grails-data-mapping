@@ -28,6 +28,7 @@ dependencies {
     compile "org.grails:grails-validation:$grailsVersion",excludes
     compile("org.grails:grails-bootstrap:$grailsVersion",excludes)
 
+    testCompile project(":grails-datastore-gorm-rx")
     testCompile project(":grails-datastore-gorm-tck")
     testCompile "org.codehaus.groovy:groovy-json:$groovyVersion"
     testRuntime "javax.servlet:javax.servlet-api:$servletApiVersion"

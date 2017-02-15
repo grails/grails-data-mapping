@@ -133,7 +133,7 @@ class TransactionalTransform extends AbstractMethodDecoratingTransformation impl
     }
 
     @Override
-    protected void weaveNewMethod(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode) {
+    protected MethodNode weaveNewMethod(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode) {
         super.weaveNewMethod(sourceUnit, annotationNode, classNode, methodNode)
     }
 

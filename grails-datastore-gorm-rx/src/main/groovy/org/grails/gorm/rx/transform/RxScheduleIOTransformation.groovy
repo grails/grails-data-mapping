@@ -9,9 +9,13 @@ import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.GenericsType
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.VariableScope
+import org.codehaus.groovy.ast.expr.CastExpression
 import org.codehaus.groovy.ast.expr.ClassExpression
+import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
+import org.codehaus.groovy.ast.stmt.ReturnStatement
+import org.codehaus.groovy.ast.stmt.Statement
 import org.codehaus.groovy.ast.tools.GenericsUtils
 import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.SourceUnit
@@ -25,7 +29,9 @@ import org.grails.gorm.rx.services.support.RxServiceSupport
 import static org.grails.datastore.mapping.reflect.AstUtils.ZERO_PARAMETERS
 import static org.codehaus.groovy.ast.tools.GeneralUtils.*
 /**
- * A transformation that
+ * A transformation that will convert a blocking GORM operation into an Observable that runs on the RxJava {@link rx.schedulers.Schedulers#io()} scheduler
+ *
+ * @see {@link rx.schedulers.Schedulers#io()}
  *
  * @author Graeme Rocher
  * @since 6.1
@@ -55,19 +61,33 @@ class RxScheduleIOTransformation extends AbstractMethodDecoratingTransformation 
     }
 
     @Override
-    protected void weaveNewMethod(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode) {
+    protected MethodNode weaveNewMethod(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode) {
         List<MethodNode> decorated = (List<MethodNode>)methodNode.getNodeMetaData(DECORATED_METHODS)
-        super.weaveNewMethod(sourceUnit, annotationNode, classNode, methodNode)
+        ClassNode newReturnType = resolveReturnTypeForNewMethod(methodNode)
+        if(!RxAstUtils.isSingle(methodNode.returnType)) {
+            newReturnType = GenericsUtils.makeClassSafeWithGenerics(Iterable, newReturnType)
+        }
         if(decorated != null) {
-            ClassNode newReturnType = resolveReturnTypeForNewMethod(methodNode)
-            if(!RxAstUtils.isSingle(methodNode.returnType)) {
-                newReturnType = GenericsUtils.makeClassSafeWithGenerics(Iterable, newReturnType)
-            }
 
             for(MethodNode mn in decorated) {
                 mn.setReturnType(newReturnType)
             }
         }
+
+        // align the return types
+        MethodNode newMethod = super.weaveNewMethod(sourceUnit, annotationNode, classNode, methodNode)
+        newMethod.setReturnType(newReturnType)
+        BlockStatement newMethodBody = (BlockStatement)newMethod.code
+        ReturnStatement rs = null
+        Statement last = newMethodBody.statements[-1]
+        if(last instanceof ReturnStatement) {
+            rs = (ReturnStatement)last
+        }
+        Expression returnExpr = rs?.expression
+        if(returnExpr instanceof CastExpression) {
+            ((CastExpression)returnExpr).setType(newReturnType)
+        }
+        return newMethod
     }
 
     @Override
