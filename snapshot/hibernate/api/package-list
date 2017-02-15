@@ -1,4 +1,6 @@
+another
 example
+functional.tests
 grails.gorm
 grails.gorm.annotation
 grails.gorm.api
@@ -48,6 +50,8 @@ org.grails.datastore.gorm.validation
 org.grails.datastore.gorm.validation.constraints
 org.grails.datastore.gorm.validation.constraints.builtin
 org.grails.datastore.gorm.validation.javax
+org.grails.datastore.gorm.validation.javax.services
+org.grails.datastore.gorm.validation.javax.services.implementers
 org.grails.datastore.gorm.validation.listener
 org.grails.datastore.gorm.validation.registry.support
 org.grails.datastore.mapping.cache
@@ -104,7 +108,6 @@ org.grails.orm.hibernate.datasource
 org.grails.orm.hibernate.dirty
 org.grails.orm.hibernate.exceptions
 org.grails.orm.hibernate.multitenancy
-org.grails.orm.hibernate.persister.entity
 org.grails.orm.hibernate.proxy
 org.grails.orm.hibernate.query
 org.grails.orm.hibernate.support

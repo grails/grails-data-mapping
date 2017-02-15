@@ -1006,6 +1006,29 @@ void delete(String title, Date date)</code></pre>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_validating_data_services">Validating Data Services</h3>
+<div class="paragraph">
+<p>GORM Data Services have built in support for <code>javax.validation</code> annotations for method parameters.</p>
+</div>
+<div class="paragraph">
+<p>You will need to have a <code>javax.validation</code> implementation on your classpath (such as <code>hibernate-validator</code> and then simply annotate your method parameters using the appropriate annotation. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import javax.validation.constraints.*
+
+@Service(Book)
+interface BookService {
+
+    Book find(@NotNull String title)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above example the <code>NotNull</code> constraint is applied to the <code>title</code> property. If <code>null</code> is passed to the method a <code>ConstraintViolationException</code> exception will be thrown.</p>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
