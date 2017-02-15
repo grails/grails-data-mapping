@@ -2,6 +2,8 @@ package org.grails.datastore.mapping.validation;
 
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.StaticMessageSource;
 import org.springframework.validation.Validator;
 
 /**
@@ -20,9 +22,18 @@ public class BeanFactoryValidatorRegistry implements ValidatorRegistry {
     @Override
     public Validator getValidator(PersistentEntity entity) {
         String validatorName = entity.getName() + "Validator";
-        if(beanFactory.containsBean(validatorName)) {
+        if (beanFactory.containsBean(validatorName)) {
             return beanFactory.getBean(validatorName, Validator.class);
         }
         return null;
+    }
+
+    @Override
+    public MessageSource getMessageSource() {
+        if (beanFactory instanceof MessageSource) {
+            return (MessageSource) beanFactory;
+        } else {
+            return new StaticMessageSource();
+        }
     }
 }

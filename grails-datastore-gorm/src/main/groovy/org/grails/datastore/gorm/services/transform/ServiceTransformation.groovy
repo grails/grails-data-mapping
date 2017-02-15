@@ -34,6 +34,7 @@ import org.codehaus.groovy.control.io.ReaderSource
 import org.codehaus.groovy.control.io.URLReaderSource
 import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
+import org.codehaus.groovy.transform.trait.TraitComposer
 import org.grails.datastore.gorm.services.ServiceEnhancer
 import org.grails.datastore.gorm.services.ServiceImplementer
 import org.grails.datastore.gorm.services.implementers.CountByImplementer
@@ -60,6 +61,7 @@ import org.grails.datastore.gorm.services.implementers.UpdateOneImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneWhereImplementer
 import org.grails.datastore.gorm.services.implementers.UpdateStringQueryImplementer
 import org.grails.datastore.gorm.transform.AbstractTraitApplyingGormASTTransformation
+import org.grails.datastore.gorm.validation.javax.services.implementers.MethodValidationImplementer
 import org.grails.datastore.mapping.core.order.OrderedComparator
 
 import java.beans.Introspector
@@ -103,7 +105,8 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             new UpdateStringQueryImplementer(),
             new CountImplementer(),
             new CountByImplementer(),
-            new CountWhereImplementer()] as List<ServiceImplementer>
+            new CountWhereImplementer(),
+            new MethodValidationImplementer()] as List<ServiceImplementer>
 
     private static Iterable<ServiceImplementer> LOADED_IMPLEMENTORS = null
     public static final String NO_IMPLEMENTATIONS_MESSAGE = "No implementations possible for method. Please use an abstract class instead and provide an implementation."
@@ -154,7 +157,7 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             ClassExpression ce = (ClassExpression)annotationNode.getMember("value")
             ClassNode targetDomainClass = ce != null ? ce.type : ClassHelper.OBJECT_TYPE
             // weave with generic argument
-            weaveTrait(impl, sourceUnit, getTraitClass(), targetDomainClass)
+            weaveTraitWithGenerics(impl, getTraitClass(), targetDomainClass)
 
             List<MethodNode> abstractMethods = findPublicAbstractMethods(classNode)
             Iterable<ServiceImplementer> implementers = findServiceImplementors()
@@ -220,6 +223,10 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
                         }
                     }
                 }
+            }
+
+            if (compilationUnit != null) {
+                TraitComposer.doExtendTraits(impl, sourceUnit, compilationUnit)
             }
 
 

@@ -26,9 +26,6 @@ import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.trait.TraitComposer
 import org.grails.datastore.mapping.reflect.AstUtils
 
-import static org.grails.datastore.mapping.reflect.AstUtils.OBJECT_CLASS_NODE
-import static org.grails.datastore.mapping.reflect.AstUtils.error
-
 /**
  * An abstract transformation that applies a Trait
  *
@@ -67,14 +64,21 @@ abstract class AbstractTraitApplyingGormASTTransformation extends AbstractGormAS
      * @param traitJavaClass The trait java class
      */
     protected void weaveTrait(ClassNode classNode, SourceUnit source, Class traitJavaClass, ClassNode... genericArguments) {
-        if(classNode.isInterface()) return
+        weaveTraitWithGenerics(classNode, traitJavaClass, genericArguments)
+        if (compilationUnit != null) {
+            TraitComposer.doExtendTraits(classNode, source, compilationUnit);
+        }
+    }
+
+    static void weaveTraitWithGenerics(ClassNode classNode, Class traitJavaClass, ClassNode... genericArguments) {
+        if (classNode.isInterface()) return
 
         ClassNode traitClassNode = ClassHelper.make(traitJavaClass)
         boolean shouldWeave = !classNode.implementsInterface(traitClassNode)
 
         if (shouldWeave) {
             GenericsType[] genericsTypes = traitClassNode.genericsTypes
-            if(genericsTypes != null && genericsTypes.length != genericArguments.length) {
+            if (genericsTypes != null && genericsTypes.length != genericArguments.length) {
                 ClassNode[] newGenericArguments = new ClassNode[genericsTypes.length]
                 int i = 0
                 for (GenericsType gt in genericsTypes) {
@@ -88,25 +92,22 @@ abstract class AbstractTraitApplyingGormASTTransformation extends AbstractGormAS
                 genericArguments = newGenericArguments
             }
 
-            if(genericArguments.length > 0) {
+            if (genericArguments.length > 0) {
                 ClassNode originTraitClassNode = traitClassNode
                 traitClassNode = GenericsUtils.makeClassSafeWithGenerics(originTraitClassNode, genericsTypes)
                 final Map<String, ClassNode> parameterNameToParameterValue = new LinkedHashMap<String, ClassNode>()
-                if(genericsTypes != null) {
+                if (genericsTypes != null) {
                     int j = 0
-                    for(GenericsType gt : traitClassNode.genericsTypes) {
+                    for (GenericsType gt : traitClassNode.genericsTypes) {
                         parameterNameToParameterValue.put(gt.getName(), genericArguments[j++])
                     }
                 }
                 classNode.addInterface(AstUtils.replaceGenericsPlaceholders(traitClassNode, parameterNameToParameterValue))
                 classNode.setUsingGenerics(true)
-            }
-            else {
+            } else {
                 classNode.addInterface(traitClassNode.plainNodeReference)
             }
-            if (compilationUnit != null) {
-                TraitComposer.doExtendTraits(classNode, source, compilationUnit);
-            }
+
         }
     }
 

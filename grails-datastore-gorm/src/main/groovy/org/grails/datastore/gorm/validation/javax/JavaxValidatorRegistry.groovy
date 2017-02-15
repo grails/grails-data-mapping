@@ -52,15 +52,27 @@ class JavaxValidatorRegistry extends DefaultValidatorRegistry implements Validat
      * @return The configuration
      */
     protected Configuration<?> buildConfiguration() {
-        Configuration validatorConfiguration  = Validation.byDefaultProvider()
-                                                .configure()
-        validatorConfiguration = validatorConfiguration.ignoreXmlConfiguration()
-                                     .traversableResolver(new MappingContextTraversableResolver(mappingContext))
-                                     .messageInterpolator(new ResourceBundleMessageInterpolator(new MessageSourceResourceBundleLocator(messageSource)))
+        MappingContext context = this.mappingContext
+        MessageSource ms = messageSource
+        return buildConfigurationFor(context, ms)
+    }
 
-        if(messageSource instanceof ApplicationContext) {
+    /**
+     * Builds a configuration for the given context and message source
+     * @param context The context
+     * @param messageSource The message source
+     * @return The configuration
+     */
+    static Configuration buildConfigurationFor(MappingContext context, MessageSource messageSource) {
+        Configuration validatorConfiguration = Validation.byDefaultProvider()
+                .configure()
+        validatorConfiguration = validatorConfiguration.ignoreXmlConfiguration()
+                .traversableResolver(new MappingContextTraversableResolver(context))
+                .messageInterpolator(new ResourceBundleMessageInterpolator(new MessageSourceResourceBundleLocator(messageSource)))
+
+        if (messageSource instanceof ApplicationContext) {
             validatorConfiguration = validatorConfiguration.constraintValidatorFactory(
-                new SpringConstraintValidatorFactory(((ApplicationContext)messageSource).autowireCapableBeanFactory)
+                    new SpringConstraintValidatorFactory(((ApplicationContext) messageSource).autowireCapableBeanFactory)
             )
         }
 

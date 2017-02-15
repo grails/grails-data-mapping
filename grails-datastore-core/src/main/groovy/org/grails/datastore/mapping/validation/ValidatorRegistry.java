@@ -1,6 +1,7 @@
 package org.grails.datastore.mapping.validation;
 
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.springframework.context.MessageSource;
 import org.springframework.validation.Validator;
 
 /**
@@ -18,4 +19,9 @@ public interface ValidatorRegistry {
      * @return The validator
      */
     Validator getValidator(PersistentEntity entity);
+
+    /**
+     * @return The message source used by this registry
+     */
+    MessageSource getMessageSource();
 }
