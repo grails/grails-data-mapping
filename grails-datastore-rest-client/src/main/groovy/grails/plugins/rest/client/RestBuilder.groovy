@@ -64,11 +64,11 @@ class RestBuilder {
         if(currentConfiguration instanceof DefaultConverterConfiguration) {
             // init manually
             DefaultConverterConfiguration defaultConfig = ((DefaultConverterConfiguration)currentConfiguration)
-            defaultConfig.registerObjectMarshaller(new MapMarshaller())
-            defaultConfig.registerObjectMarshaller(new ArrayMarshaller());
-            defaultConfig.registerObjectMarshaller(new ByteArrayMarshaller());
-            defaultConfig.registerObjectMarshaller(new CollectionMarshaller());
-            defaultConfig.registerObjectMarshaller(new GroovyBeanMarshaller());
+            defaultConfig.registerObjectMarshaller(new GroovyBeanMarshaller(), -1)
+            defaultConfig.registerObjectMarshaller(new MapMarshaller(), -1)
+            defaultConfig.registerObjectMarshaller(new ArrayMarshaller(), -1)
+            defaultConfig.registerObjectMarshaller(new ByteArrayMarshaller(), -1)
+            defaultConfig.registerObjectMarshaller(new CollectionMarshaller(), -1)
         }
 
         Proxy proxyFromSystemProperties = getProxyForSystemProperties()

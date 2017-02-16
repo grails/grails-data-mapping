@@ -565,6 +565,20 @@ public abstract class Query implements Cloneable{
      */
     public List list() {
         uniqueResult = false;
+        return doList();
+    }
+
+    /**
+     * Executes the query returning a single result or null
+     * @return The result
+     */
+    public Object singleResult() {
+        uniqueResult = true;
+        List results = doList();
+        return results.isEmpty() ? null : results.get(0);
+    }
+
+    private List doList() {
         flushBeforeQuery();
 
         ApplicationEventPublisher publisher = session.getDatastore().getApplicationEventPublisher();
@@ -582,16 +596,6 @@ public abstract class Query implements Cloneable{
 
 
         return results;
-    }
-
-    /**
-     * Executes the query returning a single result or null
-     * @return The result
-     */
-    public Object singleResult() {
-        uniqueResult = true;
-        List results = list();
-        return results.isEmpty() ? null : results.get(0);
     }
 
     /**
