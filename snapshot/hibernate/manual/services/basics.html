@@ -448,8 +448,20 @@ interface BookService {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">BookService bookService = datastore.getService(BookService)</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">BookService bookService = hibernateDatastore.getService(BookService)</code></pre>
 </div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The above example also works in Spock unit tests that extend <code>HibernateSpec</code>
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect3">

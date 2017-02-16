@@ -593,6 +593,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_query_joins">10.3. Query Joins</a></li>
 <li><a href="#_data_service_write_operations">10.4. Data Service Write Operations</a></li>
 <li><a href="#_validating_data_services">10.5. Validating Data Services</a></li>
+<li><a href="#_rxjava_support">10.6. RxJava Support</a></li>
 </ul>
 </li>
 <li><a href="#multipleDataSources">11. Multiple Data Sources</a>
@@ -7008,8 +7009,20 @@ These mappings will not work for default unidirectional one-to-many or many-to-m
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">BookService bookService = datastore.getService(BookService)</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">BookService bookService = hibernateDatastore.getService(BookService)</code></pre>
 </div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The above example also works in Spock unit tests that extend <code>HibernateSpec</code>
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect3">
@@ -7104,37 +7117,37 @@ These mappings will not work for default unidirectional one-to-many or many-to-m
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>count*</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Count the number of results</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Subclass of <code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subclass of <code>Number</code> or <code>Observable&lt;Number&gt;</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>countBy*</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Dynamic Finder Count the number of results</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Subclass of <code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subclass of <code>Number</code> or <code>Observable&lt;Number&gt;</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>delete*</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Delete an instance for the given arguments</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>T</code>, <code>void</code> or subclass of <code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>T</code>, <code>void</code>, subclass of <code>Number</code> or <code>Observable&lt;Number&gt;</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>find*</code>, <code>get*</code>, <code>list*</code> or <code>retrieve*</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Query for the given parameters</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>T</code>, <code>Iterable&lt;T&gt;</code>, <code>T[]</code>, <code>List&lt;T&gt;</code> etc.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>T</code>, <code>Iterable&lt;T&gt;</code>, <code>T[]</code>, <code>List&lt;T&gt;</code>, <code>Observable&lt;T&gt;</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>findBy*</code>, <code>listBy*</code>, <code>findAllBy*</code> or <code>getBy*</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Dynamic finder query for given parameters</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>T</code>, <code>Iterable&lt;T&gt;</code>, <code>T[]</code>, <code>List&lt;T&gt;</code> etc.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>T</code>, <code>Iterable&lt;T&gt;</code>, <code>T[]</code>, <code>List&lt;T&gt;</code>, <code>Observable&lt;T&gt;</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>save*</code>, <code>store*</code>, or <code>persist*</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Save a new instance</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>T</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>T</code> or <code>Observable&lt;T&gt;</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>update*</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Updates an existing instance. First parameter should be <code>id</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>T</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>T</code> or <code>Observable&lt;T&gt;</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -7579,6 +7592,92 @@ If a property exists on the interface but not on the domain class you will recei
 </div>
 <div class="paragraph">
 <p>In the above example the <code>NotNull</code> constraint is applied to the <code>title</code> property. If <code>null</code> is passed to the method a <code>ConstraintViolationException</code> exception will be thrown.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_rxjava_support">10.6. RxJava Support</h3>
+<div class="paragraph">
+<p>GORM Data Services also support returning RxJava 1.x <a href="http://reactivex.io/RxJava/1.x/javadoc/rx/Observable.html">rx.Observable</a> or <a href="http://reactivex.io/RxJava/1.x/javadoc/rx/Single.html">rx.Single</a> types.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+RxJava 2.x support is planned for a future release
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To use the RxJava support you need to ensure that the <code>grails-datastore-gorm-rx</code> dependencies is on the classpath by adding the following to <code>build.gradle</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx:6.1.0.BUILD-SNAPSHOT"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">rx.*</span>
+
+<span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
+<span class="type">interface</span> BookService {
+   Single&lt;<span class="predefined-type">Book</span>&gt; findOne(<span class="predefined-type">String</span> title)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When a <code>rx.Single</code> is used then a single result is returned. To query multiple results use an <code>rx.Observable</code> instead:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">rx.*</span>
+
+<span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
+<span class="type">interface</span> BookService {
+   <span class="predefined-type">Observable</span>&lt;<span class="predefined-type">Book</span>&gt; findBooks(<span class="predefined-type">String</span> title)
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For regular GORM entities, GORM will by default execute the persistence operation using RxJava&#8217;s <a href="http://reactivex.io/RxJava/1.x/javadoc/rx/schedulers/Schedulers.html#io()">IO Scheduler</a>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+For RxGORM entities where the underlying database supports non-blocking access the database driver will schedule the operation accordingly.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can run the operation on a different scheduler using the <code>RxSchedule</code> annotation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">rx.*</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.rx.services.RxSchedule</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
+<span class="keyword">import</span> <span class="include">rx.schedulers.Schedulers</span>
+
+<span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
+<span class="type">interface</span> BookService {
+
+   <span class="annotation">@RxSchedule</span>(scheduler = { Schedulers.newThread() })
+   <span class="predefined-type">Observable</span>&lt;<span class="predefined-type">Book</span>&gt; findBooks(<span class="predefined-type">String</span> title)
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -8698,12 +8797,12 @@ By default, all domain class properties are not nullable (i.e. they have an impl
 <div class="sect3">
 <h4 id="_spock_and_transactions">14.1.2. Spock and Transactions</h4>
 <div class="paragraph">
-<p>Note that in general you have to wrap your test execution logic in a session or transaction. The easiet way to do this is with <code>grails.transaction.Transactional</code>:</p>
+<p>Note that in general you have to wrap your test execution logic in a session or transaction. The easiest way to do this is with <code>grails.gorm.transactions.Transactional</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">...
-import grails.transaction.Rollback
+import grails.gorm.transactions.*
 <span class="keyword">import</span> <span class="include">org.springframework.transaction.PlatformTransactionManager</span>
 
 <span class="type">class</span> <span class="class">ExampleSpec</span> <span class="directive">extends</span> Specification {
@@ -8749,7 +8848,7 @@ import grails.transaction.Rollback
 </table>
 </div>
 <div class="paragraph">
-<p>In the example above, each test method is wrapped in a transaction that rolls back any changes using the <code>grails.transaction.Rollback</code> method.</p>
+<p>In the example above, each test method is wrapped in a transaction that rolls back any changes using the <code>grails.gorm.transactions.Rollback</code> annotation.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -8807,7 +8906,7 @@ void setupSpec() {
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.junit.*</span>
-<span class="keyword">import</span> <span class="include">grails.transaction.Rollback</span>
+<span class="keyword">import</span> <span class="include">grails.gorm.transactions.*</span>
 <span class="keyword">import</span> <span class="include">org.grails.orm.hibernate.HibernateDatastore</span>
 <span class="keyword">import</span> <span class="include">org.springframework.transaction.PlatformTransactionManager</span>
 
