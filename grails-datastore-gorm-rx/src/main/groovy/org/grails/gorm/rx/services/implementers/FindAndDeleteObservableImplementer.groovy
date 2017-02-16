@@ -9,12 +9,7 @@ import org.codehaus.groovy.ast.stmt.Statement
 import org.grails.datastore.gorm.services.implementers.FindAndDeleteImplementer
 
 import static org.grails.datastore.mapping.reflect.AstUtils.addAnnotationOrGetExisting
-import static org.grails.gorm.rx.transform.RxAstUtils.getRX_DETACHED_CRITERIA
-import static org.grails.gorm.rx.transform.RxAstUtils.isObservableOfDomainClass
-import static org.grails.gorm.rx.transform.RxAstUtils.isRxEntity
-import static org.grails.gorm.rx.transform.RxAstUtils.isRxEntity
-import static org.grails.gorm.rx.transform.RxAstUtils.isRxEntity
-import static org.grails.gorm.rx.transform.RxAstUtils.isSingle
+import static org.grails.gorm.rx.transform.RxAstUtils.*
 
 /**
  * Rx version of {@link FindAndDeleteImplementer}
