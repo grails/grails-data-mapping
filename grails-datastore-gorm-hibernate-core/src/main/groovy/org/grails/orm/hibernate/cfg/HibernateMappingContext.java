@@ -254,7 +254,7 @@ public class HibernateMappingContext extends AbstractMappingContext {
                 if(generatorName != null) {
                     ValueGenerator resolvedGenerator;
                     try {
-                        resolvedGenerator = ValueGenerator.valueOf(generatorName.toUpperCase());
+                        resolvedGenerator = ValueGenerator.valueOf(generatorName.toUpperCase(java.util.Locale.ENGLISH));
                     } catch (IllegalArgumentException e) {
                         if(ClassUtils.isPresent(generatorName)) {
                             resolvedGenerator = ValueGenerator.CUSTOM;

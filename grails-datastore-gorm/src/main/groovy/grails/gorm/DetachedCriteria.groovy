@@ -572,7 +572,7 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<T> implements GormOpe
      * Enable the builder syntax for constructing Criteria
      *
      * @param callable The callable closure
-     * @return This criteria instance
+     * @return A new criteria instance
      */
     @Override
     DetachedCriteria<T> build(@DelegatesTo(DetachedCriteria) Closure callable) {
@@ -583,7 +583,7 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<T> implements GormOpe
      * Enable the builder syntax for constructing Criteria
      *
      * @param callable The callable closure
-     * @return This criteria instance
+     * @return A new criteria instance
      */
     @Override
     DetachedCriteria<T> buildLazy(@DelegatesTo(DetachedCriteria) Closure callable) {
