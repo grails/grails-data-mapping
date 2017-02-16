@@ -60,15 +60,19 @@ class RestBuilder {
 
     RestBuilder(Map settings = [:]) {
 
-        def currentConfiguration = ConvertersConfigurationHolder.getConverterConfiguration(JSON)
-        if(currentConfiguration instanceof DefaultConverterConfiguration) {
-            // init manually
-            DefaultConverterConfiguration defaultConfig = ((DefaultConverterConfiguration)currentConfiguration)
-            defaultConfig.registerObjectMarshaller(new GroovyBeanMarshaller(), -1)
-            defaultConfig.registerObjectMarshaller(new MapMarshaller(), -1)
-            defaultConfig.registerObjectMarshaller(new ArrayMarshaller(), -1)
-            defaultConfig.registerObjectMarshaller(new ByteArrayMarshaller(), -1)
-            defaultConfig.registerObjectMarshaller(new CollectionMarshaller(), -1)
+        Boolean registerConverters = settings.containsKey('registerConverters') ? settings.registerConverters : true
+
+        if (registerConverters) {
+            def currentConfiguration = ConvertersConfigurationHolder.getConverterConfiguration(JSON)
+            if(currentConfiguration instanceof DefaultConverterConfiguration) {
+                // init manually
+                DefaultConverterConfiguration defaultConfig = ((DefaultConverterConfiguration)currentConfiguration)
+                defaultConfig.registerObjectMarshaller(new GroovyBeanMarshaller(), -1)
+                defaultConfig.registerObjectMarshaller(new MapMarshaller(), -1)
+                defaultConfig.registerObjectMarshaller(new ArrayMarshaller(), -1)
+                defaultConfig.registerObjectMarshaller(new ByteArrayMarshaller(), -1)
+                defaultConfig.registerObjectMarshaller(new CollectionMarshaller(), -1)
+            }
         }
 
         Proxy proxyFromSystemProperties = getProxyForSystemProperties()

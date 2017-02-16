@@ -4,6 +4,14 @@ import grails.converters.JSON
 import grails.web.JSONBuilder
 import grails.web.http.HttpHeaders
 import groovy.util.slurpersupport.GPathResult
+import org.grails.web.converters.configuration.ConverterConfiguration
+import org.grails.web.converters.configuration.ConvertersConfigurationHolder
+import org.grails.web.converters.marshaller.ClosureObjectMarshaller
+import org.grails.web.converters.marshaller.json.ArrayMarshaller
+import org.grails.web.converters.marshaller.json.ByteArrayMarshaller
+import org.grails.web.converters.marshaller.json.CollectionMarshaller
+import org.grails.web.converters.marshaller.json.GroovyBeanMarshaller
+import org.grails.web.converters.marshaller.json.MapMarshaller
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONObject
 import org.springframework.http.HttpMethod
@@ -20,6 +28,9 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 class RestBuilderSpec extends Specification {
 
+    def cleanup() {
+        ConvertersConfigurationHolder.clear()
+    }
 
     def "Test proxy configuration"() {
         when:"RestBuilder is configured with proxy settings"
@@ -327,4 +338,39 @@ class RestBuilderSpec extends Specification {
             resp.json instanceof JSONObject
             resp.json.name == 'acegi'
     }
+
+    void "test registerConverters: false won't register additional converters"() {
+        new RestBuilder(registerConverters: false)
+        ConverterConfiguration config = ConvertersConfigurationHolder.getConverterConfiguration(JSON)
+
+        expect:
+        config.orderedObjectMarshallers.size() == 0
+    }
+
+    void "test empty constructor will register additional converters"() {
+        new RestBuilder()
+        ConverterConfiguration config = ConvertersConfigurationHolder.getConverterConfiguration(JSON)
+
+        expect:
+        config.orderedObjectMarshallers.size() == 5
+        config.getMarshaller([:]).getClass() == MapMarshaller
+        config.getMarshaller([]).getClass() == CollectionMarshaller
+        config.getMarshaller("a".bytes).getClass() == ByteArrayMarshaller
+        config.getMarshaller(["x"] as Object[]).getClass() == ArrayMarshaller
+        config.getMarshaller(new Pogo()).getClass() == GroovyBeanMarshaller
+    }
+
+    void "test empty constructor won't override existing converters"() {
+        JSON.registerObjectMarshaller(Pogo, {})
+        new RestBuilder()
+        ConverterConfiguration config = ConvertersConfigurationHolder.getConverterConfiguration(JSON)
+
+        expect:
+        config.orderedObjectMarshallers.size() == 6
+        config.getMarshaller(new Pogo()).getClass() == ClosureObjectMarshaller
+    }
+}
+
+class Pogo {
+
 }
