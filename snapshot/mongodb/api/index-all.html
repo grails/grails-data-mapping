@@ -1817,6 +1817,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/mongo/bean/factory/MongoClientFactoryBean.html#destroy()" title="Method in MongoClientFactoryBean">destroy()</a></span> - Method in <a href="org/grails/datastore/gorm/mongo/bean/factory/MongoClientFactoryBean.html">MongoClientFactoryBean</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractDetachedCriteriaServiceImplementor.html#DETACHED_CRITERIA" title="Field in AbstractDetachedCriteriaServiceImplementor">DETACHED_CRITERIA</a></span> - Field in <a href="org/grails/datastore/gorm/services/implementers/AbstractDetachedCriteriaServiceImplementor.html">AbstractDetachedCriteriaServiceImplementor</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaTransformer.html#DETACHED_CRITERIA_CLASS_NODE" title="Field in DetachedCriteriaTransformer">DETACHED_CRITERIA_CLASS_NODE</a></span> - Field in <a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaTransformer.html">DetachedCriteriaTransformer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/DetachedAssociationCriteria.html" title="Class in org.grails.datastore.gorm.query.criteria">DetachedAssociationCriteria</a></span> - Class in <a href="./org/grails/datastore/gorm/query/criteria/package-summary.html">org.grails.datastore.gorm.query.criteria</a>
@@ -3205,6 +3207,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/finders/DynamicFinderInvocation.html#getDetachedCriteria()" title="Method in DynamicFinderInvocation">getDetachedCriteria()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/DynamicFinderInvocation.html">DynamicFinderInvocation</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractDetachedCriteriaServiceImplementor.html#getDetachedCriteriaType(org.codehaus.groovy.ast.ClassNode)" title="Method in AbstractDetachedCriteriaServiceImplementor">getDetachedCriteriaType(ClassNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/AbstractDetachedCriteriaServiceImplementor.html">AbstractDetachedCriteriaServiceImplementor</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractWhereImplementer.html#getDetachedCriteriaType(org.codehaus.groovy.ast.ClassNode)" title="Method in AbstractWhereImplementer">getDetachedCriteriaType(ClassNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/AbstractWhereImplementer.html">AbstractWhereImplementer</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingContext.html#getDirectChildEntities(org.grails.datastore.mapping.model.PersistentEntity)" title="Method in MappingContext">getDirectChildEntities(PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingContext.html">MappingContext</a>
 </dt><dd> <div class="block">Obtains only the direct children (1 level down) for the given root entity</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#getDirtyPropertyNames()" title="Method in GormEntity">getDirtyPropertyNames()</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
@@ -3360,6 +3366,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/mongo/config/MongoAttribute.html#getField()" title="Method in MongoAttribute">getField()</a></span> - Method in <a href="org/grails/datastore/mapping/mongo/config/MongoAttribute.html">MongoAttribute</a>
 </dt><dd> <div class="block">@return The field name to map to</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#getFinders()" title="Method in GormEnhancer">getFinders()</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/FindOneStringQueryImplementer.html#getFindMethodToInvoke(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)" title="Method in FindOneStringQueryImplementer">getFindMethodToInvoke(ClassNode, MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/FindOneStringQueryImplementer.html">FindOneStringQueryImplementer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/Session.html#getFlushMode()" title="Method in Session">getFlushMode()</a></span> - Method in <a href="org/grails/datastore/mapping/core/Session.html">Session</a>
 </dt><dd> <div class="block">Obtains the current FlushModeType</div></dd>
@@ -3932,13 +3940,13 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Get the query from the event.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/jpa/JpaQueryInfo.html#getQuery()" title="Method in JpaQueryInfo">getQuery()</a></span> - Method in <a href="org/grails/datastore/mapping/query/jpa/JpaQueryInfo.html">JpaQueryInfo</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractWhereImplementer.html#getQueryMethodToExecute()" title="Method in AbstractWhereImplementer">getQueryMethodToExecute()</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/AbstractWhereImplementer.html">AbstractWhereImplementer</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractWhereImplementer.html#getQueryMethodToExecute(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)" title="Method in AbstractWhereImplementer">getQueryMethodToExecute(ClassNode, MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/AbstractWhereImplementer.html">AbstractWhereImplementer</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/CountWhereImplementer.html#getQueryMethodToExecute()" title="Method in CountWhereImplementer">getQueryMethodToExecute()</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/CountWhereImplementer.html">CountWhereImplementer</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/CountWhereImplementer.html#getQueryMethodToExecute(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)" title="Method in CountWhereImplementer">getQueryMethodToExecute(ClassNode, MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/CountWhereImplementer.html">CountWhereImplementer</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/DeleteWhereImplementer.html#getQueryMethodToExecute()" title="Method in DeleteWhereImplementer">getQueryMethodToExecute()</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/DeleteWhereImplementer.html">DeleteWhereImplementer</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/DeleteWhereImplementer.html#getQueryMethodToExecute(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)" title="Method in DeleteWhereImplementer">getQueryMethodToExecute(ClassNode, MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/DeleteWhereImplementer.html">DeleteWhereImplementer</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/FindAllWhereImplementer.html#getQueryMethodToExecute()" title="Method in FindAllWhereImplementer">getQueryMethodToExecute()</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/FindAllWhereImplementer.html">FindAllWhereImplementer</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/FindAllWhereImplementer.html#getQueryMethodToExecute(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)" title="Method in FindAllWhereImplementer">getQueryMethodToExecute(ClassNode, MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/FindAllWhereImplementer.html">FindAllWhereImplementer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractProjectionImplementer.html#getQueryMethodToInvoke()" title="Method in AbstractProjectionImplementer">getQueryMethodToInvoke()</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/AbstractProjectionImplementer.html">AbstractProjectionImplementer</a>
 </dt><dd> <div class="block"></div></dd>
