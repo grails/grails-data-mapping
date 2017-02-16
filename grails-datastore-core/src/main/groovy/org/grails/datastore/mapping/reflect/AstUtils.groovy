@@ -124,11 +124,36 @@ class AstUtils {
      */
     static List<MethodNode> findPublicAbstractMethods(ClassNode classNode) {
         List<MethodNode> methods = []
-        findAbstractMethodsInternal(classNode, methods)
+        findAbstractMethodsInternal(classNode, methods, false)
         return methods
     }
 
-    protected static void findAbstractMethodsInternal(ClassNode classNode, List<MethodNode> methods) {
+    /**
+     * Finds all the abstract methods for the give class node
+     * @param classNode The class node
+     * @return The abstract method
+     */
+    static List<MethodNode> findAllAbstractMethods(ClassNode classNode) {
+        List<MethodNode> methods = []
+        findAbstractMethodsInternal(classNode, methods, true)
+        return methods
+    }
+
+    /**
+     * Finds all the abstract methods for the give class node
+     * @param classNode The class node
+     * @return The abstract method
+     */
+    static List<MethodNode> findAllUnimplementedAbstractMethods(ClassNode classNode) {
+        List<MethodNode> methods = []
+        findAbstractMethodsInternal(classNode, methods, true)
+        return methods.findAll() { MethodNode mn ->
+            def method = classNode.getMethod(mn.name, mn.parameters)
+            return method == null || method.isAbstract()
+        }
+    }
+
+    protected static void findAbstractMethodsInternal(ClassNode classNode, List<MethodNode> methods, boolean includeProtected) {
         if(classNode == null || classNode == ClassHelper.GROOVY_OBJECT_TYPE || Traits.isTrait(classNode) || classNode.name.indexOf('$') > -1) {
             return
         }
@@ -143,17 +168,17 @@ class AstUtils {
                 if(traitBridge != null || isInternal) {
                     continue
                 }
-                if(Modifier.isPublic(modifiers) && Modifier.isAbstract(modifiers) && !m.isSynthetic()) {
+                if(Modifier.isAbstract(modifiers) && (Modifier.isPublic(modifiers) || (Modifier.isProtected(modifiers) && includeProtected))  && !m.isSynthetic()) {
                     methods.add(m)
                 }
             }
             ClassNode superClass = classNode.getSuperClass()
             if(superClass != ClassHelper.OBJECT_TYPE) {
-                findAbstractMethodsInternal(superClass, methods)
+                findAbstractMethodsInternal(superClass, methods, includeProtected)
             }
         }
         for(i in classNode.getInterfaces()) {
-            findAbstractMethodsInternal(i, methods)
+            findAbstractMethodsInternal(i, methods, includeProtected)
         }
     }
 

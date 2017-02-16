@@ -16,9 +16,11 @@
 package org.grails.datastore.gorm.services.transform
 
 import grails.gorm.services.Service
+import grails.gorm.transactions.NotTransactional
 import groovy.transform.CompilationUnitAware
 import groovy.transform.CompileStatic
 import groovy.transform.Memoized
+import groovyjarjarasm.asm.Opcodes
 import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
@@ -62,6 +64,7 @@ import org.grails.datastore.gorm.services.implementers.FindOneStringQueryImpleme
 import org.grails.datastore.gorm.services.implementers.UpdateOneImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneWhereImplementer
 import org.grails.datastore.gorm.services.implementers.UpdateStringQueryImplementer
+import org.grails.datastore.gorm.transactions.transform.TransactionalTransform
 import org.grails.datastore.gorm.transform.AbstractTraitApplyingGormASTTransformation
 import org.grails.datastore.gorm.validation.javax.services.implementers.MethodValidationImplementer
 import org.grails.datastore.mapping.core.order.OrderedComparator
@@ -161,7 +164,7 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             // weave with generic argument
             weaveTraitWithGenerics(impl, getTraitClass(), targetDomainClass)
 
-            List<MethodNode> abstractMethods = findPublicAbstractMethods(classNode)
+            List<MethodNode> abstractMethods = findAllUnimplementedAbstractMethods(classNode)
             Iterable<ServiceImplementer> implementers = findServiceImplementors()
             Expression additionalImplementers = annotationNode.getMember("implementers")
             if(additionalImplementers instanceof ListExpression) {
@@ -193,15 +196,6 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
 
             // go through the abstract methods and implement them
             for(MethodNode method in abstractMethods) {
-                if(!Modifier.isAbstract(method.modifiers) || !Modifier.isPublic(method.modifiers)) {
-                    continue
-                }
-
-                // is the method already implemented?
-                MethodNode existing = classNode.getMethod(method.name, method.parameters)
-                if(existing!= null && !Modifier.isAbstract(existing.modifiers)) {
-                    continue
-                }
 
                 // find an implementer that implements the method
                 MethodNode methodImpl = null
@@ -209,13 +203,20 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
                     if(implementer.doesImplement(targetDomainClass, method)) {
                         methodImpl = new MethodNode(
                                 method.name,
-                                ACC_PUBLIC,
+                                Modifier.PUBLIC,
                                 GenericsUtils.makeClassSafeWithGenerics(method.returnType, method.returnType.genericsTypes),
                                 copyParameters(method.parameters),
                                 method.exceptions,
                                 new BlockStatement())
-                        impl.addMethod(methodImpl)
+                        methodImpl.setDeclaringClass(impl)
+                        if(Modifier.isProtected(method.modifiers)) {
+                            if(!TransactionalTransform.hasTransactionalAnnotation(methodImpl)) {
+                                addAnnotationIfNecessary(methodImpl, NotTransactional)
+                            }
+                        }
                         implementer.implement(targetDomainClass, method, methodImpl, impl)
+
+                        impl.addMethod(methodImpl)
                         break
                     }
                 }

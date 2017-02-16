@@ -26,6 +26,8 @@ import org.grails.datastore.gorm.services.ServiceEnhancer
 import org.grails.datastore.gorm.transactions.transform.TransactionalTransform
 import org.grails.datastore.mapping.reflect.AstUtils
 
+import java.lang.reflect.Modifier
+
 /**
  * Abstract implementor for read operations
  *
@@ -48,7 +50,7 @@ abstract class AbstractReadOperationImplementer extends AbstractServiceImplement
     final void implement(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode) {
         // copy any annotations from the abstract method
         copyClassAnnotations(abstractMethodNode, newMethodNode)
-        if(!TransactionalTransform.hasTransactionalAnnotation(newMethodNode)) {
+        if(!TransactionalTransform.hasTransactionalAnnotation(newMethodNode) && Modifier.isPublic(newMethodNode.modifiers)) {
             // read-only transaction by default
             applyDefaultTransactionHandling(newMethodNode)
         }
@@ -80,7 +82,7 @@ abstract class AbstractReadOperationImplementer extends AbstractServiceImplement
 
     @Override
     void enhance(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode) {
-        if(!TransactionalTransform.hasTransactionalAnnotation(newMethodNode)) {
+        if(!TransactionalTransform.hasTransactionalAnnotation(newMethodNode) && Modifier.isPublic(newMethodNode.modifiers)) {
             // read-only transaction by default
             applyDefaultTransactionHandling(newMethodNode)
         }

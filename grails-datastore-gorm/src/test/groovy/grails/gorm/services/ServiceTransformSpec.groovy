@@ -16,6 +16,54 @@ import java.lang.reflect.Type
  * Created by graemerocher on 11/01/2017.
  */
 class ServiceTransformSpec extends Specification {
+
+    void "test service transform on abstract protected methods"() {
+        when:"The service transform is applied to an abstract class"
+        Class service = new GroovyClassLoader().parseClass('''
+import grails.gorm.services.*
+import grails.gorm.annotation.Entity
+
+@Service(Foo)
+abstract class AbstractMyService implements FooService {
+
+    protected abstract Foo findFoo(Serializable id)
+    
+    Foo readFoo(Serializable id) {
+        findOne(id)
+    }
+    
+    @Override
+    Foo delete(Serializable id) {
+        def foo = Foo.get(id)
+        foo?.delete()
+        foo?.title = "DELETED"
+        return foo
+    }
+}
+ 
+interface FooService {
+    Foo delete(Serializable id)
+}
+@Entity
+class Foo {
+    String title
+}
+
+''')
+        then:
+        !service.isInterface()
+        println service.classLoader.loadedClasses
+
+        when:"the impl is obtained"
+        Class impl = service.classLoader.loadClass("\$AbstractMyServiceImplementation")
+
+        then:"The impl is valid - protected methods should have no transaction"
+        impl.getMethod("readFoo", Serializable).getAnnotation(ReadOnly) != null
+        impl.getMethod("findFoo", Serializable).getAnnotation(ReadOnly) == null
+        org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
+
+    }
+
     void "test dynamic finder interface projection"() {
         when:"The service transform is applied to an interface it can't implement"
         Class service = new GroovyClassLoader().parseClass('''
