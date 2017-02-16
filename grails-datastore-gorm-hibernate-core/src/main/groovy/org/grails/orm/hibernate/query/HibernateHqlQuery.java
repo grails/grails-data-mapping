@@ -36,7 +36,7 @@ public class HibernateHqlQuery extends Query {
             query.setMaxResults(1);
             List results = query.list();
             applicationEventPublisher.publishEvent(new PostQueryEvent(datastore, this, results));
-            return Collections.singletonList(results);
+            return results;
         }
         else {
 
