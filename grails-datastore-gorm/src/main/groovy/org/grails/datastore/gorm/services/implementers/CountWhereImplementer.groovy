@@ -39,8 +39,8 @@ class CountWhereImplementer extends AbstractWhereImplementer {
     }
 
     @Override
-    protected Statement buildReturnStatement(ClassNode domainClass, MethodNode abstractMethodNode, MethodNode methodNode, Expression queryExpression) {
-        return returnS(castX(methodNode.returnType, queryExpression))
+    protected Statement buildReturnStatement(ClassNode domainClass, MethodNode abstractMethodNode, MethodNode newMethodNode, Expression queryExpression) {
+        return returnS(castX(newMethodNode.returnType, queryExpression))
     }
 
 }

@@ -11,6 +11,7 @@ import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.VariableScope
 import org.codehaus.groovy.ast.expr.CastExpression
 import org.codehaus.groovy.ast.expr.ClassExpression
+import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
@@ -44,6 +45,7 @@ class RxScheduleIOTransformation extends AbstractMethodDecoratingTransformation 
 
     public static final ClassNode ANNOTATION_TYPE = ClassHelper.make(RxScheduleIO)
     public static final AnnotationNode ANNOTATION = new AnnotationNode(ANNOTATION_TYPE)
+    public static final String ANN_SINGLE_RESULT = "singleResult"
 
     @Override
     protected ClassNode getAnnotationType() {
@@ -64,30 +66,36 @@ class RxScheduleIOTransformation extends AbstractMethodDecoratingTransformation 
     protected MethodNode weaveNewMethod(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode) {
         List<MethodNode> decorated = (List<MethodNode>)methodNode.getNodeMetaData(DECORATED_METHODS)
         ClassNode newReturnType = resolveReturnTypeForNewMethod(methodNode)
-        if(!RxAstUtils.isSingle(methodNode.returnType)) {
+        Expression singleResult = annotationNode.getMember(ANN_SINGLE_RESULT)
+        if(!RxAstUtils.isSingle(methodNode.returnType) && ConstantExpression.TRUE != singleResult) {
             newReturnType = GenericsUtils.makeClassSafeWithGenerics(Iterable, newReturnType)
         }
         if(decorated != null) {
 
             for(MethodNode mn in decorated) {
                 mn.setReturnType(newReturnType)
+                alignReturnType(mn, newReturnType)
             }
         }
 
         // align the return types
         MethodNode newMethod = super.weaveNewMethod(sourceUnit, annotationNode, classNode, methodNode)
+        alignReturnType(newMethod, newReturnType)
+        return newMethod
+    }
+
+    protected void alignReturnType(MethodNode newMethod, ClassNode newReturnType) {
         newMethod.setReturnType(newReturnType)
-        BlockStatement newMethodBody = (BlockStatement)newMethod.code
+        BlockStatement newMethodBody = (BlockStatement) newMethod.code
         ReturnStatement rs = null
         Statement last = newMethodBody.statements[-1]
-        if(last instanceof ReturnStatement) {
-            rs = (ReturnStatement)last
+        if (last instanceof ReturnStatement) {
+            rs = (ReturnStatement) last
         }
         Expression returnExpr = rs?.expression
-        if(returnExpr instanceof CastExpression) {
-            ((CastExpression)returnExpr).setType(newReturnType)
+        if (returnExpr instanceof CastExpression) {
+            ((CastExpression) returnExpr).setType(newReturnType)
         }
-        return newMethod
     }
 
     @Override

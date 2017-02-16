@@ -17,6 +17,7 @@ import org.codehaus.groovy.ast.expr.MapExpression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
+import org.codehaus.groovy.ast.stmt.Statement
 import org.grails.datastore.gorm.services.ServiceEnhancer
 import org.grails.datastore.gorm.transform.AbstractTraitApplyingGormASTTransformation
 import org.grails.datastore.gorm.validation.javax.ConfigurableParameterNameProvider
@@ -73,7 +74,7 @@ class MethodValidationImplementer implements ServiceEnhancer {
 
     @Override
     void enhance(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode) {
-        BlockStatement body = (BlockStatement)newMethodNode.code
+        Statement body = (Statement)newMethodNode.code
 
         // add parameter name data for the service
         weaveParameterNameData(domainClassNode, newMethodNode, abstractMethodNode)
@@ -109,7 +110,16 @@ class MethodValidationImplementer implements ServiceEnhancer {
         // add a first line to the method body that validates the method
         ArrayExpression argArray = new ArrayExpression(OBJECT_TYPE, validateArgsList)
         MethodCallExpression validateCall = callThisD(ValidatedService, "validate", args(varThis(), varX(methodField),argArray))
-        body.statements.add(0, stmt( validateCall ))
+        if(body instanceof BlockStatement) {
+            ((BlockStatement)body).statements.add(0, stmt( validateCall ))
+        }
+        else {
+            body = new BlockStatement([
+               stmt( validateCall ),
+               body
+            ], newMethodNode.variableScope)
+            newMethodNode.setCode(body)
+        }
 
     }
 

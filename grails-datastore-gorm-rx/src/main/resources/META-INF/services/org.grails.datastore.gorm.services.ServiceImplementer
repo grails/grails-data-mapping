@@ -1,1 +1,6 @@
 org.grails.gorm.rx.services.implementers.FindOneObservableImplementer
+org.grails.gorm.rx.services.implementers.CountObservableImplementer
+org.grails.gorm.rx.services.implementers.CountWhereObservableImplementer
+org.grails.gorm.rx.services.implementers.CountByObservableImplementer
+org.grails.gorm.rx.services.implementers.DeleteObservableImplementer
+org.grails.gorm.rx.services.implementers.DeleteWhereObservableImplementer

@@ -18,4 +18,5 @@ import java.lang.annotation.*;
 @GroovyASTTransformationClass("org.grails.datastore.gorm.transform.OrderedGormTransformation")
 @GormASTTransformationClass("org.grails.gorm.rx.transform.RxScheduleIOTransformation")
 public @interface RxScheduleIO {
+    boolean singleResult() default false;
 }

@@ -23,6 +23,16 @@ class FindOneObservableImplementer extends FindOneImplementer {
     }
 
     @Override
+    protected ClassNode getDetachedCriteriaType(ClassNode domainClassNode) {
+        if(isRxEntity(domainClassNode)) {
+            return RX_DETACHED_CRITERIA
+        }
+        else {
+            return super.getDetachedCriteriaType(domainClassNode)
+        }
+    }
+
+    @Override
     protected ClassNode resolveDomainClassFromSignature(ClassNode currentDomainClassNode, MethodNode methodNode) {
         methodNode.returnType.genericsTypes[0].type
     }
@@ -43,6 +53,9 @@ class FindOneObservableImplementer extends FindOneImplementer {
     protected String findMethodToInvoke(ClassNode domainClassNode, MethodNode newMethodNode) {
         if(isSingle(newMethodNode.returnType)) {
             return "get"
+        }
+        else if(isRxEntity(domainClassNode)) {
+            return "findAll"
         }
         else {
             return "list"

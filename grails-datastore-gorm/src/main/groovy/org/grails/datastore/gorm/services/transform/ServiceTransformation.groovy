@@ -167,6 +167,7 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             if(additionalImplementers instanceof ListExpression) {
                 for(Expression exp in ((ListExpression)additionalImplementers).expressions) {
                     implementers = addClassExpressionToImplementers(exp, implementers)
+                    implementers = implementers.sort(true, new OrderedComparator<ServiceImplementer>())
                 }
             }
             else if(additionalImplementers instanceof ClassExpression) {
@@ -269,17 +270,16 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
         implementers
     }
 
-    @Memoized
     protected Iterable<ServiceImplementer> findServiceImplementors() {
         if(LOADED_IMPLEMENTORS == null) {
-            Iterable<ServiceImplementer> implementors = ServiceLoader.load(ServiceImplementer, getClass().classLoader)
-            if (!implementors.iterator().hasNext()) {
-                implementors = ServiceLoader.load(ServiceImplementer, Thread.currentThread().contextClassLoader)
+            Iterable<ServiceImplementer> implementers = ServiceLoader.load(ServiceImplementer, getClass().classLoader)
+            if (!implementers.iterator().hasNext()) {
+                implementers = ServiceLoader.load(ServiceImplementer, Thread.currentThread().contextClassLoader)
             }
-            implementors = (implementors + DEFAULT_IMPLEMENTORS).unique { ServiceImplementer o1 ->
+            implementers = (implementers + DEFAULT_IMPLEMENTORS).unique { ServiceImplementer o1 ->
                  o1.class.name
             }
-            LOADED_IMPLEMENTORS = implementors.sort(true, new OrderedComparator<ServiceImplementer>())
+            LOADED_IMPLEMENTORS = implementers.sort(true, new OrderedComparator<ServiceImplementer>())
         }
         return LOADED_IMPLEMENTORS
     }

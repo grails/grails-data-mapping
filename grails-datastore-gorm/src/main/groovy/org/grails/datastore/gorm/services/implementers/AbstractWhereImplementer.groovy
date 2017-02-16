@@ -93,7 +93,7 @@ abstract class AbstractWhereImplementer extends AbstractReadOperationImplementer
             VariableExpression queryVar = varX('$query')
             // def query = new DetachedCriteria(Foo)
             body.addStatement(
-                    declS(queryVar, ctorX(ClassHelper.make(DetachedCriteria), args(classX(domainClassNode.plainNodeReference))))
+                    declS(queryVar, ctorX(getDetachedCriteriaType(domainClassNode), args(classX(domainClassNode.plainNodeReference))))
             )
 
             body.addStatement(
@@ -108,6 +108,10 @@ abstract class AbstractWhereImplementer extends AbstractReadOperationImplementer
         else {
             AstUtils.error(sourceUnit, annotationNode, "@Where value must be a closure")
         }
+    }
+
+    protected ClassNode getDetachedCriteriaType(ClassNode domainClassNode) {
+        ClassHelper.make(DetachedCriteria)
     }
 
     protected Statement buildReturnStatement(ClassNode domainClass, MethodNode abstractMethodNode, MethodNode methodNode, Expression queryExpression) {

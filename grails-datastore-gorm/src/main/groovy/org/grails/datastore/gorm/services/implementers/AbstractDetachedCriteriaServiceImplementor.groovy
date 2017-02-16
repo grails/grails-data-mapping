@@ -26,6 +26,9 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.*
  */
 @CompileStatic
 abstract class AbstractDetachedCriteriaServiceImplementor extends AbstractReadOperationImplementer {
+
+    public static final ClassNode DETACHED_CRITERIA = ClassHelper.make(DetachedCriteria).plainNodeReference
+
     @Override
     void doImplement(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode) {
         BlockStatement body = (BlockStatement) newMethodNode.getCode()
@@ -42,7 +45,7 @@ abstract class AbstractDetachedCriteriaServiceImplementor extends AbstractReadOp
             VariableExpression queryVar = varX('$query')
             // def query = new DetachedCriteria(Foo)
             body.addStatement(
-                declS(queryVar, ctorX(ClassHelper.make(DetachedCriteria), args(classX(domainClassNode.plainNodeReference))))
+                declS(queryVar, ctorX(getDetachedCriteriaType(domainClassNode), args(classX(domainClassNode.plainNodeReference))))
             )
             handleJoinAnnotation(joinAnnotation, body, queryVar)
 
@@ -76,6 +79,10 @@ abstract class AbstractDetachedCriteriaServiceImplementor extends AbstractReadOp
             }
             implementWithQuery(domainClassNode, abstractMethodNode, newMethodNode, targetClassNode, body, queryVar, argsExpression)
         }
+    }
+
+    protected ClassNode getDetachedCriteriaType(ClassNode domainClassNode) {
+        DETACHED_CRITERIA
     }
 
     @PackageScope
