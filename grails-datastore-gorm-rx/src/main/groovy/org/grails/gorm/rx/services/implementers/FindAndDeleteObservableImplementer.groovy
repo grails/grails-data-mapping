@@ -1,23 +1,29 @@
 package org.grails.gorm.rx.services.implementers
 
+import grails.gorm.rx.services.RxSchedule
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.stmt.Statement
-import org.grails.datastore.gorm.services.implementers.FindOneImplementer
-import grails.gorm.rx.services.RxSchedule
+import org.grails.datastore.gorm.services.implementers.FindAndDeleteImplementer
 
-import static org.grails.gorm.rx.transform.RxAstUtils.*
+import static org.grails.datastore.mapping.reflect.AstUtils.addAnnotationOrGetExisting
+import static org.grails.gorm.rx.transform.RxAstUtils.getRX_DETACHED_CRITERIA
+import static org.grails.gorm.rx.transform.RxAstUtils.isObservableOfDomainClass
+import static org.grails.gorm.rx.transform.RxAstUtils.isRxEntity
+import static org.grails.gorm.rx.transform.RxAstUtils.isRxEntity
+import static org.grails.gorm.rx.transform.RxAstUtils.isRxEntity
+import static org.grails.gorm.rx.transform.RxAstUtils.isSingle
+
 /**
- * Implements a service method that returns an Observable or a Single
+ * Rx version of {@link FindAndDeleteImplementer}
  *
  * @author Graeme Rocher
  * @since 6.1
  */
 @CompileStatic
-class FindOneObservableImplementer extends FindOneImplementer {
-
+class FindAndDeleteObservableImplementer extends FindAndDeleteImplementer {
     @Override
     protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
         return isObservableOfDomainClass(returnType)
@@ -52,14 +58,6 @@ class FindOneObservableImplementer extends FindOneImplementer {
 
     @Override
     protected String findMethodToInvoke(ClassNode domainClassNode, MethodNode newMethodNode) {
-        if(isSingle(newMethodNode.returnType)) {
-            return "get"
-        }
-        else if(isRxEntity(domainClassNode)) {
-            return "findAll"
-        }
-        else {
-            return "list"
-        }
+        return "get"
     }
 }

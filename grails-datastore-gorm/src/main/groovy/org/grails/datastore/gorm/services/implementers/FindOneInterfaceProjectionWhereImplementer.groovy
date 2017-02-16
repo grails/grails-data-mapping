@@ -22,8 +22,8 @@ class FindOneInterfaceProjectionWhereImplementer extends FindOneWhereImplementer
     }
 
     @Override
-    protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
-        return isInterfaceProjection(domainClass, methodNode, returnType)
+    protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode newMethodNode, ClassNode returnType, String prefix) {
+        return isInterfaceProjection(domainClass, newMethodNode, returnType)
     }
 
     @Override

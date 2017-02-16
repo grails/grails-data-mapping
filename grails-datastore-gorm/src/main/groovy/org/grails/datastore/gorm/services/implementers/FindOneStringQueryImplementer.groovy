@@ -20,7 +20,11 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.returnS
 class FindOneStringQueryImplementer extends AbstractStringQueryImplementer {
     @Override
     protected Statement buildQueryReturnStatement(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, Expression args) {
-        returnS(callX(domainClassNode, "find", args))
+        returnS(callX(domainClassNode, getFindMethodToInvoke(domainClassNode, newMethodNode), args))
+    }
+
+    protected String getFindMethodToInvoke(ClassNode classNode, MethodNode methodNode) {
+        return "find"
     }
 
     @Override

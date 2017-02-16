@@ -29,7 +29,7 @@ class FindOneWhereImplementer extends AbstractWhereImplementer {
     }
 
     @Override
-    protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
+    protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode newMethodNode, ClassNode returnType, String prefix) {
         return AstUtils.isDomainClass(returnType)
     }
 

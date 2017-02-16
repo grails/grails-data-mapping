@@ -1,13 +1,13 @@
 package org.grails.gorm.rx.services.implementers
 
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.stmt.Statement
 import org.grails.datastore.gorm.services.implementers.CountWhereImplementer
+import grails.gorm.rx.services.RxSchedule
 import org.grails.gorm.rx.transform.RxScheduleIOTransformation
 
 import static org.grails.gorm.rx.transform.RxAstUtils.*
@@ -44,7 +44,7 @@ class CountWhereObservableImplementer extends CountWhereImplementer {
     @Override
     protected Statement buildReturnStatement(ClassNode domainClass, MethodNode abstractMethodNode, MethodNode newMethodNode, Expression queryExpression) {
         if(!isRxEntity(domainClass)) {
-            def ann = new AnnotationNode(RxScheduleIOTransformation.ANNOTATION_TYPE)
+            def ann = addAnnotationOrGetExisting(newMethodNode, RxSchedule)
             ann.setMember(RxScheduleIOTransformation.ANN_SINGLE_RESULT, ConstantExpression.TRUE)
             newMethodNode.addAnnotation(ann)
 

@@ -269,7 +269,10 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
     protected MethodNode weaveNewMethod(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode) {
         Object appliedMarker = getAppliedMarker()
         if ( methodNode.getNodeMetaData(appliedMarker) == appliedMarker ) {
-            return
+            return methodNode
+        }
+        if( methodNode.isAbstract() ) {
+            return methodNode
         }
 
         methodNode.putNodeMetaData(appliedMarker, appliedMarker)
