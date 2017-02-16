@@ -15,19 +15,13 @@
 package org.grails.datastore.mapping.model.types;
 
 import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
 
 import org.grails.datastore.mapping.config.Property;
-import org.grails.datastore.mapping.model.AbstractPersistentProperty;
-import org.grails.datastore.mapping.model.IllegalMappingException;
-import org.grails.datastore.mapping.model.MappingContext;
-import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.*;
 
 /**
  * Models an association between one class and another
@@ -45,7 +39,20 @@ public abstract class Association<T extends Property> extends AbstractPersistent
     private PersistentEntity associatedEntity;
     private String referencedPropertyName;
     private boolean owningSide;
-    private List<CascadeType> cascadeOperations = new ArrayList<CascadeType>();
+    private List<CascadeType> cascadeOperations;
+
+    private static final Map<String, CascadeType> cascadeTypeConversions = new LinkedHashMap<>();
+
+    static {
+        cascadeTypeConversions.put("all", CascadeType.ALL);
+        cascadeTypeConversions.put("merge", CascadeType.MERGE);
+        cascadeTypeConversions.put("delete", CascadeType.REMOVE);
+        cascadeTypeConversions.put("remove", CascadeType.REMOVE);
+        cascadeTypeConversions.put("refresh", CascadeType.REFRESH);
+        cascadeTypeConversions.put("persist", CascadeType.PERSIST);
+        // Unsupported Types
+        // "all-delete-orphan", "save-update", "lock", "refresh", "replicate", "evict", "delete-orphan"
+    }
 
     public Association(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         super(owner, context, descriptor);
@@ -53,6 +60,25 @@ public abstract class Association<T extends Property> extends AbstractPersistent
 
     public Association(PersistentEntity owner, MappingContext context, String name, Class type) {
         super(owner, context, name, type);
+    }
+
+    private void buildCascadeOperations() {
+        String cascade = this.getMapping().getMappedForm().getCascade();
+        if (cascade != null) {
+            cascade = cascade.toLowerCase();
+            if (cascadeTypeConversions.containsKey(cascade)) {
+                cascadeOperations = Arrays.asList(cascadeTypeConversions.get(cascade));
+            } else {
+                cascadeOperations = new ArrayList<>();
+            }
+        } else {
+            if (isOwningSide()) {
+                cascadeOperations = DEFAULT_OWNER_CASCADE;
+            }
+            else {
+                cascadeOperations = DEFAULT_CHILD_CASCADE;
+            }
+        }
     }
 
     /**
@@ -106,17 +132,10 @@ public abstract class Association<T extends Property> extends AbstractPersistent
     }
 
     protected List<CascadeType> getCascadeOperations() {
-        List<CascadeType> cascades;
-        if (cascadeOperations.isEmpty()) {
-            if (isOwningSide()) cascades = DEFAULT_OWNER_CASCADE;
-            else {
-                cascades = DEFAULT_CHILD_CASCADE;
-            }
+        if (cascadeOperations == null) {
+            buildCascadeOperations();
         }
-        else {
-            cascades = this.cascadeOperations;
-        }
-        return cascades;
+        return cascadeOperations;
     }
 
     /**
