@@ -140,6 +140,50 @@ return Book.classLoader
         def e = thrown(IllegalStateException)
         e.message.startsWith('No GORM implementations configured')
     }
+
+    void "test property projection"() {
+        given:
+        ClassLoader cl = new GroovyShell().evaluate('''
+import grails.gorm.annotation.Entity
+import grails.gorm.services.Query
+import grails.gorm.services.Service
+import grails.gorm.services.Where
+import rx.Observable
+import org.grails.gorm.rx.services.implementers.*
+import rx.Single
+
+@Entity
+class Book {
+  String title
+  String author
+}
+@Service(value=Book,implementers = [UpdateObservableStringQueryImplementer])
+interface BookService {
+    Single<String> findBookAuthor(String title)
+}
+return Book.classLoader
+''')
+        println cl.loadedClasses
+
+        when:
+        Class impl = cl.loadClass('$BookServiceImplementation')
+        then:
+        org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
+
+        when:"A method is invoked that returns an observable"
+        def instance = impl.newInstance()
+        Single o = instance.findBookAuthor("test")
+
+        then:"an observable is returned"
+        o != null
+
+        when:"The observable result is produced"
+        def result = o.toBlocking().value()
+
+        then:"A GORM method is invoked"
+        def e = thrown(IllegalStateException)
+        e.message.startsWith('No GORM implementations configured')
+    }
 }
 
 //@Entity

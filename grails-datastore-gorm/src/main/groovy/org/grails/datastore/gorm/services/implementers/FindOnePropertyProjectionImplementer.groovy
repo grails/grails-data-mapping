@@ -28,11 +28,20 @@ class FindOnePropertyProjectionImplementer extends AbstractProjectionImplementer
         String propertyName = establishPropertyName(methodNode, prefix, domainClass)
         if(propertyName) {
             ClassNode propertyType = AstPropertyResolveUtils.getPropertyType(domainClass, propertyName)
-            if(isValidPropertyType(returnType, propertyType)) {
+            if(isValidPropertyType(resolveProjectionReturnType(returnType), propertyType)) {
                 return true
             }
         }
         return false
+    }
+
+    @Override
+    protected ClassNode resolveDomainClassFromSignature(ClassNode currentDomainClassNode, MethodNode methodNode) {
+        return currentDomainClassNode
+    }
+
+    protected ClassNode resolveProjectionReturnType(ClassNode returnType) {
+        return returnType
     }
 
 

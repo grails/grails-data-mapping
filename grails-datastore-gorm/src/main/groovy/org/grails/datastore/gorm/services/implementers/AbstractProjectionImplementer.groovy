@@ -12,7 +12,6 @@ import java.beans.Introspector
 
 import static org.codehaus.groovy.ast.tools.GeneralUtils.assignS
 import static org.codehaus.groovy.ast.tools.GeneralUtils.callX
-import static org.codehaus.groovy.ast.tools.GeneralUtils.callX
 import static org.codehaus.groovy.ast.tools.GeneralUtils.constX
 import static org.codehaus.groovy.ast.tools.GeneralUtils.returnS
 
@@ -69,7 +68,7 @@ abstract class AbstractProjectionImplementer extends AbstractDetachedCriteriaSer
 
         body.addStatements([
                 assignS(detachedCriteriaVar, callX(detachedCriteriaVar, getProjectionName(), constX(propertyName))),
-                returnS(callX(detachedCriteriaVar, getQueryMethodToInvoke(), queryArgs != null ? queryArgs : AstUtils.ZERO_ARGUMENTS))
+                returnS(callX(detachedCriteriaVar, getQueryMethodToInvoke(domainClassNode, newMethodNode), queryArgs != null ? queryArgs : AstUtils.ZERO_ARGUMENTS))
         ])
     }
 
@@ -77,7 +76,7 @@ abstract class AbstractProjectionImplementer extends AbstractDetachedCriteriaSer
         "property"
     }
 
-    protected String getQueryMethodToInvoke() {
+    protected String getQueryMethodToInvoke(ClassNode domainClassNode, MethodNode newMethodNode) {
         "find"
     }
 }

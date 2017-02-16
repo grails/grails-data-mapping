@@ -9,6 +9,7 @@ import org.grails.gorm.rx.services.implementers.DeleteObservableImplementer
 import org.grails.gorm.rx.services.implementers.FindAndDeleteObservableImplementer
 import org.grails.gorm.rx.services.implementers.FindOneByObservableImplementer
 import org.grails.gorm.rx.services.implementers.FindOneObservableImplementer
+import org.grails.gorm.rx.services.implementers.FindOneObservablePropertyProjectionImplementer
 import org.grails.gorm.rx.services.implementers.FindOneObservableStringQueryImplementer
 import org.grails.gorm.rx.services.implementers.FindOneObservableWhereImplementer
 import org.grails.gorm.rx.services.implementers.SaveObservableImplementer
@@ -149,17 +150,33 @@ class RxServiceImplSpec extends Specification {
         thrown(NoSuchElementException)
 
     }
+
+    void "test simple projection"() {
+
+        given:
+        new Book(title: "Along Came a Spider", author: "James Patterson").save(flush:true)
+        new Book(title: "The Stand", author: "Stephen King").save(flush:true)
+        BookService bookService = datastore.getService(BookService)
+
+        when:
+        String author = bookService.findBookAuthor("The Stand").toBlocking().value()
+
+        then:
+        author == "Stephen King"
+    }
 }
 
 @Entity
 class Book {
     String title
+    String author
 }
 
 
-@Service(value = Book, implementers = [FindAndDeleteObservableImplementer, CountByObservableImplementer, CountWhereObservableImplementer, CountObservableImplementer, FindOneObservableImplementer, DeleteObservableImplementer, FindOneByObservableImplementer, FindOneObservableStringQueryImplementer, FindOneObservableWhereImplementer, SaveObservableImplementer, UpdateOneObservableImplementer, UpdateObservableStringQueryImplementer ])
+@Service(value = Book, implementers = [FindAndDeleteObservableImplementer, CountByObservableImplementer, CountWhereObservableImplementer, CountObservableImplementer, FindOneObservableImplementer, DeleteObservableImplementer, FindOneByObservableImplementer, FindOneObservableStringQueryImplementer, FindOneObservableWhereImplementer, SaveObservableImplementer, UpdateOneObservableImplementer, UpdateObservableStringQueryImplementer, FindOneObservablePropertyProjectionImplementer ])
 interface BookService {
 
+    Single<String> findBookAuthor(String title)
 
     @Query("update ${Book b} set $b.title = $title where $b.title = $oldTitle")
     rx.Observable<Number> updateBook(String oldTitle, String title)

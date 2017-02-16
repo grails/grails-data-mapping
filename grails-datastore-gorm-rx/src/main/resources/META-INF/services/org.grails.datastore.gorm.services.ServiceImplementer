@@ -11,3 +11,4 @@ org.grails.gorm.rx.services.implementers.FindOneObservableWhereImplementer
 org.grails.gorm.rx.services.implementers.SaveObservableImplementer
 org.grails.gorm.rx.services.implementers.UpdateOneObservableImplementer
 org.grails.gorm.rx.services.implementers.UpdateObservableStringQueryImplementer
+org.grails.gorm.rx.services.implementers.FindOneObservablePropertyProjectionImplementer

@@ -5,10 +5,8 @@ import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.GenericsType
 import org.codehaus.groovy.ast.MethodNode
 import org.grails.datastore.gorm.transform.AstPropertyResolveUtils
-import org.grails.datastore.mapping.reflect.AstUtils
 
 import static org.grails.datastore.mapping.reflect.AstUtils.implementsInterface
-import static org.grails.datastore.mapping.reflect.AstUtils.isDomainClass
 
 /**
  * Support for projections that return multiple results
@@ -51,7 +49,7 @@ class FindPropertyProjectImplementer extends AbstractProjectionImplementer {
     }
 
     @Override
-    protected String getQueryMethodToInvoke() {
+    protected String getQueryMethodToInvoke(ClassNode domainClassNode, MethodNode newMethodNode) {
         return "list"
     }
 }
