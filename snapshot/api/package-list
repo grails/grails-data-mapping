@@ -31,6 +31,8 @@ org.grails.datastore.gorm.query.criteria
 org.grails.datastore.gorm.query.transform
 org.grails.datastore.gorm.schemaless
 org.grails.datastore.gorm.services
+org.grails.datastore.gorm.services.implementers
+org.grails.datastore.gorm.services.transform
 org.grails.datastore.gorm.support
 org.grails.datastore.gorm.timestamp
 org.grails.datastore.gorm.transactions.transform
@@ -43,6 +45,8 @@ org.grails.datastore.gorm.validation.constraints.eval
 org.grails.datastore.gorm.validation.constraints.factory
 org.grails.datastore.gorm.validation.constraints.registry
 org.grails.datastore.gorm.validation.javax
+org.grails.datastore.gorm.validation.javax.services
+org.grails.datastore.gorm.validation.javax.services.implementers
 org.grails.datastore.gorm.validation.listener
 org.grails.datastore.gorm.validation.registry.support
 org.grails.datastore.mapping.cache
@@ -58,6 +62,7 @@ org.grails.datastore.mapping.core.connections
 org.grails.datastore.mapping.core.exceptions
 org.grails.datastore.mapping.core.grailsversion
 org.grails.datastore.mapping.core.impl
+org.grails.datastore.mapping.core.order
 org.grails.datastore.mapping.dirty.checking
 org.grails.datastore.mapping.document
 org.grails.datastore.mapping.document.config

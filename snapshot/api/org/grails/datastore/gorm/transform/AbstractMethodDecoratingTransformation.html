@@ -132,7 +132,19 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code><strong>static&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#DECORATED_METHODS">DECORATED_METHODS</a></code></td>
+                            <td class="colLast">Key used to store within the original method node metadata, all previous decorated methods</code></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>static&nbsp;java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#FIELD_TARGET_DATASTORE">FIELD_TARGET_DATASTORE</a></code></td>
+                            <td class="colLast"></code></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>protected&nbsp;static&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#METHOD_GET_DATASTORE_FOR_CONNECTION">METHOD_GET_DATASTORE_FOR_CONNECTION</a></code></td>
                             <td class="colLast"></code></td>
                         </tr>
                         
@@ -190,57 +202,67 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;org.codehaus.groovy.ast.expr.MethodCallExpression</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#buildDelegatingMethodCall(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode, org.codehaus.groovy.ast.expr.MethodCallExpression, org.codehaus.groovy.ast.stmt.BlockStatement)">buildDelegatingMethodCall</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, org.codehaus.groovy.ast.AnnotationNode annotationNode, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.MethodNode methodNode, org.codehaus.groovy.ast.expr.MethodCallExpression originalMethodCallExpr, org.codehaus.groovy.ast.stmt.BlockStatement newMethodBody)</code><br>Builds the delegating method call for the given class node</td>
+                            <td class="colLast"><code><strong><a href="#buildCallToOriginalMethod(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)">buildCallToOriginalMethod</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.MethodNode renamedMethodNode)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code>protected&nbsp;org.codehaus.groovy.ast.expr.MethodCallExpression</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#buildDelegatingMethodCall(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode, org.codehaus.groovy.ast.expr.MethodCallExpression, org.codehaus.groovy.ast.stmt.BlockStatement)">buildDelegatingMethodCall</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, org.codehaus.groovy.ast.AnnotationNode annotationNode, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.MethodNode methodNode, org.codehaus.groovy.ast.expr.MethodCallExpression originalMethodCallExpr, org.codehaus.groovy.ast.stmt.BlockStatement newMethodBody)</code><br>Builds the delegating method call for the given class node</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#compileMethodStatically(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.MethodNode)">compileMethodStatically</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, org.codehaus.groovy.ast.MethodNode methodNode)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;org.codehaus.groovy.ast.stmt.Statement</strong></code></td>
                             <td class="colLast"><code><strong><a href="#createDelegingMethodBody(org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.expr.MethodCallExpression)">createDelegingMethodBody</a></strong>(org.codehaus.groovy.ast.Parameter[] parameters, org.codehaus.groovy.ast.expr.MethodCallExpression originalMethodCall)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;java.lang.String</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getRenamedMethodPrefix()">getRenamedMethodPrefix</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#hasExcludedAnnotation(org.codehaus.groovy.ast.MethodNode)">hasExcludedAnnotation</a></strong>(org.codehaus.groovy.ast.MethodNode md)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#hasExcludedAnnotation(org.codehaus.groovy.ast.MethodNode, Set<String>)">hasExcludedAnnotation</a></strong>(org.codehaus.groovy.ast.MethodNode md, java.util.Set&lt;java.lang.String&gt; excludes)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isTestSetupOrCleanup(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)">isTestSetupOrCleanup</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.MethodNode md)</code><br></td>
                         </tr>
                         
+                        <tr class="altColor">
+                            <td class="colFirst"><code>protected&nbsp;org.codehaus.groovy.ast.expr.MethodCallExpression</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#makeDelegatingClosureCall(org.codehaus.groovy.ast.expr.Expression, java.lang.String, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.expr.MethodCallExpression, org.codehaus.groovy.ast.VariableScope)">makeDelegatingClosureCall</a></strong>(org.codehaus.groovy.ast.expr.Expression targetObject, java.lang.String executeMethodName, org.codehaus.groovy.ast.Parameter[] closureParameters, org.codehaus.groovy.ast.expr.MethodCallExpression originalMethodCall, org.codehaus.groovy.ast.VariableScope variableScope)</code><br>Construct a method call that wraps an original call with a closure invocation</td>
+                        </tr>
+                        
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;org.codehaus.groovy.ast.expr.MethodCallExpression</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#makeDelegatingClosureCall(org.codehaus.groovy.ast.expr.VariableExpression, java.lang.String, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.expr.MethodCallExpression, org.codehaus.groovy.ast.VariableScope)">makeDelegatingClosureCall</a></strong>(org.codehaus.groovy.ast.expr.VariableExpression targetObject, java.lang.String executeMethodName, org.codehaus.groovy.ast.Parameter[] closureParameters, org.codehaus.groovy.ast.expr.MethodCallExpression originalMethodCall, org.codehaus.groovy.ast.VariableScope variableScope)</code><br>Construct a method call that wraps an original call with a closure invocation</td>
+                            <td class="colLast"><code><strong><a href="#makeDelegatingClosureCall(org.codehaus.groovy.ast.expr.Expression, java.lang.String, org.codehaus.groovy.ast.expr.ArgumentListExpression, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.expr.MethodCallExpression, org.codehaus.groovy.ast.VariableScope)">makeDelegatingClosureCall</a></strong>(org.codehaus.groovy.ast.expr.Expression targetObject, java.lang.String executeMethodName, org.codehaus.groovy.ast.expr.ArgumentListExpression arguments, org.codehaus.groovy.ast.Parameter[] closureParameters, org.codehaus.groovy.ast.expr.MethodCallExpression originalMethodCall, org.codehaus.groovy.ast.VariableScope variableScope)</code><br>Construct a method call that wraps an original call with a closure invocation</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>protected&nbsp;org.codehaus.groovy.ast.expr.MethodCallExpression</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#makeDelegatingClosureCall(org.codehaus.groovy.ast.expr.VariableExpression, java.lang.String, org.codehaus.groovy.ast.expr.ArgumentListExpression, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.expr.MethodCallExpression, org.codehaus.groovy.ast.VariableScope)">makeDelegatingClosureCall</a></strong>(org.codehaus.groovy.ast.expr.VariableExpression targetObject, java.lang.String executeMethodName, org.codehaus.groovy.ast.expr.ArgumentListExpression arguments, org.codehaus.groovy.ast.Parameter[] closureParameters, org.codehaus.groovy.ast.expr.MethodCallExpression originalMethodCall, org.codehaus.groovy.ast.VariableScope variableScope)</code><br>Construct a method call that wraps an original call with a closure invocation</td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code>protected&nbsp;org.codehaus.groovy.ast.expr.MethodCallExpression</strong></code></td>
+                            <td class="colFirst"><code>protected&nbsp;org.codehaus.groovy.ast.MethodNode</strong></code></td>
                             <td class="colLast"><code><strong><a href="#moveOriginalCodeToNewMethod(org.codehaus.groovy.ast.MethodNode, java.lang.String, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.control.SourceUnit)">moveOriginalCodeToNewMethod</a></strong>(org.codehaus.groovy.ast.MethodNode methodNode, java.lang.String renamedMethodName, org.codehaus.groovy.ast.Parameter[] newParameters, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.control.SourceUnit source)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;org.codehaus.groovy.ast.Parameter[]</strong></code></td>
                             <td class="colLast"><code><strong><a href="#prepareNewMethodParameters(org.codehaus.groovy.ast.MethodNode)">prepareNewMethodParameters</a></strong>(org.codehaus.groovy.ast.MethodNode methodNode)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>protected&nbsp;org.codehaus.groovy.ast.ClassNode</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#resolveReturnTypeForNewMethod(org.codehaus.groovy.ast.MethodNode)">resolveReturnTypeForNewMethod</a></strong>(org.codehaus.groovy.ast.MethodNode methodNode)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -259,8 +281,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#weaveNewMethod(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)">weaveNewMethod</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, org.codehaus.groovy.ast.AnnotationNode annotationNode, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.MethodNode methodNode)</code><br></td>
+                            <td class="colFirst"><code>protected&nbsp;org.codehaus.groovy.ast.MethodNode</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#weaveNewMethod(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)">weaveNewMethod</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, org.codehaus.groovy.ast.AnnotationNode annotationNode, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.MethodNode methodNode)</code><br>Weaves a new method</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -293,7 +315,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class org.codehaus.groovy.transform.AbstractASTTransformation</strong></code></td>
-                            <td class="colLast"><code>org.codehaus.groovy.transform.AbstractASTTransformation#tokenize(java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#deemedInternalName(java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#shouldSkip(java.lang.String, java.util.List, java.util.List), org.codehaus.groovy.transform.AbstractASTTransformation#shouldSkipOnDescriptor(boolean, java.util.Map, org.codehaus.groovy.ast.MethodNode, java.util.List, java.util.List), org.codehaus.groovy.transform.AbstractASTTransformation#nonGeneric(org.codehaus.groovy.ast.ClassNode), org.codehaus.groovy.transform.AbstractASTTransformation#memberHasValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String, java.lang.Object), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberStringValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberStringValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberIntValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberClassValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String, org.codehaus.groovy.ast.ClassNode), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberClassValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberList(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getClassList(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#hasAnnotation(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.ClassNode), org.codehaus.groovy.transform.AbstractASTTransformation#addError(java.lang.String, org.codehaus.groovy.ast.ASTNode), org.codehaus.groovy.transform.AbstractASTTransformation#wait(long, int), org.codehaus.groovy.transform.AbstractASTTransformation#wait(long), org.codehaus.groovy.transform.AbstractASTTransformation#wait(), org.codehaus.groovy.transform.AbstractASTTransformation#equals(java.lang.Object), org.codehaus.groovy.transform.AbstractASTTransformation#toString(), org.codehaus.groovy.transform.AbstractASTTransformation#hashCode(), org.codehaus.groovy.transform.AbstractASTTransformation#getClass(), org.codehaus.groovy.transform.AbstractASTTransformation#notify(), org.codehaus.groovy.transform.AbstractASTTransformation#notifyAll(), org.codehaus.groovy.transform.AbstractASTTransformation#visit([Lorg.codehaus.groovy.ast.ASTNode;, org.codehaus.groovy.control.SourceUnit)</code></td>
+                            <td class="colLast"><code>org.codehaus.groovy.transform.AbstractASTTransformation#memberHasValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String, java.lang.Object), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberStringValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberStringValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberIntValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberClassValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberClassValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String, org.codehaus.groovy.ast.ClassNode), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberList(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getClassList(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#hasAnnotation(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.ClassNode), org.codehaus.groovy.transform.AbstractASTTransformation#deemedInternalName(java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#shouldSkip(java.lang.String, java.util.List, java.util.List), org.codehaus.groovy.transform.AbstractASTTransformation#shouldSkipOnDescriptor(boolean, java.util.Map, org.codehaus.groovy.ast.MethodNode, java.util.List, java.util.List), org.codehaus.groovy.transform.AbstractASTTransformation#tokenize(java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#nonGeneric(org.codehaus.groovy.ast.ClassNode), org.codehaus.groovy.transform.AbstractASTTransformation#addError(java.lang.String, org.codehaus.groovy.ast.ASTNode), org.codehaus.groovy.transform.AbstractASTTransformation#wait(long, int), org.codehaus.groovy.transform.AbstractASTTransformation#wait(long), org.codehaus.groovy.transform.AbstractASTTransformation#wait(), org.codehaus.groovy.transform.AbstractASTTransformation#equals(java.lang.Object), org.codehaus.groovy.transform.AbstractASTTransformation#toString(), org.codehaus.groovy.transform.AbstractASTTransformation#hashCode(), org.codehaus.groovy.transform.AbstractASTTransformation#getClass(), org.codehaus.groovy.transform.AbstractASTTransformation#notify(), org.codehaus.groovy.transform.AbstractASTTransformation#notifyAll(), org.codehaus.groovy.transform.AbstractASTTransformation#visit([Lorg.codehaus.groovy.ast.ASTNode;, org.codehaus.groovy.control.SourceUnit)</code></td>
                         </tr>
                     </table>
                    </ul>
@@ -318,10 +340,27 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Field Detail</h3>
                     
+                        <a name="DECORATED_METHODS"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;static&nbsp;final&nbsp;java.lang.String <strong>DECORATED_METHODS</strong></h4>
+                                <p> Key used to store within the original method node metadata, all previous decorated methods
+     </p>
+                            </li>
+                        </ul>
+                    
                         <a name="FIELD_TARGET_DATASTORE"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;static&nbsp;final&nbsp;java.lang.String <strong>FIELD_TARGET_DATASTORE</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="METHOD_GET_DATASTORE_FOR_CONNECTION"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;static&nbsp;final&nbsp;java.lang.String <strong>METHOD_GET_DATASTORE_FOR_CONNECTION</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -352,6 +391,14 @@ if (location.href.indexOf('is-external=true') == -1) {
                     <!--   -->
                 </a>
                     <h3>Method Detail</h3>
+                    
+                        <a name="buildCallToOriginalMethod(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;org.codehaus.groovy.ast.expr.MethodCallExpression <strong>buildCallToOriginalMethod</strong>(org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.MethodNode renamedMethodNode)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
                     
                         <a name="buildDelegatingMethodCall(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode, org.codehaus.groovy.ast.expr.MethodCallExpression, org.codehaus.groovy.ast.stmt.BlockStatement)"><!-- --></a>
                         <ul class="blockListLast">
@@ -410,19 +457,19 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="makeDelegatingClosureCall(org.codehaus.groovy.ast.expr.VariableExpression, java.lang.String, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.expr.MethodCallExpression, org.codehaus.groovy.ast.VariableScope)"><!-- --></a>
+                        <a name="makeDelegatingClosureCall(org.codehaus.groovy.ast.expr.Expression, java.lang.String, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.expr.MethodCallExpression, org.codehaus.groovy.ast.VariableScope)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;org.codehaus.groovy.ast.expr.MethodCallExpression <strong>makeDelegatingClosureCall</strong>(org.codehaus.groovy.ast.expr.VariableExpression targetObject, java.lang.String executeMethodName, org.codehaus.groovy.ast.Parameter[] closureParameters, org.codehaus.groovy.ast.expr.MethodCallExpression originalMethodCall, org.codehaus.groovy.ast.VariableScope variableScope)</h4>
+                                <h4>protected&nbsp;org.codehaus.groovy.ast.expr.MethodCallExpression <strong>makeDelegatingClosureCall</strong>(org.codehaus.groovy.ast.expr.Expression targetObject, java.lang.String executeMethodName, org.codehaus.groovy.ast.Parameter[] closureParameters, org.codehaus.groovy.ast.expr.MethodCallExpression originalMethodCall, org.codehaus.groovy.ast.VariableScope variableScope)</h4>
                                 <p> Construct a method call that wraps an original call with a closure invocation
      <DL><DT><B>Returns:</B></DT><DD>The MethodCallExpression</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>targetObject</code> -  The target object</DD><DD><code>executeMethodName</code> -  The method that accepts a closure</DD><DD><code>closureParameters</code> -  The parameters for the closure</DD><DD><code>originalMethodCall</code> -  The original method call to delegate to</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="makeDelegatingClosureCall(org.codehaus.groovy.ast.expr.VariableExpression, java.lang.String, org.codehaus.groovy.ast.expr.ArgumentListExpression, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.expr.MethodCallExpression, org.codehaus.groovy.ast.VariableScope)"><!-- --></a>
+                        <a name="makeDelegatingClosureCall(org.codehaus.groovy.ast.expr.Expression, java.lang.String, org.codehaus.groovy.ast.expr.ArgumentListExpression, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.expr.MethodCallExpression, org.codehaus.groovy.ast.VariableScope)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;org.codehaus.groovy.ast.expr.MethodCallExpression <strong>makeDelegatingClosureCall</strong>(org.codehaus.groovy.ast.expr.VariableExpression targetObject, java.lang.String executeMethodName, org.codehaus.groovy.ast.expr.ArgumentListExpression arguments, org.codehaus.groovy.ast.Parameter[] closureParameters, org.codehaus.groovy.ast.expr.MethodCallExpression originalMethodCall, org.codehaus.groovy.ast.VariableScope variableScope)</h4>
+                                <h4>protected&nbsp;org.codehaus.groovy.ast.expr.MethodCallExpression <strong>makeDelegatingClosureCall</strong>(org.codehaus.groovy.ast.expr.Expression targetObject, java.lang.String executeMethodName, org.codehaus.groovy.ast.expr.ArgumentListExpression arguments, org.codehaus.groovy.ast.Parameter[] closureParameters, org.codehaus.groovy.ast.expr.MethodCallExpression originalMethodCall, org.codehaus.groovy.ast.VariableScope variableScope)</h4>
                                 <p> Construct a method call that wraps an original call with a closure invocation
      <DL><DT><B>Returns:</B></DT><DD>The MethodCallExpression</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>targetObject</code> -  The target object</DD><DD><code>executeMethodName</code> -  The method that accepts a closure</DD><DD><code>closureParameters</code> -  The parameters for the closure</DD><DD><code>originalMethodCall</code> -  The original method call to delegate to</DD></DL></p>
                             </li>
@@ -431,7 +478,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="moveOriginalCodeToNewMethod(org.codehaus.groovy.ast.MethodNode, java.lang.String, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.control.SourceUnit)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;org.codehaus.groovy.ast.expr.MethodCallExpression <strong>moveOriginalCodeToNewMethod</strong>(org.codehaus.groovy.ast.MethodNode methodNode, java.lang.String renamedMethodName, org.codehaus.groovy.ast.Parameter[] newParameters, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.control.SourceUnit source)</h4>
+                                <h4>protected&nbsp;org.codehaus.groovy.ast.MethodNode <strong>moveOriginalCodeToNewMethod</strong>(org.codehaus.groovy.ast.MethodNode methodNode, java.lang.String renamedMethodName, org.codehaus.groovy.ast.Parameter[] newParameters, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.control.SourceUnit source)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -440,6 +487,14 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;org.codehaus.groovy.ast.Parameter[] <strong>prepareNewMethodParameters</strong>(org.codehaus.groovy.ast.MethodNode methodNode)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="resolveReturnTypeForNewMethod(org.codehaus.groovy.ast.MethodNode)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;org.codehaus.groovy.ast.ClassNode <strong>resolveReturnTypeForNewMethod</strong>(org.codehaus.groovy.ast.MethodNode methodNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -472,8 +527,9 @@ void <strong>visit</strong>(org.codehaus.groovy.control.SourceUnit source, org.c
                         <a name="weaveNewMethod(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>weaveNewMethod</strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, org.codehaus.groovy.ast.AnnotationNode annotationNode, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.MethodNode methodNode)</h4>
-                                <p></p>
+                                <h4>protected&nbsp;org.codehaus.groovy.ast.MethodNode <strong>weaveNewMethod</strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, org.codehaus.groovy.ast.AnnotationNode annotationNode, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.MethodNode methodNode)</h4>
+                                <p> Weaves a new method
+     <DL><DT><B>Returns:</B></DT><DD>The new method's body</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>sourceUnit</code> -  The source unit</DD><DD><code>annotationNode</code> -  The annotation node</DD><DD><code>classNode</code> -  The class node</DD><DD><code>methodNode</code> -  The original method that will delete to the new method</DD></DL></p>
                             </li>
                         </ul>
                     

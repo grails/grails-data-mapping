@@ -10,6 +10,7 @@ grails.gorm.rx.api
 grails.gorm.rx.collection
 grails.gorm.rx.multitenancy
 grails.gorm.rx.proxy
+grails.gorm.rx.services
 grails.gorm.services
 grails.gorm.transactions
 grails.gorm.validation
@@ -36,6 +37,8 @@ org.grails.datastore.gorm.query.criteria
 org.grails.datastore.gorm.query.transform
 org.grails.datastore.gorm.schemaless
 org.grails.datastore.gorm.services
+org.grails.datastore.gorm.services.implementers
+org.grails.datastore.gorm.services.transform
 org.grails.datastore.gorm.support
 org.grails.datastore.gorm.timestamp
 org.grails.datastore.gorm.transactions.transform
@@ -48,6 +51,8 @@ org.grails.datastore.gorm.validation.constraints.eval
 org.grails.datastore.gorm.validation.constraints.factory
 org.grails.datastore.gorm.validation.constraints.registry
 org.grails.datastore.gorm.validation.javax
+org.grails.datastore.gorm.validation.javax.services
+org.grails.datastore.gorm.validation.javax.services.implementers
 org.grails.datastore.gorm.validation.listener
 org.grails.datastore.gorm.validation.registry.support
 org.grails.datastore.mapping.cache
@@ -63,6 +68,7 @@ org.grails.datastore.mapping.core.connections
 org.grails.datastore.mapping.core.exceptions
 org.grails.datastore.mapping.core.grailsversion
 org.grails.datastore.mapping.core.impl
+org.grails.datastore.mapping.core.order
 org.grails.datastore.mapping.dirty.checking
 org.grails.datastore.mapping.document
 org.grails.datastore.mapping.document.config
@@ -114,6 +120,9 @@ org.grails.gorm.rx.api.multitenancy
 org.grails.gorm.rx.config
 org.grails.gorm.rx.events
 org.grails.gorm.rx.finders
+org.grails.gorm.rx.services.implementers
+org.grails.gorm.rx.services.support
+org.grails.gorm.rx.transform
 org.grails.orm.hibernate.cfg
 org.grails.orm.hibernate.support
 org.grails.orm.hibernate.validation

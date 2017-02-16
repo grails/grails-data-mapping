@@ -99,7 +99,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Superinterfaces:</dt>
-                <dd><a href='../../../../../org/grails/datastore/mapping/query/QueryCreator.html'>QueryCreator</a>, <a href='../../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a>, <a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourcesProvider.html'>ConnectionSourcesProvider</a>, <a href='../../../../../org/grails/gorm/rx/config/Settings.html'>Settings</a>, java.lang.AutoCloseable</dd>
+                <dd><a href='../../../../../org/grails/datastore/mapping/query/QueryCreator.html'>QueryCreator</a>, <a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourcesProvider.html'>ConnectionSourcesProvider</a>, java.lang.AutoCloseable, <a href='../../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a>, <a href='../../../../../org/grails/gorm/rx/config/Settings.html'>Settings</a></dd>
             </dl>
 
     <p> Internal non-client methods implemented by the implementor
@@ -153,12 +153,12 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a></strong></code></td>
+                            <td class="colFirst"><code>org.grails.datastore.mapping.query.Query</strong></code></td>
                             <td class="colLast"><code><strong><a href="#createQuery(java.lang.Class, org.grails.datastore.rx.query.QueryState)">createQuery</a></strong>(java.lang.Class type, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</code><br>Create a query, passing the entity state</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a></strong></code></td>
+                            <td class="colFirst"><code>org.grails.datastore.mapping.query.Query</strong></code></td>
                             <td class="colLast"><code><strong><a href="#createQuery(java.lang.Class, org.grails.datastore.rx.query.QueryState, java.util.Map)">createQuery</a></strong>(java.lang.Class type, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, java.util.Map arguments)</code><br>Create a query, passing the entity state</td>
                         </tr>
                         
@@ -199,7 +199,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html'>ObservableProxy</a></strong></code></td>
-                            <td class="colLast"><code><strong><a href="#proxy(org.grails.datastore.mapping.query.Query, org.grails.datastore.rx.query.QueryState)">proxy</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</code><br>Obtain an <a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a> that executes the given query to initialize</td>
+                            <td class="colLast"><code><strong><a href="#proxy(org.grails.datastore.mapping.query.Query, org.grails.datastore.rx.query.QueryState)">proxy</a></strong>(org.grails.datastore.mapping.query.Query query, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</code><br>Obtain an <a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a> that executes the given query to initialize</td>
                         </tr>
                         
                     </table>
@@ -285,7 +285,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="createQuery(java.lang.Class, org.grails.datastore.rx.query.QueryState)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> <strong>createQuery</strong>(java.lang.Class type, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</h4>
+                                <h4>org.grails.datastore.mapping.query.Query <strong>createQuery</strong>(java.lang.Class type, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</h4>
                                 <p> Create a query, passing the entity state
      <DL><DT><B>Returns:</B></DT><DD>The query</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>type</code> -  The type</DD><DD><code>queryState</code> -  The query state</DD></DL></p>
                             </li>
@@ -294,7 +294,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="createQuery(java.lang.Class, org.grails.datastore.rx.query.QueryState, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> <strong>createQuery</strong>(java.lang.Class type, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, java.util.Map arguments)</h4>
+                                <h4>org.grails.datastore.mapping.query.Query <strong>createQuery</strong>(java.lang.Class type, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, java.util.Map arguments)</h4>
                                 <p> Create a query, passing the entity state
      <DL><DT><B>Returns:</B></DT><DD>The query</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>type</code> -  The type</DD><DD><code>queryState</code> -  The query state</DD></DL></p>
                             </li>
@@ -366,7 +366,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="proxy(org.grails.datastore.mapping.query.Query, org.grails.datastore.rx.query.QueryState)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html'>ObservableProxy</a> <strong>proxy</strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</h4>
+                                <h4><a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html'>ObservableProxy</a> <strong>proxy</strong>(org.grails.datastore.mapping.query.Query query, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</h4>
                                 <p> Obtain an <a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a> that executes the given query to initialize
      <DL><DT><B>Returns:</B></DT><DD>An <a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a></DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD></DL></p>
                             </li>
