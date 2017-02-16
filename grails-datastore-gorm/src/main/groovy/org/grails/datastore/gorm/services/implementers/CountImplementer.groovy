@@ -23,10 +23,7 @@ class CountImplementer extends AbstractDetachedCriteriaServiceImplementor{
 
     @Override
     boolean doesImplement(ClassNode domainClass, MethodNode methodNode) {
-        if(methodNode.parameters.length == 0) return false
-        else {
-            return AstUtils.isDomainClass(domainClass) && super.doesImplement(domainClass, methodNode)
-        }
+        return AstUtils.isDomainClass(domainClass) && super.doesImplement(domainClass, methodNode)
     }
 
     @Override

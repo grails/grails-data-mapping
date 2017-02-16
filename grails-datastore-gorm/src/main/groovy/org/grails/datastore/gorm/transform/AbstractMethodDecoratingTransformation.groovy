@@ -78,7 +78,9 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
         if(declaringClassNode.getNodeMetaData(appliedMarker) == appliedMarker) {
             return
         }
-
+        if(declaringClassNode.isInterface()) {
+            return
+        }
         declaringClassNode.putNodeMetaData(appliedMarker, appliedMarker)
 
         Expression connectionName = annotationNode.getMember("connection")
