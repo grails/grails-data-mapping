@@ -443,6 +443,16 @@ class Mapping extends Entity<PropertyConfig> {
     }
 
     /**
+     * Configure the version
+     *
+     * @param versionConfig The version config
+     * @return This entity
+     */
+    @Override
+    Entity version(@DelegatesTo(PropertyConfig) Closure versionConfig) {
+        return super.version(versionConfig)
+    }
+    /**
      * Configure a new property
      * @param name The name of the property
      * @param propertyConfig The property config
