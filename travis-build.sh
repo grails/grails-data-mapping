@@ -16,6 +16,12 @@ else
     fi
     if [[ $EXIT_STATUS -eq 0 ]]; then
         ./gradlew --refresh-dependencies check || EXIT_STATUS=$?
+        if [[ $EXIT_STATUS -eq 0 && $TRAVIS_PULL_REQUEST == 'false' ]]; then
+            if [[ -n $TRAVIS_TAG ]] || [[ $TRAVIS_BRANCH == 'master' ]]; then
+                ./gradlew --stop
+                ./travis-publish.sh || EXIT_STATUS=$?
+            fi
+        fi
     fi
 fi
 
