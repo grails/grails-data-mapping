@@ -46,12 +46,13 @@ public abstract class Association<T extends Property> extends AbstractPersistent
     static {
         cascadeTypeConversions.put("all", CascadeType.ALL);
         cascadeTypeConversions.put("merge", CascadeType.MERGE);
+        cascadeTypeConversions.put("save-update", CascadeType.MERGE);
         cascadeTypeConversions.put("delete", CascadeType.REMOVE);
         cascadeTypeConversions.put("remove", CascadeType.REMOVE);
         cascadeTypeConversions.put("refresh", CascadeType.REFRESH);
         cascadeTypeConversions.put("persist", CascadeType.PERSIST);
         // Unsupported Types
-        // "all-delete-orphan", "save-update", "lock", "refresh", "replicate", "evict", "delete-orphan"
+        // "all-delete-orphan", "lock", "refresh", "replicate", "evict", "delete-orphan"
     }
 
     public Association(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
@@ -63,13 +64,15 @@ public abstract class Association<T extends Property> extends AbstractPersistent
     }
 
     private void buildCascadeOperations() {
-        String cascade = this.getMapping().getMappedForm().getCascade();
+        final String cascade = this.getMapping().getMappedForm().getCascade();
         if (cascade != null) {
-            cascade = cascade.toLowerCase();
-            if (cascadeTypeConversions.containsKey(cascade)) {
-                cascadeOperations = Arrays.asList(cascadeTypeConversions.get(cascade));
-            } else {
-                cascadeOperations = new ArrayList<>();
+            final String[] specifiedOperations = cascade.toLowerCase().split("/,/");
+            cascadeOperations = new ArrayList<>();
+            for(final String operation: specifiedOperations) {
+                final String key = operation.trim();
+                if (cascadeTypeConversions.containsKey(key)) {
+                    cascadeOperations.add(cascadeTypeConversions.get(key));
+                }
             }
         } else {
             if (isOwningSide()) {

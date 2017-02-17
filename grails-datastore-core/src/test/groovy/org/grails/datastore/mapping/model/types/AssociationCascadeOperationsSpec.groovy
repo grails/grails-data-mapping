@@ -61,6 +61,8 @@ class AssociationCascadeOperationsSpec extends Specification {
         "abc"      | true        | []
         null       | true        | [CascadeType.ALL]
         null       | false       | [CascadeType.PERSIST]
+        "delete,merge"  | false  | [CascadeType.REMOVE,CascadeType.MERGE]
+        "delete, merge" | false  | [CascadeType.REMOVE,CascadeType.MERGE]
 
     }
 }
