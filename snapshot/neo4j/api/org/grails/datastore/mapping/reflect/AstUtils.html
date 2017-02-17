@@ -311,7 +311,17 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;static&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#findAbstractMethodsInternal(org.codehaus.groovy.ast.ClassNode, List<MethodNode>)">findAbstractMethodsInternal</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, java.util.List&lt;org.codehaus.groovy.ast.MethodNode&gt; methods)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findAbstractMethodsInternal(org.codehaus.groovy.ast.ClassNode, List<MethodNode>, boolean)">findAbstractMethodsInternal</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, java.util.List&lt;org.codehaus.groovy.ast.MethodNode&gt; methods, boolean includeProtected)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;java.util.List&lt;org.codehaus.groovy.ast.MethodNode&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findAllAbstractMethods(org.codehaus.groovy.ast.ClassNode)">findAllAbstractMethods</a></strong>(org.codehaus.groovy.ast.ClassNode classNode)</code><br>Finds all the abstract methods for the give class node</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;java.util.List&lt;org.codehaus.groovy.ast.MethodNode&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findAllUnimplementedAbstractMethods(org.codehaus.groovy.ast.ClassNode)">findAllUnimplementedAbstractMethods</a></strong>(org.codehaus.groovy.ast.ClassNode classNode)</code><br>Finds all the abstract methods for the give class node</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -796,11 +806,29 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="findAbstractMethodsInternal(org.codehaus.groovy.ast.ClassNode, List<MethodNode>)"><!-- --></a>
+                        <a name="findAbstractMethodsInternal(org.codehaus.groovy.ast.ClassNode, List<MethodNode>, boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;static&nbsp;void <strong>findAbstractMethodsInternal</strong>(org.codehaus.groovy.ast.ClassNode classNode, java.util.List&lt;org.codehaus.groovy.ast.MethodNode&gt; methods)</h4>
+                                <h4>protected&nbsp;static&nbsp;void <strong>findAbstractMethodsInternal</strong>(org.codehaus.groovy.ast.ClassNode classNode, java.util.List&lt;org.codehaus.groovy.ast.MethodNode&gt; methods, boolean includeProtected)</h4>
                                 <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="findAllAbstractMethods(org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;java.util.List&lt;org.codehaus.groovy.ast.MethodNode&gt; <strong>findAllAbstractMethods</strong>(org.codehaus.groovy.ast.ClassNode classNode)</h4>
+                                <p> Finds all the abstract methods for the give class node
+     <DL><DT><B>Returns:</B></DT><DD>The abstract method</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>classNode</code> -  The class node</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="findAllUnimplementedAbstractMethods(org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;java.util.List&lt;org.codehaus.groovy.ast.MethodNode&gt; <strong>findAllUnimplementedAbstractMethods</strong>(org.codehaus.groovy.ast.ClassNode classNode)</h4>
+                                <p> Finds all the abstract methods for the give class node
+     <DL><DT><B>Returns:</B></DT><DD>The abstract method</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>classNode</code> -  The class node</DD></DL></p>
                             </li>
                         </ul>
                     
