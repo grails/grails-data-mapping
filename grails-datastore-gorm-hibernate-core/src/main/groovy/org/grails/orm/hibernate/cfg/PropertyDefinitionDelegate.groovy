@@ -1,5 +1,6 @@
 package org.grails.orm.hibernate.cfg
 
+import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.model.DatastoreConfigurationException
 
 /**
@@ -11,32 +12,45 @@ import org.grails.datastore.mapping.model.DatastoreConfigurationException
  *       column name: "currency_code", sqlType: "text"
  *   }
  * </pre>
+ *
  */
+@CompileStatic
 class PropertyDefinitionDelegate {
     PropertyConfig config
+
+    private int index = 0
 
     PropertyDefinitionDelegate(PropertyConfig config) {
         this.config = config
     }
 
-    def column(Map args) {
+    ColumnConfig column(Map args) {
         // Check that this column has a name
         if (!args["name"]) {
             throw new DatastoreConfigurationException("Column definition must have a name!")
         }
 
         // Create a new column configuration based on the mapping for this column.
-        def column = new ColumnConfig()
+        ColumnConfig column
+        if(index < config.columns.size()) {
+            // configure existing
+            column = config.columns[0]
+        }
+        else {
+            column = new ColumnConfig()
+            // Append the new column configuration to the property config.
+            config.columns << column
+        }
         column.name = args["name"]
         column.sqlType = args["sqlType"]
         column.enumType = args["enumType"] ?: column.enumType
         column.index = args["index"]
         column.unique = args["unique"] ?: false
-        column.length = args["length"] ?: -1
-        column.precision = args["precision"] ?: -1
-        column.scale = args["scale"] ?: -1
+        column.length = args["length"] ? args["length"] as Integer : -1
+        column.precision = args["precision"] ? args["precision"] as Integer  : -1
+        column.scale = args["scale"] ? args["scale"] as Integer : -1
 
-        // Append the new column configuration to the property config.
-        config.columns << column
+        index++
+        return column
     }
 }
