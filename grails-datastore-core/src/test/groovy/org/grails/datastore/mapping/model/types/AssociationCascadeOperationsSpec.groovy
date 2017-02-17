@@ -4,11 +4,14 @@ import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.model.ClassMapping
 import org.grails.datastore.mapping.model.PropertyMapping
 import spock.lang.Specification
+import spock.lang.Unroll
+
 import javax.persistence.CascadeType
 
 class AssociationCascadeOperationsSpec extends Specification {
 
-    void "test getCascadeOperations"() {
+    @Unroll
+    void "test getCascadeOperations with value #_cascade"() {
         String cascade = _cascade
         boolean owningSide = _owningSide
         Association a = new Association<Property>(null, null, null, null) {

@@ -66,7 +66,7 @@ public abstract class Association<T extends Property> extends AbstractPersistent
     private void buildCascadeOperations() {
         final String cascade = this.getMapping().getMappedForm().getCascade();
         if (cascade != null) {
-            final String[] specifiedOperations = cascade.toLowerCase().split("/,/");
+            final String[] specifiedOperations = cascade.toLowerCase().split(",");
             cascadeOperations = new ArrayList<>();
             for(final String operation: specifiedOperations) {
                 final String key = operation.trim();
