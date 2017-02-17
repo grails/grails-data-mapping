@@ -662,6 +662,41 @@ To see all of the features introduced in GORM 6, see the <a href="http://gorm.gr
 </div>
 </div>
 <div class="sect2">
+<h3 id="_improved_mapping_dsl">Improved Mapping DSL</h3>
+<div class="paragraph">
+<p>The GORM Mapping DSL has been improved for all implementations, allowing code completion in IDEs and static compilation. For example for Hibernate:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">grails.gorm.hibernate.mapping.MappingBuilder.*</span>
+
+<span class="type">class</span> <span class="class">Book</span> {
+    <span class="predefined-type">String</span> title
+
+    <span class="directive">static</span> <span class="directive">final</span> mapping = orm {
+        table {
+            schema <span class="string"><span class="delimiter">&quot;</span><span class="content">library</span><span class="delimiter">&quot;</span></span>
+            name <span class="string"><span class="delimiter">&quot;</span><span class="content">books</span><span class="delimiter">&quot;</span></span>
+        }
+        cache {
+            enabled <span class="predefined-constant">true</span>
+            usage <span class="string"><span class="delimiter">'</span><span class="content">read</span><span class="delimiter">'</span></span>
+        }
+        title = property {
+            nullable <span class="predefined-constant">true</span>
+            column {
+                length <span class="integer">250</span>
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For Neo4j and MongoDB there are equivalent classes called <code>grails.neo4j.mapping.MappingBuilder</code> and <code>grails.mongodb.mapping.MappingBuilder</code> respectively.</p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_support_for_scanning_packages">Support for Scanning Packages</h3>
 <div class="paragraph">
 <p>The constructors for <code>HibernateDatastore</code>, <code>MongoDatastore</code> and <code>Neo4jDatastore</code> have been updated to support an array of <code>Package</code> instances representing the packages to scan for entities. This makes it easier to setup GORM outside of Grails or within unit tests. For example for Hibernate:</p>
@@ -813,6 +848,17 @@ Product p = Product.findOneAndDelete(eq(<span class="string"><span class="delimi
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_readconcern_supported_in_queries">ReadConcern supported in Queries</h3>
+<div class="paragraph">
+<p>You can now pass the <code>ReadConcern</code> to use to GORM queries:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">Person.findAllByFirstName(<span class="string"><span class="delimiter">&quot;</span><span class="content">Bob</span><span class="delimiter">&quot;</span></span>, [<span class="key">readConcern</span>: ReadConcern.MAJORITY])</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -891,7 +937,7 @@ castMember.save(<span class="key">flush</span>:<span class="predefined-constant"
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-02-16 13:28:44 UTC
+Last updated 2017-02-17 08:58:42 UTC
 </div>
 </div>
 </body>
