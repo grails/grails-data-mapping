@@ -17,6 +17,7 @@ package grails.gorm
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
+import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.query.GormOperations
 import org.grails.datastore.gorm.query.criteria.AbstractDetachedCriteria
@@ -61,7 +62,11 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<T> implements GormOpe
         return newQuery.build(additionalQuery)
     }
 
-    /**
+    @Override
+    DetachedCriteria<T> withConnection(String name) {
+        return (DetachedCriteria<T>)super.withConnection(name)
+    }
+/**
      * Where method derives a new query from this query. This method will not mutate the original query, but instead return a new one.
      *
      * @param additionalQuery The additional query
@@ -549,9 +554,8 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<T> implements GormOpe
      *
      * @return The total number deleted
      */
-    @CompileStatic(TypeCheckingMode.SKIP)
     Number deleteAll() {
-        targetClass.withDatastoreSession { Session session ->
+        GormEnhancer.findStaticApi(targetClass, connectionName).withDatastoreSession { Session session ->
             session.deleteAll(this)
         }
     }
@@ -561,9 +565,8 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<T> implements GormOpe
      *
      * @return The total number updated
      */
-    @CompileStatic(TypeCheckingMode.SKIP)
     Number updateAll(Map properties) {
-        targetClass.withDatastoreSession { Session session ->
+        GormEnhancer.findStaticApi(targetClass, connectionName).withDatastoreSession { Session session ->
             session.updateAll(this, properties)
         }
     }
@@ -730,9 +733,8 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<T> implements GormOpe
         return new DetachedCriteria(targetClass).build(queryClosure)
     }
 
-    @CompileStatic(TypeCheckingMode.SKIP)
     private withPopulatedQuery(Map args, Closure additionalCriteria, Closure callable)  {
-        targetClass.withDatastoreSession { Session session ->
+        GormEnhancer.findStaticApi(targetClass, connectionName).withDatastoreSession { Session session ->
             applyLazyCriteria()
             Query query
             if(alias && (session instanceof QueryAliasAwareSession)) {
@@ -751,7 +753,7 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<T> implements GormOpe
             DynamicFinder.applyDetachedCriteria(query, this)
 
             if(query instanceof QueryArgumentsAware) {
-                query.arguments = args
+                ((QueryArgumentsAware)query).arguments = args
             }
 
             if (additionalCriteria != null) {

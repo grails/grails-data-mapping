@@ -5,6 +5,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.mapping.core.connections.ConnectionSource
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Association
@@ -41,6 +42,7 @@ abstract class AbstractDetachedCriteria<T> implements Criteria, Cloneable {
     protected Map<String, JoinType> joinTypes = [:]
     protected Closure lazyQuery
     protected String alias;
+    protected String connectionName = ConnectionSource.DEFAULT
     protected Map<String, DetachedAssociationCriteria> associationCriteriaMap = [:]
 
 
@@ -811,7 +813,7 @@ abstract class AbstractDetachedCriteria<T> implements Criteria, Cloneable {
      * Enable the builder syntax for constructing Criteria
      *
      * @param callable The callable closure
-     * @return This criteria instance
+     * @return A new criteria instance
      */
 
     AbstractDetachedCriteria<T> build(@DelegatesTo(AbstractDetachedCriteria) Closure callable) {
@@ -824,12 +826,27 @@ abstract class AbstractDetachedCriteria<T> implements Criteria, Cloneable {
      * Enable the builder syntax for constructing Criteria
      *
      * @param callable The callable closure
-     * @return This criteria instance
+     * @return A new criteria instance
      */
 
     AbstractDetachedCriteria<T> buildLazy(@DelegatesTo(AbstractDetachedCriteria) Closure callable) {
         AbstractDetachedCriteria newCriteria = this.clone()
         newCriteria.lazyQuery = callable
+        return newCriteria
+    }
+
+
+    /**
+     * Create a return a new DetachedCriteria that uses the given connection
+     *
+     * @param name The connection name
+     * @param callable The callable closure
+     * @return A new criteria instance
+     */
+
+    AbstractDetachedCriteria<T> withConnection(String name) {
+        AbstractDetachedCriteria newCriteria = this.clone()
+        newCriteria.connectionName = name
         return newCriteria
     }
 

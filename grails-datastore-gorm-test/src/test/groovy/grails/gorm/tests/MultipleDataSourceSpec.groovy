@@ -1,5 +1,6 @@
 package grails.gorm.tests
 
+import grails.gorm.DetachedCriteria
 import grails.gorm.annotation.Entity
 import grails.gorm.transactions.Transactional
 import org.grails.datastore.mapping.core.connections.ConnectionSource
@@ -22,6 +23,8 @@ class MultipleDataSourceSpec extends Specification {
 
         expect:
         Player.count() == 1
+        new DetachedCriteria<>(Player).count() == 1
+        new DetachedCriteria<>(Player).withConnection("one").count() == 0
         Player.one.count() == 0
         service.countPlayers() == 1
         service.countPlayersOne() == 0
