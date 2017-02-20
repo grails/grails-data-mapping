@@ -258,6 +258,9 @@ class PropertyConfig extends Property {
         pc.indexColumn = indexColumn != null ? (PropertyConfig)indexColumn.clone() : null
         pc.cache = cache != null ? cache.clone() : cache
         pc.joinTable = joinTable.clone()
+        if(typeParams != null) {
+            pc.typeParams = new Properties(typeParams)
+        }
 
         def newColumns = new ArrayList<>(columns.size())
         pc.columns = newColumns
