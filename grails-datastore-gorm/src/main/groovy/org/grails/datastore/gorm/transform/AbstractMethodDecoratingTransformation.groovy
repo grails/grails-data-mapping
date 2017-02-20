@@ -25,12 +25,6 @@ import org.codehaus.groovy.control.ErrorCollector
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.sc.StaticCompileTransformation
 import org.codehaus.groovy.transform.trait.Traits
-import org.grails.datastore.gorm.GormEnhancer
-import org.grails.datastore.gorm.internal.RuntimeSupport
-import org.grails.datastore.mapping.core.Datastore
-import org.grails.datastore.mapping.core.connections.MultipleConnectionSourceCapableDatastore
-import org.grails.datastore.mapping.transactions.TransactionCapableDatastore
-import org.springframework.beans.factory.annotation.Autowired
 
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
@@ -53,13 +47,10 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
 
     private static final Set<String> METHOD_NAME_EXCLUDES = new HashSet<String>(Arrays.asList("afterPropertiesSet", "destroy"));
     private static final Set<String> ANNOTATION_NAME_EXCLUDES = new HashSet<String>(Arrays.asList(PostConstruct.class.getName(), PreDestroy.class.getName(), "grails.web.controllers.ControllerMethod"));
-    public static final String FIELD_TARGET_DATASTORE = '$targetDatastore'
-    public static final String METHOD_GET_TARGET_DATASTORE = "getTargetDatastore"
     /**
      * Key used to store within the original method node metadata, all previous decorated methods
      */
     public static final String DECORATED_METHODS = '$DECORATED'
-    protected static final String METHOD_GET_DATASTORE_FOR_CONNECTION = "getDatastoreForConnection"
 
     @Override
     void visit(SourceUnit source, AnnotationNode annotationNode, AnnotatedNode annotatedNode) {
@@ -73,145 +64,9 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
         }
     }
 
-    protected void weaveDatastoreAware(SourceUnit source, AnnotationNode annotationNode, ClassNode declaringClassNode) {
-        def appliedMarker = getAppliedMarker()
-        if(declaringClassNode.getNodeMetaData(appliedMarker) == appliedMarker) {
-            return
-        }
-        if(declaringClassNode.isInterface()) {
-            return
-        }
-        declaringClassNode.putNodeMetaData(appliedMarker, appliedMarker)
-
-        Expression connectionName = annotationNode.getMember("connection")
-        boolean hasDataSourceProperty = connectionName != null
-        ClassExpression gormEnhancerExpr = classX(GormEnhancer)
-
-        Expression datastoreAttribute = annotationNode.getMember("datastore")
-        ClassNode defaultType = hasDataSourceProperty ? make(MultipleConnectionSourceCapableDatastore) : make(Datastore)
-        boolean hasSpecificDatastore = datastoreAttribute instanceof ClassExpression
-        ClassNode datastoreType = hasSpecificDatastore ? ((ClassExpression)datastoreAttribute).getType().getPlainNodeReference() : defaultType
-        Parameter connectionNameParam = param(STRING_TYPE, "connectionName")
-        MethodCallExpression datastoreLookupCall
-        MethodCallExpression datastoreLookupDefaultCall
-        if(hasSpecificDatastore) {
-            datastoreLookupDefaultCall = callD(gormEnhancerExpr, "findDatastoreByType", classX(datastoreType.getPlainNodeReference()))
-        }
-        else {
-            datastoreLookupDefaultCall = callD(gormEnhancerExpr, "findSingleDatastore")
-        }
-        datastoreLookupCall = callD(datastoreLookupDefaultCall, METHOD_GET_DATASTORE_FOR_CONNECTION, varX(connectionNameParam))
-
-        if(implementsInterface(declaringClassNode, "org.grails.datastore.mapping.services.Service")) {
-            // simplify logic for services
-            Parameter[] getTargetDatastoreParams = params(connectionNameParam)
-            VariableExpression datastoreVar = varX("datastore", make(Datastore))
-
-            // Add method:
-            // protected Datastore getTargetDatastore(String connectionName)
-            //    if(datastore != null)
-            //      return datastore.getDatastoreForConnection(connectionName)
-            //    else
-            //      return GormEnhancer.findSingleDatastore().getDatastoreForConnection(connectionName)
-
-            if(declaringClassNode.getMethod(METHOD_GET_TARGET_DATASTORE, getTargetDatastoreParams) == null) {
-                MethodNode mn = declaringClassNode.addMethod(METHOD_GET_TARGET_DATASTORE, Modifier.PROTECTED, datastoreType, getTargetDatastoreParams, null,
-                        ifElseS(notNullX(datastoreVar),
-                                returnS( callD( castX(make(MultipleConnectionSourceCapableDatastore), datastoreVar ), METHOD_GET_DATASTORE_FOR_CONNECTION, varX(connectionNameParam) ) ),
-                                returnS(datastoreLookupCall)
-                        ))
-                compileMethodStatically(source, mn)
-            }
-            if(declaringClassNode.getMethod(METHOD_GET_TARGET_DATASTORE, ZERO_PARAMETERS) == null) {
-                MethodNode mn = declaringClassNode.addMethod(METHOD_GET_TARGET_DATASTORE, Modifier.PROTECTED,  datastoreType, ZERO_PARAMETERS, null,
-                        ifElseS( notNullX(datastoreVar ),
-                                returnS(datastoreVar),
-                                returnS(datastoreLookupDefaultCall))
-                )
-
-                compileMethodStatically(source, mn)
-            }
-        }
-        else {
-            FieldNode datastoreField = declaringClassNode.getField(FIELD_TARGET_DATASTORE)
-            if(datastoreField == null) {
-                datastoreField = declaringClassNode.addField(FIELD_TARGET_DATASTORE, Modifier.PROTECTED, datastoreType, null)
-
-                Parameter datastoresParam = param(datastoreType.makeArray(), "datastores")
-                VariableExpression datastoresVar = varX(datastoresParam)
-
-                BlockStatement setTargetDatastoreBody
-                VariableExpression datastoreFieldVar = varX(datastoreField)
-                Statement assignTargetDatastore = assignS(datastoreFieldVar, callD(classX(RuntimeSupport), "findDefaultDatastore", datastoresVar))
-                if(hasDataSourceProperty) {
-                    // $targetDatastore = RuntimeSupport.findDefaultDatastore(datastores)
-                    // datastore = datastore.getDatastoreForConnection(connectionName)
-                    setTargetDatastoreBody = block(
-                            assignTargetDatastore,
-                            assignS(datastoreFieldVar, callX(datastoreFieldVar, METHOD_GET_DATASTORE_FOR_CONNECTION, connectionName ))
-                    )
-                }
-                else {
-                    setTargetDatastoreBody = block(
-                            assignTargetDatastore
-                    )
-                }
-
-                weaveSetTargetDatastoreBody(source, annotationNode, declaringClassNode, datastoresVar, setTargetDatastoreBody)
-
-                // Add method: @Autowired void setTargetDatastore(Datastore[] datastores)
-                Parameter[] setTargetDatastoreParams = params(datastoresParam)
-                if( declaringClassNode.getMethod("setTargetDatastore", setTargetDatastoreParams) == null) {
-                    MethodNode setTargetDatastoreMethod = declaringClassNode.addMethod("setTargetDatastore", Modifier.PUBLIC, VOID_TYPE, setTargetDatastoreParams, null, setTargetDatastoreBody)
-
-                    // Autowire setTargetDatastore via Spring
-                    addAnnotationOrGetExisting(setTargetDatastoreMethod, Autowired)
-                            .setMember("required", constX(false))
-
-                    compileMethodStatically(source, setTargetDatastoreMethod)
-                }
-
-                // Add method:
-                // protected Datastore getTargetDatastore(String connectionName)
-                //    if($targetDatastore != null)
-                //      return $targetDatastore.getDatastoreForConnection(connectionName)
-                //    else
-                //      return GormEnhancer.findSingleDatastore().getDatastoreForConnection(connectionName)
-
-
-
-                Parameter[] getTargetDatastoreParams = params(connectionNameParam)
-                if(declaringClassNode.getMethod(METHOD_GET_TARGET_DATASTORE, getTargetDatastoreParams) == null) {
-                    MethodNode mn = declaringClassNode.addMethod(METHOD_GET_TARGET_DATASTORE, Modifier.PROTECTED, datastoreType, getTargetDatastoreParams, null,
-                            ifElseS(notNullX(datastoreFieldVar),
-                                    returnS( callX( datastoreFieldVar, METHOD_GET_DATASTORE_FOR_CONNECTION, varX(connectionNameParam) ) ),
-                                    returnS(datastoreLookupCall)
-                            ))
-                    compileMethodStatically(source, mn)
-                }
-                if(declaringClassNode.getMethod(METHOD_GET_TARGET_DATASTORE, ZERO_PARAMETERS) == null) {
-                    MethodNode mn = declaringClassNode.addMethod(METHOD_GET_TARGET_DATASTORE, Modifier.PROTECTED,  datastoreType, ZERO_PARAMETERS, null,
-                            ifElseS( notNullX(datastoreFieldVar ),
-                                    returnS(datastoreFieldVar),
-                                    returnS(datastoreLookupDefaultCall))
-                    )
-
-                    compileMethodStatically(source, mn)
-                }
-            }
-
-        }
-
-
-
-    }
-
-    protected void weaveSetTargetDatastoreBody(SourceUnit source, AnnotationNode annotationNode, ClassNode declaringClassNode, VariableExpression datastoreVar, BlockStatement setTargetDatastoreBody) {
-        // no-op
-    }
 
     protected void weaveClassNode(SourceUnit source, AnnotationNode annotationNode, ClassNode classNode) {
-        weaveDatastoreAware(source, annotationNode, classNode)
+        enhanceClassNode(source, annotationNode, classNode)
 
         List<MethodNode> methods = new ArrayList<MethodNode>(classNode.getMethods())
 
@@ -247,10 +102,21 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
         }
     }
 
+    /**
+     * Add any additional logic to enhance the class node
+     *
+     * @param sourceUnit The source unit
+     * @param annotationNode The annotation node
+     * @param classNode The class node
+     */
+    protected void enhanceClassNode(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode) {
+        // no-op
+    }
+
     protected boolean isTestSetupOrCleanup(ClassNode classNode, MethodNode md) {
         String methodName = md.getName()
         return (("setup".equals(methodName) || "cleanup".equals(methodName)) && isSpockTest(classNode)) ||
-                 hasJunitAnnotation(md)
+                hasJunitAnnotation(md)
     }
 
     protected abstract String getRenamedMethodPrefix()
@@ -279,7 +145,7 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
 
         methodNode.putNodeMetaData(appliedMarker, appliedMarker)
 
-        weaveDatastoreAware(sourceUnit, annotationNode, classNode)
+        enhanceClassNode(sourceUnit, annotationNode, classNode)
 
 
         // Move the existing logic into a new method called "$tt_methodName()"
@@ -303,13 +169,13 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
 
         if(methodNode.getReturnType() != VOID_TYPE) {
             methodBody.addStatement(
-                returnS(
-                    castX(methodNode.getReturnType(), executeMethodCallExpression)
-                )
+                    returnS(
+                            castX(methodNode.getReturnType(), executeMethodCallExpression)
+                    )
             )
         } else {
             methodBody.addStatement(
-                stmt(executeMethodCallExpression)
+                    stmt(executeMethodCallExpression)
             )
         }
 
@@ -370,7 +236,7 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
     protected MethodCallExpression makeDelegatingClosureCall(Expression targetObject, String executeMethodName, ArgumentListExpression arguments, Parameter[] closureParameters, MethodCallExpression originalMethodCall, VariableScope variableScope ) {
         final ClosureExpression closureExpression = closureX(closureParameters, createDelegingMethodBody(closureParameters, originalMethodCall))
         closureExpression.setVariableScope(
-            variableScope
+                variableScope
         )
         arguments.addExpression(closureExpression)
         final MethodCallExpression executeMethodCallExpression = callX(

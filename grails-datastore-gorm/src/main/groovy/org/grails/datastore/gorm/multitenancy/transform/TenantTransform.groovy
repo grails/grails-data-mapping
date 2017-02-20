@@ -31,9 +31,8 @@ import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.GroovyASTTransformation
 import org.grails.datastore.gorm.transactions.transform.TransactionalTransform
-import org.grails.datastore.gorm.transform.AbstractMethodDecoratingTransformation
+import org.grails.datastore.gorm.transform.AbstractDatastoreMethodDecoratingTransformation
 import org.grails.datastore.mapping.core.Ordered
-import org.grails.datastore.mapping.core.order.OrderedComparator
 import org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException
 import org.grails.datastore.mapping.services.ServiceRegistry
 
@@ -53,7 +52,7 @@ import static org.grails.datastore.mapping.reflect.AstUtils.varThis
  */
 @CompileStatic
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
-class TenantTransform extends AbstractMethodDecoratingTransformation implements Ordered {
+class TenantTransform extends AbstractDatastoreMethodDecoratingTransformation implements Ordered {
     private static final Object APPLIED_MARKER = new Object()
     private static final ClassExpression CURRENT_TENANT_ANNOTATION_TYPE_EXPR = classX(CurrentTenant)
     private static final ClassExpression TENANT_ANNOTATION_TYPE_EXPR = classX(Tenant)

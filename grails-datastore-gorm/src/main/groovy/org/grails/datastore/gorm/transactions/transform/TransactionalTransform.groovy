@@ -29,9 +29,7 @@ import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.GroovyASTTransformation
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.multitenancy.transform.TenantTransform
-import org.grails.datastore.gorm.transform.AbstractMethodDecoratingTransformation
-import org.grails.datastore.gorm.transform.AstMethodDispatchUtils
-import org.grails.datastore.gorm.transform.GormASTTransformationClass
+import org.grails.datastore.gorm.transform.AbstractDatastoreMethodDecoratingTransformation
 import org.grails.datastore.mapping.core.Ordered
 import org.grails.datastore.mapping.core.connections.MultipleConnectionSourceCapableDatastore
 import org.grails.datastore.mapping.transactions.CustomizableRollbackTransactionAttribute
@@ -95,7 +93,7 @@ import static org.grails.datastore.mapping.reflect.AstUtils.*
  */
 @CompileStatic
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
-class TransactionalTransform extends AbstractMethodDecoratingTransformation implements Ordered {
+class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransformation implements Ordered {
     private static final Set<String> ANNOTATION_NAME_EXCLUDES = new HashSet<String>([Transactional.class.getName(), "grails.transaction.Rollback", Rollback.class.getName(), NotTransactional.class.getName(), "grails.transaction.NotTransactional", "grails.gorm.transactions.ReadOnly"]);
     public static final ClassNode MY_TYPE = new ClassNode(Transactional)
     public static final ClassNode READ_ONLY_TYPE = new ClassNode(ReadOnly)
@@ -143,9 +141,9 @@ class TransactionalTransform extends AbstractMethodDecoratingTransformation impl
     }
 
     @Override
-    protected void weaveDatastoreAware(SourceUnit source, AnnotationNode annotationNode, ClassNode declaringClassNode) {
+    protected void enhanceClassNode(SourceUnit source, AnnotationNode annotationNode, ClassNode declaringClassNode) {
         weaveTransactionManagerAware(sourceUnit, annotationNode, declaringClassNode)
-        super.weaveDatastoreAware(source, annotationNode, declaringClassNode)
+        super.enhanceClassNode(source, annotationNode, declaringClassNode)
     }
 
     @Override
