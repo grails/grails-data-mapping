@@ -267,7 +267,7 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
      */
     @Override
     final <T1> Observable<T1> persist(T1 instance, Map<String, Object> arguments) {
-        persistAll((Iterable<T1>)Arrays.asList(instance), arguments).map { List<Serializable> identifiers ->
+        persistAll((Iterable<T1>)Collections.singletonList(instance), arguments).map { List<Serializable> identifiers ->
             if(!identifiers.isEmpty()) {
                 return instance
             }
@@ -279,7 +279,7 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
 
     @Override
     final <T1> Observable<T1> insert(T1 instance, Map<String, Object> arguments) {
-        insertAll((Iterable<T1>)Arrays.asList(instance), arguments).map { List<Serializable> identifiers ->
+        insertAll((Iterable<T1>)Collections.singletonList(instance), arguments).map { List<Serializable> identifiers ->
             if(!identifiers.isEmpty()) {
                 return instance
             }

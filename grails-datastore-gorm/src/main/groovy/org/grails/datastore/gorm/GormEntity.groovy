@@ -40,7 +40,7 @@ import javax.persistence.Transient
  * A trait that turns any class into a GORM entity
  *
  * @author Jeff Brown
- * @authro Graeme Rocher
+ * @author Graeme Rocher
  * @since 4.0
  */
 @CompileStatic
