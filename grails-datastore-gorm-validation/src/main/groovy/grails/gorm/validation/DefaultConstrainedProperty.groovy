@@ -29,7 +29,7 @@ import org.springframework.validation.Errors
  */
 @CompileStatic
 @Slf4j
-@ToString(includes = ['ownerClass', 'propertyType', 'propertyName', 'appliedConstraints'])
+@ToString(includes = ['owningClass', 'propertyType', 'propertyName', 'appliedConstraints'])
 class DefaultConstrainedProperty implements ConstrainedProperty {
 
     /**
