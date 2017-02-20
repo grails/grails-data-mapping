@@ -1,40 +1,26 @@
 package org.grails.datastore.gorm.validation.javax.services.implementers
 
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.ast.AnnotationNode
-import org.codehaus.groovy.ast.ClassNode
-import org.codehaus.groovy.ast.ConstructorNode
-import org.codehaus.groovy.ast.FieldNode
-import org.codehaus.groovy.ast.InnerClassNode
-import org.codehaus.groovy.ast.MethodNode
-import org.codehaus.groovy.ast.ModuleNode
-import org.codehaus.groovy.ast.Parameter
-import org.codehaus.groovy.ast.expr.ArgumentListExpression
-import org.codehaus.groovy.ast.expr.ArrayExpression
-import org.codehaus.groovy.ast.expr.Expression
-import org.codehaus.groovy.ast.expr.ListExpression
-import org.codehaus.groovy.ast.expr.MapExpression
-import org.codehaus.groovy.ast.expr.MethodCallExpression
-import org.codehaus.groovy.ast.expr.VariableExpression
+import org.codehaus.groovy.ast.*
+import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.Statement
 import org.grails.datastore.gorm.services.ServiceEnhancer
 import org.grails.datastore.gorm.transform.AbstractTraitApplyingGormASTTransformation
 import org.grails.datastore.gorm.validation.javax.ConfigurableParameterNameProvider
-import org.grails.datastore.gorm.validation.javax.JavaxValidatorRegistry
-import org.grails.datastore.gorm.validation.javax.MethodKey
 import org.grails.datastore.gorm.validation.javax.services.ValidatedService
 import org.grails.datastore.mapping.reflect.ClassUtils
 
 import javax.validation.Constraint
 import javax.validation.ParameterNameProvider
-import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
-import static org.grails.datastore.mapping.reflect.AstUtils.*
-import static org.grails.datastore.gorm.transform.AstMethodDispatchUtils.*
 import static org.codehaus.groovy.ast.ClassHelper.*
+import static org.codehaus.groovy.ast.tools.GeneralUtils.*
+import static org.grails.datastore.gorm.transform.AstMethodDispatchUtils.callThisD
+import static org.grails.datastore.mapping.reflect.AstUtils.*
+
 /**
  * Adds method parameter validation to {@link grails.gorm.services.Service} instances
  *
@@ -93,6 +79,8 @@ class MethodValidationImplementer implements ServiceEnhancer {
         else{
             validatedMethodCount++
         }
+        
+        targetClassNode.putNodeMetaData(VALIDATED_METHOD, validatedMethodCount)
 
         // add a field that holds a reference to the java.lang.reflect.Method to be validated
         String methodFieldName = VALIDATED_METHOD + validatedMethodCount
