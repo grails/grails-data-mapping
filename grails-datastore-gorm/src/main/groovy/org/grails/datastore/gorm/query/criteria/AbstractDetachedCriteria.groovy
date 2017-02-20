@@ -842,6 +842,7 @@ abstract class AbstractDetachedCriteria<T> implements Criteria, Cloneable {
      * @param name The connection name
      * @param callable The callable closure
      * @return A new criteria instance
+     * @since 6.1
      */
 
     AbstractDetachedCriteria<T> withConnection(String name) {
