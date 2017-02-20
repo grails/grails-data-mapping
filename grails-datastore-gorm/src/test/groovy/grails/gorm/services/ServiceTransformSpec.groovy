@@ -316,7 +316,7 @@ class Foo {
 
         then:"A compilation error occurred"
         def e = thrown(MultipleCompilationErrorsException)
-        e.message.contains '''[Static type checking] - The variable [wrong] is undeclared.
+        e.message.normalize().contains '''[Static type checking] - The variable [wrong] is undeclared.
  @ line 8, column 48.
    $Foo as f where f.title like $wrong")'''
     }
@@ -341,7 +341,7 @@ class Foo {
 
         then:"A compilation error occurred"
         def e = thrown(MultipleCompilationErrorsException)
-        e.message.contains '''Invalid query class [java.lang.String]. Referenced classes in queries must be domain classes
+        e.message.normalize().contains '''Invalid query class [java.lang.String]. Referenced classes in queries must be domain classes
  @ line 8, column 19.
        @Query("from $String as f where f.title like $pattern") 
                      ^'''
@@ -463,7 +463,7 @@ class Foo {
 
         then:"A compilation error occurred"
         def e = thrown(MultipleCompilationErrorsException)
-        e.message.contains '''No property [tit] existing for domain class [Foo]
+        e.message.normalize().contains '''No property [tit] existing for domain class [Foo]
  @ line 8, column 34.
        @Query("from ${Foo f} where $f.tit like $pattern") 
                                     ^'''
@@ -640,7 +640,7 @@ interface MyService {
 
         then:"A compilation error occurred"
         def e = thrown(MultipleCompilationErrorsException)
-        e.message.contains '''No implementations possible for method 'void foo()'. Please use an abstract class instead and provide an implementation.
+        e.message.normalize().contains '''No implementations possible for method 'void foo()'. Please use an abstract class instead and provide an implementation.
  @ line 6, column 5.
        void foo()
        ^'''
@@ -665,7 +665,7 @@ class Foo {
 
         then:"A compilation error occurred"
         def e = thrown(MultipleCompilationErrorsException)
-        e.message.contains '''Cannot implement finder for non-existent property [tit] of class [Foo]
+        e.message.normalize().contains '''Cannot implement finder for non-existent property [tit] of class [Foo]
  @ line 8, column 5.
        List<Foo> findByTitLike(String title)'''
     }
@@ -690,7 +690,7 @@ class Foo {
 
         then:"A compilation error occurred"
         def e = thrown(MultipleCompilationErrorsException)
-        e.message.contains '''Cannot implement method for argument [title]. No property exists on domain class [Foo]
+        e.message.normalize().contains '''Cannot implement method for argument [title]. No property exists on domain class [Foo]
  @ line 8, column 5.
        List<Foo> find(Integer title)
        ^'''
