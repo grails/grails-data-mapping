@@ -119,6 +119,10 @@ class Property implements Cloneable {
     private String propertyName
     private EnumType enumType
 
+    protected void setUniquenessGroup(List<String> uniquenessGroup) {
+        this.uniquenessGroup = uniquenessGroup
+    }
+
     Boolean getLazy() {
         return lazy
     }
@@ -134,9 +138,9 @@ class Property implements Cloneable {
     @Override
     Property clone() throws CloneNotSupportedException {
         Property cloned = (Property) super.clone()
-        cloned.@uniquenessGroup = new ArrayList<>(uniquenessGroup);
+        cloned.uniquenessGroup = new ArrayList<>(uniquenessGroup)
         if(inList != null) {
-            cloned.inList = new ArrayList<>(inList);
+            cloned.inList = new ArrayList<>(inList)
         }
 
         return cloned

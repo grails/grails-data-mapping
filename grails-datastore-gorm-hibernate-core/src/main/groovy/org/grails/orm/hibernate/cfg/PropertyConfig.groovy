@@ -441,7 +441,7 @@ class PropertyConfig extends Property {
     }
 
     String toString() {
-        "property[type:$type, lazy:$lazy, columns:$columns, insertable:${insertable}, updateable:${updateable}]"
+        "property[type:$type, lazy:$lazy, columns:$columns, insertable:${insertable}, updateable:${updatable}]"
     }
 
     protected void checkHasSingleColumn() {
