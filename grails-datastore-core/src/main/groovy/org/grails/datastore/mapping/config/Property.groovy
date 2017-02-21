@@ -133,7 +133,13 @@ class Property implements Cloneable {
 
     @Override
     Property clone() throws CloneNotSupportedException {
-        return (Property) super.clone()
+        Property cloned = (Property) super.clone()
+        cloned.uniquenessGroup = new ArrayList<>(uniquenessGroup);
+        if(inList != null) {
+            cloned.inList = new ArrayList<>(inList);
+        }
+
+        return cloned
     }
 
     @CompileDynamic
