@@ -7105,6 +7105,60 @@ The above example also works in Spock unit tests that extend <code>HibernateSpec
 <div class="paragraph">
 <p>In this case GORM will implement the interface methods that have not been defined by the abstract class.</p>
 </div>
+<div class="paragraph">
+<p>In addition, all <em>public</em> methods of the domain class will be automatically wrapped in the appropriate transaction handling.</p>
+</div>
+<div class="paragraph">
+<p>What this means is that you can define protected abstract methods that are non-transactional in order to compose logic. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
+<span class="directive">abstract</span> <span class="type">class</span> <span class="class">BookService</span>  {
+
+   <span class="directive">protected</span> <span class="directive">abstract</span> <span class="predefined-type">Book</span> getBook(<span class="predefined-type">Serializable</span> id) <i class="conum" data-value="1"></i><b>(1)</b>
+
+   <span class="directive">protected</span> <span class="directive">abstract</span> Author getAuthor(<span class="predefined-type">Serializable</span> id) <i class="conum" data-value="1"></i><b>(1)</b>
+
+   <span class="predefined-type">Book</span> updateBook(<span class="predefined-type">Serializable</span> id, <span class="predefined-type">Serializable</span> authorId) { <i class="conum" data-value="2"></i><b>(2)</b>
+      <span class="predefined-type">Book</span> book = getBook(id)
+      <span class="keyword">if</span>(book != <span class="predefined-constant">null</span>) {
+          Author author = getAuthor(authorId)
+          <span class="keyword">if</span>(author == <span class="predefined-constant">null</span>) {
+              <span class="keyword">throw</span> <span class="keyword">new</span> <span class="exception">IllegalArgumentException</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">Author does not exist</span><span class="delimiter">&quot;</span></span>)
+          }
+          book.author = author
+          book.save()
+      }
+      <span class="keyword">return</span> book
+   }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Two <code>protected abstract</code> methods are defined that are not wrapped in transaction handling</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>updateBook</code> method uses the two methods that are implemented automatically by GORM and being <code>public</code> is automatically made transactional.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If you have <code>public</code> methods that you do not wish to be transactional, then you can annotate them with <code>@NotTransactional</code>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 <div class="sect2">
