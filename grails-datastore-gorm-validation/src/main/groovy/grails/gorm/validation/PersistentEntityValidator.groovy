@@ -68,12 +68,14 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
             ConstrainedProperty constrainedProperty = constrainedProperties.get(propertyName)
 
             if(constrainedProperty != null) {
-                validatePropertyWithConstraint(obj, propertyName, entityReflector, errors, constrainedProperty)
+                validatePropertyWithConstraint(obj, propertyName, entityReflector, errors, constrainedProperty, pp)
             }
 
             if(pp instanceof Association) {
                 Association association = (Association)pp
-                cascadeToAssociativeProperty(obj, errors, entityReflector, association)
+                if(cascade) {
+                    cascadeToAssociativeProperty(obj, errors, entityReflector, association)
+                }
             }
 
             constrainedPropertyNames.remove(propertyName)
@@ -82,7 +84,7 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
         for(String remainingProperty in constrainedPropertyNames) {
             ConstrainedProperty constrainedProperty = constrainedProperties.get(remainingProperty)
             if(remainingProperty != null) {
-                validatePropertyWithConstraint(obj, remainingProperty, entityReflector, errors, constrainedProperty)
+                validatePropertyWithConstraint(obj, remainingProperty, entityReflector, errors, constrainedProperty, null)
             }
         }
 
@@ -226,7 +228,7 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
                 if (associatedConstrainedProperties.containsKey(associatedPropertyName)) {
 
                     ConstrainedProperty associatedConstrainedProperty = associatedConstrainedProperties.get(associatedPropertyName)
-                    validatePropertyWithConstraint(associatedObject, errors.getNestedPath() + associatedPropertyName, associatedReflector, errors, associatedConstrainedProperty)
+                    validatePropertyWithConstraint(associatedObject, errors.getNestedPath() + associatedPropertyName, associatedReflector, errors, associatedConstrainedProperty, associatedPersistentProperty)
                 }
                 // don't continue cascade if the the other side is equal to avoid stack overflow
                 if (associatedPersistentProperty.equals(otherSide)) continue;
@@ -262,7 +264,7 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
         return nestedPath + componentName + "['" + indexOrKey + "']";
     }
 
-    private void validatePropertyWithConstraint(Object obj, String propertyName, EntityReflector reflector, Errors errors, ConstrainedProperty constrainedProperty) {
+    private void validatePropertyWithConstraint(Object obj, String propertyName, EntityReflector reflector, Errors errors, ConstrainedProperty constrainedProperty, PersistentProperty persistentProperty) {
 
         int i = propertyName.lastIndexOf(".")
         String constrainedPropertyName
@@ -274,7 +276,14 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
         }
         FieldError fieldError = errors.getFieldError(constrainedPropertyName)
         if (fieldError == null) {
-            constrainedProperty.validate(obj, reflector.getProperty(obj, constrainedPropertyName), errors)
+            if(persistentProperty != null) {
+                constrainedProperty.validate(obj, reflector.getProperty(obj, constrainedPropertyName), errors)
+            }
+            else {
+                if(obj instanceof GroovyObject) {
+                    constrainedProperty.validate(obj, ((GroovyObject)obj).getProperty(constrainedPropertyName), errors)
+                }
+            }
         }
     }
     @Override

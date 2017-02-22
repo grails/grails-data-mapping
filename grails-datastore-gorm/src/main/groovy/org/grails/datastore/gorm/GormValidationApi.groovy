@@ -14,9 +14,9 @@
  */
 package org.grails.datastore.gorm
 
+import grails.gorm.validation.CascadingValidator
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.support.BeforeValidateHelper
-import org.grails.datastore.gorm.validation.CascadingValidator
 import org.grails.datastore.gorm.validation.ValidatorProvider
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.Session
@@ -113,7 +113,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
             }
 
             if (validator instanceof CascadingValidator) {
-                validator.validate instance, localErrors, arguments?.deepValidate != false
+                ((CascadingValidator)validator).validate instance, localErrors, arguments?.deepValidate != false
             } else {
                 validator.validate instance, localErrors
             }

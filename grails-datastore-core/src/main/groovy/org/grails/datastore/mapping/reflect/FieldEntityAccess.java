@@ -417,7 +417,7 @@ public class FieldEntityAccess implements EntityAccess {
                     object = unwrapIfProxy(object);
                     return field.get(object);
                 } catch (Throwable e) {
-                    throw new IllegalArgumentException("Cannot read field ["+field+"] from object ["+object+"] of type ["+object.getClass()+"]");
+                    throw new IllegalArgumentException("Cannot read field ["+field+"] from object ["+object+"] of type ["+object.getClass()+"]", e);
                 }
             }
         }
@@ -440,7 +440,7 @@ public class FieldEntityAccess implements EntityAccess {
                 try {
                     field.set(object, value);
                 } catch (Throwable e) {
-                    throw new IllegalArgumentException("Cannot set field ["+field.getName()+"] of object ["+object+"] for value ["+value+"] of type ["+value.getClass().getName()+"]");
+                    throw new IllegalArgumentException("Cannot set field ["+field.getName()+"] of object ["+object+"] for value ["+value+"] of type ["+value.getClass().getName()+"]", e);
                 }
             }
         }

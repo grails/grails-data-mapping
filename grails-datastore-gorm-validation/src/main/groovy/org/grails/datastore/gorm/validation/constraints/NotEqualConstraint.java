@@ -42,7 +42,8 @@ public class NotEqualConstraint extends AbstractConstraint {
                     ConstrainedProperty.NOT_EQUAL_CONSTRAINT + "] of property [" +
                     constraintPropertyName + "] of class [" + constraintOwningClass +
                     "] must be the same type as property: [" + propertyClass.getName() + "]");
-        }        return null;
+        }
+        return constraintParameter;
     }
 
 
