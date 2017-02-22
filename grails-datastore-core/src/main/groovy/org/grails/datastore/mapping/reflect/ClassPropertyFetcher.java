@@ -206,15 +206,50 @@ public class ClassPropertyFetcher {
     }
 
     private static <T> List<T> getStaticPropertyValuesFromInheritanceHierarchy(ClassInfo classInfo, String name, Class<T> c) {
-        Collection<ClassInfo> hierarchy = classInfo.getCachedClass().getHierarchy();
+        CachedClass cachedClass = classInfo.getCachedClass();
+        Collection<ClassInfo> hierarchy = cachedClass.getHierarchy();
+        Class javaClass = cachedClass.getTheClass();
         List<T> values = new ArrayList<>(hierarchy.size());
         for (ClassInfo current : hierarchy) {
-            if(current.getCachedClass().isInterface()) continue;
+            if(cachedClass.isInterface()) continue;
             MetaProperty metaProperty = current.getMetaClass().getMetaProperty(name);
             if(metaProperty != null && Modifier.isStatic(metaProperty.getModifiers())) {
-                Object val = metaProperty.getProperty(current.getCachedClass().getTheClass());
-                if(c.isInstance(val)) {
-                    values.add((T) val);
+                Class type = metaProperty.getType();
+                if(type == Object.class || c.isAssignableFrom(type)) {
+                    if(metaProperty instanceof MetaBeanProperty) {
+                        MetaBeanProperty beanProperty = (MetaBeanProperty) metaProperty;
+                        CachedField field = beanProperty.getField();
+                        // try the field
+                        if(field != null) {
+                            Object val = field.getProperty(javaClass);
+                            if(c.isInstance(val)) {
+                                values.add((T) val);
+                            }
+                        }
+                        else {
+                            Object val = metaProperty.getProperty(javaClass);
+                            if(c.isInstance(val)) {
+                                values.add((T) val);
+                            }
+                        }
+                    }
+                    else {
+                        Object val = metaProperty.getProperty(javaClass);
+                        if(c.isInstance(val)) {
+                            values.add((T) val);
+                        }
+                    }
+                }
+                else {
+                    // try the field
+                    Field field = org.springframework.util.ReflectionUtils.findField(javaClass, name);
+                    if (field != null && c.isAssignableFrom(field.getType())) {
+                        org.springframework.util.ReflectionUtils.makeAccessible(field);
+                        try {
+                            values.add((T) field.get(javaClass));
+                        } catch (IllegalAccessException ignored) {}
+                    }
+                    return null;
                 }
             }
         }

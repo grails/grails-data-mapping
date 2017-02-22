@@ -125,6 +125,19 @@ interface ConstrainedProperty extends Constrained {
      */
     void applyConstraint(String constraintName, Object constrainingValue)
 
+
+    /**
+     * @return Returns the appliedConstraints.
+     */
+    Collection<Constraint> getAppliedConstraints()
+
+    /**
+     * Obtain an applied constraint
+     *
+     * @param name The name
+     * @return The constraint or null if it doesn't exist
+     */
+    Constraint getAppliedConstraint(String name)
     /**
      * @return The owner
      */

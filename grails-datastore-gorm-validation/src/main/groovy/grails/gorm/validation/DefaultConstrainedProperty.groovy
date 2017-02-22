@@ -97,6 +97,7 @@ class DefaultConstrainedProperty implements ConstrainedProperty {
     /**
      * @return Returns the appliedConstraints.
      */
+    @Override
     Collection<Constraint> getAppliedConstraints() {
         return appliedConstraints.values()
     }
@@ -106,6 +107,7 @@ class DefaultConstrainedProperty implements ConstrainedProperty {
      * @param name The name of the constraint
      * @return The applied constraint
      */
+    @Override
     Constraint getAppliedConstraint(String name) {
         return appliedConstraints.get(name)
     }

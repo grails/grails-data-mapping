@@ -10,6 +10,9 @@ import org.grails.datastore.mapping.model.config.GormProperties
  * @since 6.0
  */
 interface ConstraintsEvaluator {
+    /**
+     * The name of the constraints property
+     */
     String PROPERTY_NAME = GormProperties.CONSTRAINTS
     /**
      * The default constraints to use
@@ -33,4 +36,15 @@ interface ConstraintsEvaluator {
      * @return A map of constrained properties
      */
     Map<String, ConstrainedProperty> evaluate(@SuppressWarnings("rawtypes") Class cls, boolean defaultNullable)
+
+    /**
+     * Evaluate constraints for the given class
+     *
+     * @param cls The class to evaluate constraints for
+     * @param defaultNullable indicates if properties are nullable by default
+     * @param useOnlyAdHocConstraints indicates if evaluating without pre-declared constraints
+     * @param adHocConstraintsClosures ad-hoc constraints to evaluate for
+     * @return A map of constrained properties
+     */
+    Map<String, ConstrainedProperty> evaluate(Class<?> cls, boolean defaultNullable, boolean useOnlyAdHocConstraints, Closure... adHocConstraintsClosures);
 }
