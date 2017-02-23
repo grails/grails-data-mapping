@@ -1,6 +1,7 @@
 package org.grails.datastore.mapping.core.grailsversion
 
 import groovy.transform.CompileStatic
+import groovy.transform.EqualsAndHashCode
 import org.grails.datastore.mapping.reflect.ClassUtils
 
 
@@ -8,8 +9,10 @@ import org.grails.datastore.mapping.reflect.ClassUtils
  * A class to represent a version of Grails for comparison
  *
  * @author James Kleeh
+ * @author Graeme Rocher
  */
 @CompileStatic
+@EqualsAndHashCode(includes = ['versionText'])
 class GrailsVersion implements Comparable<GrailsVersion> {
 
     /**
@@ -38,6 +41,11 @@ class GrailsVersion implements Comparable<GrailsVersion> {
      */
     String versionText
 
+    @Override
+    String toString() {
+        return versionText
+    }
+
     GrailsVersion(String version) {
         String[] parts = version.split("\\.")
         if (parts.length >= 3) {
@@ -62,8 +70,8 @@ class GrailsVersion implements Comparable<GrailsVersion> {
     static boolean isAtLeast(String requiredVersion) {
         GrailsVersion currentVersion = getCurrent()
         if (currentVersion != null) {
-            // if the current version is greater than the required versiono
-            if (currentVersion.compareTo(new GrailsVersion(requiredVersion)) == -1) {
+            // if the current version is greater than the required version
+            if (currentVersion > new GrailsVersion(requiredVersion)) {
                 return true
             }
         }

@@ -7,6 +7,13 @@ import spock.lang.Specification
  */
 class GrailsVersionSpec extends Specification {
 
+    void "test isAtLeast"() {
+        expect:
+        !GrailsVersion.isAtLeast("3.3.0")
+        GrailsVersion.isAtLeast("3.2.0")
+        GrailsVersion.isAtLeast("3.1.0")
+    }
+
     void "test compareTo"() {
         expect:
         new GrailsVersion(greater) > new GrailsVersion(lesser)
