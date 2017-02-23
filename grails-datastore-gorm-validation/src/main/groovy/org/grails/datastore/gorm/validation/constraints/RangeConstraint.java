@@ -63,11 +63,22 @@ public class RangeConstraint extends AbstractConstraint {
         Comparable from = range.getFrom();
         Comparable to = range.getTo();
 
-        if (from instanceof Number && propertyValue instanceof Number) {
+        boolean isNumberRange = from instanceof Number;
+        if (isNumberRange) {
             // Upgrade the numbers to Long, so all integer types can be compared.
             from = ((Number) from).longValue();
             to = ((Number) to).longValue();
-            propertyValue = ((Number) propertyValue).longValue();
+            if(propertyValue instanceof Number) {
+                propertyValue = ((Number) propertyValue).longValue();
+            }
+            else if(propertyValue instanceof CharSequence) {
+                try {
+                    propertyValue = Long.valueOf(propertyValue.toString());
+                } catch (NumberFormatException e) {
+                    rejectValue(target, errors, ConstrainedProperty.DEFAULT_INVALID_RANGE_MESSAGE_CODE,
+                            ConstrainedProperty.RANGE_CONSTRAINT + ConstrainedProperty.INVALID_SUFFIX, args);
+                }
+            }
         }
 
         if (from.compareTo(propertyValue) > 0) {
