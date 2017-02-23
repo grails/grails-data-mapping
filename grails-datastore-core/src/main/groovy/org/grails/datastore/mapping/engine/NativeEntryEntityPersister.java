@@ -986,7 +986,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends ThirdPartyCacheEn
                     handleEmbeddedToOne(association, key, entityAccess, e);
                 }
 
-                else if (association.doesCascade(CascadeType.PERSIST) && association.getAssociatedEntity() !=  null) {
+                else if (association.getAssociatedEntity() !=  null) {
                     final Object associatedObject = entityAccess.getProperty(prop.getName());
                     if (associatedObject != null) {
                         Serializable associationId;
@@ -994,7 +994,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends ThirdPartyCacheEn
                         if (proxyFactory.isInitialized(associatedObject) && !session.contains(associatedObject) ) {
                             Serializable tempId = associationPersister.getObjectIdentifier(associatedObject);
                             if (tempId == null) {
-                                if (association.isOwningSide()) {
+                                if (association.doesCascade(CascadeType.PERSIST)) {
                                     tempId = session.persist(associatedObject);
                                 }
                             }
@@ -1017,8 +1017,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends ThirdPartyCacheEn
                                 }
                             }
 
-                            if (association.doesCascade(CascadeType.PERSIST)) {
-
                                 if (association.isBidirectional()) {
                                     Association inverseSide = association.getInverseSide();
                                     if (inverseSide != null) {
@@ -1026,8 +1024,9 @@ public abstract class NativeEntryEntityPersister<T, K> extends ThirdPartyCacheEn
                                         inverseAccess.setProperty(inverseSide.getName(), obj);
                                     }
                                 }
-                                associationPersister.persist(associatedObject);
-                            }
+                                if( association.doesCascade(CascadeType.PERSIST) ) {
+                                    associationPersister.persist(associatedObject);
+                                }
                         }
                         // handle of standard many-to-one
                         else {

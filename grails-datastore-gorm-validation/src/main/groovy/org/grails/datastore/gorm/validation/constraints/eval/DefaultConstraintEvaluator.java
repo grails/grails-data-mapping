@@ -145,29 +145,26 @@ public class DefaultConstraintEvaluator implements ConstraintsEvaluator {
                 }
             }
 
-            if(!useOnlyAdHocConstraints) {
-
-                ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(theClass);
-                List<MetaProperty> metaProperties = cpf.getMetaProperties();
-                for (MetaProperty metaProperty : metaProperties) {
-                    String propertyName = metaProperty.getName();
-                    if(!constrainedProperties.containsKey(propertyName) && NameUtils.isNotConfigurational(propertyName)) {
-                        Class propertyType = metaProperty.getType();
-                        if(metaProperty instanceof MetaBeanProperty) {
-                            MetaBeanProperty beanProperty = (MetaBeanProperty) metaProperty;
-                            MetaMethod getter = beanProperty.getGetter();
-                            // getters of type Boolean should start with 'get' not 'is'
-                            if(Boolean.class == propertyType && getter != null && getter.getName().startsWith("is")) {
-                                continue;
-                            }
+            ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(theClass);
+            List<MetaProperty> metaProperties = cpf.getMetaProperties();
+            for (MetaProperty metaProperty : metaProperties) {
+                String propertyName = metaProperty.getName();
+                if(!constrainedProperties.containsKey(propertyName) && NameUtils.isNotConfigurational(propertyName)) {
+                    Class propertyType = metaProperty.getType();
+                    if(metaProperty instanceof MetaBeanProperty) {
+                        MetaBeanProperty beanProperty = (MetaBeanProperty) metaProperty;
+                        MetaMethod getter = beanProperty.getGetter();
+                        // getters of type Boolean should start with 'get' not 'is'
+                        if(Boolean.class == propertyType && getter != null && getter.getName().startsWith("is")) {
+                            continue;
                         }
-                        if(!defaultNullable) {
-                            DefaultConstrainedProperty constrainedProperty = new DefaultConstrainedProperty(theClass, propertyName, propertyType, constraintRegistry);
-                            constrainedProperty.setOrder(constrainedProperties.size() + 1);
-                            constrainedProperties.put(propertyName, constrainedProperty);
-                            applyDefaultNullableConstraint(constrainedProperty, defaultNullable);
-                            applyDefaultConstraints(propertyName, null, constrainedProperty, defaultConstraints);
-                        }
+                    }
+                    if(!defaultNullable) {
+                        DefaultConstrainedProperty constrainedProperty = new DefaultConstrainedProperty(theClass, propertyName, propertyType, constraintRegistry);
+                        constrainedProperty.setOrder(constrainedProperties.size() + 1);
+                        constrainedProperties.put(propertyName, constrainedProperty);
+                        applyDefaultNullableConstraint(constrainedProperty, defaultNullable);
+                        applyDefaultConstraints(propertyName, null, constrainedProperty, defaultConstraints);
                     }
                 }
             }

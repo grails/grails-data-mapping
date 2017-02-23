@@ -39,33 +39,33 @@ class AssociationCascadeOperationsSpec extends Specification {
         }
 
         when:
-        List<CascadeType> cascadeTypes = a.getCascadeOperations()
+        Set<CascadeType> cascadeTypes = a.getCascadeOperations()
 
         then:
         cascadeTypes == expectedTypes
 
         where:
         _cascade   | _owningSide | expectedTypes
-        "none"     | false       | []
-        "all"      | false       | [CascadeType.ALL]
-        "merge"    | false       | [CascadeType.MERGE]
-        "delete"   | false       | [CascadeType.REMOVE]
-        "remove"   | false       | [CascadeType.REMOVE]
-        "refresh"  | false       | [CascadeType.REFRESH]
-        "persist"  | false       | [CascadeType.PERSIST]
-        "abc"      | false       | []
-        "none"     | true        | []
-        "all"      | true        | [CascadeType.ALL]
-        "merge"    | true        | [CascadeType.MERGE]
-        "delete"   | true        | [CascadeType.REMOVE]
-        "remove"   | true        | [CascadeType.REMOVE]
-        "refresh"  | true        | [CascadeType.REFRESH]
-        "persist"  | true        | [CascadeType.PERSIST]
-        "abc"      | true        | []
-        null       | true        | [CascadeType.ALL]
-        null       | false       | [CascadeType.PERSIST]
-        "delete,merge"  | false  | [CascadeType.REMOVE,CascadeType.MERGE]
-        "delete, merge" | false  | [CascadeType.REMOVE,CascadeType.MERGE]
+        "none"     | false       | Collections.emptySet()
+        "all"      | false       | [CascadeType.ALL] as Set
+        "merge"    | false       | [CascadeType.MERGE] as Set
+        "delete"   | false       | [CascadeType.REMOVE] as Set
+        "remove"   | false       | [CascadeType.REMOVE] as Set
+        "refresh"  | false       | [CascadeType.REFRESH] as Set
+        "persist"  | false       | [CascadeType.PERSIST] as Set
+        "abc"      | false       | Collections.emptySet()
+        "none"     | true        | Collections.emptySet()
+        "all"      | true        | [CascadeType.ALL] as Set
+        "merge"    | true        | [CascadeType.MERGE] as Set
+        "delete"   | true        | [CascadeType.REMOVE] as Set
+        "remove"   | true        | [CascadeType.REMOVE] as Set
+        "refresh"  | true        | [CascadeType.REFRESH] as Set
+        "persist"  | true        | [CascadeType.PERSIST] as Set
+        "abc"      | true        | Collections.emptySet()
+        null       | true        | [CascadeType.ALL] as Set
+        null       | false       | [CascadeType.PERSIST] as Set
+        "delete,merge"  | false  | [CascadeType.REMOVE,CascadeType.MERGE] as Set
+        "delete, merge" | false  | [CascadeType.REMOVE,CascadeType.MERGE] as Set
 
     }
 }

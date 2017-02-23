@@ -16,6 +16,8 @@ import org.springframework.context.MessageSource
 import org.springframework.validation.Errors
 import org.springframework.validation.FieldError
 
+import javax.persistence.CascadeType
+
 /**
  * A Validator that validates a {@link org.grails.datastore.mapping.model.PersistentEntity} against known constraints
  *
@@ -107,7 +109,7 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
             Object associatedObject = reflector.getProperty(parent, propertyName)
 
             if(associatedObject != null && proxyHandler?.isInitialized(associatedObject)) {
-                if(association.isOwningSide()) {
+                if(association.isOwningSide() || association.doesCascade(CascadeType.PERSIST, CascadeType.MERGE)) {
                     cascadeValidationToOne(parent, propertyName, (ToOne)association, errors, reflector, associatedObject, null)
                 }
                 else {
@@ -123,7 +125,9 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
             }
         }
         else if (association instanceof ToMany) {
-            cascadeValidationToMany(parent, propertyName, association, errors, reflector)
+            if(association.doesCascade(CascadeType.PERSIST, CascadeType.MERGE)) {
+                cascadeValidationToMany(parent, propertyName, association, errors, reflector)
+            }
         }
     }
 
@@ -194,7 +198,7 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
         MappingContext mappingContext = associatedEntity.getMappingContext()
         EntityReflector associatedReflector = mappingContext.getEntityReflector(associatedEntity)
 
-        if (associatedEntity == null || !association.isOwningSide()) {
+        if (associatedEntity == null || (!association.isOwningSide() && !association.doesCascade(CascadeType.PERSIST, CascadeType.MERGE) )) {
             return
         }
 
