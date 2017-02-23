@@ -28,10 +28,10 @@ import java.util.concurrent.ConcurrentHashMap
  * @since 6.0
  */
 @CompileStatic
-class DefaultValidatorRegistry implements ValidatorRegistry, ConstraintRegistry {
+class DefaultValidatorRegistry implements ValidatorRegistry, ConstraintRegistry, ConstraintsEvaluator {
 
     final Map<PersistentEntity, Validator> validatorMap = new ConcurrentHashMap<>()
-    final ConstraintsEvaluator constraintsEvaluator
+    final @Delegate ConstraintsEvaluator constraintsEvaluator
     final @Delegate ConstraintRegistry constraintRegistry
     final MessageSource messageSource
     final MappingContext mappingContext

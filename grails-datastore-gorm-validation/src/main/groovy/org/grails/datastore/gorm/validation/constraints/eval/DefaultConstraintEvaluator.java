@@ -86,7 +86,8 @@ public class DefaultConstraintEvaluator implements ConstraintsEvaluator {
         if(adHocConstraintsClosures != null) {
             constraints.addAll( Arrays.asList(adHocConstraintsClosures) );
         }
-        ConstrainedPropertyBuilder delegate = new ConstrainedPropertyBuilder(this.mappingContext, this.constraintRegistry, theClass, defaultConstraints);
+        ConstrainedPropertyBuilder delegate = newConstrainedPropertyBuilder(theClass);
+        delegate.setAllowDynamic(useOnlyAdHocConstraints);
         // Evaluate all the constraints closures in the inheritance chain
         for (Closure c : constraints) {
 
@@ -143,26 +144,30 @@ public class DefaultConstraintEvaluator implements ConstraintsEvaluator {
                     applyDefaultNullableConstraint(constrainedProperty, defaultNullable);
                 }
             }
-            ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(theClass);
-            List<MetaProperty> metaProperties = cpf.getMetaProperties();
-            for (MetaProperty metaProperty : metaProperties) {
-                String propertyName = metaProperty.getName();
-                if(!constrainedProperties.containsKey(propertyName) && NameUtils.isNotConfigurational(propertyName)) {
-                    Class propertyType = metaProperty.getType();
-                    if(metaProperty instanceof MetaBeanProperty) {
-                        MetaBeanProperty beanProperty = (MetaBeanProperty) metaProperty;
-                        MetaMethod getter = beanProperty.getGetter();
-                        // getters of type Boolean should start with 'get' not 'is'
-                        if(Boolean.class == propertyType && getter != null && getter.getName().startsWith("is")) {
-                            continue;
+
+            if(!useOnlyAdHocConstraints) {
+
+                ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(theClass);
+                List<MetaProperty> metaProperties = cpf.getMetaProperties();
+                for (MetaProperty metaProperty : metaProperties) {
+                    String propertyName = metaProperty.getName();
+                    if(!constrainedProperties.containsKey(propertyName) && NameUtils.isNotConfigurational(propertyName)) {
+                        Class propertyType = metaProperty.getType();
+                        if(metaProperty instanceof MetaBeanProperty) {
+                            MetaBeanProperty beanProperty = (MetaBeanProperty) metaProperty;
+                            MetaMethod getter = beanProperty.getGetter();
+                            // getters of type Boolean should start with 'get' not 'is'
+                            if(Boolean.class == propertyType && getter != null && getter.getName().startsWith("is")) {
+                                continue;
+                            }
                         }
-                    }
-                    if(!defaultNullable) {
-                        DefaultConstrainedProperty constrainedProperty = new DefaultConstrainedProperty(theClass, propertyName, propertyType, constraintRegistry);
-                        constrainedProperty.setOrder(constrainedProperties.size() + 1);
-                        constrainedProperties.put(propertyName, constrainedProperty);
-                        applyDefaultNullableConstraint(constrainedProperty, defaultNullable);
-                        applyDefaultConstraints(propertyName, null, constrainedProperty, defaultConstraints);
+                        if(!defaultNullable) {
+                            DefaultConstrainedProperty constrainedProperty = new DefaultConstrainedProperty(theClass, propertyName, propertyType, constraintRegistry);
+                            constrainedProperty.setOrder(constrainedProperties.size() + 1);
+                            constrainedProperties.put(propertyName, constrainedProperty);
+                            applyDefaultNullableConstraint(constrainedProperty, defaultNullable);
+                            applyDefaultConstraints(propertyName, null, constrainedProperty, defaultConstraints);
+                        }
                     }
                 }
             }
@@ -171,6 +176,10 @@ public class DefaultConstraintEvaluator implements ConstraintsEvaluator {
         applySharedConstraints(delegate, constrainedProperties);
 
         return constrainedProperties;
+    }
+
+    public ConstrainedPropertyBuilder newConstrainedPropertyBuilder(Class<?> theClass) {
+        return new ConstrainedPropertyBuilder(this.mappingContext, this.constraintRegistry, theClass, defaultConstraints);
     }
 
     protected void applySharedConstraints(

@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm.validation.constraints.eval
 
 import grails.gorm.validation.ConstrainedProperty
+import org.grails.datastore.gorm.validation.constraints.builder.ConstrainedPropertyBuilder
 import org.grails.datastore.mapping.model.config.GormProperties
 
 /**
@@ -46,5 +47,13 @@ interface ConstraintsEvaluator {
      * @param adHocConstraintsClosures ad-hoc constraints to evaluate for
      * @return A map of constrained properties
      */
-    Map<String, ConstrainedProperty> evaluate(Class<?> cls, boolean defaultNullable, boolean useOnlyAdHocConstraints, Closure... adHocConstraintsClosures);
+    Map<String, ConstrainedProperty> evaluate(Class<?> cls, boolean defaultNullable, boolean useOnlyAdHocConstraints, Closure... adHocConstraintsClosures)
+
+    /**
+     * Obtains a new builder from this evaluator
+     *
+     * @param theClass The class
+     * @return The builder
+     */
+    ConstrainedPropertyBuilder newConstrainedPropertyBuilder(Class<?> theClass)
 }

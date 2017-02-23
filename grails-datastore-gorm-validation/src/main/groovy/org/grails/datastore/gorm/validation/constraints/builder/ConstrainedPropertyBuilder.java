@@ -38,6 +38,7 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
     private final ConstraintRegistry constraintRegistry;
     private final MappingContext mappingContext;
     private final Map<String, Object> defaultConstraints;
+    private boolean allowDynamic = false;
 
 
     public ConstrainedPropertyBuilder(MappingContext mappingContext, ConstraintRegistry constraintRegistry, Class targetClass, Map<String, Object> defaultConstraints) {
@@ -95,7 +96,11 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
             else {
                 Class<?> propertyType = classPropertyFetcher.getPropertyType(property);
                 if (propertyType == null) {
-                    throw new MissingMethodException(property, targetClass, new Object[]{attributes}, true);
+                    if(!allowDynamic) {
+                        throw new MissingMethodException(property, targetClass, new Object[]{attributes}, true);
+                    }
+                    // assume in dynamic use types are strings
+                    propertyType = CharSequence.class;
                 }
                 cp = new DefaultConstrainedProperty(targetClass, property, propertyType, constraintRegistry);
                 cp.setOrder(order++);
@@ -238,5 +243,9 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
 
     public Map<String, ConstrainedProperty> getConstrainedProperties() {
         return constrainedProperties;
+    }
+
+    public void setAllowDynamic(boolean allowDynamic) {
+        this.allowDynamic = allowDynamic;
     }
 }
