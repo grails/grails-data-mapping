@@ -105,6 +105,7 @@ if (location.href.indexOf('is-external=true') == -1) {
             <hr>
             <br>
 <pre>@groovy.transform.CompileStatic
+@groovy.transform.EqualsAndHashCode(includes = ['versionText'])
 class GrailsVersion
 extends java.lang.Object
 
@@ -113,7 +114,7 @@ extends java.lang.Object
 
 
     <p> A class to represent a version of Grails for comparison
- <DL><DT><B>Authors:</B></DT><DD>James Kleeh</DD></DL></p>
+ <DL><DT><B>Authors:</B></DT><DD>James Kleeh</DD><DD>Graeme Rocher</DD></DL></p>
 
           </li>
     </ul>
@@ -233,6 +234,11 @@ extends java.lang.Object
                         <tr class="rowColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isSnapshot()">isSnapshot</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>java.lang.String</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#toString()">toString</a></strong>()</code><br></td>
                         </tr>
                         
                     </table>
@@ -389,6 +395,15 @@ int <strong>compareTo</strong>(<a href='../../../../../../org/grails/datastore/m
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>boolean <strong>isSnapshot</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="toString()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.lang.String <strong>toString</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
