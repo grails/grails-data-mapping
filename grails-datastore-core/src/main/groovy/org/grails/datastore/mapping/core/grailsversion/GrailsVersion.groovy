@@ -1,5 +1,6 @@
 package org.grails.datastore.mapping.core.grailsversion
 
+import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.reflect.ClassUtils
 
 
@@ -8,12 +9,33 @@ import org.grails.datastore.mapping.reflect.ClassUtils
  *
  * @author James Kleeh
  */
+@CompileStatic
 class GrailsVersion implements Comparable<GrailsVersion> {
 
+    /**
+     * The current version
+     */
+    private static GrailsVersion currentVersion = null
+
+    /**
+     * The major version
+     */
     int major
+    /**
+     * The minor version
+     */
     int minor
+    /**
+     * The patch version
+     */
     int patch
+    /**
+     * Information about the snapshot status
+     */
     Snapshot snapshot
+    /**
+     * The full version text
+     */
     String versionText
 
     GrailsVersion(String version) {
@@ -31,9 +53,33 @@ class GrailsVersion implements Comparable<GrailsVersion> {
         }
     }
 
+    /**
+     * Check whether the version is at least the given version
+     *
+     * @param requiredVersion The required version
+     * @return True if it is
+     */
+    static boolean isAtLeast(String requiredVersion) {
+        GrailsVersion currentVersion = getCurrent()
+        if (currentVersion != null) {
+            // if the current version is greater than the required versiono
+            if (currentVersion.compareTo(new GrailsVersion(requiredVersion)) == -1) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
+     * @return Obtains the current Grails version
+     */
     static GrailsVersion getCurrent() {
-        if (ClassUtils.isPresent("grails.util.BuildSettings")) {
-            new GrailsVersion(Class.forName("grails.util.BuildSettings").package.implementationVersion)
+        if(currentVersion != null) {
+            return currentVersion
+        }
+        else if (ClassUtils.isPresent("grails.util.BuildSettings")) {
+            currentVersion = new GrailsVersion(Class.forName("grails.util.BuildSettings").package.implementationVersion)
+            return currentVersion
         } else {
             null
         }
