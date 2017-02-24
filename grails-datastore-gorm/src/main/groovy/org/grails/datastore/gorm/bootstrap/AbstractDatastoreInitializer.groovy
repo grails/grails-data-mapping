@@ -9,6 +9,7 @@ import org.grails.datastore.gorm.events.DefaultApplicationEventPublisher
 import org.grails.datastore.gorm.plugin.support.PersistenceContextInterceptorAggregator
 import org.grails.datastore.gorm.support.AbstractDatastorePersistenceContextInterceptor
 import org.grails.datastore.mapping.core.DatastoreUtils
+import org.grails.datastore.mapping.core.grailsversion.GrailsVersion
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar
 import org.grails.datastore.mapping.reflect.AstUtils
@@ -244,7 +245,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     @CompileDynamic
     Closure getCommonConfiguration(BeanDefinitionRegistry registry, String type) {
         return {
-            if(!isGrailsPresent()) {
+            if(!isGrailsPresent() || GrailsVersion.isAtLeastMajorMinor(3,3)) {
                 return
             }
 
