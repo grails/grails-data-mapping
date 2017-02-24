@@ -13,7 +13,6 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProce
 import org.springframework.beans.factory.support.RootBeanDefinition
 import org.springframework.transaction.PlatformTransactionManager
 
-import javax.sql.DataSource
 
 /**
  * A factory bean that looks up a datastore by connection name
@@ -34,19 +33,6 @@ class HibernateDatastoreConnectionSourcesRegistrar implements BeanDefinitionRegi
     void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
         for(String dataSourceName in dataSourceNames) {
             boolean isDefault = dataSourceName == ConnectionSource.DEFAULT || dataSourceName == Settings.SETTING_DATASOURCE
-            String dataSourceBeanName = isDefault ? Settings.SETTING_DATASOURCE : "${Settings.SETTING_DATASOURCE}_$dataSourceName"
-
-            if(!registry.containsBeanDefinition(dataSourceBeanName)) {
-                def dataSourceBean = new RootBeanDefinition()
-                dataSourceBean.setTargetType(DataSource)
-                dataSourceBean.setBeanClass(InstanceFactoryBean)
-                def args = new ConstructorArgumentValues()
-                args.addGenericArgumentValue("#{hibernateDatastore.getDatastoreForConnection('$dataSourceName').connectionSources.defaultConnectionSource.dataSource}".toString())
-                dataSourceBean.setConstructorArgumentValues(
-                        args
-                )
-                registry.registerBeanDefinition(dataSourceBeanName, dataSourceBean)
-            }
 
             if(!isDefault) {
                 String suffix = '_' + dataSourceName
