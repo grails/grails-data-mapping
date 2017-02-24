@@ -586,45 +586,35 @@ table.CodeRay td.code>pre{padding:0}
 </ul>
 </li>
 <li><a href="#programmaticTransactions">9. Programmatic Transactions</a></li>
-<li><a href="#dataServices">10. GORM Data Services</a>
+<li><a href="#multipleDataSources">10. Multiple Data Sources</a>
 <ul class="sectlevel2">
-<li><a href="#_data_service_basics">10.1. Data Service Basics</a></li>
-<li><a href="#_data_service_queries">10.2. Data Service Queries</a></li>
-<li><a href="#_query_joins">10.3. Query Joins</a></li>
-<li><a href="#_data_service_write_operations">10.4. Data Service Write Operations</a></li>
-<li><a href="#_validating_data_services">10.5. Validating Data Services</a></li>
-<li><a href="#_rxjava_support">10.6. RxJava Support</a></li>
+<li><a href="#_configuring_multiple_data_sources">10.1. Configuring Multiple Data Sources</a></li>
+<li><a href="#_mapping_domain_classes_to_data_sources">10.2. Mapping Domain Classes to Data Sources</a></li>
+<li><a href="#_data_source_namespaces">10.3. Data Source Namespaces</a></li>
+<li><a href="#connectionSources">10.4. The ConnectionSources API</a></li>
 </ul>
 </li>
-<li><a href="#multipleDataSources">11. Multiple Data Sources</a>
+<li><a href="#multiTenancy">11. Multi-Tenancy</a>
 <ul class="sectlevel2">
-<li><a href="#_configuring_multiple_data_sources">11.1. Configuring Multiple Data Sources</a></li>
-<li><a href="#_mapping_domain_classes_to_data_sources">11.2. Mapping Domain Classes to Data Sources</a></li>
-<li><a href="#_data_source_namespaces">11.3. Data Source Namespaces</a></li>
-<li><a href="#connectionSources">11.4. The ConnectionSources API</a></li>
+<li><a href="#_multi_tenancy_modes">11.1. Multi-Tenancy Modes</a></li>
+<li><a href="#_database_per_tenant">11.2. Database Per Tenant</a></li>
+<li><a href="#_schema_per_tenant">11.3. Schema Per Tenant</a></li>
+<li><a href="#_partitioned_multi_tenancy">11.4. Partitioned Multi-Tenancy</a></li>
+<li><a href="#_understanding_tenant_resolvers">11.5. Understanding Tenant Resolvers</a></li>
 </ul>
 </li>
-<li><a href="#multiTenancy">12. Multi-Tenancy</a>
+<li><a href="#constraints">12. Validation and Constraints</a>
 <ul class="sectlevel2">
-<li><a href="#_multi_tenancy_modes">12.1. Multi-Tenancy Modes</a></li>
-<li><a href="#_database_per_tenant">12.2. Database Per Tenant</a></li>
-<li><a href="#_schema_per_tenant">12.3. Schema Per Tenant</a></li>
-<li><a href="#_partitioned_multi_tenancy">12.4. Partitioned Multi-Tenancy</a></li>
-<li><a href="#_understanding_tenant_resolvers">12.5. Understanding Tenant Resolvers</a></li>
+<li><a href="#_applying_constraints">12.1. Applying Constraints</a></li>
+<li><a href="#_referencing_instances_in_constraints">12.2. Referencing Instances in Constraints</a></li>
+<li><a href="#_constraints_reference">12.3. Constraints Reference</a></li>
+<li><a href="#_constraints_and_database_mapping">12.4. Constraints and Database Mapping</a></li>
 </ul>
 </li>
-<li><a href="#constraints">13. Validation and Constraints</a>
+<li><a href="#testing">13. GORM and Testing</a>
 <ul class="sectlevel2">
-<li><a href="#_applying_constraints">13.1. Applying Constraints</a></li>
-<li><a href="#_referencing_instances_in_constraints">13.2. Referencing Instances in Constraints</a></li>
-<li><a href="#_constraints_reference">13.3. Constraints Reference</a></li>
-<li><a href="#_constraints_and_database_mapping">13.4. Constraints and Database Mapping</a></li>
-</ul>
-</li>
-<li><a href="#testing">14. GORM and Testing</a>
-<ul class="sectlevel2">
-<li><a href="#_unit_testing_with_spock">14.1. Unit Testing with Spock</a></li>
-<li><a href="#_unit_testing_with_junit">14.2. Unit Testing with JUnit</a></li>
+<li><a href="#_unit_testing_with_spock">13.1. Unit Testing with Spock</a></li>
+<li><a href="#_unit_testing_with_junit">13.2. Unit Testing with JUnit</a></li>
 </ul>
 </li>
 </ul>
@@ -668,41 +658,7 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="releaseHistory">1.1. Release History</h3>
 <div class="sect3">
-<h4 id="_gorm_6_1">1.1.1. GORM 6.1</h4>
-<div class="paragraph">
-<p>GORM 6.1 includes a variety of enhancements to GORM 6.0 including:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>GORM Data Services</p>
-</li>
-<li>
-<p>Multi-Tenancy Transformations</p>
-</li>
-<li>
-<p>Support for Bean Validation API</p>
-</li>
-<li>
-<p>Built-in Package Scanning</p>
-</li>
-<li>
-<p>JPA Annotation Mapping Support</p>
-</li>
-<li>
-<p>Hibernate transformations for dirty checking, managed entities and so on</p>
-</li>
-<li>
-<p>HQL &amp; SQL query escaping for GString queries</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>See the <a href="http://gorm.grails.org/6.1.x/whatsNew/manual">What&#8217;s New in GORM 6.1</a> guide for more information.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_gorm_6_0">1.1.2. GORM 6.0</h4>
+<h4 id="_gorm_6_0">1.1.1. GORM 6.0</h4>
 <div class="paragraph">
 <p>GORM 6.0 continues to evolve the new trait based model and includes the following new features:</p>
 </div>
@@ -733,7 +689,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_5_0">1.1.3. GORM 5.0</h4>
+<h4 id="_gorm_5_0">1.1.2. GORM 5.0</h4>
 <div class="paragraph">
 <p>GORM 5.0 replaced the majority of the custom AST transformations that power GORM with <a href="http://docs.groovy-lang.org/next/html/documentation/core-traits.html">Groovy Traits</a>.</p>
 </div>
@@ -742,7 +698,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_4_0">1.1.4. GORM 4.0</h4>
+<h4 id="_gorm_4_0">1.1.3. GORM 4.0</h4>
 <div class="paragraph">
 <p>GORM 4.0 continued to separate the GORM API from the Grails core APIs and was the first version to be support standalone execution outside of Grails.</p>
 </div>
@@ -754,7 +710,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_3_0">1.1.5. GORM 3.0</h4>
+<h4 id="_gorm_3_0">1.1.4. GORM 3.0</h4>
 <div class="paragraph">
 <p>GORM 3.0 was the first release of GORM that was released separately to the Grails framework itself and was introduced in Grails 2.1.</p>
 </div>
@@ -766,7 +722,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_2_0">1.1.6. GORM 2.0</h4>
+<h4 id="_gorm_2_0">1.1.5. GORM 2.0</h4>
 <div class="paragraph">
 <p>GORM 2.0 evolved as part of Grails 2.0 and re-engineered some of the metaprogramming logic that relied on ExpandoMetaClass into a set of <a href="http://groovy-lang.org/metaprogramming.html#_compile_time_metaprogramming">Groovy AST transformations</a>.</p>
 </div>
@@ -775,7 +731,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_1_0">1.1.7. GORM 1.0</h4>
+<h4 id="_gorm_1_0">1.1.6. GORM 1.0</h4>
 <div class="paragraph">
 <p>The first version of GORM was a series of meta-programming functions that built on the capabilities of Groovy&#8217;s <a href="http://groovy-lang.org/metaprogramming.html#metaprogramming_emc">ExpandoMetaClass</a>.</p>
 </div>
@@ -787,68 +743,7 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="upgradeNotes">1.2. Upgrade Notes</h3>
 <div class="sect3">
-<h4 id="_separation_of_gorm_async">1.2.1. Separation of GORM Async</h4>
-<div class="paragraph">
-<p>GORM Async has been separated from GORM core and is no longer added by default to entities.</p>
-</div>
-<div class="paragraph">
-<p>This was done in order to reduce the number of dependencies necessary to use GORM and to add flexibility in terms of the Async API used in the future.</p>
-</div>
-<div class="paragraph">
-<p>In order to enable GORM Async you need to add the necessary dependency to <code>build.gradle</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-async:6.1.0.BUILD-SNAPSHOT"</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And make your entities implement the <code>AsyncEntity</code> trait:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.gorm.async.*</span>
-
-<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> AsyncEntity&lt;Person&gt; {
-  ...
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_removal_of_grails_datastore_simple">1.2.2. Removal of grails-datastore-simple</h4>
-<div class="paragraph">
-<p>The <code>grails-datastore-simple</code> and <code>grails-datastore-gorm-test</code> dependencies have been combined into a single <code>grails-datastore-gorm-test</code> dependency.</p>
-</div>
-<div class="paragraph">
-<p>Unfortunately existing versions of Grails still depend on the old <code>grails-datastore-simple</code> dependency. And you may receive an error such as:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">> Could not resolve all dependencies for configuration ':example:runtime'.
-   > Could not find org.grails:grails-datastore-simple:6.1.0.BUILD-SNAPSHOT.
-     Searched in the following locations:
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.0.BUILD-SNAPSHOT/grails-datastore-simple-6.1.0.BUILD-SNAPSHOT.pom
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.0.BUILD-SNAPSHOT/grails-datastore-simple-6.1.0.BUILD-SNAPSHOT.jar
-     Required by:
-         project :example > org.grails:grails-dependencies:3.2.4 >
-            ...</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If you are upgrading you will need to exclude this dependency from <code>grails-dependencies</code> and remove any references from <code>build.gradle</code>. For example:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-dependencies:</span><span class="inline"><span class="inline-delimiter">$</span>grailsVersion</span><span class="delimiter">&quot;</span></span>, {
-        exclude <span class="key">module</span>:<span class="string"><span class="delimiter">'</span><span class="content">grails-datastore-simple</span><span class="delimiter">'</span></span>
-    }</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_flush_mode_now_commit_by_default">1.2.3. Flush Mode Now COMMIT by Default</h4>
+<h4 id="_flush_mode_now_commit_by_default">1.2.1. Flush Mode Now COMMIT by Default</h4>
 <div class="paragraph">
 <p>In previous versions of GORM the flush mode defaulted to AUTO. With this setting the session would be flushed with or without the presence of a transaction and before every query.</p>
 </div>
@@ -867,87 +762,13 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_changes_to_configuration_model">1.2.4. Changes to Configuration Model</h4>
+<h4 id="_changes_to_configuration_model">1.2.2. Changes to Configuration Model</h4>
 <div class="paragraph">
 <p>In preparation for Hibernate 5.2 support the previous "SessionFactoryBean" notion has been removed. Now if you wish to customize <code>SessionFactory</code> creation you should instead register a custom <code>org.grails.orm.hibernate.connections.HibernateConnectionSourceFactory</code> in Spring.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_identityenumtype_handling_changed">1.2.5. IdentityEnumType Handling Changed</h4>
-<div class="paragraph">
-<p>Previous versions of GORM shipped with a <code>org.grails.orm.hibernate.cfg.IdentityEnumType</code> class for altering the handling of enums. In order to support different versions of Hibernate 5.x which feature different signatures for the <code>org.hibernate.usertype.UserType</code> interface this class has been removed.</p>
-</div>
-<div class="paragraph">
-<p>If you wish to obtain the same functionality you need to change your <code>mapping</code> block to:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">static</span> mapping = {
-   myEnum <span class="key">enumType</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">identity</span><span class="delimiter">&quot;</span></span>
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_changes_to_support_hibernate_5_2">1.2.6. Changes to Support Hibernate 5.2</h4>
-<div class="paragraph">
-<p>Hibernate 5.2 includes many breaking API changes, in order to support Hibernate 5.2 several classes have been removed or rewritten. Including:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>org.grails.orm.hibernate.proxy.GroovyAwareJavassistLazyInitializer</code></p>
-</li>
-<li>
-<p><code>org.grails.orm.hibernate.proxy.GroovyAwareJavassistProxyFactory</code></p>
-</li>
-<li>
-<p><code>org.grails.orm.hibernate.persister.entity.GroovyAwareJoinedSubclassEntityPersister</code></p>
-</li>
-<li>
-<p><code>org.grails.orm.hibernate.persister.entity.GroovyAwareSingleTableEntityPersister</code></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Most of these classes are considered internal, however if you have extended or references these classes you may need to modify your code appropriately.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_domain_autowiring_disabled_by_default">1.2.7. Domain Autowiring Disabled by Default</h4>
-<div class="paragraph">
-<p>Spring autowiring of domain instances has been disabled by default because it represents a performance bottleneck. If you are autowiring services into your domain instances you will need to re-enable using the <code>mapping</code> block:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">static</span> mapping = {
-   autowire <span class="predefined-constant">true</span>
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Note that if enabled read performance will degrade.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_field_accesstype_by_default">1.2.8. Field AccessType by Default</h4>
-<div class="paragraph">
-<p>Previous versions of GORM used property access to read and write values to entities by default. In other words the respective getters and setters were used when reflecting on the instances. GORM 6.1 uses field access by default instead, which means the field is used when reading and writing data via reflection to instances.</p>
-</div>
-<div class="paragraph">
-<p>If you wish to continue to use property access this can be configured by altering the default mapping in your configuration:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">javax.persistence.*</span>
-grails.gorm.default.mapping = {
-   <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span>(<span class="key">accessType</span>: AccessType.PROPERTY)
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_fail_on_error_package_setting_renamed">1.2.9. Fail on Error Package Setting Renamed</h4>
+<h4 id="_fail_on_error_package_setting_renamed">1.2.3. Fail on Error Package Setting Renamed</h4>
 <div class="paragraph">
 <p>The <code>grails.gorm.failOnError</code> setting can no longer be used to configure the packages to enable fail on error. Instead <code>grails.gorm.failOnErrorPackages</code> should be used.</p>
 </div>
@@ -959,39 +780,35 @@ grails.gorm.default.mapping = {
 <h2 id="gettingStarted">2. Getting Started</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To use GORM 6.1.0.BUILD-SNAPSHOT for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
+<p>To use GORM 6.0.8.BUILD-SNAPSHOT for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile "org.grails.plugins:hibernate5:6.1.0.BUILD-SNAPSHOT"
+    compile "org.grails.plugins:hibernate5:6.0.8.BUILD-SNAPSHOT"
     compile "org.hibernate:hibernate-ehcache"
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>If you are using a version of Grails 3 earlier than 3.3 then you may need to enforce the GORM version by adding the following block directly above the <code>dependencies</code> block:</p>
+<p>If you are using a version of Grails 3 earlier than 3.2 then you may need to enforce the GORM version by adding the following block:</p>
 </div>
 <div class="listingblock">
-<div class="title">build.gradle</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">configurations.all {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("6.1.0.BUILD-SNAPSHOT")
+            details.useVersion("6.0.8.BUILD-SNAPSHOT")
         }
     }
-}
-dependencies {
-    ...
 }</code></pre>
 </div>
 </div>
 <div class="sect2">
 <h3 id="hibernateVersions">2.1. Configuring Different Hibernate Versions</h3>
 <div class="paragraph">
-<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.1.0.BUILD-SNAPSHOT.</p>
+<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.0.8.BUILD-SNAPSHOT.</p>
 </div>
 <div class="sect3">
 <h4 id="_grails_3_2_x_and_above_with_hibernate_4">2.1.1. Grails 3.2.x and above with Hibernate 4</h4>
@@ -1057,7 +874,7 @@ configurations.all {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.1.0.BUILD-SNAPSHOT")
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.0.8.BUILD-SNAPSHOT")
 compile "org.hibernate:hibernate-core:5.1.0.Final"
 compile "org.hibernate:hibernate-ehcache:5.1.0.Final"
 runtime "com.h2database:h2:1.4.192"
@@ -1190,7 +1007,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:6.1.0.BUILD-SNAPSHOT"
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:6.0.8.BUILD-SNAPSHOT"
 runtime "com.h2database:h2:1.4.192"
 runtime "org.apache.tomcat:tomcat-jdbc:8.5.0"
 runtime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"
@@ -4128,11 +3945,11 @@ Pet.where {
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>lower</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Converts a string property to lower case</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Converts a string property to upper case</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>upper</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Converts a string property to upper case</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Converts a string property to lower case</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>length</strong></p></td>
@@ -7005,777 +6822,13 @@ These mappings will not work for default unidirectional one-to-many or many-to-m
 </div>
 </div>
 <div class="sect1">
-<h2 id="dataServices">10. GORM Data Services</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Introduced in GORM 6.1, Data Services take the work out of implemented service layer logic by adding the ability to automatically implement abstract classes or interfaces using GORM logic.</p>
-</div>
-<div class="paragraph">
-<p>To illustrate what GORM Data Services are about let&#8217;s walk through an example.</p>
-</div>
-<div class="sect2">
-<h3 id="_data_service_basics">10.1. Data Service Basics</h3>
-<div class="sect3">
-<h4 id="_writing_a_simple_data_service">10.1.1. Writing a Simple Data Service</h4>
-<div class="paragraph">
-<p>To write a Data Service you should create either an interface (although abstract classes can also be used, more about that later) and annotate it with the <code>grails.gorm.services.Service</code> annotation with the domain class the service applies to:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
-<span class="type">interface</span> BookService {
-    <span class="predefined-type">Book</span> getBook(<span class="predefined-type">Serializable</span> id)
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>@Service</code> annotation is an AST transformation that will automatically implement the service for you. You can then obtain the service via Spring autowiring:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Autowired</span> BookService bookService</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Or if you are using GORM standalone by looking it up from the <code>HibernateDatastore</code> instance:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">BookService bookService = hibernateDatastore.getService(BookService)</code></pre>
-</div>
-</div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-The above example also works in Spock unit tests that extend <code>HibernateSpec</code>
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_how_does_it_work">10.1.2. How Does it Work?</h4>
-<div class="paragraph">
-<p>The <code>@Service</code> transformation will look at the the method signatures of the interface and make a best effort to find a way to implement each method.</p>
-</div>
-<div class="paragraph">
-<p>If a method cannot be implemented then a compilation error will occur. At this point you have the option to use an abstract class instead and provide an implementation yourself.</p>
-</div>
-<div class="paragraph">
-<p>The <code>@Service</code> transformation will also generate a <code>META-INF/services</code> file for the service so it can be discovered via the standard Java service loader. So no additional configuration is necessary.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_advantages_of_data_services">10.1.3. Advantages of Data Services</h4>
-<div class="paragraph">
-<p>There are several advantages to Data Services that make them worth considering to abstract your persistence logic.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Type Safety</strong> - Data service method signatures are compile time checked and compilation will fail if the types of any parameters don&#8217;t match up with properties in your domain class</p>
-</li>
-<li>
-<p><strong>Testing</strong> - Since Data Services are interfaces this makes them easy to test via <a href="http://spockframework.org/spock/docs/1.0/interaction_based_testing.html">Spock Mocks</a></p>
-</li>
-<li>
-<p><strong>Performance</strong> - The generated services are statically compiled and unlike competing technologies in the Java space no proxies are created so runtime performance doesn&#8217;t suffer</p>
-</li>
-<li>
-<p><strong>Transaction Management</strong> - Each method in a Data Service is wrapped in an appropriate transaction (a read-only transaction in the case of read operations) that can be easily overridden.</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_abstract_class_support">10.1.4. Abstract Class Support</h4>
-<div class="paragraph">
-<p>If you come across a method that GORM doesn&#8217;t know how to implement, then you can provide an implementation by using an abstract class.</p>
-</div>
-<div class="paragraph">
-<p>For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">interface</span> IBookService {
-    <span class="predefined-type">Book</span> getBook(<span class="predefined-type">Serializable</span> id)
-    <span class="predefined-type">Date</span> someOtherMethod()
-}
-<span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
-<span class="directive">abstract</span> <span class="type">class</span> <span class="class">BookService</span> <span class="directive">implements</span> IBookService {
-
-   <span class="annotation">@Override</span>
-   <span class="predefined-type">Date</span> someOtherMethod() {
-      <span class="comment">// impl</span>
-   }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In this case GORM will implement the interface methods that have not been defined by the abstract class.</p>
-</div>
-<div class="paragraph">
-<p>In addition, all <em>public</em> methods of the domain class will be automatically wrapped in the appropriate transaction handling.</p>
-</div>
-<div class="paragraph">
-<p>What this means is that you can define protected abstract methods that are non-transactional in order to compose logic. For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
-<span class="directive">abstract</span> <span class="type">class</span> <span class="class">BookService</span>  {
-
-   <span class="directive">protected</span> <span class="directive">abstract</span> <span class="predefined-type">Book</span> getBook(<span class="predefined-type">Serializable</span> id) <i class="conum" data-value="1"></i><b>(1)</b>
-
-   <span class="directive">protected</span> <span class="directive">abstract</span> Author getAuthor(<span class="predefined-type">Serializable</span> id) <i class="conum" data-value="1"></i><b>(1)</b>
-
-   <span class="predefined-type">Book</span> updateBook(<span class="predefined-type">Serializable</span> id, <span class="predefined-type">Serializable</span> authorId) { <i class="conum" data-value="2"></i><b>(2)</b>
-      <span class="predefined-type">Book</span> book = getBook(id)
-      <span class="keyword">if</span>(book != <span class="predefined-constant">null</span>) {
-          Author author = getAuthor(authorId)
-          <span class="keyword">if</span>(author == <span class="predefined-constant">null</span>) {
-              <span class="keyword">throw</span> <span class="keyword">new</span> <span class="exception">IllegalArgumentException</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">Author does not exist</span><span class="delimiter">&quot;</span></span>)
-          }
-          book.author = author
-          book.save()
-      }
-      <span class="keyword">return</span> book
-   }
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Two <code>protected abstract</code> methods are defined that are not wrapped in transaction handling</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The <code>updateBook</code> method uses the two methods that are implemented automatically by GORM and being <code>public</code> is automatically made transactional.</td>
-</tr>
-</table>
-</div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-If you have <code>public</code> methods that you do not wish to be transactional, then you can annotate them with <code>@NotTransactional</code>
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_data_service_queries">10.2. Data Service Queries</h3>
-<div class="paragraph">
-<p>GORM Data Services will implement queries for you using a number of different strategies and conventions.</p>
-</div>
-<div class="paragraph">
-<p>It does this by looking at the return type of a method and the method stem and picking the most appropriate implementation.</p>
-</div>
-<div class="paragraph">
-<p>The following table summarizes the conventions:</p>
-</div>
-<table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 1. Data Service Conventions</caption>
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Method Stem</th>
-<th class="tableblock halign-left valign-top">Description</th>
-<th class="tableblock halign-left valign-top">Possible Return Types</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>count*</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Count the number of results</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Subclass of <code>Number</code> or <code>Observable&lt;Number&gt;</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>countBy*</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Dynamic Finder Count the number of results</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Subclass of <code>Number</code> or <code>Observable&lt;Number&gt;</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>delete*</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Delete an instance for the given arguments</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>T</code>, <code>void</code>, subclass of <code>Number</code> or <code>Observable&lt;Number&gt;</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>find*</code>, <code>get*</code>, <code>list*</code> or <code>retrieve*</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query for the given parameters</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>T</code>, <code>Iterable&lt;T&gt;</code>, <code>T[]</code>, <code>List&lt;T&gt;</code>, <code>Observable&lt;T&gt;</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>findBy*</code>, <code>listBy*</code>, <code>findAllBy*</code> or <code>getBy*</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Dynamic finder query for given parameters</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>T</code>, <code>Iterable&lt;T&gt;</code>, <code>T[]</code>, <code>List&lt;T&gt;</code>, <code>Observable&lt;T&gt;</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>save*</code>, <code>store*</code>, or <code>persist*</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Save a new instance</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>T</code> or <code>Observable&lt;T&gt;</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>update*</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Updates an existing instance. First parameter should be <code>id</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>T</code> or <code>Observable&lt;T&gt;</code></p></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
-<p>The conventions are extensible (more on that later), in terms of queries there are two distinct types.</p>
-</div>
-<div class="sect3">
-<h4 id="_simple_queries">10.2.1. Simple Queries</h4>
-<div class="paragraph">
-<p>Simple queries are queries that use the arguments of the method. For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
-<span class="type">interface</span> BookService {
-    <span class="predefined-type">Book</span> findBook(<span class="predefined-type">String</span> title)
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In the example above the Data Service will generate the implementation based on the fact that the <code>title</code> parameter matches the <code>title</code> property of the <code>Book</code> class both in terms of name and type.</p>
-</div>
-<div class="paragraph">
-<p>If you were to misspell the <code>title</code> parameter or use an incorrect type then a compilation error will occur.</p>
-</div>
-<div class="paragraph">
-<p>You can alter the return type to return more results:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
-<span class="type">interface</span> BookService {
-    <span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; findBooks(<span class="predefined-type">String</span> title)
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And if you wish to control pagination and query arguments you can add an <code>args</code> parameter that should be a <code>Map</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
-<span class="type">interface</span> BookService {
-    <span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; findBooks(<span class="predefined-type">String</span> title, <span class="predefined-type">Map</span> args)
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In this case the following query will control pagination and ordering:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; books = bookService.findBooks(
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">The Stand</span><span class="delimiter">&quot;</span></span>,
-    [<span class="key">offset</span>:<span class="integer">10</span>, <span class="key">max</span>:<span class="integer">10</span>, <span class="key">sort</span>:<span class="string"><span class="delimiter">'</span><span class="content">title</span><span class="delimiter">'</span></span>, <span class="key">order</span>:<span class="string"><span class="delimiter">'</span><span class="content">desc</span><span class="delimiter">'</span></span>]
-)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can include multiple parameters in the query:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
-<span class="type">interface</span> BookService {
-    <span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; findBooks(<span class="predefined-type">String</span> title, <span class="predefined-type">Date</span> publishDate)
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In this case a conjunction (<code>AND</code>) query will be executed. If you need to do a disjunction (<code>OR</code>) then it is time you learn about Dynamic Finder-style queries.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_dynamic_finder_queries">10.2.2. Dynamic Finder Queries</h4>
-<div class="paragraph">
-<p>Dynamic finder styles queries use the stem plus the word <code>By</code> and then a <a href="#finders">Dynamic Finder expression</a>.</p>
-</div>
-<div class="paragraph">
-<p>For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
-<span class="type">interface</span> BookService {
-    <span class="predefined-type">List</span>&lt;<span class="predefined-type">Book</span>&gt; findByTitleAndPublishDateGreaterThan(<span class="predefined-type">String</span> title, <span class="predefined-type">Date</span> publishDate)
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The signature above will produce a dynamic finder query using the method signature expression.</p>
-</div>
-<div class="paragraph">
-<p>The possible method expressions are the same as those possible with GORM&#8217;s static <a href="#finders">Dynamic Finders</a></p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-In this case the names of the properties to query are inferred from the method signature and the parameter names are not critical. If you misspell the method signature a compilation error will occur.
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_where_queries">10.2.3. Where Queries</h4>
-<div class="paragraph">
-<p>If you have a more complex query then you may want to consider using the <code>@Where</code> annotation:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    <span class="annotation">@Where</span>({ title ==~ pattern &amp;&amp; releaseDate &gt; fromDate })
-    <span class="predefined-type">Book</span> searchBooks(<span class="predefined-type">String</span> pattern, <span class="predefined-type">Date</span> fromDate)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>With the <code>@Where</code> annotation the method name can be anything you want and query is expressed within a closure passed with the <code>@Where</code> annotation.</p>
-</div>
-<div class="paragraph">
-<p>The query will be type checked against the parameters and compilation will fail if you misspell a parameter or property name.</p>
-</div>
-<div class="paragraph">
-<p>The syntax is the same as what is passed to GORM&#8217;s static <code>where</code> method, see the section on <a href="#whereQueries">Where Queries</a> for more information.</p>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_query_joins">10.3. Query Joins</h3>
-<div class="paragraph">
-<p>You can specify query joins using the <code>@Join</code> annotation:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">javax.persistence.criteria.JoinType.*</span>
-
-<span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
-<span class="type">interface</span> BookService {
-    <span class="annotation">@Join</span>(<span class="string"><span class="delimiter">'</span><span class="content">author</span><span class="delimiter">'</span></span>)
-    <span class="predefined-type">Book</span> find(<span class="predefined-type">String</span> title) <i class="conum" data-value="1"></i><b>(1)</b>
-
-    <span class="annotation">@Join</span>(value=<span class="string"><span class="delimiter">'</span><span class="content">author</span><span class="delimiter">'</span></span>, type=LEFT) <i class="conum" data-value="2"></i><b>(2)</b>
-    <span class="predefined-type">Book</span> findAnother(<span class="predefined-type">String</span> title)
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Join on the <code>author</code> property</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Join on the <code>author</code> property using a <code>LEFT OUTER</code> join</td>
-</tr>
-</table>
-</div>
-<div class="sect3">
-<h4 id="_jpa_ql_queries">10.3.1. JPA-QL Queries</h4>
-<div class="paragraph">
-<p>If you need even more flexibility, then HQL queries can be used via the <code>@Query</code> annotation:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">from </span><span class="inline"><span class="inline-delimiter">$</span><span class="predefined-type">Book</span></span><span class="content"> as book where book.title like </span><span class="inline"><span class="inline-delimiter">$</span>pattern</span><span class="delimiter">&quot;</span></span>)
-<span class="predefined-type">Book</span> searchByTitle(<span class="predefined-type">String</span> pattern)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Note that in the example above, if you misspell the <code>pattern</code> parameter passed to the query a compilation error will occur.</p>
-</div>
-<div class="paragraph">
-<p>However, if you were to incorrectly input the <code>title</code> property no error would occur since it is part of the String and not a variable.</p>
-</div>
-<div class="paragraph">
-<p>You can resolve this by declaring the value of <code>book</code> within the passed GString:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">from </span><span class="inline"><span class="inline-delimiter">${</span><span class="predefined-type">Book</span> book<span class="inline-delimiter">}</span></span><span class="content"> where </span><span class="inline"><span class="inline-delimiter">${</span>book.title<span class="inline-delimiter">}</span></span><span class="content"> like </span><span class="inline"><span class="inline-delimiter">$</span>pattern</span><span class="delimiter">&quot;</span></span>)
-<span class="predefined-type">Book</span> searchByTitle(<span class="predefined-type">String</span> pattern)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In the above example if you misspell the <code>title</code> property then a compilation error will occur. This is extremely powerful as it gives you the ability to type check HQL queries, which has always been one of the disadvantages of using them in comparison to criteria.</p>
-</div>
-<div class="paragraph">
-<p>This support for type checked queries extends to joins. For example consider this query:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;&quot;&quot;</span><span class="content">
- from </span><span class="inline"><span class="inline-delimiter">${</span><span class="predefined-type">Book</span> book<span class="inline-delimiter">}</span></span><span class="content"> <i class="conum" data-value="1"></i><b>(1)</b>
- inner join </span><span class="inline"><span class="inline-delimiter">${</span>Author author = book.author<span class="inline-delimiter">}</span></span><span class="content"> <i class="conum" data-value="2"></i><b>(2)</b>
- where </span><span class="inline"><span class="inline-delimiter">$</span>book</span><span class="content">.title = </span><span class="inline"><span class="inline-delimiter">$</span>title</span><span class="content"> and </span><span class="inline"><span class="inline-delimiter">$</span>author</span><span class="content">.name = </span><span class="inline"><span class="inline-delimiter">$</span>author</span><span class="delimiter">&quot;&quot;&quot;</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
-<span class="predefined-type">Book</span> find(<span class="predefined-type">String</span> title, <span class="predefined-type">String</span> author)</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Using <code>from</code> to define the root query</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Use inner join and a declaration to define the association to join on</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Apply any conditions in the <code>where</code> clause</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_query_projections">10.3.2. Query Projections</h4>
-<div class="paragraph">
-<p>There are a few ways to implement projections. One way is to is to use the convention <code>T find[Domain Class][Property]</code>. For example say the <code>Book</code> class has a <code>releaseDate</code> property of type <code>Date</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
-<span class="type">interface</span> BookService {
-   <span class="predefined-type">Date</span> findBookReleaseDate(<span class="predefined-type">String</span> title)
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This also works for multiple results:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
-<span class="type">interface</span> BookService {
-   <span class="predefined-type">List</span>&lt;<span class="predefined-type">Date</span>&gt; findBookReleaseDate(<span class="predefined-type">String</span> publisher)
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And you can use the <code>Map</code> argument to provide ordering and pagination if necessary:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
-<span class="type">interface</span> BookService {
-   <span class="predefined-type">List</span>&lt;<span class="predefined-type">Date</span>&gt; findBookReleaseDate(<span class="predefined-type">String</span> publisher, <span class="predefined-type">Map</span> args)
-}</code></pre>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_jpa_ql_projections">JPA-QL Projections</h5>
-<div class="paragraph">
-<p>You can also use a JPA-QL query to perform a projection:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
-<span class="type">interface</span> BookService {
-   <span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">select </span><span class="inline"><span class="inline-delimiter">$</span>b</span><span class="content">.releaseDate from </span><span class="inline"><span class="inline-delimiter">${</span><span class="predefined-type">Book</span> b<span class="inline-delimiter">}</span></span><span class="content"> where </span><span class="inline"><span class="inline-delimiter">$</span>b</span><span class="content">.publisher = </span><span class="inline"><span class="inline-delimiter">$</span>publisher</span><span class="content"> order by </span><span class="inline"><span class="inline-delimiter">$</span>b</span><span class="content">.releaseDate</span><span class="delimiter">&quot;</span></span>)
-   <span class="predefined-type">List</span>&lt;<span class="predefined-type">Date</span>&gt; findBookReleaseDates(<span class="predefined-type">String</span> publisher)
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_interface_projections">Interface Projections</h5>
-<div class="paragraph">
-<p>Sometimes you want to expose a more limited set of a data to the calling class. In this case it is possible to use interface projections.</p>
-</div>
-<div class="paragraph">
-<p>For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Author</span> {
-    <span class="predefined-type">String</span> name
-    <span class="predefined-type">Date</span> dateOfBirth <i class="conum" data-value="1"></i><b>(1)</b>
-}
-<span class="type">interface</span> AuthorInfo {
-    <span class="predefined-type">String</span> getName() <i class="conum" data-value="2"></i><b>(2)</b>
-}
-<span class="annotation">@Service</span>(Author)
-<span class="type">interface</span> AuthorService {
-   AuthorInfo find(<span class="predefined-type">String</span> name) <i class="conum" data-value="3"></i><b>(3)</b>
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The domain class <code>Author</code> has a property called <code>dateOfBirth</code> that we do not want to make available to the client</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>You can define an interface that only exposes the properties you want to expose</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Return the interface from the service.</td>
-</tr>
-</table>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-If a property exists on the interface but not on the domain class you will receive a compilation error.
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_data_service_write_operations">10.4. Data Service Write Operations</h3>
-<div class="paragraph">
-<p>Write operations in Data Services are automatically wrapped in a transaction. You can modify the transactional attributes by simply adding the <code>@Transactional</code> transformation to any method.</p>
-</div>
-<div class="paragraph">
-<p>The following sections discuss the details of the different write operations.</p>
-</div>
-<div class="sect3">
-<h4 id="_create_2">10.4.1. Create</h4>
-<div class="paragraph">
-<p>To create a new entity the method should return the new entity and feature either the parameters to be used to create the entity or the entity itself.</p>
-</div>
-<div class="paragraph">
-<p>For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
-<span class="type">interface</span> BookService {
-    <span class="predefined-type">Book</span> saveBook(<span class="predefined-type">String</span> title)
-
-    <span class="predefined-type">Book</span> saveBook(<span class="predefined-type">Book</span> newBook)
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If any of the parameters don&#8217;t match up to a property on the domain class then a compilation error will occur.</p>
-</div>
-<div class="paragraph">
-<p>If a validation error occurs then a <code>ValidationException</code> will be thrown from the service.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_update_2">10.4.2. Update</h4>
-<div class="paragraph">
-<p>Update operations are similar to Create operations, the main difference being that the first argument should be the <code>id</code> of the object to update.</p>
-</div>
-<div class="paragraph">
-<p>For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
-<span class="type">interface</span> BookService {
-    <span class="predefined-type">Book</span> updateBook(<span class="predefined-type">Serializable</span> id, <span class="predefined-type">String</span> title)
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If any of the parameters don&#8217;t match up to a property on the domain class then a compilation error will occur.</p>
-</div>
-<div class="paragraph">
-<p>If a validation error occurs then a <code>ValidationException</code> will be thrown from the service.</p>
-</div>
-<div class="paragraph">
-<p>You can also implement update operations using JPA-QL:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">update </span><span class="inline"><span class="inline-delimiter">${</span><span class="predefined-type">Book</span> book<span class="inline-delimiter">}</span></span><span class="content"> set </span><span class="inline"><span class="inline-delimiter">${</span>book.title<span class="inline-delimiter">}</span></span><span class="content"> = </span><span class="inline"><span class="inline-delimiter">$</span>newTitle</span><span class="content"> where book.title = </span><span class="inline"><span class="inline-delimiter">$</span>oldTitle</span><span class="delimiter">&quot;</span></span>)
-<span class="predefined-type">Number</span> updateTitle(<span class="predefined-type">String</span> newTitle, <span class="predefined-type">String</span> oldTitle)</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_delete_2">10.4.3. Delete</h4>
-<div class="paragraph">
-<p>Delete operations can either return <code>void</code> or return the instance that was deleted. In the latter case an extra query is required to fetch the entity prior to issue a delete.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
-<span class="type">interface</span> BookService {
-    <span class="predefined-type">Number</span> deleteAll(<span class="predefined-type">String</span> title)
-
-    <span class="type">void</span> delete(<span class="predefined-type">Serializable</span> id)
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can also implement delete operations using JPA-QL:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">delete </span><span class="inline"><span class="inline-delimiter">${</span><span class="predefined-type">Book</span> book<span class="inline-delimiter">}</span></span><span class="content"> where </span><span class="inline"><span class="inline-delimiter">$</span>book</span><span class="content">.title = </span><span class="inline"><span class="inline-delimiter">$</span>title</span><span class="delimiter">&quot;</span></span>)
-<span class="type">void</span> delete(<span class="predefined-type">String</span> title)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Or via where queries:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Where</span>({ title == title &amp;&amp; releaseDate &gt; date })
-<span class="type">void</span> delete(<span class="predefined-type">String</span> title, <span class="predefined-type">Date</span> date)</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_validating_data_services">10.5. Validating Data Services</h3>
-<div class="paragraph">
-<p>GORM Data Services have built in support for <code>javax.validation</code> annotations for method parameters.</p>
-</div>
-<div class="paragraph">
-<p>You will need to have a <code>javax.validation</code> implementation on your classpath (such as <code>hibernate-validator</code> and then simply annotate your method parameters using the appropriate annotation. For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">javax.validation.constraints.*</span>
-
-<span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
-<span class="type">interface</span> BookService {
-
-    <span class="predefined-type">Book</span> find(<span class="annotation">@NotNull</span> <span class="predefined-type">String</span> title)
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In the above example the <code>NotNull</code> constraint is applied to the <code>title</code> property. If <code>null</code> is passed to the method a <code>ConstraintViolationException</code> exception will be thrown.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_rxjava_support">10.6. RxJava Support</h3>
-<div class="paragraph">
-<p>GORM Data Services also support returning RxJava 1.x <a href="http://reactivex.io/RxJava/1.x/javadoc/rx/Observable.html">rx.Observable</a> or <a href="http://reactivex.io/RxJava/1.x/javadoc/rx/Single.html">rx.Single</a> types.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-RxJava 2.x support is planned for a future release
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>To use the RxJava support you need to ensure that the <code>grails-datastore-gorm-rx</code> dependencies is on the classpath by adding the following to <code>build.gradle</code>:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx:6.1.0.BUILD-SNAPSHOT"</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">rx.*</span>
-
-<span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
-<span class="type">interface</span> BookService {
-   Single&lt;<span class="predefined-type">Book</span>&gt; findOne(<span class="predefined-type">String</span> title)
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>When a <code>rx.Single</code> is used then a single result is returned. To query multiple results use an <code>rx.Observable</code> instead:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">rx.*</span>
-
-<span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
-<span class="type">interface</span> BookService {
-   <span class="predefined-type">Observable</span>&lt;<span class="predefined-type">Book</span>&gt; findBooks(<span class="predefined-type">String</span> title)
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>For regular GORM entities, GORM will by default execute the persistence operation using RxJava&#8217;s <a href="http://reactivex.io/RxJava/1.x/javadoc/rx/schedulers/Schedulers.html#io()">IO Scheduler</a>.</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-For RxGORM entities where the underlying database supports non-blocking access the database driver will schedule the operation accordingly.
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>You can run the operation on a different scheduler using the <code>RxSchedule</code> annotation:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">rx.*</span>
-<span class="keyword">import</span> <span class="include">grails.gorm.rx.services.RxSchedule</span>
-<span class="keyword">import</span> <span class="include">grails.gorm.services.Service</span>
-<span class="keyword">import</span> <span class="include">rx.schedulers.Schedulers</span>
-
-<span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
-<span class="type">interface</span> BookService {
-
-   <span class="annotation">@RxSchedule</span>(scheduler = { Schedulers.newThread() })
-   <span class="predefined-type">Observable</span>&lt;<span class="predefined-type">Book</span>&gt; findBooks(<span class="predefined-type">String</span> title)
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="multipleDataSources">11. Multiple Data Sources</h2>
+<h2 id="multipleDataSources">10. Multiple Data Sources</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>GORM supports the notion of multiple data sources where multiple individual SQL <code>DataSource</code> instances can be configured and switched between.</p>
 </div>
 <div class="sect2">
-<h3 id="_configuring_multiple_data_sources">11.1. Configuring Multiple Data Sources</h3>
+<h3 id="_configuring_multiple_data_sources">10.1. Configuring Multiple Data Sources</h3>
 <div class="paragraph">
 <p>To configure multiple data sources you need to use the <code>dataSources</code> setting. For example in <code>application.yml</code>:</p>
 </div>
@@ -7814,7 +6867,7 @@ For more information on configuration see the <a href="#configuration">Configura
 </div>
 </div>
 <div class="sect2">
-<h3 id="_mapping_domain_classes_to_data_sources">11.2. Mapping Domain Classes to Data Sources</h3>
+<h3 id="_mapping_domain_classes_to_data_sources">10.2. Mapping Domain Classes to Data Sources</h3>
 <div class="paragraph">
 <p>If a domain class has no <code>DataSource</code> configuration, it defaults to the standard <code>'dataSource'</code>. Set the <code>datasource</code> property in the <code>mapping</code> block to configure a non-default <code>DataSource</code>. For example, if you want to use the <code>ZipCode</code> domain to use a <code>DataSource</code> called <code>'lookup'</code>, configure it like this:</p>
 </div>
@@ -7881,7 +6934,7 @@ For more information on configuration see the <a href="#configuration">Configura
 </div>
 </div>
 <div class="sect2">
-<h3 id="_data_source_namespaces">11.3. Data Source Namespaces</h3>
+<h3 id="_data_source_namespaces">10.3. Data Source Namespaces</h3>
 <div class="paragraph">
 <p>If a domain class uses more than one <code>DataSource</code> then you can use the namespace implied by each <code>DataSource</code> name to make GORM calls for a particular <code>DataSource</code>. For example, consider this class which uses two <code>DataSource</code> instances:</p>
 </div>
@@ -7912,7 +6965,7 @@ zipCode.auditing.save()</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="connectionSources">11.4. The ConnectionSources API</h3>
+<h3 id="connectionSources">10.4. The ConnectionSources API</h3>
 <div class="paragraph">
 <p>Introduced in GORM 6.0, the <a href="../api/org/grails/datastore/mapping/core/connections/ConnectionSources.html">ConnectionSources</a> API allows you to introspect the data sources configured for the application:</p>
 </div>
@@ -7934,7 +6987,7 @@ ConnectionSources&lt;SessionFactory, HibernateConnectionSourceSettings&gt; conne
 </div>
 </div>
 <div class="sect1">
-<h2 id="multiTenancy">12. Multi-Tenancy</h2>
+<h2 id="multiTenancy">11. Multi-Tenancy</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Multi-Tenancy, as it relates to software developments, is when a single instance of an application is used to service multiple clients (tenants) in a way that each tenants' data is isolated from the other.</p>
@@ -7943,7 +6996,7 @@ ConnectionSources&lt;SessionFactory, HibernateConnectionSourceSettings&gt; conne
 <p>This type of architecture is highly common in Software as a Service (SaaS) and Cloud architectures. There are a variety of approaches to multi-tenancy and GORM tries to be flexible in supporting as many as possible.</p>
 </div>
 <div class="sect2">
-<h3 id="_multi_tenancy_modes">12.1. Multi-Tenancy Modes</h3>
+<h3 id="_multi_tenancy_modes">11.1. Multi-Tenancy Modes</h3>
 <div class="paragraph">
 <p>GORM supports the following different multitenancy modes:</p>
 </div>
@@ -7965,12 +7018,12 @@ ConnectionSources&lt;SessionFactory, HibernateConnectionSourceSettings&gt; conne
 </div>
 </div>
 <div class="sect2">
-<h3 id="_database_per_tenant">12.2. Database Per Tenant</h3>
+<h3 id="_database_per_tenant">11.2. Database Per Tenant</h3>
 <div class="paragraph">
 <p>Using a database per tenant is the most secure way to isolate each tenants data and builds upon GORM&#8217;s existing support for <a href="#multipleDataSources">Multiple Data Sources</a>.</p>
 </div>
 <div class="sect3">
-<h4 id="_configuration">12.2.1. Configuration</h4>
+<h4 id="_configuration">11.2.1. Configuration</h4>
 <div class="paragraph">
 <p>In order to activate database-per-tenant multi-tenancy you need to set the multi-tenancy mode to <code>DATABASE</code> in your configuration and supply a <a href="../api/org/grails/datastore/mapping/multitenancy/TenantResolver.html">TenantResolver</a>:</p>
 </div>
@@ -7996,7 +7049,7 @@ ConnectionSources&lt;SessionFactory, HibernateConnectionSourceSettings&gt; conne
 </div>
 </div>
 <div class="sect3">
-<h4 id="_multi_tenant_domain_classes">12.2.2. Multi Tenant Domain Classes</h4>
+<h4 id="_multi_tenant_domain_classes">11.2.2. Multi Tenant Domain Classes</h4>
 <div class="paragraph">
 <p>With the above configuration in place you then to need to implement the <a href="../api/grails/gorm/MultiTenant.html">MultiTenant</a> trait in the domain classes you want to be regarded as multi tenant:</p>
 </div>
@@ -8012,7 +7065,7 @@ ConnectionSources&lt;SessionFactory, HibernateConnectionSourceSettings&gt; conne
 </div>
 </div>
 <div class="sect3">
-<h4 id="_multi_tenancy_and_the_session_factory">12.2.3. Multi Tenancy and the Session Factory</h4>
+<h4 id="_multi_tenancy_and_the_session_factory">11.2.3. Multi Tenancy and the Session Factory</h4>
 <div class="paragraph">
 <p>Note that if you reference the default <code>SessionFactory</code> or <code>PlatformTransactionManager</code> in your classes that are injected via Spring, these will not be tenant aware and will point directly to default data source.</p>
 </div>
@@ -8032,7 +7085,7 @@ SessionFactory sessionFactory = hibernateDatastore
 </div>
 </div>
 <div class="sect3">
-<h4 id="_multi_tenancy_with_sessions">12.2.4. Multi Tenancy with Sessions</h4>
+<h4 id="_multi_tenancy_with_sessions">11.2.4. Multi Tenancy with Sessions</h4>
 <div class="paragraph">
 <p>When working with GORM typically you need a session bound to the current thread in order for GORM and transactions to work consistently. If you switch to a different tenant then it may be that the session bound to the current thread no longer matches the underlying <code>SessionFactory</code> being used by the tenant. With this in mind you may wants to use the <a href="../api/grails/gorm/multitenancy/Tenants.html">Tenants</a> class to ensure the correct session is bound for the current tenant:</p>
 </div>
@@ -8072,7 +7125,7 @@ SessionFactory sessionFactory = hibernateDatastore
 </div>
 </div>
 <div class="sect3">
-<h4 id="_adding_tenants_at_runtime">12.2.5. Adding Tenants at Runtime</h4>
+<h4 id="_adding_tenants_at_runtime">11.2.5. Adding Tenants at Runtime</h4>
 <div class="paragraph">
 <p>Provisioning and creating SQL databases at runtime is non-trivial and beyond the scope of what GORM offers, however the <a href="#connectionSources">ConnectionSources API</a> does provide a way to hook into GORM to make this possible.</p>
 </div>
@@ -8109,12 +7162,12 @@ If you are interested in more examples, an <a href="https://github.com/grails/go
 </div>
 </div>
 <div class="sect2">
-<h3 id="_schema_per_tenant">12.3. Schema Per Tenant</h3>
+<h3 id="_schema_per_tenant">11.3. Schema Per Tenant</h3>
 <div class="paragraph">
 <p>Schema-per-tenant is when a single database is used, but a different database schema is used for each tenant.</p>
 </div>
 <div class="sect3">
-<h4 id="_configuration_2">12.3.1. Configuration</h4>
+<h4 id="_configuration_2">11.3.1. Configuration</h4>
 <div class="paragraph">
 <p>In order to activate schema-per-tenant multi-tenancy you need to set the multi-tenancy mode to <code>SCHEMA</code> in your configuration and supply a <a href="../api/org/grails/datastore/mapping/multitenancy/TenantResolver.html">TenantResolver</a>:</p>
 </div>
@@ -8135,7 +7188,7 @@ If you are interested in more examples, an <a href="https://github.com/grails/go
 </div>
 </div>
 <div class="sect3">
-<h4 id="_runtime_schema_creation">12.3.2. Runtime Schema Creation</h4>
+<h4 id="_runtime_schema_creation">11.3.2. Runtime Schema Creation</h4>
 <div class="paragraph">
 <p>On startup, if <code>dataSource.dbCreate</code> is set to create the database at runtime, then GORM will attempt to create the schemas if they are missing.</p>
 </div>
@@ -8154,14 +7207,14 @@ If you are interested in more examples, an <a href="https://github.com/grails/go
 </div>
 </div>
 <div class="sect3">
-<h4 id="_schema_per_tenant_caveats">12.3.3. Schema-Per-Tenant Caveats</h4>
+<h4 id="_schema_per_tenant_caveats">11.3.3. Schema-Per-Tenant Caveats</h4>
 <div class="paragraph">
 <p>In order to support a schema-per-tenant, just like the <code>DATABASE</code> Multi-Tenancy mode, GORM uses a unique <code>SessionFactory</code> per tenant. So all of the same considerations regarding session management apply.</p>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_partitioned_multi_tenancy">12.4. Partitioned Multi-Tenancy</h3>
+<h3 id="_partitioned_multi_tenancy">11.4. Partitioned Multi-Tenancy</h3>
 <div class="paragraph">
 <p>Partitioned multi-tenancy is when a discriminator column is used in each multi-tenant class in order to partition the data.</p>
 </div>
@@ -8178,7 +7231,7 @@ When using a discriminator all data for all tenants is stored in a single databa
 </table>
 </div>
 <div class="sect3">
-<h4 id="_configuration_3">12.4.1. Configuration</h4>
+<h4 id="_configuration_3">11.4.1. Configuration</h4>
 <div class="paragraph">
 <p>In order to activate discriminator-based multi-tenancy you need to set the multi-tenancy mode to <code>DISCRIMINATOR</code> in your configuration and supply a <a href="../api/org/grails/datastore/mapping/multitenancy/TenantResolver.html">TenantResolver</a>:</p>
 </div>
@@ -8208,7 +7261,7 @@ The specified <code>TenantResolver</code> will also need to implement the <a hre
 </div>
 </div>
 <div class="sect3">
-<h4 id="_mapping_domain_classes">12.4.2. Mapping Domain Classes</h4>
+<h4 id="_mapping_domain_classes">11.4.2. Mapping Domain Classes</h4>
 <div class="paragraph">
 <p>Like the other forms of multi-tenancy you then need to implement the <a href="../api/grails/gorm/MultiTenant.html">MultiTenant</a> trait in the domain classes that are multi-tenant. In addition, you also need to specify a discriminator column. The default discriminator column is called <code>tenantId</code>, for example:</p>
 </div>
@@ -8237,7 +7290,7 @@ The specified <code>TenantResolver</code> will also need to implement the <a hre
 </div>
 </div>
 <div class="sect3">
-<h4 id="_querying_and_caveats">12.4.3. Querying and Caveats</h4>
+<h4 id="_querying_and_caveats">11.4.3. Querying and Caveats</h4>
 <div class="paragraph">
 <p>The discriminator-based multi-tenancy transparently adds a Hibernate filter that is activated when you query the domain class and you can also use the <a href="../api/grails/gorm/multitenancy/Tenants.html">Tenants</a> API to switch between tenants:</p>
 </div>
@@ -8274,7 +7327,7 @@ sessionFactory.openSession()</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_understanding_tenant_resolvers">12.5. Understanding Tenant Resolvers</h3>
+<h3 id="_understanding_tenant_resolvers">11.5. Understanding Tenant Resolvers</h3>
 <div class="paragraph">
 <p>As mentioned previously the <a href="../api/org/grails/datastore/mapping/multitenancy/TenantResolver.html">TenantResolver</a> interface is how you define the value of the <a href="../api/grails/gorm/multitenancy/Tenants.html#currentId()">current tenant</a>.</p>
 </div>
@@ -8282,7 +7335,7 @@ sessionFactory.openSession()</code></pre>
 <p>This section will cover a few more details about implementing <code>TenantResolver</code> instances.</p>
 </div>
 <div class="sect3">
-<h4 id="_specifying_the_tenant_resolver">12.5.1. Specifying the Tenant Resolver</h4>
+<h4 id="_specifying_the_tenant_resolver">11.5.1. Specifying the Tenant Resolver</h4>
 <div class="paragraph">
 <p>As already mentioned you can specify the <code>TenantResolver</code> via configuration using the <code>grails.gorm.tenantResolverClass</code> setting:</p>
 </div>
@@ -8300,7 +7353,7 @@ sessionFactory.openSession()</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_built_in_tenant_resolvers">12.5.2. Built-in Tenant Resolvers</h4>
+<h4 id="_built_in_tenant_resolvers">11.5.2. Built-in Tenant Resolvers</h4>
 <div class="paragraph">
 <p>The following table contains all of the <code>TenantResolver</code> implementations that ship with GORM and are usable out of the box. The package name has been shorted from <code>org.grails.datastore.mapping</code> to <code>o.g.d.m</code> for brevity:</p>
 </div>
@@ -8344,12 +7397,12 @@ sessionFactory.openSession()</code></pre>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:6.1.0.BUILD-SNAPSHOT"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:6.0.8.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_the_alltenantsresolver_interface">12.5.3. The AllTenantsResolver interface</h4>
+<h4 id="_the_alltenantsresolver_interface">11.5.3. The AllTenantsResolver interface</h4>
 <div class="paragraph">
 <p>If you are using discriminator-based multi-tenancy then you may need to implement the <a href="../api/org/grails/datastore/mapping/multitenancy/AllTenantsResolver.html">AllTenantsResolver</a> interface in your <code>TenantResolver</code> implentation if you want to at any point iterate over all available tenants.</p>
 </div>
@@ -8370,7 +7423,7 @@ sessionFactory.openSession()</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_implementing_web_tenant_resolvers">12.5.4. Implementing Web Tenant Resolvers</h4>
+<h4 id="_implementing_web_tenant_resolvers">11.5.4. Implementing Web Tenant Resolvers</h4>
 <div class="paragraph">
 <p>If you wish to implement your own tenant resolver for Grails or Spring Boot then it is possible do so using the <code>RequestContextHolder</code> class without needing to inject any dependencies. For example the <code>SubDomainTenantResolver</code> implementation is as follows:</p>
 </div>
@@ -8411,13 +7464,13 @@ If the tenant id is not found a <code>TenantNotFoundException</code> should be t
 </div>
 </div>
 <div class="sect1">
-<h2 id="constraints">13. Validation and Constraints</h2>
+<h2 id="constraints">12. Validation and Constraints</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Constraints are how you define validation when using GORM entities.</p>
 </div>
 <div class="sect2">
-<h3 id="_applying_constraints">13.1. Applying Constraints</h3>
+<h3 id="_applying_constraints">12.1. Applying Constraints</h3>
 <div class="paragraph">
 <p>Within a domain class constraints are defined with the constraints property that is assigned a code block:</p>
 </div>
@@ -8485,7 +7538,7 @@ By default, all domain class properties are not nullable (i.e. they have an impl
 </div>
 </div>
 <div class="sect2">
-<h3 id="_referencing_instances_in_constraints">13.2. Referencing Instances in Constraints</h3>
+<h3 id="_referencing_instances_in_constraints">12.2. Referencing Instances in Constraints</h3>
 <div class="paragraph">
 <p>It&#8217;s very easy to attempt to reference instance variables from the static constraints block, but this isn&#8217;t legal in Groovy (or Java). If you do so, you will get a <code>MissingPropertyException</code> for your trouble. For example, you may try the following:</p>
 </div>
@@ -8521,7 +7574,7 @@ By default, all domain class properties are not nullable (i.e. they have an impl
 </div>
 </div>
 <div class="sect2">
-<h3 id="_constraints_reference">13.3. Constraints Reference</h3>
+<h3 id="_constraints_reference">12.3. Constraints Reference</h3>
 <div class="paragraph">
 <p>The following table summarizes the available constraints with a brief example:</p>
 </div>
@@ -8601,34 +7654,34 @@ By default, all domain class properties are not nullable (i.e. they have an impl
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">scale</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Set to the desired scale for floating point numbers (i.e. the number of digits to the right of the decimal point).</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>salary(scale: 2)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Set to the desired scale for floating point numbers (i.e.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">the number of digits to the right of the decimal point).</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>salary(scale: 2)</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">size</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Uses a Groovy range to restrict the size of a collection or number or the length of a String.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>children(size: 5..15)</code></p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>children(size: 5..15)</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">unique</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Constrains a property as unique at the database level</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>login(unique: true)</code></p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>login(unique: true)</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">url</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Validates that a String value is a valid URL.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>homePage(url: true)</code></p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>homePage(url: true)</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">validator</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Adds custom validation to a field.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">See documentation</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="sect2">
-<h3 id="_constraints_and_database_mapping">13.4. Constraints and Database Mapping</h3>
+<h3 id="_constraints_and_database_mapping">12.4. Constraints and Database Mapping</h3>
 <div class="paragraph">
 <p>Although constraints are primarily for validation, it is important to understand that constraints can affect the way in which the database schema is generated.</p>
 </div>
@@ -8704,7 +7757,7 @@ By default, all domain class properties are not nullable (i.e. they have an impl
 <p>This constraint would provide both the application-based validation we want and it would also cause the schema to be generated as shown above.  Below is a description of the other constraints that influence schema generation.</p>
 </div>
 <div class="sect3">
-<h4 id="_constraints_affecting_string_properties">13.4.1. Constraints Affecting String Properties</h4>
+<h4 id="_constraints_affecting_string_properties">12.4.1. Constraints Affecting String Properties</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -8729,7 +7782,7 @@ By default, all domain class properties are not nullable (i.e. they have an impl
 </div>
 </div>
 <div class="sect3">
-<h4 id="_constraints_affecting_numeric_properties">13.4.2. Constraints Affecting Numeric Properties</h4>
+<h4 id="_constraints_affecting_numeric_properties">12.4.2. Constraints Affecting Numeric Properties</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -8812,7 +7865,7 @@ By default, all domain class properties are not nullable (i.e. they have an impl
 </div>
 </div>
 <div class="sect1">
-<h2 id="testing">14. GORM and Testing</h2>
+<h2 id="testing">13. GORM and Testing</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>In previous versions of GORM it was much more difficult to setup a unit test to test your GORM logic.</p>
@@ -8821,12 +7874,12 @@ By default, all domain class properties are not nullable (i.e. they have an impl
 <p>However, since GORM 6.0, this situation has changed and it is relatively trivial to setup GORM for testing.</p>
 </div>
 <div class="sect2">
-<h3 id="_unit_testing_with_spock">14.1. Unit Testing with Spock</h3>
+<h3 id="_unit_testing_with_spock">13.1. Unit Testing with Spock</h3>
 <div class="paragraph">
 <p><a href="http://docs.spockframework.org">Spock</a> is the recommended tool for writing unit tests with GORM and is trivial to setup.</p>
 </div>
 <div class="sect3">
-<h4 id="_gorm_with_hibernate_and_spock_basics">14.1.1. GORM with Hibernate and Spock Basics</h4>
+<h4 id="_gorm_with_hibernate_and_spock_basics">13.1.1. GORM with Hibernate and Spock Basics</h4>
 <div class="paragraph">
 <p>The following is an example Spock unit test:</p>
 </div>
@@ -8881,14 +7934,14 @@ By default, all domain class properties are not nullable (i.e. they have an impl
 </div>
 </div>
 <div class="sect3">
-<h4 id="_spock_and_transactions">14.1.2. Spock and Transactions</h4>
+<h4 id="_spock_and_transactions">13.1.2. Spock and Transactions</h4>
 <div class="paragraph">
-<p>Note that in general you have to wrap your test execution logic in a session or transaction. The easiest way to do this is with <code>grails.gorm.transactions.Transactional</code>:</p>
+<p>Note that in general you have to wrap your test execution logic in a session or transaction. The easiet way to do this is with <code>grails.transaction.Transactional</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">...
-import grails.gorm.transactions.*
+import grails.transaction.Rollback
 <span class="keyword">import</span> <span class="include">org.springframework.transaction.PlatformTransactionManager</span>
 
 <span class="type">class</span> <span class="class">ExampleSpec</span> <span class="directive">extends</span> Specification {
@@ -8934,7 +7987,7 @@ import grails.gorm.transactions.*
 </table>
 </div>
 <div class="paragraph">
-<p>In the example above, each test method is wrapped in a transaction that rolls back any changes using the <code>grails.gorm.transactions.Rollback</code> annotation.</p>
+<p>In the example above, each test method is wrapped in a transaction that rolls back any changes using the <code>grails.transaction.Rollback</code> method.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -8962,7 +8015,7 @@ void setupSpec() {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_configuring_gorm_in_spock">14.1.3. Configuring GORM in Spock</h4>
+<h4 id="_configuring_gorm_in_spock">13.1.3. Configuring GORM in Spock</h4>
 <div class="paragraph">
 <p>If you need to configure GORM within a Spock unit test you can pass a map to the constructor of <code>HibernateDatastore</code>. For example to setup multi-tenancy:</p>
 </div>
@@ -8982,7 +8035,7 @@ void setupSpec() {
 </div>
 </div>
 <div class="sect2">
-<h3 id="_unit_testing_with_junit">14.2. Unit Testing with JUnit</h3>
+<h3 id="_unit_testing_with_junit">13.2. Unit Testing with JUnit</h3>
 <div class="paragraph">
 <p>To unit test with <a href="http://junit.org/junit4">JUnit</a> it is largely similar to Spock, just following different idioms.</p>
 </div>
@@ -8992,7 +8045,7 @@ void setupSpec() {
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">org.junit.*</span>
-<span class="keyword">import</span> <span class="include">grails.gorm.transactions.*</span>
+<span class="keyword">import</span> <span class="include">grails.transaction.Rollback</span>
 <span class="keyword">import</span> <span class="include">org.grails.orm.hibernate.HibernateDatastore</span>
 <span class="keyword">import</span> <span class="include">org.springframework.transaction.PlatformTransactionManager</span>
 
