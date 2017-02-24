@@ -122,10 +122,12 @@ abstract class AbstractDatastoreMethodDecoratingTransformation extends AbstractM
 
                 Parameter datastoresParam = param(datastoreType.makeArray(), "datastores")
                 VariableExpression datastoresVar = varX(datastoresParam)
+                Expression datastoreVar = callD(classX(RuntimeSupport), "findDefaultDatastore", datastoresVar)
 
                 BlockStatement setTargetDatastoreBody
                 VariableExpression datastoreFieldVar = varX(datastoreField)
-                Statement assignTargetDatastore = assignS(datastoreFieldVar, callD(classX(RuntimeSupport), "findDefaultDatastore", datastoresVar))
+
+                Statement assignTargetDatastore = assignS(datastoreFieldVar,datastoreVar )
                 if(hasDataSourceProperty) {
                     // $targetDatastore = RuntimeSupport.findDefaultDatastore(datastores)
                     // datastore = datastore.getDatastoreForConnection(connectionName)
@@ -140,7 +142,7 @@ abstract class AbstractDatastoreMethodDecoratingTransformation extends AbstractM
                     )
                 }
 
-                weaveSetTargetDatastoreBody(source, annotationNode, declaringClassNode, datastoresVar, setTargetDatastoreBody)
+                weaveSetTargetDatastoreBody(source, annotationNode, declaringClassNode, datastoreVar, setTargetDatastoreBody)
 
                 // Add method: @Autowired void setTargetDatastore(Datastore[] datastores)
                 Parameter[] setTargetDatastoreParams = params(datastoresParam)
@@ -189,7 +191,7 @@ abstract class AbstractDatastoreMethodDecoratingTransformation extends AbstractM
 
     }
 
-    protected void weaveSetTargetDatastoreBody(SourceUnit source, AnnotationNode annotationNode, ClassNode declaringClassNode, VariableExpression datastoreVar, BlockStatement setTargetDatastoreBody) {
+    protected void weaveSetTargetDatastoreBody(SourceUnit source, AnnotationNode annotationNode, ClassNode declaringClassNode, Expression datastoreVar, BlockStatement setTargetDatastoreBody) {
         // no-op
     }
 

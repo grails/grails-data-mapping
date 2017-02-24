@@ -4,7 +4,9 @@ package grails.gorm.annotation.transactions
 import grails.core.DefaultGrailsApplication
 import grails.spring.BeanBuilder
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
+import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.connections.MultipleConnectionSourceCapableDatastore
+import org.grails.datastore.mapping.transactions.TransactionCapableDatastore
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -28,6 +30,38 @@ import java.lang.reflect.Field
 /**
  */
 class TransactionalTransformSpec extends Specification {
+
+    void "Test transactional transform set target datastore method"() {
+        when: "A subclass subclasses a transactional service"
+        Class testService = new GroovyShell().evaluate('''
+import grails.gorm.transactions.Transactional
+
+    @Transactional
+    class TestService {
+
+        def foo() {
+            "unknown"
+        }
+    }
+
+
+    TestService
+    ''')
+
+        def field = ReflectionUtils.findField(testService, '$transactionManager')
+
+        then: "It implements TransactionManagerAware"
+        field.declaringClass.name == 'TestService'
+
+        when:
+        def instance = testService.newInstance()
+        def mockDatastore = Mock(TransactionCapableDatastore)
+        instance.targetDatastore = mockDatastore
+
+
+        then:
+        instance.targetDatastore == mockDatastore
+    }
 
     @Issue('https://github.com/grails/grails-core/issues/9989')
     void "Test transactional transform when applied to inheritance"() {
