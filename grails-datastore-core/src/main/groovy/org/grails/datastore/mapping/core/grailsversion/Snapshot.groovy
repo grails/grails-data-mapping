@@ -1,32 +1,46 @@
 package org.grails.datastore.mapping.core.grailsversion
 
+import groovy.transform.CompileStatic
+import groovy.transform.EqualsAndHashCode
+
 /**
  * A class to represent the snapshot version of Grails for comparison
  *
  * @author James Kleeh
  */
+@CompileStatic
+@EqualsAndHashCode(includes = ['text'])
 class Snapshot implements Comparable<Snapshot> {
+
+    private static final String BUILD_SNAPSHOT = "BUILD-SNAPSHOT"
+    private static final String RC = "RC"
+    private static final String MILESTONE = "M"
 
     private String text
 
+    @Override
+    String toString() {
+        text
+    }
+
     int getMilestoneVersion() {
-        text.replace("M", "").toInteger()
+        text.replace(MILESTONE, "").toInteger()
     }
 
     int getReleaseCandidateVersion() {
-        text.replace("RC", "").toInteger()
+        text.replace(RC, "").toInteger()
     }
 
     boolean isBuildSnapshot() {
-        text == "BUILD-SNAPSHOT"
+        text == BUILD_SNAPSHOT
     }
 
     boolean isReleaseCandidate() {
-        text.startsWith("RC")
+        text.startsWith(RC)
     }
 
     boolean isMilestone() {
-        text.startsWith("M")
+        text.startsWith(MILESTONE)
     }
 
     Snapshot(String text) {

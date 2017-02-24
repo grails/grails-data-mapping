@@ -62,16 +62,66 @@ class GrailsVersion implements Comparable<GrailsVersion> {
     }
 
     /**
-     * Check whether the version is at least the given version
+     * Check whether the current version is at least the given major and minor version
+     *
+     * @param majorVersion The major version
+     * @param minorVersion The minor version
+     * @return True if it is
+     */
+    static boolean isAtLeastMajorMinor(int majorVersion, int minorVersion) {
+        GrailsVersion current = getCurrent()
+        return isAtLeastMajorMinorImpl(current, majorVersion, minorVersion)
+    }
+
+    /**
+     * Check whether the current version is at least the given major and minor version
+     *
+     * @param majorVersion The major version
+     * @param minorVersion The minor version
+     * @return True if it is
+     */
+    static boolean isAtLeastMajorMinor(String version, int majorVersion, int minorVersion) {
+        return isAtLeastMajorMinorImpl(new GrailsVersion(version), majorVersion, minorVersion)
+    }
+
+    private static boolean isAtLeastMajorMinorImpl(GrailsVersion version, int majorVersion, int minorVersion) {
+        if (version != null) {
+            return version.major >= majorVersion && version.minor >= minorVersion
+        }
+        return false
+    }
+    /**
+     * Check whether the current version is at least the given version
      *
      * @param requiredVersion The required version
      * @return True if it is
      */
     static boolean isAtLeast(String requiredVersion) {
         GrailsVersion currentVersion = getCurrent()
-        if (currentVersion != null) {
+        return isAtLeastImpl(currentVersion, requiredVersion)
+    }
+    /**
+     * Check whether the version is at least the given version
+     *
+     * @param version The version
+     * @param requiredVersion The required version
+     * @return True if it is
+     */
+    static boolean isAtLeast(String version, String requiredVersion) {
+        return isAtLeastImpl(new GrailsVersion(version), requiredVersion)
+    }
+    /**
+     * Check whether the version is at least the given version
+     *
+     * @param version The version
+     * @param requiredVersion The required version
+     * @return True if it is
+     */
+    private static boolean isAtLeastImpl(GrailsVersion version, String requiredVersion) {
+        if (version != null) {
             // if the current version is greater than the required version
-            if (currentVersion > new GrailsVersion(requiredVersion)) {
+            GrailsVersion otherVersion = new GrailsVersion(requiredVersion)
+            if (version >= otherVersion) {
                 return true
             }
         }

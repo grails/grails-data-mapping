@@ -9,9 +9,19 @@ class GrailsVersionSpec extends Specification {
 
     void "test isAtLeast"() {
         expect:
+        GrailsVersion.isAtLeastMajorMinor(3,2)
+        GrailsVersion.isAtLeastMajorMinor(3,1)
+        GrailsVersion.isAtLeast("3.1.0")
+        GrailsVersion.isAtLeastMajorMinor("3.3.0.BUILD-SNAPSHOT", 3, 3)
+        !GrailsVersion.isAtLeastMajorMinor("3.3.0.BUILD-SNAPSHOT", 3, 4)
+        GrailsVersion.isAtLeastMajorMinor("3.3.0.BUILD-SNAPSHOT", 3, 2)
+        GrailsVersion.isAtLeast("3.3.0", "3.3.0.BUILD-SNAPSHOT")
+        GrailsVersion.isAtLeast("3.3.0", "3.3.0.M1")
+        !GrailsVersion.isAtLeast("3.3.0.BUILD-SNAPSHOT","3.3.0")
+        GrailsVersion.isAtLeast("3.3.0","3.3.0")
         !GrailsVersion.isAtLeast("3.3.0")
         GrailsVersion.isAtLeast("3.2.0")
-        GrailsVersion.isAtLeast("3.1.0")
+
     }
 
     void "test compareTo"() {
