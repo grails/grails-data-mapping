@@ -4,7 +4,6 @@ import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.bootstrap.support.InstanceFactoryBean
 import org.grails.datastore.mapping.config.Settings
 import org.grails.datastore.mapping.core.connections.ConnectionSource
-import org.grails.datastore.mapping.core.grailsversion.GrailsVersion
 import org.hibernate.SessionFactory
 import org.springframework.beans.BeansException
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
@@ -35,10 +34,9 @@ class HibernateDatastoreConnectionSourcesRegistrar implements BeanDefinitionRegi
     void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
         for(String dataSourceName in dataSourceNames) {
             boolean isDefault = dataSourceName == ConnectionSource.DEFAULT || dataSourceName == Settings.SETTING_DATASOURCE
-            boolean shouldConfigureDataSourceBean = !GrailsVersion.isAtLeastMajorMinor(3,3)
             String dataSourceBeanName = isDefault ? Settings.SETTING_DATASOURCE : "${Settings.SETTING_DATASOURCE}_$dataSourceName"
 
-            if(!registry.containsBeanDefinition(dataSourceBeanName) && shouldConfigureDataSourceBean) {
+            if(!registry.containsBeanDefinition(dataSourceBeanName)) {
                 def dataSourceBean = new RootBeanDefinition()
                 dataSourceBean.setTargetType(DataSource)
                 dataSourceBean.setBeanClass(InstanceFactoryBean)
