@@ -15,15 +15,12 @@
  */
 package org.grails.orm.hibernate;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEventListener;
 import org.grails.orm.hibernate.connections.HibernateConnectionSourceSettings;
 import org.grails.orm.hibernate.support.SoftKey;
 import org.springframework.context.ApplicationEvent;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -42,7 +39,6 @@ public abstract class AbstractEventTriggeringInterceptor extends AbstractPersist
             new ConcurrentHashMap<SoftKey<Class<?>>, Boolean>();
     protected final boolean failOnError;
     protected final List<?> failOnErrorPackages;
-    protected final Log log = LogFactory.getLog(getClass());
 
     protected AbstractEventTriggeringInterceptor(AbstractHibernateDatastore datastore) {
         super(datastore);
@@ -58,5 +54,12 @@ public abstract class AbstractEventTriggeringInterceptor extends AbstractPersist
      */
     public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
         return AbstractPersistenceEvent.class.isAssignableFrom(eventType);
+    }
+
+    /**
+     * @return The hibernate datastore
+     */
+    protected AbstractHibernateDatastore getDatastore() {
+        return (AbstractHibernateDatastore) this.datastore;
     }
 }

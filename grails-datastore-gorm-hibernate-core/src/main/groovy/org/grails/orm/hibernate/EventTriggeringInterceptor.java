@@ -98,18 +98,14 @@ public class EventTriggeringInterceptor extends AbstractEventTriggeringIntercept
     }
 
     public void onSaveOrUpdate(SaveOrUpdateEvent event) throws HibernateException {
-        EntityEntry entry = event.getEntry();
-        ClosureEventListener eventListener;
-
-        if(entry != null) {
-            eventListener = findEventListener(event.getObject(), entry.getPersister().getFactory());
-        }
-        else {
+        Object entity = event.getObject();
+        if(entity != null) {
+            ClosureEventListener eventListener;
             EventSource session = event.getSession();
-            eventListener = findEventListener(event.getObject(), (SessionFactoryImplementor) session.getSessionFactory());
-        }
-        if (eventListener != null) {
-            eventListener.onSaveOrUpdate(event);
+            eventListener = findEventListener(entity, (SessionFactoryImplementor) session.getSessionFactory());
+            if (eventListener != null) {
+                eventListener.onSaveOrUpdate(event);
+            }
         }
     }
 
