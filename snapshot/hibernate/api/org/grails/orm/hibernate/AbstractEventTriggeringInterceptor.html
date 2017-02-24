@@ -146,12 +146,6 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <td class="colLast"></code></td>
                         </tr>
                         
-                        <tr class="rowColor">
-                            <td class="colFirst"><code><strong>protected&nbsp;org.apache.commons.logging.Log</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#log">log</a></code></td>
-                            <td class="colLast"></code></td>
-                        </tr>
-                        
                     </table>
                    </ul>
                 </li>
@@ -221,6 +215,11 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>protected&nbsp;org.grails.orm.hibernate.AbstractHibernateDatastore</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getDatastore()">getDatastore</a></strong>()</code><br>@return The hibernate datastore</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#supportsEventType(Class<? extends ApplicationEvent>)">supportsEventType</a></strong>(java.lang.Class&lt;? extends org.springframework.context.ApplicationEvent&gt; eventType)</code><br>{@inheritDoc}</td>
                         </tr>
@@ -294,14 +293,6 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="log"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>protected&nbsp;final&nbsp;org.apache.commons.logging.Log <strong>log</strong></h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
                 </li>
             </ul>
             
@@ -338,6 +329,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                     <!--   -->
                 </a>
                     <h3>Method Detail</h3>
+                    
+                        <a name="getDatastore()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;org.grails.orm.hibernate.AbstractHibernateDatastore <strong>getDatastore</strong>()</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>The hibernate datastore</DD></DL></p>
+                            </li>
+                        </ul>
                     
                         <a name="supportsEventType(Class<? extends ApplicationEvent>)"><!-- --></a>
                         <ul class="blockListLast">
