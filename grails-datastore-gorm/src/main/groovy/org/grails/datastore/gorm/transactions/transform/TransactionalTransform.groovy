@@ -101,6 +101,9 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
     private static final String METHOD_EXECUTE = "execute"
     private static final Object APPLIED_MARKER = new Object();
     private static final String SET_TRANSACTION_MANAGER = "setTransactionManager"
+    private static final Set<String> VALID_ANNOTATION_NAMES = Collections.unmodifiableSet(
+        new HashSet<String>([Transactional.simpleName, Rollback.simpleName, ReadOnly.simpleName])
+    )
     public static final String GET_TRANSACTION_MANAGER_METHOD = "getTransactionManager"
     /**
      * The position of the transform in terms ordering
@@ -110,7 +113,7 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
 
     @Override
     protected boolean isValidAnnotation(AnnotationNode annotationNode, AnnotatedNode classNode) {
-        return super.isValidAnnotation(annotationNode, classNode) || READ_ONLY_TYPE.equals(annotationNode.classNode)
+        return VALID_ANNOTATION_NAMES.contains( annotationNode.classNode.nameWithoutPackage )
     }
 
     @Override

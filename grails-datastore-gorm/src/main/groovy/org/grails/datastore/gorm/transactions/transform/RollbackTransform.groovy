@@ -18,9 +18,4 @@ class RollbackTransform extends TransactionalTransform {
     protected String getTransactionTemplateMethodName() {
         return "executeAndRollback"
     }
-
-    @Override
-    protected boolean isValidAnnotation(AnnotationNode annotationNode, AnnotatedNode classNode) {
-        return MY_TYPE.equals(annotationNode.getClassNode())
-    }
 }
