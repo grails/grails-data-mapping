@@ -20,6 +20,7 @@ import java.util.*;
 
 import groovy.util.ConfigObject;
 import groovy.util.ConfigSlurper;
+import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.grails.datastore.mapping.config.DatastoreEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -436,7 +437,8 @@ public abstract class DatastoreUtils {
         else if(propertyResolver instanceof ConfigurableEnvironment) {
             // Spring Boot Environment config
             ConfigurableEnvironment env = (ConfigurableEnvironment) propertyResolver;
-            MutablePropertySources propertySources = env.getPropertySources();
+            List<PropertySource<?>> propertySources = DefaultGroovyMethods.asList(env.getPropertySources());
+            Collections.reverse(propertySources);
             Map<String, Object> configuration = new LinkedHashMap<>();
             for (PropertySource<?> propertySource : propertySources) {
                 if(propertySource instanceof EnumerablePropertySource) {

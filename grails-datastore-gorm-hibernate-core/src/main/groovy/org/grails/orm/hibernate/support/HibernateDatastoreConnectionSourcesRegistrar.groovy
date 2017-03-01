@@ -16,6 +16,7 @@ import org.springframework.transaction.PlatformTransactionManager
 
 import javax.sql.DataSource
 
+
 /**
  * A factory bean that looks up a datastore by connection name
  *
