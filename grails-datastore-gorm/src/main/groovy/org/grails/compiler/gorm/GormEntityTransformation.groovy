@@ -47,6 +47,7 @@ import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.ExpressionStatement
 import org.codehaus.groovy.ast.stmt.ReturnStatement
 import org.codehaus.groovy.ast.stmt.Statement
+import org.codehaus.groovy.ast.tools.GeneralUtils
 import org.codehaus.groovy.control.CompilationUnit
 import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.SourceUnit
@@ -57,6 +58,7 @@ import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.gorm.query.GormQueryOperations
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.AstUtils
+import org.grails.datastore.mapping.reflect.ClassUtils
 import org.grails.datastore.mapping.reflect.NameUtils
 
 import javax.persistence.Embeddable
@@ -100,6 +102,16 @@ class GormEntityTransformation extends AbstractASTTransformation implements Comp
     public static final Parameter[] ADD_TO_PARAMETERS = [new Parameter(AstUtils.OBJECT_CLASS_NODE, "obj")] as Parameter[]
     public static final ClassNode SERIALIZABLE_CLASS_NODE = ClassHelper.make(Serializable).getPlainNodeReference()
     private static final Object APPLIED_MARKER = new Object();
+    private static final ListExpression IGNORED_PROPERTIES = new ListExpression();
+
+    static {
+        IGNORED_PROPERTIES.addExpression(GeneralUtils.constX(GormProperties.DIRTY_PROPERTY_NAMES))
+        IGNORED_PROPERTIES.addExpression(GeneralUtils.constX(GormProperties.ERRORS))
+        IGNORED_PROPERTIES.addExpression(GeneralUtils.constX(GormProperties.DIRTY))
+        IGNORED_PROPERTIES.addExpression(GeneralUtils.constX(GormProperties.ATTACHED))
+        IGNORED_PROPERTIES.addExpression(GeneralUtils.constX(GormProperties.VERSION))
+
+    }
 
     protected CompilationUnit compilationUnit
 
@@ -144,10 +156,10 @@ class GormEntityTransformation extends AbstractASTTransformation implements Comp
 
         AstUtils.addTransformedEntityName(classNode.name)
         // Add the entity annotation and enable generic replacement
-        classNode.setUsingGenerics(true);
+        classNode.setUsingGenerics(true)
 
         if(!isJpaEntity) {
-            AstUtils.addAnnotationIfNecessary(classNode, Entity.class);
+            AstUtils.addAnnotationIfNecessary(classNode, Entity.class)
             try {
                 AstUtils.addAnnotationIfNecessary(classNode, (Class<? extends Annotation>)getClass().classLoader.loadClass('grails.persistence.Entity'))
             } catch (Throwable e) {
@@ -156,6 +168,24 @@ class GormEntityTransformation extends AbstractASTTransformation implements Comp
                     AstUtils.addAnnotationIfNecessary(classNode, (Class<? extends Annotation>)Class.forName('grails.persistence.Entity', true, cl))
                 } catch (Throwable e2) {
                     // Only GORM classes on the classpath continue
+                }
+            }
+        }
+
+        // Add the Jackson @JsonIgnoreProperties if Jackson is present
+        // Add @JsonIgnoreProperties(['dirtyPropertyNames', 'errors', 'dirty', 'attached', 'version'])
+        if(ClassUtils.isPresent("com.fasterxml.jackson.annotation.JsonIgnoreProperties")) {
+            AnnotationNode ignorePropertiesAnn = AstUtils.addAnnotationOrGetExisting(classNode,  (Class<? extends Annotation>)getClass().classLoader.loadClass('com.fasterxml.jackson.annotation.JsonIgnoreProperties'))
+            Expression existing = ignorePropertiesAnn.getMember("value")
+            if(existing == null) {
+                ignorePropertiesAnn.setMember("value", IGNORED_PROPERTIES)
+            }
+            else {
+                if(existing instanceof ListExpression) {
+                    ListExpression listExpression = (ListExpression) existing
+                    for(exp in IGNORED_PROPERTIES.expressions) {
+                        listExpression.addExpression(exp)
+                    }
                 }
             }
         }
