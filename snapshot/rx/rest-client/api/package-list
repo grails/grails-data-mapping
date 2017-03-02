@@ -11,7 +11,6 @@ grails.gorm.rx.proxy
 grails.gorm.rx.rest
 grails.gorm.rx.rest.api
 grails.gorm.rx.rest.interceptor
-grails.gorm.rx.rest.mapping
 grails.gorm.rx.services
 grails.gorm.services
 grails.gorm.transactions

@@ -443,18 +443,13 @@ book.save()</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import static grails.gorm.rx.rest.mapping.MappingBuilder.*
-
-@Entity
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Entity
 class Product implements RxRestEntity&lt;Product&gt; {
 
     String name
 
-    static mapping = endpoint {
-        id {
-            name "name"
-            generator "assigned"
-        }
+    static mapping = {
+        id name:"name", generator:"assigned"
     }
 }</code></pre>
 </div>
@@ -480,7 +475,7 @@ product.insert()</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-03-01 14:45:52 UTC
+Last updated 2017-03-02 13:55:49 UTC
 </div>
 </div>
 </body>

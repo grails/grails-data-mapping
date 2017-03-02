@@ -455,17 +455,14 @@ class Author implements RxRestEntity&lt;Author&gt; {
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">package example
 
 import grails.gorm.rx.rest.*
-import static grails.gorm.rx.rest.mapping.MappingBuilder.*
 
 class Book implements RxRestEntity&lt;Book&gt; {
     String title
 
     static hasMany = [authors:Author]
 
-    static mapping = endpoint {
-        authors property {
-            uri '/books/{book}/info/authors'
-        }
+    static mapping = {
+        authors '/books/{book}/info/authors'
     }
 }</code></pre>
 </div>
@@ -497,7 +494,7 @@ Within the <a href="#uriTemplates">URI Template</a> for the association you can 
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-03-01 14:45:52 UTC
+Last updated 2017-03-02 13:55:49 UTC
 </div>
 </div>
 </body>

@@ -434,14 +434,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">package example
 
 import grails.gorm.rx.rest.*
-import static grails.gorm.rx.rest.mapping.MappingBuilder.*
 
 class Book implements RxRestEntity&lt;Book&gt; {
     String title
     String author
 
-    static mapping = endpoint {
-        id {  name "title" }
+    static mapping = {
+        id name:"title"
         uri "/authors/{author}/books{/title}"
     }
 }</code></pre>
@@ -503,7 +502,7 @@ Observable&lt;Book&gt; observable = Book.where {
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-03-01 14:45:52 UTC
+Last updated 2017-03-02 13:55:49 UTC
 </div>
 </div>
 </body>
