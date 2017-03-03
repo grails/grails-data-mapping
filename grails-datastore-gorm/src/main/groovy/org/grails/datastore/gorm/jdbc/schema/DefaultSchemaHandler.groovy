@@ -1,5 +1,8 @@
 package org.grails.datastore.gorm.jdbc.schema
 
+import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
+
 import javax.sql.DataSource
 import java.sql.Connection
 import java.sql.ResultSet
@@ -10,6 +13,8 @@ import java.sql.ResultSet
  * @author Graeme Rocher
  * @since 6.0
  */
+@CompileStatic
+@Slf4j
 class DefaultSchemaHandler implements SchemaHandler {
 
     final String useSchemaStatement
@@ -30,9 +35,11 @@ class DefaultSchemaHandler implements SchemaHandler {
 
     @Override
     void useSchema(Connection connection, String name) {
+        String useStatement = String.format(useSchemaStatement, name)
+        log.debug("Executing SQL Set Schema Statement: ${useStatement}")
         connection
                 .createStatement()
-                .execute( String.format(useSchemaStatement, name) )
+                .execute(useStatement)
     }
 
     @Override
@@ -42,15 +49,17 @@ class DefaultSchemaHandler implements SchemaHandler {
 
     @Override
     void createSchema(Connection connection, String name) {
+        String schemaCreateStatement = String.format(createSchemaStatement, name)
+        log.debug("Executing SQL Create Schema Statement: ${schemaCreateStatement}")
         connection
                 .createStatement()
-                .execute( String.format(createSchemaStatement, name) )
+                .execute(schemaCreateStatement)
     }
 
     @Override
     Collection<String> resolveSchemaNames(DataSource dataSource) {
         Collection<String> schemaNames = []
-        Connection connection
+        Connection connection = null
         try {
             connection = dataSource.getConnection()
             ResultSet schemas = connection.getMetaData().getSchemas()
@@ -58,7 +67,11 @@ class DefaultSchemaHandler implements SchemaHandler {
                 schemaNames.add(schemas.getString("TABLE_SCHEM"))
             }
         } finally {
-            connection?.close()
+            try {
+                connection?.close()
+            } catch (Throwable e) {
+                log.debug("Error closing SQL connection: $e.message", e)
+            }
         }
         return schemaNames
     }
