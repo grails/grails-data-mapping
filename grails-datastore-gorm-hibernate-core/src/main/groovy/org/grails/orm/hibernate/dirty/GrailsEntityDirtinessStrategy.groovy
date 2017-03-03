@@ -18,6 +18,7 @@ package org.grails.orm.hibernate.dirty
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
+import org.grails.datastore.mapping.model.config.GormProperties
 import org.hibernate.CustomEntityDirtinessStrategy
 import org.hibernate.Session
 import org.hibernate.engine.spi.SessionImplementor
@@ -61,7 +62,13 @@ class GrailsEntityDirtinessStrategy implements CustomEntityDirtinessStrategy {
                     if(status != null) {
                         if(status == Status.MANAGED) {
                             // perform dirty check
-                            return cast(entity).hasChanged(propertyName)
+                            DirtyCheckable dirtyCheckable = cast(entity)
+                            if(GormProperties.LAST_UPDATED == propertyName) {
+                                return dirtyCheckable.hasChanged()
+                            }
+                            else {
+                                return dirtyCheckable.hasChanged(propertyName)
+                            }
                         }
                         else {
                             // either deleted or in a state that cannot be regarded as dirty
