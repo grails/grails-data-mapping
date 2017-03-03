@@ -26,10 +26,7 @@ import org.grails.datastore.mapping.core.DatastoreAware;
 import org.grails.datastore.mapping.core.connections.*;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.config.GormProperties;
-import org.grails.datastore.mapping.multitenancy.AllTenantsResolver;
-import org.grails.datastore.mapping.multitenancy.MultiTenancySettings;
-import org.grails.datastore.mapping.multitenancy.MultiTenantCapableDatastore;
-import org.grails.datastore.mapping.multitenancy.TenantResolver;
+import org.grails.datastore.mapping.multitenancy.*;
 import org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException;
 import org.grails.datastore.mapping.multitenancy.resolvers.FixedTenantResolver;
 import org.grails.datastore.mapping.transactions.TransactionCapableDatastore;
@@ -60,7 +57,7 @@ import java.util.concurrent.Callable;
  * @author Graeme Rocher
  * @since 2.0
  */
-public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware, Settings, MultiTenantCapableDatastore<SessionFactory, HibernateConnectionSourceSettings>, TransactionCapableDatastore, Closeable, MessageSourceAware, MultipleConnectionSourceCapableDatastore {
+public abstract class AbstractHibernateDatastore extends AbstractDatastore implements ApplicationContextAware, Settings, SchemaMultiTenantCapableDatastore<SessionFactory, HibernateConnectionSourceSettings>, TransactionCapableDatastore, Closeable, MessageSourceAware, MultipleConnectionSourceCapableDatastore {
 
     public static final String CONFIG_PROPERTY_CACHE_QUERIES = "grails.hibernate.cache.queries";
     public static final String CONFIG_PROPERTY_OSIV_READONLY = "grails.hibernate.osiv.readonly";
