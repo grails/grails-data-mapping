@@ -113,7 +113,7 @@ extends <a href='../../../../../org/grails/datastore/gorm/finders/AbstractFinder
 
 
     <p> Abstract base class for dynamic finders.
- </p>
+ <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>1.0</DD></DL></p>
 
           </li>
     </ul>
@@ -315,19 +315,19 @@ extends <a href='../../../../../org/grails/datastore/gorm/finders/AbstractFinder
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#applyDetachedCriteria(org.grails.datastore.mapping.query.Query, org.grails.datastore.gorm.query.criteria.AbstractDetachedCriteria)">applyDetachedCriteria</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> q, <a href='../../../../../org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html'>AbstractDetachedCriteria</a> detachedCriteria)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#applyDetachedCriteria(org.grails.datastore.mapping.query.Query, org.grails.datastore.gorm.query.criteria.AbstractDetachedCriteria)">applyDetachedCriteria</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query, <a href='../../../../../org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html'>AbstractDetachedCriteria</a> detachedCriteria)</code><br>Applies the given detached criteria to the given query</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#applySortForMap(org.grails.datastore.mapping.query.Query, java.util.Map, boolean)">applySortForMap</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> q, java.util.Map sortMap, boolean ignoreCase)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#applySortForMap(org.grails.datastore.mapping.query.Query, java.util.Map, boolean)">applySortForMap</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query, java.util.Map sortMap, boolean ignoreCase)</code><br>Applies sorting logic to the given query from the given map</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;<a href='../../../../../org/grails/datastore/gorm/finders/MatchSpec.html'>MatchSpec</a></code></td>
-                            <td class="colLast"><code><strong><a href="#buildMatchSpec(java.lang.String, java.lang.String, int)">buildMatchSpec</a></strong>(java.lang.String prefix, java.lang.String methodName, int parameterCount)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#buildMatchSpec(java.lang.String, java.lang.String, int)">buildMatchSpec</a></strong>(java.lang.String prefix, java.lang.String methodName, int parameterCount)</code><br>Builds a match specification that can be used to establish information about a dynamic finder compilation for the purposes of compilation etc.</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -387,19 +387,19 @@ extends <a href='../../../../../org/grails/datastore/gorm/finders/AbstractFinder
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#isMethodMatch(java.lang.String)">isMethodMatch</a></strong>(java.lang.String methodName)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#isMethodMatch(java.lang.String)">isMethodMatch</a></strong>(java.lang.String methodName)</code><br>Checks whether the given method is a match</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#populateArgumentsForCriteria(org.grails.datastore.mapping.query.api.BuildableCriteria, java.util.Map)">populateArgumentsForCriteria</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/api/BuildableCriteria.html'>BuildableCriteria</a> q, java.util.Map argMap)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#populateArgumentsForCriteria(org.grails.datastore.mapping.query.api.BuildableCriteria, java.util.Map)">populateArgumentsForCriteria</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/api/BuildableCriteria.html'>BuildableCriteria</a> query, java.util.Map argMap)</code><br>Populates arguments for the given query form the given map</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#populateArgumentsForCriteria(Class<?>, org.grails.datastore.mapping.query.Query, java.util.Map)">populateArgumentsForCriteria</a></strong>(java.lang.Class&lt;?&gt; targetClass, <a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> q, java.util.Map argMap)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#populateArgumentsForCriteria(Class<?>, org.grails.datastore.mapping.query.Query, java.util.Map)">populateArgumentsForCriteria</a></strong>(java.lang.Class&lt;?&gt; targetClass, <a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query, java.util.Map argMap)</code><br>Populates arguments for the given query form the given map</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -411,7 +411,7 @@ extends <a href='../../../../../org/grails/datastore/gorm/finders/AbstractFinder
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#setPattern(java.lang.String)">setPattern</a></strong>(java.lang.String pattern)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setPattern(java.lang.String)">setPattern</a></strong>(java.lang.String pattern)</code><br>Sets the pattern to use for this finder</td>
                         </tr>
                         
                     </table>
@@ -635,16 +635,18 @@ extends <a href='../../../../../org/grails/datastore/gorm/finders/AbstractFinder
                         <a name="applyDetachedCriteria(org.grails.datastore.mapping.query.Query, org.grails.datastore.gorm.query.criteria.AbstractDetachedCriteria)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;static&nbsp;void <strong>applyDetachedCriteria</strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> q, <a href='../../../../../org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html'>AbstractDetachedCriteria</a> detachedCriteria)</h4>
-                                <p></p>
+                                <h4>public&nbsp;static&nbsp;void <strong>applyDetachedCriteria</strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query, <a href='../../../../../org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html'>AbstractDetachedCriteria</a> detachedCriteria)</h4>
+                                <p> Applies the given detached criteria to the given query
+     <DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD><DD><code>detachedCriteria</code> -  The detached criteria</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="applySortForMap(org.grails.datastore.mapping.query.Query, java.util.Map, boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;static&nbsp;void <strong>applySortForMap</strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> q, java.util.Map sortMap, boolean ignoreCase)</h4>
-                                <p></p>
+                                <h4>public&nbsp;static&nbsp;void <strong>applySortForMap</strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query, java.util.Map sortMap, boolean ignoreCase)</h4>
+                                <p> Applies sorting logic to the given query from the given map
+     <DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD><DD><code>sortMap</code> -  The sort map</DD><DD><code>ignoreCase</code> -  Whether toi ignore case</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -652,7 +654,8 @@ extends <a href='../../../../../org/grails/datastore/gorm/finders/AbstractFinder
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;static&nbsp;<a href='../../../../../org/grails/datastore/gorm/finders/MatchSpec.html'>MatchSpec</a> <strong>buildMatchSpec</strong>(java.lang.String prefix, java.lang.String methodName, int parameterCount)</h4>
-                                <p></p>
+                                <p> Builds a match specification that can be used to establish information about a dynamic finder compilation for the purposes of compilation etc.
+     <DL><DT><B>Returns:</B></DT><DD>The match specification</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>prefix</code> -  The dynamic finder prefix. For example 'findBy'</DD><DD><code>methodName</code> -  The full method name</DD><DD><code>parameterCount</code> -  The number of parameters</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -733,23 +736,26 @@ extends <a href='../../../../../org/grails/datastore/gorm/finders/AbstractFinder
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;boolean <strong>isMethodMatch</strong>(java.lang.String methodName)</h4>
-                                <p></p>
+                                <p> Checks whether the given method is a match
+     <DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>methodName</code> -  The method name</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="populateArgumentsForCriteria(org.grails.datastore.mapping.query.api.BuildableCriteria, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;static&nbsp;void <strong>populateArgumentsForCriteria</strong>(<a href='../../../../../org/grails/datastore/mapping/query/api/BuildableCriteria.html'>BuildableCriteria</a> q, java.util.Map argMap)</h4>
-                                <p></p>
+                                <h4>public&nbsp;static&nbsp;void <strong>populateArgumentsForCriteria</strong>(<a href='../../../../../org/grails/datastore/mapping/query/api/BuildableCriteria.html'>BuildableCriteria</a> query, java.util.Map argMap)</h4>
+                                <p> Populates arguments for the given query form the given map
+     <DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD><DD><code>argMap</code> -  The query arguments</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="populateArgumentsForCriteria(Class<?>, org.grails.datastore.mapping.query.Query, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;static&nbsp;void <strong>populateArgumentsForCriteria</strong>(java.lang.Class&lt;?&gt; targetClass, <a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> q, java.util.Map argMap)</h4>
-                                <p></p>
+                                <h4>public&nbsp;static&nbsp;void <strong>populateArgumentsForCriteria</strong>(java.lang.Class&lt;?&gt; targetClass, <a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query, java.util.Map argMap)</h4>
+                                <p> Populates arguments for the given query form the given map
+     <DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD><DD><code>argMap</code> -  The query arguments</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -767,7 +773,8 @@ extends <a href='../../../../../org/grails/datastore/gorm/finders/AbstractFinder
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;void <strong>setPattern</strong>(java.lang.String pattern)</h4>
-                                <p></p>
+                                <p> Sets the pattern to use for this finder
+     <DL><DT><B>Parameters:</B></DT><DD><code>pattern</code> -  A regular expression</DD></DL></p>
                             </li>
                         </ul>
                     
