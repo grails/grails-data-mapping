@@ -8,7 +8,6 @@ grails.gorm.multitenancy
 grails.gorm.services
 grails.gorm.transactions
 grails.plugins.cassandra
-org.grails.compiler
 org.grails.compiler.gorm
 org.grails.datastore.gorm
 org.grails.datastore.gorm.bootstrap
@@ -17,6 +16,7 @@ org.grails.datastore.gorm.cassandra
 org.grails.datastore.gorm.cassandra.bean.factory
 org.grails.datastore.gorm.cassandra.boot.autoconfigure
 org.grails.datastore.gorm.cassandra.mapping
+org.grails.datastore.gorm.cassandra.transform
 org.grails.datastore.gorm.events
 org.grails.datastore.gorm.finders
 org.grails.datastore.gorm.internal
