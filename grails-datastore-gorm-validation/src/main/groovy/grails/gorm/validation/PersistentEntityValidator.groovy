@@ -76,7 +76,7 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
             if(pp instanceof Association) {
                 Association association = (Association)pp
                 if(cascade) {
-                    cascadeToAssociativeProperty(obj, errors, entityReflector, association)
+                    cascadeToAssociativeProperty(obj, errors, entityReflector, association, new HashSet())
                 }
             }
 
@@ -99,24 +99,25 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
      * @param bean The original bean
      * @param association The associative property
      */
-    protected void cascadeToAssociativeProperty(Object parent, Errors errors, EntityReflector reflector, Association association) {
+    protected void cascadeToAssociativeProperty(Object parent, Errors errors, EntityReflector reflector, Association association, Set validatedObjects ) {
         String propertyName = association.getName()
-        if (errors.hasFieldErrors(propertyName)) {
+        if (errors.hasFieldErrors(propertyName) || validatedObjects.contains(parent)) {
             return
         }
+        validatedObjects.add(parent)
 
         if (association instanceof ToOne) {
             Object associatedObject = reflector.getProperty(parent, propertyName)
 
             if(associatedObject != null && proxyHandler?.isInitialized(associatedObject)) {
                 if(association.isOwningSide() || association.doesCascade(CascadeType.PERSIST, CascadeType.MERGE)) {
-                    cascadeValidationToOne(parent, propertyName, (ToOne)association, errors, reflector, associatedObject, null)
+                    cascadeValidationToOne(parent, propertyName, (ToOne)association, errors, reflector, associatedObject, null, validatedObjects)
                 }
                 else {
                     Errors existingErrors = retrieveErrors(associatedObject)
                     if(existingErrors != null && existingErrors.hasErrors()) {
                         for(error in existingErrors.fieldErrors) {
-                            String path = errors.getNestedPath() + "${propertyName}." +error.field
+                            String path = "${propertyName}." +error.field
                             errors.rejectValue(path, error.code, error.arguments, error.defaultMessage)
                         }
                     }
@@ -126,7 +127,7 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
         }
         else if (association instanceof ToMany) {
             if(association.doesCascade(CascadeType.PERSIST, CascadeType.MERGE)) {
-                cascadeValidationToMany(parent, propertyName, association, errors, reflector)
+                cascadeValidationToMany(parent, propertyName, association, errors, reflector, validatedObjects)
             }
         }
     }
@@ -146,7 +147,7 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
      * @param propertyName The name of the property
      */
     @SuppressWarnings("rawtypes")
-    protected void cascadeValidationToMany(Object parentObject, String propertyName, Association association, Errors errors, EntityReflector entityReflector) {
+    protected void cascadeValidationToMany(Object parentObject, String propertyName, Association association, Errors errors, EntityReflector entityReflector, Set validatedObjects) {
 
         Object collection = entityReflector.getProperty(parentObject, propertyName)
         if(collection == null || !proxyHandler?.isInitialized(collection)) {
@@ -154,22 +155,22 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
         }
 
         if (collection instanceof List || collection instanceof SortedSet) {
-            int idx = 0;
+            int idx = 0
             for (Object associatedObject : ((Collection)collection)) {
-                cascadeValidationToOne(parentObject, propertyName, association, errors, entityReflector,associatedObject, idx++)
+                cascadeValidationToOne(parentObject, propertyName, association, errors, entityReflector,associatedObject, idx++, validatedObjects)
             }
         }
         else if (collection instanceof Collection) {
-            Integer index = 0;
+            Integer index = 0
             for (Object associatedObject : ((Collection)collection)) {
-                cascadeValidationToOne(parentObject, propertyName, association, errors, entityReflector,associatedObject, index++)
+                cascadeValidationToOne(parentObject, propertyName, association, errors, entityReflector,associatedObject, index++, validatedObjects)
             }
         }
         else if (collection instanceof Map) {
 
             for (Object entryObject in ((Map) collection).entrySet()) {
-                Map.Entry entry = (Map.Entry) entryObject;
-                cascadeValidationToOne(parentObject, propertyName, association, errors, entityReflector, entry.value, entry.key)
+                Map.Entry entry = (Map.Entry) entryObject
+                cascadeValidationToOne(parentObject, propertyName, association, errors, entityReflector, entry.value, entry.key, validatedObjects)
             }
         }
     }
@@ -184,7 +185,7 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
      * @param indexOrKey
      */
     @SuppressWarnings("rawtypes")
-    protected void cascadeValidationToOne(Object parentObject, String propertyName, Association association, Errors errors, EntityReflector reflector, Object associatedObject, Object indexOrKey) {
+    protected void cascadeValidationToOne(Object parentObject, String propertyName, Association association, Errors errors, EntityReflector reflector, Object associatedObject, Object indexOrKey, Set validatedObjects) {
 
         if (associatedObject == null) {
             return
@@ -221,28 +222,39 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
         List<PersistentProperty> associatedPersistentProperties = associatedEntity.getPersistentProperties()
         String nestedPath = errors.getNestedPath()
         try {
-            errors.setNestedPath(buildNestedPath(nestedPath, propertyName, indexOrKey));
+            errors.setNestedPath(buildNestedPath(nestedPath, propertyName, indexOrKey))
 
             for (PersistentProperty associatedPersistentProperty : associatedPersistentProperties) {
                 if (association.isEmbedded() && EMBEDDED_EXCLUDES.contains(associatedPersistentProperty.getName())) {
                     continue
                 }
 
-                String associatedPropertyName = associatedPersistentProperty.getName();
+
+                String associatedPropertyName = associatedPersistentProperty.getName()
                 if (associatedConstrainedProperties.containsKey(associatedPropertyName)) {
 
                     ConstrainedProperty associatedConstrainedProperty = associatedConstrainedProperties.get(associatedPropertyName)
                     validatePropertyWithConstraint(associatedObject, errors.getNestedPath() + associatedPropertyName, associatedReflector, errors, associatedConstrainedProperty, associatedPersistentProperty)
                 }
                 // don't continue cascade if the the other side is equal to avoid stack overflow
-                if (associatedPersistentProperty.equals(otherSide)) continue;
+                if (associatedPersistentProperty.equals(otherSide)) {
+                    continue
+                }
                 if (associatedPersistentProperty instanceof Association) {
+                    if(association.doesCascade(CascadeType.PERSIST, CascadeType.MERGE)) {
+                        if(association.isBidirectional() && associatedPersistentProperty == association.inverseSide) {
+                            // If this property is the inverse side of the currently processed association then
+                            // we don't want to process it because that would cause a potential infinite loop
+                            continue
+                        }
 
-                    cascadeToAssociativeProperty(
-                            associatedObject,
-                            errors,
-                            associatedReflector,
-                            (Association)associatedPersistentProperty)
+                        cascadeToAssociativeProperty(
+                                associatedObject,
+                                errors,
+                                associatedReflector,
+                                (Association)associatedPersistentProperty,
+                                validatedObjects)
+                    }
                 }
             }
         }
@@ -254,18 +266,18 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
     private String buildNestedPath(String nestedPath, String componentName, Object indexOrKey) {
         if (indexOrKey == null) {
             // Component is neither part of a Collection nor Map.
-            return nestedPath + componentName;
+            return nestedPath + componentName
         }
 
         if (indexOrKey instanceof Integer) {
             // Component is part of a Collection. Collection access string
             // e.g. path.object[1] will be appended to the nested path.
-            return nestedPath + componentName + "[" + indexOrKey + "]";
+            return nestedPath + componentName + "[" + indexOrKey + "]"
         }
 
         // Component is part of a Map. Nested path should have a key surrounded
         // with apostrophes at the end.
-        return nestedPath + componentName + "['" + indexOrKey + "']";
+        return nestedPath + componentName + "['" + indexOrKey + "']"
     }
 
     private void validatePropertyWithConstraint(Object obj, String propertyName, EntityReflector reflector, Errors errors, ConstrainedProperty constrainedProperty, PersistentProperty persistentProperty) {

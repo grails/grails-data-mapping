@@ -123,8 +123,7 @@ public abstract class Association<T extends Property> extends AbstractPersistent
      * @return True if it does
      */
     public boolean doesCascade(CascadeType cascadeOperation) {
-        Set<CascadeType> cascades = getCascadeOperations();
-        return cascadeOperation != null && (cascades.contains(CascadeType.ALL) || cascades.contains(cascadeOperation));
+        return doesCascade(new CascadeType[]{cascadeOperation});
     }
 
     /**
