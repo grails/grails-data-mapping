@@ -91,7 +91,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li><ul class="inheritance"></ul></li><li>grails.gorm.validation.ConstrainedProperty
+<li><ul class="inheritance"></ul></li><li>grails.gorm.validation.Constrained
 </ul>
 <div class="description">
     <ul class="blockList">
@@ -445,26 +445,41 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../grails/gorm/validation/Constraint.html'>Constraint</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getAppliedConstraint(java.lang.String)">getAppliedConstraint</a></strong>(java.lang.String name)</code><br>Obtain an applied constraint</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>java.util.Collection&lt;<a href='../../../grails/gorm/validation/Constraint.html' title='Constraint'>Constraint</a>&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getAppliedConstraints()">getAppliedConstraints</a></strong>()</code><br>@return Returns the appliedConstraints.</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.Class</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getOwner()">getOwner</a></strong>()</code><br>@return The owner</td>
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>java.lang.String</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getPropertyName()">getPropertyName</a></strong>()</code><br>@return The name of the property constrained</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.Class&lt;?&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getPropertyType()">getPropertyType</a></strong>()</code><br>@return Returns the propertyType.</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#hasAppliedConstraint(java.lang.String)">hasAppliedConstraint</a></strong>(java.lang.String constraintName)</code><br>@param constraintName The name of the constraint to check</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#supportsContraint(java.lang.String)">supportsContraint</a></strong>(java.lang.String constraintName)</code><br>Check whether a given constraint type is supported</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#validate(java.lang.Object, java.lang.Object, org.springframework.validation.Errors)">validate</a></strong>(java.lang.Object target, java.lang.Object propertyValue, org.springframework.validation.Errors errors)</code><br>Validate this constrainted property against specified property value</td>
                         </tr>
@@ -986,12 +1001,39 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="getAppliedConstraint(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../grails/gorm/validation/Constraint.html'>Constraint</a> <strong>getAppliedConstraint</strong>(java.lang.String name)</h4>
+                                <p> Obtain an applied constraint
+     <DL><DT><B>Returns:</B></DT><DD>The constraint or null if it doesn't exist</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getAppliedConstraints()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.util.Collection&lt;<a href='../../../grails/gorm/validation/Constraint.html' title='Constraint'>Constraint</a>&gt; <strong>getAppliedConstraints</strong>()</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>Returns the appliedConstraints.</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getOwner()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>java.lang.Class <strong>getOwner</strong>()</h4>
                                 <p>
      <DL><DT><B>Returns:</B></DT><DD>The owner</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getPropertyName()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.lang.String <strong>getPropertyName</strong>()</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>The name of the property constrained</DD></DL></p>
                             </li>
                         </ul>
                     

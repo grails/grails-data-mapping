@@ -131,7 +131,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#PROPERTY_NAME">PROPERTY_NAME</a></code><br></td>
+                            <td class="colLast"><code><a href="#PROPERTY_NAME">PROPERTY_NAME</a></code><br>The name of the constraints property</td>
                         </tr>
                         
                     </table>
@@ -170,8 +170,18 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>java.util.Map&lt;java.lang.String, <a href='../../../../../../../grails/gorm/validation/ConstrainedProperty.html' title='ConstrainedProperty'>ConstrainedProperty</a>&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#evaluate(Class<?>, boolean, boolean, groovy.lang.Closure)">evaluate</a></strong>(java.lang.Class&lt;?&gt; cls, boolean defaultNullable, boolean useOnlyAdHocConstraints, groovy.lang.Closure... adHocConstraintsClosures)</code><br>Evaluate constraints for the given class</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.util.Map&lt;java.lang.String, java.lang.Object&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getDefaultConstraints()">getDefaultConstraints</a></strong>()</code><br>The default constraints to use</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>org.grails.datastore.gorm.validation.constraints.builder.ConstrainedPropertyBuilder</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#newConstrainedPropertyBuilder(Class<?>)">newConstrainedPropertyBuilder</a></strong>(java.lang.Class&lt;?&gt; theClass)</code><br>Obtains a new builder from this evaluator</td>
                         </tr>
                         
                     </table>
@@ -203,7 +213,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>java.lang.String <strong>PROPERTY_NAME</strong></h4>
-                                <p></p>
+                                <p> The name of the constraints property
+     </p>
                             </li>
                         </ul>
                     
@@ -242,12 +253,30 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="evaluate(Class<?>, boolean, boolean, groovy.lang.Closure)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.util.Map&lt;java.lang.String, <a href='../../../../../../../grails/gorm/validation/ConstrainedProperty.html' title='ConstrainedProperty'>ConstrainedProperty</a>&gt; <strong>evaluate</strong>(java.lang.Class&lt;?&gt; cls, boolean defaultNullable, boolean useOnlyAdHocConstraints, groovy.lang.Closure... adHocConstraintsClosures)</h4>
+                                <p> Evaluate constraints for the given class
+     <DL><DT><B>Returns:</B></DT><DD>A map of constrained properties</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>cls</code> -  The class to evaluate constraints for</DD><DD><code>defaultNullable</code> -  indicates if properties are nullable by default</DD><DD><code>useOnlyAdHocConstraints</code> -  indicates if evaluating without pre-declared constraints</DD><DD><code>adHocConstraintsClosures</code> -  ad-hoc constraints to evaluate for</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getDefaultConstraints()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>java.util.Map&lt;java.lang.String, java.lang.Object&gt; <strong>getDefaultConstraints</strong>()</h4>
                                 <p> The default constraints to use
      <DL><DT><B>Returns:</B></DT><DD>A map of default constraints</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="newConstrainedPropertyBuilder(Class<?>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>org.grails.datastore.gorm.validation.constraints.builder.ConstrainedPropertyBuilder <strong>newConstrainedPropertyBuilder</strong>(java.lang.Class&lt;?&gt; theClass)</h4>
+                                <p> Obtains a new builder from this evaluator
+     <DL><DT><B>Returns:</B></DT><DD>The builder</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>theClass</code> -  The class</DD></DL></p>
                             </li>
                         </ul>
                     

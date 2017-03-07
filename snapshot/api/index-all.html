@@ -163,6 +163,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html#AbstractDatastoreInitializer(java.util.Map, java.lang.Class)" title="Constructor in AbstractDatastoreInitializer">AbstractDatastoreInitializer(Map, Class)</a></span> - Constructor in <a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html">AbstractDatastoreInitializer</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractDatastoreMethodDecoratingTransformation.html" title="Class in org.grails.datastore.gorm.transform">AbstractDatastoreMethodDecoratingTransformation</a></span> - Class in <a href="./org/grails/datastore/gorm/transform/package-summary.html">org.grails.datastore.gorm.transform</a>
+</dt><dd><div class="block">An abstract implementation for transformations that decorate a method invocation such that
+ the method invocation is wrapped in the execution of a closure that delegates to the original logic.
+ </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/support/AbstractDatastorePersistenceContextInterceptor.html" title="Class in org.grails.datastore.gorm.support">AbstractDatastorePersistenceContextInterceptor</a></span> - Class in <a href="./org/grails/datastore/gorm/support/package-summary.html">org.grails.datastore.gorm.support</a>
 </dt><dd><div class="block">Abstract implementation of the persistence context interceptor</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/support/AbstractDatastorePersistenceContextInterceptor.html#AbstractDatastorePersistenceContextInterceptor(org.grails.datastore.mapping.core.Datastore)" title="Constructor in AbstractDatastorePersistenceContextInterceptor">AbstractDatastorePersistenceContextInterceptor(Datastore)</a></span> - Constructor in <a href="org/grails/datastore/gorm/support/AbstractDatastorePersistenceContextInterceptor.html">AbstractDatastorePersistenceContextInterceptor</a>
@@ -360,6 +364,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#addStaticMethods(org.grails.datastore.mapping.model.PersistentEntity, boolean)" title="Method in GormEnhancer">addStaticMethods(PersistentEntity, boolean)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/multitenancy/SchemaMultiTenantCapableDatastore.html#addTenantForSchema(java.lang.String)" title="Method in SchemaMultiTenantCapableDatastore">addTenantForSchema(String)</a></span> - Method in <a href="org/grails/datastore/mapping/multitenancy/SchemaMultiTenantCapableDatastore.html">SchemaMultiTenantCapableDatastore</a>
+</dt><dd> <div class="block">Add a new tenant at runtime for the given schema name</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#addTo(java.lang.String, java.lang.Object)" title="Method in GormEntity">addTo(String, Object)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
 </dt><dd> <div class="block">Adds the given value to given association ensuring both sides are correctly associated</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html#addToCriteria(org.grails.datastore.mapping.query.Query$Criterion)" title="Method in AbstractCriteriaBuilder">addToCriteria(Criterion)</a></span> - Method in <a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html">AbstractCriteriaBuilder</a>
@@ -443,6 +449,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Applies a constraint for the specified name and consraint value.</div></dd>
 <dt><span class="strong"><a href="grails/gorm/validation/DefaultConstrainedProperty.html#applyConstraintInternal(java.lang.String, java.lang.Object)" title="Method in DefaultConstrainedProperty">applyConstraintInternal(String, Object)</a></span> - Method in <a href="grails/gorm/validation/DefaultConstrainedProperty.html">DefaultConstrainedProperty</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html#applyDefaultConstraints(java.lang.String, org.grails.datastore.mapping.model.PersistentProperty, grails.gorm.validation.ConstrainedProperty, Map<String, Object>)" title="Method in DefaultConstraintEvaluator">applyDefaultConstraints(String, PersistentProperty, ConstrainedProperty, Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html">DefaultConstraintEvaluator</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html#applyDefaultNullableConstraint(grails.gorm.validation.ConstrainedProperty, boolean)" title="Method in DefaultConstraintEvaluator">applyDefaultNullableConstraint(ConstrainedProperty, boolean)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html">DefaultConstraintEvaluator</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/validation/HibernateConstraintsEvaluator.html#applyDefaultNullableConstraint(grails.core.GrailsDomainClassProperty, grails.validation.Constrained)" title="Method in HibernateConstraintsEvaluator">applyDefaultNullableConstraint(GrailsDomainClassProperty, Constrained)</a></span> - Method in <a href="org/grails/orm/hibernate/validation/HibernateConstraintsEvaluator.html">HibernateConstraintsEvaluator</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractReadOperationImplementer.html#applyDefaultTransactionHandling(org.codehaus.groovy.ast.MethodNode)" title="Method in AbstractReadOperationImplementer">applyDefaultTransactionHandling(MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/AbstractReadOperationImplementer.html">AbstractReadOperationImplementer</a>
@@ -463,7 +473,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/DetachedCriteria.html#applyLazyCriteria()" title="Method in DetachedCriteria">applyLazyCriteria()</a></span> - Method in <a href="grails/gorm/DetachedCriteria.html">DetachedCriteria</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html#applyMapOfConstraints(Map<String, Object>, java.lang.String, org.grails.datastore.mapping.model.PersistentProperty, grails.gorm.validation.ConstrainedProperty)" title="Method in DefaultConstraintEvaluator">applyMapOfConstraints(Map&lt;String, Object&gt;, String, PersistentProperty, ConstrainedProperty)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html">DefaultConstraintEvaluator</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/order/ManualEntityOrdering.html#applyOrder(java.util.List, org.grails.datastore.mapping.query.Query$Order)" title="Method in ManualEntityOrdering">applyOrder(List, Order)</a></span> - Method in <a href="org/grails/datastore/mapping/query/order/ManualEntityOrdering.html">ManualEntityOrdering</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html#applySharedConstraints(org.grails.datastore.gorm.validation.constraints.builder.ConstrainedPropertyBuilder, Map<String, ConstrainedProperty>)" title="Method in DefaultConstraintEvaluator">applySharedConstraints(ConstrainedPropertyBuilder, Map&lt;String, ConstrainedProperty&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html">DefaultConstraintEvaluator</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html#applyTransactionalAttributeSettings(org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.expr.VariableExpression, org.codehaus.groovy.ast.stmt.BlockStatement)" title="Method in TransactionalTransform">applyTransactionalAttributeSettings(AnnotationNode, VariableExpression, BlockStatement)</a></span> - Method in <a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html">TransactionalTransform</a>
 </dt><dd> <div class="block"></div></dd>
@@ -472,10 +486,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#areCollectionsEqual(java.lang.Object, java.lang.Object)" title="Method in NativeEntryEntityPersister">areCollectionsEqual(Object, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#areEqual(java.lang.Object, java.lang.Object, java.lang.String)" title="Method in NativeEntryEntityPersister">areEqual(Object, Object, String)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.html#arguments" title="Field in MethodExpression">arguments</a></span> - Field in <a href="org/grails/datastore/gorm/finders/MethodExpression.html">MethodExpression</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.html#argumentsRequired" title="Field in MethodExpression">argumentsRequired</a></span> - Field in <a href="org/grails/datastore/gorm/finders/MethodExpression.html">MethodExpression</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/DetachedCriteria.html#asBoolean(groovy.lang.Closure)" title="Method in DetachedCriteria">asBoolean(Closure)</a></span> - Method in <a href="grails/gorm/DetachedCriteria.html">DetachedCriteria</a>
 </dt><dd> <div class="block">Counts the number of records returned by the query</div></dd>
@@ -797,6 +807,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Make a direct method call on this object for the given name and arguments</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AstMethodDispatchUtils.html#callThisD(org.codehaus.groovy.ast.ClassNode, java.lang.String, org.codehaus.groovy.ast.expr.Expression)" title="Method in AstMethodDispatchUtils">callThisD(ClassNode, String, Expression)</a></span> - Method in <a href="org/grails/datastore/gorm/transform/AstMethodDispatchUtils.html">AstMethodDispatchUtils</a>
 </dt><dd> <div class="block">Make a direct method call on this object for the given name and arguments</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html#canApplyNullableConstraint(java.lang.String, org.grails.datastore.mapping.model.PersistentProperty, grails.gorm.validation.Constrained)" title="Method in DefaultConstraintEvaluator">canApplyNullableConstraint(String, PersistentProperty, Constrained)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html">DefaultConstraintEvaluator</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/validation/HibernateConstraintsEvaluator.html#canApplyNullableConstraint(java.lang.String, grails.core.GrailsDomainClassProperty, grails.validation.Constrained)" title="Method in HibernateConstraintsEvaluator">canApplyNullableConstraint(String, GrailsDomainClassProperty, Constrained)</a></span> - Method in <a href="org/grails/orm/hibernate/validation/HibernateConstraintsEvaluator.html">HibernateConstraintsEvaluator</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html#cancel()" title="Method in AbstractPersistenceEvent">cancel()</a></span> - Method in <a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html">AbstractPersistenceEvent</a>
@@ -812,6 +824,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/conversion/DefaultConversionService.html#canConvert(org.springframework.core.convert.TypeDescriptor, org.springframework.core.convert.TypeDescriptor)" title="Method in DefaultConversionService">canConvert(TypeDescriptor, TypeDescriptor)</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/conversion/DefaultConversionService.html">DefaultConversionService</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaTransformer.html#CANDIDATE_METHODS_WHERE_ONLY" title="Field in DetachedCriteriaTransformer">CANDIDATE_METHODS_WHERE_ONLY</a></span> - Field in <a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaTransformer.html">DetachedCriteriaTransformer</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html#canPropertyBeConstrained(org.grails.datastore.mapping.model.PersistentProperty)" title="Method in DefaultConstraintEvaluator">canPropertyBeConstrained(PersistentProperty)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html">DefaultConstraintEvaluator</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/validation/HibernateConstraintsEvaluator.html#canPropertyBeConstrained(grails.core.GrailsDomainClassProperty)" title="Method in HibernateConstraintsEvaluator">canPropertyBeConstrained(GrailsDomainClassProperty)</a></span> - Method in <a href="org/grails/orm/hibernate/validation/HibernateConstraintsEvaluator.html">HibernateConstraintsEvaluator</a>
 </dt><dd> <div class="block"></div></dd>
@@ -1010,6 +1024,8 @@ if (location.href.indexOf('is-external=true') == -1) {
  @default ConnectionSource.DEFAULT</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/AbstractDatastore.html#connectionDetails" title="Field in AbstractDatastore">connectionDetails</a></span> - Field in <a href="org/grails/datastore/mapping/core/AbstractDatastore.html">AbstractDatastore</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html#connectionName" title="Field in AbstractDetachedCriteria">connectionName</a></span> - Field in <a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html">AbstractDetachedCriteria</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/ConnectionNotFoundException.html" title="Class in org.grails.datastore.mapping.core">ConnectionNotFoundException</a></span> - Class in <a href="./org/grails/datastore/mapping/core/package-summary.html">org.grails.datastore.mapping.core</a>
 </dt><dd><div class="block">Thrown when a session cannot be located.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/ConnectionNotFoundException.html#ConnectionNotFoundException(java.lang.String)" title="Constructor in ConnectionNotFoundException">ConnectionNotFoundException(String)</a></span> - Constructor in <a href="org/grails/datastore/mapping/core/ConnectionNotFoundException.html">ConnectionNotFoundException</a>
@@ -1080,6 +1096,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">A registry of Constraint factories</div></dd>
 <dt><span class="strong"><a href="grails/gorm/validation/DefaultConstrainedProperty.html#constraintRegistry" title="Field in DefaultConstrainedProperty">constraintRegistry</a></span> - Field in <a href="grails/gorm/validation/DefaultConstrainedProperty.html">DefaultConstrainedProperty</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html#constraintRegistry" title="Field in DefaultConstraintEvaluator">constraintRegistry</a></span> - Field in <a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html">DefaultConstraintEvaluator</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/config/GormProperties.html#CONSTRAINTS" title="Field in GormProperties">CONSTRAINTS</a></span> - Field in <a href="org/grails/datastore/mapping/model/config/GormProperties.html">GormProperties</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/eval/ConstraintsEvaluator.html" title="Interface in org.grails.datastore.gorm.validation.constraints.eval">ConstraintsEvaluator</a></span> - Interface in <a href="./org/grails/datastore/gorm/validation/constraints/eval/package-summary.html">org.grails.datastore.gorm.validation.constraints.eval</a>
@@ -1139,12 +1157,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/conversion/StringToURLConverter.html#convert(java.lang.String)" title="Method in StringToURLConverter">convert(String)</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/conversion/StringToURLConverter.html">StringToURLConverter</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html#convertArgumentList(java.util.Collection)" title="Method in AbstractDetachedCriteria">convertArgumentList(Collection)</a></span> - Method in <a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html">AbstractDetachedCriteria</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.html#convertArguments(org.grails.datastore.mapping.model.PersistentEntity)" title="Method in MethodExpression">convertArguments(PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.html">MethodExpression</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.InList.html#convertArguments(org.grails.datastore.mapping.model.PersistentEntity)" title="Method in MethodExpression.InList">convertArguments(PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.InList.html">MethodExpression.InList</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.InRange.html#convertArguments(org.grails.datastore.mapping.model.PersistentEntity)" title="Method in MethodExpression.InRange">convertArguments(PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.InRange.html">MethodExpression.InRange</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#convertBasicEntryValue(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.types.Basic, java.lang.Object)" title="Method in NativeEntryEntityPersister">convertBasicEntryValue(PersistentEntity, Basic, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block">Convert a Basic (collection-style) property native entry value taken from an entity into the target property
@@ -1257,40 +1269,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="grails/gorm/api/GormStaticOperations.html#createCriteria()" title="Method in GormStaticOperations">createCriteria()</a></span> - Method in <a href="grails/gorm/api/GormStaticOperations.html">GormStaticOperations</a>
 </dt><dd> <div class="block">Creates a criteria builder instance</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/multitenancy/TenantDelegatingGormOperations.html#createCriteria()" title="Method in TenantDelegatingGormOperations">createCriteria()</a></span> - Method in <a href="org/grails/datastore/gorm/multitenancy/TenantDelegatingGormOperations.html">TenantDelegatingGormOperations</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.html#createCriterion()" title="Method in MethodExpression">createCriterion()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.html">MethodExpression</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.Between.html#createCriterion()" title="Method in MethodExpression.Between">createCriterion()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.Between.html">MethodExpression.Between</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.Equal.html#createCriterion()" title="Method in MethodExpression.Equal">createCriterion()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.Equal.html">MethodExpression.Equal</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.GreaterThan.html#createCriterion()" title="Method in MethodExpression.GreaterThan">createCriterion()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.GreaterThan.html">MethodExpression.GreaterThan</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.GreaterThanEquals.html#createCriterion()" title="Method in MethodExpression.GreaterThanEquals">createCriterion()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.GreaterThanEquals.html">MethodExpression.GreaterThanEquals</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.Ilike.html#createCriterion()" title="Method in MethodExpression.Ilike">createCriterion()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.Ilike.html">MethodExpression.Ilike</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.InList.html#createCriterion()" title="Method in MethodExpression.InList">createCriterion()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.InList.html">MethodExpression.InList</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.InRange.html#createCriterion()" title="Method in MethodExpression.InRange">createCriterion()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.InRange.html">MethodExpression.InRange</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.IsEmpty.html#createCriterion()" title="Method in MethodExpression.IsEmpty">createCriterion()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.IsEmpty.html">MethodExpression.IsEmpty</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.IsNotEmpty.html#createCriterion()" title="Method in MethodExpression.IsNotEmpty">createCriterion()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.IsNotEmpty.html">MethodExpression.IsNotEmpty</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.IsNotNull.html#createCriterion()" title="Method in MethodExpression.IsNotNull">createCriterion()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.IsNotNull.html">MethodExpression.IsNotNull</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.IsNull.html#createCriterion()" title="Method in MethodExpression.IsNull">createCriterion()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.IsNull.html">MethodExpression.IsNull</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.LessThan.html#createCriterion()" title="Method in MethodExpression.LessThan">createCriterion()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.LessThan.html">MethodExpression.LessThan</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.LessThanEquals.html#createCriterion()" title="Method in MethodExpression.LessThanEquals">createCriterion()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.LessThanEquals.html">MethodExpression.LessThanEquals</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.Like.html#createCriterion()" title="Method in MethodExpression.Like">createCriterion()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.Like.html">MethodExpression.Like</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.NotEqual.html#createCriterion()" title="Method in MethodExpression.NotEqual">createCriterion()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.NotEqual.html">MethodExpression.NotEqual</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.Rlike.html#createCriterion()" title="Method in MethodExpression.Rlike">createCriterion()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.Rlike.html">MethodExpression.Rlike</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#createDelegingMethodBody(org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.expr.MethodCallExpression)" title="Method in AbstractMethodDecoratingTransformation">createDelegingMethodBody(Parameter, MethodCallExpression)</a></span> - Method in <a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html">AbstractMethodDecoratingTransformation</a>
 </dt><dd> <div class="block"></div></dd>
@@ -1547,6 +1525,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">Default implementation of the <a href='../../../grails/gorm/validation/ConstrainedProperty.html' title='ConstrainedProperty'>ConstrainedProperty</a> interface</div></dd>
 <dt><span class="strong"><a href="grails/gorm/validation/DefaultConstrainedProperty.html#DefaultConstrainedProperty(Class<?>, java.lang.String, Class<?>, org.grails.datastore.gorm.validation.constraints.registry.ConstraintRegistry)" title="Constructor in DefaultConstrainedProperty">DefaultConstrainedProperty(Class&lt;?&gt;, String, Class&lt;?&gt;, ConstraintRegistry)</a></span> - Constructor in <a href="grails/gorm/validation/DefaultConstrainedProperty.html">DefaultConstrainedProperty</a>
 </dt><dd> <div class="block">Constructs a new ConstrainedProperty for the given arguments.</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html" title="Class in org.grails.datastore.gorm.validation.constraints.eval">DefaultConstraintEvaluator</a></span> - Class in <a href="./org/grails/datastore/gorm/validation/constraints/eval/package-summary.html">org.grails.datastore.gorm.validation.constraints.eval</a>
+</dt><dd><div class="block">Evaluates constraints for entities</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html#DefaultConstraintEvaluator(org.grails.datastore.gorm.validation.constraints.registry.ConstraintRegistry, org.grails.datastore.mapping.model.MappingContext, Map<String, Object>)" title="Constructor in DefaultConstraintEvaluator">DefaultConstraintEvaluator(ConstraintRegistry, MappingContext, Map&lt;String, Object&gt;)</a></span> - Constructor in <a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html">DefaultConstraintEvaluator</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/factory/DefaultConstraintFactory.html" title="Class in org.grails.datastore.gorm.validation.constraints.factory">DefaultConstraintFactory</a></span> - Class in <a href="./org/grails/datastore/gorm/validation/constraints/factory/package-summary.html">org.grails.datastore.gorm.validation.constraints.factory</a>
 </dt><dd><div class="block">A default factory for creating constraints</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/factory/DefaultConstraintFactory.html#DefaultConstraintFactory(Class<? extends Constraint>, org.springframework.context.MessageSource, List<Class>)" title="Constructor in DefaultConstraintFactory">DefaultConstraintFactory(Class&lt;? extends Constraint&gt;, MessageSource, List&lt;Class&gt;)</a></span> - Constructor in <a href="org/grails/datastore/gorm/validation/constraints/factory/DefaultConstraintFactory.html">DefaultConstraintFactory</a>
@@ -1556,6 +1538,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/registry/DefaultConstraintRegistry.html#DefaultConstraintRegistry(org.springframework.context.MessageSource)" title="Constructor in DefaultConstraintRegistry">DefaultConstraintRegistry(MessageSource)</a></span> - Constructor in <a href="org/grails/datastore/gorm/validation/constraints/registry/DefaultConstraintRegistry.html">DefaultConstraintRegistry</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/AbstractGormMappingFactory.html#defaultConstraints" title="Field in AbstractGormMappingFactory">defaultConstraints</a></span> - Field in <a href="org/grails/datastore/mapping/config/AbstractGormMappingFactory.html">AbstractGormMappingFactory</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html#defaultConstraints" title="Field in DefaultConstraintEvaluator">defaultConstraints</a></span> - Field in <a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html">DefaultConstraintEvaluator</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/conversion/DefaultConversionService.html" title="Class in org.grails.datastore.mapping.model.types.conversion">DefaultConversionService</a></span> - Class in <a href="./org/grails/datastore/mapping/model/types/conversion/package-summary.html">org.grails.datastore.mapping.model.types.conversion</a>
 </dt><dd><div class="block">Default conversion service th</div></dd>
@@ -1981,6 +1965,12 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/ServiceEnhancer.html#enhance(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode, org.codehaus.groovy.ast.MethodNode, org.codehaus.groovy.ast.ClassNode)" title="Method in ServiceEnhancer">enhance(ClassNode, MethodNode, MethodNode, ClassNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/ServiceEnhancer.html">ServiceEnhancer</a>
 </dt><dd> <div class="block">Enhances the method</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractDatastoreMethodDecoratingTransformation.html#enhanceClassNode(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode)" title="Method in AbstractDatastoreMethodDecoratingTransformation">enhanceClassNode(SourceUnit, AnnotationNode, ClassNode)</a></span> - Method in <a href="org/grails/datastore/gorm/transform/AbstractDatastoreMethodDecoratingTransformation.html">AbstractDatastoreMethodDecoratingTransformation</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#enhanceClassNode(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode)" title="Method in AbstractMethodDecoratingTransformation">enhanceClassNode(SourceUnit, AnnotationNode, ClassNode)</a></span> - Method in <a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html">AbstractMethodDecoratingTransformation</a>
+</dt><dd> <div class="block">Add any additional logic to enhance the class node</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html#enhanceClassNode(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode)" title="Method in TransactionalTransform">enhanceClassNode(SourceUnit, AnnotationNode, ClassNode)</a></span> - Method in <a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html">TransactionalTransform</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html#ensureQueryIsInitialized()" title="Method in AbstractCriteriaBuilder">ensureQueryIsInitialized()</a></span> - Method in <a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html">AbstractCriteriaBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/events/AutoTimestampEventListener.html#entitiesWithDateCreated" title="Field in AutoTimestampEventListener">entitiesWithDateCreated</a></span> - Field in <a href="org/grails/datastore/gorm/events/AutoTimestampEventListener.html">AutoTimestampEventListener</a>
@@ -2077,8 +2067,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/config/GormMappingConfigurationStrategy.html#establishRelationshipForCollection(java.beans.PropertyDescriptor, org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, Map<String, Class>, java.util.Map, boolean)" title="Method in GormMappingConfigurationStrategy">establishRelationshipForCollection(PropertyDescriptor, PersistentEntity, MappingContext, Map&lt;String, Class&gt;, Map, boolean)</a></span> - Method in <a href="org/grails/datastore/mapping/model/config/GormMappingConfigurationStrategy.html">GormMappingConfigurationStrategy</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/eval/ConstraintsEvaluator.html#evaluate(java.lang.Class, boolean)" title="Method in ConstraintsEvaluator">evaluate(Class, boolean)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/constraints/eval/ConstraintsEvaluator.html">ConstraintsEvaluator</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/eval/ConstraintsEvaluator.html#evaluate(Class<?>, boolean, boolean, groovy.lang.Closure)" title="Method in ConstraintsEvaluator">evaluate(Class&lt;?&gt;, boolean, boolean, Closure)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/constraints/eval/ConstraintsEvaluator.html">ConstraintsEvaluator</a>
 </dt><dd> <div class="block">Evaluate constraints for the given class</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html#evaluate(Class<?>, boolean, boolean, groovy.lang.Closure)" title="Method in DefaultConstraintEvaluator">evaluate(Class&lt;?&gt;, boolean, boolean, Closure)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html">DefaultConstraintEvaluator</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/groovy/DefaultMappingConfigurationBuilder.html#evaluate(groovy.lang.Closure, java.lang.Object)" title="Method in DefaultMappingConfigurationBuilder">evaluate(Closure, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/config/groovy/DefaultMappingConfigurationBuilder.html">DefaultMappingConfigurationBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/groovy/MappingConfigurationBuilder.html#evaluate(groovy.lang.Closure, java.lang.Object)" title="Method in MappingConfigurationBuilder">evaluate(Closure, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/config/groovy/MappingConfigurationBuilder.html">MappingConfigurationBuilder</a>
@@ -2181,7 +2173,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Configure the fetch strategy</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html#fetchStrategies" title="Field in AbstractDetachedCriteria">fetchStrategies</a></span> - Field in <a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html">AbstractDetachedCriteria</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#FIELD_TARGET_DATASTORE" title="Field in AbstractMethodDecoratingTransformation">FIELD_TARGET_DATASTORE</a></span> - Field in <a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html">AbstractMethodDecoratingTransformation</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractDatastoreMethodDecoratingTransformation.html#FIELD_TARGET_DATASTORE" title="Field in AbstractDatastoreMethodDecoratingTransformation">FIELD_TARGET_DATASTORE</a></span> - Field in <a href="org/grails/datastore/gorm/transform/AbstractDatastoreMethodDecoratingTransformation.html">AbstractDatastoreMethodDecoratingTransformation</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/FieldEntityAccess.html" title="Class in org.grails.datastore.mapping.reflect">FieldEntityAccess</a></span> - Class in <a href="./org/grails/datastore/mapping/reflect/package-summary.html">org.grails.datastore.mapping.reflect</a>
 </dt><dd><div class="block">Uses field reflection or CGlib to improve performance</div></dd>
@@ -2553,8 +2545,12 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/Datastore.html#getApplicationEventPublisher()" title="Method in Datastore">getApplicationEventPublisher()</a></span> - Method in <a href="org/grails/datastore/mapping/core/Datastore.html">Datastore</a>
 </dt><dd> <div class="block">Get the application event publisher.</div></dd>
+<dt><span class="strong"><a href="grails/gorm/validation/ConstrainedProperty.html#getAppliedConstraint(java.lang.String)" title="Method in ConstrainedProperty">getAppliedConstraint(String)</a></span> - Method in <a href="grails/gorm/validation/ConstrainedProperty.html">ConstrainedProperty</a>
+</dt><dd> <div class="block">Obtain an applied constraint</div></dd>
 <dt><span class="strong"><a href="grails/gorm/validation/DefaultConstrainedProperty.html#getAppliedConstraint(java.lang.String)" title="Method in DefaultConstrainedProperty">getAppliedConstraint(String)</a></span> - Method in <a href="grails/gorm/validation/DefaultConstrainedProperty.html">DefaultConstrainedProperty</a>
 </dt><dd> <div class="block">Obtains an applied constraint by name.</div></dd>
+<dt><span class="strong"><a href="grails/gorm/validation/ConstrainedProperty.html#getAppliedConstraints()" title="Method in ConstrainedProperty">getAppliedConstraints()</a></span> - Method in <a href="grails/gorm/validation/ConstrainedProperty.html">ConstrainedProperty</a>
+</dt><dd> <div class="block">@return Returns the appliedConstraints.</div></dd>
 <dt><span class="strong"><a href="grails/gorm/validation/DefaultConstrainedProperty.html#getAppliedConstraints()" title="Method in DefaultConstrainedProperty">getAppliedConstraints()</a></span> - Method in <a href="grails/gorm/validation/DefaultConstrainedProperty.html">DefaultConstrainedProperty</a>
 </dt><dd> <div class="block">@return Returns the appliedConstraints.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractGormASTTransformation.html#getAppliedMarker()" title="Method in AbstractGormASTTransformation">getAppliedMarker()</a></span> - Method in <a href="org/grails/datastore/gorm/transform/AbstractGormASTTransformation.html">AbstractGormASTTransformation</a>
@@ -2566,10 +2562,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html#getAppliedMarker()" title="Method in TransactionalTransform">getAppliedMarker()</a></span> - Method in <a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html">TransactionalTransform</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/finders/DynamicFinderInvocation.html#getArguments()" title="Method in DynamicFinderInvocation">getArguments()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/DynamicFinderInvocation.html">DynamicFinderInvocation</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.html#getArguments()" title="Method in MethodExpression">getArguments()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.html">MethodExpression</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.html#getArgumentsRequired()" title="Method in MethodExpression">getArgumentsRequired()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.html">MethodExpression</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html#getArtefactTypes()" title="Method in DirtyCheckingTransformer">getArtefactTypes()</a></span> - Method in <a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html">DirtyCheckingTransformer</a>
 </dt><dd> <div class="block"></div></dd>
@@ -2728,7 +2720,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/api/QueryableCriteria.html#getCriteria()" title="Method in QueryableCriteria">getCriteria()</a></span> - Method in <a href="org/grails/datastore/mapping/query/api/QueryableCriteria.html">QueryableCriteria</a>
 </dt><dd> <div class="block">@return A list of all criteria</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/grailsversion/GrailsVersion.html#getCurrent()" title="Method in GrailsVersion">getCurrent()</a></span> - Method in <a href="org/grails/datastore/mapping/core/grailsversion/GrailsVersion.html">GrailsVersion</a>
-</dt><dd> <div class="block"></div></dd>
+</dt><dd> <div class="block">@return Obtains the current Grails version</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/AbstractDatastore.html#getCurrentSession()" title="Method in AbstractDatastore">getCurrentSession()</a></span> - Method in <a href="org/grails/datastore/mapping/core/AbstractDatastore.html">AbstractDatastore</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/Datastore.html#getCurrentSession()" title="Method in Datastore">getCurrentSession()</a></span> - Method in <a href="org/grails/datastore/mapping/core/Datastore.html">Datastore</a>
@@ -2783,6 +2775,8 @@ if (location.href.indexOf('is-external=true') == -1) {
  when calling a method without a namespace qualifier.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/eval/ConstraintsEvaluator.html#getDefaultConstraints()" title="Method in ConstraintsEvaluator">getDefaultConstraints()</a></span> - Method in <a href="org/grails/datastore/gorm/validation/constraints/eval/ConstraintsEvaluator.html">ConstraintsEvaluator</a>
 </dt><dd> <div class="block">The default constraints to use</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html#getDefaultConstraints()" title="Method in DefaultConstraintEvaluator">getDefaultConstraints()</a></span> - Method in <a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html">DefaultConstraintEvaluator</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html#getDefaultDatabaseName()" title="Method in DocumentMappingContext">getDefaultDatabaseName()</a></span> - Method in <a href="org/grails/datastore/mapping/document/config/DocumentMappingContext.html">DocumentMappingContext</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/config/GormMappingConfigurationStrategy.html#getDefaultIdentityMapping(org.grails.datastore.mapping.model.ClassMapping)" title="Method in GormMappingConfigurationStrategy">getDefaultIdentityMapping(ClassMapping)</a></span> - Method in <a href="org/grails/datastore/mapping/model/config/GormMappingConfigurationStrategy.html">GormMappingConfigurationStrategy</a>
@@ -3531,10 +3525,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/AbstractConstraint.html#getPropertyName()" title="Method in AbstractConstraint">getPropertyName()</a></span> - Method in <a href="org/grails/datastore/gorm/validation/constraints/AbstractConstraint.html">AbstractConstraint</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="grails/gorm/validation/ConstrainedProperty.html#getPropertyName()" title="Method in ConstrainedProperty">getPropertyName()</a></span> - Method in <a href="grails/gorm/validation/ConstrainedProperty.html">ConstrainedProperty</a>
+</dt><dd> <div class="block">@return The name of the property constrained</div></dd>
 <dt><span class="strong"><a href="grails/gorm/validation/Constraint.html#getPropertyName()" title="Method in Constraint">getPropertyName()</a></span> - Method in <a href="grails/gorm/validation/Constraint.html">Constraint</a>
 </dt><dd> <div class="block">@return The property name of the constraint</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.html#getPropertyName()" title="Method in MethodExpression">getPropertyName()</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.html">MethodExpression</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/NameUtils.html#getPropertyNameForGetterOrSetter(java.lang.String)" title="Method in NameUtils">getPropertyNameForGetterOrSetter(String)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/NameUtils.html">NameUtils</a>
 </dt><dd> <div class="block">Returns the property name for a getter or setter</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/EntityReflector.html#getPropertyNames()" title="Method in EntityReflector">getPropertyNames()</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/EntityReflector.html">EntityReflector</a>
@@ -4507,6 +4501,10 @@ if (location.href.indexOf('is-external=true') == -1) {
  of, the specified type parameter. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/EntityPersister.html#isAssignedId(org.grails.datastore.mapping.model.PersistentEntity)" title="Method in EntityPersister">isAssignedId(PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/EntityPersister.html">EntityPersister</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/core/grailsversion/GrailsVersion.html#isAtLeast(java.lang.String, java.lang.String)" title="Method in GrailsVersion">isAtLeast(String, String)</a></span> - Method in <a href="org/grails/datastore/mapping/core/grailsversion/GrailsVersion.html">GrailsVersion</a>
+</dt><dd> <div class="block">Check whether the version is at least the given version</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/core/grailsversion/GrailsVersion.html#isAtLeastMajorMinor(java.lang.String, int, int)" title="Method in GrailsVersion">isAtLeastMajorMinor(String, int, int)</a></span> - Method in <a href="org/grails/datastore/mapping/core/grailsversion/GrailsVersion.html">GrailsVersion</a>
+</dt><dd> <div class="block">Check whether the current version is at least the given major and minor version</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/DelegatingGormEntityApi.html#isAttached()" title="Method in DelegatingGormEntityApi">isAttached()</a></span> - Method in <a href="org/grails/datastore/gorm/DelegatingGormEntityApi.html">DelegatingGormEntityApi</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#isAttached()" title="Method in GormEntity">isAttached()</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
@@ -4605,6 +4603,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/Session.html#isConnected()" title="Method in Session">isConnected()</a></span> - Method in <a href="org/grails/datastore/mapping/core/Session.html">Session</a>
 </dt><dd> <div class="block">@return <code>true</code> if connected to the datastore</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html#isConstrainableProperty(org.grails.datastore.mapping.model.PersistentProperty, java.lang.String)" title="Method in DefaultConstraintEvaluator">isConstrainableProperty(PersistentProperty, String)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html">DefaultConstraintEvaluator</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/validation/Constrained.html#isCreditCard()" title="Method in Constrained">isCreditCard()</a></span> - Method in <a href="grails/gorm/validation/Constrained.html">Constrained</a>
 </dt><dd> <div class="block">@return Whether this is a credit card string</div></dd>
 <dt><span class="strong"><a href="grails/gorm/validation/DefaultConstrainedProperty.html#isCreditCard()" title="Method in DefaultConstrainedProperty">isCreditCard()</a></span> - Method in <a href="grails/gorm/validation/DefaultConstrainedProperty.html">DefaultConstrainedProperty</a>
@@ -4936,8 +4936,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/UniqueConstraint.html#isValid()" title="Method in UniqueConstraint">isValid()</a></span> - Method in <a href="org/grails/datastore/gorm/validation/constraints/UniqueConstraint.html">UniqueConstraint</a>
 </dt><dd> <div class="block">Return whether the constraint is valid for the owning class</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractGormASTTransformation.html#isValidAnnotation(org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.AnnotatedNode)" title="Method in AbstractGormASTTransformation">isValidAnnotation(AnnotationNode, AnnotatedNode)</a></span> - Method in <a href="org/grails/datastore/gorm/transform/AbstractGormASTTransformation.html">AbstractGormASTTransformation</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/transactions/transform/RollbackTransform.html#isValidAnnotation(org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.AnnotatedNode)" title="Method in RollbackTransform">isValidAnnotation(AnnotationNode, AnnotatedNode)</a></span> - Method in <a href="org/grails/datastore/gorm/transactions/transform/RollbackTransform.html">RollbackTransform</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/multitenancy/transform/TenantTransform.html#isValidAnnotation(org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.AnnotatedNode)" title="Method in TenantTransform">isValidAnnotation(AnnotationNode, AnnotatedNode)</a></span> - Method in <a href="org/grails/datastore/gorm/multitenancy/transform/TenantTransform.html">TenantTransform</a>
 </dt><dd> <div class="block"></div></dd>
@@ -5330,6 +5328,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">Implementors can register for events when the mapping context changes</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/AbstractDatastore.html#mappingContext" title="Field in AbstractDatastore">mappingContext</a></span> - Field in <a href="org/grails/datastore/mapping/core/AbstractDatastore.html">AbstractDatastore</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html#mappingContext" title="Field in DefaultConstraintEvaluator">mappingContext</a></span> - Field in <a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html">DefaultConstraintEvaluator</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormValidationApi.html#mappingContext" title="Field in GormValidationApi">mappingContext</a></span> - Field in <a href="org/grails/datastore/gorm/GormValidationApi.html">GormValidationApi</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/MappingContextAwareConstraintFactory.html" title="Class in org.grails.datastore.gorm.validation.constraints">MappingContextAwareConstraintFactory</a></span> - Class in <a href="./org/grails/datastore/gorm/validation/constraints/package-summary.html">org.grails.datastore.gorm.validation.constraints</a>
@@ -5421,9 +5421,9 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">Utility methods for manipulating meta classes</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/internal/MethodInvokingClosure.html#metaMethod" title="Field in MethodInvokingClosure">metaMethod</a></span> - Field in <a href="org/grails/datastore/gorm/internal/MethodInvokingClosure.html">MethodInvokingClosure</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#METHOD_GET_DATASTORE_FOR_CONNECTION" title="Field in AbstractMethodDecoratingTransformation">METHOD_GET_DATASTORE_FOR_CONNECTION</a></span> - Field in <a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html">AbstractMethodDecoratingTransformation</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractDatastoreMethodDecoratingTransformation.html#METHOD_GET_DATASTORE_FOR_CONNECTION" title="Field in AbstractDatastoreMethodDecoratingTransformation">METHOD_GET_DATASTORE_FOR_CONNECTION</a></span> - Field in <a href="org/grails/datastore/gorm/transform/AbstractDatastoreMethodDecoratingTransformation.html">AbstractDatastoreMethodDecoratingTransformation</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#METHOD_GET_TARGET_DATASTORE" title="Field in AbstractMethodDecoratingTransformation">METHOD_GET_TARGET_DATASTORE</a></span> - Field in <a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html">AbstractMethodDecoratingTransformation</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractDatastoreMethodDecoratingTransformation.html#METHOD_GET_TARGET_DATASTORE" title="Field in AbstractDatastoreMethodDecoratingTransformation">METHOD_GET_TARGET_DATASTORE</a></span> - Field in <a href="org/grails/datastore/gorm/transform/AbstractDatastoreMethodDecoratingTransformation.html">AbstractDatastoreMethodDecoratingTransformation</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html#METHOD_NAME_MARK_DIRTY" title="Field in DirtyCheckingTransformer">METHOD_NAME_MARK_DIRTY</a></span> - Field in <a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html">DirtyCheckingTransformer</a>
 </dt><dd> <div class="block"></div></dd>
@@ -5434,74 +5434,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/finders/FindOrCreateByFinder.html#METHOD_PATTERN" title="Field in FindOrCreateByFinder">METHOD_PATTERN</a></span> - Field in <a href="org/grails/datastore/gorm/finders/FindOrCreateByFinder.html">FindOrCreateByFinder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/finders/FindOrSaveByFinder.html#METHOD_PATTERN" title="Field in FindOrSaveByFinder">METHOD_PATTERN</a></span> - Field in <a href="org/grails/datastore/gorm/finders/FindOrSaveByFinder.html">FindOrSaveByFinder</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.html" title="Class in org.grails.datastore.gorm.finders">MethodExpression</a></span> - Class in <a href="./org/grails/datastore/gorm/finders/package-summary.html">org.grails.datastore.gorm.finders</a>
-</dt><dd><div class="block">Method expression used to evaluate a dynamic finder.</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.Between.html" title="Class in org.grails.datastore.gorm.finders.MethodExpression">MethodExpression.Between</a></span> - Class in <a href="./org/grails/datastore/gorm/finders/package-summary.html">org.grails.datastore.gorm.finders</a>
-</dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.Between.html#MethodExpression.Between(java.lang.String)" title="Constructor in MethodExpression.Between">MethodExpression.Between(String)</a></span> - Constructor in <a href="org/grails/datastore/gorm/finders/MethodExpression.Between.html">MethodExpression.Between</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.Equal.html" title="Class in org.grails.datastore.gorm.finders.MethodExpression">MethodExpression.Equal</a></span> - Class in <a href="./org/grails/datastore/gorm/finders/package-summary.html">org.grails.datastore.gorm.finders</a>
-</dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.Equal.html#MethodExpression.Equal(java.lang.String)" title="Constructor in MethodExpression.Equal">MethodExpression.Equal(String)</a></span> - Constructor in <a href="org/grails/datastore/gorm/finders/MethodExpression.Equal.html">MethodExpression.Equal</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.GreaterThan.html" title="Class in org.grails.datastore.gorm.finders.MethodExpression">MethodExpression.GreaterThan</a></span> - Class in <a href="./org/grails/datastore/gorm/finders/package-summary.html">org.grails.datastore.gorm.finders</a>
-</dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.GreaterThan.html#MethodExpression.GreaterThan(java.lang.String)" title="Constructor in MethodExpression.GreaterThan">MethodExpression.GreaterThan(String)</a></span> - Constructor in <a href="org/grails/datastore/gorm/finders/MethodExpression.GreaterThan.html">MethodExpression.GreaterThan</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.GreaterThanEquals.html" title="Class in org.grails.datastore.gorm.finders.MethodExpression">MethodExpression.GreaterThanEquals</a></span> - Class in <a href="./org/grails/datastore/gorm/finders/package-summary.html">org.grails.datastore.gorm.finders</a>
-</dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.GreaterThanEquals.html#MethodExpression.GreaterThanEquals(java.lang.String)" title="Constructor in MethodExpression.GreaterThanEquals">MethodExpression.GreaterThanEquals(String)</a></span> - Constructor in <a href="org/grails/datastore/gorm/finders/MethodExpression.GreaterThanEquals.html">MethodExpression.GreaterThanEquals</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.Ilike.html" title="Class in org.grails.datastore.gorm.finders.MethodExpression">MethodExpression.Ilike</a></span> - Class in <a href="./org/grails/datastore/gorm/finders/package-summary.html">org.grails.datastore.gorm.finders</a>
-</dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.Ilike.html#MethodExpression.Ilike(java.lang.String)" title="Constructor in MethodExpression.Ilike">MethodExpression.Ilike(String)</a></span> - Constructor in <a href="org/grails/datastore/gorm/finders/MethodExpression.Ilike.html">MethodExpression.Ilike</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.InList.html" title="Class in org.grails.datastore.gorm.finders.MethodExpression">MethodExpression.InList</a></span> - Class in <a href="./org/grails/datastore/gorm/finders/package-summary.html">org.grails.datastore.gorm.finders</a>
-</dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.InList.html#MethodExpression.InList(java.lang.String)" title="Constructor in MethodExpression.InList">MethodExpression.InList(String)</a></span> - Constructor in <a href="org/grails/datastore/gorm/finders/MethodExpression.InList.html">MethodExpression.InList</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.InRange.html" title="Class in org.grails.datastore.gorm.finders.MethodExpression">MethodExpression.InRange</a></span> - Class in <a href="./org/grails/datastore/gorm/finders/package-summary.html">org.grails.datastore.gorm.finders</a>
-</dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.InRange.html#MethodExpression.InRange(java.lang.String)" title="Constructor in MethodExpression.InRange">MethodExpression.InRange(String)</a></span> - Constructor in <a href="org/grails/datastore/gorm/finders/MethodExpression.InRange.html">MethodExpression.InRange</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.IsEmpty.html" title="Class in org.grails.datastore.gorm.finders.MethodExpression">MethodExpression.IsEmpty</a></span> - Class in <a href="./org/grails/datastore/gorm/finders/package-summary.html">org.grails.datastore.gorm.finders</a>
-</dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.IsEmpty.html#MethodExpression.IsEmpty(java.lang.String)" title="Constructor in MethodExpression.IsEmpty">MethodExpression.IsEmpty(String)</a></span> - Constructor in <a href="org/grails/datastore/gorm/finders/MethodExpression.IsEmpty.html">MethodExpression.IsEmpty</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.IsNotEmpty.html" title="Class in org.grails.datastore.gorm.finders.MethodExpression">MethodExpression.IsNotEmpty</a></span> - Class in <a href="./org/grails/datastore/gorm/finders/package-summary.html">org.grails.datastore.gorm.finders</a>
-</dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.IsNotEmpty.html#MethodExpression.IsNotEmpty(java.lang.String)" title="Constructor in MethodExpression.IsNotEmpty">MethodExpression.IsNotEmpty(String)</a></span> - Constructor in <a href="org/grails/datastore/gorm/finders/MethodExpression.IsNotEmpty.html">MethodExpression.IsNotEmpty</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.IsNotNull.html" title="Class in org.grails.datastore.gorm.finders.MethodExpression">MethodExpression.IsNotNull</a></span> - Class in <a href="./org/grails/datastore/gorm/finders/package-summary.html">org.grails.datastore.gorm.finders</a>
-</dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.IsNotNull.html#MethodExpression.IsNotNull(java.lang.String)" title="Constructor in MethodExpression.IsNotNull">MethodExpression.IsNotNull(String)</a></span> - Constructor in <a href="org/grails/datastore/gorm/finders/MethodExpression.IsNotNull.html">MethodExpression.IsNotNull</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.IsNull.html" title="Class in org.grails.datastore.gorm.finders.MethodExpression">MethodExpression.IsNull</a></span> - Class in <a href="./org/grails/datastore/gorm/finders/package-summary.html">org.grails.datastore.gorm.finders</a>
-</dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.IsNull.html#MethodExpression.IsNull(java.lang.String)" title="Constructor in MethodExpression.IsNull">MethodExpression.IsNull(String)</a></span> - Constructor in <a href="org/grails/datastore/gorm/finders/MethodExpression.IsNull.html">MethodExpression.IsNull</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.LessThan.html" title="Class in org.grails.datastore.gorm.finders.MethodExpression">MethodExpression.LessThan</a></span> - Class in <a href="./org/grails/datastore/gorm/finders/package-summary.html">org.grails.datastore.gorm.finders</a>
-</dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.LessThan.html#MethodExpression.LessThan(java.lang.String)" title="Constructor in MethodExpression.LessThan">MethodExpression.LessThan(String)</a></span> - Constructor in <a href="org/grails/datastore/gorm/finders/MethodExpression.LessThan.html">MethodExpression.LessThan</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.LessThanEquals.html" title="Class in org.grails.datastore.gorm.finders.MethodExpression">MethodExpression.LessThanEquals</a></span> - Class in <a href="./org/grails/datastore/gorm/finders/package-summary.html">org.grails.datastore.gorm.finders</a>
-</dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.LessThanEquals.html#MethodExpression.LessThanEquals(java.lang.String)" title="Constructor in MethodExpression.LessThanEquals">MethodExpression.LessThanEquals(String)</a></span> - Constructor in <a href="org/grails/datastore/gorm/finders/MethodExpression.LessThanEquals.html">MethodExpression.LessThanEquals</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.Like.html" title="Class in org.grails.datastore.gorm.finders.MethodExpression">MethodExpression.Like</a></span> - Class in <a href="./org/grails/datastore/gorm/finders/package-summary.html">org.grails.datastore.gorm.finders</a>
-</dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.Like.html#MethodExpression.Like(java.lang.String)" title="Constructor in MethodExpression.Like">MethodExpression.Like(String)</a></span> - Constructor in <a href="org/grails/datastore/gorm/finders/MethodExpression.Like.html">MethodExpression.Like</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.NotEqual.html" title="Class in org.grails.datastore.gorm.finders.MethodExpression">MethodExpression.NotEqual</a></span> - Class in <a href="./org/grails/datastore/gorm/finders/package-summary.html">org.grails.datastore.gorm.finders</a>
-</dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.NotEqual.html#MethodExpression.NotEqual(java.lang.String)" title="Constructor in MethodExpression.NotEqual">MethodExpression.NotEqual(String)</a></span> - Constructor in <a href="org/grails/datastore/gorm/finders/MethodExpression.NotEqual.html">MethodExpression.NotEqual</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.Rlike.html" title="Class in org.grails.datastore.gorm.finders.MethodExpression">MethodExpression.Rlike</a></span> - Class in <a href="./org/grails/datastore/gorm/finders/package-summary.html">org.grails.datastore.gorm.finders</a>
-</dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.Rlike.html#MethodExpression.Rlike(java.lang.String)" title="Constructor in MethodExpression.Rlike">MethodExpression.Rlike(String)</a></span> - Constructor in <a href="org/grails/datastore/gorm/finders/MethodExpression.Rlike.html">MethodExpression.Rlike</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.html#MethodExpression(java.lang.String)" title="Constructor in MethodExpression">MethodExpression(String)</a></span> - Constructor in <a href="org/grails/datastore/gorm/finders/MethodExpression.html">MethodExpression</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/internal/MethodInvokingClosure.html" title="Class in org.grails.datastore.gorm.internal">MethodInvokingClosure</a></span> - Class in <a href="./org/grails/datastore/gorm/internal/package-summary.html">org.grails.datastore.gorm.internal</a>
 </dt><dd><div class="block">Not public API. </div></dd>
@@ -5660,6 +5592,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/connections/ConnectionSourcesListener.html#newConnectionSource(ConnectionSource<T, S>)" title="Method in ConnectionSourcesListener">newConnectionSource(ConnectionSource&lt;T, S&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/core/connections/ConnectionSourcesListener.html">ConnectionSourcesListener</a>
 </dt><dd> <div class="block">Triggered when a new connection source is added at runtime</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/eval/ConstraintsEvaluator.html#newConstrainedPropertyBuilder(Class<?>)" title="Method in ConstraintsEvaluator">newConstrainedPropertyBuilder(Class&lt;?&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/constraints/eval/ConstraintsEvaluator.html">ConstraintsEvaluator</a>
+</dt><dd> <div class="block">Obtains a new builder from this evaluator</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html#newConstrainedPropertyBuilder(Class<?>)" title="Method in DefaultConstraintEvaluator">newConstrainedPropertyBuilder(Class&lt;?&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/constraints/eval/DefaultConstraintEvaluator.html">DefaultConstraintEvaluator</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/DefaultTransactionService.html#newDefinition(java.util.Map)" title="Method in DefaultTransactionService">newDefinition(Map)</a></span> - Method in <a href="org/grails/datastore/gorm/services/DefaultTransactionService.html">DefaultTransactionService</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/EntityPersister.html#newEntityInstance(org.grails.datastore.mapping.model.PersistentEntity)" title="Method in EntityPersister">newEntityInstance(PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/EntityPersister.html">EntityPersister</a>
@@ -6165,8 +6101,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/multitenancy/TenantDelegatingGormOperations.html#propertyMissing(java.lang.String, java.lang.Object)" title="Method in TenantDelegatingGormOperations">propertyMissing(String, Object)</a></span> - Method in <a href="org/grails/datastore/gorm/multitenancy/TenantDelegatingGormOperations.html">TenantDelegatingGormOperations</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.html#propertyName" title="Field in MethodExpression">propertyName</a></span> - Field in <a href="org/grails/datastore/gorm/finders/MethodExpression.html">MethodExpression</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/utils/PropertyResolverMap.html" title="Class in org.grails.datastore.mapping.config.utils">PropertyResolverMap</a></span> - Class in <a href="./org/grails/datastore/mapping/config/utils/package-summary.html">org.grails.datastore.mapping.config.utils</a>
 </dt><dd><div class="block">Adapts a property resolver to the Map<String,String> interface</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/utils/PropertyResolverMap.html#PropertyResolverMap(org.springframework.core.env.PropertyResolver)" title="Constructor in PropertyResolverMap">PropertyResolverMap(PropertyResolver)</a></span> - Constructor in <a href="org/grails/datastore/mapping/config/utils/PropertyResolverMap.html">PropertyResolverMap</a>
@@ -6657,6 +6591,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/jdbc/schema/SchemaHandler.html" title="Interface in org.grails.datastore.gorm.jdbc.schema">SchemaHandler</a></span> - Interface in <a href="./org/grails/datastore/gorm/jdbc/schema/package-summary.html">org.grails.datastore.gorm.jdbc.schema</a>
 </dt><dd><div class="block">A resolver that helps resolve information about the database schema. </div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/multitenancy/SchemaMultiTenantCapableDatastore.html" title="Interface in org.grails.datastore.mapping.multitenancy">SchemaMultiTenantCapableDatastore</a></span> - Interface in <a href="./org/grails/datastore/mapping/multitenancy/package-summary.html">org.grails.datastore.mapping.multitenancy</a>
+</dt><dd><div class="block">For datastores that are capable of implementing the addition of new schemas at runtime for a single shared database instance</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/api/BuildableCriteria.html#scroll(groovy.lang.Closure)" title="Method in BuildableCriteria">scroll(Closure)</a></span> - Method in <a href="org/grails/datastore/mapping/query/api/BuildableCriteria.html">BuildableCriteria</a>
 </dt><dd> <div class="block">Defines and executes a scroll query in a single call. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html#SCROLL_CALL" title="Field in AbstractCriteriaBuilder">SCROLL_CALL</a></span> - Field in <a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html">AbstractCriteriaBuilder</a>
@@ -6762,14 +6698,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/DefaultDomainClassValidator.html#setApplicationContext(org.springframework.context.ApplicationContext)" title="Method in DefaultDomainClassValidator">setApplicationContext(ApplicationContext)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/DefaultDomainClassValidator.html">DefaultDomainClassValidator</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/jdbc/connections/SpringDataSourceConnectionSourceFactory.html#setApplicationContext(org.springframework.context.ApplicationContext)" title="Method in SpringDataSourceConnectionSourceFactory">setApplicationContext(ApplicationContext)</a></span> - Method in <a href="org/grails/datastore/gorm/jdbc/connections/SpringDataSourceConnectionSourceFactory.html">SpringDataSourceConnectionSourceFactory</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.html#setArguments(java.lang.Object)" title="Method in MethodExpression">setArguments(Object)</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.html">MethodExpression</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.Between.html#setArguments(java.lang.Object)" title="Method in MethodExpression.Between">setArguments(Object)</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.Between.html">MethodExpression.Between</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.InList.html#setArguments(java.lang.Object)" title="Method in MethodExpression.InList">setArguments(Object)</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.InList.html">MethodExpression.InList</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.InRange.html#setArguments(java.lang.Object)" title="Method in MethodExpression.InRange">setArguments(Object)</a></span> - Method in <a href="org/grails/datastore/gorm/finders/MethodExpression.InRange.html">MethodExpression.InRange</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/api/QueryArgumentsAware.html#setArguments(java.util.Map)" title="Method in QueryArgumentsAware">setArguments(Map)</a></span> - Method in <a href="org/grails/datastore/mapping/query/api/QueryArgumentsAware.html">QueryArgumentsAware</a>
 </dt><dd> <div class="block">@param arguments The query arguments</div></dd>
@@ -7091,6 +7019,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/transactions/TransactionObject.html#setTransaction(Transaction<?>)" title="Method in TransactionObject">setTransaction(Transaction&lt;?&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/transactions/TransactionObject.html">TransactionObject</a>
 </dt><dd> <div class="block">@deprecated Here for binary compatibility, doesn't actually do anything</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/Property.html#setUnique(List<String>)" title="Method in Property">setUnique(List&lt;String&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/config/Property.html">Property</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/config/Property.html#setUniquenessGroup(List<String>)" title="Method in Property">setUniquenessGroup(List&lt;String&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/config/Property.html">Property</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html#setUniqueResult(boolean)" title="Method in AbstractCriteriaBuilder">setUniqueResult(boolean)</a></span> - Method in <a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html">AbstractCriteriaBuilder</a>
 </dt><dd> <div class="block"></div></dd>
@@ -7439,8 +7369,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html#targetClass" title="Field in AbstractDetachedCriteria">targetClass</a></span> - Field in <a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html">AbstractDetachedCriteria</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/finders/MethodExpression.html#targetClass" title="Field in MethodExpression">targetClass</a></span> - Field in <a href="org/grails/datastore/gorm/finders/MethodExpression.html">MethodExpression</a>
-</dt><dd> <div class="block">@deprecated  Do not use</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/async/GormAsyncStaticApi.html#task(Closure<T>)" title="Method in GormAsyncStaticApi">task(Closure&lt;T&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/async/GormAsyncStaticApi.html">GormAsyncStaticApi</a>
 </dt><dd> <div class="block">Used to perform a sequence of operations asynchronously</div></dd>
 <dt><span class="strong"><a href="grails/gorm/multitenancy/Tenant.html" title="Annotation Type in grails.gorm.multitenancy">Tenant</a></span> - Annotation Type in <a href="./grails/gorm/multitenancy/package-summary.html">grails.gorm.multitenancy</a>
@@ -7521,6 +7449,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html#toString()" title="Method in AbstractPersistentCollection">toString()</a></span> - Method in <a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html">AbstractPersistentCollection</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentProperty.html#toString()" title="Method in AbstractPersistentProperty">toString()</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractPersistentProperty.html">AbstractPersistentProperty</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/core/grailsversion/GrailsVersion.html#toString()" title="Method in GrailsVersion">toString()</a></span> - Method in <a href="org/grails/datastore/mapping/core/grailsversion/GrailsVersion.html">GrailsVersion</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/core/grailsversion/Snapshot.html#toString()" title="Method in Snapshot">toString()</a></span> - Method in <a href="org/grails/datastore/mapping/core/grailsversion/Snapshot.html">Snapshot</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/PagedResultList.html#totalCount" title="Field in PagedResultList">totalCount</a></span> - Field in <a href="grails/gorm/PagedResultList.html">PagedResultList</a>
 </dt><dd> <div class="block"></div></dd>
@@ -7871,10 +7803,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html#weaveClassNode(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode)" title="Method in TransactionalTransform">weaveClassNode(SourceUnit, AnnotationNode, ClassNode)</a></span> - Method in <a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html">TransactionalTransform</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#weaveDatastoreAware(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode)" title="Method in AbstractMethodDecoratingTransformation">weaveDatastoreAware(SourceUnit, AnnotationNode, ClassNode)</a></span> - Method in <a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html">AbstractMethodDecoratingTransformation</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html#weaveDatastoreAware(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode)" title="Method in TransactionalTransform">weaveDatastoreAware(SourceUnit, AnnotationNode, ClassNode)</a></span> - Method in <a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html">TransactionalTransform</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html#weaveIntoExistingSetter(java.lang.String, org.grails.compiler.gorm.DirtyCheckingTransformer.GetterAndSetter, org.codehaus.groovy.ast.MethodNode)" title="Method in DirtyCheckingTransformer">weaveIntoExistingSetter(String, DirtyCheckingTransformer.GetterAndSetter, MethodNode)</a></span> - Method in <a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html">DirtyCheckingTransformer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#weaveNewMethod(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)" title="Method in AbstractMethodDecoratingTransformation">weaveNewMethod(SourceUnit, AnnotationNode, ClassNode, MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html">AbstractMethodDecoratingTransformation</a>
@@ -7883,9 +7811,9 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/javax/services/implementers/MethodValidationImplementer.html#weaveParameterNameData(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode, org.codehaus.groovy.ast.MethodNode)" title="Method in MethodValidationImplementer">weaveParameterNameData(ClassNode, MethodNode, MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/javax/services/implementers/MethodValidationImplementer.html">MethodValidationImplementer</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#weaveSetTargetDatastoreBody(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.expr.VariableExpression, org.codehaus.groovy.ast.stmt.BlockStatement)" title="Method in AbstractMethodDecoratingTransformation">weaveSetTargetDatastoreBody(SourceUnit, AnnotationNode, ClassNode, VariableExpression, BlockStatement)</a></span> - Method in <a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html">AbstractMethodDecoratingTransformation</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractDatastoreMethodDecoratingTransformation.html#weaveSetTargetDatastoreBody(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.expr.Expression, org.codehaus.groovy.ast.stmt.BlockStatement)" title="Method in AbstractDatastoreMethodDecoratingTransformation">weaveSetTargetDatastoreBody(SourceUnit, AnnotationNode, ClassNode, Expression, BlockStatement)</a></span> - Method in <a href="org/grails/datastore/gorm/transform/AbstractDatastoreMethodDecoratingTransformation.html">AbstractDatastoreMethodDecoratingTransformation</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html#weaveSetTargetDatastoreBody(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.expr.VariableExpression, org.codehaus.groovy.ast.stmt.BlockStatement)" title="Method in TransactionalTransform">weaveSetTargetDatastoreBody(SourceUnit, AnnotationNode, ClassNode, VariableExpression, BlockStatement)</a></span> - Method in <a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html">TransactionalTransform</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html#weaveSetTargetDatastoreBody(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.expr.Expression, org.codehaus.groovy.ast.stmt.BlockStatement)" title="Method in TransactionalTransform">weaveSetTargetDatastoreBody(SourceUnit, AnnotationNode, ClassNode, Expression, BlockStatement)</a></span> - Method in <a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html">TransactionalTransform</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#weaveTestSetupMethod(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)" title="Method in AbstractMethodDecoratingTransformation">weaveTestSetupMethod(SourceUnit, AnnotationNode, ClassNode, MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html">AbstractMethodDecoratingTransformation</a>
 </dt><dd> <div class="block"></div></dd>
@@ -7932,6 +7860,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="grails/gorm/api/GormStaticOperations.html#whereLazy(groovy.lang.Closure)" title="Method in GormStaticOperations">whereLazy(Closure)</a></span> - Method in <a href="grails/gorm/api/GormStaticOperations.html">GormStaticOperations</a>
 </dt><dd> <div class="block">@param callable Callable closure containing detached criteria definition</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/multitenancy/TenantDelegatingGormOperations.html#whereLazy(groovy.lang.Closure)" title="Method in TenantDelegatingGormOperations">whereLazy(Closure)</a></span> - Method in <a href="org/grails/datastore/gorm/multitenancy/TenantDelegatingGormOperations.html">TenantDelegatingGormOperations</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html#withConnection(java.lang.String)" title="Method in AbstractDetachedCriteria">withConnection(String)</a></span> - Method in <a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html">AbstractDetachedCriteria</a>
+</dt><dd> <div class="block">Create a return a new DetachedCriteria that uses the given connection</div></dd>
+<dt><span class="strong"><a href="grails/gorm/DetachedCriteria.html#withConnection(java.lang.String)" title="Method in DetachedCriteria">withConnection(String)</a></span> - Method in <a href="grails/gorm/DetachedCriteria.html">DetachedCriteria</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#withCriteria(java.util.Map, groovy.lang.Closure)" title="Method in GormEntity">withCriteria(Map, Closure)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
 </dt><dd> <div class="block">Creates a criteria builder instance</div></dd>

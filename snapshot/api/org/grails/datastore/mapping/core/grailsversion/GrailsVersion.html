@@ -104,7 +104,9 @@ if (location.href.indexOf('is-external=true') == -1) {
             <!-- todo: direct known subclasses -->
             <hr>
             <br>
-<pre>class GrailsVersion
+<pre>@groovy.transform.CompileStatic
+@groovy.transform.EqualsAndHashCode(includes = ['versionText'])
+class GrailsVersion
 extends java.lang.Object
 
 </pre>
@@ -112,7 +114,7 @@ extends java.lang.Object
 
 
     <p> A class to represent a version of Grails for comparison
- <DL><DT><B>Authors:</B></DT><DD>James Kleeh</DD></DL></p>
+ <DL><DT><B>Authors:</B></DT><DD>James Kleeh</DD><DD>Graeme Rocher</DD></DL></p>
 
           </li>
     </ul>
@@ -144,27 +146,27 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code><strong>int</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#major">major</a></code><br></td>
+                            <td class="colLast"><code><a href="#major">major</a></code><br>The major version</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code><strong>int</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#minor">minor</a></code><br></td>
+                            <td class="colLast"><code><a href="#minor">minor</a></code><br>The minor version</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code><strong>int</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#patch">patch</a></code><br></td>
+                            <td class="colLast"><code><a href="#patch">patch</a></code><br>The patch version</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code><strong><a href='../../../../../../org/grails/datastore/mapping/core/grailsversion/Snapshot.html'>Snapshot</a></strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#snapshot">snapshot</a></code><br></td>
+                            <td class="colLast"><code><a href="#snapshot">snapshot</a></code><br>Information about the snapshot status</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#versionText">versionText</a></code><br></td>
+                            <td class="colLast"><code><a href="#versionText">versionText</a></code><br>The full version text</td>
                         </tr>
                         
                     </table>
@@ -221,12 +223,37 @@ extends java.lang.Object
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;<a href='../../../../../../org/grails/datastore/mapping/core/grailsversion/GrailsVersion.html'>GrailsVersion</a></strong></code></td>
-                            <td class="colLast"><code><strong><a href="#getCurrent()">getCurrent</a></strong>()</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getCurrent()">getCurrent</a></strong>()</code><br>@return Obtains the current Grails version</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#isAtLeast(java.lang.String)">isAtLeast</a></strong>(java.lang.String requiredVersion)</code><br>Check whether the current version is at least the given version</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#isAtLeast(java.lang.String, java.lang.String)">isAtLeast</a></strong>(java.lang.String version, java.lang.String requiredVersion)</code><br>Check whether the version is at least the given version</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#isAtLeastMajorMinor(int, int)">isAtLeastMajorMinor</a></strong>(int majorVersion, int minorVersion)</code><br>Check whether the current version is at least the given major and minor version</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#isAtLeastMajorMinor(java.lang.String, int, int)">isAtLeastMajorMinor</a></strong>(java.lang.String version, int majorVersion, int minorVersion)</code><br>Check whether the current version is at least the given major and minor version</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isSnapshot()">isSnapshot</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>java.lang.String</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#toString()">toString</a></strong>()</code><br></td>
                         </tr>
                         
                     </table>
@@ -276,7 +303,8 @@ extends java.lang.Object
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>int <strong>major</strong></h4>
-                                <p></p>
+                                <p> The major version
+     </p>
                             </li>
                         </ul>
                     
@@ -284,7 +312,8 @@ extends java.lang.Object
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>int <strong>minor</strong></h4>
-                                <p></p>
+                                <p> The minor version
+     </p>
                             </li>
                         </ul>
                     
@@ -292,7 +321,8 @@ extends java.lang.Object
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>int <strong>patch</strong></h4>
-                                <p></p>
+                                <p> The patch version
+     </p>
                             </li>
                         </ul>
                     
@@ -300,7 +330,8 @@ extends java.lang.Object
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../../../org/grails/datastore/mapping/core/grailsversion/Snapshot.html'>Snapshot</a> <strong>snapshot</strong></h4>
-                                <p></p>
+                                <p> Information about the snapshot status
+     </p>
                             </li>
                         </ul>
                     
@@ -308,7 +339,8 @@ extends java.lang.Object
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>java.lang.String <strong>versionText</strong></h4>
-                                <p></p>
+                                <p> The full version text
+     </p>
                             </li>
                         </ul>
                     
@@ -360,7 +392,44 @@ int <strong>compareTo</strong>(<a href='../../../../../../org/grails/datastore/m
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>static&nbsp;<a href='../../../../../../org/grails/datastore/mapping/core/grailsversion/GrailsVersion.html'>GrailsVersion</a> <strong>getCurrent</strong>()</h4>
-                                <p></p>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>Obtains the current Grails version</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="isAtLeast(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;boolean <strong>isAtLeast</strong>(java.lang.String requiredVersion)</h4>
+                                <p> Check whether the current version is at least the given version
+     <DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>requiredVersion</code> -  The required version</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="isAtLeast(java.lang.String, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;boolean <strong>isAtLeast</strong>(java.lang.String version, java.lang.String requiredVersion)</h4>
+                                <p> Check whether the version is at least the given version
+     <DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>version</code> -  The version</DD><DD><code>requiredVersion</code> -  The required version</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="isAtLeastMajorMinor(int, int)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;boolean <strong>isAtLeastMajorMinor</strong>(int majorVersion, int minorVersion)</h4>
+                                <p> Check whether the current version is at least the given major and minor version
+     <DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>majorVersion</code> -  The major version</DD><DD><code>minorVersion</code> -  The minor version</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="isAtLeastMajorMinor(java.lang.String, int, int)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;boolean <strong>isAtLeastMajorMinor</strong>(java.lang.String version, int majorVersion, int minorVersion)</h4>
+                                <p> Check whether the current version is at least the given major and minor version
+     <DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>majorVersion</code> -  The major version</DD><DD><code>minorVersion</code> -  The minor version</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -368,6 +437,15 @@ int <strong>compareTo</strong>(<a href='../../../../../../org/grails/datastore/m
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>boolean <strong>isSnapshot</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="toString()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.lang.String <strong>toString</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
