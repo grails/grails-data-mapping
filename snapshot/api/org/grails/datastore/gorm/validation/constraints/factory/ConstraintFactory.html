@@ -87,7 +87,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
     <div class="subTitle">Package: <strong>org.grails.datastore.gorm.validation.constraints.factory</strong></div>
 
-    <h2 title="[Groovy] Interface ConstraintFactory&lt;T&gt;" class="title">[Groovy] Interface ConstraintFactory&lt;T&gt;</h2>
+    <h2 title="[Groovy] Interface ConstraintFactory&lt;T extends Constraint&gt;" class="title">[Groovy] Interface ConstraintFactory&lt;T extends Constraint&gt;</h2>
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
@@ -134,27 +134,32 @@ if (location.href.indexOf('is-external=true') == -1) {
                     <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Methods Summary table">
                         <caption><span>Methods</span><span class="tabEnd">&nbsp;</span></caption>
                         <tr>
-                            <th class="colFirst" scope="col">Type</th>
+                            <th class="colFirst" scope="col">Type Params</th>
+                            <th class="colLast" scope="col">Return Type</th>
                             <th class="colLast" scope="col">Name and description</th>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>T</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>T</code></td>
                             <td class="colLast"><code><strong><a href="#build(java.lang.Class, java.lang.String, java.lang.Object)">build</a></strong>(java.lang.Class owner, java.lang.String property, java.lang.Object constrainingValue)</code><br>Builds a constraint</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>java.lang.String</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>java.lang.String</code></td>
                             <td class="colLast"><code><strong><a href="#getName()">getName</a></strong>()</code><br>@return The name of the constraint</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>java.lang.Class&lt;T&gt;</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>java.lang.Class&lt;T&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getType()">getType</a></strong>()</code><br>@return The type of the constraint</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>boolean</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>boolean</code></td>
                             <td class="colLast"><code><strong><a href="#supports(java.lang.Class)">supports</a></strong>(java.lang.Class targetType)</code><br>The target type this factory supports</td>
                         </tr>
                         

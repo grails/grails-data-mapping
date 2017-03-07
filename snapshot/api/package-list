@@ -40,6 +40,7 @@ org.grails.datastore.gorm.transform
 org.grails.datastore.gorm.utils
 org.grails.datastore.gorm.validation
 org.grails.datastore.gorm.validation.constraints
+org.grails.datastore.gorm.validation.constraints.builder
 org.grails.datastore.gorm.validation.constraints.builtin
 org.grails.datastore.gorm.validation.constraints.eval
 org.grails.datastore.gorm.validation.constraints.factory

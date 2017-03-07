@@ -144,19 +144,19 @@ extends java.lang.Object
                         <tr class="altColor">
                             <td class="colFirst"><code><strong>protected&nbsp;java.util.Map&lt;java.lang.String, java.util.List&lt;<a href='../../../../../../../org/grails/datastore/gorm/validation/constraints/factory/ConstraintFactory.html' title='ConstraintFactory'>ConstraintFactory</a>&gt;&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#factoriesByName">factoriesByName</a></code></td>
-                            <td class="colLast"></code></td>
+                            <td class="colLast"></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code><strong>protected&nbsp;java.util.Map&lt;java.lang.Class&lt;? extends <a href='../../../../../../../grails/gorm/validation/Constraint.html' title='Constraint'>Constraint</a>&gt;, java.util.List&lt;<a href='../../../../../../../org/grails/datastore/gorm/validation/constraints/factory/ConstraintFactory.html' title='ConstraintFactory'>ConstraintFactory</a>&gt;&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#factoriesByType">factoriesByType</a></code></td>
-                            <td class="colLast"></code></td>
+                            <td class="colLast"></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code><strong>protected&nbsp;org.springframework.context.MessageSource</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#messageSource">messageSource</a></code></td>
-                            <td class="colLast"></code></td>
+                            <td class="colLast"></td>
                         </tr>
                         
                     </table>
@@ -186,7 +186,7 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst">
-                                <code><a href="#DefaultConstraintRegistry(org.springframework.context.MessageSource)">DefaultConstraintRegistry</a></strong>
+                                <code><a href="#DefaultConstraintRegistry(org.springframework.context.MessageSource)">DefaultConstraintRegistry</a>
                                 (org.springframework.context.MessageSource messageSource)</code><br></td>
                         </tr>
                         
@@ -206,32 +206,38 @@ extends java.lang.Object
                     <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Methods Summary table">
                         <caption><span>Methods</span><span class="tabEnd">&nbsp;</span></caption>
                         <tr>
-                            <th class="colFirst" scope="col">Type</th>
+                            <th class="colFirst" scope="col">Type Params</th>
+                            <th class="colLast" scope="col">Return Type</th>
                             <th class="colLast" scope="col">Name and description</th>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#addConstraint(Class<? extends Constraint>, List<Class>)">addConstraint</a></strong>(java.lang.Class&lt;? extends <a href='../../../../../../../grails/gorm/validation/Constraint.html' title='Constraint'>Constraint</a>&gt; constraintClass, java.util.List&lt;java.lang.Class&gt; targetPropertyTypes = [Object])</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#addConstraintFactory(org.grails.datastore.gorm.validation.constraints.factory.ConstraintFactory)">addConstraintFactory</a></strong>(<a href='../../../../../../../org/grails/datastore/gorm/validation/constraints/factory/ConstraintFactory.html'>ConstraintFactory</a> factory)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>java.util.List&lt;<a href='../../../../../../../org/grails/datastore/gorm/validation/constraints/factory/ConstraintFactory.html' title='ConstraintFactory'>ConstraintFactory</a>&gt;</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>java.util.List&lt;<a href='../../../../../../../org/grails/datastore/gorm/validation/constraints/factory/ConstraintFactory.html' title='ConstraintFactory'>ConstraintFactory</a>&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#findConstraintFactories(java.lang.String)">findConstraintFactories</a></strong>(java.lang.String name)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>java.util.List&lt;<a href='../../../../../../../org/grails/datastore/gorm/validation/constraints/factory/ConstraintFactory.html' title='ConstraintFactory'>ConstraintFactory</a>&lt;T&gt;&gt;</strong></code></td>
+                            <td class="colFirst"><code>&lt;T extends Constraint&gt;</code></td>
+                            <td class="colLast"><code>java.util.List&lt;<a href='../../../../../../../org/grails/datastore/gorm/validation/constraints/factory/ConstraintFactory.html' title='ConstraintFactory'>ConstraintFactory</a>&lt;T&gt;&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#findConstraintFactories(Class<T>)">findConstraintFactories</a></strong>(java.lang.Class&lt;T&gt; constraintType)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#setConstraintFactories(org.grails.datastore.gorm.validation.constraints.factory.ConstraintFactory)">setConstraintFactories</a></strong>(<a href='../../../../../../../org/grails/datastore/gorm/validation/constraints/factory/ConstraintFactory.html'>ConstraintFactory</a>... constraintFactories)</code><br></td>
                         </tr>
                         
@@ -250,7 +256,7 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>class java.lang.Object</strong></code></td>
+                            <td class="colFirst"><code>class java.lang.Object</code></td>
                             <td class="colLast"><code>java.lang.Object#wait(long, int), java.lang.Object#wait(long), java.lang.Object#wait(), java.lang.Object#equals(java.lang.Object), java.lang.Object#toString(), java.lang.Object#hashCode(), java.lang.Object#getClass(), java.lang.Object#notify(), java.lang.Object#notifyAll()</code></td>
                         </tr>
                     </table>
@@ -367,7 +373,7 @@ java.util.List&lt;<a href='../../../../../../../org/grails/datastore/gorm/valida
                         <a name="findConstraintFactories(Class<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.Override
+                                <h4>&lt;T extends Constraint&gt; @java.lang.Override
 java.util.List&lt;<a href='../../../../../../../org/grails/datastore/gorm/validation/constraints/factory/ConstraintFactory.html' title='ConstraintFactory'>ConstraintFactory</a>&lt;T&gt;&gt; <strong>findConstraintFactories</strong>(java.lang.Class&lt;T&gt; constraintType)</h4>
                                 <p></p>
                             </li>

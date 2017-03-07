@@ -144,7 +144,7 @@ extends java.lang.Object
                         <tr class="altColor">
                             <td class="colFirst"><code><strong>protected&nbsp;<a href='../../../org/grails/datastore/mapping/proxy/ProxyHandler.html'>ProxyHandler</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#proxyHandler">proxyHandler</a></code></td>
-                            <td class="colLast"></code></td>
+                            <td class="colLast"></td>
                         </tr>
                         
                     </table>
@@ -215,7 +215,7 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst">
-                                <code><a href="#PersistentEntityValidator(org.grails.datastore.mapping.model.PersistentEntity, org.springframework.context.MessageSource, org.grails.datastore.gorm.validation.constraints.eval.ConstraintsEvaluator)">PersistentEntityValidator</a></strong>
+                                <code><a href="#PersistentEntityValidator(org.grails.datastore.mapping.model.PersistentEntity, org.springframework.context.MessageSource, org.grails.datastore.gorm.validation.constraints.eval.ConstraintsEvaluator)">PersistentEntityValidator</a>
                                 (<a href='../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.springframework.context.MessageSource messageSource, <a href='../../../org/grails/datastore/gorm/validation/constraints/eval/ConstraintsEvaluator.html'>ConstraintsEvaluator</a> constraintsEvaluator)</code><br></td>
                         </tr>
                         
@@ -235,37 +235,44 @@ extends java.lang.Object
                     <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Methods Summary table">
                         <caption><span>Methods</span><span class="tabEnd">&nbsp;</span></caption>
                         <tr>
-                            <th class="colFirst" scope="col">Type</th>
+                            <th class="colFirst" scope="col">Type Params</th>
+                            <th class="colLast" scope="col">Return Type</th>
                             <th class="colLast" scope="col">Name and description</th>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#cascadeToAssociativeProperty(java.lang.Object, org.springframework.validation.Errors, org.grails.datastore.mapping.reflect.EntityReflector, org.grails.datastore.mapping.model.types.Association)">cascadeToAssociativeProperty</a></strong>(java.lang.Object parent, org.springframework.validation.Errors errors, <a href='../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> reflector, org.grails.datastore.mapping.model.types.Association association)</code><br>Cascades validation onto an associative property maybe a one-to-many, one-to-one or many-to-one relationship.</td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>protected&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#cascadeToAssociativeProperty(java.lang.Object, org.springframework.validation.Errors, org.grails.datastore.mapping.reflect.EntityReflector, org.grails.datastore.mapping.model.types.Association)">cascadeToAssociativeProperty</a></strong>(java.lang.Object parent, org.springframework.validation.Errors errors, <a href='../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> reflector, <a href='../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> association)</code><br>Cascades validation onto an associative property maybe a one-to-many, one-to-one or many-to-one relationship.</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#cascadeValidationToMany(java.lang.Object, java.lang.String, org.grails.datastore.mapping.model.types.Association, org.springframework.validation.Errors, org.grails.datastore.mapping.reflect.EntityReflector)">cascadeValidationToMany</a></strong>(java.lang.Object parentObject, java.lang.String propertyName, org.grails.datastore.mapping.model.types.Association association, org.springframework.validation.Errors errors, <a href='../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> entityReflector)</code><br>Cascades validation to a one-to-many type relationship. </td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>protected&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#cascadeValidationToMany(java.lang.Object, java.lang.String, org.grails.datastore.mapping.model.types.Association, org.springframework.validation.Errors, org.grails.datastore.mapping.reflect.EntityReflector)">cascadeValidationToMany</a></strong>(java.lang.Object parentObject, java.lang.String propertyName, <a href='../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> association, org.springframework.validation.Errors errors, <a href='../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> entityReflector)</code><br>Cascades validation to a one-to-many type relationship. </td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#cascadeValidationToOne(java.lang.Object, java.lang.String, org.grails.datastore.mapping.model.types.Association, org.springframework.validation.Errors, org.grails.datastore.mapping.reflect.EntityReflector, java.lang.Object, java.lang.Object)">cascadeValidationToOne</a></strong>(java.lang.Object parentObject, java.lang.String propertyName, org.grails.datastore.mapping.model.types.Association association, org.springframework.validation.Errors errors, <a href='../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> reflector, java.lang.Object associatedObject, java.lang.Object indexOrKey)</code><br>Cascades validation to a one-to-one or many-to-one property.</td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>protected&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#cascadeValidationToOne(java.lang.Object, java.lang.String, org.grails.datastore.mapping.model.types.Association, org.springframework.validation.Errors, org.grails.datastore.mapping.reflect.EntityReflector, java.lang.Object, java.lang.Object)">cascadeValidationToOne</a></strong>(java.lang.Object parentObject, java.lang.String propertyName, <a href='../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> association, org.springframework.validation.Errors errors, <a href='../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> reflector, java.lang.Object associatedObject, java.lang.Object indexOrKey)</code><br>Cascades validation to a one-to-one or many-to-one property.</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>protected&nbsp;org.springframework.validation.Errors</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>protected&nbsp;org.springframework.validation.Errors</code></td>
                             <td class="colLast"><code><strong><a href="#retrieveErrors(def)">retrieveErrors</a></strong>(java.lang.Object associatedObject)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>boolean</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>boolean</code></td>
                             <td class="colLast"><code><strong><a href="#supports(Class<?>)">supports</a></strong>(java.lang.Class&lt;?&gt; clazz)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#validate(java.lang.Object, org.springframework.validation.Errors, boolean)">validate</a></strong>(java.lang.Object obj, org.springframework.validation.Errors errors, boolean cascade = true)</code><br></td>
                         </tr>
                         
@@ -284,7 +291,7 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>class java.lang.Object</strong></code></td>
+                            <td class="colFirst"><code>class java.lang.Object</code></td>
                             <td class="colLast"><code>java.lang.Object#wait(long, int), java.lang.Object#wait(long), java.lang.Object#wait(), java.lang.Object#equals(java.lang.Object), java.lang.Object#toString(), java.lang.Object#hashCode(), java.lang.Object#getClass(), java.lang.Object#notify(), java.lang.Object#notifyAll()</code></td>
                         </tr>
                     </table>
@@ -408,7 +415,7 @@ extends java.lang.Object
                         <a name="cascadeToAssociativeProperty(java.lang.Object, org.springframework.validation.Errors, org.grails.datastore.mapping.reflect.EntityReflector, org.grails.datastore.mapping.model.types.Association)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>cascadeToAssociativeProperty</strong>(java.lang.Object parent, org.springframework.validation.Errors errors, <a href='../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> reflector, org.grails.datastore.mapping.model.types.Association association)</h4>
+                                <h4>protected&nbsp;void <strong>cascadeToAssociativeProperty</strong>(java.lang.Object parent, org.springframework.validation.Errors errors, <a href='../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> reflector, <a href='../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> association)</h4>
                                 <p> Cascades validation onto an associative property maybe a one-to-many, one-to-one or many-to-one relationship.
      <DL><DT><B>Parameters:</B></DT><DD><code>errors</code> -  The Errors instnace</DD><DD><code>bean</code> -  The original bean</DD><DD><code>association</code> -  The associative property</DD></DL></p>
                             </li>
@@ -418,7 +425,7 @@ extends java.lang.Object
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.SuppressWarnings("rawtypes")
-protected&nbsp;void <strong>cascadeValidationToMany</strong>(java.lang.Object parentObject, java.lang.String propertyName, org.grails.datastore.mapping.model.types.Association association, org.springframework.validation.Errors errors, <a href='../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> entityReflector)</h4>
+protected&nbsp;void <strong>cascadeValidationToMany</strong>(java.lang.Object parentObject, java.lang.String propertyName, <a href='../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> association, org.springframework.validation.Errors errors, <a href='../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> entityReflector)</h4>
                                 <p> Cascades validation to a one-to-many type relationship. Normally a collection such as a List or Set
  each element in the association will also be validated.
      <DL><DT><B>Parameters:</B></DT><DD><code>errors</code> -  The Errors instance</DD><DD><code>entityReflector</code> -  The entity reflector</DD><DD><code>association</code> -  An association whose isOneToMeny() method returns true</DD><DD><code>propertyName</code> -  The name of the property</DD></DL></p>
@@ -429,7 +436,7 @@ protected&nbsp;void <strong>cascadeValidationToMany</strong>(java.lang.Object pa
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.SuppressWarnings("rawtypes")
-protected&nbsp;void <strong>cascadeValidationToOne</strong>(java.lang.Object parentObject, java.lang.String propertyName, org.grails.datastore.mapping.model.types.Association association, org.springframework.validation.Errors errors, <a href='../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> reflector, java.lang.Object associatedObject, java.lang.Object indexOrKey)</h4>
+protected&nbsp;void <strong>cascadeValidationToOne</strong>(java.lang.Object parentObject, java.lang.String propertyName, <a href='../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> association, org.springframework.validation.Errors errors, <a href='../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> reflector, java.lang.Object associatedObject, java.lang.Object indexOrKey)</h4>
                                 <p> Cascades validation to a one-to-one or many-to-one property.
      <DL><DT><B>Parameters:</B></DT><DD><code>errors</code> -  The Errors instance</DD><DD><code>bean</code> -  The original BeanWrapper</DD><DD><code>associatedObject</code> -  The associated object's current value</DD><DD><code>association</code> -  The GrailsDomainClassProperty instance</DD><DD><code>propertyName</code> -  The name of the property</DD><DD>indexOrKey</DD></DL></p>
                             </li>

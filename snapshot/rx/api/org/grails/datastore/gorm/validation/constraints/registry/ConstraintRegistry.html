@@ -155,32 +155,38 @@ if (location.href.indexOf('is-external=true') == -1) {
                     <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Methods Summary table">
                         <caption><span>Methods</span><span class="tabEnd">&nbsp;</span></caption>
                         <tr>
-                            <th class="colFirst" scope="col">Type</th>
+                            <th class="colFirst" scope="col">Type Params</th>
+                            <th class="colLast" scope="col">Return Type</th>
                             <th class="colLast" scope="col">Name and description</th>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#addConstraint(Class<? extends Constraint>, List<Class>)">addConstraint</a></strong>(java.lang.Class&lt;? extends <a href='../../../../../../../grails/gorm/validation/Constraint.html' title='Constraint'>Constraint</a>&gt; constraintClass, java.util.List&lt;java.lang.Class&gt; targetPropertyTypes)</code><br>Adds a constraint for the given class</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#addConstraint(Class<? extends Constraint>)">addConstraint</a></strong>(java.lang.Class&lt;? extends <a href='../../../../../../../grails/gorm/validation/Constraint.html' title='Constraint'>Constraint</a>&gt; constraintClass)</code><br>Adds a constraint for the given class</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#addConstraintFactory(org.grails.datastore.gorm.validation.constraints.factory.ConstraintFactory)">addConstraintFactory</a></strong>(<a href='../../../../../../../org/grails/datastore/gorm/validation/constraints/factory/ConstraintFactory.html'>ConstraintFactory</a> constraintFactory)</code><br>Adds a constraint factory</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>java.util.List&lt;<a href='../../../../../../../org/grails/datastore/gorm/validation/constraints/factory/ConstraintFactory.html' title='ConstraintFactory'>ConstraintFactory</a>&gt;</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>java.util.List&lt;<a href='../../../../../../../org/grails/datastore/gorm/validation/constraints/factory/ConstraintFactory.html' title='ConstraintFactory'>ConstraintFactory</a>&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#findConstraintFactories(java.lang.String)">findConstraintFactories</a></strong>(java.lang.String name)</code><br>Finds a named constraint</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>java.util.List&lt;<a href='../../../../../../../org/grails/datastore/gorm/validation/constraints/factory/ConstraintFactory.html' title='ConstraintFactory'>ConstraintFactory</a>&lt;T&gt;&gt;</strong></code></td>
+                            <td class="colFirst"><code>&lt;T extends Constraint&gt;</code></td>
+                            <td class="colLast"><code>java.util.List&lt;<a href='../../../../../../../org/grails/datastore/gorm/validation/constraints/factory/ConstraintFactory.html' title='ConstraintFactory'>ConstraintFactory</a>&lt;T&gt;&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#findConstraintFactories(Class<T>)">findConstraintFactories</a></strong>(java.lang.Class&lt;T&gt; constraintType)</code><br>Finds a constraint by class</td>
                         </tr>
                         
@@ -273,7 +279,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="findConstraintFactories(Class<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.List&lt;<a href='../../../../../../../org/grails/datastore/gorm/validation/constraints/factory/ConstraintFactory.html' title='ConstraintFactory'>ConstraintFactory</a>&lt;T&gt;&gt; <strong>findConstraintFactories</strong>(java.lang.Class&lt;T&gt; constraintType)</h4>
+                                <h4>&lt;T extends Constraint&gt; java.util.List&lt;<a href='../../../../../../../org/grails/datastore/gorm/validation/constraints/factory/ConstraintFactory.html' title='ConstraintFactory'>ConstraintFactory</a>&lt;T&gt;&gt; <strong>findConstraintFactories</strong>(java.lang.Class&lt;T&gt; constraintType)</h4>
                                 <p> Finds a constraint by class
      <DL><DT><B>Returns:</B></DT><DD>The constraint</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The short name of the constraint</DD></DL></p>
                             </li>

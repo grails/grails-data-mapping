@@ -135,27 +135,32 @@ if (location.href.indexOf('is-external=true') == -1) {
                     <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Methods Summary table">
                         <caption><span>Methods</span><span class="tabEnd">&nbsp;</span></caption>
                         <tr>
-                            <th class="colFirst" scope="col">Type</th>
+                            <th class="colFirst" scope="col">Type Params</th>
+                            <th class="colLast" scope="col">Return Type</th>
                             <th class="colLast" scope="col">Name and description</th>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>static&nbsp;java.util.Observable&lt;T&gt;</strong></code></td>
+                            <td class="colFirst"><code>&lt;T&gt;</code></td>
+                            <td class="colLast"><code>static&nbsp;java.util.Observable&lt;T&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#create(Callable<T>)">create</a></strong>(java.util.concurrent.Callable&lt;T&gt; callable)</code><br>Create an observable from the given callable</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>static&nbsp;java.util.Observable&lt;T&gt;</strong></code></td>
+                            <td class="colFirst"><code>&lt;T&gt;</code></td>
+                            <td class="colLast"><code>static&nbsp;java.util.Observable&lt;T&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#create(rx.Scheduler, Callable<T>)">create</a></strong>(rx.Scheduler scheduler, java.util.concurrent.Callable&lt;T&gt; callable)</code><br>Create an observable from the given callable on the given Scheduler</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>static&nbsp;rx.Single&lt;T&gt;</strong></code></td>
+                            <td class="colFirst"><code>&lt;T&gt;</code></td>
+                            <td class="colLast"><code>static&nbsp;rx.Single&lt;T&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#createSingle(Callable<T>)">createSingle</a></strong>(java.util.concurrent.Callable&lt;T&gt; callable)</code><br>Create an observable from the given callable</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>static&nbsp;rx.Single&lt;T&gt;</strong></code></td>
+                            <td class="colFirst"><code>&lt;T&gt;</code></td>
+                            <td class="colLast"><code>static&nbsp;rx.Single&lt;T&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#createSingle(rx.Scheduler, Callable<T>)">createSingle</a></strong>(rx.Scheduler scheduler, java.util.concurrent.Callable&lt;T&gt; callable)</code><br>Create an observable from the given callable on the given scheduler</td>
                         </tr>
                         
@@ -174,7 +179,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>class java.lang.Object</strong></code></td>
+                            <td class="colFirst"><code>class java.lang.Object</code></td>
                             <td class="colLast"><code>java.lang.Object#wait(long, int), java.lang.Object#wait(long), java.lang.Object#wait(), java.lang.Object#equals(java.lang.Object), java.lang.Object#toString(), java.lang.Object#hashCode(), java.lang.Object#getClass(), java.lang.Object#notify(), java.lang.Object#notifyAll()</code></td>
                         </tr>
                     </table>
@@ -212,7 +217,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="create(Callable<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.util.Observable&lt;T&gt; <strong>create</strong>(java.util.concurrent.Callable&lt;T&gt; callable)</h4>
+                                <h4>&lt;T&gt; static&nbsp;java.util.Observable&lt;T&gt; <strong>create</strong>(java.util.concurrent.Callable&lt;T&gt; callable)</h4>
                                 <p> Create an observable from the given callable
      <DL><DT><B>Returns:</B></DT><DD>The java.util.Observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL></p>
                             </li>
@@ -221,7 +226,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="create(rx.Scheduler, Callable<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.util.Observable&lt;T&gt; <strong>create</strong>(rx.Scheduler scheduler, java.util.concurrent.Callable&lt;T&gt; callable)</h4>
+                                <h4>&lt;T&gt; static&nbsp;java.util.Observable&lt;T&gt; <strong>create</strong>(rx.Scheduler scheduler, java.util.concurrent.Callable&lt;T&gt; callable)</h4>
                                 <p> Create an observable from the given callable on the given Scheduler
      <DL><DT><B>Returns:</B></DT><DD>The java.util.Observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL></p>
                             </li>
@@ -230,7 +235,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="createSingle(Callable<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;rx.Single&lt;T&gt; <strong>createSingle</strong>(java.util.concurrent.Callable&lt;T&gt; callable)</h4>
+                                <h4>&lt;T&gt; static&nbsp;rx.Single&lt;T&gt; <strong>createSingle</strong>(java.util.concurrent.Callable&lt;T&gt; callable)</h4>
                                 <p> Create an observable from the given callable
      <DL><DT><B>Returns:</B></DT><DD>The java.util.Observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL></p>
                             </li>
@@ -239,7 +244,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="createSingle(rx.Scheduler, Callable<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;rx.Single&lt;T&gt; <strong>createSingle</strong>(rx.Scheduler scheduler, java.util.concurrent.Callable&lt;T&gt; callable)</h4>
+                                <h4>&lt;T&gt; static&nbsp;rx.Single&lt;T&gt; <strong>createSingle</strong>(rx.Scheduler scheduler, java.util.concurrent.Callable&lt;T&gt; callable)</h4>
                                 <p> Create an observable from the given callable on the given scheduler
      <DL><DT><B>Returns:</B></DT><DD>The java.util.Observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL></p>
                             </li>
