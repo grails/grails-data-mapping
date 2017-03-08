@@ -955,7 +955,15 @@ dependencies {
 </div>
 </div>
 <div class="paragraph">
-<p>If you are using a version of Grails 3 earlier than 3.3 then you may need to enforce the GORM version by adding the following block directly above the <code>dependencies</code> block:</p>
+<p>If you are using a version of Grails 3 earlier than 3.3 then you may need to enforce the GORM version. If you are using Grails 3.2.7 or above this can be done by modifying the <code>gormVersion</code> setting in <code>gradle.properties</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=6.1.0.BUILD-SNAPSHOT</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Otherwise if you are using an earlier version of Grails you can force the GORM version by adding the following block directly above the <code>dependencies</code> block:</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
