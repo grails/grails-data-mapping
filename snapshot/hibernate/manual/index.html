@@ -527,9 +527,10 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 <li><a href="#gettingStarted">2. Getting Started</a>
 <ul class="sectlevel2">
-<li><a href="#hibernateVersions">2.1. Configuring Different Hibernate Versions</a></li>
-<li><a href="#springBoot">2.2. Using GORM in Spring Boot</a></li>
-<li><a href="#outsideGrails">2.3. Using GORM for Hibernate Outside Grails</a></li>
+<li><a href="#_common_problems">2.1. Common Problems</a></li>
+<li><a href="#hibernateVersions">2.2. Configuring Different Hibernate Versions</a></li>
+<li><a href="#springBoot">2.3. Using GORM in Spring Boot</a></li>
+<li><a href="#outsideGrails">2.4. Using GORM for Hibernate Outside Grails</a></li>
 </ul>
 </li>
 <li><a href="#quickStartGuide">3. Quick Start Guide</a>
@@ -652,9 +653,6 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 <li>
 <p><a href="http://gorm.grails.org/latest/neo4j/manual">GORM for Neo4j</a></p>
-</li>
-<li>
-<p><a href="http://gorm.grails.org/latest/redis/manual">GORM for Redis</a></p>
 </li>
 <li>
 <p><a href="http://gorm.grails.org/latest/cassandra/manual">GORM for Cassandra</a></p>
@@ -975,7 +973,15 @@ grails.gorm.default.mapping = {
 </div>
 </div>
 <div class="paragraph">
-<p>If you are using a version of Grails 3 earlier than 3.3 then you may need to enforce the GORM version by adding the following block directly above the <code>dependencies</code> block:</p>
+<p>If you are using a version of Grails 3 earlier than 3.3 then you may need to enforce the GORM version. If you are using Grails 3.2.7 or above this can be done by modifying the <code>gormVersion</code> setting in <code>gradle.properties</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=6.1.0.BUILD-SNAPSHOT</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Otherwise if you are using an earlier version of Grails you can force the GORM version by adding the following block directly above the <code>dependencies</code> block:</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
@@ -994,12 +1000,26 @@ dependencies {
 </div>
 </div>
 <div class="sect2">
-<h3 id="hibernateVersions">2.1. Configuring Different Hibernate Versions</h3>
+<h3 id="_common_problems">2.1. Common Problems</h3>
+<div class="paragraph">
+<p>If you receive an error that indicates a failure to resolve the <code>grails-datastore-simple</code> dependency you may need to add the following to <code>build.gradle</code> directly above the <code>dependencies</code> block:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">configurations.all {
+    exclude <span class="key">module</span>:<span class="string"><span class="delimiter">'</span><span class="content">grails-datastore-simple</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="hibernateVersions">2.2. Configuring Different Hibernate Versions</h3>
 <div class="paragraph">
 <p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.1.0.BUILD-SNAPSHOT.</p>
 </div>
 <div class="sect3">
-<h4 id="_grails_3_2_x_and_above_with_hibernate_4">2.1.1. Grails 3.2.x and above with Hibernate 4</h4>
+<h4 id="_grails_3_2_x_and_above_with_hibernate_4">2.2.1. Grails 3.2.x and above with Hibernate 4</h4>
 <div class="paragraph">
 <p>Grails 3.2.x is based on Spring Boot 1.4.x which enforces Hibernate 5.0.x as the default version. If you want to continue to use Hibernate 4 you must explicitly declare the Hibernate 4 dependences in <code>build.gradle</code>.</p>
 </div>
@@ -1015,7 +1035,7 @@ dependencies {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_grails_3_1_x_and_below_with_hibernate_5">2.1.2. Grails 3.1.x and below with Hibernate 5</h4>
+<h4 id="_grails_3_1_x_and_below_with_hibernate_5">2.2.2. Grails 3.1.x and below with Hibernate 5</h4>
 <div class="paragraph">
 <p>Grails 3.1.x and below are based on Spring Boot 1.3.x which enforces Hibernate 4 as the default version of Hibernate, hence you have to use explicit versions to depend on Hibernate 5:</p>
 </div>
@@ -1031,7 +1051,7 @@ dependencies {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_grails_3_0_x_spring_version_conflicts">2.1.3. Grails 3.0.x Spring Version Conflicts</h4>
+<h4 id="_grails_3_0_x_spring_version_conflicts">2.2.3. Grails 3.0.x Spring Version Conflicts</h4>
 <div class="paragraph">
 <p>Grails 3.0.x enforces Spring 4.1.x as the Spring version, so if you want to use Hibernate 5 you must force an upgrade to Spring 4.2.x in <code>build.gradle</code>:</p>
 </div>
@@ -1056,7 +1076,7 @@ configurations.all {
 </div>
 </div>
 <div class="sect2">
-<h3 id="springBoot">2.2. Using GORM in Spring Boot</h3>
+<h3 id="springBoot">2.3. Using GORM in Spring Boot</h3>
 <div class="paragraph">
 <p>To use GORM for Hibernate in Spring Boot add the necessary dependencies to your Boot application:</p>
 </div>
@@ -1189,7 +1209,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 </div>
 <div class="sect2">
-<h3 id="outsideGrails">2.3. Using GORM for Hibernate Outside Grails</h3>
+<h3 id="outsideGrails">2.4. Using GORM for Hibernate Outside Grails</h3>
 <div class="paragraph">
 <p>If you wish to use GORM for Hibernate outside of a Grails application you should declare the necessary dependencies for GORM and the database you are using, for example in Gradle:</p>
 </div>
