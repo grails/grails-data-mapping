@@ -18,6 +18,8 @@ package org.grails.datastore.mapping.proxy;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.reflect.FieldEntityAccess;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cglib.reflect.FastClass;
 import org.springframework.cglib.reflect.FastMethod;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -35,6 +37,7 @@ import java.lang.reflect.Modifier;
 * @author Graeme Rocher
 */
 public class SessionEntityProxyMethodHandler extends EntityProxyMethodHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(SessionEntityProxyMethodHandler.class);
     private final Session session;
     private final Class cls;
     private final Serializable id;
@@ -66,6 +69,9 @@ public class SessionEntityProxyMethodHandler extends EntityProxyMethodHandler {
     }
 
     protected void initializeTarget() {
+        if(LOG.isDebugEnabled()) {
+            LOG.debug("Lazy loading proxy for class {} with id {}", cls.getName(), id);
+        }
         target = session.retrieve(cls, id);
     }
 

@@ -224,8 +224,13 @@ public class FieldEntityAccess implements EntityAccess {
         }
 
         protected String getTraitFieldName(Traits.TraitBridge traitBridge, String fieldName) {
-            return traitBridge.traitClass().getName().replace('.','_') + "__" + fieldName;
+            Class traitClass = traitBridge.traitClass();
+            return getTraitFieldName(traitClass, fieldName);
         }
+        private String getTraitFieldName(Class traitClass, String fieldName) {
+            return traitClass.getName().replace('.','_') + "__" + fieldName;
+        }
+
 
         @Override
         public PersistentEntity getPersitentEntity() {
@@ -477,8 +482,22 @@ public class FieldEntityAccess implements EntityAccess {
                     Method readMethod = descriptor.getReadMethod();
 
                     Traits.TraitBridge traitBridge = readMethod.getAnnotation(Traits.TraitBridge.class);
+                    String traitFieldName;
                     if(traitBridge != null) {
-                        String traitFieldName = getTraitFieldName(traitBridge, propertyName);
+                        traitFieldName = getTraitFieldName(traitBridge, propertyName);
+                    }
+                    else {
+                        Traits.Implemented traitImplemented = readMethod.getAnnotation(Traits.Implemented.class);
+                        if(traitImplemented != null) {
+                            traitFieldName = getTraitFieldName(readMethod.getDeclaringClass(), propertyName);
+                        }
+                        else {
+                            traitFieldName = null;
+                        }
+
+                    }
+                    if(traitFieldName != null) {
+
                         field = ReflectionUtils.findField(javaClass, traitFieldName);
                         if(field != null) {
                             ReflectionUtils.makeAccessible(field);
@@ -510,6 +529,7 @@ public class FieldEntityAccess implements EntityAccess {
             }
         }
     }
+
 
     protected static Object unwrapIfProxy(Object object) {
         if(object instanceof EntityProxy) {
