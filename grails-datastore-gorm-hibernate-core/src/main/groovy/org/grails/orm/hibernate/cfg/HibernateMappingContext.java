@@ -140,7 +140,7 @@ public class HibernateMappingContext extends AbstractMappingContext {
 
     @Override
     protected PersistentEntity createPersistentEntity(Class javaClass) {
-        if(GormEntity.class.isAssignableFrom(javaClass) || doIsDomainClassCheck(javaClass)) {
+        if(GormEntity.class.isAssignableFrom(javaClass)) {
             return new HibernatePersistentEntity(javaClass, this);
         }
         return null;
@@ -156,6 +156,10 @@ public class HibernateMappingContext extends AbstractMappingContext {
     }
 
     private static boolean doIsDomainClassCheck(Class<?> clazz) {
+        if(GormEntity.class.isAssignableFrom(clazz)) {
+            return true;
+        }
+
         // it's not a closure
         if (Closure.class.isAssignableFrom(clazz)) {
             return false;
