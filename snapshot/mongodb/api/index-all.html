@@ -653,6 +653,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/Restrictions.html#between(java.lang.String, java.lang.Object, java.lang.Object)" title="Method in Restrictions">between(String, Object, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/query/Restrictions.html">Restrictions</a>
 </dt><dd> <div class="block">Restricts the results by the given property value range</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/bson/codecs/BigDecimalCodec.html" title="Class in org.grails.datastore.bson.codecs">BigDecimalCodec</a></span> - Class in <a href="./org/grails/datastore/bson/codecs/package-summary.html">org.grails.datastore.bson.codecs</a>
+</dt><dd><div class="block">A codec for BigDecimal</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/bson/codecs/BigIntegerCodec.html" title="Class in org.grails.datastore.bson.codecs">BigIntegerCodec</a></span> - Class in <a href="./org/grails/datastore/bson/codecs/package-summary.html">org.grails.datastore.bson.codecs</a>
+</dt><dd><div class="block">A codec for BigDecimal</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractSaveImplementer.html#bindParametersAndSave(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.stmt.BlockStatement, org.codehaus.groovy.ast.expr.VariableExpression)" title="Method in AbstractSaveImplementer">bindParametersAndSave(ClassNode, MethodNode, Parameter, BlockStatement, VariableExpression)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/AbstractSaveImplementer.html">AbstractSaveImplementer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/mongodb/geo/Box.html" title="Class in grails.mongodb.geo">Box</a></span> - Class in <a href="./grails/mongodb/geo/package-summary.html">grails.mongodb.geo</a>
@@ -1578,6 +1582,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Decodes the given entity type from the given native object type</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/bson/codecs/decoders/BasicCollectionTypeDecoder.html#decode(org.bson.BsonReader, org.grails.datastore.mapping.model.types.Basic, org.grails.datastore.mapping.engine.EntityAccess, org.bson.codecs.DecoderContext, org.bson.codecs.configuration.CodecRegistry)" title="Method in BasicCollectionTypeDecoder">decode(BsonReader, Basic, EntityAccess, DecoderContext, CodecRegistry)</a></span> - Method in <a href="org/grails/datastore/bson/codecs/decoders/BasicCollectionTypeDecoder.html">BasicCollectionTypeDecoder</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/bson/codecs/BigDecimalCodec.html#decode(org.bson.BsonReader, org.bson.codecs.DecoderContext)" title="Method in BigDecimalCodec">decode(BsonReader, DecoderContext)</a></span> - Method in <a href="org/grails/datastore/bson/codecs/BigDecimalCodec.html">BigDecimalCodec</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/bson/codecs/BigIntegerCodec.html#decode(org.bson.BsonReader, org.bson.codecs.DecoderContext)" title="Method in BigIntegerCodec">decode(BsonReader, DecoderContext)</a></span> - Method in <a href="org/grails/datastore/bson/codecs/BigIntegerCodec.html">BigIntegerCodec</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/bson/codecs/BsonPersistentEntityCodec.html#decode(org.bson.BsonReader, org.bson.codecs.DecoderContext)" title="Method in BsonPersistentEntityCodec">decode(BsonReader, DecoderContext)</a></span> - Method in <a href="org/grails/datastore/bson/codecs/BsonPersistentEntityCodec.html">BsonPersistentEntityCodec</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/bson/codecs/CodecExtensions.CurrencyCodec.html#decode(org.bson.BsonReader, org.bson.codecs.DecoderContext)" title="Method in CodecExtensions.CurrencyCodec">decode(BsonReader, DecoderContext)</a></span> - Method in <a href="org/grails/datastore/bson/codecs/CodecExtensions.CurrencyCodec.html">CodecExtensions.CurrencyCodec</a>
@@ -2203,6 +2211,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/bson/codecs/encoders/SimpleEncoder.html#enableBigDecimalEncoding()" title="Method in SimpleEncoder">enableBigDecimalEncoding()</a></span> - Method in <a href="org/grails/datastore/bson/codecs/encoders/SimpleEncoder.html">SimpleEncoder</a>
 </dt><dd> <div class="block">Enables Decimal128 encoding for simple types</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/bson/codecs/encoders/BasicCollectionTypeEncoder.html#encode(org.bson.BsonWriter, org.grails.datastore.mapping.model.types.Basic, java.lang.Object, org.grails.datastore.mapping.engine.EntityAccess, org.bson.codecs.EncoderContext, org.bson.codecs.configuration.CodecRegistry)" title="Method in BasicCollectionTypeEncoder">encode(BsonWriter, Basic, Object, EntityAccess, EncoderContext, CodecRegistry)</a></span> - Method in <a href="org/grails/datastore/bson/codecs/encoders/BasicCollectionTypeEncoder.html">BasicCollectionTypeEncoder</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/bson/codecs/BigDecimalCodec.html#encode(org.bson.BsonWriter, BigDecimal, org.bson.codecs.EncoderContext)" title="Method in BigDecimalCodec">encode(BsonWriter, BigDecimal, EncoderContext)</a></span> - Method in <a href="org/grails/datastore/bson/codecs/BigDecimalCodec.html">BigDecimalCodec</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/bson/codecs/BigIntegerCodec.html#encode(org.bson.BsonWriter, BigInteger, org.bson.codecs.EncoderContext)" title="Method in BigIntegerCodec">encode(BsonWriter, BigInteger, EncoderContext)</a></span> - Method in <a href="org/grails/datastore/bson/codecs/BigIntegerCodec.html">BigIntegerCodec</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/bson/codecs/BsonPersistentEntityCodec.html#encode(org.bson.BsonWriter, java.lang.Object, org.bson.codecs.EncoderContext, boolean)" title="Method in BsonPersistentEntityCodec">encode(BsonWriter, Object, EncoderContext, boolean)</a></span> - Method in <a href="org/grails/datastore/bson/codecs/BsonPersistentEntityCodec.html">BsonPersistentEntityCodec</a>
 </dt><dd> <div class="block"></div></dd>
@@ -3197,6 +3209,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#getEmbedded(T, java.lang.String)" title="Method in NativeEntryEntityPersister">getEmbedded(T, String)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block">Implementors should override to provide support for embedded objects.</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/bson/codecs/BigDecimalCodec.html#getEncoderClass()" title="Method in BigDecimalCodec">getEncoderClass()</a></span> - Method in <a href="org/grails/datastore/bson/codecs/BigDecimalCodec.html">BigDecimalCodec</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/bson/codecs/BigIntegerCodec.html#getEncoderClass()" title="Method in BigIntegerCodec">getEncoderClass()</a></span> - Method in <a href="org/grails/datastore/bson/codecs/BigIntegerCodec.html">BigIntegerCodec</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/bson/codecs/BsonPersistentEntityCodec.html#getEncoderClass()" title="Method in BsonPersistentEntityCodec">getEncoderClass()</a></span> - Method in <a href="org/grails/datastore/bson/codecs/BsonPersistentEntityCodec.html">BsonPersistentEntityCodec</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/bson/codecs/CodecExtensions.CurrencyCodec.html#getEncoderClass()" title="Method in CodecExtensions.CurrencyCodec">getEncoderClass()</a></span> - Method in <a href="org/grails/datastore/bson/codecs/CodecExtensions.CurrencyCodec.html">CodecExtensions.CurrencyCodec</a>
