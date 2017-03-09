@@ -31,8 +31,8 @@ project.ext {
     projectPatchVersion = "0"
 //     releaseType = "RELEASE"
 //    releaseType = "M2"
-    releaseType = "RC1"
-     // releaseType = "BUILD-SNAPSHOT"
+    // releaseType = "RC1"
+     releaseType = "BUILD-SNAPSHOT"
 
     // overall project version
     projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
