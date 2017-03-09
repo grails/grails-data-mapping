@@ -171,6 +171,7 @@ class ServiceImplSpec extends Specification {
         Product p = productService.saveProduct("Apple", "Fruit")
 
         then:
+        datastore.getService(AnotherProductService) != null
         p.id != null
         productService.get(p.id) != null
 

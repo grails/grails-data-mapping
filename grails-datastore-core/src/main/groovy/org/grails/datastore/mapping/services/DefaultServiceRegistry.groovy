@@ -10,6 +10,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.util.ClassUtils
 
 import java.beans.Introspector
+import java.lang.reflect.Modifier
 
 /**
  * The default {@link ServiceRegistry} implementation
@@ -38,8 +39,17 @@ class DefaultServiceRegistry implements ServiceRegistry {
                 Service service = serviceIterator.next()
                 service.datastore = datastore
                 this.services.add(service)
-                def allInterfaces = ClassUtils.getAllInterfaces(service)
-                serviceMap.put(service.getClass(), service)
+                Class[] allInterfaces = ClassUtils.getAllInterfaces(service)
+                Class theClass = service.getClass()
+                serviceMap.put(theClass, service)
+                if( theClass.simpleName.startsWith('$') ) {
+                    // handle automatically implemented abstract service implementations
+                    Class superClass = theClass.getSuperclass()
+                    if(superClass != null && superClass != Object.class && Modifier.isAbstract(superClass.modifiers)) {
+                        serviceMap.put(superClass, service)
+                    }
+
+                }
                 for(Class i in allInterfaces) {
                     if(isValidInterface(i)) {
                         serviceMap.put(i, service)
