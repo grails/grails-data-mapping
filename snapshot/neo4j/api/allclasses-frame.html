@@ -128,6 +128,8 @@
 <li><a href="org/grails/datastore/mapping/model/types/Custom.html" title="class in org.grails.datastore.mapping.model.types" target="classFrame">Custom</a></li>
 <li><a href="org/grails/datastore/mapping/engine/types/CustomTypeMarshaller.html" title="interface in org.grails.datastore.mapping.engine.types" target="classFrame"><I>CustomTypeMarshaller</I></a></li>
 <li><a href="org/grails/datastore/mapping/transactions/CustomizableRollbackTransactionAttribute.html" title="class in org.grails.datastore.mapping.transactions" target="classFrame">CustomizableRollbackTransactionAttribute</a></li>
+<li><a href="grails/neo4j/services/Cypher.html" title="annotation type in grails.neo4j.services" target="classFrame">Cypher</a></li>
+<li><a href="org/grails/datastore/gorm/neo4j/services/transform/CypherQueryStringTransformer.html" title="class in org.grails.datastore.gorm.neo4j.services.transform" target="classFrame">CypherQueryStringTransformer</a></li>
 <li><a href="org/grails/datastore/gorm/jdbc/connections/DataSourceConnectionSource.html" title="class in org.grails.datastore.gorm.jdbc.connections" target="classFrame">DataSourceConnectionSource</a></li>
 <li><a href="org/grails/datastore/gorm/jdbc/connections/DataSourceSettings.html" title="class in org.grails.datastore.gorm.jdbc.connections" target="classFrame">DataSourceSettings</a></li>
 <li><a href="org/grails/datastore/gorm/jdbc/connections/DataSourceSettingsBuilder.html" title="class in org.grails.datastore.gorm.jdbc.connections" target="classFrame">DataSourceSettingsBuilder</a></li>
@@ -204,6 +206,7 @@
 <li><a href="org/grails/datastore/mapping/reflect/FieldEntityAccess.html" title="class in org.grails.datastore.mapping.reflect" target="classFrame">FieldEntityAccess</a></li>
 <li><a href="org/grails/datastore/gorm/finders/FindAllByBooleanFinder.html" title="class in org.grails.datastore.gorm.finders" target="classFrame">FindAllByBooleanFinder</a></li>
 <li><a href="org/grails/datastore/gorm/finders/FindAllByFinder.html" title="class in org.grails.datastore.gorm.finders" target="classFrame">FindAllByFinder</a></li>
+<li><a href="org/grails/datastore/gorm/neo4j/services/implementers/FindAllCypherQueryImplementer.html" title="class in org.grails.datastore.gorm.neo4j.services.implementers" target="classFrame">FindAllCypherQueryImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindAllImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindAllImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindAllStringQueryImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindAllStringQueryImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindAllWhereImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindAllWhereImplementer</a></li>
@@ -213,6 +216,7 @@
 <li><a href="org/grails/datastore/gorm/services/implementers/FindByImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindByImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindOneByImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindOneByImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindOneByInterfaceProjectionImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindOneByInterfaceProjectionImplementer</a></li>
+<li><a href="org/grails/datastore/gorm/neo4j/services/implementers/FindOneCypherQueryImplementer.html" title="class in org.grails.datastore.gorm.neo4j.services.implementers" target="classFrame">FindOneCypherQueryImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindOneImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindOneImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindOneInterfaceProjectionImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindOneInterfaceProjectionImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindOneInterfaceProjectionStringQueryImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindOneInterfaceProjectionStringQueryImplementer</a></li>
@@ -335,6 +339,7 @@
 <li><a href="grails/neo4j/Neo4jEntity.html" title="trait in grails.neo4j" target="classFrame"><I>Neo4jEntity</I></a></li>
 <li><a href="org/grails/datastore/gorm/neo4j/Neo4jEntityTraitProvider.html" title="class in org.grails.datastore.gorm.neo4j" target="classFrame">Neo4jEntityTraitProvider</a></li>
 <li><a href="org/grails/datastore/gorm/neo4j/extensions/Neo4jExtensions.html" title="class in org.grails.datastore.gorm.neo4j.extensions" target="classFrame">Neo4jExtensions</a></li>
+<li><a href="org/grails/datastore/gorm/neo4j/api/Neo4jGormStaticApi.html" title="class in org.grails.datastore.gorm.neo4j.api" target="classFrame">Neo4jGormStaticApi</a></li>
 <li><a href="org/grails/datastore/gorm/neo4j/Neo4jGrailsPlugin.html" title="class in org.grails.datastore.gorm.neo4j" target="classFrame">Neo4jGrailsPlugin</a></li>
 <li><a href="org/grails/datastore/gorm/neo4j/collection/Neo4jList.html" title="class in org.grails.datastore.gorm.neo4j.collection" target="classFrame">Neo4jList</a></li>
 <li><a href="org/grails/datastore/gorm/neo4j/Neo4jMappingContext.html" title="class in org.grails.datastore.gorm.neo4j" target="classFrame">Neo4jMappingContext</a></li>
@@ -461,6 +466,7 @@
 <li><a href="org/grails/datastore/gorm/jdbc/connections/SpringDataSourceConnectionSourceFactory.html" title="class in org.grails.datastore.gorm.jdbc.connections" target="classFrame">SpringDataSourceConnectionSourceFactory</a></li>
 <li><a href="org/grails/datastore/mapping/transactions/support/SpringSessionSynchronization.html" title="class in org.grails.datastore.mapping.transactions.support" target="classFrame">SpringSessionSynchronization</a></li>
 <li><a href="org/grails/datastore/mapping/core/StatelessDatastore.html" title="interface in org.grails.datastore.mapping.core" target="classFrame"><I>StatelessDatastore</I></a></li>
+<li><a href="org/grails/datastore/gorm/neo4j/services/implementers/StatementResultCypherQueryImplementer.html" title="class in org.grails.datastore.gorm.neo4j.services.implementers" target="classFrame">StatementResultCypherQueryImplementer</a></li>
 <li><a href="org/grails/datastore/mapping/core/connections/StaticConnectionSources.html" title="class in org.grails.datastore.mapping.core.connections" target="classFrame">StaticConnectionSources</a></li>
 <li><a href="org/grails/datastore/gorm/internal/StaticMethodInvokingClosure.html" title="class in org.grails.datastore.gorm.internal" target="classFrame">StaticMethodInvokingClosure</a></li>
 <li><a href="org/grails/datastore/mapping/model/types/conversion/StringToBigDecimalConverter.html" title="class in org.grails.datastore.mapping.model.types.conversion" target="classFrame">StringToBigDecimalConverter</a></li>
