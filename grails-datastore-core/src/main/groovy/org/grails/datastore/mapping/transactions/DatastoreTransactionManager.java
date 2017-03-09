@@ -158,13 +158,15 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
         final SessionHolder sessionHolder = txObject.getSessionHolder();
         try {
             Transaction<?> transaction = txObject.getTransaction();
-            if(transaction != null && transaction.isActive()) {
+            if(transaction != null && transaction.isActive() ) {
                 Session session = sessionHolder.getSession();
-                if (session != null) {
-                    if (status.isDebug()) {
-                        logger.debug("Flushing Session prior to transaction commit [" + session + "]");
+                if(!status.isReadOnly()) {
+                    if (session != null) {
+                        if (status.isDebug()) {
+                            logger.debug("Flushing Session prior to transaction commit [" + session + "]");
+                        }
+                        session.flush();
                     }
-                    session.flush();
                 }
                 if (status.isDebug()) {
                     logger.debug("Committing Datastore transaction on Session [" + session + "]");
