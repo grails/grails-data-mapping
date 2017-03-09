@@ -198,21 +198,36 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code>protected&nbsp;java.lang.String</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#formatDomainClassVariable(org.codehaus.groovy.ast.ClassNode, java.lang.String)">formatDomainClassVariable</a></strong>(org.codehaus.groovy.ast.ClassNode domainType, java.lang.String variableName)</code><br>Formats a domain class variable</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>protected&nbsp;java.lang.String</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#formatPropertyPath(List<String>, java.lang.String)">formatPropertyPath</a></strong>(java.util.List&lt;java.lang.String&gt; propertyPath, java.lang.String variableName)</code><br>Formats a declaration for the given property path</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>protected&nbsp;java.lang.String</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#formatPropertyReference(org.codehaus.groovy.ast.expr.VariableExpression, java.lang.String, java.lang.String)">formatPropertyReference</a></strong>(org.codehaus.groovy.ast.expr.VariableExpression declaringObject, java.lang.String propertyName, java.lang.String variableName)</code><br>Formats a reference to a property of a declared domain class</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>org.codehaus.groovy.ast.expr.Expression</strong></code></td>
                             <td class="colLast"><code><strong><a href="#transform(org.codehaus.groovy.ast.expr.Expression)">transform</a></strong>(org.codehaus.groovy.ast.expr.Expression exp)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>org.codehaus.groovy.ast.expr.Expression</strong></code></td>
                             <td class="colLast"><code><strong><a href="#transformDeclarationExpression(org.codehaus.groovy.ast.expr.DeclarationExpression)">transformDeclarationExpression</a></strong>(org.codehaus.groovy.ast.expr.DeclarationExpression dec)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>org.codehaus.groovy.ast.expr.Expression</strong></code></td>
                             <td class="colLast"><code><strong><a href="#transformPropertyExpressions(org.codehaus.groovy.ast.expr.Expression)">transformPropertyExpressions</a></strong>(org.codehaus.groovy.ast.expr.Expression exp)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>org.codehaus.groovy.ast.expr.GStringExpression</strong></code></td>
                             <td class="colLast"><code><strong><a href="#transformQuery(org.codehaus.groovy.ast.expr.GStringExpression)">transformQuery</a></strong>(org.codehaus.groovy.ast.expr.GStringExpression query)</code><br></td>
                         </tr>
@@ -328,6 +343,33 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>java.util.List&lt;java.lang.String&gt; <strong>calculatePropertyPath</strong>(org.codehaus.groovy.ast.expr.PropertyExpression p)</h4>
                                 <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="formatDomainClassVariable(org.codehaus.groovy.ast.ClassNode, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;java.lang.String <strong>formatDomainClassVariable</strong>(org.codehaus.groovy.ast.ClassNode domainType, java.lang.String variableName)</h4>
+                                <p> Formats a domain class variable
+     <DL><DT><B>Parameters:</B></DT><DD><code>domainType</code> -  The domain class type</DD><DD><code>variableName</code> -  The variable name</DD></DL><DL><DT><B>Returns:</B></DT><DD>The formatted declaration</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="formatPropertyPath(List<String>, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;java.lang.String <strong>formatPropertyPath</strong>(java.util.List&lt;java.lang.String&gt; propertyPath, java.lang.String variableName)</h4>
+                                <p> Formats a declaration for the given property path
+     <DL><DT><B>Parameters:</B></DT><DD><code>propertyPath</code> -  The path to the property as a list</DD><DD><code>variableName</code> -  The variable name</DD></DL><DL><DT><B>Returns:</B></DT><DD>The formatted declaration</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="formatPropertyReference(org.codehaus.groovy.ast.expr.VariableExpression, java.lang.String, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;java.lang.String <strong>formatPropertyReference</strong>(org.codehaus.groovy.ast.expr.VariableExpression declaringObject, java.lang.String propertyName, java.lang.String variableName)</h4>
+                                <p> Formats a reference to a property of a declared domain class
+     <DL><DT><B>Parameters:</B></DT><DD><code>declaringObject</code> -  The variable that references the declared domain class</DD><DD><code>propertyName</code> -  The property of the domain class</DD><DD><code>variableName</code> -  The variable name</DD></DL><DL><DT><B>Returns:</B></DT><DD>The formatted declaration</DD></DL></p>
                             </li>
                         </ul>
                     
