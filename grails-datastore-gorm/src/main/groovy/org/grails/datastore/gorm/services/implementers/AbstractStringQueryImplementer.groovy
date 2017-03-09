@@ -10,8 +10,11 @@ import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.GStringExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.Statement
+import org.codehaus.groovy.control.SourceUnit
 import org.grails.datastore.gorm.services.transform.QueryStringTransformer
 import org.grails.datastore.mapping.reflect.AstUtils
+
+import java.lang.annotation.Annotation
 
 import static org.codehaus.groovy.ast.tools.GeneralUtils.args
 import static org.codehaus.groovy.ast.tools.GeneralUtils.constX
@@ -31,7 +34,7 @@ abstract class AbstractStringQueryImplementer extends AbstractReadOperationImple
 
     @Override
     boolean doesImplement(ClassNode domainClass, MethodNode methodNode) {
-        if( AstUtils.findAnnotation(methodNode, Query) != null) {
+        if( AstUtils.findAnnotation(methodNode, getAnnotationType()) != null) {
             return isCompatibleReturnType(domainClass, methodNode, methodNode.returnType, methodNode.name)
         }
         return false
@@ -39,12 +42,13 @@ abstract class AbstractStringQueryImplementer extends AbstractReadOperationImple
 
     @Override
     void doImplement(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode) {
-        AnnotationNode annotationNode = AstUtils.findAnnotation(abstractMethodNode, Query)
+        AnnotationNode annotationNode = AstUtils.findAnnotation(abstractMethodNode, getAnnotationType())
         Expression expr = annotationNode.getMember("value")
         VariableScope scope = newMethodNode.variableScope
         if(expr instanceof GStringExpression) {
             GStringExpression gstring = (GStringExpression)expr
-            QueryStringTransformer transformer = new QueryStringTransformer(abstractMethodNode.declaringClass.module.context, scope)
+            SourceUnit sourceUnit = abstractMethodNode.declaringClass.module.context
+            QueryStringTransformer transformer = createQueryStringTransformer(sourceUnit, scope)
             Expression transformed = transformer.transformQuery(gstring)
             BlockStatement body = (BlockStatement)newMethodNode.code
             Expression argMap = findArgsExpression(newMethodNode)
@@ -56,6 +60,21 @@ abstract class AbstractStringQueryImplementer extends AbstractReadOperationImple
             )
             annotationNode.setMember("value", constX("IMPLEMENTED"))
         }
+    }
+
+    protected Class<? extends Annotation> getAnnotationType() {
+        Query
+    }
+
+    /**
+     * Creates the query string transformer
+     *
+     * @param sourceUnit The source unit
+     * @param scope the variable scope
+     * @return The transformer
+     */
+    protected QueryStringTransformer createQueryStringTransformer(SourceUnit sourceUnit, VariableScope scope) {
+        new QueryStringTransformer(sourceUnit, scope)
     }
 
     /**

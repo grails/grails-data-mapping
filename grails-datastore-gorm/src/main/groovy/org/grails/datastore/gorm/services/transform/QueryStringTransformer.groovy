@@ -138,7 +138,7 @@ class QueryStringTransformer extends ClassCodeExpressionTransformer {
             String variableName = declaredVar.name
             if(AstUtils.isDomainClass(variableType)) {
                 declaredQueryTargets.put(variableName, variableType)
-                return constX("${variableType.name} as $variableName".toString())
+                return constX(formatDomainClassVariable(variableType, variableName))
             }
         }
         else if(dec.leftExpression instanceof VariableExpression && dec.rightExpression instanceof PropertyExpression) {
@@ -158,7 +158,7 @@ class QueryStringTransformer extends ClassCodeExpressionTransformer {
                     }
                     else {
                         declaredQueryTargets.put(variableName, variableType)
-                        return constX("${ve.name}.${currentProperty} as $variableName".toString())
+                        return constX(formatPropertyReference(ve, currentProperty, variableName))
                     }
                 }
                 else if(obj instanceof PropertyExpression) {
@@ -174,7 +174,7 @@ class QueryStringTransformer extends ClassCodeExpressionTransformer {
                     }
                     if(currentType != null) {
                         declaredQueryTargets.put(variableName, currentType)
-                        return constX("${propertyPath.join('.')} as $variableName".toString())
+                        return constX(formatPropertyPath(propertyPath, variableName))
                     }
                     else {
                         AstUtils.error(sourceUnit, dec, "Invalid property path ${propertyPath.join('.')} in query")
@@ -183,6 +183,40 @@ class QueryStringTransformer extends ClassCodeExpressionTransformer {
             }
         }
         return dec
+    }
+
+    /**
+     * Formats a declaration for the given property path
+     *
+     * @param propertyPath The path to the property as a list
+     * @param variableName The variable name
+     * @return The formatted declaration
+     */
+    protected String formatPropertyPath(List<String> propertyPath, String variableName) {
+        "${propertyPath.join('.')} as $variableName".toString()
+    }
+
+    /**
+     * Formats a reference to a property of a declared domain class
+     *
+     * @param declaringObject The variable that references the declared domain class
+     * @param propertyName The property of the domain class
+     * @param variableName The variable name
+     * @return The formatted declaration
+     */
+    protected String formatPropertyReference(VariableExpression declaringObject, String propertyName, String variableName) {
+        "${declaringObject.name}.${propertyName} as $variableName".toString()
+    }
+
+    /**
+     * Formats a domain class variable
+     *
+     * @param domainType The domain class type
+     * @param variableName The variable name
+     * @return The formatted declaration
+     */
+    protected String formatDomainClassVariable(ClassNode domainType, String variableName) {
+        "${domainType.name} as $variableName".toString()
     }
 
     List<String> calculatePropertyPath(PropertyExpression p) {
