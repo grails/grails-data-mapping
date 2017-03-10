@@ -17,26 +17,25 @@ package org.grails.datastore.gorm.transform
 
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.*
-import org.codehaus.groovy.ast.expr.*
+import org.codehaus.groovy.ast.expr.ClassExpression
+import org.codehaus.groovy.ast.expr.Expression
+import org.codehaus.groovy.ast.expr.MethodCallExpression
+import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.Statement
-import org.codehaus.groovy.classgen.VariableScopeVisitor
-import org.codehaus.groovy.control.ErrorCollector
 import org.codehaus.groovy.control.SourceUnit
-import org.codehaus.groovy.transform.sc.StaticCompileTransformation
-import org.codehaus.groovy.transform.trait.Traits
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.internal.RuntimeSupport
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.connections.MultipleConnectionSourceCapableDatastore
+import org.grails.datastore.mapping.reflect.AstUtils
 import org.springframework.beans.factory.annotation.Autowired
 
-import javax.annotation.PostConstruct
-import javax.annotation.PreDestroy
 import java.lang.reflect.Modifier
 
 import static org.codehaus.groovy.ast.ClassHelper.*
-import static org.grails.datastore.gorm.transform.AstMethodDispatchUtils.*
+import static org.codehaus.groovy.ast.tools.GeneralUtils.*
+import static org.grails.datastore.gorm.transform.AstMethodDispatchUtils.callD
 import static org.grails.datastore.mapping.reflect.AstUtils.*
 
 /**
@@ -68,6 +67,7 @@ abstract class AbstractDatastoreMethodDecoratingTransformation extends AbstractM
 
         Expression connectionName = annotationNode.getMember("connection")
         boolean hasDataSourceProperty = connectionName != null
+        boolean isSpockTest = isSpockTest(declaringClassNode)
         ClassExpression gormEnhancerExpr = classX(GormEnhancer)
 
         Expression datastoreAttribute = annotationNode.getMember("datastore")
@@ -166,13 +166,16 @@ abstract class AbstractDatastoreMethodDecoratingTransformation extends AbstractM
 
 
                 Parameter[] getTargetDatastoreParams = params(connectionNameParam)
+
                 if(declaringClassNode.getMethod(METHOD_GET_TARGET_DATASTORE, getTargetDatastoreParams) == null) {
                     MethodNode mn = declaringClassNode.addMethod(METHOD_GET_TARGET_DATASTORE, Modifier.PROTECTED, datastoreType, getTargetDatastoreParams, null,
                             ifElseS(notNullX(datastoreFieldVar),
                                     returnS( callX( datastoreFieldVar, METHOD_GET_DATASTORE_FOR_CONNECTION, varX(connectionNameParam) ) ),
                                     returnS(datastoreLookupCall)
                             ))
-                    compileMethodStatically(source, mn)
+                    if(!isSpockTest) {
+                        compileMethodStatically(source, mn)
+                    }
                 }
                 if(declaringClassNode.getMethod(METHOD_GET_TARGET_DATASTORE, ZERO_PARAMETERS) == null) {
                     MethodNode mn = declaringClassNode.addMethod(METHOD_GET_TARGET_DATASTORE, Modifier.PROTECTED,  datastoreType, ZERO_PARAMETERS, null,
@@ -181,7 +184,10 @@ abstract class AbstractDatastoreMethodDecoratingTransformation extends AbstractM
                                     returnS(datastoreLookupDefaultCall))
                     )
 
-                    compileMethodStatically(source, mn)
+                    if(!isSpockTest) {
+                        compileMethodStatically(source, mn)
+                    }
+
                 }
             }
 

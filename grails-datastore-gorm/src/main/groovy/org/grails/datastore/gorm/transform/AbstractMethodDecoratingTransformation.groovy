@@ -181,7 +181,9 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
 
         methodNode.setCode(methodBody)
         processVariableScopes(sourceUnit, classNode, methodNode)
-        compileMethodStatically(sourceUnit, methodNode)
+        if(!isSpockTest(classNode)) {
+            compileMethodStatically(sourceUnit, methodNode)
+        }
         return renamedMethod
     }
 
