@@ -423,31 +423,21 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>GORM by default uses a custom identity generator based on the Snowflake algorithm and stores the generated identifier in a property of each Neo4j node called <code>__id__</code>.</p>
+<p>GORM by default uses a native Neo4j node identifiers for each <code>id</code> property of a domain class.
+These have a couple of disadvantages that should encourage you to use an alternative id generation strategy:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Neo4j node ids are more like internal identifiers used by Neo4j to identify nodes (equivalent to the <code>rowid</code> in a SQL database), but can be potentially re-used if data is deleted and recreated. This makes them not appropriate for use as a public facing key.</p>
+</li>
+<li>
+<p>In order to obtain a Node id GORM must perform an insert (similar to the way GORM for Hibernate has to perform a SQL INSERT if the id generation strategy is an auto-increment column), which means it cannot efficiently batch up Cypher <code>CREATE</code> statements.</p>
+</li>
+</ol>
 </div>
 <div class="paragraph">
-<p>This has the advantage of enabling GORM to batch insert operations into a single CREATE cypher statement, hence why it is the default.</p>
-</div>
-<div class="paragraph">
-<p>However, if you prefer to use native Neo4j node identifiers then you can do so by changing the generator used in the mapping:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Club {
-
-    ...
-    static mapping = {
-        id generator:'native'
-    }
-
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This will instead use the Neo4j node identifier as the object identifier with the downside being that GORM has to execute individual CREATE  statements for each new object saved, similar to the way GORM for Hibernate has to perform a SQL INSERT if the id generation strategy is an auto-increment column.</p>
-</div>
-<div class="paragraph">
-<p>This disadvantage can be worked around by using the <code>saveAll</code> method to save multiple domain classes at once:</p>
+<p>This last disadvantage can be worked around by using the <code>saveAll</code> method to save multiple domain classes at once:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -458,12 +448,49 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="paragraph">
+<p>However, it is generally better to consider a different id generation strategy. The recommended approach is to use <code>assigned</code> identifiers that relate to your domain. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import static grails.neo4j.mapping.MappingBuilder.*
+class Club {
+    String name
+    ...
+    static mapping = node {
+        id {
+            generator "assigned"
+            name "name"
+        }
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Another option is a custom identity generator based on the Snowflake algorithm and stores the generated identifier in a property of each Neo4j node called <code>__id__</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import static grails.neo4j.mapping.MappingBuilder.*
+class Club {
+    String name
+    ...
+    static mapping = node {
+        id {
+            generator "snowflake"
+        }
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
 <p>If you wish to globally change id generation then you can do so in <code>grails-app/conf/application.groovy</code> (<code>Config.groovy</code> in Grails 2.x):</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">grails.neo4j.default.mapping = {
-    id generator:'native'
+    id generator:'assigned'
 }</code></pre>
 </div>
 </div>
