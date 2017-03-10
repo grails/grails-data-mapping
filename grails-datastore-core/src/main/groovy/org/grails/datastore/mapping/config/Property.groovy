@@ -174,6 +174,14 @@ class Property implements Cloneable {
     }
 
     /**
+     * @return The name of the property this property mapping relates to
+     */
+    Property name(String propertyName) {
+        setName(propertyName)
+        return this
+    }
+
+    /**
      * Makes it easier to configure the fetch strategy
      *
      * @param name The name of the fetch strategy
