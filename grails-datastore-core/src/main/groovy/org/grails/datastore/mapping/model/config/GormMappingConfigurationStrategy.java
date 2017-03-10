@@ -650,8 +650,18 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                     PropertyDescriptor first = descriptors.get(0);
                     // ensure circular links are not possible between one-to-one associations
                     if(!first.equals(property)) {
-                        relatedClassPropertyType = first.getPropertyType();
-                        relatedClassPropertyName = first.getName();
+                        String otherSidePropertyName = first.getName();
+                        if(mappedBy.containsKey(otherSidePropertyName)) {
+                            Object mapping = mappedBy.get(otherSidePropertyName);
+                            if(mapping != null && mapping.equals(property.getName())) {
+                                relatedClassPropertyType = first.getPropertyType();
+                                relatedClassPropertyName = otherSidePropertyName;
+                            }
+                        }
+                        else {
+                            relatedClassPropertyType = first.getPropertyType();
+                            relatedClassPropertyName = otherSidePropertyName;
+                        }
                     }
                 }
             }
