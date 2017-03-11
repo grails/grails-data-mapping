@@ -172,36 +172,30 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>protected&nbsp;java.lang.String</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#identifierProperty">identifierProperty</a></code></td>
-                            <td class="colLast"></code></td>
-                        </tr>
-                        
-                        <tr class="altColor">
                             <td class="colFirst"><code><strong>protected&nbsp;java.util.Collection&lt;java.lang.Object&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#labelObjects">labelObjects</a></code></td>
                             <td class="colLast"></code></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>protected&nbsp;<a href='../../../../../org/grails/datastore/gorm/neo4j/mapping/config/NodeConfig.html'>NodeConfig</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#mappedForm">mappedForm</a></code></td>
                             <td class="colLast"></code></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>protected&nbsp;boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#nativeId">nativeId</a></code></td>
                             <td class="colLast"></code></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>protected&nbsp;boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#relationshipEntity">relationshipEntity</a></code></td>
                             <td class="colLast"></code></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>protected&nbsp;java.util.Collection&lt;java.lang.String&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#staticLabels">staticLabels</a></code></td>
                             <td class="colLast"></code></td>
@@ -338,27 +332,37 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#hasDynamicAssociations()">hasDynamicAssociations</a></strong>()</code><br></td>
+                            <td class="colLast"><code><strong><a href="#hasDynamicAssociations()">hasDynamicAssociations</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>Whether there are dynamic associations.</DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code>boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#hasDynamicLabels()">hasDynamicLabels</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>Whether there are dynamic labels.</DD></DL></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#initialize()">initialize</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isAssignedId()">isAssignedId</a></strong>()</code><br>@return Whether the ID is assigned</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isNativeId()">isNativeId</a></strong>()</code><br>@return Whether the ID is native</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isRelationshipEntity()">isRelationshipEntity</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>java.io.Serializable</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#readId(org.neo4j.driver.v1.types.Entity)">readId</a></strong>(org.neo4j.driver.v1.types.Entity entity)</code><br>Reads the id from given Neo4j entity</td>
                         </tr>
                         
                     </table>
@@ -377,7 +381,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>class org.grails.datastore.mapping.model.AbstractPersistentEntity</strong></code></td>
-                            <td class="colLast"><code>org.grails.datastore.mapping.model.AbstractPersistentEntity#isExternal(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getVersion(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isRoot(), org.grails.datastore.mapping.model.AbstractPersistentEntity#hasProperty(java.lang.String, java.lang.Class), org.grails.datastore.mapping.model.AbstractPersistentEntity#isInitialized(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getJavaClass(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getMappingContext(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getPropertyByName(java.lang.String), org.grails.datastore.mapping.model.AbstractPersistentEntity#getPersistentProperties(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getIdentity(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isOwningEntity(org.grails.datastore.mapping.model.PersistentEntity), org.grails.datastore.mapping.model.AbstractPersistentEntity#addOwner(java.lang.Class), org.grails.datastore.mapping.model.AbstractPersistentEntity#getParentEntity(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isMultiTenant(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getCompositeIdentity(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getTenantId(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getMappingStrategy(), org.grails.datastore.mapping.model.AbstractPersistentEntity#setExternal(boolean), org.grails.datastore.mapping.model.AbstractPersistentEntity#getReflector(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isIdentityName(java.lang.String), org.grails.datastore.mapping.model.AbstractPersistentEntity#getDiscriminator(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getRootEntity(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getDecapitalizedName(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getPersistentPropertyNames(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getAssociations(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isVersioned(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getMapping(), org.grails.datastore.mapping.model.AbstractPersistentEntity#equals(java.lang.Object), org.grails.datastore.mapping.model.AbstractPersistentEntity#toString(), org.grails.datastore.mapping.model.AbstractPersistentEntity#hashCode(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isInstance(java.lang.Object), org.grails.datastore.mapping.model.AbstractPersistentEntity#getName(), org.grails.datastore.mapping.model.AbstractPersistentEntity#newInstance(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isAbstract(), org.grails.datastore.mapping.model.AbstractPersistentEntity#initialize(), org.grails.datastore.mapping.model.AbstractPersistentEntity#wait(long, int), org.grails.datastore.mapping.model.AbstractPersistentEntity#wait(long), org.grails.datastore.mapping.model.AbstractPersistentEntity#wait(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getClass(), org.grails.datastore.mapping.model.AbstractPersistentEntity#notify(), org.grails.datastore.mapping.model.AbstractPersistentEntity#notifyAll()</code></td>
+                            <td class="colLast"><code>org.grails.datastore.mapping.model.AbstractPersistentEntity#isExternal(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getVersion(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isRoot(), org.grails.datastore.mapping.model.AbstractPersistentEntity#hasProperty(java.lang.String, java.lang.Class), org.grails.datastore.mapping.model.AbstractPersistentEntity#getMapping(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getPropertyByName(java.lang.String), org.grails.datastore.mapping.model.AbstractPersistentEntity#getParentEntity(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isInitialized(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getJavaClass(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isVersioned(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getReflector(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getAssociations(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getPersistentProperties(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getIdentity(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getMappingContext(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isMultiTenant(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getCompositeIdentity(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getTenantId(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getMappingStrategy(), org.grails.datastore.mapping.model.AbstractPersistentEntity#setExternal(boolean), org.grails.datastore.mapping.model.AbstractPersistentEntity#isIdentityName(java.lang.String), org.grails.datastore.mapping.model.AbstractPersistentEntity#getDiscriminator(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getRootEntity(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isOwningEntity(org.grails.datastore.mapping.model.PersistentEntity), org.grails.datastore.mapping.model.AbstractPersistentEntity#getDecapitalizedName(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getPersistentPropertyNames(), org.grails.datastore.mapping.model.AbstractPersistentEntity#addOwner(java.lang.Class), org.grails.datastore.mapping.model.AbstractPersistentEntity#equals(java.lang.Object), org.grails.datastore.mapping.model.AbstractPersistentEntity#toString(), org.grails.datastore.mapping.model.AbstractPersistentEntity#hashCode(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isInstance(java.lang.Object), org.grails.datastore.mapping.model.AbstractPersistentEntity#getName(), org.grails.datastore.mapping.model.AbstractPersistentEntity#newInstance(), org.grails.datastore.mapping.model.AbstractPersistentEntity#isAbstract(), org.grails.datastore.mapping.model.AbstractPersistentEntity#initialize(), org.grails.datastore.mapping.model.AbstractPersistentEntity#wait(long, int), org.grails.datastore.mapping.model.AbstractPersistentEntity#wait(long), org.grails.datastore.mapping.model.AbstractPersistentEntity#wait(), org.grails.datastore.mapping.model.AbstractPersistentEntity#getClass(), org.grails.datastore.mapping.model.AbstractPersistentEntity#notify(), org.grails.datastore.mapping.model.AbstractPersistentEntity#notifyAll()</code></td>
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class java.lang.Object</strong></code></td>
@@ -458,14 +462,6 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;<a href='../../../../../org/grails/datastore/gorm/neo4j/IdGenerator.Type.html'>Type</a> <strong>idGeneratorType</strong></h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="identifierProperty"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>protected&nbsp;java.lang.String <strong>identifierProperty</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -680,7 +676,17 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>boolean <strong>hasDynamicAssociations</strong>()</h4>
-                                <p></p>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>Whether there are dynamic associations. Dynamic associations reduce read performance so are discouraged</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="hasDynamicLabels()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>boolean <strong>hasDynamicLabels</strong>()</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>Whether there are dynamic labels. Dynamic labels prevent optimization of write operations so are discouraged</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -716,6 +722,15 @@ void <strong>initialize</strong>()</h4>
                             <li class="blockList">
                                 <h4>boolean <strong>isRelationshipEntity</strong>()</h4>
                                 <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="readId(org.neo4j.driver.v1.types.Entity)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.io.Serializable <strong>readId</strong>(org.neo4j.driver.v1.types.Entity entity)</h4>
+                                <p> Reads the id from given Neo4j entity
+     <DL><DT><B>Returns:</B></DT><DD>the id</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL></p>
                             </li>
                         </ul>
                     
