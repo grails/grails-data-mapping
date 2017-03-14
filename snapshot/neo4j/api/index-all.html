@@ -247,6 +247,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">Abstract implementation for queries annotated with <a href='../../../../../../grails/gorm/services/Where.html' title='Where'>Where</a></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractWriteOperationImplementer.html" title="Class in org.grails.datastore.gorm.services.implementers">AbstractWriteOperationImplementer</a></span> - Class in <a href="./org/grails/datastore/gorm/services/implementers/package-summary.html">org.grails.datastore.gorm.services.implementers</a>
 </dt><dd><div class="block">Abstract implementer for write operations</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/api/Neo4jGormStaticApi.html#adaptResults(org.neo4j.driver.v1.StatementResult)" title="Method in Neo4jGormStaticApi">adaptResults(StatementResult)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/api/Neo4jGormStaticApi.html">Neo4jGormStaticApi</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html#add(org.grails.datastore.mapping.query.Query$Criterion)" title="Method in AbstractDetachedCriteria">add(Criterion)</a></span> - Method in <a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html">AbstractDetachedCriteria</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html#add(java.lang.Object)" title="Method in AbstractPersistentCollection">add(Object)</a></span> - Method in <a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html">AbstractPersistentCollection</a>
@@ -2337,13 +2339,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/javax/GormValidatorAdapter.html#forExecutables()" title="Method in GormValidatorAdapter">forExecutables()</a></span> - Method in <a href="org/grails/datastore/gorm/validation/javax/GormValidatorAdapter.html">GormValidatorAdapter</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html#formatAssociationMatch(org.grails.datastore.mapping.model.types.Association, java.lang.String)" title="Method in GraphPersistentEntity">formatAssociationMatch(Association, String)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html">GraphPersistentEntity</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html#formatAssociationDelete(org.grails.datastore.mapping.model.types.Association, java.lang.Object)" title="Method in GraphPersistentEntity">formatAssociationDelete(Association, Object)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html">GraphPersistentEntity</a>
 </dt><dd> <div class="block">Formats an association merge</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html#formatAssociationMerge(org.grails.datastore.mapping.model.types.Association, java.lang.String, java.lang.String)" title="Method in GraphPersistentEntity">formatAssociationMerge(Association, String, String)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html">GraphPersistentEntity</a>
 </dt><dd> <div class="block">Formats an association merge</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html#formatBatchCreate(java.lang.String, org.grails.datastore.mapping.model.types.Association)" title="Method in GraphPersistentEntity">formatBatchCreate(String, Association)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html">GraphPersistentEntity</a>
-</dt><dd> <div class="block">Formats a batch FOREACH statement for populating association data</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html#formatBatchMerge(java.lang.String, org.grails.datastore.mapping.model.types.Association)" title="Method in GraphPersistentEntity">formatBatchMerge(String, Association)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html">GraphPersistentEntity</a>
 </dt><dd> <div class="block">Formats a batch FOREACH statement for populating association data</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/services/transform/CypherQueryStringTransformer.html#formatDomainClassVariable(org.codehaus.groovy.ast.ClassNode, java.lang.String)" title="Method in CypherQueryStringTransformer">formatDomainClassVariable(ClassNode, String)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/services/transform/CypherQueryStringTransformer.html">CypherQueryStringTransformer</a>
 </dt><dd> <div class="block"></div></dd>
@@ -5471,6 +5471,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/Entity.html#newProperty()" title="Method in Entity">newProperty()</a></span> - Method in <a href="org/grails/datastore/mapping/config/Entity.html">Entity</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/keyvalue/mapping/config/Family.html#newProperty()" title="Method in Family">newProperty()</a></span> - Method in <a href="org/grails/datastore/mapping/keyvalue/mapping/config/Family.html">Family</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/mapping/config/NodeConfig.html#newProperty()" title="Method in NodeConfig">newProperty()</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/mapping/config/NodeConfig.html">NodeConfig</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/AbstractResultList.html#nextDecoded()" title="Method in AbstractResultList">nextDecoded()</a></span> - Method in <a href="org/grails/datastore/gorm/query/AbstractResultList.html">AbstractResultList</a>
 </dt><dd> <div class="block"></div></dd>

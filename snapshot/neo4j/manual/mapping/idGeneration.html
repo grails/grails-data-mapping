@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Untitled</title>
+<title>Assigned Identifiers</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -418,8 +418,17 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
 </head>
-<body class="article">
+<body class="article toc2 toc-left">
 <div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel3">
+<li><a href="#_assigned_identifiers">Assigned Identifiers</a></li>
+<li><a href="#_snowflake_identifiers">Snowflake Identifiers</a></li>
+<li><a href="#_globally_changing_identity_strategy">Globally Changing Identity Strategy</a></li>
+<li><a href="#_custom_identifiers">Custom Identifiers</a></li>
+</ul>
+</div>
 </div>
 <div id="content">
 <div class="paragraph">
@@ -448,24 +457,66 @@ These have a couple of disadvantages that should encourage you to use an alterna
 </div>
 </div>
 <div class="paragraph">
-<p>However, it is generally better to consider a different id generation strategy. The recommended approach is to use <code>assigned</code> identifiers that relate to your domain. For example:</p>
+<p>However, it is generally better to consider a different id generation strategy.</p>
+</div>
+<div class="sect3">
+<h4 id="_assigned_identifiers">Assigned Identifiers</h4>
+<div class="paragraph">
+<p>The recommended approach is to use <code>assigned</code> identifiers that relate to your domain. For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import static grails.neo4j.mapping.MappingBuilder.*
-class Club {
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Owner {
     String name
-    ...
+    static hasMany = [pets:Pet]
     static mapping = node {
-        id {
-            generator "assigned"
-            name "name"
-        }
+        id generator:'assigned', name:'name'
     }
-
+}
+class Pet {
+    String name
+    static belongsTo = [owner:Owner]
+    static mapping = node {
+        id generator:'assigned', name:'name'
+    }
 }</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>With assigned identifiers GORM can do a much better job of optimizing write operations. For example the following logic:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">new Owner(name:"Fred")
+        .addToPets(name: "Dino")
+        .addToPets(name: "Joe")
+        .save()
+new Owner(name:"Barney")
+        .addToPets(name: "Hoppy")
+        .save(flush:true)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>GORM will generate the following Cypher:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cypher" data-lang="cypher">UNWIND {ownerBatch} as row
+CREATE (owner:Owner)
+SET owner += row.props
+FOREACH (pets IN row.pets |
+    CREATE (pet:Pet)
+    SET pet += pets.props
+    MERGE (owner)-[:PETS]-&gt;(pet)
+)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice how <code>UNWIND</code> and <code>FOREACH</code> are used to create both the entity and its associations in one go, significantly improving write performance for large data sets.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_snowflake_identifiers">Snowflake Identifiers</h4>
 <div class="paragraph">
 <p>Another option is a custom identity generator based on the Snowflake algorithm and stores the generated identifier in a property of each Neo4j node called <code>__id__</code>:</p>
 </div>
@@ -484,6 +535,9 @@ class Club {
 }</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_globally_changing_identity_strategy">Globally Changing Identity Strategy</h4>
 <div class="paragraph">
 <p>If you wish to globally change id generation then you can do so in <code>grails-app/conf/application.groovy</code> (<code>Config.groovy</code> in Grails 2.x):</p>
 </div>
@@ -494,6 +548,9 @@ class Club {
 }</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_custom_identifiers">Custom Identifiers</h4>
 <div class="paragraph">
 <p>In addition, if you wish to use a custom identity generation strategy you can do so by specifying a class name that implements the <code>IdGenerator</code> interface:</p>
 </div>
@@ -502,6 +559,7 @@ class Club {
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">grails.neo4j.default.mapping = {
     id generator:'com.foo.MyIdGenerator'
 }</code></pre>
+</div>
 </div>
 </div>
 </div>

@@ -458,13 +458,58 @@ class Team  {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">MATCH (n:Club) WHERE ( n.__id__={1} )
-OPTIONAL MATCH(n)-[:LEAGUE]-&gt;(leagueNode)
-RETURN n as data, collect(DISTINCT leagueNode.__id__) as leagueIds</code></pre>
+<pre class="highlight"><code class="language-cypher" data-lang="cypher">MATCH (n:Club) WHERE ( ID(n)={1} ) RETURN n as data</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>As you can see the <code>teams</code> association is not loaded in the query, and only the ID of the <code>league</code> association is retrieved. If you then iterate over the teams you will get a second query to obtain the teams:</p>
+<p>As you can see the <code>teams</code> association is not loaded in the query and nor is the <code>league</code> association. Note that if you were to make the <code>league</code> association nullable:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Club {
+ ...
+ static belongsTo = [league:League]
+ static constraints = {
+    league nullable:true
+ }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This would alter the query executed to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cypher" data-lang="cypher">MATCH (n:Club) WHERE ( ID(n) = {1} )
+OPTIONAL MATCH(n)-[:LEAGUE]-&gt;(leagueNode)
+RETURN n as data, collect(DISTINCT ID(leagueNode)) as leagueIds</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that only the ID of the <code>league</code> association is retrieved.</p>
+</div>
+<div class="paragraph">
+<p>The reason the <code>id</code> of the associated entity is retrieved is to differentiate between whether an association exists or is <code>null</code>. You can restore the previous behaviour by making the <code>league</code> association <code>lazy</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Club {
+ ...
+ static belongsTo = [league:League]
+ static constraints = {
+    league nullable:true
+ }
+ static maping = {
+    league lazy:true
+ }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>However if you were to access the <code>league</code> association and it were <code>null</code> you would get an exception.</p>
+</div>
+<div class="paragraph">
+<p>With all of these approaches, if you then iterate over the teams you will get a second query to obtain the teams:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -478,7 +523,7 @@ RETURN n as data, collect(DISTINCT leagueNode.__id__) as leagueIds</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">MATCH (from:Club)&lt;-[:CLUB]-(to:Team) WHERE from.__id__ = {id} RETURN to as data</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">MATCH (from:Club)-[:TEAMS]-&gt;(to:Team) WHERE ID(from) = {id} RETURN to as data</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -507,10 +552,9 @@ def club = query.get {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">MATCH (n:Club) WHERE ( n.name={1} )
-OPTIONAL MATCH(n)&lt;-[:CLUB]-(teamsNode)
-OPTIONAL MATCH(n)-[:LEAGUE]-&gt;(leagueNode)
-RETURN n as data, collect(DISTINCT leagueNode.__id__) as leagueIds, collect(DISTINCT teamsNode) as teamsNodes</code></pre>
+<pre class="highlight"><code class="language-cypher" data-lang="cypher">MATCH (n:Club) WHERE ( n.name={1} )
+OPTIONAL MATCH(n)-[:TEAMS]-&gt;(teamsNode) WITH n, collect(DISTINCT teamsNode) as teamsNodes
+RETURN n as data, teamsNodes</code></pre>
 </div>
 </div>
 <div class="paragraph">

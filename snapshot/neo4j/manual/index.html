@@ -556,6 +556,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#indexing">Defining the Query Index</a></li>
 </ul>
 </li>
+<li><a href="#testing">Testing</a></li>
 <li><a href="#multipleDataSources">Multiple Data Sources</a>
 <ul class="sectlevel2">
 <li><a href="#_configuring_multiple_bolt_drivers">Configuring Multiple Bolt Drivers</a></li>
@@ -681,13 +682,19 @@ table.CodeRay td.code>pre{padding:0}
 <div class="ulist">
 <ul>
 <li>
+<p>Support for assigned identifiers</p>
+</li>
+<li>
+<p>Batch inserts with UNWIND and FOREACH when using assigned ids</p>
+</li>
+<li>
 <p>Support for mapping entities to Neo4j Relationships</p>
 </li>
 <li>
 <p>Support for lists and maps of basic types</p>
 </li>
 <li>
-<p>Upgrade to Neo4j Bolt Driver 1.1</p>
+<p>Upgrade to Neo4j Bolt Driver 1.2</p>
 </li>
 </ul>
 </div>
@@ -1333,24 +1340,66 @@ These have a couple of disadvantages that should encourage you to use an alterna
 </div>
 </div>
 <div class="paragraph">
-<p>However, it is generally better to consider a different id generation strategy. The recommended approach is to use <code>assigned</code> identifiers that relate to your domain. For example:</p>
+<p>However, it is generally better to consider a different id generation strategy.</p>
+</div>
+<div class="sect3">
+<h4 id="_assigned_identifiers">Assigned Identifiers</h4>
+<div class="paragraph">
+<p>The recommended approach is to use <code>assigned</code> identifiers that relate to your domain. For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">grails.neo4j.mapping.MappingBuilder.*</span>
-<span class="type">class</span> <span class="class">Club</span> {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Owner</span> {
     <span class="predefined-type">String</span> name
-    ...
-    static mapping = node {
-        id {
-            generator <span class="string"><span class="delimiter">&quot;</span><span class="content">assigned</span><span class="delimiter">&quot;</span></span>
-            name <span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>
-        }
+    <span class="directive">static</span> hasMany = [<span class="key">pets</span>:Pet]
+    <span class="directive">static</span> mapping = node {
+        id <span class="key">generator</span>:<span class="string"><span class="delimiter">'</span><span class="content">assigned</span><span class="delimiter">'</span></span>, <span class="key">name</span>:<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>
     }
-
+}
+<span class="type">class</span> <span class="class">Pet</span> {
+    <span class="predefined-type">String</span> name
+    <span class="directive">static</span> belongsTo = [<span class="key">owner</span>:<span class="predefined-type">Owner</span>]
+    <span class="directive">static</span> mapping = node {
+        id <span class="key">generator</span>:<span class="string"><span class="delimiter">'</span><span class="content">assigned</span><span class="delimiter">'</span></span>, <span class="key">name</span>:<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>
+    }
 }</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>With assigned identifiers GORM can do a much better job of optimizing write operations. For example the following logic:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">new</span> <span class="predefined-type">Owner</span>(<span class="key">name</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>)
+        .addToPets(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Dino</span><span class="delimiter">&quot;</span></span>)
+        .addToPets(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Joe</span><span class="delimiter">&quot;</span></span>)
+        .save()
+<span class="keyword">new</span> <span class="predefined-type">Owner</span>(<span class="key">name</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Barney</span><span class="delimiter">&quot;</span></span>)
+        .addToPets(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Hoppy</span><span class="delimiter">&quot;</span></span>)
+        .save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>GORM will generate the following Cypher:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cypher">UNWIND {ownerBatch} as row
+CREATE (owner:Owner)
+SET owner += row.props
+FOREACH (pets IN row.pets |
+    CREATE (pet:Pet)
+    SET pet += pets.props
+    MERGE (owner)-[:PETS]-&gt;(pet)
+)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice how <code>UNWIND</code> and <code>FOREACH</code> are used to create both the entity and its associations in one go, significantly improving write performance for large data sets.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_snowflake_identifiers">Snowflake Identifiers</h4>
 <div class="paragraph">
 <p>Another option is a custom identity generator based on the Snowflake algorithm and stores the generated identifier in a property of each Neo4j node called <code>__id__</code>:</p>
 </div>
@@ -1369,6 +1418,9 @@ These have a couple of disadvantages that should encourage you to use an alterna
 }</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_globally_changing_identity_strategy">Globally Changing Identity Strategy</h4>
 <div class="paragraph">
 <p>If you wish to globally change id generation then you can do so in <code>grails-app/conf/application.groovy</code> (<code>Config.groovy</code> in Grails 2.x):</p>
 </div>
@@ -1379,6 +1431,9 @@ These have a couple of disadvantages that should encourage you to use an alterna
 }</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_custom_identifiers">Custom Identifiers</h4>
 <div class="paragraph">
 <p>In addition, if you wish to use a custom identity generation strategy you can do so by specifying a class name that implements the <code>IdGenerator</code> interface:</p>
 </div>
@@ -1387,6 +1442,7 @@ These have a couple of disadvantages that should encourage you to use an alterna
 <pre class="CodeRay highlight"><code data-lang="groovy">grails.neo4j.default.mapping = {
     id <span class="key">generator</span>:<span class="string"><span class="delimiter">'</span><span class="content">com.foo.MyIdGenerator</span><span class="delimiter">'</span></span>
 }</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -1408,11 +1464,22 @@ These have a couple of disadvantages that should encourage you to use an alterna
 </div>
 </div>
 <div class="paragraph">
-<p>Will generate a Cypher relationship creation query as follows:</p>
+<p>When you save the relationship:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">MATCH (<span class="key">from</span>:<span class="predefined-type">Owner</span> {<span class="key">__id__</span>:{start}}), (<span class="key">to</span>:Pet) WHERE to.__id__ IN {end} CREATE (from)-[<span class="key">r</span>:PETS]-&gt;(to)</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">new</span> <span class="predefined-type">Owner</span>(<span class="key">name</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>)
+    .addToPets(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Dino</span><span class="delimiter">&quot;</span></span>)
+    .save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)
+    .discard()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>save()</code> method will generate a Cypher relationship creation query as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cypher">MATCH (from:Owner),(to:Pet) WHERE ID(from) = {start} AND ID(to) IN {end} MERGE (from)-[r:PETS]-&gt;(to)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1477,6 +1544,18 @@ For more information on defining relationships with GORM, see the <a href="http:
 }</code></pre>
 </div>
 </div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Dynamic labels have a negative impact on write performance as GORM is unable to batch operations with dynamic labels so should be used sparingly.
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>Or mix static and dynamic labels:</p>
 </div>
@@ -1488,7 +1567,7 @@ For more information on defining relationships with GORM, see the <a href="http:
 </div>
 </div>
 <div class="paragraph">
-<p>At a small read/write performance cost you can define dynamic labels based on an instance:</p>
+<p>At the cost of read/write performance you can define dynamic labels based on an instance:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1551,8 +1630,17 @@ For more information on defining relationships with GORM, see the <a href="http:
   p.save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>The downside of dynamic associations is that GORM has to issue a separate query for each loaded instance when retrieving entities. If you have a small amount of data this is not a problem, but for larger data sets it is not recommended.</p>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Dynamic associations have a runtime performance cost and are not recommended since GORM has to issue a separate query for each instance to obtain the dynamic associations. The functionality they provide should instead be modelled with Relationship entities (see the next section).
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
@@ -1798,13 +1886,58 @@ If you want to see what queries GORM for Neo4j generates, enabling logging for t
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">MATCH (<span class="key">n</span>:Club) WHERE ( n.__id__={<span class="integer">1</span>} )
-OPTIONAL MATCH(n)-[:LEAGUE]-&gt;(leagueNode)
-RETURN n <span class="keyword">as</span> data, collect(DISTINCT leagueNode.__id__) <span class="keyword">as</span> leagueIds</code></pre>
+<pre class="CodeRay highlight"><code data-lang="cypher">MATCH (n:Club) WHERE ( ID(n)={1} ) RETURN n as data</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>As you can see the <code>teams</code> association is not loaded in the query, and only the ID of the <code>league</code> association is retrieved. If you then iterate over the teams you will get a second query to obtain the teams:</p>
+<p>As you can see the <code>teams</code> association is not loaded in the query and nor is the <code>league</code> association. Note that if you were to make the <code>league</code> association nullable:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Club</span> {
+ ...
+ static belongsTo = [<span class="key">league</span>:League]
+ <span class="directive">static</span> constraints = {
+    league <span class="key">nullable</span>:<span class="predefined-constant">true</span>
+ }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This would alter the query executed to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cypher">MATCH (n:Club) WHERE ( ID(n) = {1} )
+OPTIONAL MATCH(n)-[:LEAGUE]-&gt;(leagueNode)
+RETURN n as data, collect(DISTINCT ID(leagueNode)) as leagueIds</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that only the ID of the <code>league</code> association is retrieved.</p>
+</div>
+<div class="paragraph">
+<p>The reason the <code>id</code> of the associated entity is retrieved is to differentiate between whether an association exists or is <code>null</code>. You can restore the previous behaviour by making the <code>league</code> association <code>lazy</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Club</span> {
+ ...
+ static belongsTo = [<span class="key">league</span>:League]
+ <span class="directive">static</span> constraints = {
+    league <span class="key">nullable</span>:<span class="predefined-constant">true</span>
+ }
+ <span class="directive">static</span> maping = {
+    league <span class="key">lazy</span>:<span class="predefined-constant">true</span>
+ }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>However if you were to access the <code>league</code> association and it were <code>null</code> you would get an exception.</p>
+</div>
+<div class="paragraph">
+<p>With all of these approaches, if you then iterate over the teams you will get a second query to obtain the teams:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1818,7 +1951,7 @@ RETURN n <span class="keyword">as</span> data, collect(DISTINCT leagueNode.__id_
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">MATCH (<span class="key">from</span>:Club)&lt;-[:CLUB]-(<span class="key">to</span>:Team) WHERE from.__id__ = {id} RETURN to <span class="keyword">as</span> data</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">MATCH (<span class="key">from</span>:Club)-[:TEAMS]-&gt;(<span class="key">to</span>:Team) WHERE ID(from) = {id} RETURN to <span class="keyword">as</span> data</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1847,10 +1980,9 @@ RETURN n <span class="keyword">as</span> data, collect(DISTINCT leagueNode.__id_
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">MATCH (<span class="key">n</span>:Club) WHERE ( n.name={<span class="integer">1</span>} )
-OPTIONAL MATCH(n)&lt;-[:CLUB]-(teamsNode)
-OPTIONAL MATCH(n)-[:LEAGUE]-&gt;(leagueNode)
-RETURN n <span class="keyword">as</span> data, collect(DISTINCT leagueNode.__id__) <span class="keyword">as</span> leagueIds, collect(DISTINCT teamsNode) <span class="keyword">as</span> teamsNodes</code></pre>
+<pre class="CodeRay highlight"><code data-lang="cypher">MATCH (n:Club) WHERE ( n.name={1} )
+OPTIONAL MATCH(n)-[:TEAMS]-&gt;(teamsNode) WITH n, collect(DISTINCT teamsNode) as teamsNodes
+RETURN n as data, teamsNodes</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1964,6 +2096,60 @@ List&lt;Club&gt; clubs = result.toList(Club)</code></pre>
 </div>
 </div>
 <div class="sect1">
+<h2 id="testing">Testing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>It is relatively trivial to write unit tests that use GORM for Neo4j. If you wish to use an embedded version of Neo4j simply add the <code>neo4j-harness</code> dependency to your <code>build.gradle</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">testRuntime "org.neo4j.test:neo4j-harness:3.0.4"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then create a <a href="http://spockframework.org">Spock</a> specification and declare a <code>@Shared</code> field using the <code>Neo4jDatastore</code> constructor with the domain classes you wish to test:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Shared</span> <span class="annotation">@AutoCleanup</span> Neo4jDatastore datastore = <span class="keyword">new</span> Neo4jDatastore(getClass().getPackage())</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The <code>@AutoCleanup</code> annotation will ensure the datastore is shutdown correctly after the test completes
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If the test is in the same package as your domain classes then you can also setup package scanning instead of hard coding each domain class name:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Shared</span> <span class="annotation">@AutoCleanup</span> Neo4jDatastore datastore
+        = <span class="keyword">new</span> Neo4jDatastore(getClass().getPackage())</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then annotate each test method with the <code>grails.gorm.transactions.Rollback</code> annotation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Rollback</span>
+<span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test something</span><span class="delimiter">&quot;</span></span>() {
+
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="multipleDataSources">Multiple Data Sources</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -2072,9 +2258,21 @@ List&lt;Club&gt; clubs = result.toList(Club)</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.withConnection(<span class="string"><span class="delimiter">&quot;</span><span class="content">moreBooks</span><span class="delimiter">&quot;</span></span>) {
-    <span class="predefined-type">Book</span>.list()
+    list()
 }</code></pre>
 </div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The call to <code>list()</code> should not be prefixed with <code>Book.</code> as this will use the default connection
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>Any logic executed within the body of the closure will use the alternate connection. Once the close finishes execution GORM will switch back to the default connection automatically.</p>

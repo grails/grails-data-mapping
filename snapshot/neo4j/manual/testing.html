@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>6.1.x</title>
+<title>Untitled</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -418,166 +418,57 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
 </head>
-<body class="article toc2 toc-left">
+<body class="article">
 <div id="header">
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel3">
-<li><a href="#_6_1_x">6.1.x</a></li>
-<li><a href="#_6_0_x">6.0.x</a></li>
-<li><a href="#_5_0_x">5.0.x</a></li>
-<li><a href="#_4_0_x">4.0.x</a></li>
-<li><a href="#_3_0_x">3.0.x</a></li>
-<li><a href="#_2_0_x">2.0.x</a></li>
-<li><a href="#_1_0_x">1.0.x</a></li>
-</ul>
-</div>
 </div>
 <div id="content">
-<div class="sect3">
-<h4 id="_6_1_x">6.1.x</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Support for assigned identifiers</p>
-</li>
-<li>
-<p>Batch inserts with UNWIND and FOREACH when using assigned ids</p>
-</li>
-<li>
-<p>Support for mapping entities to Neo4j Relationships</p>
-</li>
-<li>
-<p>Support for lists and maps of basic types</p>
-</li>
-<li>
-<p>Upgrade to Neo4j Bolt Driver 1.2</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_6_0_x">6.0.x</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Support for Neo4j 3.0.x or above</p>
-</li>
-<li>
-<p>Rewritten for Neo4j Bolt Java Driver</p>
-</li>
-<li>
-<p>Support for Multiple Data Sources (Connections)</p>
-</li>
-<li>
-<p>Multi Tenancy support for DATABASE and DISCRIMINATOR approaches</p>
-</li>
-<li>
-<p>Refactored Bootstrapping</p>
-</li>
-<li>
-<p>Uses new DynamicAttributes trait</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_5_0_x">5.0.x</h4>
 <div class="paragraph">
-<p>The following new features are available in this release.</p>
+<p>It is relatively trivial to write unit tests that use GORM for Neo4j. If you wish to use an embedded version of Neo4j simply add the <code>neo4j-harness</code> dependency to your <code>build.gradle</code> file:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Support for Neo4j 2.3.x or above</p>
-</li>
-<li>
-<p>Ability to query using Cypher with the default GORM methods (find, findAll)</p>
-</li>
-<li>
-<p>Robust Spring Transaction Management</p>
-</li>
-<li>
-<p>Support for Lazy &amp; Eager Loading using OPTIONAL MATCH</p>
-</li>
-<li>
-<p>Improved Performance</p>
-</li>
-<li>
-<p>Dirty Checking Implementation</p>
-</li>
-</ul>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">testRuntime "org.neo4j.test:neo4j-harness:3.0.4"</code></pre>
+</div>
 </div>
 <div class="paragraph">
-<p>If you are using an older version of the plugin, and looking to upgrade the following changes may impact you:</p>
+<p>Then create a <a href="http://spockframework.org">Spock</a> specification and declare a <code>@Shared</code> field using the <code>Neo4jDatastore</code> constructor with the domain classes you wish to test:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Neo4j JDBC is no longer used and the corresponding CypherEngine interface was removed</p>
-</li>
-<li>
-<p>Dynamic associations are disabled by default, you can re-enable them in your entity mapping</p>
-</li>
-</ul>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Shared @AutoCleanup Neo4jDatastore datastore = new Neo4jDatastore(getClass().getPackage())</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_4_0_x">4.0.x</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Rewritten for Groovy traits &amp; Grails 3</p>
-</li>
-</ul>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The <code>@AutoCleanup</code> annotation will ensure the datastore is shutdown correctly after the test completes
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If the test is in the same package as your domain classes then you can also setup package scanning instead of hard coding each domain class name:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Shared @AutoCleanup Neo4jDatastore datastore
+        = new Neo4jDatastore(getClass().getPackage())</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_3_0_x">3.0.x</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Initial support for Neo4j 2.0.x</p>
-</li>
-<li>
-<p>Support for Cypher via Neo4j JDBC</p>
-</li>
-</ul>
+<div class="paragraph">
+<p>Then annotate each test method with the <code>grails.gorm.transactions.Rollback</code> annotation:</p>
 </div>
-</div>
-<div class="sect3">
-<h4 id="_2_0_x">2.0.x</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Refinements from 1.0.x</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_1_0_x">1.0.x</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>works with Neo4j HA</p>
-</li>
-<li>
-<p>implementing new GORM property criteria filters</p>
-</li>
-<li>
-<p>uses Neo4j 1.8.2</p>
-</li>
-<li>
-<p>first GORM compliant version of the plugin</p>
-</li>
-<li>
-<p>works with embedded and REST Neo4j databases</p>
-</li>
-<li>
-<p>exposing traversal options to domain classes</p>
-</li>
-</ul>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Rollback
+void "test something"() {
+
+}</code></pre>
 </div>
 </div>
 </div>
