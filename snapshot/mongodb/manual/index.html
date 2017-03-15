@@ -3030,29 +3030,7 @@ uses by default a <code>MongoClient</code> instance that connects to a MongoDB i
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.test.mongodb.MongoSpec</span>
-<span class="keyword">import</span> <span class="include">grails.validation.ValidationException</span>
-
-<span class="type">class</span> <span class="class">LocalMongoUnitSpec</span> <span class="directive">extends</span> MongoSpec {
-
-    <span class="comment">// Specs ...</span>
-    <span class="annotation">@Override</span>
-    <span class="type">void</span> setup() {
-        <span class="predefined-type">Book</span>.DB.drop()
-    }
-
-
-    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test fail on error</span><span class="delimiter">&quot;</span></span>() {
-
-        <span class="key">when</span>:
-        <span class="keyword">def</span> invalid = <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>: <span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>)
-        invalid.save()
-
-        <span class="key">then</span>:
-        thrown ValidationException
-        invalid.hasErrors()
-    }
-}</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">Unresolved directive <span class="keyword">in</span> testing.adoc - <span class="key">include</span>::<span class="regexp"><span class="delimiter">/</span><span class="content">home</span><span class="delimiter">/</span></span>travis/build/grails/gorm-mongodb/examples/grails31-mongodb/src/test/groovy/functional/tests/LocalMongoUnitSpec.groovy[tags=structure]</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3061,49 +3039,7 @@ as shown in the following example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">package</span> functional.tests
-
-<span class="keyword">import</span> <span class="include">com.github.fakemongo.Fongo</span>
-<span class="keyword">import</span> <span class="include">com.mongodb.MongoClient</span>
-<span class="keyword">import</span> <span class="include">grails.test.mongodb.MongoSpec</span>
-
-<span class="type">class</span> <span class="class">BookUnitSpec</span> <span class="directive">extends</span> MongoSpec {
-
-    <span class="annotation">@Override</span>
-    MongoClient createMongoClient() {
-        <span class="keyword">return</span> <span class="keyword">new</span> Fongo(getClass().name).mongo
-    }
-
-    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Test low-level API extensions</span><span class="delimiter">&quot;</span></span>() {
-        <span class="key">when</span>:
-        <span class="keyword">def</span> db = createMongoClient().getDatabase(<span class="string"><span class="delimiter">&quot;</span><span class="content">test</span><span class="delimiter">&quot;</span></span>)
-<span class="comment">//        db.drop()</span>
-        <span class="comment">// Insert a document</span>
-        db[<span class="string"><span class="delimiter">'</span><span class="content">languages</span><span class="delimiter">'</span></span>].insert([<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Groovy</span><span class="delimiter">'</span></span>])
-        <span class="comment">// A less verbose way to do it</span>
-        db.languages.insert(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Ruby</span><span class="delimiter">'</span></span>)
-        <span class="comment">// Yet another way</span>
-        db.languages &lt;&lt; [<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Python</span><span class="delimiter">'</span></span>]
-
-        <span class="key">then</span>:
-        db.languages.count() == <span class="integer">3</span>
-    }
-
-    <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Test GORM access</span><span class="delimiter">&quot;</span></span>(){
-        <span class="key">when</span>:
-        <span class="predefined-type">Book</span> book = <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">title</span>: <span class="string"><span class="delimiter">'</span><span class="content">El Quijote</span><span class="delimiter">'</span></span>).save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
-
-        <span class="key">then</span>:
-        <span class="predefined-type">Book</span>.count() ==<span class="integer">1</span>
-
-        <span class="key">when</span>:
-        book = <span class="predefined-type">Book</span>.findByTitle(<span class="string"><span class="delimiter">'</span><span class="content">El Quijote</span><span class="delimiter">'</span></span>)
-
-        <span class="key">then</span>:
-        book.id
-    }
-
-}</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">Unresolved directive <span class="keyword">in</span> testing.adoc - <span class="key">include</span>::<span class="regexp"><span class="delimiter">/</span><span class="content">home</span><span class="delimiter">/</span></span>travis/build/grails/gorm-mongodb/examples/grails31-mongodb/src/test/groovy/functional/tests/BookUnitSpec.groovy<span class="type">[]</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3113,10 +3049,7 @@ is large, classpath scanning may be slow, so it&#8217;s better to override the m
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Override</span>
-<span class="directive">protected</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">Class</span>&gt; getDomainClasses() {
-    [<span class="predefined-type">Book</span>]
-}</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">Unresolved directive <span class="keyword">in</span> testing.adoc - <span class="key">include</span>::<span class="regexp"><span class="delimiter">/</span><span class="content">home</span><span class="delimiter">/</span></span>travis/build/grails/gorm-mongodb/examples/grails31-hibernate4-mongodb/src/test/groovy/functional/tests/BookFongoSpec.groovy[tags=getDomainClasses,indent=<span class="integer">0</span>]</code></pre>
 </div>
 </div>
 </div>

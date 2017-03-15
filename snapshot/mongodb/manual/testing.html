@@ -432,29 +432,7 @@ uses by default a <code>MongoClient</code> instance that connects to a MongoDB i
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.test.mongodb.MongoSpec
-import grails.validation.ValidationException
-
-class LocalMongoUnitSpec extends MongoSpec {
-
-    // Specs ...
-    @Override
-    void setup() {
-        Book.DB.drop()
-    }
-
-
-    void "test fail on error"() {
-
-        when:
-        def invalid = new Book(title: "")
-        invalid.save()
-
-        then:
-        thrown ValidationException
-        invalid.hasErrors()
-    }
-}</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Unresolved directive in testing.adoc - include::/home/travis/build/grails/gorm-mongodb/examples/grails31-mongodb/src/test/groovy/functional/tests/LocalMongoUnitSpec.groovy[tags=structure]</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -463,49 +441,7 @@ as shown in the following example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">package functional.tests
-
-import com.github.fakemongo.Fongo
-import com.mongodb.MongoClient
-import grails.test.mongodb.MongoSpec
-
-class BookUnitSpec extends MongoSpec {
-
-    @Override
-    MongoClient createMongoClient() {
-        return new Fongo(getClass().name).mongo
-    }
-
-    void "Test low-level API extensions"() {
-        when:
-        def db = createMongoClient().getDatabase("test")
-//        db.drop()
-        // Insert a document
-        db['languages'].insert([name: 'Groovy'])
-        // A less verbose way to do it
-        db.languages.insert(name: 'Ruby')
-        // Yet another way
-        db.languages &lt;&lt; [name: 'Python']
-
-        then:
-        db.languages.count() == 3
-    }
-
-    void "Test GORM access"(){
-        when:
-        Book book = new Book(title: 'El Quijote').save(flush: true)
-
-        then:
-        Book.count() ==1
-
-        when:
-        book = Book.findByTitle('El Quijote')
-
-        then:
-        book.id
-    }
-
-}</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Unresolved directive in testing.adoc - include::/home/travis/build/grails/gorm-mongodb/examples/grails31-mongodb/src/test/groovy/functional/tests/BookUnitSpec.groovy[]</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -515,10 +451,7 @@ is large, classpath scanning may be slow, so it&#8217;s better to override the m
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Override
-protected List&lt;Class&gt; getDomainClasses() {
-    [Book]
-}</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Unresolved directive in testing.adoc - include::/home/travis/build/grails/gorm-mongodb/examples/grails31-hibernate4-mongodb/src/test/groovy/functional/tests/BookFongoSpec.groovy[tags=getDomainClasses,indent=0]</code></pre>
 </div>
 </div>
 </div>
