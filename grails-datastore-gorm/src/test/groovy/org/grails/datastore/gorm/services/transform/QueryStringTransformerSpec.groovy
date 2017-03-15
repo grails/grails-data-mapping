@@ -68,7 +68,7 @@ where b.title =  and a.name = '''
         transformedQuery(sourceUnit,'from ${Book b} where $b.titl = \'test\'')
 
         expect:
-        sourceUnit.errorCollector.errorCount == 2
+        sourceUnit.errorCollector.errorCount == 1
     }
 
     SourceUnit sourceUnit() {

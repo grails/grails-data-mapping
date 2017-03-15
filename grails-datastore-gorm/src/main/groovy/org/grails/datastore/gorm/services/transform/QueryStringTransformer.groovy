@@ -127,6 +127,9 @@ class QueryStringTransformer extends ClassCodeExpressionTransformer {
             if(declared != null) {
                 return varX(declared)
             }
+            else if(declaredQueryTargets.containsKey(var.name)) {
+                return constX(var.name)
+            }
         }
         return super.transform(exp)
     }
