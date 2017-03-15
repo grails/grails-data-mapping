@@ -2379,8 +2379,14 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html#formatId(java.lang.String)" title="Method in GraphPersistentEntity">formatId(String)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html">GraphPersistentEntity</a>
 </dt><dd> <div class="block">Format a reference to the ID for cypher queries</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html#formatMatch(java.lang.String)" title="Method in GraphPersistentEntity">formatMatch(String)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html">GraphPersistentEntity</a>
-</dt><dd> <div class="block">Format a match to this entity node</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html#formatMatchAndUpdate(java.lang.String, Map<String, Object>)" title="Method in GraphPersistentEntity">formatMatchAndUpdate(String, Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html">GraphPersistentEntity</a>
+</dt><dd> <div class="block">Formats a match for the ID for this entity</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html#formatMatchId(java.lang.String, java.lang.Object)" title="Method in GraphPersistentEntity">formatMatchId(String, Object)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html">GraphPersistentEntity</a>
+</dt><dd> <div class="block">Formats a match for the ID for this entity</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/RelationshipPersistentEntity.html#formatMatchId(java.lang.String)" title="Method in RelationshipPersistentEntity">formatMatchId(String)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/RelationshipPersistentEntity.html">RelationshipPersistentEntity</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html#formatNode(java.lang.String, java.lang.Object)" title="Method in GraphPersistentEntity">formatNode(String, Object)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html">GraphPersistentEntity</a>
+</dt><dd> <div class="block">Format a match for a node to this entity node</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/services/transform/CypherQueryStringTransformer.html#formatNodeVariable(java.lang.String, org.codehaus.groovy.ast.ClassNode)" title="Method in CypherQueryStringTransformer">formatNodeVariable(String, ClassNode)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/services/transform/CypherQueryStringTransformer.html">CypherQueryStringTransformer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html#formatProperty(java.lang.String, java.lang.String)" title="Method in GraphPersistentEntity">formatProperty(String, String)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html">GraphPersistentEntity</a>
@@ -2391,6 +2397,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Formats a declaration for the given property path</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/transform/QueryStringTransformer.html#formatPropertyReference(org.codehaus.groovy.ast.expr.VariableExpression, java.lang.String, java.lang.String)" title="Method in QueryStringTransformer">formatPropertyReference(VariableExpression, String, String)</a></span> - Method in <a href="org/grails/datastore/gorm/services/transform/QueryStringTransformer.html">QueryStringTransformer</a>
 </dt><dd> <div class="block">Formats a reference to a property of a declared domain class</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html#formatReturnId(java.lang.String)" title="Method in GraphPersistentEntity">formatReturnId(String)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html">GraphPersistentEntity</a>
+</dt><dd> <div class="block">Format a reference to the ID for cypher queries</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#formulateDatabaseReference(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.types.Association, java.io.Serializable)" title="Method in NativeEntryEntityPersister">formulateDatabaseReference(PersistentEntity, Association, Serializable)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block">Formulates a database reference for the given entity, association and association id</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/ReflectionUtils.html#forName(java.lang.String, java.lang.ClassLoader)" title="Method in ReflectionUtils">forName(String, ClassLoader)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/ReflectionUtils.html">ReflectionUtils</a>
@@ -3888,7 +3896,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html#hasDynamicAssociations" title="Field in GraphPersistentEntity">hasDynamicAssociations</a></span> - Field in <a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html">GraphPersistentEntity</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/RelationshipPersistentEntity.html#hasDynamicAssociations()" title="Method in RelationshipPersistentEntity">hasDynamicAssociations()</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/RelationshipPersistentEntity.html">RelationshipPersistentEntity</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html#hasDynamicLabels" title="Field in GraphPersistentEntity">hasDynamicLabels</a></span> - Field in <a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html">GraphPersistentEntity</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/RelationshipPersistentEntity.html#hasDynamicLabels()" title="Method in RelationshipPersistentEntity">hasDynamicLabels()</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/RelationshipPersistentEntity.html">RelationshipPersistentEntity</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormValidateable.html#hasErrors()" title="Method in GormValidateable">hasErrors()</a></span> - Method in <a href="org/grails/datastore/gorm/GormValidateable.html">GormValidateable</a>
 </dt><dd> <div class="block">Tests whether an instance has any errors</div></dd>
@@ -5164,6 +5176,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/collection/PersistentCollection.html#markDirty()" title="Method in PersistentCollection">markDirty()</a></span> - Method in <a href="org/grails/datastore/mapping/collection/PersistentCollection.html">PersistentCollection</a>
 </dt><dd> <div class="block">Mark the collection as dirty.</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html#MATCH_ID" title="Field in GraphPersistentEntity">MATCH_ID</a></span> - Field in <a href="org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html">GraphPersistentEntity</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/engine/Neo4jQuery.html#matchForAssociation(org.grails.datastore.mapping.model.types.Association, java.lang.String, Map<String, String>)" title="Method in Neo4jQuery">matchForAssociation(Association, String, Map&lt;String, String&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/engine/Neo4jQuery.html">Neo4jQuery</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/RelationshipUtils.html#matchForAssociation(org.grails.datastore.mapping.model.types.Association, java.lang.String, Map<String, String>)" title="Method in RelationshipUtils">matchForAssociation(Association, String, Map&lt;String, String&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/RelationshipUtils.html">RelationshipUtils</a>
