@@ -423,58 +423,69 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>To query with raw Cypher queries you can use the built in <code>find</code> and <code>findAll</code> methods:</p>
+<p>Since 6.1, GORM for Neo4j features support for Neo4j path queries. For example given the following class:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">def club = Club.find("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenchen')
-def clubs = Club.findAll("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenchen')</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@EqualsAndHashCode(includes = 'name')
+class Person {
+    String name
+    static hasMany = [friends: Person]
+
+    static mapping = node {
+        id(generator:'assigned', name:'name')
+    }
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Note that the first returned item should be the node itself. To execute cypher queries and work with the raw results use <code>executeCypher</code>:</p>
+<p>And the following setup data:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">StatementResult result = Club.executeCypher("MATCH n where n.name = {1} RETURN n", ['FC Bayern Muenchen'])</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Person joe = new Person(name: "Joe")
+Person barney = new Person(name: "Barney")
+                      .addToFriends(joe)
+Person fred = new Person(name: "Fred")
+                      .addToFriends(barney)</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Or alternatively you can use <code>executeQuery</code> which will return a list of results:</p>
+<p>Which creates a friend graph it is possible to find out the shortest path from one friend to another with the <code>findShortestPath</code> method which returns a <code>grails.neo4j.Path</code> instance:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">List&lt;Node&gt; nodes = Club.executeQuery("MATCH n where n.name = {1} RETURN n", ['FC Bayern Muenchen'])</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Path&lt;Person, Person&gt; path = Person.findShortestPath(fred, joe, 15)
+for(Path.Segment&lt;Person, Person&gt; segment in path) {
+    println segment.start().name
+    println segment.end().name
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>When working with raw results, you can convert any <code>org.neo4j.driver.v1.types.Node</code> into a domain instance using the <code>as</code> keyword:</p>
+<p>You can also find the shortest path without first loading the entities using proxies:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">Node myNode = ...
- Club club = myNode as Club</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Path&lt;Person, Person&gt; path = Person.findShortestPath(Person.proxy("Fred"), Person.proxy("Joe"), 15)
+for(Path.Segment&lt;Person, Person&gt; segment in path) {
+    println segment.start().name
+    println segment.end().name
+}</code></pre>
 </div>
-</div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-This also works for <code>Relationship</code> and <code>Path</code> types
-</td>
-</tr>
-</table>
 </div>
 <div class="paragraph">
-<p>You can also convert any <a href="http://neo4j.com/docs/api/java-driver/1.0/org/neo4j/driver/v1/StatementResult.html">org.neo4j.driver.v1.StatementResult</a> instance to a list of domain classes:</p>
+<p>Finally it is also possible to use Cypher queries to find a path:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">StatementResult result = ...
-List&lt;Club&gt; clubs = result.toList(Club)</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">String from = "Fred"
+String to = "Joe"
+Path&lt;Person, Person&gt; path = Person.findPath("MATCH (from:Person),(to:Person), p = shortestPath((from)-[*..15]-(to)) WHERE from.name = $from AND to.name = $to RETURN p")
+for(Path.Segment&lt;Person, Person&gt; segment in path) {
+    println segment.start().name
+    println segment.end().name
+}</code></pre>
 </div>
 </div>
 </div>
