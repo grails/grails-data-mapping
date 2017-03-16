@@ -1215,7 +1215,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 </div>
 <div class="paragraph">
-<p>Then annotate your entities with the <code>grails.gorm.annotation.Entity</code> annotation and implement the <a href="../api/grails/neo4j/Neo4jEntity.html">Neo4jEntity</a> trait:</p>
+<p>Then annotate your entities with the <code>grails.gorm.annotation.Entity</code> annotation and implement the <a href="../api/grails/neo4j/Node.html">Node</a> trait:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1223,7 +1223,7 @@ If your GORM entities are in a different package specify the package name as the
 <span class="keyword">import</span> <span class="include">grails.gorm.annotation.*</span>
 
 <span class="annotation">@Entity</span>
-<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> Neo4jEntity&lt;Person&gt;{
+<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> Node&lt;Person&gt;{
     <span class="predefined-type">String</span> name
 }</code></pre>
 </div>
@@ -1277,11 +1277,13 @@ println Person.count()</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Each domain class will implement the <a href="../api/grails/neo4j/Neo4jEntity.html">Neo4jEntity</a> trait. You can define this explicitly if you prefer:</p>
+<p>Each domain class will implement the <a href="../api/grails/neo4j/Neo4jEntity.html">Neo4jEntity</a> trait. You can define this explicitly if you prefer (the <code>Node</code> trait is a subtrait of <code>Neo4jEntity</code>):</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Pet</span> <span class="directive">implements</span> Neo4jEntity&lt;Pet&gt; {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.neo4j.Node</span>
+
+<span class="type">class</span> <span class="class">Pet</span> <span class="directive">implements</span> Node&lt;Pet&gt; {
     <span class="predefined-type">String</span> name
 }</code></pre>
 </div>
@@ -1643,7 +1645,7 @@ Dynamic labels have a negative impact on write performance as GORM is unable to 
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-Dynamic associations have a runtime performance cost and are not recommended since GORM has to issue a separate query for each instance to obtain the dynamic associations. The functionality they provide should instead be modelled with Relationship entities (see the next section).
+Dynamic associations have a runtime performance cost as when you access any dynamic property GORM has to issue a separate query to retrieve that association if the value is null, use with care.
 </td>
 </tr>
 </table>
@@ -1729,8 +1731,9 @@ println person.name</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.neo4j.*</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">grails.neo4j.mapping.MappingBuilder.*</span>
 
-<span class="directive">static</span> mapping = {
+<span class="directive">static</span> mapping = relationship {
    type <span class="string"><span class="delimiter">&quot;</span><span class="content">ACTED_IN</span><span class="delimiter">&quot;</span></span>
    direction Direction.OUTGOING
 }</code></pre>
@@ -2127,7 +2130,7 @@ List&lt;Club&gt; clubs = result.toList(Club)</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@EqualsAndHashCode</span>(includes = <span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>)
-<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> Neo4jEntity&lt;Person&gt; {
+<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> Node&lt;Person&gt; {
     <span class="predefined-type">String</span> name
     <span class="directive">static</span> hasMany = [<span class="key">friends</span>: Person]
 
@@ -2196,7 +2199,7 @@ Path&lt;Person, Person&gt; path = Person.findPath(<span class="string"><span cla
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@EqualsAndHashCode</span>(includes = <span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>)
-<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> Neo4jEntity&lt;Person&gt; {
+<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> Node&lt;Person&gt; {
     <span class="predefined-type">String</span> name
     <span class="directive">static</span> hasMany = [<span class="key">friends</span>: Person]
 

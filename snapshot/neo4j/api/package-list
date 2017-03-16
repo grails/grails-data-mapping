@@ -24,7 +24,6 @@ org.grails.datastore.gorm.multitenancy
 org.grails.datastore.gorm.multitenancy.transform
 org.grails.datastore.gorm.neo4j
 org.grails.datastore.gorm.neo4j.api
-org.grails.datastore.gorm.neo4j.bean.factory
 org.grails.datastore.gorm.neo4j.boot.autoconfigure
 org.grails.datastore.gorm.neo4j.collection
 org.grails.datastore.gorm.neo4j.config
