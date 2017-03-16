@@ -59,7 +59,7 @@ class UpdateStringQueryImplementer extends AbstractStringQueryImplementer {
         ClassNode returnType = newMethodNode.returnType
         boolean isVoid = returnType == ClassHelper.VOID_TYPE
         Expression methodCall = callX(domainClassNode, "executeUpdate", args)
-        methodCall = castX(returnType.plainNodeReference, methodCall)
+        methodCall = isVoid ? methodCall : castX(returnType.plainNodeReference, methodCall)
         return isVoid ? stmt(methodCall) : returnS(methodCall)
     }
 
