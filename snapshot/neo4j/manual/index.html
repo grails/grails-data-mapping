@@ -555,6 +555,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#cypher">Querying with Cypher</a></li>
 <li><a href="#indexing">Defining the Query Index</a></li>
 <li><a href="#paths">Querying for Paths</a></li>
+<li><a href="#queryingRelationships">Querying for Relationships</a></li>
 <li><a href="#dataServices">GORM for Neo4j Data Services</a></li>
 </ul>
 </li>
@@ -2126,7 +2127,7 @@ List&lt;Club&gt; clubs = result.toList(Club)</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@EqualsAndHashCode</span>(includes = <span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>)
-<span class="type">class</span> <span class="class">Person</span> {
+<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> Neo4jEntity&lt;Person&gt; {
     <span class="predefined-type">String</span> name
     <span class="directive">static</span> hasMany = [<span class="key">friends</span>: Person]
 
@@ -2188,6 +2189,72 @@ Path&lt;Person, Person&gt; path = Person.findPath(<span class="string"><span cla
 </div>
 </div>
 <div class="sect2">
+<h3 id="queryingRelationships">Querying for Relationships</h3>
+<div class="paragraph">
+<p>In addition to being able to query for paths since 6.1, GORM for Neo4j features support for Neo4j relationship queries. For example given the following class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@EqualsAndHashCode</span>(includes = <span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>)
+<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> Neo4jEntity&lt;Person&gt; {
+    <span class="predefined-type">String</span> name
+    <span class="directive">static</span> hasMany = [<span class="key">friends</span>: Person]
+
+    <span class="directive">static</span> mapping = node {
+        id(<span class="key">generator</span>:<span class="string"><span class="delimiter">'</span><span class="content">assigned</span><span class="delimiter">'</span></span>, <span class="key">name</span>:<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can find a relationship between two entities with the following query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">String</span> from = <span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>
+<span class="predefined-type">String</span> to = <span class="string"><span class="delimiter">&quot;</span><span class="content">Barney</span><span class="delimiter">&quot;</span></span>
+Relationship&lt;Person, Person&gt; rel = Person.findRelationship(Person.proxy(from), Person.proxy(to))</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The arguments can be retrieved instances or unloaded proxies to nodes.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Querying for relationships in this way is not as flexible as using relationship entities. Consider <a href="#relationships">mapping an entity to a relationship</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can also find all the relationships between two entities:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">String</span> from = <span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>
+<span class="predefined-type">String</span> to = <span class="string"><span class="delimiter">&quot;</span><span class="content">Barney</span><span class="delimiter">&quot;</span></span>
+<span class="predefined-type">List</span>&lt;Relationship&lt;Person, Person&gt;&gt; rels = Person.findRelationships(Person.proxy(from), Person.proxy(to))</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or find all the relationships between two entity types:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Relationship&lt;Person, Person&gt;&gt; rels = Person.findRelationships(Person, Person, [<span class="key">max</span>:<span class="integer">10</span>])
+<span class="keyword">for</span>(rel <span class="keyword">in</span> rels) {
+    println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Type </span><span class="inline"><span class="inline-delimiter">${</span>rel.type<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
+    println(<span class="string"><span class="delimiter">&quot;</span><span class="content">From </span><span class="inline"><span class="inline-delimiter">${</span>rel.from.name<span class="inline-delimiter">}</span></span><span class="content"> to </span><span class="inline"><span class="inline-delimiter">${</span>rel.to.name<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
 <h3 id="dataServices">GORM for Neo4j Data Services</h3>
 <div class="paragraph">
 <p>Additional support for <a href="http://gorm.grails.org/6.1.x/hibernate/manual/index.html#dataServices">GORM Data Services</a> exists in GORM for Neo4j beyond what is already offered by GORM core.</p>
@@ -2220,7 +2287,18 @@ Path&lt;Person, Person&gt; findPath(<span class="predefined-type">String</span> 
 <p>Variable references within the <code>@Cypher</code> string declaration are also compile time checked.</p>
 </div>
 <div class="paragraph">
-<p>Support for implementing methods that find paths has also been added. For example:</p>
+<p>You can also automatically implement Cypher update operations:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Cypher</span>(<span class="string"><span class="delimiter">&quot;&quot;&quot;</span><span class="content">MATCH </span><span class="inline"><span class="inline-delimiter">${</span>Person p<span class="inline-delimiter">}</span></span><span class="content">
+           WHERE </span><span class="inline"><span class="inline-delimiter">$</span>p</span><span class="content">.name = </span><span class="inline"><span class="inline-delimiter">$</span>name</span><span class="content">
+           SET p.age = </span><span class="inline"><span class="inline-delimiter">$</span>age</span><span class="delimiter">&quot;&quot;&quot;</span></span>)
+<span class="type">void</span> updatePerson(<span class="predefined-type">String</span> name, <span class="type">int</span> age)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally, support for implementing methods that find paths is also possible. For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">

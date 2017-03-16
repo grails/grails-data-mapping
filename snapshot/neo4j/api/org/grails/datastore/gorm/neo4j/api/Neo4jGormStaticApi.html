@@ -271,6 +271,21 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><a href='../../../../../../grails/neo4j/Relationship.html' title='Relationship'>Relationship</a>&lt;F, T&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findRelationship(F, T)">findRelationship</a></strong>(F from, T to)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>java.util.List&lt;<a href='../../../../../../grails/neo4j/Relationship.html' title='Relationship'>Relationship</a>&lt;F, T&gt;&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findRelationships(F, T, java.util.Map)">findRelationships</a></strong>(F from, T to, java.util.Map params = Collections.emptyMap()</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>java.util.List&lt;<a href='../../../../../../grails/neo4j/Relationship.html' title='Relationship'>Relationship</a>&lt;F, T&gt;&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findRelationships(Class<F>, Class<T>, java.util.Map)">findRelationships</a></strong>(java.lang.Class&lt;F&gt; from, java.lang.Class&lt;T&gt; to, java.util.Map params = Collections.emptyMap()</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../../grails/neo4j/Path.html' title='Path'>Path</a>&lt;F, T&gt;</strong></code></td>
                             <td class="colLast"><code><strong><a href="#findShortestPath(F, T, int)">findShortestPath</a></strong>(F from, T to, int maxDistance = 10)</code><br></td>
                         </tr>
@@ -488,6 +503,30 @@ java.util.List&lt;D&gt; <strong>findAll</strong>(java.lang.CharSequence query, j
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../../../grails/neo4j/Path.html'>Path</a> <strong>findPathTo</strong>(java.lang.Class type, java.lang.CharSequence query, java.util.Map params)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="findRelationship(F, T)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../../../grails/neo4j/Relationship.html' title='Relationship'>Relationship</a>&lt;F, T&gt; <strong>findRelationship</strong>(F from, T to)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="findRelationships(F, T, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.util.List&lt;<a href='../../../../../../grails/neo4j/Relationship.html' title='Relationship'>Relationship</a>&lt;F, T&gt;&gt; <strong>findRelationships</strong>(F from, T to, java.util.Map params = Collections.emptyMap()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="findRelationships(Class<F>, Class<T>, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.util.List&lt;<a href='../../../../../../grails/neo4j/Relationship.html' title='Relationship'>Relationship</a>&lt;F, T&gt;&gt; <strong>findRelationships</strong>(java.lang.Class&lt;F&gt; from, java.lang.Class&lt;T&gt; to, java.util.Map params = Collections.emptyMap()</h4>
                                 <p></p>
                             </li>
                         </ul>

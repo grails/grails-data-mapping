@@ -232,8 +232,28 @@ trait Neo4jEntity
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;<a href='../../grails/neo4j/Relationship.html' title='Relationship'>Relationship</a>&lt;F, T&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findRelationship(F, T)">findRelationship</a></strong>(F from, T to)</code><br>Finds a relationship between two entities</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>static&nbsp;java.util.List&lt;<a href='../../grails/neo4j/Relationship.html' title='Relationship'>Relationship</a>&lt;F, T&gt;&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findRelationships(F, T, java.util.Map)">findRelationships</a></strong>(F from, T to, java.util.Map params = Collections.emptyMap()</code><br>Finds a relationship between two entities</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;java.util.List&lt;<a href='../../grails/neo4j/Relationship.html' title='Relationship'>Relationship</a>&lt;F, T&gt;&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#findRelationships(Class<F>, Class<T>, java.util.Map)">findRelationships</a></strong>(java.lang.Class&lt;F&gt; from, java.lang.Class&lt;T&gt; to, java.util.Map params = Collections.emptyMap()</code><br>Finds a relationship between two entity types</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;<a href='../../grails/neo4j/Path.html' title='Path'>Path</a>&lt;F, T&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#findShortestPath(F, T, int)">findShortestPath</a></strong>(F from, T to, int maxDistance = 10)</code><br>Execute cypher that finds a path to the given entity</td>
+                            <td class="colLast"><code><strong><a href="#findShortestPath(F, T, int)">findShortestPath</a></strong>(F from, T to, int maxDistance = 10)</code><br>Finds a path between two entities</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>java.lang.Object</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getAt(java.lang.String)">getAt</a></strong>(java.lang.String name)</code><br>Obtains a dynamic attribute</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -429,12 +449,49 @@ static&nbsp;org.neo4j.driver.v1.StatementResult <strong>cypherStatic</strong>(ja
                             </li>
                         </ul>
                     
+                        <a name="findRelationship(F, T)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;<a href='../../grails/neo4j/Relationship.html' title='Relationship'>Relationship</a>&lt;F, T&gt; <strong>findRelationship</strong>(F from, T to)</h4>
+                                <p> Finds a relationship between two entities
+     <DL><DT><B>Returns:</B></DT><DD>The relationship or null if it doesn't exist</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>from</code> -  The from entity (can be a proxy)</DD><DD><code>to</code> -  The to entity (can be a proxy)</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="findRelationships(F, T, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;java.util.List&lt;<a href='../../grails/neo4j/Relationship.html' title='Relationship'>Relationship</a>&lt;F, T&gt;&gt; <strong>findRelationships</strong>(F from, T to, java.util.Map params = Collections.emptyMap()</h4>
+                                <p> Finds a relationship between two entities
+     <DL><DT><B>Returns:</B></DT><DD>The relationship or null if it doesn't exist</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>from</code> -  The from entity (can be a proxy)</DD><DD><code>to</code> -  The to entity (can be a proxy)</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="findRelationships(Class<F>, Class<T>, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;java.util.List&lt;<a href='../../grails/neo4j/Relationship.html' title='Relationship'>Relationship</a>&lt;F, T&gt;&gt; <strong>findRelationships</strong>(java.lang.Class&lt;F&gt; from, java.lang.Class&lt;T&gt; to, java.util.Map params = Collections.emptyMap()</h4>
+                                <p> Finds a relationship between two entity types
+     <DL><DT><B>Returns:</B></DT><DD>The relationship or null if it doesn't exist</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>from</code> -  The from entity (can be a proxy)</DD><DD><code>to</code> -  The to entity (can be a proxy)</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="findShortestPath(F, T, int)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>static&nbsp;<a href='../../grails/neo4j/Path.html' title='Path'>Path</a>&lt;F, T&gt; <strong>findShortestPath</strong>(F from, T to, int maxDistance = 10)</h4>
-                                <p> Execute cypher that finds a path to the given entity
+                                <p> Finds a path between two entities
      <DL><DT><B>Returns:</B></DT><DD>The path or null if non exists</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>from</code> -  The from entity (can be a proxy)</DD><DD><code>to</code> -  The to entity (can be a proxy)</DD><DD><code>maxDistance</code> -  The maximum distance to traverse (defaults to 10)</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getAt(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+java.lang.Object <strong>getAt</strong>(java.lang.String name)</h4>
+                                <p> Obtains a dynamic attribute
+     <DL><DT><B>Returns:</B></DT><DD>The value of the attribute</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the attribute</DD></DL></p>
                             </li>
                         </ul>
                     

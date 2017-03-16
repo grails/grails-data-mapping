@@ -423,7 +423,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>Since 6.1, GORM for Neo4j features support for Neo4j path queries. For example given the following class:</p>
+<p>In addition to being able to query for paths since 6.1, GORM for Neo4j features support for Neo4j relationship queries. For example given the following class:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -439,52 +439,49 @@ class Person implements Neo4jEntity&lt;Person&gt; {
 </div>
 </div>
 <div class="paragraph">
-<p>And the following setup data:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">Person joe = new Person(name: "Joe")
-Person barney = new Person(name: "Barney")
-                      .addToFriends(joe)
-Person fred = new Person(name: "Fred")
-                      .addToFriends(barney)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Which creates a friend graph it is possible to find out the shortest path from one friend to another with the <code>findShortestPath</code> method which returns a <code>grails.neo4j.Path</code> instance:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">Path&lt;Person, Person&gt; path = Person.findShortestPath(fred, joe, 15)
-for(Path.Segment&lt;Person, Person&gt; segment in path) {
-    println segment.start().name
-    println segment.end().name
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can also find the shortest path without first loading the entities using proxies:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">Path&lt;Person, Person&gt; path = Person.findShortestPath(Person.proxy("Fred"), Person.proxy("Joe"), 15)
-for(Path.Segment&lt;Person, Person&gt; segment in path) {
-    println segment.start().name
-    println segment.end().name
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Finally it is also possible to use Cypher queries to find a path:</p>
+<p>You can find a relationship between two entities with the following query:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">String from = "Fred"
-String to = "Joe"
-Path&lt;Person, Person&gt; path = Person.findPath("MATCH (from:Person),(to:Person), p = shortestPath((from)-[*..15]-(to)) WHERE from.name = $from AND to.name = $to RETURN p")
-for(Path.Segment&lt;Person, Person&gt; segment in path) {
-    println segment.start().name
-    println segment.end().name
+String to = "Barney"
+Relationship&lt;Person, Person&gt; rel = Person.findRelationship(Person.proxy(from), Person.proxy(to))</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The arguments can be retrieved instances or unloaded proxies to nodes.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Querying for relationships in this way is not as flexible as using relationship entities. Consider <a href="#relationships">mapping an entity to a relationship</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can also find all the relationships between two entities:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">String from = "Fred"
+String to = "Barney"
+List&lt;Relationship&lt;Person, Person&gt;&gt; rels = Person.findRelationships(Person.proxy(from), Person.proxy(to))</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or find all the relationships between two entity types:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">List&lt;Relationship&lt;Person, Person&gt;&gt; rels = Person.findRelationships(Person, Person, [max:10])
+for(rel in rels) {
+    println("Type ${rel.type}")
+    println("From ${rel.from.name} to ${rel.to.name}")
 }</code></pre>
 </div>
 </div>

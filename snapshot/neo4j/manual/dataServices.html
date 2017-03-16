@@ -453,7 +453,18 @@ Path&lt;Person, Person&gt; findPath(String start, String end)</code></pre>
 <p>Variable references within the <code>@Cypher</code> string declaration are also compile time checked.</p>
 </div>
 <div class="paragraph">
-<p>Support for implementing methods that find paths has also been added. For example:</p>
+<p>You can also automatically implement Cypher update operations:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Cypher("""MATCH ${Person p}
+           WHERE $p.name = $name
+           SET p.age = $age""")
+void updatePerson(String name, int age)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally, support for implementing methods that find paths is also possible. For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
