@@ -63,6 +63,10 @@ class QueryStringTransformer extends ClassCodeExpressionTransformer {
                     newValues.add(valueExpr)
                     currentConstant = null
                 }
+                else {
+                    newStrings.add(exp)
+                    newValues.add(valueExpr)
+                }
             }
             else {
                 if(currentConstant != null) {
