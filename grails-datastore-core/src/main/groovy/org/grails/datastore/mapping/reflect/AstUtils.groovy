@@ -808,4 +808,22 @@ class AstUtils {
         return declaredMethod.getParameters().length == 0 && ReflectionUtils.isGetter(declaredMethod.getName(), EMPTY_JAVA_CLASS_ARRAY)
     }
 
+    static boolean isIterableOrArrayOfDomainClasses(ClassNode type) {
+        boolean isCompatibleReturnType = false
+        if (type.name == Iterable.name || implementsInterface(type, Iterable.name)) {
+            GenericsType[] genericsTypes = type.genericsTypes
+            if (genericsTypes.length > 0) {
+                if (isDomainClass(genericsTypes[0].type)) {
+                    isCompatibleReturnType = true
+                }
+            }
+        } else if (type.isArray()) {
+
+            ClassNode componentType = type.componentType
+            if (componentType != null && isDomainClass(componentType)) {
+                isCompatibleReturnType = true
+            }
+        }
+        return isCompatibleReturnType
+    }
 }

@@ -273,7 +273,7 @@ class ServiceImplSpec extends Specification {
 
         then:
         e = thrown(UnsupportedOperationException)
-        e.message == "String-based queries like [findAll] are currently not supported in this implementation of GORM. Use criteria instead."
+        e.message == "String-based queries like [executeQuery] are currently not supported in this implementation of GORM. Use criteria instead."
 
     }
 

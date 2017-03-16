@@ -16,16 +16,11 @@
 package org.grails.datastore.gorm.services.implementers
 
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
-import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.expr.Expression
-import org.codehaus.groovy.ast.expr.MapEntryExpression
-import org.codehaus.groovy.ast.expr.MapExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
-import org.codehaus.groovy.ast.stmt.Statement
 import org.grails.datastore.mapping.core.Ordered
 import org.grails.datastore.mapping.reflect.AstUtils
 
@@ -45,7 +40,7 @@ class FindAllImplementer extends AbstractDetachedCriteriaServiceImplementor impl
 
     @Override
     protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
-        return AbstractArrayOrIterableResultImplementer.isIterableOrArrayOfDomainClasses(returnType)
+        return AstUtils.isIterableOrArrayOfDomainClasses(returnType)
     }
 
     @Override

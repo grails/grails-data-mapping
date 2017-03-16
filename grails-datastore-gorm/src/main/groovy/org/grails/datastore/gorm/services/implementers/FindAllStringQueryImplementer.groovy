@@ -5,6 +5,7 @@ import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.stmt.Statement
+import org.grails.datastore.mapping.reflect.AstUtils
 
 import static org.codehaus.groovy.ast.tools.GeneralUtils.callX
 import static org.codehaus.groovy.ast.tools.GeneralUtils.castX
@@ -33,7 +34,8 @@ class FindAllStringQueryImplementer extends AbstractStringQueryImplementer {
     @Override
     protected Statement buildQueryReturnStatement(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, Expression args) {
         ClassNode returnType = newMethodNode.returnType
-        Expression methodCall = callX(domainClassNode, "findAll", args)
+        String methodName = AstUtils.isIterableOrArrayOfDomainClasses(returnType) ? "findAll" : "executeQuery"
+        Expression methodCall = callX(domainClassNode, methodName, args)
         methodCall = castX(returnType.plainNodeReference, methodCall)
         return returnS(methodCall)
     }

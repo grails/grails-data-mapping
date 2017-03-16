@@ -30,7 +30,7 @@ class FindAllWhereImplementer extends AbstractWhereImplementer {
 
     @Override
     protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
-        return AbstractArrayOrIterableResultImplementer.isIterableOrArrayOfDomainClasses(returnType)
+        return AstUtils.isIterableOrArrayOfDomainClasses(returnType)
     }
 
     @Override
