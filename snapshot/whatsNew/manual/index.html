@@ -894,6 +894,34 @@ Product p = Product.findOneAndDelete(eq(<span class="string"><span class="delimi
 <div class="sect1">
 <h2 id="_new_neo4j_features">New Neo4j Features</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>The following new features have been added to GORM for Neo4j:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Support for mapping entities to Neo4j Relationships</p>
+</li>
+<li>
+<p>Support for assigned identifiers</p>
+</li>
+<li>
+<p>Support for querying Neo4j Paths</p>
+</li>
+<li>
+<p>Support for lists and maps of basic types</p>
+</li>
+<li>
+<p>Batch inserts with UNWIND and FOREACH when using assigned ids</p>
+</li>
+<li>
+<p>Upgrade to Neo4j Bolt Driver 1.2</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>See the following sections for more details.</p>
+</div>
 <div class="sect2">
 <h3 id="_relationship_entity_support">Relationship Entity Support</h3>
 <div class="paragraph">
@@ -940,6 +968,50 @@ castMember.save(<span class="key">flush</span>:<span class="predefined-constant"
 </div>
 </div>
 <div class="sect2">
+<h3 id="_path_and_relationship_query_support">Path and Relationship Query Support</h3>
+<div class="paragraph">
+<p>It is not possible to query for Neo4j paths:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.neo4j.Path</span>
+...
+Path&lt;Person, Person&gt; path = Person.findShortestPath(fred, joe, <span class="integer">15</span>)
+<span class="keyword">for</span>(Path.Segment&lt;Person, Person&gt; segment <span class="keyword">in</span> path) {
+    println segment.start().name
+    println segment.end().name
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And relationships:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.neo4j.Relationship</span>
+...
+List&lt;Relationship&lt;Person, Person&gt;&gt; rels = Person.findRelationships(Person, Person, [<span class="key">max</span>:<span class="integer">10</span>])</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_assigned_identifier_support">Assigned Identifier Support</h3>
+<div class="paragraph">
+<p>It is now possible to use assigned identifiers:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">grails.neo4j.mapping.MappingBuilder.*</span>
+<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> Node&lt;Person&gt; {
+    <span class="predefined-type">String</span> name
+    <span class="directive">static</span> mapping = node {
+        id(<span class="key">generator</span>:<span class="string"><span class="delimiter">'</span><span class="content">assigned</span><span class="delimiter">'</span></span>, <span class="key">name</span>:<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>)
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_relationship_mapping_support">Relationship Mapping Support</h3>
 <div class="paragraph">
 <p>More control over how relationships are mapped has been added via the <code>mapping</code> block. For example:</p>
@@ -947,12 +1019,13 @@ castMember.save(<span class="key">flush</span>:<span class="predefined-constant"
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">grails.neo4j.Direction.*</span>
+<span class="keyword">import</span> <span class="include">static</span> <span class="include">grails.neo4j.mapping.MappingBuilder.*</span>
 
 <span class="type">class</span> <span class="class">Owner</span> {
     <span class="predefined-type">String</span> name
     <span class="directive">static</span> hasMany = [<span class="key">pets</span>:Pet]
 
-    <span class="directive">static</span> mapping = {
+    <span class="directive">static</span> mapping = node {
          pets <span class="key">type</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">PETZ</span><span class="delimiter">&quot;</span></span>, <span class="key">direction</span>:BOTH
     }
 }</code></pre>
@@ -967,7 +1040,7 @@ castMember.save(<span class="key">flush</span>:<span class="predefined-constant"
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-03-09 14:20:52 UTC
+Last updated 2017-03-16 15:57:37 UTC
 </div>
 </div>
 </body>
