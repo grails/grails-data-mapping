@@ -382,6 +382,9 @@ class RequestCustomizer {
         else if (value instanceof InputStream) {
             value = new InputStreamResource(value)
         }
+        else if (value instanceof GString) {
+            value = value.toString()
+        }
         if( mvm[name] ) {
             mvm[name].add value    
         }
