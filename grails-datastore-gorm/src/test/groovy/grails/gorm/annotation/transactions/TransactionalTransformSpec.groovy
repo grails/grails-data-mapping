@@ -31,6 +31,32 @@ import java.lang.reflect.Field
  */
 class TransactionalTransformSpec extends Specification {
 
+    void "test transactional transform with generics"() {
+        when:"A service uses a generic argument"
+        def (testService, interfaceType) = new GroovyShell().evaluate('''
+import grails.gorm.transactions.Transactional
+import groovy.transform.CompileStatic
+
+@CompileStatic
+@Transactional
+class FooService<Param extends Named> {
+
+    void serviceMethod(Param param) {
+
+    }
+}
+interface Named {
+
+    String getName()
+}
+
+[FooService, Named]
+''')
+        then:"the types are correct"
+        interfaceType.name == "Named"
+        testService.getMethod('serviceMethod', interfaceType) != null
+    }
+
     void "Test transactional transform set target datastore method"() {
         when: "A subclass subclasses a transactional service"
         Class testService = new GroovyShell().evaluate('''

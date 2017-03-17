@@ -20,6 +20,7 @@ import org.codehaus.groovy.ast.*
 import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.Statement
+import org.codehaus.groovy.ast.tools.GenericsUtils
 import org.codehaus.groovy.classgen.VariableScopeVisitor
 import org.codehaus.groovy.control.ErrorCollector
 import org.codehaus.groovy.control.SourceUnit
@@ -54,9 +55,11 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
 
     @Override
     void visit(SourceUnit source, AnnotationNode annotationNode, AnnotatedNode annotatedNode) {
+
         if(annotatedNode instanceof MethodNode) {
             MethodNode methodNode = (MethodNode)annotatedNode
-            weaveNewMethod(source, annotationNode, methodNode.getDeclaringClass(), methodNode)
+            Map<String, ClassNode> genericsSpec = GenericsUtils.createGenericsSpec(methodNode.declaringClass)
+            weaveNewMethod(source, annotationNode, methodNode.getDeclaringClass(), methodNode, genericsSpec)
         }
         else if(annotatedNode instanceof ClassNode) {
             ClassNode classNode = (ClassNode) annotatedNode
@@ -67,7 +70,7 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
 
     protected void weaveClassNode(SourceUnit source, AnnotationNode annotationNode, ClassNode classNode) {
         enhanceClassNode(source, annotationNode, classNode)
-
+        Map<String, ClassNode> genericsSpec = GenericsUtils.createGenericsSpec(classNode)
         List<MethodNode> methods = new ArrayList<MethodNode>(classNode.getMethods())
 
         for (MethodNode md in methods) {
@@ -95,9 +98,9 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
                 // ignore methods that delegate to each other
                 if (hasAnnotation(md, "grails.compiler.DelegatingMethod")) continue
 
-                weaveNewMethod(source, annotationNode, classNode, md)
+                weaveNewMethod(source, annotationNode, classNode, md, genericsSpec)
             } else if (isTestSetupOrCleanup(classNode, md)) {
-                weaveTestSetupMethod(source, annotationNode, classNode, md)
+                weaveTestSetupMethod(source, annotationNode, classNode, md, genericsSpec)
             }
         }
     }
@@ -121,7 +124,7 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
 
     protected abstract String getRenamedMethodPrefix()
 
-    protected void weaveTestSetupMethod(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode) {
+    protected void weaveTestSetupMethod(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode, Map<String, ClassNode> genericsSpec) {
         // no-op
     }
 
@@ -134,7 +137,7 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
      * @param methodNode The original method that will delete to the new method
      * @return The new method's body
      */
-    protected MethodNode weaveNewMethod(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode) {
+    protected MethodNode weaveNewMethod(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode, Map<String, ClassNode> genericsSpec) {
         Object appliedMarker = getAppliedMarker()
         if ( methodNode.getNodeMetaData(appliedMarker) == appliedMarker ) {
             return methodNode
@@ -150,8 +153,8 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
 
         // Move the existing logic into a new method called "$tt_methodName()"
         String renamedMethodName = getRenamedMethodPrefix() + methodNode.getName()
-        Parameter[] newParameters = prepareNewMethodParameters(methodNode)
-        MethodNode renamedMethod = moveOriginalCodeToNewMethod(methodNode, renamedMethodName, newParameters, classNode, sourceUnit)
+        Parameter[] newParameters = prepareNewMethodParameters(methodNode, GenericsUtils.addMethodGenerics(methodNode, genericsSpec) )
+        MethodNode renamedMethod = moveOriginalCodeToNewMethod(methodNode, renamedMethodName, newParameters, classNode, sourceUnit, genericsSpec)
         MethodCallExpression originalMethodCall = buildCallToOriginalMethod(classNode, renamedMethod)
 
         // Start constructing new method body
@@ -195,8 +198,8 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
         }
     }
 
-    protected Parameter[] prepareNewMethodParameters(MethodNode methodNode) {
-        return copyParameters(methodNode.getParameters())
+    protected Parameter[] prepareNewMethodParameters(MethodNode methodNode, Map<String, ClassNode> genericsSpec) {
+        return copyParameters(methodNode.getParameters(), genericsSpec)
     }
 
     /**
@@ -258,7 +261,7 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
     }
 
 
-    protected MethodNode moveOriginalCodeToNewMethod(MethodNode methodNode, String renamedMethodName, Parameter[] newParameters, ClassNode classNode, SourceUnit source) {
+    protected MethodNode moveOriginalCodeToNewMethod(MethodNode methodNode, String renamedMethodName, Parameter[] newParameters, ClassNode classNode, SourceUnit source, Map<String, ClassNode> genericsSpec) {
         Statement body = methodNode.code
         MethodNode renamedMethodNode = new MethodNode(
                 renamedMethodName,

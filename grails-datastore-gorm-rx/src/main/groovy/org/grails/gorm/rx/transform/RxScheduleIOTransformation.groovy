@@ -65,7 +65,7 @@ class RxScheduleIOTransformation extends AbstractMethodDecoratingTransformation 
     }
 
     @Override
-    protected MethodNode weaveNewMethod(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode) {
+    protected MethodNode weaveNewMethod(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode, Map<String, ClassNode> genericsSpec) {
         Object appliedMarker = getAppliedMarker()
         if ( methodNode.getNodeMetaData(appliedMarker) == appliedMarker ) {
             return methodNode
@@ -89,7 +89,7 @@ class RxScheduleIOTransformation extends AbstractMethodDecoratingTransformation 
         }
 
         // align the return types
-        MethodNode newMethod = super.weaveNewMethod(sourceUnit, annotationNode, classNode, methodNode)
+        MethodNode newMethod = super.weaveNewMethod(sourceUnit, annotationNode, classNode, methodNode, genericsSpec)
         alignReturnType(newMethod, newReturnType)
         return newMethod
     }

@@ -127,15 +127,16 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
     }
 
     @Override
-    protected Parameter[] prepareNewMethodParameters(MethodNode methodNode) {
+    protected Parameter[] prepareNewMethodParameters(MethodNode methodNode, Map<String, ClassNode> genericsSpec) {
         final Parameter transactionStatusParameter = param(make(TransactionStatus), "transactionStatus")
-        Parameter[] newParameters = methodNode.getParameters() ? (copyParameters(((methodNode.getParameters() as List) + [transactionStatusParameter]) as Parameter[])) : [transactionStatusParameter] as Parameter[]
+        Parameter[] parameters = methodNode.getParameters()
+        Parameter[] newParameters = parameters.length > 0 ? (copyParameters(((parameters as List) + [transactionStatusParameter]) as Parameter[], genericsSpec)) : [transactionStatusParameter] as Parameter[]
         return newParameters
     }
 
     @Override
-    protected MethodNode weaveNewMethod(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode) {
-        super.weaveNewMethod(sourceUnit, annotationNode, classNode, methodNode)
+    protected MethodNode weaveNewMethod(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode, Map<String, ClassNode> genericsSpec) {
+        super.weaveNewMethod(sourceUnit, annotationNode, classNode, methodNode, genericsSpec)
     }
 
     @Override
@@ -150,10 +151,10 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
     }
 
     @Override
-    protected void weaveTestSetupMethod(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode) {
+    protected void weaveTestSetupMethod(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode, Map<String, ClassNode> genericsSpec) {
         def requiresNewTransaction = new AnnotationNode(annotationNode.classNode)
         requiresNewTransaction.addMember("propagation", propX( classX(Propagation), "REQUIRES_NEW") )
-        weaveNewMethod(sourceUnit, requiresNewTransaction, classNode, methodNode)
+        weaveNewMethod(sourceUnit, requiresNewTransaction, classNode, methodNode, genericsSpec)
     }
 
     @Override
