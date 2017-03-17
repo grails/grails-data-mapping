@@ -145,13 +145,23 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code>protected&nbsp;<a href='../../../../../../org/grails/datastore/gorm/services/transform/QueryStringTransformer.html'>QueryStringTransformer</a></strong></code></td>
+                            <td class="colLast"><code><strong><a href="#createQueryStringTransformer(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.VariableScope)">createQueryStringTransformer</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, org.codehaus.groovy.ast.VariableScope scope)</code><br>Creates the query string transformer</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#doImplement(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode, org.codehaus.groovy.ast.MethodNode, org.codehaus.groovy.ast.ClassNode)">doImplement</a></strong>(org.codehaus.groovy.ast.ClassNode domainClassNode, org.codehaus.groovy.ast.MethodNode abstractMethodNode, org.codehaus.groovy.ast.MethodNode newMethodNode, org.codehaus.groovy.ast.ClassNode targetClassNode)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#doesImplement(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)">doesImplement</a></strong>(org.codehaus.groovy.ast.ClassNode domainClass, org.codehaus.groovy.ast.MethodNode methodNode)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>protected&nbsp;java.lang.Class&lt;? extends java.lang.annotation.Annotation&gt;</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getAnnotationType()">getAnnotationType</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -227,6 +237,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="createQueryStringTransformer(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.VariableScope)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;<a href='../../../../../../org/grails/datastore/gorm/services/transform/QueryStringTransformer.html'>QueryStringTransformer</a> <strong>createQueryStringTransformer</strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, org.codehaus.groovy.ast.VariableScope scope)</h4>
+                                <p> Creates the query string transformer
+     <DL><DT><B>Returns:</B></DT><DD>The transformer</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>sourceUnit</code> -  The source unit</DD><DD><code>scope</code> -  the variable scope</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="doImplement(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode, org.codehaus.groovy.ast.MethodNode, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -241,6 +260,14 @@ void <strong>doImplement</strong>(org.codehaus.groovy.ast.ClassNode domainClassN
                             <li class="blockList">
                                 <h4>@java.lang.Override
 boolean <strong>doesImplement</strong>(org.codehaus.groovy.ast.ClassNode domainClass, org.codehaus.groovy.ast.MethodNode methodNode)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getAnnotationType()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;java.lang.Class&lt;? extends java.lang.annotation.Annotation&gt; <strong>getAnnotationType</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
