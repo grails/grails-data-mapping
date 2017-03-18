@@ -87,7 +87,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
     <div class="subTitle">Package: <strong>org.grails.datastore.gorm.neo4j.collection</strong></div>
 
-    <h2 title="[Groovy] Class Neo4jPath&lt;F, T&gt;" class="title">[Groovy] Class Neo4jPath&lt;F, T&gt;</h2>
+    <h2 title="[Groovy] Class Neo4jPath&lt;F extends Neo4jEntity&lt;F&gt;, T extends Neo4jEntity&lt;T&gt;&gt;" class="title">[Groovy] Class Neo4jPath&lt;F extends Neo4jEntity&lt;F&gt;, T extends Neo4jEntity&lt;T&gt;&gt;</h2>
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
@@ -139,13 +139,13 @@ extends java.lang.Object
                         <tr class="altColor">
                             <td class="colFirst"><code><strong>static&nbsp;class</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/neo4j/collection/Neo4jPath.Neo4jPathIterator.html'>Neo4jPath.Neo4jPathIterator</a></code></td>
-                            <td class="colLast"></code></td>
+                            <td class="colLast"></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code><strong>static&nbsp;class</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/neo4j/collection/Neo4jPath.Neo4jPathSegment.html'>Neo4jPath.Neo4jPathSegment</a></code></td>
-                            <td class="colLast"></code></td>
+                            <td class="colLast"></td>
                         </tr>
                         
                     </table>
@@ -173,7 +173,7 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>org.grails.datastore.gorm.neo4j.Neo4jDatastore</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong><a href='../../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html'>Neo4jDatastore</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#datastore">datastore</a></code><br></td>
                         </tr>
                         
@@ -215,20 +215,20 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst">
-                                <code><a href="#Neo4jPath(org.grails.datastore.gorm.neo4j.Neo4jDatastore, org.neo4j.driver.v1.types.Path, org.grails.datastore.gorm.neo4j.GraphPersistentEntity, org.grails.datastore.gorm.neo4j.GraphPersistentEntity)">Neo4jPath</a></strong>
-                                (org.grails.datastore.gorm.neo4j.Neo4jDatastore datastore, org.neo4j.driver.v1.types.Path neo4jPath, <a href='../../../../../../org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html'>GraphPersistentEntity</a> from, <a href='../../../../../../org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html'>GraphPersistentEntity</a> to)</code><br></td>
+                                <code><a href="#Neo4jPath(org.grails.datastore.gorm.neo4j.Neo4jDatastore, org.neo4j.driver.v1.types.Path, org.grails.datastore.gorm.neo4j.GraphPersistentEntity, org.grails.datastore.gorm.neo4j.GraphPersistentEntity)">Neo4jPath</a>
+                                (<a href='../../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html'>Neo4jDatastore</a> datastore, org.neo4j.driver.v1.types.Path neo4jPath, <a href='../../../../../../org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html'>GraphPersistentEntity</a> from, <a href='../../../../../../org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html'>GraphPersistentEntity</a> to)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst">
-                                <code><a href="#Neo4jPath(org.grails.datastore.gorm.neo4j.Neo4jDatastore, org.neo4j.driver.v1.types.Path, java.lang.Class, java.lang.Class)">Neo4jPath</a></strong>
-                                (org.grails.datastore.gorm.neo4j.Neo4jDatastore datastore, org.neo4j.driver.v1.types.Path neo4jPath, java.lang.Class from, java.lang.Class to)</code><br></td>
+                                <code><a href="#Neo4jPath(org.grails.datastore.gorm.neo4j.Neo4jDatastore, org.neo4j.driver.v1.types.Path, java.lang.Class, java.lang.Class)">Neo4jPath</a>
+                                (<a href='../../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html'>Neo4jDatastore</a> datastore, org.neo4j.driver.v1.types.Path neo4jPath, java.lang.Class from, java.lang.Class to)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst">
-                                <code><a href="#Neo4jPath(org.grails.datastore.gorm.neo4j.Neo4jDatastore, org.neo4j.driver.v1.types.Path)">Neo4jPath</a></strong>
-                                (org.grails.datastore.gorm.neo4j.Neo4jDatastore datastore, org.neo4j.driver.v1.types.Path neo4jPath)</code><br></td>
+                                <code><a href="#Neo4jPath(org.grails.datastore.gorm.neo4j.Neo4jDatastore, org.neo4j.driver.v1.types.Path)">Neo4jPath</a>
+                                (<a href='../../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html'>Neo4jDatastore</a> datastore, org.neo4j.driver.v1.types.Path neo4jPath)</code><br></td>
                         </tr>
                         
                     </table>
@@ -247,43 +247,51 @@ extends java.lang.Object
                     <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Methods Summary table">
                         <caption><span>Methods</span><span class="tabEnd">&nbsp;</span></caption>
                         <tr>
-                            <th class="colFirst" scope="col">Type</th>
+                            <th class="colFirst" scope="col">Type Params</th>
+                            <th class="colLast" scope="col">Return Type</th>
                             <th class="colLast" scope="col">Name and description</th>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>boolean</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>boolean</code></td>
                             <td class="colLast"><code><strong><a href="#contains(java.lang.Object)">contains</a></strong>(java.lang.Object o)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>T</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>T</code></td>
                             <td class="colLast"><code><strong><a href="#end()">end</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>java.util.Iterator&lt;Path.Segment&gt;</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>java.util.Iterator&lt;Path.Segment&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#iterator()">iterator</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>int</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>int</code></td>
                             <td class="colLast"><code><strong><a href="#length()">length</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>java.lang.Iterable</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>java.lang.Iterable</code></td>
                             <td class="colLast"><code><strong><a href="#nodes()">nodes</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>F</strong></code></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>F</code></td>
                             <td class="colLast"><code><strong><a href="#start()">start</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>protected&nbsp;static&nbsp;<a href='../../../../../../grails/neo4j/Neo4jEntity.html'>Neo4jEntity</a></strong></code></td>
-                            <td class="colLast"><code><strong><a href="#unmarshallNode(org.grails.datastore.gorm.neo4j.Neo4jDatastore, groovy.util.Node)">unmarshallNode</a></strong>(org.grails.datastore.gorm.neo4j.Neo4jDatastore datastore, groovy.util.Node node)</code><br></td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>protected&nbsp;static&nbsp;<a href='../../../../../../grails/neo4j/Neo4jEntity.html'>Neo4jEntity</a></code></td>
+                            <td class="colLast"><code><strong><a href="#unmarshallNode(org.grails.datastore.gorm.neo4j.Neo4jDatastore, groovy.util.Node)">unmarshallNode</a></strong>(<a href='../../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html'>Neo4jDatastore</a> datastore, groovy.util.Node node)</code><br></td>
                         </tr>
                         
                     </table>
@@ -301,7 +309,7 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>class java.lang.Object</strong></code></td>
+                            <td class="colFirst"><code>class java.lang.Object</code></td>
                             <td class="colLast"><code>java.lang.Object#wait(long, int), java.lang.Object#wait(long), java.lang.Object#wait(), java.lang.Object#equals(java.lang.Object), java.lang.Object#toString(), java.lang.Object#hashCode(), java.lang.Object#getClass(), java.lang.Object#notify(), java.lang.Object#notifyAll()</code></td>
                         </tr>
                     </table>
@@ -332,7 +340,7 @@ extends java.lang.Object
                         <a name="datastore"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>final&nbsp;org.grails.datastore.gorm.neo4j.Neo4jDatastore <strong>datastore</strong></h4>
+                                <h4>final&nbsp;<a href='../../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html'>Neo4jDatastore</a> <strong>datastore</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -378,7 +386,7 @@ extends java.lang.Object
                         <a name="Neo4jPath(org.grails.datastore.gorm.neo4j.Neo4jDatastore, org.neo4j.driver.v1.types.Path, org.grails.datastore.gorm.neo4j.GraphPersistentEntity, org.grails.datastore.gorm.neo4j.GraphPersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><strong>Neo4jPath</strong>(org.grails.datastore.gorm.neo4j.Neo4jDatastore datastore, org.neo4j.driver.v1.types.Path neo4jPath, <a href='../../../../../../org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html'>GraphPersistentEntity</a> from, <a href='../../../../../../org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html'>GraphPersistentEntity</a> to)</h4>
+                                <h4><strong>Neo4jPath</strong>(<a href='../../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html'>Neo4jDatastore</a> datastore, org.neo4j.driver.v1.types.Path neo4jPath, <a href='../../../../../../org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html'>GraphPersistentEntity</a> from, <a href='../../../../../../org/grails/datastore/gorm/neo4j/GraphPersistentEntity.html'>GraphPersistentEntity</a> to)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -386,7 +394,7 @@ extends java.lang.Object
                         <a name="Neo4jPath(org.grails.datastore.gorm.neo4j.Neo4jDatastore, org.neo4j.driver.v1.types.Path, java.lang.Class, java.lang.Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><strong>Neo4jPath</strong>(org.grails.datastore.gorm.neo4j.Neo4jDatastore datastore, org.neo4j.driver.v1.types.Path neo4jPath, java.lang.Class from, java.lang.Class to)</h4>
+                                <h4><strong>Neo4jPath</strong>(<a href='../../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html'>Neo4jDatastore</a> datastore, org.neo4j.driver.v1.types.Path neo4jPath, java.lang.Class from, java.lang.Class to)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -394,7 +402,7 @@ extends java.lang.Object
                         <a name="Neo4jPath(org.grails.datastore.gorm.neo4j.Neo4jDatastore, org.neo4j.driver.v1.types.Path)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><strong>Neo4jPath</strong>(org.grails.datastore.gorm.neo4j.Neo4jDatastore datastore, org.neo4j.driver.v1.types.Path neo4jPath)</h4>
+                                <h4><strong>Neo4jPath</strong>(<a href='../../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html'>Neo4jDatastore</a> datastore, org.neo4j.driver.v1.types.Path neo4jPath)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -469,7 +477,7 @@ F <strong>start</strong>()</h4>
                         <a name="unmarshallNode(org.grails.datastore.gorm.neo4j.Neo4jDatastore, groovy.util.Node)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;static&nbsp;<a href='../../../../../../grails/neo4j/Neo4jEntity.html'>Neo4jEntity</a> <strong>unmarshallNode</strong>(org.grails.datastore.gorm.neo4j.Neo4jDatastore datastore, groovy.util.Node node)</h4>
+                                <h4>protected&nbsp;static&nbsp;<a href='../../../../../../grails/neo4j/Neo4jEntity.html'>Neo4jEntity</a> <strong>unmarshallNode</strong>(<a href='../../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html'>Neo4jDatastore</a> datastore, groovy.util.Node node)</h4>
                                 <p></p>
                             </li>
                         </ul>
