@@ -40,20 +40,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         cd gorm-hibernate5
         echo "$(date)" > .snapshot
         git add .snapshot
-        if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
-            if [[ $TRAVIS_TAG =~ [M\d|RC\d] ]]; then            
-               echo "gormVersion=${TRAVIS_TAG:1}" > gradle.properties  
-            else 
-               echo "gormVersion=${TRAVIS_TAG:1}.RELEASE" > gradle.properties
-            fi            
-            
-            git add gradle.properties
-            git commit -m "Release GORM for Hibernate 5 $TRAVIS_TAG"
-            git tag $TRAVIS_TAG
-            git push --tags
-        else
-            git commit -m "New Core Snapshot: $(date)"
-        fi
+        git commit -m "New Core Snapshot: $(date)"
         git push
         cd ..
 
@@ -62,20 +49,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         cd gorm-hibernate4
         echo "$(date)" > .snapshot
         git add .snapshot
-        if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
-            if [[ $TRAVIS_TAG =~ [M\d|RC\d] ]]; then            
-               echo "gormVersion=${TRAVIS_TAG:1}" > gradle.properties  
-            else 
-               echo "gormVersion=${TRAVIS_TAG:1}.RELEASE" > gradle.properties
-            fi            
-
-            git add gradle.properties
-            git commit -m "Release GORM for Hibernate 4 $TRAVIS_TAG"
-            git tag $TRAVIS_TAG
-            git push --tags
-        else
-            git commit -m "New Core Snapshot: $(date)"
-        fi
+        git commit -m "New Core Snapshot: $(date)"
         git push
         cd ..
 
@@ -85,19 +59,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         cd gorm-rest-client
         echo "$(date)" > .snapshot
         git add .snapshot
-
-        if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
-            if [[ $TRAVIS_TAG =~ [M\d|RC\d] ]]; then            
-               echo "gormVersion=${TRAVIS_TAG:1}" > gradle.properties  
-            else 
-               echo "gormVersion=${TRAVIS_TAG:1}.RELEASE" > gradle.properties
-            fi            
-
-            git add gradle.properties
-            git commit -m "New GORM Release $TRAVIS_TAG"
-        else
-            git commit -m "New Core Snapshot: $(date)"
-        fi
+        git commit -m "New Core Snapshot: $(date)"
         git push
         cd ..
 
@@ -106,20 +68,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         cd gorm-neo4j
         echo "$(date)" > .snapshot
         git add .snapshot
-        if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
-            if [[ $TRAVIS_TAG =~ [M\d|RC\d] ]]; then            
-               echo "gormVersion=${TRAVIS_TAG:1}" > gradle.properties  
-            else 
-               echo "gormVersion=${TRAVIS_TAG:1}.RELEASE" > gradle.properties
-            fi            
-
-            git add gradle.properties
-            git commit -m "New GORM Release $TRAVIS_TAG"
-#            git tag $TRAVIS_TAG
-#            git push --tags
-        else
-            git commit -m "New Core Snapshot: $(date)"
-        fi
+        git commit -m "New Core Snapshot: $(date)"
         git push
         cd ..
 
@@ -128,20 +77,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         cd gorm-mongodb
         echo "$(date)" > .snapshot
         git add .snapshot
-        if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
-            if [[ $TRAVIS_TAG =~ [M\d|RC\d] ]]; then            
-               echo "gormVersion=${TRAVIS_TAG:1}" > gradle.properties  
-            else 
-               echo "gormVersion=${TRAVIS_TAG:1}.RELEASE" > gradle.properties
-            fi            
-
-            git add gradle.properties
-            git commit -m "New GORM Release $TRAVIS_TAG"
-#            git tag $TRAVIS_TAG
-#            git push --tags
-        else
-            git commit -m "New Core Snapshot: $(date)"
-        fi
+        git commit -m "New Core Snapshot: $(date)"
 
         git push
         cd ..
