@@ -2125,7 +2125,7 @@ List&lt;Club&gt; clubs = result.toList(Club)</code></pre>
 <div class="sect2">
 <h3 id="paths">Querying for Paths</h3>
 <div class="paragraph">
-<p>Since 6.1, GORM for Neo4j features support for Neo4j path queries. For example given the following class:</p>
+<p>Since 6.1, GORM for Neo4j features support for Neo4j path queries. To use path queries you must implement the <code>grails.neo4j.Node</code> trait in your domain class. For example given the following class:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2194,7 +2194,7 @@ Path&lt;Person, Person&gt; path = Person.findPath(<span class="string"><span cla
 <div class="sect2">
 <h3 id="queryingRelationships">Querying for Relationships</h3>
 <div class="paragraph">
-<p>In addition to being able to query for paths since 6.1, GORM for Neo4j features support for Neo4j relationship queries. For example given the following class:</p>
+<p>In addition to being able to query for paths since 6.1, GORM for Neo4j features support for Neo4j relationship queries. To use path queries you must implement the <code>grails.neo4j.Node</code> trait in your domain class. For example given the following class:</p>
 </div>
 <div class="listingblock">
 <div class="content">
