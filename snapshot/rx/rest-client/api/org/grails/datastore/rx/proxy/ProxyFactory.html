@@ -138,18 +138,21 @@ if (location.href.indexOf('is-external=true') == -1) {
                     <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Methods Summary table">
                         <caption><span>Methods</span><span class="tabEnd">&nbsp;</span></caption>
                         <tr>
-                            <th class="colFirst" scope="col">Type</th>
+                            <th class="colFirst" scope="col">Type Params</th>
+                            <th class="colLast" scope="col">Return Type</th>
                             <th class="colLast" scope="col">Name and description</th>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>T</strong></code></td>
+                            <td class="colFirst"><code>&lt;T&gt;</code></td>
+                            <td class="colLast"><code>T</code></td>
                             <td class="colLast"><code><strong><a href="#createProxy(org.grails.datastore.rx.RxDatastoreClient, org.grails.datastore.rx.query.QueryState, Class<T>, java.io.Serializable)">createProxy</a></strong>(<a href='../../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> client, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, java.lang.Class&lt;T&gt; type, java.io.Serializable key)</code><br>Creates a proxy</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html'>ObservableProxy</a></strong></code></td>
-                            <td class="colLast"><code><strong><a href="#createProxy(org.grails.datastore.rx.RxDatastoreClient, org.grails.datastore.rx.query.QueryState, org.grails.datastore.mapping.query.Query)">createProxy</a></strong>(<a href='../../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> client, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, org.grails.datastore.mapping.query.Query query)</code><br>Creates a proxy</td>
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code><a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html'>ObservableProxy</a></code></td>
+                            <td class="colLast"><code><strong><a href="#createProxy(org.grails.datastore.rx.RxDatastoreClient, org.grails.datastore.rx.query.QueryState, org.grails.datastore.mapping.query.Query)">createProxy</a></strong>(<a href='../../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> client, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, <a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query)</code><br>Creates a proxy</td>
                         </tr>
                         
                     </table>
@@ -167,7 +170,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>interface <a href='../../../../../org/grails/datastore/mapping/proxy/ProxyHandler.html'>ProxyHandler</a></strong></code></td>
+                            <td class="colFirst"><code>interface <a href='../../../../../org/grails/datastore/mapping/proxy/ProxyHandler.html'>ProxyHandler</a></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/datastore/mapping/proxy/ProxyHandler.html#getIdentifier(java.lang.Object)'>getIdentifier</a>, <a href='../../../../../org/grails/datastore/mapping/proxy/ProxyHandler.html#getProxiedClass(java.lang.Object)'>getProxiedClass</a>, <a href='../../../../../org/grails/datastore/mapping/proxy/ProxyHandler.html#initialize(java.lang.Object)'>initialize</a>, <a href='../../../../../org/grails/datastore/mapping/proxy/ProxyHandler.html#isInitialized(java.lang.Object)'>isInitialized</a>, <a href='../../../../../org/grails/datastore/mapping/proxy/ProxyHandler.html#isInitialized(java.lang.Object, java.lang.String)'>isInitialized</a>, <a href='../../../../../org/grails/datastore/mapping/proxy/ProxyHandler.html#isProxy(java.lang.Object)'>isProxy</a>, <a href='../../../../../org/grails/datastore/mapping/proxy/ProxyHandler.html#unwrap(java.lang.Object)'>unwrap</a></code></td>
                         </tr>
                     </table>
@@ -205,7 +208,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="createProxy(org.grails.datastore.rx.RxDatastoreClient, org.grails.datastore.rx.query.QueryState, Class<T>, java.io.Serializable)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;T <strong>createProxy</strong>(<a href='../../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> client, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, java.lang.Class&lt;T&gt; type, java.io.Serializable key)</h4>
+                                <h4>&lt;T&gt; public&nbsp;T <strong>createProxy</strong>(<a href='../../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> client, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, java.lang.Class&lt;T&gt; type, java.io.Serializable key)</h4>
                                 <p> Creates a proxy
      <DL><DT><B>Returns:</B></DT><DD>A proxy instance</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code><T></code> -  The type of the proxy to create</DD><DD><code>client</code> -  The datastore client</DD><DD><code>queryState</code> -  Any prior query state</DD><DD><code>type</code> -  The type of the proxy to create</DD><DD><code>key</code> -  The key to proxy</DD></DL></p>
                             </li>
@@ -214,7 +217,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="createProxy(org.grails.datastore.rx.RxDatastoreClient, org.grails.datastore.rx.query.QueryState, org.grails.datastore.mapping.query.Query)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html'>ObservableProxy</a> <strong>createProxy</strong>(<a href='../../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> client, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, org.grails.datastore.mapping.query.Query query)</h4>
+                                <h4>public&nbsp;<a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html'>ObservableProxy</a> <strong>createProxy</strong>(<a href='../../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a> client, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, <a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query)</h4>
                                 <p> Creates a proxy
      <DL><DT><B>Returns:</B></DT><DD>A proxy instance</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>client</code> -  The datastore client</DD><DD><code>queryState</code> -  Any prior query state</DD><DD><code>query</code> -  The query to be executed to initialize the proxy</DD></DL></p>
                             </li>
