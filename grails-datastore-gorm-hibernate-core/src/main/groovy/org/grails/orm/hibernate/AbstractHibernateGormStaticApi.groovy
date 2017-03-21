@@ -73,11 +73,17 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
             return null
         }
 
+        id = convertIdentifier(id)
+        
+        if (id == null) {
+            return null
+        }
+
         if(persistentEntity.isMultiTenant()) {
             // for multi-tenant entities we process get(..) via a query
             (D)hibernateTemplate.execute(  { Session session ->
                 def criteria = session.createCriteria(persistentEntity.javaClass)
-                criteria.add Restrictions.idEq(convertIdentifier(id))
+                criteria.add Restrictions.idEq(id)
                 firePreQueryEvent(session,criteria)
                 def result = (D) criteria.uniqueResult()
                 firePostQueryEvent(session, criteria, result)
@@ -87,7 +93,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         else {
             // for non multi-tenant entities we process get(..) via the second level cache
             return (D)proxyHandler.unwrap(
-                hibernateTemplate.get(persistentEntity.javaClass, convertIdentifier(id))
+                hibernateTemplate.get(persistentEntity.javaClass, id)
             )
         }
 
@@ -98,10 +104,15 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         if (id == null) {
             return null
         }
+        id = convertIdentifier(id)
 
+        if (id == null) {
+            return null
+        }
+        
         (D)hibernateTemplate.execute(  { Session session ->
             def criteria = session.createCriteria(persistentEntity.javaClass)
-            criteria.add Restrictions.idEq(convertIdentifier(id))
+            criteria.add Restrictions.idEq(id)
             criteria.readOnly = true
             firePreQueryEvent(session,criteria)
             def result = (D) criteria.uniqueResult()
