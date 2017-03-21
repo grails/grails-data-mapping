@@ -239,12 +239,12 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;org.codehaus.groovy.ast.MethodNode</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#moveOriginalCodeToNewMethod(org.codehaus.groovy.ast.MethodNode, java.lang.String, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.control.SourceUnit)">moveOriginalCodeToNewMethod</a></strong>(org.codehaus.groovy.ast.MethodNode methodNode, java.lang.String renamedMethodName, org.codehaus.groovy.ast.Parameter[] newParameters, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.control.SourceUnit source)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#moveOriginalCodeToNewMethod(org.codehaus.groovy.ast.MethodNode, java.lang.String, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.control.SourceUnit, Map<String, ClassNode>)">moveOriginalCodeToNewMethod</a></strong>(org.codehaus.groovy.ast.MethodNode methodNode, java.lang.String renamedMethodName, org.codehaus.groovy.ast.Parameter[] newParameters, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.control.SourceUnit source, java.util.Map&lt;java.lang.String, org.codehaus.groovy.ast.ClassNode&gt; genericsSpec)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;org.codehaus.groovy.ast.Parameter[]</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#prepareNewMethodParameters(org.codehaus.groovy.ast.MethodNode)">prepareNewMethodParameters</a></strong>(org.codehaus.groovy.ast.MethodNode methodNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#prepareNewMethodParameters(org.codehaus.groovy.ast.MethodNode, Map<String, ClassNode>)">prepareNewMethodParameters</a></strong>(org.codehaus.groovy.ast.MethodNode methodNode, java.util.Map&lt;java.lang.String, org.codehaus.groovy.ast.ClassNode&gt; genericsSpec)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -264,12 +264,12 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;org.codehaus.groovy.ast.MethodNode</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#weaveNewMethod(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)">weaveNewMethod</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, org.codehaus.groovy.ast.AnnotationNode annotationNode, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.MethodNode methodNode)</code><br>Weaves a new method</td>
+                            <td class="colLast"><code><strong><a href="#weaveNewMethod(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode, Map<String, ClassNode>)">weaveNewMethod</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, org.codehaus.groovy.ast.AnnotationNode annotationNode, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.MethodNode methodNode, java.util.Map&lt;java.lang.String, org.codehaus.groovy.ast.ClassNode&gt; genericsSpec)</code><br>Weaves a new method</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#weaveTestSetupMethod(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)">weaveTestSetupMethod</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, org.codehaus.groovy.ast.AnnotationNode annotationNode, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.MethodNode methodNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#weaveTestSetupMethod(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode, Map<String, ClassNode>)">weaveTestSetupMethod</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, org.codehaus.groovy.ast.AnnotationNode annotationNode, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.MethodNode methodNode, java.util.Map&lt;java.lang.String, org.codehaus.groovy.ast.ClassNode&gt; genericsSpec)</code><br></td>
                         </tr>
                         
                     </table>
@@ -437,18 +437,18 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="moveOriginalCodeToNewMethod(org.codehaus.groovy.ast.MethodNode, java.lang.String, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.control.SourceUnit)"><!-- --></a>
+                        <a name="moveOriginalCodeToNewMethod(org.codehaus.groovy.ast.MethodNode, java.lang.String, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.control.SourceUnit, Map<String, ClassNode>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;org.codehaus.groovy.ast.MethodNode <strong>moveOriginalCodeToNewMethod</strong>(org.codehaus.groovy.ast.MethodNode methodNode, java.lang.String renamedMethodName, org.codehaus.groovy.ast.Parameter[] newParameters, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.control.SourceUnit source)</h4>
+                                <h4>protected&nbsp;org.codehaus.groovy.ast.MethodNode <strong>moveOriginalCodeToNewMethod</strong>(org.codehaus.groovy.ast.MethodNode methodNode, java.lang.String renamedMethodName, org.codehaus.groovy.ast.Parameter[] newParameters, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.control.SourceUnit source, java.util.Map&lt;java.lang.String, org.codehaus.groovy.ast.ClassNode&gt; genericsSpec)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="prepareNewMethodParameters(org.codehaus.groovy.ast.MethodNode)"><!-- --></a>
+                        <a name="prepareNewMethodParameters(org.codehaus.groovy.ast.MethodNode, Map<String, ClassNode>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;org.codehaus.groovy.ast.Parameter[] <strong>prepareNewMethodParameters</strong>(org.codehaus.groovy.ast.MethodNode methodNode)</h4>
+                                <h4>protected&nbsp;org.codehaus.groovy.ast.Parameter[] <strong>prepareNewMethodParameters</strong>(org.codehaus.groovy.ast.MethodNode methodNode, java.util.Map&lt;java.lang.String, org.codehaus.groovy.ast.ClassNode&gt; genericsSpec)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -478,19 +478,19 @@ void <strong>visit</strong>(org.codehaus.groovy.control.SourceUnit source, org.c
                             </li>
                         </ul>
                     
-                        <a name="weaveNewMethod(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)"><!-- --></a>
+                        <a name="weaveNewMethod(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode, Map<String, ClassNode>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;org.codehaus.groovy.ast.MethodNode <strong>weaveNewMethod</strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, org.codehaus.groovy.ast.AnnotationNode annotationNode, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.MethodNode methodNode)</h4>
+                                <h4>protected&nbsp;org.codehaus.groovy.ast.MethodNode <strong>weaveNewMethod</strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, org.codehaus.groovy.ast.AnnotationNode annotationNode, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.MethodNode methodNode, java.util.Map&lt;java.lang.String, org.codehaus.groovy.ast.ClassNode&gt; genericsSpec)</h4>
                                 <p> Weaves a new method
      <DL><DT><B>Returns:</B></DT><DD>The new method's body</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>sourceUnit</code> -  The source unit</DD><DD><code>annotationNode</code> -  The annotation node</DD><DD><code>classNode</code> -  The class node</DD><DD><code>methodNode</code> -  The original method that will delete to the new method</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="weaveTestSetupMethod(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)"><!-- --></a>
+                        <a name="weaveTestSetupMethod(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode, Map<String, ClassNode>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>weaveTestSetupMethod</strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, org.codehaus.groovy.ast.AnnotationNode annotationNode, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.MethodNode methodNode)</h4>
+                                <h4>protected&nbsp;void <strong>weaveTestSetupMethod</strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, org.codehaus.groovy.ast.AnnotationNode annotationNode, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.MethodNode methodNode, java.util.Map&lt;java.lang.String, org.codehaus.groovy.ast.ClassNode&gt; genericsSpec)</h4>
                                 <p></p>
                             </li>
                         </ul>
