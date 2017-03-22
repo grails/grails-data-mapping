@@ -100,6 +100,7 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             Serializable.class.getName(),
             URI.class.getName(),
             URL.class.getName(),
+            UUID.class.getName(),
             "org.bson.types.ObjectId")));
     }
 
