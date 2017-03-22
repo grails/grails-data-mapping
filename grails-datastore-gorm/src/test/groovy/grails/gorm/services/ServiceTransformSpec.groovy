@@ -26,6 +26,8 @@ import grails.gorm.annotation.Entity
 @Service(Foo)
 abstract class AbstractMyService implements FooService {
 
+    AbstractMyService anotherFooService 
+    
     protected abstract Foo findFoo(Serializable id)
     
     Foo readFoo(Serializable id) {
@@ -699,7 +701,7 @@ class Foo {
     void "test service transform"() {
         given:
         ServiceRegistry reg = new DefaultServiceRegistry(Mock(Datastore), false)
-
+        reg.initialize()
         expect:
         org.grails.datastore.mapping.services.Service.isAssignableFrom(TestService)
         reg.getService(TestService) != null

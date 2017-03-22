@@ -24,11 +24,16 @@ import groovyjarjarasm.asm.Opcodes
 import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
+import org.codehaus.groovy.ast.ConstructorNode
+import org.codehaus.groovy.ast.FieldNode
 import org.codehaus.groovy.ast.MethodNode
+import org.codehaus.groovy.ast.Parameter
+import org.codehaus.groovy.ast.PropertyNode
 import org.codehaus.groovy.ast.expr.ClassExpression
 import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.ListExpression
+import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.tools.GenericsUtils
 import org.codehaus.groovy.control.CompilePhase
@@ -67,11 +72,13 @@ import org.grails.datastore.gorm.services.implementers.UpdateStringQueryImplemen
 import org.grails.datastore.gorm.transactions.transform.TransactionalTransform
 import org.grails.datastore.gorm.transform.AbstractTraitApplyingGormASTTransformation
 import org.grails.datastore.gorm.validation.javax.services.implementers.MethodValidationImplementer
+import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.order.OrderedComparator
 
 import java.beans.Introspector
 import java.lang.reflect.Modifier
 
+import static org.codehaus.groovy.ast.tools.GeneralUtils.*
 import static org.grails.datastore.mapping.reflect.AstUtils.*
 
 /**
@@ -83,10 +90,10 @@ import static org.grails.datastore.mapping.reflect.AstUtils.*
  */
 @CompileStatic
 @GroovyASTTransformation(phase = CompilePhase.SEMANTIC_ANALYSIS)
-class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation implements CompilationUnitAware,ASTTransformation {
+class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation implements CompilationUnitAware, ASTTransformation {
 
     private static final ClassNode MY_TYPE = new ClassNode(Service.class);
-    private static final Object APPLIED_MARKER  = new Object()
+    private static final Object APPLIED_MARKER = new Object()
     private static final List<ServiceImplementer> DEFAULT_IMPLEMENTORS = [
             new FindAllImplementer(),
             new FindOneImplementer(),
@@ -114,7 +121,8 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             new MethodValidationImplementer()] as List<ServiceImplementer>
 
     private static Iterable<ServiceImplementer> LOADED_IMPLEMENTORS = null
-    public static final String NO_IMPLEMENTATIONS_MESSAGE = "No implementations possible for method. Please use an abstract class instead and provide an implementation."
+    public static
+    final String NO_IMPLEMENTATIONS_MESSAGE = "No implementations possible for method. Please use an abstract class instead and provide an implementation."
 
     @Override
     protected Class getTraitClass() {
@@ -142,16 +150,70 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
         // and add the implementation as an inner class. If any method of the interface cannot be implemented
         // a compilation error occurs
         boolean isInterface = classNode.isInterface()
-        if(isInterface || Modifier.isAbstract(classNode.modifiers)) {
+        boolean isAbstractClass = !isInterface && Modifier.isAbstract(classNode.modifiers)
+
+        List<FieldNode> propertiesFields = []
+        if (isAbstractClass) {
+            List<PropertyNode> properties = classNode.getProperties()
+            for (PropertyNode pn in properties) {
+                ClassNode propertyType = pn.type
+                if (hasAnnotation(propertyType, Service) && propertyType != classNode && Modifier.isPublic(pn.modifiers) && pn.getterBlock == null && pn.setterBlock == null) {
+                    FieldNode field = pn.field
+                    VariableExpression fieldVar = varX(field)
+                    propertiesFields.add(field)
+                    pn.setGetterBlock(
+                        block(
+                            ifS( equalsNullX(fieldVar),
+                                assignX(fieldVar, callX( varX("datastore"), "getService", classX(propertyType.plainNodeReference)))
+                            ),
+                            returnS(fieldVar)
+                        )
+                    )
+                }
+            }
+
+            List<ConstructorNode> constructors = classNode.getDeclaredConstructors()
+            if(!constructors.isEmpty()) {
+                error(sourceUnit, classNode, "Abstract data Services should not define constructors")
+            }
+
+        }
+
+        if (isInterface || isAbstractClass) {
             // create a new class to represent the implementation
             String packageName = classNode.packageName ? "${classNode.packageName}." : ""
             ClassNode[] interfaces = isInterface ? [classNode.plainNodeReference] as ClassNode[] : new ClassNode[0]
             ClassNode superClass = isInterface ? ClassHelper.OBJECT_TYPE : classNode.plainNodeReference
             String serviceClassName = classNode.nameWithoutPackage
-            ClassNode impl = new ClassNode("${packageName}\$${ serviceClassName}Implementation", // class name
-                                            ACC_PUBLIC, // public
-                                            superClass,
-                                            interfaces)
+            ClassNode impl = new ClassNode("${packageName}\$${serviceClassName}Implementation", // class name
+                    ACC_PUBLIC, // public
+                    superClass,
+                    interfaces)
+
+            if(!propertiesFields.isEmpty()) {
+
+                ClassNode datastoreType = ClassHelper.make(Datastore)
+                FieldNode datastoreField = impl.addField("datastore", Modifier.PRIVATE, datastoreType, null)
+                VariableExpression datastoreFieldVar = varX(datastoreField)
+
+
+                BlockStatement body = block()
+                Parameter datastoreParam = param(datastoreType, "d")
+                impl.addMethod("setDatastore", Modifier.PUBLIC, ClassHelper.VOID_TYPE, params(
+                        datastoreParam
+                ), null, body )
+                body.addStatement(
+                        assignS(datastoreFieldVar, varX(datastoreParam))
+                )
+                impl.addMethod("getDatastore", Modifier.PUBLIC, datastoreType.plainNodeReference, ZERO_PARAMETERS, null,
+                        returnS( datastoreFieldVar )
+                )
+                for(FieldNode fn in propertiesFields) {
+                    body.addStatement(
+                            assignS(varX(fn), callX(datastoreFieldVar, "getService", classX(fn.type.plainNodeReference)))
+                    )
+                }
+            }
 
             copyAnnotations(classNode, impl)
             findAnnotation(impl, Service)
@@ -159,7 +221,7 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             // add compile static by default
             impl.addAnnotation(new AnnotationNode(COMPILE_STATIC_TYPE))
             // weave the trait class
-            ClassExpression ce = (ClassExpression)annotationNode.getMember("value")
+            ClassExpression ce = (ClassExpression) annotationNode.getMember("value")
             ClassNode targetDomainClass = ce != null ? ce.type : ClassHelper.OBJECT_TYPE
             // weave with generic argument
             weaveTraitWithGenerics(impl, getTraitClass(), targetDomainClass)
@@ -167,25 +229,24 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             List<MethodNode> abstractMethods = findAllUnimplementedAbstractMethods(classNode)
             Iterable<ServiceImplementer> implementers = findServiceImplementors()
             Expression additionalImplementers = annotationNode.getMember("implementers")
-            if(additionalImplementers instanceof ListExpression) {
-                for(Expression exp in ((ListExpression)additionalImplementers).expressions) {
+            if (additionalImplementers instanceof ListExpression) {
+                for (Expression exp in ((ListExpression) additionalImplementers).expressions) {
                     implementers = addClassExpressionToImplementers(exp, implementers)
                     implementers = implementers.sort(true, new OrderedComparator<ServiceImplementer>())
                 }
-            }
-            else if(additionalImplementers instanceof ClassExpression) {
+            } else if (additionalImplementers instanceof ClassExpression) {
                 implementers = addClassExpressionToImplementers(additionalImplementers, implementers)
             }
 
             // first go through the existing implemented methods and just enhance them
-            if(!isInterface) {
-                for(MethodNode existing in classNode.methods) {
+            if (!isInterface) {
+                for (MethodNode existing in classNode.methods) {
                     int modifiers = existing.modifiers
-                    if(!Modifier.isAbstract(modifiers) && Modifier.isPublic(modifiers) && !existing.isStatic()) {
-                        for(ServiceImplementer implementer in implementers) {
-                            if(implementer instanceof ServiceEnhancer) {
-                                ServiceEnhancer enhancer = (ServiceEnhancer)implementer
-                                if(enhancer.doesEnhance(targetDomainClass, existing)) {
+                    if (!Modifier.isAbstract(modifiers) && Modifier.isPublic(modifiers) && !existing.isStatic()) {
+                        for (ServiceImplementer implementer in implementers) {
+                            if (implementer instanceof ServiceEnhancer) {
+                                ServiceEnhancer enhancer = (ServiceEnhancer) implementer
+                                if (enhancer.doesEnhance(targetDomainClass, existing)) {
                                     enhancer.enhance(targetDomainClass, existing, existing, impl)
                                 }
                             }
@@ -195,12 +256,12 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             }
 
             // go through the abstract methods and implement them
-            for(MethodNode method in abstractMethods) {
+            for (MethodNode method in abstractMethods) {
 
                 // find an implementer that implements the method
                 MethodNode methodImpl = null
-                for(ServiceImplementer implementer in implementers) {
-                    if(implementer.doesImplement(targetDomainClass, method)) {
+                for (ServiceImplementer implementer in implementers) {
+                    if (implementer.doesImplement(targetDomainClass, method)) {
                         methodImpl = new MethodNode(
                                 method.name,
                                 Modifier.PUBLIC,
@@ -209,8 +270,8 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
                                 method.exceptions,
                                 new BlockStatement())
                         methodImpl.setDeclaringClass(impl)
-                        if(Modifier.isProtected(method.modifiers)) {
-                            if(!TransactionalTransform.hasTransactionalAnnotation(methodImpl)) {
+                        if (Modifier.isProtected(method.modifiers)) {
+                            if (!TransactionalTransform.hasTransactionalAnnotation(methodImpl)) {
                                 addAnnotationIfNecessary(methodImpl, NotTransactional)
                             }
                         }
@@ -222,15 +283,14 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
                 }
 
                 // the method couldn't be implemented so error
-                if(methodImpl == null) {
+                if (methodImpl == null) {
                     error(sourceUnit, classNode.isPrimaryClassNode() ? method : classNode, "No implementations possible for method '${method.typeDescriptor}'. Please use an abstract class instead and provide an implementation.")
                     break
-                }
-                else {
-                    for(ServiceImplementer implementer in implementers) {
-                        if(implementer instanceof ServiceEnhancer) {
-                            ServiceEnhancer enhancer = ((ServiceEnhancer)implementer)
-                            if(enhancer.doesEnhance(targetDomainClass, method)) {
+                } else {
+                    for (ServiceImplementer implementer in implementers) {
+                        if (implementer instanceof ServiceEnhancer) {
+                            ServiceEnhancer enhancer = ((ServiceEnhancer) implementer)
+                            if (enhancer.doesEnhance(targetDomainClass, method)) {
                                 enhancer.enhance(targetDomainClass, method, methodImpl, impl)
                             }
                         }
@@ -244,15 +304,14 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
 
 
             Expression exposeExpr = annotationNode.getMember("expose")
-            if( exposeExpr == null || (exposeExpr instanceof ConstantExpression && exposeExpr == ConstantExpression.TRUE) ) {
+            if (exposeExpr == null || (exposeExpr instanceof ConstantExpression && exposeExpr == ConstantExpression.TRUE)) {
                 generateServiceDescriptor(sourceUnit, impl)
             }
 
             sourceUnit.getAST().addClass(impl)
-        }
-        else {
+        } else {
             Expression exposeExpr = annotationNode.getMember("expose")
-            if( exposeExpr == null || (exposeExpr instanceof ConstantExpression && exposeExpr == ConstantExpression.TRUE) ) {
+            if (exposeExpr == null || (exposeExpr instanceof ConstantExpression && exposeExpr == ConstantExpression.TRUE)) {
                 generateServiceDescriptor(sourceUnit, classNode)
             }
         }
@@ -272,13 +331,13 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
     }
 
     protected Iterable<ServiceImplementer> findServiceImplementors() {
-        if(LOADED_IMPLEMENTORS == null) {
+        if (LOADED_IMPLEMENTORS == null) {
             Iterable<ServiceImplementer> implementers = ServiceLoader.load(ServiceImplementer, getClass().classLoader)
             if (!implementers.iterator().hasNext()) {
                 implementers = ServiceLoader.load(ServiceImplementer, Thread.currentThread().contextClassLoader)
             }
             implementers = (implementers + DEFAULT_IMPLEMENTORS).unique { ServiceImplementer o1 ->
-                 o1.class.name
+                o1.class.name
             }
             LOADED_IMPLEMENTORS = implementers.sort(true, new OrderedComparator<ServiceImplementer>())
         }
@@ -288,7 +347,7 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
     protected void generateServiceDescriptor(SourceUnit sourceUnit, ClassNode classNode) {
         ReaderSource readerSource = sourceUnit.getSource()
         // Don't generate for runtime compiled scripts
-        if(readerSource instanceof FileReaderSource || readerSource instanceof URLReaderSource) {
+        if (readerSource instanceof FileReaderSource || readerSource instanceof URLReaderSource) {
 
             File targetDirectory = sourceUnit.configuration.targetDirectory
             if (targetDirectory == null) {

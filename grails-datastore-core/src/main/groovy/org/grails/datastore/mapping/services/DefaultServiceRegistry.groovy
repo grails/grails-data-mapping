@@ -3,6 +3,7 @@ package org.grails.datastore.mapping.services
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.model.lifecycle.Initializable
 import org.grails.datastore.mapping.reflect.NameUtils
 import org.springframework.beans.factory.BeanFactory
 import org.springframework.beans.factory.BeanFactoryAware
@@ -20,7 +21,7 @@ import java.lang.reflect.Modifier
  */
 @CompileStatic
 @Slf4j
-class DefaultServiceRegistry implements ServiceRegistry {
+class DefaultServiceRegistry implements ServiceRegistry, Initializable {
     /**
      * The datastore this service relates to
      */
@@ -28,6 +29,7 @@ class DefaultServiceRegistry implements ServiceRegistry {
 
     protected final Map<Class,Service> servicesByInterface
     protected final Collection<Service> services = []
+    private boolean initialized
 
     DefaultServiceRegistry(Datastore datastore, boolean exceptionOnLoadError = true) {
         this.datastore = datastore
@@ -37,7 +39,6 @@ class DefaultServiceRegistry implements ServiceRegistry {
         while(serviceIterator.hasNext()) {
             try {
                 Service service = serviceIterator.next()
-                service.datastore = datastore
                 this.services.add(service)
                 Class[] allInterfaces = ClassUtils.getAllInterfaces(service)
                 Class theClass = service.getClass()
@@ -88,5 +89,18 @@ class DefaultServiceRegistry implements ServiceRegistry {
 
     protected Iterable<Service> loadServices() {
         ServiceLoader.load(Service)
+    }
+
+    @Override
+    void initialize() {
+        for(s in services) {
+            s.datastore = datastore
+        }
+        this.initialized = true
+    }
+
+    @Override
+    boolean isInitialized() {
+        return this.initialized
     }
 }

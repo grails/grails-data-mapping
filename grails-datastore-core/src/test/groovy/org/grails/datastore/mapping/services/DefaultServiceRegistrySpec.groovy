@@ -11,8 +11,9 @@ class DefaultServiceRegistrySpec extends Specification {
     void "test load services into service registry"() {
         given:
         ServiceRegistry reg = new DefaultServiceRegistry(Mock(Datastore))
+        reg.initialize()
         ServiceRegistry reg2 = new DefaultServiceRegistry(Mock(Datastore))
-
+        reg2.initialize()
         expect:
         reg.getService(TestService) != null
         reg.getService(TestService).datastore != null

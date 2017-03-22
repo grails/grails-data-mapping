@@ -22,6 +22,17 @@ class ServiceImplSpec extends Specification {
         Product
     )
 
+    void "test inter service interaction"() {
+        given:
+        Product p1 = new Product(name: "Apple", type:"Fruit").save(flush:true)
+        Product p2 = new Product(name: "Orange", type:"Fruit").save(flush:true)
+        AnotherProductService productService = datastore.getService(AnotherProductService)
+
+        expect:
+        productService.findProductInfo("Apple", "Fruit").name == "Apple"
+
+    }
+
     void "test list products"() {
         given:
         Product p1 = new Product(name: "Apple", type:"Fruit").save(flush:true)
@@ -341,10 +352,16 @@ interface AnotherProductInterface {
 @Service(Product)
 abstract class AnotherProductService implements AnotherProductInterface{
 
+    ProductService originalProductService
+
     abstract Product get(Serializable id)
 
     Product getByName(String name) {
         return new Product(name:name.toUpperCase())
+    }
+
+    ProductInfo findProductInfo(String name, String type) {
+        getOriginalProductService().findProductInfo(name, type) // ?
     }
 }
 

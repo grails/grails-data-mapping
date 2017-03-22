@@ -83,7 +83,9 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
         this.connectionDetails = connectionDetails;
         setApplicationContext(ctx);
         this.cacheAdapterRepository = cacheAdapterRepository;
-        this.serviceRegistry = new DefaultServiceRegistry(this);
+        DefaultServiceRegistry defaultServiceRegistry = new DefaultServiceRegistry(this);
+        this.serviceRegistry = defaultServiceRegistry;
+        defaultServiceRegistry.initialize();
     }
 
     public AbstractDatastore(MappingContext mappingContext, Map<String, Object> connectionDetails,
