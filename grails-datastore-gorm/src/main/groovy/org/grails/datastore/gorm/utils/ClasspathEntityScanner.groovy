@@ -65,6 +65,7 @@ class ClasspathEntityScanner {
      */
     Class[] scan(Package... packages) {
         ClassPathScanningCandidateComponentProvider componentProvider = new ClassPathScanningCandidateComponentProvider(false)
+        componentProvider.setMetadataReaderFactory(new AnnotationMetadataReaderFactory(classLoader))
         for(ann in annotations) {
             componentProvider.addIncludeFilter(new AnnotationTypeFilter(ann))
         }
