@@ -19,10 +19,16 @@ import grails.core.GrailsApplication;
 import grails.core.GrailsClass;
 import grails.core.GrailsDomainClass;
 import org.grails.core.artefact.DomainClassArtefactHandler;
+import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.model.AbstractMappingContext;
 import org.grails.datastore.mapping.model.MappingConfigurationStrategy;
 import org.grails.datastore.mapping.model.MappingFactory;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+
+import java.util.Map;
 
 /**
  * A MappingContext that adapts the Grails domain model to the Mapping API.
@@ -31,9 +37,12 @@ import org.grails.datastore.mapping.model.PersistentEntity;
  * @since 1.0
  */
 @SuppressWarnings("rawtypes")
-public class GrailsDomainClassMappingContext extends AbstractMappingContext {
+public class GrailsDomainClassMappingContext extends AbstractMappingContext implements ApplicationContextAware {
 
     private GrailsApplication grailsApplication;
+    private MappingConfigurationStrategy configurationStrategy;
+    private MappingFactory mappingFactory;
+    private ApplicationContext applicationContext;
 
     public GrailsDomainClassMappingContext(GrailsApplication grailsApplication) {
         this.grailsApplication = grailsApplication;
@@ -52,12 +61,45 @@ public class GrailsDomainClassMappingContext extends AbstractMappingContext {
     }
 
     public MappingConfigurationStrategy getMappingSyntaxStrategy() {
-        throw new UnsupportedOperationException("MappingConfigurationStrategy not supported by implementation. Defined by Grails itself.");
+        if(configurationStrategy == null) {
+            if(applicationContext != null) {
+                Map<String, Datastore> datastoreBeans = applicationContext.getBeansOfType(Datastore.class);
+                if(datastoreBeans.containsKey("hibernateDatastore")) {
+                    Datastore datastore = datastoreBeans.get("hibernateDatastore");
+                    this.configurationStrategy = datastore.getMappingContext().getMappingSyntaxStrategy();
+                    return configurationStrategy;
+                }
+                else if(!datastoreBeans.isEmpty()) {
+                    Datastore first = datastoreBeans.values().iterator().next();
+                    this.configurationStrategy = first.getMappingContext().getMappingSyntaxStrategy();
+                    return configurationStrategy;
+                }
+            }
+            throw new IllegalStateException("No GORM implementation configured");
+        }
+        return configurationStrategy;
     }
 
     @Override
     public MappingFactory getMappingFactory() {
-        throw new UnsupportedOperationException("MappingFactory not supported by implementation. Defined by Grails itself.");
+        if(mappingFactory == null) {
+            if(applicationContext != null) {
+                Map<String, Datastore> datastoreBeans = applicationContext.getBeansOfType(Datastore.class);
+                if(datastoreBeans.containsKey("hibernateDatastore")) {
+                    Datastore datastore = datastoreBeans.get("hibernateDatastore");
+                    this.mappingFactory = datastore.getMappingContext().getMappingFactory();
+                    return mappingFactory;
+                }
+                else if(!datastoreBeans.isEmpty()) {
+                    Datastore first = datastoreBeans.values().iterator().next();
+                    this.mappingFactory = first.getMappingContext().getMappingFactory();
+                    return mappingFactory;
+                }
+            }
+            throw new IllegalStateException("No GORM implementation configured");
+        }
+        return mappingFactory;
+
     }
 
     @Override
@@ -71,5 +113,10 @@ public class GrailsDomainClassMappingContext extends AbstractMappingContext {
     @Override
     protected PersistentEntity createPersistentEntity(Class javaClass, boolean external) {
         return createPersistentEntity(javaClass);
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }
