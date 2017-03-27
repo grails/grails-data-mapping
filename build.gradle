@@ -17,8 +17,8 @@ buildscript {
 
 project.ext {
     springVersion = "4.3.7.RELEASE"
-    grailsVersion = "3.2.7"
-    grails2Version = '2.5.5'
+    grailsVersion = "3.2.8"
+    grails2Version = '2.5.6'
     slf4jVersion = "1.7.22"
     junitVersion = "4.12"
     javassistVersion = "3.21.0-GA"
