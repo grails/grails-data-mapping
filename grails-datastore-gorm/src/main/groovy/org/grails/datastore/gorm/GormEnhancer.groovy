@@ -441,7 +441,7 @@ class GormEnhancer implements Closeable {
         try {
             Thread.currentThread().contextClassLoader.loadClass("org.grails.datastore.gorm.support.ConstraintRegistrar").newInstance(datastore)
         } catch (Throwable e) {
-            log.error("Unable to register GORM constraints: $e.message", e)
+            log.debug("Unable to register GORM constraints. Not running a Grails environment. This can be safely ignored if you are not running Grails: $e.message", e)
         }
     }
 
