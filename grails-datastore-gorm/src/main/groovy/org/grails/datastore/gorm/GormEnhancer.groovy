@@ -40,6 +40,7 @@ import org.grails.datastore.mapping.multitenancy.MultiTenantCapableDatastore
 import org.grails.datastore.mapping.multitenancy.TenantResolver
 import org.grails.datastore.mapping.multitenancy.resolvers.FixedTenantResolver
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
+import org.grails.datastore.mapping.reflect.ClassUtils
 import org.grails.datastore.mapping.reflect.MetaClassUtils
 import org.grails.datastore.mapping.reflect.NameUtils
 import org.grails.datastore.mapping.transactions.TransactionCapableDatastore
@@ -431,7 +432,11 @@ class GormEnhancer implements Closeable {
     @CompileDynamic
     protected void removeConstraints() {
         try {
-            Thread.currentThread().contextClassLoader.loadClass("org.codehaus.groovy.grails.validation.ConstrainedProperty").removeConstraint('unique')
+            String className = "org.codehaus.groovy.grails.validation.ConstrainedProperty"
+            ClassLoader classLoader = getClass().getClassLoader()
+            if(ClassUtils.isPresent(className, classLoader)) {
+                classLoader.loadClass(className).removeConstraint('unique')
+            }
         } catch (Throwable e) {
             log.debug("Not running in Grails 2 environment, cannot de-register constraints. This exception can be safely ignored if you are not using Grails 2. ${e.message}", e)
         }
@@ -439,7 +444,11 @@ class GormEnhancer implements Closeable {
 
     protected void registerConstraints(Datastore datastore) {
         try {
-            Thread.currentThread().contextClassLoader.loadClass("org.grails.datastore.gorm.support.ConstraintRegistrar").newInstance(datastore)
+            String className = "org.grails.datastore.gorm.support.ConstraintRegistrar"
+            ClassLoader classLoader = getClass().getClassLoader()
+            if(ClassUtils.isPresent(className, classLoader)) {
+                classLoader.loadClass(className).newInstance(datastore)
+            }
         } catch (Throwable e) {
             log.debug("Unable to register GORM constraints. Not running a Grails environment. This can be safely ignored if you are not running Grails: $e.message", e)
         }
