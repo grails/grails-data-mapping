@@ -10,7 +10,7 @@ dependencies {
     documentation "org.grails:grails-async:$grailsVersion"
     documentation "org.springframework:spring-beans:$springVersion"
     compileOnly("org.hibernate:hibernate-validator:$hibernateValidatorVersion")
-    compile 'io.reactivex:rxjava:1.2.1'
+    compile 'io.reactivex:rxjava:1.2.7'
 }
 
 tasks.withType(Groovydoc) {

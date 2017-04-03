@@ -2,10 +2,12 @@ package org.grails.gorm.rx.services.support
 
 import groovy.transform.CompileStatic
 import rx.Observable
+import rx.Observer
 import rx.Scheduler
 import rx.Single
 import rx.SingleSubscriber
 import rx.Subscriber
+import rx.observables.SyncOnSubscribe
 import rx.schedulers.Schedulers
 
 import java.util.concurrent.Callable
@@ -37,23 +39,36 @@ class RxServiceSupport {
      * @return The {@link Observable}
      */
     static <T> Observable<T> create(Scheduler scheduler, Callable<T> callable) {
-        Observable.create({ Subscriber<? super T> subscriber ->
-            subscriber.onStart()
-            try {
+        Observable.create(new SyncOnSubscribe() {
+            @Override
+            protected Object generateState() {
                 def result = callable.call()
                 if(result instanceof Iterable) {
-                    for(o in result) {
-                        subscriber.onNext(o)
+                    return ((Iterable)result).iterator()
+                }
+                return result
+            }
+
+            @Override
+            protected Object next(Object state, Observer observer) {
+                if(state instanceof Iterator) {
+                    Iterator i = (Iterator)state
+                    if(i.hasNext()) {
+                        observer.onNext(i.next())
                     }
+                    else {
+                        observer.onCompleted()
+                    }
+
                 }
                 else {
-                    subscriber.onNext(result)
+                    observer.onNext(state)
+                    observer.onCompleted()
                 }
-                subscriber.onCompleted()
-            } catch (Throwable e) {
-                subscriber.onError(e)
+                return state
             }
-        } as Observable.OnSubscribe).observeOn(scheduler)
+
+        }).observeOn(scheduler)
     }
 
     /**
