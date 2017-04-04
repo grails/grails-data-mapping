@@ -62,7 +62,7 @@ class UpdateStringQueryImplementer extends AbstractStringQueryImplementer implem
     protected Statement buildQueryReturnStatement(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, Expression args) {
         ClassNode returnType = newMethodNode.returnType
         boolean isVoid = returnType == ClassHelper.VOID_TYPE
-        Expression methodCall = callX(domainClassNode, "executeUpdate", args)
+        Expression methodCall = callX(findDomainClassForConnectionId(domainClassNode, newMethodNode), "executeUpdate", args)
         methodCall = isVoid ? methodCall : castX(returnType.plainNodeReference, methodCall)
         return isVoid ? stmt(methodCall) : returnS(methodCall)
     }

@@ -1,17 +1,22 @@
 package org.grails.datastore.gorm.services.implementers
 
+import grails.gorm.transactions.ReadOnly
+import grails.gorm.transactions.Transactional
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.Parameter
+import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.transform.trait.Traits
+import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.services.ServiceImplementer
+import org.grails.datastore.gorm.transform.AstMethodDispatchUtils
 import org.grails.datastore.gorm.transform.AstPropertyResolveUtils
 import org.grails.datastore.mapping.core.Ordered
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.AstUtils
-
+import static org.codehaus.groovy.ast.tools.GeneralUtils.*
 /**
  * Abstract implementation of the {@link ServiceImplementer} interface
  *
@@ -82,5 +87,46 @@ abstract class AbstractServiceImplementer implements PrefixedServiceImplementer,
             }
         }
         return false
+    }
+
+    protected Expression findConnectionId(MethodNode methodNode) {
+        AnnotationNode ann = findTransactionalAnnotation(methodNode)
+
+        Expression connectionId = ann?.getMember("connection")
+        if(connectionId == null) {
+            connectionId= ann.getMember("value")
+        }
+        return connectionId
+
+    }
+
+    protected AnnotationNode findTransactionalAnnotation(MethodNode methodNode) {
+        AnnotationNode ann = AstUtils.findAnnotation(methodNode, Transactional)
+        if (ann == null) {
+            ann = AstUtils.findAnnotation(methodNode, ReadOnly)
+        }
+        if (ann == null) {
+            ann = AstUtils.findAnnotation(methodNode.getDeclaringClass(), Transactional)
+        }
+        if (ann == null) {
+            ann = AstUtils.findAnnotation(methodNode.getDeclaringClass(), ReadOnly)
+        }
+        ann
+    }
+
+    protected Expression buildApiLookup(ClassNode domainClass, Expression connectionId) {
+        return AstMethodDispatchUtils.callD(
+            classX(GormEnhancer), "findInstanceApi", args(classX(domainClass), connectionId)
+        )
+    }
+
+    protected Expression findDomainClassForConnectionId(ClassNode domainClass, MethodNode methodNode) {
+        Expression connectionId = findConnectionId(methodNode)
+        if(connectionId != null) {
+            return buildApiLookup(domainClass, connectionId)
+        }
+        else {
+            return classX(domainClass.plainNodeReference)
+        }
     }
 }

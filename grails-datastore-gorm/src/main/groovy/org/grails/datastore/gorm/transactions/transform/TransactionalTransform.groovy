@@ -173,6 +173,9 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
         }
 
         Expression connectionName = annotationNode.getMember("connection")
+        if( connectionName == null ) {
+            connectionName = annotationNode.getMember("value")
+        }
         boolean hasDataSourceProperty = connectionName != null
 
         //add the transactionManager property
@@ -208,14 +211,15 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
                 //     return datastore.transactionManager
                 // else
                 //     return GormEnhancer.findSingleTransactionManager()
-                VariableExpression datastoreVar = varX("datastore", make(TransactionCapableDatastore))
+                ClassNode transactionCapableDatastore = make(TransactionCapableDatastore)
+                Expression datastoreVar = castX(transactionCapableDatastore, varX("datastore") )
                 Expression datastoreLookupExpr = datastoreVar
                 if(hasDataSourceProperty) {
                     datastoreLookupExpr = callD(castX(make(MultipleConnectionSourceCapableDatastore), datastoreVar), "getDatastoreForConnection", connectionName )
                 }
                 Statement ifElse = ifElseS(
                         notNullX(datastoreVar),
-                        returnS( propX(datastoreLookupExpr, PROPERTY_TRANSACTION_MANAGER) ),
+                        returnS( propX( castX(transactionCapableDatastore, datastoreLookupExpr), PROPERTY_TRANSACTION_MANAGER) ),
                         returnS( transactionManagerLookupExpr )
                 )
 
@@ -301,6 +305,9 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
         applyTransactionalAttributeSettings(annotationNode, transactionAttributeVar, newMethodBody)
 
         Expression connectionName = annotationNode.getMember("connection")
+        if( connectionName == null ) {
+            connectionName = annotationNode.getMember("value")
+        }
         if(connectionName == null) {
             if(hasAnnotation(methodNode, TenantTransform.CURRENT_TENANT_ANNOTATION_TYPE) || this.hasAnnotation(classNode, TenantTransform.CURRENT_TENANT_ANNOTATION_TYPE)) {
                 connectionName = varX("tenantId")
@@ -376,9 +383,11 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
                     name = 'propagationBehavior'
                     expr = callX(expr, "value", ZERO_ARGUMENTS)
                 }
-                methodBody.addStatement(
-                    assignS(propX(transactionAttributeVar, name), expr)
-                )
+                else if(name != 'value') {
+                    methodBody.addStatement(
+                        assignS(propX(transactionAttributeVar, name), expr)
+                    )
+                }
             }
         }
     }
@@ -405,7 +414,7 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
      * @param md The method node
      * @return
      */
-    static boolean hasTransactionalAnnotation(MethodNode md) {
+    static boolean hasTransactionalAnnotation(AnnotatedNode md) {
         for (AnnotationNode annotation : md.getAnnotations()) {
             if(ANNOTATION_NAME_EXCLUDES.any() { String n -> n == annotation.classNode.name}) {
                 return true
@@ -413,6 +422,8 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
         }
         return false
     }
+
+
 
     @Override
     protected String getRenamedMethodPrefix() {

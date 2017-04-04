@@ -55,7 +55,13 @@ abstract class AbstractSaveImplementer extends AbstractWriteOperationImplementer
             saveArgs = namedArgs(failOnError: ConstantExpression.TRUE)
         }
 
-        return returnS(callX(entityVar, "save", saveArgs))
+        Expression connectionId = findConnectionId(abstractMethodNode)
+        if(connectionId != null) {
+            returnS(callX(buildApiLookup(domainClassNode, connectionId), "save", args(entityVar, saveArgs)))
+        }
+        else {
+            return returnS(callX(entityVar, "save", saveArgs))
+        }
     }
 
 }

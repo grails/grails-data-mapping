@@ -1,6 +1,5 @@
 package org.grails.datastore.gorm.services.implementers
 
-import grails.gorm.services.Query
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
@@ -22,7 +21,11 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.returnS
 class FindOneStringQueryImplementer extends AbstractStringQueryImplementer implements SingleResultServiceImplementer<GormEntity> {
     @Override
     protected Statement buildQueryReturnStatement(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, Expression args) {
-        returnS(callX(domainClassNode, getFindMethodToInvoke(domainClassNode, newMethodNode), args))
+        returnS(
+                callX(  findDomainClassForConnectionId(domainClassNode, newMethodNode),
+                        getFindMethodToInvoke(domainClassNode, newMethodNode),
+                        args)
+        )
     }
 
     protected String getFindMethodToInvoke(ClassNode classNode, MethodNode methodNode) {

@@ -98,7 +98,8 @@ class FindByImplementer extends AbstractArrayOrIterableResultImplementer impleme
 
         // add a method that invokes list()
         String methodPrefix = getDynamicFinderPrefix()
-        Expression findCall = callX(classX(domainClassNode.plainNodeReference), "${methodPrefix}${matchSpec.queryExpression}", args(newMethodNode.parameters))
+        String finderCallName = "${methodPrefix}${matchSpec.queryExpression}"
+        Expression findCall = callX(findDomainClassForConnectionId(domainClassNode, newMethodNode), finderCallName, args(newMethodNode.parameters))
         if(isArray) {
             // handle array cast
             findCall = castX( returnType.plainNodeReference, findCall)

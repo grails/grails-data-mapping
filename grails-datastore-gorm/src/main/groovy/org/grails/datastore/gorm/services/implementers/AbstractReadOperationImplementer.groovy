@@ -50,7 +50,7 @@ abstract class AbstractReadOperationImplementer extends AbstractServiceImplement
     final void implement(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode) {
         // copy any annotations from the abstract method
         copyClassAnnotations(abstractMethodNode, newMethodNode)
-        if(!TransactionalTransform.hasTransactionalAnnotation(newMethodNode) && Modifier.isPublic(newMethodNode.modifiers)) {
+        if(!TransactionalTransform.hasTransactionalAnnotation(targetClassNode) && !TransactionalTransform.hasTransactionalAnnotation(newMethodNode) && Modifier.isPublic(newMethodNode.modifiers)) {
             // read-only transaction by default
             applyDefaultTransactionHandling(newMethodNode)
         }
@@ -100,4 +100,5 @@ abstract class AbstractReadOperationImplementer extends AbstractServiceImplement
         }
         argsExpression
     }
+
 }

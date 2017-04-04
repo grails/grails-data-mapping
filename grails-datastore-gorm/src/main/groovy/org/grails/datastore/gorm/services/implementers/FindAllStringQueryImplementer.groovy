@@ -35,7 +35,7 @@ class FindAllStringQueryImplementer extends AbstractStringQueryImplementer {
     protected Statement buildQueryReturnStatement(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, Expression args) {
         ClassNode returnType = newMethodNode.returnType
         String methodName = AstUtils.isIterableOrArrayOfDomainClasses(returnType) ? "findAll" : "executeQuery"
-        Expression methodCall = callX(domainClassNode, methodName, args)
+        Expression methodCall = callX(findDomainClassForConnectionId(domainClassNode, newMethodNode), methodName, args)
         methodCall = castX(returnType.plainNodeReference, methodCall)
         return returnS(methodCall)
     }

@@ -47,6 +47,13 @@ abstract class AbstractDetachedCriteriaServiceImplementor extends AbstractReadOp
             body.addStatement(
                 declS(queryVar, ctorX(getDetachedCriteriaType(domainClassNode), args(classX(domainClassNode.plainNodeReference))))
             )
+            Expression connectionId = findConnectionId(newMethodNode)
+
+            if(connectionId != null) {
+                body.addStatement(
+                    assignS(queryVar, callX(queryVar, "withConnection", connectionId))
+                )
+            }
             handleJoinAnnotation(joinAnnotation, body, queryVar)
 
             if (parameterCount > 0) {

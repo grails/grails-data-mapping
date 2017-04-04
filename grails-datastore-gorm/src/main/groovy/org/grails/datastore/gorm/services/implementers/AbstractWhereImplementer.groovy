@@ -100,7 +100,13 @@ abstract class AbstractWhereImplementer extends AbstractReadOperationImplementer
             body.addStatement(
                     declS(queryVar, ctorX(getDetachedCriteriaType(domainClassNode), args(classX(domainClassNode.plainNodeReference))))
             )
+            Expression connectionId = findConnectionId(newMethodNode)
 
+            if(connectionId != null) {
+                body.addStatement(
+                        assignS(queryVar, callX(queryVar, "withConnection", connectionId))
+                )
+            }
             body.addStatement(
                     assignS(queryVar, callX(queryVar, "build", closureExpression))
             )

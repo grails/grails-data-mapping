@@ -42,7 +42,7 @@ class FindOneByImplementer extends FindByImplementer implements SingleResultServ
         Parameter[] parameters = newMethodNode.parameters
         if(parameters.length == 1 && parameters[0].name == GormProperties.IDENTITY) {
             // add a method that invokes get(id)
-            Expression queryMethodCall = callX(classX(domainClassNode.plainNodeReference), "get", args(parameters))
+            Expression queryMethodCall = callX(findDomainClassForConnectionId(domainClassNode, newMethodNode), "get", args(parameters))
             body.addStatement(
                 returnS(
                     queryMethodCall

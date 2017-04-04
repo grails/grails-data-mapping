@@ -63,7 +63,9 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
         }
         else if(annotatedNode instanceof ClassNode) {
             ClassNode classNode = (ClassNode) annotatedNode
-            weaveClassNode( source, annotationNode, classNode)
+            if(!classNode.isInterface()) {
+                weaveClassNode( source, annotationNode, classNode)
+            }
         }
     }
 
