@@ -1,5 +1,7 @@
 package org.grails.datastore.gorm.services.implementers
 
+import grails.gorm.services.Query
+import grails.gorm.services.Where
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
@@ -14,7 +16,7 @@ import org.codehaus.groovy.ast.stmt.Statement
  * @since 6.1
  */
 @CompileStatic
-class FindOneInterfaceProjectionWhereImplementer extends FindOneWhereImplementer implements SingleResultInterfaceProjectionBuilder {
+class FindOneInterfaceProjectionWhereImplementer extends FindOneWhereImplementer implements SingleResultInterfaceProjectionBuilder, AnnotatedServiceImplementer<Where> {
 
     @Override
     protected ClassNode resolveDomainClassFromSignature(ClassNode currentDomainClassNode, MethodNode methodNode) {

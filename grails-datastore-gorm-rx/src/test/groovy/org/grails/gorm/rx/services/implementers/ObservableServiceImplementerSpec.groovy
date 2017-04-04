@@ -2,6 +2,7 @@ package org.grails.gorm.rx.services.implementers
 
 import grails.gorm.annotation.Entity
 import grails.gorm.services.Service
+import grails.gorm.transactions.ReadOnly
 import org.grails.gorm.rx.services.support.RxServiceSupport
 import rx.Observable
 import rx.Single
@@ -51,6 +52,51 @@ return Book.classLoader
         then:"A GORM method is invoked"
         def e = thrown(IllegalStateException)
         e.message.startsWith('No GORM implementations configured')
+    }
+
+
+    void "test dynamic finder interface projection"() {
+        when:"The service transform is applied to an interface it can't implement"
+        Class service = new GroovyClassLoader().parseClass('''
+import grails.gorm.services.*
+import grails.gorm.annotation.Entity
+import static javax.persistence.criteria.JoinType.*
+import org.grails.gorm.rx.services.implementers.*
+
+@Service(value = Foo, adapters = [ObservableServiceImplementerAdapter])
+interface MyService {
+    rx.Observable<IFoo> findByNameLike(String n)
+}
+@Entity
+class Foo {
+    String title
+    String name
+}
+
+interface IFoo {
+    String getTitle()
+}
+''')
+
+        then:
+        service.isInterface()
+        println service.classLoader.loadedClasses
+
+        when:"the impl is obtained"
+        Class impl = service.classLoader.loadClass("\$MyServiceImplementation")
+        def instance = impl.newInstance()
+        Observable o = instance.findByNameLike("test")
+
+        then:"an observable is returned"
+        o != null
+
+        when:"The observable result is produced"
+        def result = o.toBlocking().first()
+
+        then:"A GORM method is invoked"
+        def e = thrown(IllegalStateException)
+        e.message.startsWith('No GORM implementations configured')
+
     }
 
     void "test find method that returns an Observable"() {

@@ -9,6 +9,7 @@ import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.Statement
 import org.codehaus.groovy.transform.DelegateASTTransformation
+import org.grails.datastore.gorm.services.ServiceImplementer
 import org.grails.datastore.gorm.transform.AstPropertyResolveUtils
 import org.grails.datastore.mapping.reflect.AstUtils
 import org.grails.datastore.mapping.reflect.NameUtils
@@ -47,7 +48,7 @@ trait SingleResultInterfaceProjectionBuilder {
 
     Statement buildInterfaceProjection(ClassNode targetDomainClass, MethodNode abstractMethodNode, Expression queryMethodCall, Expression args, MethodNode newMethodNode) {
         ClassNode declaringClass = newMethodNode.declaringClass
-        ClassNode interfaceNode = newMethodNode.returnType
+        ClassNode interfaceNode = (ClassNode)newMethodNode.getNodeMetaData(ServiceImplementer.RETURN_TYPE) ?: abstractMethodNode.returnType
         List<Expression> getterNames = (List<Expression>)AstPropertyResolveUtils.getPropertyNames(interfaceNode).collect() {
             new ConstantExpression(NameUtils.getGetterName(it))
         }

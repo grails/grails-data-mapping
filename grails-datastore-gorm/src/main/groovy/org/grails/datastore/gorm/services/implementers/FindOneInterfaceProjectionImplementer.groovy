@@ -13,7 +13,7 @@ import org.codehaus.groovy.ast.stmt.Statement
  * @since 6.1
  */
 @CompileStatic
-class FindOneInterfaceProjectionImplementer extends FindOneImplementer implements SingleResultInterfaceProjectionBuilder {
+class FindOneInterfaceProjectionImplementer extends FindOneImplementer implements SingleResultInterfaceProjectionBuilder, SingleResultServiceImplementer {
 
     @Override
     protected ClassNode resolveDomainClassFromSignature(ClassNode currentDomainClassNode, MethodNode methodNode) {

@@ -10,6 +10,7 @@ import org.grails.datastore.gorm.services.ServiceImplementer
 import org.grails.datastore.gorm.services.implementers.AdaptedImplementer
 import org.grails.datastore.gorm.services.implementers.AnnotatedServiceImplementer
 import org.grails.datastore.gorm.services.implementers.PrefixedServiceImplementer
+import org.grails.datastore.gorm.services.implementers.SingleResultInterfaceProjectionBuilder
 import org.grails.datastore.gorm.services.implementers.SingleResultProjectionServiceImplementer
 import org.grails.datastore.gorm.services.implementers.SingleResultServiceImplementer
 import org.grails.datastore.mapping.core.Ordered
@@ -57,6 +58,11 @@ class ObservableSingleResultAdapter implements ServiceImplementer, Ordered, Adap
                 isObservableOfReturnType = RxAstUtils.isObservableOf(methodReturnType, Object) && !methodReturnType.isArray()
             }
 
+            if(!isObservableOfReturnType && (adapted instanceof SingleResultInterfaceProjectionBuilder)) {
+                ClassNode genericType = resolveSingleGenericType(methodReturnType)
+                isObservableOfReturnType =  ((SingleResultInterfaceProjectionBuilder)adapted).isInterfaceProjection(domainClass, methodNode, genericType )
+            }
+
             if(adapted instanceof AnnotatedServiceImplementer) {
                 return ((AnnotatedServiceImplementer)adapted).isAnnotated(domainClass, methodNode) && isObservableOfReturnType
             }
@@ -77,9 +83,11 @@ class ObservableSingleResultAdapter implements ServiceImplementer, Ordered, Adap
 
     @Override
     void implement(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode) {
-        if(isDomainReturnType) {
-            domainClassNode = abstractMethodNode.returnType.genericsTypes[0].type
+        ClassNode returnType = resolveSingleGenericType(abstractMethodNode.returnType)
+        if(isDomainReturnType && !(adapted instanceof SingleResultInterfaceProjectionBuilder)) {
+            domainClassNode = returnType
         }
+        newMethodNode.setNodeMetaData(RETURN_TYPE, returnType )
         adapted.implement(domainClassNode, abstractMethodNode, newMethodNode, targetClassNode)
 
         if(!isRxEntity(domainClassNode)) {

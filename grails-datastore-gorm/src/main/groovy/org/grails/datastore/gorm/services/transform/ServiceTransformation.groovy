@@ -346,6 +346,9 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             loadAnnotationDefined(annotationNode, "adapters", finalAdapters, ServiceImplementerAdapter)
 
             if(!finalAdapters.isEmpty()) {
+                finalAdapters = finalAdapters.unique { ServiceImplementerAdapter o1 ->
+                    o1.class.name
+                }
                 for(implementer in implementers) {
                     for(ServiceImplementerAdapter adapter in finalAdapters) {
                         ServiceImplementer adapted = adapter.adapt(implementer)
