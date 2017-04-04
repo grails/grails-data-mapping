@@ -94,7 +94,7 @@ abstract class AbstractServiceImplementer implements PrefixedServiceImplementer,
 
         Expression connectionId = ann?.getMember("connection")
         if(connectionId == null) {
-            connectionId= ann.getMember("value")
+            connectionId= ann?.getMember("value")
         }
         return connectionId
 
@@ -102,16 +102,19 @@ abstract class AbstractServiceImplementer implements PrefixedServiceImplementer,
 
     protected AnnotationNode findTransactionalAnnotation(MethodNode methodNode) {
         AnnotationNode ann = AstUtils.findAnnotation(methodNode, Transactional)
-        if (ann == null) {
-            ann = AstUtils.findAnnotation(methodNode, ReadOnly)
+        if (ann != null) {
+            return ann
         }
-        if (ann == null) {
-            ann = AstUtils.findAnnotation(methodNode.getDeclaringClass(), Transactional)
+        ann = AstUtils.findAnnotation(methodNode, ReadOnly)
+        if (ann != null) {
+            return ann
         }
-        if (ann == null) {
-            ann = AstUtils.findAnnotation(methodNode.getDeclaringClass(), ReadOnly)
+        ann = AstUtils.findAnnotation(methodNode.getDeclaringClass(), Transactional)
+        if (ann != null) {
+            return ann
         }
-        ann
+        ann = AstUtils.findAnnotation(methodNode.getDeclaringClass(), ReadOnly)
+        return ann
     }
 
     protected Expression buildApiLookup(ClassNode domainClass, Expression connectionId) {
