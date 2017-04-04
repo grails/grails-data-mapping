@@ -21,6 +21,7 @@ import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.stmt.BlockStatement
+import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.AstUtils
 
@@ -32,7 +33,7 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.*
  * @since 6.1
  */
 @CompileStatic
-class FindOneByImplementer extends FindByImplementer {
+class FindOneByImplementer extends FindByImplementer implements SingleResultServiceImplementer<GormEntity> {
     static final List<String> HANDLED_PREFIXES = ['findBy','getBy', 'findOneBy']
 
     @Override

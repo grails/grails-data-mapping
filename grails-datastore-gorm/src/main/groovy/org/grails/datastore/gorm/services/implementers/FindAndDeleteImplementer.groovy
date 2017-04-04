@@ -8,6 +8,7 @@ import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.Statement
+import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.gorm.transactions.transform.TransactionalTransform
 import org.grails.datastore.mapping.reflect.AstUtils
 import static org.codehaus.groovy.ast.tools.GeneralUtils.*
@@ -18,7 +19,7 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.*
  * @since 6.1
  */
 @CompileStatic
-class FindAndDeleteImplementer extends FindOneImplementer {
+class FindAndDeleteImplementer extends FindOneImplementer implements SingleResultServiceImplementer<GormEntity> {
 
     @Override
     boolean doesImplement(ClassNode domainClass, MethodNode methodNode) {

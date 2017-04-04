@@ -11,6 +11,47 @@ import spock.lang.Specification
  * Created by graemerocher on 15/02/2017.
  */
 class ObservableServiceImplementerSpec extends Specification {
+    void "test dynamic finder method that returns an Observable"() {
+        given:
+        ClassLoader cl = new GroovyShell().evaluate('''
+import grails.gorm.annotation.Entity
+import grails.gorm.rx.services.RxSchedule
+import grails.gorm.services.Service
+import rx.Observable
+import rx.schedulers.Schedulers
+import org.grails.gorm.rx.services.implementers.*
+
+@Entity
+class Book {
+  String title
+}
+@Service(value=Book, adapters = [ObservableServiceImplementerAdapter])
+interface BookService {
+    Observable<Book> findByTitleLike(String title)
+}
+return Book.classLoader
+''')
+        println cl.loadedClasses
+
+        when:
+        Class impl = cl.loadClass('$BookServiceImplementation')
+        then:
+        org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
+
+        when:"A method is invoked that returns an observable"
+        def instance = impl.newInstance()
+        Observable o = instance.findByTitleLike("test")
+
+        then:"an observable is returned"
+        o != null
+
+        when:"The observable result is produced"
+        def result = o.toBlocking().first()
+
+        then:"A GORM method is invoked"
+        def e = thrown(IllegalStateException)
+        e.message.startsWith('No GORM implementations configured')
+    }
 
     void "test find method that returns an Observable"() {
         given:
@@ -20,12 +61,13 @@ import grails.gorm.rx.services.RxSchedule
 import grails.gorm.services.Service
 import rx.Observable
 import rx.schedulers.Schedulers
+import org.grails.gorm.rx.services.implementers.*
 
 @Entity
 class Book {
   String title
 }
-@Service(value=Book,implementers = [org.grails.gorm.rx.services.implementers.FindOneObservableImplementer])
+@Service(value=Book, adapters = [ObservableServiceImplementerAdapter])
 interface BookService {
     @RxSchedule(scheduler = { Schedulers.newThread() })
     Observable<Book> find(String title)
@@ -54,6 +96,50 @@ return Book.classLoader
         e.message.startsWith('No GORM implementations configured')
     }
 
+    void "test find @Where method that returns an Observable"() {
+        given:
+        ClassLoader cl = new GroovyShell().evaluate('''
+import grails.gorm.annotation.Entity
+import grails.gorm.services.Service
+import grails.gorm.services.Where
+import rx.Observable
+import org.grails.gorm.rx.services.implementers.*
+import rx.Single
+
+@Entity
+class Book {
+  String title
+}
+@Service(value=Book,adapters= [ObservableServiceImplementerAdapter])
+interface BookService {
+    @Where({ title ==~ pattern})
+    rx.Observable<Book> findWhereTitle(String pattern)
+}
+return Book.classLoader
+''')
+        println cl.loadedClasses
+
+        when:
+        Class impl = cl.loadClass('$BookServiceImplementation')
+        then:
+        org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
+
+        when:"A method is invoked that returns an observable"
+        def instance = impl.newInstance()
+        Observable o = instance.findWhereTitle("test")
+
+        then:"an observable is returned"
+        o != null
+
+        when:"The observable result is produced"
+        def result = o.toBlocking().first()
+
+        then:"A GORM method is invoked"
+        def e = thrown(IllegalStateException)
+        e.message.startsWith('No GORM implementations configured')
+    }
+
+
     void "test count @Where method that returns an Observable"() {
         given:
         ClassLoader cl = new GroovyShell().evaluate('''
@@ -68,7 +154,7 @@ import rx.Single
 class Book {
   String title
 }
-@Service(value=Book,implementers = [CountWhereObservableImplementer])
+@Service(value=Book,adapters= [ObservableServiceImplementerAdapter])
 interface BookService {
     @Where({ title == tit})
     Single<Number> count(String tit)
@@ -112,7 +198,7 @@ import rx.Single
 class Book {
   String title
 }
-@Service(value=Book,implementers = [UpdateObservableStringQueryImplementer])
+@Service(value=Book,adapters= [ObservableServiceImplementerAdapter])
 interface BookService {
     @Query("update ${Book b} set $b.title = $title where $b.title = $oldTitle")
     Single<Number> updateBook(String oldTitle, String title)
@@ -157,7 +243,7 @@ class Book {
   String title
   String author
 }
-@Service(value=Book,implementers = [UpdateObservableStringQueryImplementer])
+@Service(value=Book,adapters= [ObservableServiceImplementerAdapter])
 interface BookService {
     Single<String> findBookAuthor(String title)
 }

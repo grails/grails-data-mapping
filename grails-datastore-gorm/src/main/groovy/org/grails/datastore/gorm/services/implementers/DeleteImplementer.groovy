@@ -10,6 +10,7 @@ import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.Statement
+import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.gorm.transactions.transform.TransactionalTransform
 import org.grails.datastore.mapping.reflect.AstUtils
 
@@ -21,7 +22,7 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.*
  * @author Graeme Rocher
  */
 @CompileStatic
-class DeleteImplementer extends AbstractDetachedCriteriaServiceImplementor {
+class DeleteImplementer extends AbstractDetachedCriteriaServiceImplementor implements SingleResultServiceImplementer<Number> {
     static final List<String> HANDLED_PREFIXES = ['delete', 'remove']
 
     @Override
@@ -38,7 +39,7 @@ class DeleteImplementer extends AbstractDetachedCriteriaServiceImplementor {
     }
 
     @Override
-    protected Iterable<String> getHandledPrefixes() {
+    Iterable<String> getHandledPrefixes() {
         return HANDLED_PREFIXES
     }
 

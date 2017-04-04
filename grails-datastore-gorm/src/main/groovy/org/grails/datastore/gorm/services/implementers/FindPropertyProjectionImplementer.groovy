@@ -15,7 +15,7 @@ import static org.grails.datastore.mapping.reflect.AstUtils.implementsInterface
  * @since 6.1
  */
 @CompileStatic
-class FindPropertyProjectImplementer extends AbstractProjectionImplementer {
+class FindPropertyProjectionImplementer extends AbstractProjectionImplementer {
     @Override
     protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
         boolean isCompatibleReturnType = false
@@ -44,7 +44,7 @@ class FindPropertyProjectImplementer extends AbstractProjectionImplementer {
     }
 
     @Override
-    protected Iterable<String> getHandledPrefixes() {
+    Iterable<String> getHandledPrefixes() {
         return FindAllImplementer.HANDLED_PREFIXES
     }
 

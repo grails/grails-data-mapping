@@ -19,8 +19,6 @@ import grails.gorm.services.Service
 import grails.gorm.transactions.NotTransactional
 import groovy.transform.CompilationUnitAware
 import groovy.transform.CompileStatic
-import groovy.transform.Memoized
-import groovyjarjarasm.asm.Opcodes
 import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
@@ -44,8 +42,11 @@ import org.codehaus.groovy.control.io.URLReaderSource
 import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 import org.codehaus.groovy.transform.trait.TraitComposer
+import org.grails.datastore.gorm.services.Implemented
 import org.grails.datastore.gorm.services.ServiceEnhancer
 import org.grails.datastore.gorm.services.ServiceImplementer
+import org.grails.datastore.gorm.services.ServiceImplementerAdapter
+import org.grails.datastore.gorm.services.implementers.AdaptedImplementer
 import org.grails.datastore.gorm.services.implementers.CountByImplementer
 import org.grails.datastore.gorm.services.implementers.CountImplementer
 import org.grails.datastore.gorm.services.implementers.CountWhereImplementer
@@ -63,7 +64,7 @@ import org.grails.datastore.gorm.services.implementers.FindOneInterfaceProjectio
 import org.grails.datastore.gorm.services.implementers.FindOneInterfaceProjectionStringQueryImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneInterfaceProjectionWhereImplementer
 import org.grails.datastore.gorm.services.implementers.FindOnePropertyProjectionImplementer
-import org.grails.datastore.gorm.services.implementers.FindPropertyProjectImplementer
+import org.grails.datastore.gorm.services.implementers.FindPropertyProjectionImplementer
 import org.grails.datastore.gorm.services.implementers.SaveImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneStringQueryImplementer
 import org.grails.datastore.gorm.services.implementers.UpdateOneImplementer
@@ -107,7 +108,7 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             new SaveImplementer(),
             new UpdateOneImplementer(),
             new FindOnePropertyProjectionImplementer(),
-            new FindPropertyProjectImplementer(),
+            new FindPropertyProjectionImplementer(),
             new FindOneWhereImplementer(),
             new FindOneInterfaceProjectionWhereImplementer(),
             new FindAllWhereImplementer(),
@@ -227,16 +228,8 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             weaveTraitWithGenerics(impl, getTraitClass(), targetDomainClass)
 
             List<MethodNode> abstractMethods = findAllUnimplementedAbstractMethods(classNode)
-            Iterable<ServiceImplementer> implementers = findServiceImplementors()
-            Expression additionalImplementers = annotationNode.getMember("implementers")
-            if (additionalImplementers instanceof ListExpression) {
-                for (Expression exp in ((ListExpression) additionalImplementers).expressions) {
-                    implementers = addClassExpressionToImplementers(exp, implementers)
-                    implementers = implementers.sort(true, new OrderedComparator<ServiceImplementer>())
-                }
-            } else if (additionalImplementers instanceof ClassExpression) {
-                implementers = addClassExpressionToImplementers(additionalImplementers, implementers)
-            }
+            Iterable<ServiceImplementer> implementers = findServiceImplementors(annotationNode)
+
 
             // first go through the existing implemented methods and just enhance them
             if (!isInterface) {
@@ -276,7 +269,13 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
                             }
                         }
                         implementer.implement(targetDomainClass, method, methodImpl, impl)
-
+                        def implementedAnn = new AnnotationNode(ClassHelper.make(Implemented))
+                        Class implementedClass = implementer.getClass()
+                        if(implementer instanceof AdaptedImplementer) {
+                            implementedClass = ((AdaptedImplementer)implementer).getAdapted().getClass()
+                        }
+                        implementedAnn.setMember("by", classX(implementedClass))
+                        methodImpl.addAnnotation(implementedAnn)
                         impl.addMethod(methodImpl)
                         break
                     }
@@ -317,31 +316,69 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
         }
     }
 
-    private Iterable<ServiceImplementer> addClassExpressionToImplementers(Expression exp, Iterable<ServiceImplementer> implementers) {
+    private Iterable<ServiceImplementer> addClassExpressionToImplementers(Expression exp, List implementers, Class type) {
         if (exp instanceof ClassExpression) {
             ClassNode cn = ((ClassExpression) exp).type
             if (!cn.isPrimaryClassNode()) {
                 Class cls = cn.typeClass
-                if (cls != null && ServiceImplementer.isAssignableFrom(cls)) {
-                    implementers += (ServiceImplementer) cls.newInstance()
+                if (cls != null && type.isAssignableFrom(cls)) {
+                    implementers.add( cls.newInstance() )
                 }
             }
         }
-        implementers
+        return implementers
     }
 
-    protected Iterable<ServiceImplementer> findServiceImplementors() {
+    protected Iterable<ServiceImplementer> findServiceImplementors(AnnotationNode annotationNode) {
         if (LOADED_IMPLEMENTORS == null) {
-            Iterable<ServiceImplementer> implementers = ServiceLoader.load(ServiceImplementer, getClass().classLoader)
-            if (!implementers.iterator().hasNext()) {
-                implementers = ServiceLoader.load(ServiceImplementer, Thread.currentThread().contextClassLoader)
-            }
+            Iterable<ServiceImplementer> implementers = load(ServiceImplementer)
             implementers = (implementers + DEFAULT_IMPLEMENTORS).unique { ServiceImplementer o1 ->
                 o1.class.name
             }
-            LOADED_IMPLEMENTORS = implementers.sort(true, new OrderedComparator<ServiceImplementer>())
+
+            List<ServiceImplementer> finalImplementers = []
+            finalImplementers.addAll(implementers)
+
+            loadAnnotationDefined(annotationNode, "implementers", finalImplementers, ServiceImplementer)
+
+            Iterable<ServiceImplementerAdapter> adapters = load(ServiceImplementerAdapter)
+            List<ServiceImplementerAdapter> finalAdapters = adapters.toList()
+            loadAnnotationDefined(annotationNode, "adapters", finalAdapters, ServiceImplementerAdapter)
+
+            if(!finalAdapters.isEmpty()) {
+                for(implementer in implementers) {
+                    for(ServiceImplementerAdapter adapter in finalAdapters) {
+                        ServiceImplementer adapted = adapter.adapt(implementer)
+                        if(adapted != null) {
+                            finalImplementers.add(adapted)
+                        }
+                    }
+                }
+            }
+
+
+            LOADED_IMPLEMENTORS = finalImplementers.sort(true, new OrderedComparator<ServiceImplementer>())
         }
         return LOADED_IMPLEMENTORS
+    }
+
+    protected void loadAnnotationDefined(AnnotationNode annotationNode, String member, List finalList, Class type) {
+        Expression additionalImplementers = annotationNode.getMember(member )
+        if (additionalImplementers instanceof ListExpression) {
+            for (Expression exp in ((ListExpression) additionalImplementers).expressions) {
+                addClassExpressionToImplementers(exp, finalList, type)
+            }
+        } else if (additionalImplementers instanceof ClassExpression) {
+            addClassExpressionToImplementers(additionalImplementers, finalList, type)
+        }
+    }
+
+    protected <T> Iterable<T> load(Class<T> type) {
+        Iterable<T> implementers = ServiceLoader.load(type, getClass().classLoader)
+        if (!implementers.iterator().hasNext()) {
+            implementers = ServiceLoader.load(type, Thread.currentThread().contextClassLoader)
+        }
+        return implementers
     }
 
     protected void generateServiceDescriptor(SourceUnit sourceUnit, ClassNode classNode) {

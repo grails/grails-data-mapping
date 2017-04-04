@@ -19,20 +19,24 @@ import org.grails.datastore.mapping.reflect.AstUtils
  * @since 6.1
  */
 @CompileStatic
-abstract class AbstractServiceImplementer implements ServiceImplementer, Ordered {
+abstract class AbstractServiceImplementer implements PrefixedServiceImplementer, Ordered {
 
     @Override
     boolean doesImplement(ClassNode domainClass, MethodNode methodNode) {
         def alreadyImplemented = methodNode.getNodeMetaData(IMPLEMENTED)
-        String prefix = handledPrefixes.find() { String it -> methodNode.name.startsWith(it) }
-        if(!alreadyImplemented && prefix != null) {
+
+        String prefix = resolvePrefix(methodNode)
+        if(!alreadyImplemented && prefix) {
             ClassNode returnType = methodNode.returnType
             return isCompatibleReturnType(domainClass, methodNode, returnType, prefix)
-
         }
         return false
     }
 
+    @Override
+    String resolvePrefix(MethodNode mn) {
+        return handledPrefixes.find() { String it -> mn.name.startsWith(it) }
+    }
     /**
      * Return true if the provided return type is compatible with this implementor.
      *
@@ -43,10 +47,6 @@ abstract class AbstractServiceImplementer implements ServiceImplementer, Ordered
      */
     protected abstract boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix)
 
-    /**
-     * @return The method prefixes handled by this method
-     */
-    protected abstract Iterable<String> getHandledPrefixes()
 
     /**
      * Copies annotation from the abstract method to the implementation method

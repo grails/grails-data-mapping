@@ -2,6 +2,7 @@ package org.grails.datastore.gorm.services.implementers
 
 import grails.gorm.services.Where
 import groovy.transform.CompileStatic
+import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.expr.Expression
@@ -18,11 +19,11 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.returnS
  * @since 6.1
  */
 @CompileStatic
-class CountWhereImplementer extends AbstractWhereImplementer {
+class CountWhereImplementer extends AbstractWhereImplementer implements AnnotatedServiceImplementer<Where>, SingleResultServiceImplementer<Number> {
 
     @Override
     boolean doesImplement(ClassNode domainClass, MethodNode methodNode) {
-        if( AstUtils.findAnnotation(methodNode, Where) != null) {
+        if( isAnnotated(domainClass, methodNode) ) {
             return isCompatibleReturnType(domainClass, methodNode, methodNode.returnType, methodNode.name)
         }
         return false

@@ -22,6 +22,7 @@ import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
+import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.mapping.reflect.AstUtils
 
 import static org.codehaus.groovy.ast.tools.GeneralUtils.*
@@ -34,7 +35,7 @@ import static org.grails.datastore.gorm.transform.AstMethodDispatchUtils.namedAr
  * @since 6.1
  */
 @CompileStatic
-class SaveImplementer extends AbstractSaveImplementer {
+class SaveImplementer extends AbstractSaveImplementer implements SingleResultServiceImplementer<GormEntity> {
     static final List<String> HANDLED_PREFIXES = ['save', 'store', 'persist']
 
     @Override
@@ -75,7 +76,7 @@ class SaveImplementer extends AbstractSaveImplementer {
     }
 
     @Override
-    protected Iterable<String> getHandledPrefixes() {
+    Iterable<String> getHandledPrefixes() {
         return HANDLED_PREFIXES
     }
 }

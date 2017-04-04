@@ -737,9 +737,18 @@ class AstUtils {
     static boolean isSubclassOf(ClassNode classNode, String parentClassName) {
         if(classNode.name == parentClassName) return true
         ClassNode currentSuper = classNode.getSuperClass()
-        while (currentSuper != null && !currentSuper.getName().equals(OBJECT_CLASS_NODE.getName())) {
-            if (currentSuper.getName().equals(parentClassName)) return true
-            currentSuper = currentSuper.getSuperClass()
+        while (currentSuper != null ) {
+            if (currentSuper.getName() == parentClassName) {
+                return true
+            }
+
+            if(currentSuper.getName() == OBJECT_CLASS_NODE.getName()) {
+                break
+            }
+            else {
+                currentSuper = currentSuper.getSuperClass()
+            }
+
         }
         return false
     }

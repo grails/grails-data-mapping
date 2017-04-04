@@ -22,7 +22,7 @@ class FindAllWhereImplementer extends AbstractWhereImplementer {
 
     @Override
     boolean doesImplement(ClassNode domainClass, MethodNode methodNode) {
-        if( AstUtils.findAnnotation(methodNode, Where) != null) {
+        if( isAnnotated(domainClass, methodNode )) {
             return isCompatibleReturnType(domainClass, methodNode, methodNode.returnType, methodNode.name)
         }
         return false

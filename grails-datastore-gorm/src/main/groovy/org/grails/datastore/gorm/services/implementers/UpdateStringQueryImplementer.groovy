@@ -25,24 +25,28 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.stmt
  * @since 6.1
  */
 @CompileStatic
-class UpdateStringQueryImplementer extends AbstractStringQueryImplementer {
+class UpdateStringQueryImplementer extends AbstractStringQueryImplementer implements SingleResultServiceImplementer<Number>, AnnotatedServiceImplementer<Query>, NoResultServiceImplementer {
 
     @Override
     boolean doesImplement(ClassNode domainClass, MethodNode methodNode) {
-        AnnotationNode ann = AstUtils.findAnnotation(methodNode, Query)
-        if( ann != null) {
-            Expression expr = ann.getMember("value")
-            if(expr instanceof GStringExpression) {
-                GStringExpression gstring = (GStringExpression)expr
+        return isAnnotated(domainClass, methodNode) && isCompatibleReturnType(domainClass, methodNode, methodNode.returnType, methodNode.name)
+    }
+
+    @Override
+    boolean isAnnotated(ClassNode domainClass, MethodNode methodNode) {
+        AnnotationNode annotation = AstUtils.findAnnotation(methodNode, Query)
+        if (annotation != null) {
+            Expression expr = annotation.getMember("value")
+            if (expr instanceof GStringExpression) {
+                GStringExpression gstring = (GStringExpression) expr
                 String queryStem = gstring.strings[0].text.toLowerCase(Locale.ENGLISH)
-                if(queryStem.contains("update") || queryStem.contains('delete')) {
-                    return isCompatibleReturnType(domainClass, methodNode, methodNode.returnType, methodNode.name)
+                if (queryStem.contains("update") || queryStem.contains('delete')) {
+                    return true
                 }
-            }
-            else if(expr instanceof ConstantExpression) {
-                String queryStem = ((ConstantExpression)expr).text.toLowerCase(Locale.ENGLISH)
-                if( queryStem.contains("update") || queryStem.contains('delete')) {
-                    return isCompatibleReturnType(domainClass, methodNode, methodNode.returnType, methodNode.name)
+            } else if (expr instanceof ConstantExpression) {
+                String queryStem = ((ConstantExpression) expr).text.toLowerCase(Locale.ENGLISH)
+                if (queryStem.contains("update") || queryStem.contains('delete')) {
+                    return true
                 }
             }
         }

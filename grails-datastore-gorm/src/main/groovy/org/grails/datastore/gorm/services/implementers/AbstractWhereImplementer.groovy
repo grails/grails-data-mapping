@@ -23,7 +23,7 @@ import static org.grails.datastore.mapping.reflect.AstUtils.processVariableScope
  * @since 6.1
  */
 @CompileStatic
-abstract class AbstractWhereImplementer extends AbstractReadOperationImplementer{
+abstract class AbstractWhereImplementer extends AbstractReadOperationImplementer implements AnnotatedServiceImplementer<Where> {
 
 
     public static final int POSITION = FindByImplementer.POSITION - 100
@@ -34,8 +34,13 @@ abstract class AbstractWhereImplementer extends AbstractReadOperationImplementer
     }
 
     @Override
+    boolean isAnnotated(ClassNode domainClass, MethodNode methodNode) {
+        AstUtils.findAnnotation(methodNode, Where) != null
+    }
+
+    @Override
     boolean doesImplement(ClassNode domainClass, MethodNode methodNode) {
-        if( AstUtils.findAnnotation(methodNode, Where) != null) {
+        if( isAnnotated(domainClass, methodNode) ) {
             return isCompatibleReturnType(domainClass, methodNode, methodNode.returnType, methodNode.name)
         }
         return false
@@ -123,7 +128,7 @@ abstract class AbstractWhereImplementer extends AbstractReadOperationImplementer
     }
 
     @Override
-    protected Iterable<String> getHandledPrefixes() {
+    Iterable<String> getHandledPrefixes() {
         return Collections.emptyList()
     }
 }

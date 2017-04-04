@@ -18,7 +18,7 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.returnS
  * @since 6.1
  */
 @CompileStatic
-class CountImplementer extends AbstractDetachedCriteriaServiceImplementor{
+class CountImplementer extends AbstractDetachedCriteriaServiceImplementor implements SingleResultServiceImplementer<Number> {
     static final List<String> HANDLED_PREFIXES = ['count']
 
     @Override
@@ -32,7 +32,7 @@ class CountImplementer extends AbstractDetachedCriteriaServiceImplementor{
     }
 
     @Override
-    protected Iterable<String> getHandledPrefixes() {
+    Iterable<String> getHandledPrefixes() {
         return HANDLED_PREFIXES
     }
 

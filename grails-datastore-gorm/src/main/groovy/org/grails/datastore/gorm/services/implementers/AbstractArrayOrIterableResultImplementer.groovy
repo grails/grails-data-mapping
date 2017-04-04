@@ -45,7 +45,11 @@ abstract class AbstractArrayOrIterableResultImplementer extends AbstractReadOper
     final void doImplement(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode) {
         ClassNode returnType = abstractMethodNode.returnType
         boolean isArray = returnType.isArray()
-        doImplement(resolveDomainClassForReturnType(domainClassNode, isArray, returnType), targetClassNode, abstractMethodNode, newMethodNode, isArray)
+        ClassNode domainClassForReturnType = resolveDomainClassForReturnType(domainClassNode, isArray, returnType)
+        if(AstUtils.isDomainClass(domainClassForReturnType)) {
+            domainClassNode = domainClassForReturnType
+        }
+        doImplement(domainClassNode, targetClassNode, abstractMethodNode, newMethodNode, isArray)
     }
 
     /**

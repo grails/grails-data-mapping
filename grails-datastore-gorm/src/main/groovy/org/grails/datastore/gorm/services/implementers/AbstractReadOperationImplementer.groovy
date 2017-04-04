@@ -55,7 +55,10 @@ abstract class AbstractReadOperationImplementer extends AbstractServiceImplement
             applyDefaultTransactionHandling(newMethodNode)
         }
 
-        domainClassNode = resolveDomainClassFromSignature(domainClassNode, abstractMethodNode)
+        ClassNode domainClassFromSignature = resolveDomainClassFromSignature(domainClassNode, abstractMethodNode)
+        if(domainClassFromSignature != null && AstUtils.isDomainClass(domainClassFromSignature)) {
+            domainClassNode = domainClassFromSignature
+        }
         doImplement(domainClassNode, abstractMethodNode, newMethodNode, targetClassNode)
         abstractMethodNode.putNodeMetaData(IMPLEMENTED, Boolean.TRUE)
     }

@@ -2,6 +2,7 @@ package grails.gorm.services;
 
 import org.codehaus.groovy.transform.GroovyASTTransformationClass;
 import org.grails.datastore.gorm.services.ServiceImplementer;
+import org.grails.datastore.gorm.services.ServiceImplementerAdapter;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -33,4 +34,9 @@ public @interface Service {
      * @return Any additional implementers to apply
      */
     Class<? extends ServiceImplementer>[] implementers() default {};
+
+    /**
+     * @return Any additional adapters to apply
+     */
+    Class<? extends ServiceImplementerAdapter>[] adapters() default {};
 }

@@ -22,6 +22,7 @@ import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.expr.StaticMethodCallExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
+import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.AstUtils
 import static org.codehaus.groovy.ast.tools.GeneralUtils.*
@@ -32,7 +33,7 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.*
  * @since 6.1
  */
 @CompileStatic
-class UpdateOneImplementer extends AbstractSaveImplementer {
+class UpdateOneImplementer extends AbstractSaveImplementer implements SingleResultServiceImplementer<GormEntity> {
     static final List<String> HANDLED_PREFIXES = ['update']
 
     @Override
@@ -56,7 +57,7 @@ class UpdateOneImplementer extends AbstractSaveImplementer {
     }
 
     @Override
-    protected Iterable<String> getHandledPrefixes() {
+    Iterable<String> getHandledPrefixes() {
         return HANDLED_PREFIXES
     }
 

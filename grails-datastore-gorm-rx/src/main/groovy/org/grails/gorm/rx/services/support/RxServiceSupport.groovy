@@ -51,7 +51,10 @@ class RxServiceSupport {
 
             @Override
             protected Object next(Object state, Observer observer) {
-                if(state instanceof Iterator) {
+                if(state == null) {
+                    observer.onCompleted()
+                }
+                else if(state instanceof Iterator) {
                     Iterator i = (Iterator)state
                     if(i.hasNext()) {
                         observer.onNext(i.next())

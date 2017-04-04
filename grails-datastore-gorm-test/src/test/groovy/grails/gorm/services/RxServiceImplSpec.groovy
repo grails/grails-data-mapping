@@ -1,20 +1,10 @@
 package grails.gorm.services
 
 import grails.gorm.annotation.Entity
+import org.grails.datastore.gorm.services.Implemented
+import org.grails.datastore.gorm.services.implementers.DeleteImplementer
 import org.grails.datastore.mapping.simple.SimpleMapDatastore
-import org.grails.gorm.rx.services.implementers.CountByObservableImplementer
-import org.grails.gorm.rx.services.implementers.CountObservableImplementer
-import org.grails.gorm.rx.services.implementers.CountWhereObservableImplementer
-import org.grails.gorm.rx.services.implementers.DeleteObservableImplementer
-import org.grails.gorm.rx.services.implementers.FindAndDeleteObservableImplementer
-import org.grails.gorm.rx.services.implementers.FindOneByObservableImplementer
-import org.grails.gorm.rx.services.implementers.FindOneObservableImplementer
-import org.grails.gorm.rx.services.implementers.FindOneObservablePropertyProjectionImplementer
-import org.grails.gorm.rx.services.implementers.FindOneObservableStringQueryImplementer
-import org.grails.gorm.rx.services.implementers.FindOneObservableWhereImplementer
-import org.grails.gorm.rx.services.implementers.SaveObservableImplementer
-import org.grails.gorm.rx.services.implementers.UpdateObservableStringQueryImplementer
-import org.grails.gorm.rx.services.implementers.UpdateOneObservableImplementer
+import org.grails.gorm.rx.services.implementers.ObservableServiceImplementerAdapter
 import rx.Single
 import spock.lang.AutoCleanup
 import spock.lang.Specification
@@ -48,10 +38,12 @@ class RxServiceImplSpec extends Specification {
         new Book(title: "The Shining").save(flush:true)
         BookService bookService = datastore.getService(BookService)
 
+
         when:
         def result = bookService.delete("The Stand").toBlocking().value()
-
+        def implementer = bookService.getClass().getMethod("delete", String).getAnnotation(Implemented).by()
         then:
+        implementer == DeleteImplementer
         result == 1
 
         when:
@@ -173,7 +165,7 @@ class Book {
 }
 
 
-@Service(value = Book, implementers = [FindAndDeleteObservableImplementer, CountByObservableImplementer, CountWhereObservableImplementer, CountObservableImplementer, FindOneObservableImplementer, DeleteObservableImplementer, FindOneByObservableImplementer, FindOneObservableStringQueryImplementer, FindOneObservableWhereImplementer, SaveObservableImplementer, UpdateOneObservableImplementer, UpdateObservableStringQueryImplementer, FindOneObservablePropertyProjectionImplementer ])
+@Service(value = Book)
 interface BookService {
 
     Single<String> findBookAuthor(String title)

@@ -20,11 +20,11 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.*
  * @since 6.1
  */
 @CompileStatic
-class FindOnePropertyProjectionImplementer extends AbstractProjectionImplementer {
+class FindOnePropertyProjectionImplementer extends AbstractProjectionImplementer implements SingleResultProjectionServiceImplementer {
 
 
     @Override
-    protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
+    boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
         String propertyName = establishPropertyName(methodNode, prefix, domainClass)
         if(propertyName) {
             ClassNode propertyType = AstPropertyResolveUtils.getPropertyType(domainClass, propertyName)
@@ -46,7 +46,8 @@ class FindOnePropertyProjectionImplementer extends AbstractProjectionImplementer
 
 
     @Override
-    protected Iterable<String> getHandledPrefixes() {
+    Iterable<String> getHandledPrefixes() {
         return FindOneImplementer.HANDLED_PREFIXES
     }
+
 }

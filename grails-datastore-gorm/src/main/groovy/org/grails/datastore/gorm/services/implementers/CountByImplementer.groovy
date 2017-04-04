@@ -21,7 +21,7 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.returnS
  * @since 6.1
  */
 @CompileStatic
-class CountByImplementer extends FindByImplementer {
+class CountByImplementer extends FindByImplementer implements SingleResultServiceImplementer<Number> {
     static final List<String> HANDLED_PREFIXES = ['countBy']
 
 

@@ -26,7 +26,7 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.constX
  * @since 6.1
  */
 @CompileStatic
-abstract class AbstractStringQueryImplementer extends AbstractReadOperationImplementer {
+abstract class AbstractStringQueryImplementer extends AbstractReadOperationImplementer implements AnnotatedServiceImplementer<Query> {
     @Override
     int getOrder() {
         return FindByImplementer.POSITION - 100
@@ -34,10 +34,15 @@ abstract class AbstractStringQueryImplementer extends AbstractReadOperationImple
 
     @Override
     boolean doesImplement(ClassNode domainClass, MethodNode methodNode) {
-        if( AstUtils.findAnnotation(methodNode, getAnnotationType()) != null) {
+        if( isAnnotated(domainClass, methodNode) ) {
             return isCompatibleReturnType(domainClass, methodNode, methodNode.returnType, methodNode.name)
         }
         return false
+    }
+
+    @Override
+    boolean isAnnotated(ClassNode domainClass, MethodNode methodNode) {
+        return AstUtils.findAnnotation(methodNode, getAnnotationType()) != null
     }
 
     @Override
@@ -87,7 +92,7 @@ abstract class AbstractStringQueryImplementer extends AbstractReadOperationImple
     protected abstract Statement buildQueryReturnStatement(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, Expression args)
 
     @Override
-    protected Iterable<String> getHandledPrefixes() {
+    Iterable<String> getHandledPrefixes() {
         return Collections.emptyList()
     }
 }

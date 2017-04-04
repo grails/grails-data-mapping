@@ -68,7 +68,7 @@ class DeleteWhereImplementer extends AbstractWhereImplementer {
     }
 
     @Override
-    protected Iterable<String> getHandledPrefixes() {
+    Iterable<String> getHandledPrefixes() {
         return DeleteImplementer.HANDLED_PREFIXES
     }
 }
