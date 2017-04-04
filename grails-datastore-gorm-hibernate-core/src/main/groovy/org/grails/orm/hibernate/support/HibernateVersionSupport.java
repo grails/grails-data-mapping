@@ -15,7 +15,9 @@
  */
 package org.grails.orm.hibernate.support;
 
+import org.grails.datastore.mapping.core.grailsversion.GrailsVersion;
 import org.hibernate.FlushMode;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
@@ -82,5 +84,20 @@ public class HibernateVersionSupport {
      */
     public static void setFlushMode(Session session, FlushMode flushMode) {
         ReflectionUtils.invokeMethod(setFlushMode, session, flushMode);
+    }
+
+    /**
+     * Check the current hibernate version
+     * @param required The required version
+     * @return True if it is at least the given version
+     */
+    public static boolean isAtLeastVersion(String required) {
+        String hibernateVersion = Hibernate.class.getPackage().getImplementationVersion();
+        if(hibernateVersion != null) {
+            return GrailsVersion.isAtLeast(hibernateVersion, required);
+        }
+        else {
+            return false;
+        }
     }
 }

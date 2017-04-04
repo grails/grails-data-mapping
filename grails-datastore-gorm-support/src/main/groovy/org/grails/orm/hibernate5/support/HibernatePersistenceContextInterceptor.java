@@ -2,17 +2,17 @@ package org.grails.orm.hibernate5.support;
 
 import grails.persistence.support.PersistenceContextInterceptor;
 import grails.validation.DeferredBindingActions;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.grails.core.lifecycle.ShutdownOperations;
 import org.grails.datastore.mapping.core.connections.ConnectionSource;
 import org.grails.orm.hibernate.AbstractHibernateDatastore;
-import org.grails.orm.hibernate.cfg.Mapping;
 import org.grails.orm.hibernate.support.HibernateRuntimeUtils;
+import org.grails.orm.hibernate.support.HibernateVersionSupport;
 import org.grails.orm.hibernate.support.SessionFactoryAwarePersistenceContextInterceptor;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate5.SessionFactoryUtils;
 import org.springframework.orm.hibernate5.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -29,21 +29,21 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  */
 public class HibernatePersistenceContextInterceptor implements PersistenceContextInterceptor, SessionFactoryAwarePersistenceContextInterceptor {
 
-    private static final Log LOG = LogFactory.getLog(HibernatePersistenceContextInterceptor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HibernatePersistenceContextInterceptor.class);
     private AbstractHibernateDatastore hibernateDatastore;
 
 
     private static ThreadLocal<Map<String, Boolean>> participate = new ThreadLocal<Map<String, Boolean>>() {
         @Override
         protected Map<String, Boolean> initialValue() {
-            return new HashMap<String, Boolean>();
+            return new HashMap<>();
         }
     };
 
     private static ThreadLocal<Map<String, Integer>> nestingCount = new ThreadLocal<Map<String, Integer>>() {
         @Override
         protected Map<String, Integer> initialValue() {
-            return new HashMap<String, Integer>();
+            return new HashMap<>();
         }
     };
 
@@ -59,11 +59,11 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
         });
     }
 
-    private Deque<Connection> disconnected = new ConcurrentLinkedDeque<Connection>();
-
+    private Deque<Connection> disconnected = new ConcurrentLinkedDeque<>();
+    private final boolean transactionRequired;
 
     public HibernatePersistenceContextInterceptor() {
-        this.dataSourceName = ConnectionSource.DEFAULT;
+        this(ConnectionSource.DEFAULT);
     }
 
     /**
@@ -71,6 +71,7 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
      */
     public HibernatePersistenceContextInterceptor(String dataSourceName) {
         this.dataSourceName = dataSourceName;
+        this.transactionRequired = HibernateVersionSupport.isAtLeastVersion("5.2.0.Final");
     }
 
     /* (non-Javadoc)
@@ -126,7 +127,14 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
 
     public void flush() {
         if (getSessionFactory() == null) return;
-        getSession().flush();
+        if(!getParticipate()) {
+            if(!transactionRequired) {
+                getSession().flush();
+            }
+            else if(TransactionSynchronizationManager.isSynchronizationActive()) {
+                getSession().flush();
+            }
+        }
     }
 
     public void clear() {

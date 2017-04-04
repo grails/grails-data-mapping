@@ -45,7 +45,7 @@ class Snapshot implements Comparable<Snapshot> {
 
     Snapshot(String text) {
         this.text = text
-        if (!text.matches(/^(M|RC)\d*$/) && !isBuildSnapshot()) {
+        if (!text.matches(/^(M|RC|Final)\d*$/) && !isBuildSnapshot()) {
             throw new IllegalArgumentException("GrailsVersion snapshot is not in the expected format")
         }
     }

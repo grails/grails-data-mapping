@@ -121,7 +121,7 @@ class GrailsVersion implements Comparable<GrailsVersion> {
         if (version != null) {
             // if the current version is greater than the required version
             GrailsVersion otherVersion = new GrailsVersion(requiredVersion)
-            if (version >= otherVersion) {
+            if (version >= otherVersion || version == otherVersion) {
                 return true
             }
         }
