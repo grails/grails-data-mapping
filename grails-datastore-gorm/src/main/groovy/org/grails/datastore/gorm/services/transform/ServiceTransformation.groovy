@@ -217,8 +217,11 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             }
 
             copyAnnotations(classNode, impl)
-            findAnnotation(impl, Service)
-                    .addMember("name", new ConstantExpression(Introspector.decapitalize(serviceClassName)))
+            AnnotationNode serviceAnnotation = findAnnotation(impl, Service)
+            if(serviceAnnotation.getMember("name") == null) {
+                serviceAnnotation
+                        .setMember("name", new ConstantExpression(Introspector.decapitalize(serviceClassName)))
+            }
             // add compile static by default
             impl.addAnnotation(new AnnotationNode(COMPILE_STATIC_TYPE))
             // weave the trait class

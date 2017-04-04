@@ -23,7 +23,7 @@ class ServiceTransformSpec extends Specification {
 import grails.gorm.services.*
 import grails.gorm.annotation.Entity
 
-@Service(Foo)
+@Service(name="fooService", value=Foo)
 abstract class AbstractMyService implements FooService {
 
     AbstractMyService anotherFooService 
