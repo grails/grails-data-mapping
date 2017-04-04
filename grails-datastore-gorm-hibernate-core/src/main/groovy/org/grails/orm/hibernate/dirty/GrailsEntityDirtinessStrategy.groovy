@@ -54,34 +54,36 @@ class GrailsEntityDirtinessStrategy implements CustomEntityDirtinessStrategy {
     @Override
     void findDirty(Object entity, EntityPersister persister, Session session, CustomEntityDirtinessStrategy.DirtyCheckContext dirtyCheckContext) {
         Status status = getStatus(session, entity)
-        dirtyCheckContext.doDirtyChecking(
-            new CustomEntityDirtinessStrategy.AttributeChecker() {
-                @Override
-                boolean isDirty(CustomEntityDirtinessStrategy.AttributeInformation attributeInformation) {
-                    String propertyName = attributeInformation.name
-                    if(status != null) {
-                        if(status == Status.MANAGED) {
-                            // perform dirty check
-                            DirtyCheckable dirtyCheckable = cast(entity)
-                            if(GormProperties.LAST_UPDATED == propertyName) {
-                                return dirtyCheckable.hasChanged()
+        if(entity instanceof DirtyCheckable) {
+            dirtyCheckContext.doDirtyChecking(
+                    new CustomEntityDirtinessStrategy.AttributeChecker() {
+                        @Override
+                        boolean isDirty(CustomEntityDirtinessStrategy.AttributeInformation attributeInformation) {
+                            String propertyName = attributeInformation.name
+                            if(status != null) {
+                                if(status == Status.MANAGED) {
+                                    // perform dirty check
+                                    DirtyCheckable dirtyCheckable = cast(entity)
+                                    if(GormProperties.LAST_UPDATED == propertyName) {
+                                        return dirtyCheckable.hasChanged()
+                                    }
+                                    else {
+                                        return dirtyCheckable.hasChanged(propertyName)
+                                    }
+                                }
+                                else {
+                                    // either deleted or in a state that cannot be regarded as dirty
+                                    return false
+                                }
                             }
                             else {
-                                return dirtyCheckable.hasChanged(propertyName)
+                                // a new object not within the session
+                                return true
                             }
                         }
-                        else {
-                            // either deleted or in a state that cannot be regarded as dirty
-                            return false
-                        }
                     }
-                    else {
-                        // a new object not within the session
-                        return true
-                    }
-                }
-            }
-        );
+            )
+        }
     }
 
     @CompileDynamic
@@ -91,6 +93,6 @@ class GrailsEntityDirtinessStrategy implements CustomEntityDirtinessStrategy {
     }
 
     private DirtyCheckable cast(Object entity) {
-        return DirtyCheckable.class.cast(entity);
+        return DirtyCheckable.class.cast(entity)
     }
 }
