@@ -161,7 +161,7 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
         BlockStatement methodBody = block()
 
 
-        MethodCallExpression executeMethodCallExpression = buildDelegatingMethodCall(
+        Expression executeMethodCallExpression = buildDelegatingMethodCall(
                 sourceUnit,
                 annotationNode,
                 classNode,
@@ -212,9 +212,9 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
      * @param originalMethodCallExpr The method call expression that invokes the original logic
      * @param newMethodBody The new method body
      *
-     * @return The method call expression that will make up the body of the new method
+     * @return The expression that will make up the body of the new method
      */
-    protected abstract MethodCallExpression buildDelegatingMethodCall(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode, MethodCallExpression originalMethodCallExpr, BlockStatement newMethodBody)
+    protected abstract Expression buildDelegatingMethodCall(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode, MethodNode methodNode, MethodCallExpression originalMethodCallExpr, BlockStatement newMethodBody)
 
     /**
      * Construct a method call that wraps an original call with a closure invocation
