@@ -199,7 +199,7 @@ extends <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractT
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;java.lang.Iterable&lt;<a href='../../../../../../org/grails/datastore/gorm/services/ServiceImplementer.html' title='ServiceImplementer'>ServiceImplementer</a>&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#findServiceImplementors()">findServiceImplementors</a></strong>()</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findServiceImplementors(org.codehaus.groovy.ast.AnnotationNode)">findServiceImplementors</a></strong>(org.codehaus.groovy.ast.AnnotationNode annotationNode)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -224,6 +224,18 @@ extends <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractT
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;java.lang.Class</code></td>
                             <td class="colLast"><code><strong><a href="#getTraitClass()">getTraitClass</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>&lt;T&gt;</code></td>
+                            <td class="colLast"><code>protected&nbsp;java.lang.Iterable&lt;T&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#load(Class<T>)">load</a></strong>(java.lang.Class&lt;T&gt; type)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>protected&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#loadAnnotationDefined(org.codehaus.groovy.ast.AnnotationNode, java.lang.String, java.util.List, java.lang.Class)">loadAnnotationDefined</a></strong>(org.codehaus.groovy.ast.AnnotationNode annotationNode, java.lang.String member, java.util.List finalList, java.lang.Class type)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -262,7 +274,7 @@ extends <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractT
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class org.codehaus.groovy.transform.AbstractASTTransformation</code></td>
-                            <td class="colLast"><code>org.codehaus.groovy.transform.AbstractASTTransformation#memberHasValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String, java.lang.Object), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberStringValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberStringValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberIntValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberClassValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberClassValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String, org.codehaus.groovy.ast.ClassNode), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberList(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getClassList(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#hasAnnotation(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.ClassNode), org.codehaus.groovy.transform.AbstractASTTransformation#deemedInternalName(java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#shouldSkip(java.lang.String, java.util.List, java.util.List), org.codehaus.groovy.transform.AbstractASTTransformation#shouldSkipOnDescriptor(boolean, java.util.Map, org.codehaus.groovy.ast.MethodNode, java.util.List, java.util.List), org.codehaus.groovy.transform.AbstractASTTransformation#tokenize(java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#addError(java.lang.String, org.codehaus.groovy.ast.ASTNode), org.codehaus.groovy.transform.AbstractASTTransformation#nonGeneric(org.codehaus.groovy.ast.ClassNode), org.codehaus.groovy.transform.AbstractASTTransformation#wait(long, int), org.codehaus.groovy.transform.AbstractASTTransformation#wait(long), org.codehaus.groovy.transform.AbstractASTTransformation#wait(), org.codehaus.groovy.transform.AbstractASTTransformation#equals(java.lang.Object), org.codehaus.groovy.transform.AbstractASTTransformation#toString(), org.codehaus.groovy.transform.AbstractASTTransformation#hashCode(), org.codehaus.groovy.transform.AbstractASTTransformation#getClass(), org.codehaus.groovy.transform.AbstractASTTransformation#notify(), org.codehaus.groovy.transform.AbstractASTTransformation#notifyAll(), org.codehaus.groovy.transform.AbstractASTTransformation#visit([Lorg.codehaus.groovy.ast.ASTNode;, org.codehaus.groovy.control.SourceUnit)</code></td>
+                            <td class="colLast"><code>org.codehaus.groovy.transform.AbstractASTTransformation#tokenize(java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#addError(java.lang.String, org.codehaus.groovy.ast.ASTNode), org.codehaus.groovy.transform.AbstractASTTransformation#nonGeneric(org.codehaus.groovy.ast.ClassNode), org.codehaus.groovy.transform.AbstractASTTransformation#memberHasValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String, java.lang.Object), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberStringValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberStringValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberIntValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberClassValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String, org.codehaus.groovy.ast.ClassNode), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberClassValue(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getMemberList(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#getClassList(org.codehaus.groovy.ast.AnnotationNode, java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#hasAnnotation(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.ClassNode), org.codehaus.groovy.transform.AbstractASTTransformation#deemedInternalName(java.lang.String), org.codehaus.groovy.transform.AbstractASTTransformation#shouldSkip(java.lang.String, java.util.List, java.util.List), org.codehaus.groovy.transform.AbstractASTTransformation#shouldSkipOnDescriptor(boolean, java.util.Map, org.codehaus.groovy.ast.MethodNode, java.util.List, java.util.List), org.codehaus.groovy.transform.AbstractASTTransformation#wait(long, int), org.codehaus.groovy.transform.AbstractASTTransformation#wait(long), org.codehaus.groovy.transform.AbstractASTTransformation#wait(), org.codehaus.groovy.transform.AbstractASTTransformation#equals(java.lang.Object), org.codehaus.groovy.transform.AbstractASTTransformation#toString(), org.codehaus.groovy.transform.AbstractASTTransformation#hashCode(), org.codehaus.groovy.transform.AbstractASTTransformation#getClass(), org.codehaus.groovy.transform.AbstractASTTransformation#notify(), org.codehaus.groovy.transform.AbstractASTTransformation#notifyAll(), org.codehaus.groovy.transform.AbstractASTTransformation#visit([Lorg.codehaus.groovy.ast.ASTNode;, org.codehaus.groovy.control.SourceUnit)</code></td>
                         </tr>
                     </table>
                    </ul>
@@ -314,10 +326,10 @@ extends <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractT
                 </a>
                     <h3>Method Detail</h3>
                     
-                        <a name="findServiceImplementors()"><!-- --></a>
+                        <a name="findServiceImplementors(org.codehaus.groovy.ast.AnnotationNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;java.lang.Iterable&lt;<a href='../../../../../../org/grails/datastore/gorm/services/ServiceImplementer.html' title='ServiceImplementer'>ServiceImplementer</a>&gt; <strong>findServiceImplementors</strong>()</h4>
+                                <h4>protected&nbsp;java.lang.Iterable&lt;<a href='../../../../../../org/grails/datastore/gorm/services/ServiceImplementer.html' title='ServiceImplementer'>ServiceImplementer</a>&gt; <strong>findServiceImplementors</strong>(org.codehaus.groovy.ast.AnnotationNode annotationNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -353,6 +365,22 @@ protected&nbsp;java.lang.Object <strong>getAppliedMarker</strong>()</h4>
                             <li class="blockList">
                                 <h4>@java.lang.Override
 protected&nbsp;java.lang.Class <strong>getTraitClass</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="load(Class<T>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>&lt;T&gt; protected&nbsp;java.lang.Iterable&lt;T&gt; <strong>load</strong>(java.lang.Class&lt;T&gt; type)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="loadAnnotationDefined(org.codehaus.groovy.ast.AnnotationNode, java.lang.String, java.util.List, java.lang.Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;void <strong>loadAnnotationDefined</strong>(org.codehaus.groovy.ast.AnnotationNode annotationNode, java.lang.String member, java.util.List finalList, java.lang.Class type)</h4>
                                 <p></p>
                             </li>
                         </ul>
