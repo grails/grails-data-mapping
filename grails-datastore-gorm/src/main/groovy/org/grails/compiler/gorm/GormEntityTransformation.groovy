@@ -110,7 +110,9 @@ class GormEntityTransformation extends AbstractASTTransformation implements Comp
         IGNORED_PROPERTIES.addExpression(GeneralUtils.constX(GormProperties.DIRTY))
         IGNORED_PROPERTIES.addExpression(GeneralUtils.constX(GormProperties.ATTACHED))
         IGNORED_PROPERTIES.addExpression(GeneralUtils.constX(GormProperties.VERSION))
-
+        IGNORED_PROPERTIES.addExpression(GeneralUtils.constX(GormProperties.PROPERTIES))
+        IGNORED_PROPERTIES.addExpression(GeneralUtils.constX(GormProperties.META_CLASS))
+        IGNORED_PROPERTIES.addExpression(GeneralUtils.constX(GormProperties.TENANT_IDENTITY))
     }
 
     protected CompilationUnit compilationUnit
