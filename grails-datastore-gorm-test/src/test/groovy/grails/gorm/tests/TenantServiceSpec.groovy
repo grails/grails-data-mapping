@@ -27,7 +27,10 @@ class TenantServiceSpec extends Specification {
             [ConnectionSource.DEFAULT, 'two'],
             Team
     )
-
+    def setup() {
+        System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "")
+    }
+    
     void "test multi tenancy with in-memory datastore"() {
         when:
         Team.count()

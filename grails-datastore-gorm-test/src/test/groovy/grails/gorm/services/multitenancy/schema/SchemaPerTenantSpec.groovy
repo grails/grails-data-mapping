@@ -22,6 +22,9 @@ class SchemaPerTenantSpec extends Specification {
              (Settings.SETTING_DB_CREATE): "create-drop"],
             getClass().getPackage()
     )
+    def setup() {
+        System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "")
+    }
     void 'Test schema per tenant'() {
         when:"When there is no tenant"
         Book.count()
