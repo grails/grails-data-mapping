@@ -104,6 +104,22 @@ function windowTitle()
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
+                                <strong><a href="IterableProjectionServiceImplementer.html" title="class in org/grails/datastore/gorm/services/implementers">
+                                    IterableProjectionServiceImplementer
+                                </a></strong>
+                            </td>
+                            <td>For projections that return an iterable</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="IterableServiceImplementer.html" title="class in org/grails/datastore/gorm/services/implementers">
+                                    IterableServiceImplementer
+                                </a></strong>
+                            </td>
+                            <td>An implementer that returns an iterable or an array</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
                                 <strong><a href="NoResultServiceImplementer.html" title="class in org/grails/datastore/gorm/services/implementers">
                                     NoResultServiceImplementer
                                 </a></strong>
@@ -161,6 +177,22 @@ function windowTitle()
                         <th class="colFirst" scope="col">Trait</th>
                         <th class="colLast" scope="col">Description</th>
                     </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="InterfaceProjectionBuilder.html" title="class in org/grails/datastore/gorm/services/implementers">
+                                    InterfaceProjectionBuilder
+                                </a></strong>
+                            </td>
+                            <td>Base trait for building interface projections</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="IterableInterfaceProjectionBuilder.html" title="class in org/grails/datastore/gorm/services/implementers">
+                                    IterableInterfaceProjectionBuilder
+                                </a></strong>
+                            </td>
+                            <td>Projection builder for iterable results like lists and arrays</td>
+                        </tr>
 <tr class="altColor">
                             <td class="colOne">
                                 <strong><a href="SingleResultInterfaceProjectionBuilder.html" title="class in org/grails/datastore/gorm/services/implementers">
@@ -234,7 +266,7 @@ function windowTitle()
                                     AbstractServiceImplementer
                                 </a></strong>
                             </td>
-                            <td>Abstract implementation of the <a href='../../../../../../org/grails/datastore/gorm/services/ServiceImplementer.html' title='ServiceImplementer'>ServiceImplementer</a> interface</td>
+                            <td>Abstract implementation of the ServiceImplementer interface</td>
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
@@ -250,7 +282,7 @@ function windowTitle()
                                     AbstractWhereImplementer
                                 </a></strong>
                             </td>
-                            <td>Abstract implementation for queries annotated with <a href='../../../../../../grails/gorm/services/Where.html' title='Where'>Where</a></td>
+                            <td>Abstract implementation for queries annotated with Where</td>
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
@@ -282,7 +314,7 @@ function windowTitle()
                                     CountWhereImplementer
                                 </a></strong>
                             </td>
-                            <td>Implements support for the <a href='../../../../../../grails/gorm/services/Where.html' title='Where'>Where</a> annotation on <a href='../../../../../../grails/gorm/services/Service.html' title='Service'>Service</a> instances that return a multiple results</td>
+                            <td>Implements support for the Where annotation on <a href='../../../../../../grails/gorm/services/Service.html' title='Service'>Service</a> instances that return a multiple results</td>
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
@@ -302,12 +334,44 @@ function windowTitle()
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
+                                <strong><a href="FindAllByImplementer.html" title="class in org/grails/datastore/gorm/services/implementers">
+                                    FindAllByImplementer
+                                </a></strong>
+                            </td>
+                            <td>Automatically implement services that find objects based an arguments</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="FindAllByInterfaceProjectionImplementer.html" title="class in org/grails/datastore/gorm/services/implementers">
+                                    FindAllByInterfaceProjectionImplementer
+                                </a></strong>
+                            </td>
+                            <td>Created by graemerocher on 05/04/2017.</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
                                 <strong><a href="FindAllImplementer.html" title="class in org/grails/datastore/gorm/services/implementers">
                                     FindAllImplementer
                                 </a></strong>
                             </td>
                             <td>Automatically implements <a href='../../../../../../grails/gorm/services/Service.html' title='Service'>Service</a> interface methods that start with "list" and
  return an iterable of domain classes</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="FindAllInterfaceProjectionImplementer.html" title="class in org/grails/datastore/gorm/services/implementers">
+                                    FindAllInterfaceProjectionImplementer
+                                </a></strong>
+                            </td>
+                            <td>Used for performing interface projections on</td>
+                        </tr>
+<tr class="altColor">
+                            <td class="colOne">
+                                <strong><a href="FindAllPropertyProjectionImplementer.html" title="class in org/grails/datastore/gorm/services/implementers">
+                                    FindAllPropertyProjectionImplementer
+                                </a></strong>
+                            </td>
+                            <td>Support for projections that return multiple results</td>
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
@@ -323,7 +387,7 @@ function windowTitle()
                                     FindAllWhereImplementer
                                 </a></strong>
                             </td>
-                            <td>Implements support for the <a href='../../../../../../grails/gorm/services/Where.html' title='Where'>Where</a> annotation on <a href='../../../../../../grails/gorm/services/Service.html' title='Service'>Service</a> instances that return a multiple results</td>
+                            <td>Implements support for the Where annotation on <a href='../../../../../../grails/gorm/services/Service.html' title='Service'>Service</a> instances that return a multiple results</td>
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
@@ -332,14 +396,6 @@ function windowTitle()
                                 </a></strong>
                             </td>
                             <td>An implementer that handles delete methods</td>
-                        </tr>
-<tr class="altColor">
-                            <td class="colOne">
-                                <strong><a href="FindByImplementer.html" title="class in org/grails/datastore/gorm/services/implementers">
-                                    FindByImplementer
-                                </a></strong>
-                            </td>
-                            <td>Automatically implement services that find objects based an arguments</td>
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
@@ -411,15 +467,7 @@ function windowTitle()
                                     FindOneWhereImplementer
                                 </a></strong>
                             </td>
-                            <td>Implements support for the <a href='../../../../../../grails/gorm/services/Where.html' title='Where'>Where</a> annotation on <a href='../../../../../../grails/gorm/services/Service.html' title='Service'>Service</a> instances that return a single result</td>
-                        </tr>
-<tr class="altColor">
-                            <td class="colOne">
-                                <strong><a href="FindPropertyProjectionImplementer.html" title="class in org/grails/datastore/gorm/services/implementers">
-                                    FindPropertyProjectionImplementer
-                                </a></strong>
-                            </td>
-                            <td>Support for projections that return multiple results</td>
+                            <td>Implements support for the Where annotation on <a href='../../../../../../grails/gorm/services/Service.html' title='Service'>Service</a> instances that return a single result</td>
                         </tr>
 <tr class="altColor">
                             <td class="colOne">
