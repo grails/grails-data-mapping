@@ -29,7 +29,7 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.constX
 abstract class AbstractStringQueryImplementer extends AbstractReadOperationImplementer implements AnnotatedServiceImplementer<Query> {
     @Override
     int getOrder() {
-        return FindByImplementer.POSITION - 100
+        return FindAllByImplementer.POSITION - 100
     }
 
     @Override

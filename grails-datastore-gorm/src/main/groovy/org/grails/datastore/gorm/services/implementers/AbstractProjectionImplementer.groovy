@@ -28,7 +28,7 @@ abstract class AbstractProjectionImplementer extends AbstractDetachedCriteriaSer
     // before find by implementer
     @Override
     int getOrder() {
-        FindByImplementer.POSITION - 100
+        FindAllByImplementer.POSITION - 100
     }
 
     protected String establishPropertyName(MethodNode methodNode, String prefix, ClassNode domainClass) {

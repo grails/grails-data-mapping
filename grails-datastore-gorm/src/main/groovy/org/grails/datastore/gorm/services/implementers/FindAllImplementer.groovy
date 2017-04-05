@@ -21,6 +21,7 @@ import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
+import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.mapping.core.Ordered
 import org.grails.datastore.mapping.reflect.AstUtils
 
@@ -34,7 +35,7 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.*
  * @since 6.1
  */
 @CompileStatic
-class FindAllImplementer extends AbstractDetachedCriteriaServiceImplementor implements Ordered {
+class FindAllImplementer extends AbstractDetachedCriteriaServiceImplementor implements Ordered, IterableServiceImplementer<GormEntity> {
 
     static final List<String> HANDLED_PREFIXES = ['list', 'find', 'get', 'retrieve']
 

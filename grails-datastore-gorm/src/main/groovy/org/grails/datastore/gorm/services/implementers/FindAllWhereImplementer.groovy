@@ -6,6 +6,7 @@ import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.stmt.Statement
+import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.mapping.reflect.AstUtils
 
 import static org.codehaus.groovy.ast.tools.GeneralUtils.castX
@@ -18,7 +19,7 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.returnS
  * @since 6.1
  */
 @CompileStatic
-class FindAllWhereImplementer extends AbstractWhereImplementer {
+class FindAllWhereImplementer extends AbstractWhereImplementer implements IterableServiceImplementer<GormEntity> {
 
     @Override
     boolean doesImplement(ClassNode domainClass, MethodNode methodNode) {

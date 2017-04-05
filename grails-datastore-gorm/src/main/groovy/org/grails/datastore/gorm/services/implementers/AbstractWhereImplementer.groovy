@@ -26,7 +26,7 @@ import static org.grails.datastore.mapping.reflect.AstUtils.processVariableScope
 abstract class AbstractWhereImplementer extends AbstractReadOperationImplementer implements AnnotatedServiceImplementer<Where> {
 
 
-    public static final int POSITION = FindByImplementer.POSITION - 100
+    public static final int POSITION = FindAllByImplementer.POSITION - 100
 
     @Override
     int getOrder() {

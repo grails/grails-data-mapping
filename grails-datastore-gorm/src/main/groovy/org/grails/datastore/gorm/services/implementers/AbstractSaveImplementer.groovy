@@ -57,7 +57,7 @@ abstract class AbstractSaveImplementer extends AbstractWriteOperationImplementer
 
         Expression connectionId = findConnectionId(abstractMethodNode)
         if(connectionId != null) {
-            returnS(callX(buildApiLookup(domainClassNode, connectionId), "save", args(entityVar, saveArgs)))
+            returnS(callX(buildInstanceApiLookup(domainClassNode, connectionId), "save", args(entityVar, saveArgs)))
         }
         else {
             return returnS(callX(entityVar, "save", saveArgs))

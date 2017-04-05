@@ -15,9 +15,9 @@ import static org.grails.datastore.mapping.reflect.AstUtils.implementsInterface
  * @since 6.1
  */
 @CompileStatic
-class FindPropertyProjectionImplementer extends AbstractProjectionImplementer {
+class FindAllPropertyProjectionImplementer extends AbstractProjectionImplementer implements IterableProjectionServiceImplementer {
     @Override
-    protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
+    boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
         boolean isCompatibleReturnType = false
         String propertyName = establishPropertyName(methodNode, prefix, domainClass)
         if(propertyName == null) return false

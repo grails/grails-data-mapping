@@ -33,7 +33,7 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.*
  * @since 6.1
  */
 @CompileStatic
-class FindOneByImplementer extends FindByImplementer implements SingleResultServiceImplementer<GormEntity> {
+class FindOneByImplementer extends FindAllByImplementer implements SingleResultServiceImplementer<GormEntity> {
     static final List<String> HANDLED_PREFIXES = ['findBy','getBy', 'findOneBy']
 
     @Override
@@ -42,7 +42,7 @@ class FindOneByImplementer extends FindByImplementer implements SingleResultServ
         Parameter[] parameters = newMethodNode.parameters
         if(parameters.length == 1 && parameters[0].name == GormProperties.IDENTITY) {
             // add a method that invokes get(id)
-            Expression queryMethodCall = callX(findDomainClassForConnectionId(domainClassNode, newMethodNode), "get", args(parameters))
+            Expression queryMethodCall = callX(findStaticApiForConnectionId(domainClassNode, newMethodNode), "get", args(parameters))
             body.addStatement(
                 returnS(
                     queryMethodCall

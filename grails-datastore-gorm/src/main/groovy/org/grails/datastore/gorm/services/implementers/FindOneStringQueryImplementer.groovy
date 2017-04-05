@@ -22,7 +22,7 @@ class FindOneStringQueryImplementer extends AbstractStringQueryImplementer imple
     @Override
     protected Statement buildQueryReturnStatement(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, Expression args) {
         returnS(
-                callX(  findDomainClassForConnectionId(domainClassNode, newMethodNode),
+                callX(  findStaticApiForConnectionId(domainClassNode, newMethodNode),
                         getFindMethodToInvoke(domainClassNode, newMethodNode),
                         args)
         )

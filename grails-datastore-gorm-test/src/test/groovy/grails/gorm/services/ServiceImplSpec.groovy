@@ -11,8 +11,6 @@ import org.springframework.context.support.StaticMessageSource
 import spock.lang.AutoCleanup
 import spock.lang.Specification
 
-import java.beans.Introspector
-
 /**
  * Created by graemerocher on 06/02/2017.
  */
@@ -298,15 +296,18 @@ class ServiceImplSpec extends Specification {
         productService.saveProduct("Tomato", "Fruit")
 
         ProductInfo info = productService.findProductInfo("Pumpkin", "Vegetable")
-
+        List<ProductInfo> infos = productService.findProductInfos( "Vegetable")
         def result = JsonOutput.toJson(info)
         then:
+        infos.size() == 2
+        infos.first().name == "Carrot"
         result == '{"name":"Pumpkin"}'
         info != null
         info.name == "Pumpkin"
         productService.searchProductInfoByName("Pump%") != null
         productService.findByTypeLike("Veg%") != null
         productService.findByTypeLike("Jun%")  == null
+        productService.findAllByTypeLike( "Vege%").size() == 2
 
         when:
         productService.searchProductInfo("Pum%").name == "Pumpkin"
@@ -319,6 +320,8 @@ class ServiceImplSpec extends Specification {
 
         then:
         productService.findByTypeLike("Vege%") == null
+
+
     }
 }
 
@@ -367,6 +370,9 @@ abstract class AnotherProductService implements AnotherProductInterface{
 
 @Service(Product)
 interface ProductService {
+    List<ProductInfo> findProductInfos(String type)
+
+    List<ProductInfo> findAllByTypeLike(String type)
 
     ProductInfo findProductInfo(String name, String type)
 

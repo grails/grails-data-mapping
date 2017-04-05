@@ -54,6 +54,23 @@ class RxAstUtils extends AstUtils {
      * @param cls The class node
      * @return True if it is
      */
+    static boolean isSingleOfDomainClass(ClassNode cls) {
+        if(isSingle(cls)) {
+            GenericsType[] genericsTypes = cls.genericsTypes
+            if(genericsTypes != null && genericsTypes.length == 1) {
+                ClassNode type = genericsTypes[0].type
+                return type != null && isDomainClass(type)
+            }
+        }
+        return false
+    }
+
+    /**
+     * Return if the given class is an Observable of domain class
+     *
+     * @param cls The class node
+     * @return True if it is
+     */
     static boolean isObservableOf(ClassNode cls, ClassNode parent) {
         if(isObservable(cls) || isSingle(cls)) {
             GenericsType[] genericsTypes = cls.genericsTypes
@@ -64,7 +81,22 @@ class RxAstUtils extends AstUtils {
         }
         return false
     }
-
+    /**
+     * Return if the given class is an Observable of domain class
+     *
+     * @param cls The class node
+     * @return True if it is
+     */
+    static boolean isSingleOf(ClassNode cls, Class parent) {
+        if(isSingle(cls)) {
+            GenericsType[] genericsTypes = cls.genericsTypes
+            if(genericsTypes != null && genericsTypes.length == 1) {
+                ClassNode type = genericsTypes[0].type
+                return type != null && isSubclassOfOrImplementsInterface(type, parent.name)
+            }
+        }
+        return false
+    }
     /**
      * Return if the given class is an Observable of domain class
      *

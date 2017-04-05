@@ -52,11 +52,13 @@ import org.grails.datastore.gorm.services.implementers.CountImplementer
 import org.grails.datastore.gorm.services.implementers.CountWhereImplementer
 import org.grails.datastore.gorm.services.implementers.DeleteImplementer
 import org.grails.datastore.gorm.services.implementers.DeleteWhereImplementer
+import org.grails.datastore.gorm.services.implementers.FindAllByInterfaceProjectionImplementer
+import org.grails.datastore.gorm.services.implementers.FindAllInterfaceProjectionImplementer
 import org.grails.datastore.gorm.services.implementers.FindAllStringQueryImplementer
 import org.grails.datastore.gorm.services.implementers.FindAllWhereImplementer
 import org.grails.datastore.gorm.services.implementers.FindAndDeleteImplementer
 import org.grails.datastore.gorm.services.implementers.FindAllImplementer
-import org.grails.datastore.gorm.services.implementers.FindByImplementer
+import org.grails.datastore.gorm.services.implementers.FindAllByImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneByImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneByInterfaceProjectionImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneImplementer
@@ -64,7 +66,7 @@ import org.grails.datastore.gorm.services.implementers.FindOneInterfaceProjectio
 import org.grails.datastore.gorm.services.implementers.FindOneInterfaceProjectionStringQueryImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneInterfaceProjectionWhereImplementer
 import org.grails.datastore.gorm.services.implementers.FindOnePropertyProjectionImplementer
-import org.grails.datastore.gorm.services.implementers.FindPropertyProjectionImplementer
+import org.grails.datastore.gorm.services.implementers.FindAllPropertyProjectionImplementer
 import org.grails.datastore.gorm.services.implementers.SaveImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneStringQueryImplementer
 import org.grails.datastore.gorm.services.implementers.UpdateOneImplementer
@@ -98,17 +100,19 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
     private static final List<ServiceImplementer> DEFAULT_IMPLEMENTORS = [
             new FindAllImplementer(),
             new FindOneImplementer(),
-            new FindByImplementer(),
+            new FindAllByImplementer(),
+            new FindAllByInterfaceProjectionImplementer(),
             new FindOneByImplementer(),
             new FindOneByInterfaceProjectionImplementer(),
             new FindOneInterfaceProjectionImplementer(),
+            new FindAllInterfaceProjectionImplementer(),
             new FindAndDeleteImplementer(),
             new DeleteImplementer(),
             new DeleteWhereImplementer(),
             new SaveImplementer(),
             new UpdateOneImplementer(),
             new FindOnePropertyProjectionImplementer(),
-            new FindPropertyProjectionImplementer(),
+            new FindAllPropertyProjectionImplementer(),
             new FindOneWhereImplementer(),
             new FindOneInterfaceProjectionWhereImplementer(),
             new FindAllWhereImplementer(),

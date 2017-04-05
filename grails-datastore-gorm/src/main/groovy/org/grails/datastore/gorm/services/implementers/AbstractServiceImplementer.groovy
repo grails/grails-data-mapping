@@ -117,16 +117,32 @@ abstract class AbstractServiceImplementer implements PrefixedServiceImplementer,
         return ann
     }
 
-    protected Expression buildApiLookup(ClassNode domainClass, Expression connectionId) {
+    protected Expression buildInstanceApiLookup(ClassNode domainClass, Expression connectionId) {
         return AstMethodDispatchUtils.callD(
             classX(GormEnhancer), "findInstanceApi", args(classX(domainClass), connectionId)
         )
     }
 
-    protected Expression findDomainClassForConnectionId(ClassNode domainClass, MethodNode methodNode) {
+    protected Expression buildStaticApiLookup(ClassNode domainClass, Expression connectionId) {
+        return AstMethodDispatchUtils.callD(
+                classX(GormEnhancer), "findStaticApi", args(classX(domainClass), connectionId)
+        )
+    }
+
+    protected Expression findInstanceApiForConnectionId(ClassNode domainClass, MethodNode methodNode) {
         Expression connectionId = findConnectionId(methodNode)
         if(connectionId != null) {
-            return buildApiLookup(domainClass, connectionId)
+            return buildInstanceApiLookup(domainClass, connectionId)
+        }
+        else {
+            return classX(domainClass.plainNodeReference)
+        }
+    }
+
+    protected Expression findStaticApiForConnectionId(ClassNode domainClass, MethodNode methodNode) {
+        Expression connectionId = findConnectionId(methodNode)
+        if(connectionId != null) {
+            return buildStaticApiLookup(domainClass, connectionId)
         }
         else {
             return classX(domainClass.plainNodeReference)

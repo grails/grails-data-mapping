@@ -1,6 +1,5 @@
 package org.grails.datastore.gorm.services.implementers
 
-import grails.gorm.services.Query
 import grails.gorm.services.Where
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.ClassNode

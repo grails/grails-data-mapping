@@ -22,6 +22,7 @@ import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.Statement
+import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.MatchSpec
 import org.grails.datastore.gorm.services.transform.ServiceTransformation
@@ -37,7 +38,7 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.*
  * @author Graeme Rocher
  */
 @CompileStatic
-class FindByImplementer extends AbstractArrayOrIterableResultImplementer implements Ordered {
+class FindAllByImplementer extends AbstractArrayOrIterableResultImplementer implements Ordered, IterableServiceImplementer<GormEntity> {
     static final List<String> HANDLED_PREFIXES = ['listBy','findBy', 'findAllBy']
     public static final int POSITION = -100
 
@@ -88,25 +89,27 @@ class FindByImplementer extends AbstractArrayOrIterableResultImplementer impleme
         if(matchSpec == null) {
             AstUtils.error(abstractMethodNode.declaringClass.module.context, abstractMethodNode, ServiceTransformation.NO_IMPLEMENTATIONS_MESSAGE)
         }
-
-        // validate the properties
-        for(String propertyName in matchSpec.propertyNames) {
-            if(!AstUtils.hasProperty(domainClassNode, propertyName)) {
-                AstUtils.error(abstractMethodNode.declaringClass.module.context, abstractMethodNode, "Cannot implement finder for non-existent property [$propertyName] of class [$domainClassNode.name]")
+        else {
+            // validate the properties
+            for(String propertyName in matchSpec.propertyNames) {
+                if(!AstUtils.hasProperty(domainClassNode, propertyName)) {
+                    AstUtils.error(abstractMethodNode.declaringClass.module.context, abstractMethodNode, "Cannot implement finder for non-existent property [$propertyName] of class [$domainClassNode.name]")
+                }
             }
+
+            // add a method that invokes list()
+            String methodPrefix = getDynamicFinderPrefix()
+            String finderCallName = "${methodPrefix}${matchSpec.queryExpression}"
+            Expression findCall = callX(findStaticApiForConnectionId(domainClassNode, newMethodNode), finderCallName, args(newMethodNode.parameters))
+            if(isArray) {
+                // handle array cast
+                findCall = castX( returnType.plainNodeReference, findCall)
+            }
+            body.addStatement(
+                    buildReturnStatement(domainClassNode, abstractMethodNode, newMethodNode, findCall)
+            )
         }
 
-        // add a method that invokes list()
-        String methodPrefix = getDynamicFinderPrefix()
-        String finderCallName = "${methodPrefix}${matchSpec.queryExpression}"
-        Expression findCall = callX(findDomainClassForConnectionId(domainClassNode, newMethodNode), finderCallName, args(newMethodNode.parameters))
-        if(isArray) {
-            // handle array cast
-            findCall = castX( returnType.plainNodeReference, findCall)
-        }
-        body.addStatement(
-            buildReturnStatement(domainClassNode, abstractMethodNode, newMethodNode, findCall)
-        )
     }
 
     protected Statement buildReturnStatement(ClassNode domainClass, MethodNode abstractMethodNode, MethodNode newMethodNode, Expression queryExpression) {
