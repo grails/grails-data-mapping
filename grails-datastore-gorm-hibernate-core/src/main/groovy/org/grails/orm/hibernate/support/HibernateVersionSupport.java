@@ -17,10 +17,12 @@ package org.grails.orm.hibernate.support;
 
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
+import org.hibernate.persister.entity.EntityPersister;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
+import java.util.Set;
 
 /**
  *
@@ -36,10 +38,25 @@ public class HibernateVersionSupport {
 
     private static Method getFlushMode;
     private static Method setFlushMode;
+    private static Method resolveAttributeIndexes;
+    private static boolean arrayAttributeIndexes = true;
 
     static {
         try {
+            resolveAttributeIndexes = EntityPersister.class.getMethod("resolveAttributeIndexes", String[].class);
+            resolveAttributeIndexes.setAccessible(true);
+        } catch (NoSuchMethodException e) {
+            try {
+                resolveAttributeIndexes = EntityPersister.class.getMethod("resolveAttributeIndexes", Set.class);
+                resolveAttributeIndexes.setAccessible(true);
+                arrayAttributeIndexes = false;
+            } catch (NoSuchMethodException e1) {
+                throw new IllegalStateException("No compatible Hibernate resolveAttributeIndexes signature found", e1);
+            }
+        }
+        try {
             // Hibernate 5.2+ getHibernateFlushMode()
+
             getFlushMode = Session.class.getMethod("getHibernateFlushMode");
             setFlushMode = Session.class.getMethod("setHibernateFlushMode", FlushMode.class);
             getFlushMode.setAccessible(true);
@@ -82,5 +99,15 @@ public class HibernateVersionSupport {
      */
     public static void setFlushMode(Session session, FlushMode flushMode) {
         ReflectionUtils.invokeMethod(setFlushMode, session, flushMode);
+    }
+
+    public static int[] resolveAttributeIndexes(EntityPersister persister, Set<String> properties) {
+        if(arrayAttributeIndexes) {
+            Object[] propertiesArray = new Object[]{ properties.toArray(new String[properties.size()]) };
+            return (int[]) ReflectionUtils.invokeMethod(resolveAttributeIndexes, persister, propertiesArray);
+        }
+        else {
+            return (int[]) ReflectionUtils.invokeMethod(resolveAttributeIndexes, persister, properties);
+        }
     }
 }
