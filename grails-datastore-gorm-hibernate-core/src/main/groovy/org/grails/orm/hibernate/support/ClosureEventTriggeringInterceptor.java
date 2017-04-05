@@ -20,21 +20,33 @@ import org.grails.datastore.gorm.events.ConfigurableApplicationContextEventPubli
 import org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
+import org.grails.datastore.mapping.engine.ModificationTrackingEntityAccess;
+import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.orm.hibernate.AbstractHibernateDatastore;
 import org.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.internal.Nullability;
 import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.*;
+import org.hibernate.event.spi.EventType;
+import org.hibernate.event.spi.PostDeleteEvent;
+import org.hibernate.event.spi.PostInsertEvent;
+import org.hibernate.event.spi.PostLoadEvent;
+import org.hibernate.event.spi.PostUpdateEvent;
+import org.hibernate.event.spi.PreDeleteEvent;
+import org.hibernate.event.spi.PreInsertEvent;
+import org.hibernate.event.spi.PreLoadEvent;
+import org.hibernate.event.spi.PreUpdateEvent;
+import org.hibernate.event.spi.SaveOrUpdateEvent;
 import org.hibernate.persister.entity.EntityPersister;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * Listens for Hibernate events and publishes corresponding Datastore events.
@@ -49,7 +61,7 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     //    private final Logger log = LoggerFactory.getLogger(getClass());
     private static final long serialVersionUID = 1;
 
-    public static final Collection<String> IGNORED = new HashSet<String>(Arrays.asList(GormProperties.VERSION, GormProperties.IDENTITY));
+    public static final Collection<String> IGNORED = new HashSet<>(Arrays.asList(GormProperties.VERSION, GormProperties.IDENTITY));
     public static final String ONLOAD_EVENT = "onLoad";
     public static final String ONLOAD_SAVE = "onSave";
     public static final String BEFORE_LOAD_EVENT = "beforeLoad";
@@ -76,8 +88,9 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     public void onSaveOrUpdate(SaveOrUpdateEvent hibernateEvent) throws HibernateException {
         Object entity = getEntity(hibernateEvent);
         if(entity != null && datastore.getMappingContext().getProxyHandler().isInitialized(entity)) {
-            publishEvent(hibernateEvent, new org.grails.datastore.mapping.engine.event.SaveOrUpdateEvent(
-                    this.datastore, entity));
+            org.grails.datastore.mapping.engine.event.SaveOrUpdateEvent grailsEvent = new org.grails.datastore.mapping.engine.event.SaveOrUpdateEvent(
+                    this.datastore, entity);
+            publishEvent(hibernateEvent, grailsEvent);
         }
         super.onSaveOrUpdate(hibernateEvent);
     }
@@ -93,8 +106,9 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     }
 
     public void onPreLoad(PreLoadEvent hibernateEvent) {
-        publishEvent(hibernateEvent, new org.grails.datastore.mapping.engine.event.PreLoadEvent(
-                this.datastore, hibernateEvent.getEntity()));
+        org.grails.datastore.mapping.engine.event.PreLoadEvent grailsEvent = new org.grails.datastore.mapping.engine.event.PreLoadEvent(
+                this.datastore, hibernateEvent.getEntity());
+        publishEvent(hibernateEvent, grailsEvent);
     }
 
     public void onPostLoad(PostLoadEvent hibernateEvent) {
@@ -105,29 +119,86 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     }
 
     public boolean onPreInsert(PreInsertEvent hibernateEvent) {
-        AbstractPersistenceEvent event = new org.grails.datastore.mapping.engine.event.PreInsertEvent(
-                this.datastore, hibernateEvent.getEntity());
-        publishEvent(hibernateEvent, event);
-        return event.isCancelled();
+        Object entity = hibernateEvent.getEntity();
+        Class type = Hibernate.getClass(entity);
+        MappingContext mappingContext = datastore.getMappingContext();
+        PersistentEntity persistentEntity = mappingContext.getPersistentEntity(type.getName());
+        AbstractPersistenceEvent grailsEvent;
+        ModificationTrackingEntityAccess entityAccess = null;
+        if(persistentEntity != null) {
+            entityAccess = new ModificationTrackingEntityAccess(mappingContext.createEntityAccess(persistentEntity, entity));
+            grailsEvent = new org.grails.datastore.mapping.engine.event.PreInsertEvent(this.datastore, persistentEntity, entityAccess);
+        }
+        else {
+            grailsEvent = new org.grails.datastore.mapping.engine.event.PreInsertEvent(this.datastore, entity);
+        }
+
+        publishEvent(hibernateEvent, grailsEvent);
+
+        boolean cancelled = grailsEvent.isCancelled();
+        if(!cancelled && entityAccess != null) {
+            synchronizeHibernateState(hibernateEvent, entityAccess);
+        }
+        return cancelled;
+    }
+
+    private void synchronizeHibernateState(PreInsertEvent hibernateEvent, ModificationTrackingEntityAccess entityAccess) {
+        Map<String, Object> modifiedProperties = entityAccess.getModifiedProperties();
+        if(!modifiedProperties.isEmpty()) {
+            Object[] state = hibernateEvent.getState();
+            EntityPersister persister = hibernateEvent.getPersister();
+            synchronizeHibernateState(persister, state, modifiedProperties);
+        }
+    }
+
+    private void synchronizeHibernateState(PreUpdateEvent hibernateEvent, ModificationTrackingEntityAccess entityAccess) {
+        Map<String, Object> modifiedProperties = entityAccess.getModifiedProperties();
+        if(!modifiedProperties.isEmpty()) {
+            Object[] state = hibernateEvent.getState();
+            EntityPersister persister = hibernateEvent.getPersister();
+            synchronizeHibernateState(persister, state, modifiedProperties);
+        }
+    }
+
+    private void synchronizeHibernateState(EntityPersister persister, Object[] state, Map<String, Object> modifiedProperties) {
+        Set<String> properties = modifiedProperties.keySet();
+        Iterator<String> propertyIterator = properties.iterator();
+        int[] indexes = HibernateVersionSupport.resolveAttributeIndexes(persister, properties);
+        for (int index : indexes) {
+            state[index] = modifiedProperties.get(propertyIterator.next());
+        }
     }
 
     public void onPostInsert(PostInsertEvent hibernateEvent) {
         Object entity = hibernateEvent.getEntity();
+        org.grails.datastore.mapping.engine.event.PostInsertEvent grailsEvent = new org.grails.datastore.mapping.engine.event.PostInsertEvent(
+                this.datastore, entity);
         activateDirtyChecking(entity);
-        publishEvent(hibernateEvent, new org.grails.datastore.mapping.engine.event.PostInsertEvent(
-                this.datastore, entity));
-    }
-
-    @Override
-    public boolean requiresPostCommitHanding(EntityPersister persister) {
-        return false;
+        publishEvent(hibernateEvent, grailsEvent);
     }
 
     public boolean onPreUpdate(PreUpdateEvent hibernateEvent) {
-        AbstractPersistenceEvent event = new org.grails.datastore.mapping.engine.event.PreUpdateEvent(
-                this.datastore, hibernateEvent.getEntity());
-        publishEvent(hibernateEvent, event);
-        return event.isCancelled();
+        Object entity = hibernateEvent.getEntity();
+        Class type = Hibernate.getClass(entity);
+        MappingContext mappingContext = datastore.getMappingContext();
+        PersistentEntity persistentEntity = mappingContext.getPersistentEntity(type.getName());
+        AbstractPersistenceEvent grailsEvent;
+        ModificationTrackingEntityAccess entityAccess = null;
+        if(persistentEntity != null) {
+            entityAccess = new ModificationTrackingEntityAccess(mappingContext.createEntityAccess(persistentEntity, entity));
+            grailsEvent = new org.grails.datastore.mapping.engine.event.PreUpdateEvent(this.datastore, persistentEntity, entityAccess);
+        }
+        else {
+            grailsEvent = new org.grails.datastore.mapping.engine.event.PreUpdateEvent(this.datastore, entity);
+        }
+
+        publishEvent(hibernateEvent, grailsEvent);
+        boolean cancelled = grailsEvent.isCancelled();
+        if(!cancelled && entityAccess != null) {
+            synchronizeHibernateState(hibernateEvent, entityAccess);
+        }
+        return cancelled;
+
     }
 
     public void onPostUpdate(PostUpdateEvent hibernateEvent) {
@@ -145,8 +216,9 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     }
 
     public void onPostDelete(PostDeleteEvent hibernateEvent) {
-        publishEvent(hibernateEvent, new org.grails.datastore.mapping.engine.event.PostDeleteEvent(
-                this.datastore, hibernateEvent.getEntity()));
+        org.grails.datastore.mapping.engine.event.PostDeleteEvent grailsEvent = new org.grails.datastore.mapping.engine.event.PostDeleteEvent(
+                this.datastore, hibernateEvent.getEntity());
+        publishEvent(hibernateEvent, grailsEvent);
     }
 
     private void publishEvent(AbstractEvent hibernateEvent, AbstractPersistenceEvent mappingEvent) {
@@ -154,6 +226,11 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
         if(eventPublisher != null) {
             eventPublisher.publishEvent(mappingEvent);
         }
+    }
+
+    @Override
+    public boolean requiresPostCommitHanding(EntityPersister persister) {
+        return false;
     }
 
     /*
