@@ -38,7 +38,7 @@ class RxAstUtils extends AstUtils {
      * @return True if it is
      */
     static boolean isObservableOfDomainClass(ClassNode cls) {
-        if(isObservable(cls) || isSingle(cls)) {
+        if(isObservable(cls)) {
             GenericsType[] genericsTypes = cls.genericsTypes
             if(genericsTypes != null && genericsTypes.length == 1) {
                 ClassNode type = genericsTypes[0].type
@@ -104,7 +104,7 @@ class RxAstUtils extends AstUtils {
      * @return True if it is
      */
     static boolean isObservableOf(ClassNode cls, Class parent) {
-        if(isObservable(cls) || isSingle(cls)) {
+        if(isObservable(cls)) {
             GenericsType[] genericsTypes = cls.genericsTypes
             if(genericsTypes != null && genericsTypes.length == 1) {
                 ClassNode type = genericsTypes[0].type

@@ -25,6 +25,7 @@ import org.grails.datastore.gorm.multitenancy.transform.TenantTransform
 import org.grails.datastore.gorm.transform.AbstractDatastoreMethodDecoratingTransformation
 import org.grails.datastore.gorm.transform.AbstractMethodDecoratingTransformation
 import org.grails.datastore.mapping.core.Ordered
+import org.grails.datastore.mapping.reflect.AstGenericsUtils
 import org.grails.gorm.rx.services.support.RxServiceSupport
 import rx.Scheduler
 
@@ -76,8 +77,7 @@ class RxScheduleIOTransformation extends AbstractMethodDecoratingTransformation 
 
         List<MethodNode> decorated = (List<MethodNode>)methodNode.getNodeMetaData(DECORATED_METHODS)
         ClassNode newReturnType = resolveReturnTypeForNewMethod(methodNode)
-        Expression singleResult = annotationNode.getMember(ANN_SINGLE_RESULT)
-        if(!RxAstUtils.isSingle(methodNode.returnType) && ConstantExpression.TRUE != singleResult) {
+        if(RxAstUtils.isObservable(methodNode.returnType)) {
             newReturnType = GenericsUtils.makeClassSafeWithGenerics(Iterable, newReturnType)
         }
         if(decorated != null) {
@@ -132,13 +132,7 @@ class RxScheduleIOTransformation extends AbstractMethodDecoratingTransformation 
 
     @Override
     protected ClassNode resolveReturnTypeForNewMethod(MethodNode methodNode) {
-        GenericsType[] genericTypes = methodNode.returnType.genericsTypes
-        if(genericTypes != null && genericTypes.length > 0) {
-            return genericTypes[0].type.plainNodeReference
-        }
-        else {
-            return ClassHelper.OBJECT_TYPE.plainNodeReference
-        }
+        AstGenericsUtils.resolveSingleGenericType(methodNode.returnType)
     }
 
     @Override

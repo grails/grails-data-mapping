@@ -3,6 +3,18 @@ package org.grails.gorm.rx.services.implementers
 import grails.gorm.annotation.Entity
 import grails.gorm.services.Service
 import grails.gorm.transactions.ReadOnly
+import org.grails.datastore.gorm.services.Implemented
+import org.grails.datastore.gorm.services.implementers.CountWhereImplementer
+import org.grails.datastore.gorm.services.implementers.FindAllByImplementer
+import org.grails.datastore.gorm.services.implementers.FindAllByInterfaceProjectionImplementer
+import org.grails.datastore.gorm.services.implementers.FindAllImplementer
+import org.grails.datastore.gorm.services.implementers.FindAllInterfaceProjectionImplementer
+import org.grails.datastore.gorm.services.implementers.FindAllWhereImplementer
+import org.grails.datastore.gorm.services.implementers.FindOneImplementer
+import org.grails.datastore.gorm.services.implementers.FindOnePropertyProjectionImplementer
+import org.grails.datastore.gorm.services.implementers.FindOneWhereImplementer
+import org.grails.datastore.gorm.services.implementers.UpdateOneImplementer
+import org.grails.datastore.gorm.services.implementers.UpdateStringQueryImplementer
 import org.grails.gorm.rx.services.support.RxServiceSupport
 import rx.Observable
 import rx.Single
@@ -11,7 +23,7 @@ import spock.lang.Specification
 /**
  * Created by graemerocher on 15/02/2017.
  */
-class ObservableServiceImplementerSpec extends Specification {
+class ObservableServiceTransformSpec extends Specification {
     void "test dynamic finder method that returns an Observable"() {
         given:
         ClassLoader cl = new GroovyShell().evaluate('''
@@ -37,6 +49,7 @@ return Book.classLoader
         when:
         Class impl = cl.loadClass('$BookServiceImplementation')
         then:
+        impl.getMethod("findByTitleLike", String).getAnnotation(Implemented).by() == FindAllByImplementer
         org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
 
         when:"A method is invoked that returns an observable"
@@ -80,6 +93,7 @@ interface IFoo {
 
         then:
         service.isInterface()
+
         println service.classLoader.loadedClasses
 
         when:"the impl is obtained"
@@ -88,6 +102,7 @@ interface IFoo {
         Observable o = instance.findByNameLike("test")
 
         then:"an observable is returned"
+        impl.getMethod("findByNameLike", String).getAnnotation(Implemented).by() == FindAllByInterfaceProjectionImplementer
         o != null
 
         when:"The observable result is produced"
@@ -126,6 +141,7 @@ return Book.classLoader
         Class impl = cl.loadClass('$BookServiceImplementation')
         then:
         org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
+        impl.getMethod("find", String).getAnnotation(Implemented).by() == FindAllImplementer
 
         when:"A method is invoked that returns an observable"
         def instance = impl.newInstance()
@@ -136,6 +152,52 @@ return Book.classLoader
 
         when:"The observable result is produced"
         def result = o.toBlocking().first()
+
+        then:"A GORM method is invoked"
+        def e = thrown(IllegalStateException)
+        e.message.startsWith('No GORM implementations configured')
+    }
+
+
+    void "test find method that returns a single"() {
+        given:
+        ClassLoader cl = new GroovyShell().evaluate('''
+import grails.gorm.annotation.Entity
+import grails.gorm.rx.services.RxSchedule
+import grails.gorm.services.Service
+import rx.Single
+import rx.schedulers.Schedulers
+import org.grails.gorm.rx.services.implementers.*
+
+@Entity
+class Book {
+  String title
+}
+@Service(value=Book, adapters = [ObservableServiceImplementerAdapter])
+interface BookService {
+    @RxSchedule(scheduler = { Schedulers.newThread() })
+    Single<Book> find(String title)
+}
+return Book.classLoader
+''')
+        println cl.loadedClasses
+
+        when:
+        Class impl = cl.loadClass('$BookServiceImplementation')
+
+        then:
+        org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
+        impl.getMethod("find", String).getAnnotation(Implemented).by() == FindOneImplementer
+
+        when:"A method is invoked that returns an observable"
+        def instance = impl.newInstance()
+        Single o = instance.find("test")
+
+        then:"an observable is returned"
+        o != null
+
+        when:"The observable result is produced"
+        def result = o.toBlocking().value()
 
         then:"A GORM method is invoked"
         def e = thrown(IllegalStateException)
@@ -168,6 +230,7 @@ return Book.classLoader
         when:
         Class impl = cl.loadClass('$BookServiceImplementation')
         then:
+        impl.getMethod("findWhereTitle", String).getAnnotation(Implemented).by() == FindAllWhereImplementer
         org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
 
         when:"A method is invoked that returns an observable"
@@ -212,6 +275,7 @@ return Book.classLoader
         when:
         Class impl = cl.loadClass('$BookServiceImplementation')
         then:
+        impl.getMethod("count", String).getAnnotation(Implemented).by() == CountWhereImplementer
         org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
 
         when:"A method is invoked that returns an observable"
@@ -256,6 +320,7 @@ return Book.classLoader
         when:
         Class impl = cl.loadClass('$BookServiceImplementation')
         then:
+        impl.getMethod("updateBook", String, String).getAnnotation(Implemented).by() == UpdateStringQueryImplementer
         org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
 
         when:"A method is invoked that returns an observable"
@@ -300,6 +365,7 @@ return Book.classLoader
         when:
         Class impl = cl.loadClass('$BookServiceImplementation')
         then:
+        impl.getMethod("findBookAuthor", String).getAnnotation(Implemented).by() == FindOnePropertyProjectionImplementer
         org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
 
         when:"A method is invoked that returns an observable"

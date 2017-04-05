@@ -26,7 +26,7 @@ class RxServiceImplSpec extends Specification {
         expect:"the observable returns the correct res"
         bookService.countByTitleLike("The%").toBlocking().value() == 1
         bookService.countFor("The Stand").toBlocking().value() == 1
-        bookService.count("The Stand").toBlocking().first() == 1
+        bookService.count("The Stand").toBlocking().value() == 1
         bookService.find("The Stand").toList().toBlocking().single().size() == 1
         bookService.findOne("The Stand").toBlocking().value().title == "The Stand"
         bookService.findByTitleLike("The%").toBlocking().first().title == "The Stand"

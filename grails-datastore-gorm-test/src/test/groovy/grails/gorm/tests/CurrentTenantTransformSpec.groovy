@@ -34,6 +34,10 @@ class CurrentTenantTransformSpec  extends Specification {
             Player
     )
 
+    void setup() {
+        System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "")
+    }
+
     void "Test parsing of @CurrentTenant"() {
         given:
         Class testServiceClass = new GroovyShell().evaluate('''

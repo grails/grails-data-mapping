@@ -15,7 +15,7 @@ import spock.lang.Specification
  */
 class MultipleDataSourceSpec extends Specification {
 
-    SimpleMapDatastore datastore = new SimpleMapDatastore([ConnectionSource.DEFAULT, "one"], Player)
+    @AutoCleanup SimpleMapDatastore datastore = new SimpleMapDatastore([ConnectionSource.DEFAULT, "one"], Player)
 
     void "test multiple datasource support with in-memory GORM"() {
         given:

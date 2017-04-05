@@ -94,7 +94,8 @@ class RxServiceSupport {
     static <T>  Single<T> createSingle(Scheduler scheduler, Callable<T> callable) {
         Single.create({ SingleSubscriber<? super T> singleSubscriber ->
             try {
-                singleSubscriber.onSuccess(callable.call())
+                def result = callable.call()
+                singleSubscriber.onSuccess(result)
             } catch (Throwable e) {
                 singleSubscriber.onError(e)
             }
