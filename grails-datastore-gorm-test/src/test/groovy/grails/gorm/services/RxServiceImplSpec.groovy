@@ -187,7 +187,7 @@ interface BookService {
 
     Single<Number> delete(String title)
 
-    rx.Observable<Number> count(String title)
+    Single<Number> count(String title)
 
     Single<Number> countByTitleLike(String pattern)
 

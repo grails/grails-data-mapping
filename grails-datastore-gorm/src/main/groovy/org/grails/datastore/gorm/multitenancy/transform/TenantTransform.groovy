@@ -34,6 +34,7 @@ import org.grails.datastore.gorm.transactions.transform.TransactionalTransform
 import org.grails.datastore.gorm.transform.AbstractDatastoreMethodDecoratingTransformation
 import org.grails.datastore.mapping.core.Ordered
 import org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException
+import org.grails.datastore.mapping.reflect.AstUtils
 import org.grails.datastore.mapping.services.ServiceRegistry
 
 import static org.codehaus.groovy.ast.ClassHelper.CLOSURE_TYPE
@@ -155,5 +156,12 @@ class TenantTransform extends AbstractDatastoreMethodDecoratingTransformation im
     @Override
     int getOrder() {
         return POSITION
+    }
+
+    static boolean hasTenantAnnotation(AnnotatedNode node) {
+        for(ann in [CurrentTenant, Tenant]) {
+            if(AstUtils.findAnnotation(node, ann)) return true
+        }
+        return false
     }
 }

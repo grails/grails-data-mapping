@@ -67,7 +67,6 @@ public class MultiTenantEventListener implements PersistenceEventListener {
                 PersistentEntity entity = preInsertEvent.getEntity();
                 if(entity.isMultiTenant()) {
                     TenantId tenantId = entity.getTenantId();
-                    EntityReflector reflector = entity.getReflector();
                     if(datastore == null) {
                         datastore = GormEnhancer.findDatastore(entity.getJavaClass());
                     }
@@ -75,7 +74,7 @@ public class MultiTenantEventListener implements PersistenceEventListener {
                         Serializable currentId = Tenants.currentId(datastore.getClass());
                         if(currentId != null) {
                             try {
-                                reflector.setProperty(preInsertEvent.getEntityObject(), tenantId.getName(), currentId);
+                                preInsertEvent.getEntityAccess().setProperty(tenantId.getName(), currentId);
                             } catch (Exception e) {
                                 throw new TenantException("Could not assigned tenant id ["+currentId+"] to property ["+tenantId+"], probably due to a type mismatch. You should return a type from the tenant resolver that matches the property type of the tenant id!: " + e.getMessage(), e);
                             }

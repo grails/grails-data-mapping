@@ -188,21 +188,40 @@ class Tenants {
 
     static <T> T withId(MultiTenantCapableDatastore multiTenantCapableDatastore, Serializable tenantId, Closure<T> callable) {
         return CurrentTenant.withTenant(tenantId) {
-            multiTenantCapableDatastore.withNewSession(tenantId) { session ->
-                def i = callable.parameterTypes.length
-                switch (i) {
-                    case 0:
-                        return callable.call()
-                        break
-                    case 1:
-                        return callable.call(tenantId)
-                        break
-                    case 2:
-                        return callable.call(tenantId, session)
-                    default:
-                        throw new IllegalArgumentException("Provided closure accepts too many arguments")
+            if(multiTenantCapableDatastore.getMultiTenancyMode().isSharedConnection()) {
+                multiTenantCapableDatastore.withSession { session ->
+                    def i = callable.parameterTypes.length
+                    switch (i) {
+                        case 0:
+                            return callable.call()
+                            break
+                        case 1:
+                            return callable.call(tenantId)
+                            break
+                        case 2:
+                            return callable.call(tenantId, session)
+                        default:
+                            throw new IllegalArgumentException("Provided closure accepts too many arguments")
+                    }
                 }
+            }
+            else {
+                return multiTenantCapableDatastore.withNewSession(tenantId) { session ->
+                    def i = callable.parameterTypes.length
+                    switch (i) {
+                        case 0:
+                            return callable.call()
+                            break
+                        case 1:
+                            return callable.call(tenantId)
+                            break
+                        case 2:
+                            return callable.call(tenantId, session)
+                        default:
+                            throw new IllegalArgumentException("Provided closure accepts too many arguments")
+                    }
 
+                }
             }
         }
     }

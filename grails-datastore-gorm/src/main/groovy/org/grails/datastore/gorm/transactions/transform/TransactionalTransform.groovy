@@ -32,6 +32,7 @@ import org.grails.datastore.gorm.multitenancy.transform.TenantTransform
 import org.grails.datastore.gorm.transform.AbstractDatastoreMethodDecoratingTransformation
 import org.grails.datastore.mapping.core.Ordered
 import org.grails.datastore.mapping.core.connections.MultipleConnectionSourceCapableDatastore
+import org.grails.datastore.mapping.multitenancy.MultiTenantCapableDatastore
 import org.grails.datastore.mapping.transactions.CustomizableRollbackTransactionAttribute
 import org.grails.datastore.mapping.transactions.TransactionCapableDatastore
 import org.springframework.transaction.PlatformTransactionManager
@@ -304,12 +305,14 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
         // apply @Transaction attributes to properties of $transactionAttribute
         applyTransactionalAttributeSettings(annotationNode, transactionAttributeVar, newMethodBody)
 
+        boolean isMultiTenant = TenantTransform.hasTenantAnnotation(methodNode) || TenantTransform.hasTenantAnnotation(classNode)
+
         Expression connectionName = annotationNode.getMember("connection")
         if( connectionName == null ) {
             connectionName = annotationNode.getMember("value")
         }
         if(connectionName == null) {
-            if(hasAnnotation(methodNode, TenantTransform.CURRENT_TENANT_ANNOTATION_TYPE) || this.hasAnnotation(classNode, TenantTransform.CURRENT_TENANT_ANNOTATION_TYPE)) {
+            if(isMultiTenant) {
                 connectionName = varX("tenantId")
             }
         }
@@ -317,7 +320,13 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
 
         // $transactionManager = connection != null ? getTargetDatastore(connection).getTransactionManager() : getTransactionManager()
         Expression transactionManagerExpression
-        if(hasDataSourceProperty) {
+        if(isMultiTenant && hasDataSourceProperty) {
+            Expression targetDatastoreExpr = castX( make(MultiTenantCapableDatastore), callThisD(classNode, "getTargetDatastore", ZERO_ARGUMENTS) )
+            targetDatastoreExpr = callX( targetDatastoreExpr, "getDatastoreForTenantId", connectionName)
+            transactionManagerExpression = castX( make(PlatformTransactionManager), propX(targetDatastoreExpr, PROPERTY_TRANSACTION_MANAGER) )
+
+        }
+        else if(hasDataSourceProperty) {
             // callX(varX("this"), "getTargetDatastore", connectionName)
             def targetDatastoreExpr = castX( make(TransactionCapableDatastore), callThisD(classNode, "getTargetDatastore", connectionName) )
             transactionManagerExpression = castX( make(PlatformTransactionManager), propX(targetDatastoreExpr, PROPERTY_TRANSACTION_MANAGER) )

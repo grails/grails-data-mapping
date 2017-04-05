@@ -49,8 +49,8 @@ public class KeyValueMappingContext extends AbstractMappingContext {
         Assert.notNull(keyspace, "Argument [keyspace] cannot be null");
         this.keyspace = keyspace;
         initializeDefaultMappingFactory(keyspace);
-
         syntaxStrategy = new JpaMappingConfigurationStrategy(mappingFactory);
+        super.initialize(new ConnectionSourceSettings());
     }
 
     /**
@@ -62,10 +62,8 @@ public class KeyValueMappingContext extends AbstractMappingContext {
         Assert.notNull(keyspace, "Argument [keyspace] cannot be null");
         this.keyspace = keyspace;
         initializeDefaultMappingFactory(keyspace);
-        GormKeyValueMappingFactory mappingFactory = (GormKeyValueMappingFactory) getMappingFactory();
-        mappingFactory.setDefaultConstraints(settings.getDefault().getConstraints());
-        mappingFactory.setDefaultMapping(settings.getDefault().getMapping());
         syntaxStrategy = new JpaMappingConfigurationStrategy(this.mappingFactory);
+        super.initialize(settings);
     }
 
     public String getKeyspace() {
