@@ -222,6 +222,18 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <td class="colLast"><code><strong><a href="#isSingle(org.codehaus.groovy.ast.ClassNode)">isSingle</a></strong>(org.codehaus.groovy.ast.ClassNode cls)</code><br>Is the given class a rx.Single</td>
                         </tr>
                         
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>static&nbsp;boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#isSingleOf(org.codehaus.groovy.ast.ClassNode, java.lang.Class)">isSingleOf</a></strong>(org.codehaus.groovy.ast.ClassNode cls, java.lang.Class parent)</code><br>Return if the given class is an Observable of domain class</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>static&nbsp;boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#isSingleOfDomainClass(org.codehaus.groovy.ast.ClassNode)">isSingleOfDomainClass</a></strong>(org.codehaus.groovy.ast.ClassNode cls)</code><br>Return if the given class is an Observable of domain class</td>
+                        </tr>
+                        
                     </table>
                    </ul>
               </li>
@@ -354,6 +366,24 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <h4>static&nbsp;boolean <strong>isSingle</strong>(org.codehaus.groovy.ast.ClassNode cls)</h4>
                                 <p> Is the given class a rx.Single
      <DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>cls</code> -  The class</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="isSingleOf(org.codehaus.groovy.ast.ClassNode, java.lang.Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;boolean <strong>isSingleOf</strong>(org.codehaus.groovy.ast.ClassNode cls, java.lang.Class parent)</h4>
+                                <p> Return if the given class is an Observable of domain class
+     <DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>cls</code> -  The class node</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="isSingleOfDomainClass(org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;boolean <strong>isSingleOfDomainClass</strong>(org.codehaus.groovy.ast.ClassNode cls)</h4>
+                                <p> Return if the given class is an Observable of domain class
+     <DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>cls</code> -  The class node</DD></DL></p>
                             </li>
                         </ul>
                     
