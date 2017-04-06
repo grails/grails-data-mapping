@@ -4,8 +4,7 @@ import grails.gorm.multitenancy.Tenants;
 import org.grails.datastore.gorm.GormEnhancer;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.connections.ConnectionSource;
-import org.grails.datastore.mapping.engine.event.PersistenceEventListener;
-import org.grails.datastore.mapping.engine.event.PreInsertEvent;
+import org.grails.datastore.mapping.engine.event.*;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.types.TenantId;
 import org.grails.datastore.mapping.multitenancy.exceptions.TenantException;
@@ -16,6 +15,8 @@ import org.grails.datastore.mapping.reflect.EntityReflector;
 import org.springframework.context.ApplicationEvent;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * An event listener that hooks into persistence events to enable discriminator based multi tenancy (ie {@link org.grails.datastore.mapping.multitenancy.MultiTenancySettings.MultiTenancyMode#DISCRIMINATOR}
@@ -25,6 +26,7 @@ import java.io.Serializable;
  */
 public class MultiTenantEventListener implements PersistenceEventListener {
     protected final Datastore datastore;
+    public static final List<Class<? extends ApplicationEvent>> SUPPORTED_EVENTS = Arrays.asList(PreQueryEvent.class, ValidationEvent.class, PreInsertEvent.class, PreUpdateEvent.class);
 
     public MultiTenantEventListener(Datastore datastore) {
         this.datastore = datastore;
@@ -32,7 +34,7 @@ public class MultiTenantEventListener implements PersistenceEventListener {
 
     @Override
     public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
-        return PreQueryEvent.class.isAssignableFrom(eventType) || PostQueryEvent.class.isAssignableFrom(eventType) || PreInsertEvent.class.isAssignableFrom(eventType);
+        return SUPPORTED_EVENTS.contains(eventType);
     }
 
     @Override
@@ -42,7 +44,8 @@ public class MultiTenantEventListener implements PersistenceEventListener {
 
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
-        if(supportsEventType(event.getClass())) {
+        Class<? extends ApplicationEvent> eventClass = event.getClass();
+        if(supportsEventType(eventClass)) {
             Datastore datastore = (Datastore) event.getSource();
             if(event instanceof PreQueryEvent) {
                 PreQueryEvent preQueryEvent = (PreQueryEvent) event;
@@ -62,8 +65,8 @@ public class MultiTenantEventListener implements PersistenceEventListener {
                     }
                 }
             }
-            else if(event instanceof PreInsertEvent) {
-                PreInsertEvent preInsertEvent = (PreInsertEvent) event;
+            else if((event instanceof ValidationEvent) || (event instanceof PreInsertEvent) || (event instanceof PreUpdateEvent)) {
+                AbstractPersistenceEvent preInsertEvent = (AbstractPersistenceEvent) event;
                 PersistentEntity entity = preInsertEvent.getEntity();
                 if(entity.isMultiTenant()) {
                     TenantId tenantId = entity.getTenantId();

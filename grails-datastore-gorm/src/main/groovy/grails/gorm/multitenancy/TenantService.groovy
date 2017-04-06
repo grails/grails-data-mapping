@@ -24,7 +24,7 @@ package grails.gorm.multitenancy
 interface TenantService {
 
     /**
-     * Execute the given closure for each tenant.
+     * Execute the given closure for each tenant. This method will create a new datastore session for the scope of the call and hence is designed to be used to manage the connection life cycle
      *
      * @param callable The closure
      * @return The result of the closure
@@ -49,7 +49,7 @@ interface TenantService {
     public <T> T withoutId(Closure<T> callable)
 
     /**
-     * Execute the given closure with the current tenant
+     * Execute the given closure with the current tenant. This method will create a new datastore session for the scope of the call and hence is designed to be used to manage the connection life cycle
      *
      * @param callable The closure
      * @return The result of the closure
@@ -57,7 +57,8 @@ interface TenantService {
     public <T> T withCurrent(Closure<T> callable)
 
     /**
-     * Execute the given closure with given tenant id
+     * Execute the given closure with given tenant id. This method will create a new datastore session for the scope of the call and hence is designed to be used to manage the connection life cycle
+     *
      * @param tenantId The tenant id
      * @param callable The closure
      * @return The result of the closure

@@ -23,10 +23,9 @@ import java.lang.annotation.Target
 @Documented
 @GroovyASTTransformationClass("org.grails.datastore.gorm.transform.OrderedGormTransformation")
 @GormASTTransformationClass("org.grails.datastore.gorm.transactions.transform.RollbackTransform")
-public @interface Rollback {
+@interface Rollback {
     /**
-     * Whether or not the transaction for the annotated method should be rolled
-     * back after the method has completed.
+     * The connection to rollback for
      */
-    boolean value() default true
+    String value() default ""
 }

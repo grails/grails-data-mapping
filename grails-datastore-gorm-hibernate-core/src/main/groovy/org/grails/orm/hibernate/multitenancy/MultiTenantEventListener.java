@@ -4,8 +4,7 @@ import grails.gorm.multitenancy.Tenants;
 import org.grails.datastore.gorm.GormEnhancer;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.connections.ConnectionSource;
-import org.grails.datastore.mapping.engine.event.PersistenceEventListener;
-import org.grails.datastore.mapping.engine.event.PreInsertEvent;
+import org.grails.datastore.mapping.engine.event.*;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.types.TenantId;
 import org.grails.datastore.mapping.multitenancy.exceptions.TenantException;
@@ -26,7 +25,7 @@ import java.io.Serializable;
 public class MultiTenantEventListener implements PersistenceEventListener {
     @Override
     public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
-        return PreQueryEvent.class.isAssignableFrom(eventType) || PreInsertEvent.class.isAssignableFrom(eventType);
+        return org.grails.datastore.gorm.multitenancy.MultiTenantEventListener.SUPPORTED_EVENTS.contains(eventType);
     }
 
     @Override
@@ -52,8 +51,8 @@ public class MultiTenantEventListener implements PersistenceEventListener {
                     }
                 }
             }
-            else if(event instanceof PreInsertEvent) {
-                PreInsertEvent preInsertEvent = (PreInsertEvent) event;
+            else if((event instanceof ValidationEvent) || (event instanceof PreInsertEvent) || (event instanceof PreUpdateEvent)) {
+                AbstractPersistenceEvent preInsertEvent = (AbstractPersistenceEvent) event;
                 PersistentEntity entity = preInsertEvent.getEntity();
                 if(entity.isMultiTenant()) {
                     TenantId tenantId = entity.getTenantId();

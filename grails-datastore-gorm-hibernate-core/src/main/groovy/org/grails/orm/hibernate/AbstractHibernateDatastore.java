@@ -342,12 +342,16 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     @Override
     public <T1> T1 withNewSession(Serializable tenantId, Closure<T1> callable) {
         if(getMultiTenancyMode() == MultiTenancySettings.MultiTenancyMode.DATABASE) {
-            return getDatastoreForConnection(tenantId.toString()).withNewSession(callable);
+            AbstractHibernateDatastore datastore = getDatastoreForConnection(tenantId.toString());
+            SessionFactory sessionFactory = datastore.getSessionFactory();
+
+            return datastore.getHibernateTemplate().executeWithExistingOrCreateNewSession( sessionFactory, callable);
         }
         else {
             return withNewSession(callable);
         }
     }
+
 
     /**
      * Enable the tenant id filter for the given datastore and entity

@@ -471,31 +471,58 @@ public abstract class DatastoreUtils {
             return (PropertyResolver)configuration;
         }
         else {
-            DatastoreEnvironment env = new DatastoreEnvironment();
-            env.getConversionService().addConverter(new Converter<String, Class>() {
-                @Override
-                public Class convert(String source) {
-                    try {
-                        return ClassUtils.forName(source, getClass().getClassLoader());
-                    } catch (ClassNotFoundException e) {
-                        throw new ConversionException("Cannot convert String ["+source+"] to class. The class was not found.", e) {};
-                    }
+
+            Map<String, Object>[] configurations = new Map[1];
+            configurations[0] = configuration;
+            return createPropertyResolvers(configurations);
+        }
+    }
+
+    /**
+     * Creates a {@link PropertyResolver} from the given configuration
+     * @param configurations The configuration
+     *
+     * @return A {@link PropertyResolver} instance
+     */
+    public static PropertyResolver createPropertyResolvers(Map<String, Object>... configurations) {
+        return createPropertyResolvers(Arrays.asList(configurations));
+    }
+
+    /**
+     * Creates a {@link PropertyResolver} from the given configuration
+     * @param configurations The configuration
+     *
+     * @return A {@link PropertyResolver} instance
+     */
+    public static PropertyResolver createPropertyResolvers(Collection<Map<String, Object>> configurations) {
+        DatastoreEnvironment env = new DatastoreEnvironment();
+        env.getConversionService().addConverter(new Converter<String, Class>() {
+            @Override
+            public Class convert(String source) {
+                try {
+                    return ClassUtils.forName(source, getClass().getClassLoader());
+                } catch (ClassNotFoundException e) {
+                    throw new ConversionException("Cannot convert String ["+source+"] to class. The class was not found.", e) {};
                 }
-            });
-            env.getConversionService().addConverter(new Converter<String, Resource>() {
-                @Override
-                public Resource convert(String source) {
-                    return new PathMatchingResourcePatternResolver().getResource(source);
-                }
-            });
+            }
+        });
+        env.getConversionService().addConverter(new Converter<String, Resource>() {
+            @Override
+            public Resource convert(String source) {
+                return new PathMatchingResourcePatternResolver().getResource(source);
+            }
+        });
+        int i = 0;
+        for (Map<String, Object> configuration : configurations) {
+            i++;
             if(configuration != null) {
                 MutablePropertySources propertySources = env.getPropertySources();
 
                 if(configuration instanceof ConfigObject) {
                     ConfigObject existingConfig = (ConfigObject) configuration;
                     ConfigObject cloned = existingConfig.clone();
-                    propertySources.addFirst(new ConfigObjectPropertySource(DATASTORE_CONFIG, cloned));
-                    propertySources.addFirst(new ConfigObjectPropertySource(DATASTORE_CONFIG_FLAT, createFlatConfig(cloned)));
+                    propertySources.addFirst(new ConfigObjectPropertySource(DATASTORE_CONFIG + i, cloned));
+                    propertySources.addFirst(new ConfigObjectPropertySource(DATASTORE_CONFIG_FLAT+ i, createFlatConfig(cloned)));
                 }
                 else {
                     ConfigSlurper configSlurper = new ConfigSlurper();
@@ -512,14 +539,14 @@ public abstract class DatastoreUtils {
                     ConfigObject flatConfigObject = new ConfigObject();
                     configObject.flatten(flatConfigObject);
                     flatConfigObject.merge(configObject);
-                    propertySources.addFirst(new ConfigObjectPropertySource(DATASTORE_CONFIG, configObject));
-                    propertySources.addFirst(new ConfigObjectPropertySource(DATASTORE_CONFIG_FLAT, createFlatConfig(flatConfigObject)));
+                    propertySources.addFirst(new ConfigObjectPropertySource(DATASTORE_CONFIG + i, configObject));
+                    propertySources.addFirst(new ConfigObjectPropertySource(DATASTORE_CONFIG_FLAT + i, createFlatConfig(flatConfigObject)));
                 }
             }
-            return env;
         }
-    }
 
+        return env;
+    }
     private static Map<String, Object> createFlatConfig(ConfigObject configuration) {
         Map<String, Object> flatConfig = new LinkedHashMap<>();
         String prefix = "";

@@ -186,11 +186,22 @@ class Tenants {
         }
     }
 
+    /**
+    * Execute the given closure with given tenant id for the given datastore. This method will create a new datastore session for the scope of the call and hence is designed to be used to manage the connection life cycle
+    * @param tenantId The tenant id
+    * @param callable The closure
+    * @return The result of the closure
+    */
     static <T> T withId(MultiTenantCapableDatastore multiTenantCapableDatastore, Serializable tenantId, Closure<T> callable) {
         return CurrentTenant.withTenant(tenantId) {
             if(multiTenantCapableDatastore.getMultiTenancyMode().isSharedConnection()) {
-                multiTenantCapableDatastore.withSession { session ->
-                    def i = callable.parameterTypes.length
+                def i = callable.parameterTypes.length
+                if(i == 2) {
+                    return multiTenantCapableDatastore.withSession { session ->
+                        return callable.call(tenantId, session)
+                    }
+                }
+                else {
                     switch (i) {
                         case 0:
                             return callable.call()
@@ -198,8 +209,6 @@ class Tenants {
                         case 1:
                             return callable.call(tenantId)
                             break
-                        case 2:
-                            return callable.call(tenantId, session)
                         default:
                             throw new IllegalArgumentException("Provided closure accepts too many arguments")
                     }
@@ -226,15 +235,11 @@ class Tenants {
         }
     }
 
-    private static void eachTenantInternal(Datastore datastore, Closure callable) {
-        if (datastore instanceof MultiTenantCapableDatastore) {
-            MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore) datastore
-            eachTenant(multiTenantCapableDatastore, callable)
-        } else {
-            throw new UnsupportedOperationException("Datastore implementation does not support multi-tenancy")
-        }
-    }
-
+    /**
+     * Execute the given closure for each tenant for the given datastore. This method will create a new datastore session for the scope of the call and hence is designed to be used to manage the connection life cycle
+     * @param callable The closure
+     * @return The result of the closure
+     */
     static void eachTenant(MultiTenantCapableDatastore multiTenantCapableDatastore, Closure callable) {
         MultiTenancySettings.MultiTenancyMode multiTenancyMode = multiTenantCapableDatastore.multiTenancyMode
         if (multiTenancyMode == MultiTenancySettings.MultiTenancyMode.DATABASE) {
@@ -263,6 +268,15 @@ class Tenants {
             }
         } else {
             throw new UnsupportedOperationException("Method not supported in multi tenancy mode $multiTenancyMode")
+        }
+    }
+
+    private static void eachTenantInternal(Datastore datastore, Closure callable) {
+        if (datastore instanceof MultiTenantCapableDatastore) {
+            MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore) datastore
+            eachTenant(multiTenantCapableDatastore, callable)
+        } else {
+            throw new UnsupportedOperationException("Datastore implementation does not support multi-tenancy")
         }
     }
 

@@ -37,7 +37,9 @@ public interface MultiTenantCapableDatastore<T, S extends ConnectionSourceSettin
 
 
     /**
-     * Execute a new session with the given tenantId
+     * Execute a new session with the given tenantId IF the session is not already present. This differs from the regular withNewSession method.
+     * The idea is that if there is already a transaction or session bound for the current tenant it should be re-used, otherwise one should be created
+     *
      *
      * @param tenantId The tenant id
      * @param callable the callable
