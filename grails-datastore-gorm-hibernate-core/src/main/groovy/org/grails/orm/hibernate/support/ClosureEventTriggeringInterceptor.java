@@ -77,8 +77,8 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     @Override
     public void onSaveOrUpdate(SaveOrUpdateEvent hibernateEvent) throws HibernateException {
         Object entity = getEntity(hibernateEvent);
-        activateDirtyChecking(entity);
         if(entity != null && datastore.getMappingContext().getProxyHandler().isInitialized(entity)) {
+            activateDirtyChecking(entity);
             org.grails.datastore.mapping.engine.event.SaveOrUpdateEvent grailsEvent = new org.grails.datastore.mapping.engine.event.SaveOrUpdateEvent(
                     this.datastore, entity);
             publishEvent(hibernateEvent, grailsEvent);
@@ -260,7 +260,10 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
 
     private void activateDirtyChecking(Object entity) {
         if(entity instanceof DirtyCheckable) {
-            ((DirtyCheckable) entity).trackChanges();
+            DirtyCheckable dirtyCheckable = (DirtyCheckable) entity;
+            if(dirtyCheckable.listDirtyPropertyNames().isEmpty()) {
+                dirtyCheckable.trackChanges();
+            }
         }
     }
 
