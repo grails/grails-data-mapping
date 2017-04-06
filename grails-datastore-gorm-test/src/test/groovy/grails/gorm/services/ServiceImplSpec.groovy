@@ -236,6 +236,7 @@ class ServiceImplSpec extends Specification {
         then:
         productService.listProductName("Vegetable").size() == 2
         productService.countProducts("Vegetable") == 2
+        productService.countPrimProducts("Vegetable") == 2
         productService.countByType("Vegetable") == 2
     }
 
@@ -409,6 +410,8 @@ interface ProductService {
     Number countByType(String t)
 
     Number countProducts(String type)
+
+    int countPrimProducts(String type)
 
     Product updateProduct(Serializable id, String type)
 

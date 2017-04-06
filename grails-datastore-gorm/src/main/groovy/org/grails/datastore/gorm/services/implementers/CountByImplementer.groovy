@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm.services.implementers
 
 import groovy.transform.CompileStatic
+import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.grails.datastore.mapping.reflect.AstUtils
@@ -18,7 +19,7 @@ class CountByImplementer extends FindAllByImplementer implements SingleResultSer
 
     @Override
     protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
-        return AstUtils.isSubclassOfOrImplementsInterface(returnType, Number.name)
+        return ClassHelper.isNumberType(returnType)
     }
 
     @Override

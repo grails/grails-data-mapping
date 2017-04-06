@@ -275,6 +275,10 @@ interface MyService {
     Number count(String title)
     
     Integer countFoos(String title)
+    
+    int countPrimitive(String title)
+    
+    int countAll()
 }
 @Entity
 class Foo {

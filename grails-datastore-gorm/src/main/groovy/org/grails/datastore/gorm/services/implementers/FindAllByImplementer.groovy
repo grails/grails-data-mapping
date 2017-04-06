@@ -17,6 +17,7 @@ package org.grails.datastore.gorm.services.implementers
 
 import groovy.transform.CompileStatic
 import groovy.transform.Memoized
+import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.expr.Expression
@@ -101,7 +102,7 @@ class FindAllByImplementer extends AbstractArrayOrIterableResultImplementer impl
             String methodPrefix = getDynamicFinderPrefix()
             String finderCallName = "${methodPrefix}${matchSpec.queryExpression}"
             Expression findCall = callX(findStaticApiForConnectionId(domainClassNode, newMethodNode), finderCallName, args(newMethodNode.parameters))
-            if(isArray) {
+            if(isArray || ClassHelper.isNumberType(returnType)) {
                 // handle array cast
                 findCall = castX( returnType.plainNodeReference, findCall)
             }

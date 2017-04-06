@@ -1,14 +1,17 @@
 package org.grails.datastore.gorm.services.implementers
 
 import groovy.transform.CompileStatic
+import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.expr.Expression
+import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.grails.datastore.mapping.reflect.AstUtils
 
 import static org.codehaus.groovy.ast.tools.GeneralUtils.callX
+import static org.codehaus.groovy.ast.tools.GeneralUtils.castX
 import static org.codehaus.groovy.ast.tools.GeneralUtils.returnS
 
 /**
@@ -28,7 +31,7 @@ class CountImplementer extends AbstractDetachedCriteriaServiceImplementor implem
 
     @Override
     protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
-        return AstUtils.isSubclassOfOrImplementsInterface(returnType, Number.name)
+        return ClassHelper.isNumberType(returnType)
     }
 
     @Override
@@ -48,8 +51,9 @@ class CountImplementer extends AbstractDetachedCriteriaServiceImplementor implem
 
     @Override
     void implementWithQuery(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, ClassNode targetClassNode, BlockStatement body, VariableExpression detachedCriteriaVar, Expression queryArgs) {
+        Expression callCount = callX(detachedCriteriaVar, "count", queryArgs)
         body.addStatement(
-            returnS(callX(detachedCriteriaVar, "count", queryArgs))
+            returnS( castX(newMethodNode.returnType, callCount) )
         )
     }
 }
