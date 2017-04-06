@@ -32,7 +32,7 @@ class CountWhereImplementer extends AbstractWhereImplementer implements Annotate
 
     @Override
     protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
-        return ClassHelper.isNumberType(returnType)
+        return AstUtils.isNumberType(returnType)
     }
 
     @Override

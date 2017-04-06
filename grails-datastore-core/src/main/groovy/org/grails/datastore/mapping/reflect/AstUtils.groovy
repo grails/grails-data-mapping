@@ -380,12 +380,29 @@ class AstUtils {
         return copyOfAnnotationNode
     }
 
+    /**
+     * Is the class an enum
+     * @param classNode The class node
+     * @return True if it is
+     */
     static boolean isEnum(ClassNode classNode) {
         ClassNode parent = classNode.getSuperClass()
         while (parent != null) {
             if (parent.getName().equals("java.lang.Enum"))
                 return true
             parent = parent.getSuperClass()
+        }
+        return false
+    }
+
+    /**
+     * Is the class a number
+     * @param classNode The class node
+     * @return True if it is
+     */
+    static boolean isNumberType(ClassNode classNode) {
+        if(classNode != null) {
+            return ClassHelper.isNumberType(classNode) || isSubclassOfOrImplementsInterface(classNode, Number.name)
         }
         return false
     }
@@ -821,7 +838,7 @@ class AstUtils {
         boolean isCompatibleReturnType = false
         if (type.name == Iterable.name || implementsInterface(type, Iterable.name)) {
             GenericsType[] genericsTypes = type.genericsTypes
-            if (genericsTypes.length > 0) {
+            if (genericsTypes != null && genericsTypes.length > 0) {
                 if (isDomainClass(genericsTypes[0].type)) {
                     isCompatibleReturnType = true
                 }

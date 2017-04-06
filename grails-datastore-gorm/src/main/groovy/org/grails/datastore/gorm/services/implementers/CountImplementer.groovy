@@ -31,7 +31,7 @@ class CountImplementer extends AbstractDetachedCriteriaServiceImplementor implem
 
     @Override
     protected boolean isCompatibleReturnType(ClassNode domainClass, MethodNode methodNode, ClassNode returnType, String prefix) {
-        return ClassHelper.isNumberType(returnType)
+        return AstUtils.isNumberType(returnType)
     }
 
     @Override

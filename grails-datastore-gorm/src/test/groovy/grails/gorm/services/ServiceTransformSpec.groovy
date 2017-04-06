@@ -6,6 +6,7 @@ import grails.gorm.transactions.TransactionService
 import grails.gorm.transactions.Transactional
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import org.grails.datastore.gorm.services.Implemented
+import org.grails.datastore.gorm.services.implementers.FindAllImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneImplementer
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.services.DefaultServiceRegistry
@@ -359,6 +360,7 @@ class Foo {
 
         then:"The impl is valid"
         impl.getMethod("listFoos").getAnnotation(ReadOnly) != null
+        impl.getMethod("listFoos").getAnnotation(Implemented).by() == FindAllImplementer
     }
 
     void "test @Join on finder"() {
