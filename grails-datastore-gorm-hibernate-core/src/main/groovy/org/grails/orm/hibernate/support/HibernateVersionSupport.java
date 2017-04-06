@@ -22,6 +22,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -108,6 +110,16 @@ public class HibernateVersionSupport {
         }
         else {
             return (int[]) ReflectionUtils.invokeMethod(resolveAttributeIndexes, persister, properties);
+        }
+    }
+
+    public static int[] resolveAttributeIndexes(EntityPersister persister, String[] properties) {
+        if(arrayAttributeIndexes) {
+            return (int[]) ReflectionUtils.invokeMethod(resolveAttributeIndexes, persister, new Object[]{properties});
+        }
+        else {
+            Set<String> propertySet = new LinkedHashSet<>(Arrays.asList(properties));
+            return (int[]) ReflectionUtils.invokeMethod(resolveAttributeIndexes, persister, propertySet);
         }
     }
 }

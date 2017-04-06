@@ -18,12 +18,10 @@ package org.grails.orm.hibernate.support;
 
 import org.grails.datastore.gorm.events.ConfigurableApplicationContextEventPublisher;
 import org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher;
-import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.ModificationTrackingEntityAccess;
-import org.grails.datastore.mapping.engine.event.*;
+import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.orm.hibernate.AbstractHibernateDatastore;
 import org.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
 import org.hibernate.Hibernate;
@@ -31,22 +29,14 @@ import org.hibernate.HibernateException;
 import org.hibernate.engine.internal.Nullability;
 import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.*;
-import org.hibernate.event.spi.EventType;
-import org.hibernate.event.spi.PostDeleteEvent;
-import org.hibernate.event.spi.PostInsertEvent;
-import org.hibernate.event.spi.PostLoadEvent;
-import org.hibernate.event.spi.PostUpdateEvent;
-import org.hibernate.event.spi.PreDeleteEvent;
-import org.hibernate.event.spi.PreInsertEvent;
-import org.hibernate.event.spi.PreLoadEvent;
-import org.hibernate.event.spi.PreUpdateEvent;
-import org.hibernate.event.spi.SaveOrUpdateEvent;
 import org.hibernate.persister.entity.EntityPersister;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Listens for Hibernate events and publishes corresponding Datastore events.
@@ -61,7 +51,6 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     //    private final Logger log = LoggerFactory.getLogger(getClass());
     private static final long serialVersionUID = 1;
 
-    public static final Collection<String> IGNORED = new HashSet<String>(Arrays.asList(GormProperties.VERSION, GormProperties.IDENTITY));
     public static final String ONLOAD_EVENT = "onLoad";
     public static final String ONLOAD_SAVE = "onSave";
     public static final String BEFORE_LOAD_EVENT = "beforeLoad";
@@ -229,14 +218,7 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
         return false;
     }
 
-    /*
-     * TODO: This is a horrible hack due to a bug in Hibernate's post-insert event processing (HHH-3904)
-     */
-/*    @Override
-    protected Serializable performSaveOrReplicate(Object entity, EntityKey key, EntityPersister persister, boolean useIdentityColumn,
-            Object anything, EventSource source, boolean requiresImmediateIdAccess) {
-*/
-
+    @Deprecated
     public static final void addNullabilityCheckerPreInsertEventListener(EventListenerRegistry listenerRegistry) {
         listenerRegistry.getEventListenerGroup(EventType.PRE_INSERT).appendListener(NULLABILITY_CHECKER_INSTANCE);
     }

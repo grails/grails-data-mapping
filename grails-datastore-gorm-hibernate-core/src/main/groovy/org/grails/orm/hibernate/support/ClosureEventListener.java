@@ -15,26 +15,21 @@
  */
 package org.grails.orm.hibernate.support;
 
-import groovy.lang.*;
-
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import groovy.lang.Closure;
+import groovy.lang.GroovySystem;
+import groovy.lang.MetaClass;
 import org.grails.datastore.gorm.GormValidateable;
-import org.grails.datastore.mapping.model.config.GormProperties;
-import org.grails.datastore.mapping.reflect.ClassUtils;
-import org.grails.datastore.mapping.validation.ValidationException;
-import org.grails.orm.hibernate.AbstractHibernateGormValidationApi;
-import org.grails.orm.hibernate.cfg.AbstractGrailsDomainBinder;
-import org.grails.orm.hibernate.cfg.Mapping;
 import org.grails.datastore.gorm.support.BeforeValidateHelper.BeforeValidateEventTriggerCaller;
 import org.grails.datastore.gorm.support.EventTriggerCaller;
-import org.grails.datastore.gorm.timestamp.DefaultTimestampProvider;
-import org.grails.datastore.gorm.timestamp.TimestampProvider;
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.engine.event.ValidationEvent;
+import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.config.GormProperties;
+import org.grails.datastore.mapping.reflect.ClassUtils;
+import org.grails.datastore.mapping.reflect.EntityReflector;
+import org.grails.datastore.mapping.validation.ValidationException;
+import org.grails.orm.hibernate.AbstractHibernateGormValidationApi;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -48,12 +43,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.Errors;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>Invokes closure events on domain entities such as beforeInsert, beforeUpdate and beforeDelete.
  *
  * <p>Also deals with auto time stamping of domain classes that have properties named 'lastUpdated' and/or 'dateCreated'.
  *
  * @author Lari Hotari
+ * @author Graeme Rocher
  * @since 1.3.5
  */
 @SuppressWarnings({"rawtypes", "unchecked", "serial"})
@@ -79,37 +80,19 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
     final EventTriggerCaller preDeleteEventListener;
     final EventTriggerCaller preUpdateEventListener;
     final BeforeValidateEventTriggerCaller beforeValidateEventListener;
-    final boolean shouldTimestamp;
+    final PersistentEntity persistentEntity;
+    final MetaClass domainMetaClass;
     final boolean isMultiTenant;
-    MetaProperty dateCreatedProperty;
-    MetaProperty lastUpdatedProperty;
-    MetaClass domainMetaClass;
-    boolean failOnErrorEnabled = false;
-    Map validateParams;
-    final TimestampProvider timestampProvider;
+    final boolean failOnErrorEnabled;
+    final Map validateParams;
 
-    public ClosureEventListener(Class<?> domainClazz, boolean failOnError, List failOnErrorPackages) {
-        this(domainClazz, failOnError, failOnErrorPackages, new DefaultTimestampProvider());
-    }
+    private Field actionQueueUpdatesField;
+    private Field entityUpdateActionStateField;
 
-    public ClosureEventListener(Class<?> domainClazz, boolean failOnError, List failOnErrorPackages, TimestampProvider timestampProvider) {
-        this.timestampProvider = timestampProvider;
-        domainMetaClass = GroovySystem.getMetaClassRegistry().getMetaClass(domainClazz);
-        dateCreatedProperty = domainMetaClass.getMetaProperty(GormProperties.DATE_CREATED);
-        if(dateCreatedProperty != null && !verifyTimestampFieldTypeSupport(domainClazz, timestampProvider, dateCreatedProperty)) {
-            dateCreatedProperty = null;
-        }
-        lastUpdatedProperty = domainMetaClass.getMetaProperty(GormProperties.LAST_UPDATED);
-        if(lastUpdatedProperty != null && !verifyTimestampFieldTypeSupport(domainClazz, timestampProvider, lastUpdatedProperty)) {
-            lastUpdatedProperty = null;
-        }
-        if (dateCreatedProperty != null || lastUpdatedProperty != null) {
-            Mapping m = AbstractGrailsDomainBinder.getMapping(domainClazz);
-            shouldTimestamp = m == null || m.isAutoTimestamp();
-        } else {
-            shouldTimestamp = false;
-        }
-
+    public ClosureEventListener(PersistentEntity persistentEntity, boolean failOnError, List failOnErrorPackages) {
+        this.persistentEntity = persistentEntity;
+        Class domainClazz = persistentEntity.getJavaClass();
+        this.domainMetaClass = GroovySystem.getMetaClassRegistry().getMetaClass(domainClazz);
         this.isMultiTenant = ClassUtils.isMultiTenant(domainClazz);
         saveOrUpdateCaller = buildCaller(ClosureEventTriggeringInterceptor.ONLOAD_SAVE, domainClazz);
         beforeInsertCaller = buildCaller(ClosureEventTriggeringInterceptor.BEFORE_INSERT_EVENT, domainClazz);
@@ -150,71 +133,8 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
     }
 
 
-    private boolean verifyTimestampFieldTypeSupport(Class<?> domainClazz, TimestampProvider timestampProvider, MetaProperty timestampField) {
-        if(timestampProvider.supportsCreating(timestampField.getType())) {
-            return true;
-        } else {
-            LOG.warn("TimestampProvider doesn't support creating timestamps for " + domainClazz.getName() + "." + timestampField.getName() + " field of type " + timestampField.getType());
-            return false;
-        }
-    }
-
-    private EventTriggerCaller buildCaller(String eventName, Class<?> domainClazz) {
-        return EventTriggerCaller.buildCaller(eventName, domainClazz, domainMetaClass, null);
-    }
-
     public void onSaveOrUpdate(SaveOrUpdateEvent event) throws HibernateException {
         // no-op, merely a hook for plugins to override
-    }
-
-    private Field actionQueueUpdatesField;
-    private Field entityUpdateActionStateField;
-
-    private void synchronizePersisterState(AbstractPreDatabaseOperationEvent event, Object[] state) {
-        Object entity = event.getEntity();
-        EntityPersister persister = event.getPersister();
-
-        String[] propertyNames = persister.getPropertyNames();
-        HashMap<Integer, Object> changedState=new HashMap<Integer, Object>();
-        for (int i = 0; i < propertyNames.length; i++) {
-            String p = propertyNames[i];
-            MetaProperty metaProperty = domainMetaClass.getMetaProperty(p);
-            if (ClosureEventTriggeringInterceptor.IGNORED.contains(p) || metaProperty == null) {
-                continue;
-            }
-            Object value = metaProperty.getProperty(entity);
-            if(state[i] != value) {
-                changedState.put(i, value);
-            }
-            state[i] = value;
-            persister.setPropertyValue(entity, i, value);
-        }
-
-        synchronizeEntityUpdateActionState(event, entity, changedState);
-    }
-
-    protected void synchronizeEntityUpdateActionState(AbstractPreDatabaseOperationEvent event, Object entity,
-                                                      HashMap<Integer, Object> changedState) {
-        if(actionQueueUpdatesField != null && event instanceof PreInsertEvent && changedState.size() > 0) {
-            try {
-                ExecutableList<EntityUpdateAction> updates = (ExecutableList<EntityUpdateAction>)actionQueueUpdatesField.get(event.getSource().getActionQueue());
-                if(updates != null) {
-                    for (EntityUpdateAction updateAction : updates) {
-                        if(updateAction.getInstance() == entity) {
-                            Object[] updateState = (Object[])entityUpdateActionStateField.get(updateAction);
-                            if (updateState != null) {
-                                for(Map.Entry<Integer, Object> entry : changedState.entrySet()) {
-                                    updateState[entry.getKey()] = entry.getValue();
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e) {
-                LOG.warn("Exception in synchronizeEntityUpdateActionState", e);
-            }
-        }
     }
 
     public void onPreLoad(final PreLoadEvent event) {
@@ -316,28 +236,13 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
                 boolean evict = false;
                 if (preUpdateEventListener != null) {
                     evict = preUpdateEventListener.call(entity);
-                    synchronizePersisterState(event, event.getState());
+                    if (!evict) {
+                        synchronizePersisterState(event, event.getState());
+                    }
                 }
-                handleTimestampingBeforeUpdate(event, entity);
-                if(!evict) {
-                    return doValidate(entity);
-                }
-                else {
-                    return evict;
-                }
+                return evict || doValidate(entity);
             }
         });
-    }
-
-    private <T> T doWithManualSession(AbstractEvent event, Closure<T> callable) {
-        Session session = event.getSession();
-        FlushMode current = HibernateVersionSupport.getFlushMode(session);
-        try {
-            session.setFlushMode(FlushMode.MANUAL);
-            return callable.call();
-        } finally {
-            session.setFlushMode(current);
-        }
     }
 
     public boolean onPreInsert(final PreInsertEvent event) {
@@ -352,16 +257,17 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
                     }
                     synchronizeState = true;
                 }
-                synchronizeState = handleTimestampingBeforeInsert(entity, synchronizeState);
-
                 if (synchronizeState) {
                     synchronizePersisterState(event, event.getState());
                 }
-
                 return doValidate(entity);
             }
 
         });
+    }
+
+    public void onValidate(ValidationEvent event) {
+        beforeValidateEventListener.call(event.getEntityObject(), event.getValidatedFields());
     }
 
     protected boolean doValidate(Object entity) {
@@ -379,51 +285,76 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
         return evict;
     }
 
-    public void onValidate(ValidationEvent event) {
-        beforeValidateEventListener.call(event.getEntityObject(), event.getValidatedFields());
+    private EventTriggerCaller buildCaller(String eventName, Class<?> domainClazz) {
+        return EventTriggerCaller.buildCaller(eventName, domainClazz, domainMetaClass, null);
     }
 
-    protected void handleTimestampingBeforeUpdate(final PreUpdateEvent event, Object entity) {
-        if (shouldTimestamp) {
-            Class<?> dateCreatedType = null;
-            Object timestamp = null;
-            String[] propertyNames = event.getPersister().getPropertyNames();
-            if (dateCreatedProperty != null && dateCreatedProperty.getProperty(entity)==null) {
-                dateCreatedType = dateCreatedProperty.getType();
-                timestamp = timestampProvider.createTimestamp(dateCreatedType);
-                dateCreatedProperty.setProperty(entity, timestamp);
-                event.getState()[ Arrays.asList(propertyNames).indexOf(GormProperties.DATE_CREATED) ] = timestamp;
+    private void synchronizePersisterState(AbstractPreDatabaseOperationEvent event, Object[] state) {
+        EntityPersister persister = event.getPersister();
+        String[] propertyNames = persister.getPropertyNames();
+        synchronizePersisterState(event, state, persister, propertyNames);
+    }
+
+    private void synchronizePersisterState(AbstractPreDatabaseOperationEvent event, Object[] state, EntityPersister persister, String[] propertyNames) {
+        Object entity = event.getEntity();
+        EntityReflector reflector = persistentEntity.getReflector();
+        HashMap<Integer, Object> changedState= new HashMap<>();
+        int[] indexes = HibernateVersionSupport.resolveAttributeIndexes(persister, propertyNames);
+        for (int i = 0; i < propertyNames.length; i++) {
+            String p = propertyNames[i];
+            int index = indexes[i];
+            PersistentProperty property = persistentEntity.getPropertyByName(p);
+            if (property == null) {
+                continue;
             }
-            if (lastUpdatedProperty != null) {
-                Class<?> lastUpdateType = lastUpdatedProperty.getType();
-                if(dateCreatedType == null || !lastUpdateType.isAssignableFrom(dateCreatedType)) {
-                    timestamp = timestampProvider.createTimestamp(lastUpdateType);
+            String propertyName = property.getName();
+
+            if(GormProperties.VERSION.equals(propertyName)) {
+                continue;
+            }
+
+            Object value = reflector.getProperty(entity, propertyName);
+            if(state[index] != value) {
+                changedState.put(i, value);
+            }
+            state[index] = value;
+        }
+
+        synchronizeEntityUpdateActionState(event, entity, changedState);
+    }
+
+    private void synchronizeEntityUpdateActionState(AbstractPreDatabaseOperationEvent event, Object entity,
+                                                    HashMap<Integer, Object> changedState) {
+        if(actionQueueUpdatesField != null && event instanceof PreInsertEvent && changedState.size() > 0) {
+            try {
+                ExecutableList<EntityUpdateAction> updates = (ExecutableList<EntityUpdateAction>)actionQueueUpdatesField.get(event.getSession().getActionQueue());
+                if(updates != null) {
+                    for (EntityUpdateAction updateAction : updates) {
+                        if(updateAction.getInstance() == entity) {
+                            Object[] updateState = (Object[])entityUpdateActionStateField.get(updateAction);
+                            if (updateState != null) {
+                                for(Map.Entry<Integer, Object> entry : changedState.entrySet()) {
+                                    updateState[entry.getKey()] = entry.getValue();
+                                }
+                            }
+                        }
+                    }
                 }
-                lastUpdatedProperty.setProperty(entity, timestamp);
-                event.getState()[ Arrays.asList(propertyNames).indexOf( GormProperties.LAST_UPDATED) ] = timestamp;
+            }
+            catch (Exception e) {
+                LOG.warn("Error synchronizing object state with Hibernate: " + e.getMessage(), e);
             }
         }
     }
 
-    protected boolean handleTimestampingBeforeInsert(Object entity, boolean synchronizeState) {
-        if (shouldTimestamp) {
-            Class<?> dateCreatedType = null;
-            Object timestamp = null;
-            if (dateCreatedProperty != null) {
-                dateCreatedType = dateCreatedProperty.getType();
-                timestamp = timestampProvider.createTimestamp(dateCreatedType);
-                dateCreatedProperty.setProperty(entity, timestamp);
-                synchronizeState = true;
-            }
-            if (lastUpdatedProperty != null) {
-                Class<?> lastUpdateType = lastUpdatedProperty.getType();
-                if(dateCreatedType == null || !lastUpdateType.isAssignableFrom(dateCreatedType)) {
-                    timestamp = timestampProvider.createTimestamp(lastUpdateType);
-                }
-                lastUpdatedProperty.setProperty(entity, timestamp);
-                synchronizeState = true;
-            }
+    private <T> T doWithManualSession(AbstractEvent event, Closure<T> callable) {
+        Session session = event.getSession();
+        FlushMode current = HibernateVersionSupport.getFlushMode(session);
+        try {
+            session.setFlushMode(FlushMode.MANUAL);
+            return callable.call();
+        } finally {
+            session.setFlushMode(current);
         }
-        return synchronizeState || isMultiTenant;
     }
 }
