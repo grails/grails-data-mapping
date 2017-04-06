@@ -36,6 +36,7 @@ import org.grails.orm.hibernate.connections.HibernateConnectionSource;
 import org.grails.orm.hibernate.connections.HibernateConnectionSourceSettings;
 import org.grails.datastore.gorm.jdbc.schema.DefaultSchemaHandler;
 import org.grails.datastore.gorm.jdbc.schema.SchemaHandler;
+import org.grails.orm.hibernate.event.listener.AbstractHibernateEventListener;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.BeanUtils;
@@ -67,7 +68,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     protected final String defaultFlushModeName;
     protected final MultiTenancySettings.MultiTenancyMode multiTenantMode;
     protected final SchemaHandler schemaHandler;
-    protected AbstractEventTriggeringInterceptor eventTriggeringInterceptor;
+    protected AbstractHibernateEventListener eventTriggeringInterceptor;
     protected final boolean osivReadOnly;
     protected final boolean passReadOnlyToHibernate;
     protected final boolean isCacheQueries;
@@ -249,7 +250,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
 
 
     // for testing
-    public AbstractEventTriggeringInterceptor getEventTriggeringInterceptor() {
+    public AbstractHibernateEventListener getEventTriggeringInterceptor() {
         return eventTriggeringInterceptor;
     }
 
