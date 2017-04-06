@@ -5,6 +5,8 @@ import grails.gorm.transactions.ReadOnly
 import grails.gorm.transactions.TransactionService
 import grails.gorm.transactions.Transactional
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
+import org.grails.datastore.gorm.services.Implemented
+import org.grails.datastore.gorm.services.implementers.FindOneImplementer
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.services.DefaultServiceRegistry
 import org.grails.datastore.mapping.services.ServiceRegistry
@@ -16,6 +18,34 @@ import java.lang.reflect.Type
  * Created by graemerocher on 11/01/2017.
  */
 class ServiceTransformSpec extends Specification {
+
+    void "test service transformation with @CurrentTenant"() {
+        when:
+        Class bookService =new GroovyClassLoader().parseClass('''
+import grails.gorm.multitenancy.CurrentTenant
+import grails.gorm.services.*
+import grails.gorm.annotation.Entity
+
+@Service(Book)
+@CurrentTenant
+interface BookService {
+
+    Book find(Serializable id)
+
+    Book saveBook(String title)
+
+}
+@Entity
+class Book {
+    String title
+}
+return BookService
+''')
+        Class impl = bookService.classLoader.loadClass("\$BookServiceImplementation")
+
+        then:"The service was transformed correctly"
+        impl.getMethod("find", Serializable).getAnnotation(Implemented).by() == FindOneImplementer
+    }
 
     void "test service transform on abstract protected methods"() {
         when:"The service transform is applied to an abstract class"

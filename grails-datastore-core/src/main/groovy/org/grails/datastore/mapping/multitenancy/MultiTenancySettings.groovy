@@ -2,6 +2,7 @@ package org.grails.datastore.mapping.multitenancy
 
 import groovy.transform.builder.Builder
 import groovy.transform.builder.SimpleStrategy
+import org.grails.datastore.mapping.core.connections.ConnectionSource
 import org.grails.datastore.mapping.multitenancy.resolvers.NoTenantResolver
 import org.springframework.beans.BeanUtils
 
@@ -46,6 +47,9 @@ class MultiTenancySettings {
         this.tenantResolver = tenantResolver
     }
 
+    /**
+     * The multi-tenancy mode
+     */
     static enum MultiTenancyMode {
         /**
          * No multi tenancy
@@ -70,6 +74,22 @@ class MultiTenancySettings {
          */
         boolean isSharedConnection() {
             return this == DISCRIMINATOR || this == SCHEMA
+        }
+    }
+
+    /**
+     * Resolves the connection to use for the given tenant id based on the current mode
+     *
+     * @param mode The datastore
+     * @param tenantId The tenant id
+     * @return
+     */
+    static String resolveConnectionForTenantId(MultiTenancyMode mode, Serializable tenantId) {
+        if(mode.isSharedConnection()) {
+            return ConnectionSource.DEFAULT
+        }
+        else {
+            return tenantId.toString()
         }
     }
 }

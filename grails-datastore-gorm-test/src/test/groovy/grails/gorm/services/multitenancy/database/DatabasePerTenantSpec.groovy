@@ -3,6 +3,7 @@ package grails.gorm.services.multitenancy.database
 import grails.gorm.MultiTenant
 import grails.gorm.annotation.Entity
 import grails.gorm.multitenancy.CurrentTenant
+import grails.gorm.services.Service
 import grails.gorm.transactions.ReadOnly
 import grails.gorm.transactions.Transactional
 import org.grails.datastore.mapping.config.Settings
@@ -27,6 +28,8 @@ class DatabasePerTenantSpec extends Specification {
             [ConnectionSource.DEFAULT, "foo", "bar"],
             getClass().getPackage()
     )
+    @Shared IBookService bookDataService = datastore.getService(IBookService)
+
     void 'Test database per tenant'() {
         when:"When there is no tenant"
         Book.count()
@@ -42,20 +45,24 @@ class DatabasePerTenantSpec extends Specification {
 
         then:
         bookService.countBooks() == 0
+        bookDataService.countBooks()== 0
 
         when:"And the new @CurrentTenant transformation deals with the details for you!"
         bookService.saveBook("The Stand")
         bookService.saveBook("The Shining")
+        bookService.saveBook("It")
 
         then:
-        bookService.countBooks() == 2
+        bookService.countBooks() == 3
+        bookDataService.countBooks()== 3
 
         when:"Swapping to another schema and we get the right results!"
         System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "bar")
         bookService.saveBook("Along Came a Spider")
-
+        bookDataService.saveBook("Whatever")
         then:
-        bookService.countBooks() == 1
+        bookService.countBooks() == 2
+        bookDataService.countBooks()== 2
     }
 }
 
@@ -76,4 +83,13 @@ class BookService {
     int countBooks() {
         Book.count()
     }
+}
+
+@CurrentTenant
+@Service(Book)
+interface IBookService {
+
+    Book saveBook(String title)
+
+    Integer countBooks()
 }

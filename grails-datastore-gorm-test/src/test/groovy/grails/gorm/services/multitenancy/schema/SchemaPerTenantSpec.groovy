@@ -3,6 +3,7 @@ package grails.gorm.services.multitenancy.schema
 import grails.gorm.MultiTenant
 import grails.gorm.annotation.Entity
 import grails.gorm.multitenancy.CurrentTenant
+import grails.gorm.services.Service
 import grails.gorm.transactions.ReadOnly
 import grails.gorm.transactions.Transactional
 import org.grails.datastore.mapping.config.Settings
@@ -22,6 +23,8 @@ class SchemaPerTenantSpec extends Specification {
              (Settings.SETTING_DB_CREATE): "create-drop"],
             getClass().getPackage()
     )
+    @Shared IBookService bookDataService = datastore.getService(IBookService)
+
     def setup() {
         System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "")
     }
@@ -40,12 +43,14 @@ class SchemaPerTenantSpec extends Specification {
 
         then:
         bookService.countBooks() == 0
+        bookDataService.countBooks()== 0
 
         when:"And the new @CurrentTenant transformation deals with the details for you!"
         bookService.saveBook("The Stand")
 
         then:
         bookService.countBooks() == 1
+        bookDataService.countBooks()== 1
 
         when:"Swapping to another schema and we get the right results!"
         datastore.addTenantForSchema('bar')
@@ -53,6 +58,7 @@ class SchemaPerTenantSpec extends Specification {
 
         then:
         bookService.countBooks() == 0
+        bookDataService.countBooks()== 0
     }
 }
 
@@ -73,4 +79,13 @@ class BookService {
     int countBooks() {
         Book.count()
     }
+}
+
+@CurrentTenant
+@Service(Book)
+interface IBookService {
+
+    Book saveBook(String title)
+
+    Integer countBooks()
 }

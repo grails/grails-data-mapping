@@ -1,22 +1,32 @@
 package org.grails.datastore.gorm.services.implementers
 
-import grails.gorm.transactions.ReadOnly
-import grails.gorm.transactions.Transactional
+import grails.gorm.multitenancy.TenantService
+import grails.gorm.transactions.TransactionService
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.AnnotationNode
+import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.transform.trait.Traits
 import org.grails.datastore.gorm.GormEnhancer
+import org.grails.datastore.gorm.multitenancy.transform.TenantTransform
 import org.grails.datastore.gorm.services.ServiceImplementer
+import org.grails.datastore.gorm.transactions.transform.TransactionalTransform
 import org.grails.datastore.gorm.transform.AstMethodDispatchUtils
 import org.grails.datastore.gorm.transform.AstPropertyResolveUtils
 import org.grails.datastore.mapping.core.Ordered
 import org.grails.datastore.mapping.model.config.GormProperties
+import org.grails.datastore.mapping.multitenancy.MultiTenancySettings
+import org.grails.datastore.mapping.multitenancy.MultiTenantCapableDatastore
 import org.grails.datastore.mapping.reflect.AstUtils
+import org.grails.datastore.mapping.services.ServiceRegistry
+import org.grails.datastore.mapping.transactions.TransactionCapableDatastore
+
+import static org.codehaus.groovy.ast.ClassHelper.make
 import static org.codehaus.groovy.ast.tools.GeneralUtils.*
+import static org.grails.datastore.gorm.transform.AstMethodDispatchUtils.*
 /**
  * Abstract implementation of the {@link ServiceImplementer} interface
  *
@@ -25,6 +35,7 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.*
  */
 @CompileStatic
 abstract class AbstractServiceImplementer implements PrefixedServiceImplementer, Ordered {
+
 
     @Override
     boolean doesImplement(ClassNode domainClass, MethodNode methodNode) {
@@ -89,32 +100,55 @@ abstract class AbstractServiceImplementer implements PrefixedServiceImplementer,
         return false
     }
 
-    protected Expression findConnectionId(MethodNode methodNode) {
-        AnnotationNode ann = findTransactionalAnnotation(methodNode)
-
-        Expression connectionId = ann?.getMember("connection")
-        if(connectionId == null) {
-            connectionId= ann?.getMember("value")
-        }
-        return connectionId
-
+    /**
+     * @return The datastore expression
+     */
+    protected Expression datastore() {
+        return propX(varX("this"), "targetDatastore")
     }
 
-    protected AnnotationNode findTransactionalAnnotation(MethodNode methodNode) {
-        AnnotationNode ann = AstUtils.findAnnotation(methodNode, Transactional)
-        if (ann != null) {
-            return ann
+    /**
+     * @return The datastore expression
+     */
+    protected Expression transactionalDatastore() {
+        return castX( ClassHelper.make(TransactionCapableDatastore), propX(varX("this"), "targetDatastore"))
+    }
+
+    /**
+     * @return The datastore expression
+     */
+    protected Expression multiTenantDatastore() {
+        return castX( ClassHelper.make(MultiTenantCapableDatastore), propX(varX("this"), "targetDatastore"))
+    }
+
+    /**
+     * @return The tenant service
+     */
+    protected Expression tenantService() {
+        return callD(ServiceRegistry, "targetDatastore", "getService", classX(make(TenantService)) )
+    }
+
+    /**
+     * @return The transaction service
+     */
+    protected Expression transactionService() {
+        return callD(ServiceRegistry, "targetDatastore", "getService", classX(make(TransactionService)) )
+    }
+
+    protected Expression findConnectionId(MethodNode methodNode) {
+        if(TenantTransform.hasTenantAnnotation(methodNode)) {
+            return callD(classX(ClassHelper.make(MultiTenancySettings)), "resolveConnectionForTenantId", args(
+                propX(multiTenantDatastore(), "multiTenancyMode"), callD(tenantService(), "currentId")
+            ))
         }
-        ann = AstUtils.findAnnotation(methodNode, ReadOnly)
-        if (ann != null) {
-            return ann
+        else {
+            AnnotationNode ann = TransactionalTransform.findTransactionalAnnotation(methodNode)
+            Expression connectionId = ann?.getMember("connection")
+            if(connectionId == null) {
+                connectionId= ann?.getMember("value")
+            }
+            return connectionId
         }
-        ann = AstUtils.findAnnotation(methodNode.getDeclaringClass(), Transactional)
-        if (ann != null) {
-            return ann
-        }
-        ann = AstUtils.findAnnotation(methodNode.getDeclaringClass(), ReadOnly)
-        return ann
     }
 
     protected Expression buildInstanceApiLookup(ClassNode domainClass, Expression connectionId) {

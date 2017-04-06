@@ -33,6 +33,7 @@ import org.grails.datastore.gorm.transform.AbstractDatastoreMethodDecoratingTran
 import org.grails.datastore.mapping.core.Ordered
 import org.grails.datastore.mapping.core.connections.MultipleConnectionSourceCapableDatastore
 import org.grails.datastore.mapping.multitenancy.MultiTenantCapableDatastore
+import org.grails.datastore.mapping.reflect.AstUtils
 import org.grails.datastore.mapping.transactions.CustomizableRollbackTransactionAttribute
 import org.grails.datastore.mapping.transactions.TransactionCapableDatastore
 import org.springframework.transaction.PlatformTransactionManager
@@ -111,6 +112,29 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
      */
     public static final int POSITION = 0
     public static final String RENAMED_METHOD_PREFIX = '$tt__'
+
+    /**
+     * Finds the transactional annotation for the given method node
+     *
+     * @param methodNode The method node
+     * @return The annotation or null
+     */
+    static AnnotationNode findTransactionalAnnotation(MethodNode methodNode) {
+        AnnotationNode ann = findAnnotation(methodNode, Transactional)
+        if (ann != null) {
+            return ann
+        }
+        ann = findAnnotation(methodNode, ReadOnly)
+        if (ann != null) {
+            return ann
+        }
+        ann = findAnnotation(methodNode.getDeclaringClass(), Transactional)
+        if (ann != null) {
+            return ann
+        }
+        ann = findAnnotation(methodNode.getDeclaringClass(), ReadOnly)
+        return ann
+    }
 
     @Override
     protected boolean isValidAnnotation(AnnotationNode annotationNode, AnnotatedNode classNode) {
@@ -305,7 +329,7 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
         // apply @Transaction attributes to properties of $transactionAttribute
         applyTransactionalAttributeSettings(annotationNode, transactionAttributeVar, newMethodBody)
 
-        boolean isMultiTenant = TenantTransform.hasTenantAnnotation(methodNode) || TenantTransform.hasTenantAnnotation(classNode)
+        boolean isMultiTenant = TenantTransform.hasTenantAnnotation(methodNode)
 
         Expression connectionName = annotationNode.getMember("connection")
         if( connectionName == null ) {
@@ -322,7 +346,7 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
         Expression transactionManagerExpression
         if(isMultiTenant && hasDataSourceProperty) {
             Expression targetDatastoreExpr = castX( make(MultiTenantCapableDatastore), callThisD(classNode, "getTargetDatastore", ZERO_ARGUMENTS) )
-            targetDatastoreExpr = callX( targetDatastoreExpr, "getDatastoreForTenantId", connectionName)
+            targetDatastoreExpr = castX( make(TransactionCapableDatastore), callX( targetDatastoreExpr, "getDatastoreForTenantId", connectionName))
             transactionManagerExpression = castX( make(PlatformTransactionManager), propX(targetDatastoreExpr, PROPERTY_TRANSACTION_MANAGER) )
 
         }

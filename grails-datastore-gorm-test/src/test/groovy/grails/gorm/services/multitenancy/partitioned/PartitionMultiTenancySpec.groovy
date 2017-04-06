@@ -4,6 +4,7 @@ package grails.gorm.services.multitenancy.partitioned
 import grails.gorm.MultiTenant
 import grails.gorm.annotation.Entity
 import grails.gorm.multitenancy.CurrentTenant
+import grails.gorm.services.Service
 import grails.gorm.transactions.ReadOnly
 import grails.gorm.transactions.Transactional
 import org.grails.datastore.mapping.config.Settings
@@ -23,6 +24,7 @@ class PartitionMultiTenancySpec extends Specification {
              (Settings.SETTING_DB_CREATE): "create-drop"],
             getClass().getPackage()
     )
+    @Shared IBookService bookDataService = datastore.getService(IBookService)
 
     void 'Test partitioned multi-tenancy with GORM services'() {
         when:"When there is no tenant"
@@ -38,18 +40,21 @@ class PartitionMultiTenancySpec extends Specification {
 
         then:
         bookService.countBooks() == 0
+        bookDataService.countBooks()== 0
 
         when:"And the new @CurrentTenant transformation deals with the details for you!"
         bookService.saveBook("The Stand")
 
         then:
         bookService.countBooks() == 1
+        bookDataService.countBooks()== 1
 
         when:"Swapping to another schema and we get the right results!"
         System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "bar")
 
         then:
         bookService.countBooks() == 0
+        bookDataService.countBooks()== 0
     }
 }
 
@@ -71,4 +76,13 @@ class BookService {
     int countBooks() {
         Book.count()
     }
+}
+
+@CurrentTenant
+@Service(Book)
+interface IBookService {
+
+    Book saveBook(String title)
+
+    Integer countBooks()
 }

@@ -158,9 +158,27 @@ class TenantTransform extends AbstractDatastoreMethodDecoratingTransformation im
         return POSITION
     }
 
+    /**
+     * Whether the given node is Multi Tenant
+     *
+     * @param node The node
+     * @return True if it is
+     */
     static boolean hasTenantAnnotation(AnnotatedNode node) {
-        for(ann in [CurrentTenant, Tenant]) {
-            if(AstUtils.findAnnotation(node, ann)) return true
+        ClassNode classNode
+        if(node instanceof MethodNode) {
+            classNode = ((MethodNode)node).getDeclaringClass()
+        }
+        else if(node instanceof ClassNode) {
+            classNode = ((ClassNode)node)
+        }
+        if(classNode != null) {
+
+            for(ann in [CurrentTenant, Tenant]) {
+                if(AstUtils.findAnnotation(classNode, ann) || AstUtils.findAnnotation(node, ann)) {
+                    return true
+                }
+            }
         }
         return false
     }
