@@ -1863,6 +1863,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEventListener.html#datastore" title="Field in AbstractPersistenceEventListener">datastore</a></span> - Field in <a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEventListener.html">AbstractPersistenceEventListener</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#datastore()" title="Method in AbstractServiceImplementer">datastore()</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html">AbstractServiceImplementer</a>
+</dt><dd> <div class="block">@return The datastore expression</div></dd>
 <dt><span class="strong"><a href="grails/gorm/multitenancy/CurrentTenant.html#datastore" title="Field in CurrentTenant">datastore</a></span> - Field in <a href="grails/gorm/multitenancy/CurrentTenant.html">CurrentTenant</a>
 </dt><dd> <div class="block">If you are using multiple GORM implementations and wish to create a transaction for a specific implementation then use this. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/multitenancy/MultiTenantEventListener.html#datastore" title="Field in MultiTenantEventListener">datastore</a></span> - Field in <a href="org/grails/datastore/gorm/multitenancy/MultiTenantEventListener.html">MultiTenantEventListener</a>
@@ -2937,8 +2939,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Find the tenant id for the given entity</div></dd>
 <dt><span class="strong"><a href="org/grails/gorm/rx/api/RxGormEnhancer.html#findTenantId(java.lang.Class)" title="Method in RxGormEnhancer">findTenantId(Class)</a></span> - Method in <a href="org/grails/gorm/rx/api/RxGormEnhancer.html">RxGormEnhancer</a>
 </dt><dd> <div class="block">Find the tenant id for the given entity</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#findTransactionalAnnotation(org.codehaus.groovy.ast.MethodNode)" title="Method in AbstractServiceImplementer">findTransactionalAnnotation(MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html">AbstractServiceImplementer</a>
-</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html#findTransactionalAnnotation(org.codehaus.groovy.ast.MethodNode)" title="Method in TransactionalTransform">findTransactionalAnnotation(MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html">TransactionalTransform</a>
+</dt><dd> <div class="block">Finds the transactional annotation for the given method node</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#findTransactionManager(Class<? extends Datastore>, java.lang.String)" title="Method in GormEnhancer">findTransactionManager(Class&lt;? extends Datastore&gt;, String)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
 </dt><dd> <div class="block">Finds a single available transaction manager</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/transform/OrderedGormTransformation.html#findTransformName(org.codehaus.groovy.ast.AnnotationNode)" title="Method in OrderedGormTransformation">findTransformName(AnnotationNode)</a></span> - Method in <a href="org/grails/datastore/gorm/transform/OrderedGormTransformation.html">OrderedGormTransformation</a>
@@ -4895,7 +4897,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingMap.html#hasShrunk()" title="Method in DirtyCheckingMap">hasShrunk()</a></span> - Method in <a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingMap.html">DirtyCheckingMap</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/multitenancy/transform/TenantTransform.html#hasTenantAnnotation(org.codehaus.groovy.ast.AnnotatedNode)" title="Method in TenantTransform">hasTenantAnnotation(AnnotatedNode)</a></span> - Method in <a href="org/grails/datastore/gorm/multitenancy/transform/TenantTransform.html">TenantTransform</a>
-</dt><dd> <div class="block"></div></dd>
+</dt><dd> <div class="block">Whether the given node is Multi Tenant</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/AbstractSession.html#hasTransaction()" title="Method in AbstractSession">hasTransaction()</a></span> - Method in <a href="org/grails/datastore/mapping/core/AbstractSession.html">AbstractSession</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/Session.html#hasTransaction()" title="Method in Session">hasTransaction()</a></span> - Method in <a href="org/grails/datastore/mapping/core/Session.html">Session</a>
@@ -6730,11 +6732,13 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/multitenancy/MultiTenancySettings.html" title="Class in org.grails.datastore.mapping.multitenancy">MultiTenancySettings</a></span> - Class in <a href="./org/grails/datastore/mapping/multitenancy/package-summary.html">org.grails.datastore.mapping.multitenancy</a>
 </dt><dd><div class="block">Represents the multi tenancy settings</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html" title="Enum in org.grails.datastore.mapping.multitenancy.MultiTenancySettings">MultiTenancySettings.MultiTenancyMode</a></span> - Enum in <a href="./org/grails/datastore/mapping/multitenancy/package-summary.html">org.grails.datastore.mapping.multitenancy</a>
-</dt><dd><div class="block"></div></dd>
+</dt><dd><div class="block">The multi-tenancy mode</div></dd>
 <dt><span class="strong"><a href="grails/gorm/rx/MultiTenant.html" title="Trait in grails.gorm.rx">MultiTenant</a></span> - Trait in <a href="./grails/gorm/rx/package-summary.html">grails.gorm.rx</a>
 </dt><dd><div class="block">A trait for domain classes that should be treated as multi tenant</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/multitenancy/MultiTenantCapableDatastore.html" title="Interface in org.grails.datastore.mapping.multitenancy">MultiTenantCapableDatastore</a></span> - Interface in <a href="./org/grails/datastore/mapping/multitenancy/package-summary.html">org.grails.datastore.mapping.multitenancy</a>
 </dt><dd><div class="block">An implementation that is capable of multi tenancy</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#multiTenantDatastore()" title="Method in AbstractServiceImplementer">multiTenantDatastore()</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html">AbstractServiceImplementer</a>
+</dt><dd> <div class="block">@return The datastore expression</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/DefaultTenantService.html#multiTenantDatastore()" title="Method in DefaultTenantService">multiTenantDatastore()</a></span> - Method in <a href="org/grails/datastore/gorm/services/DefaultTenantService.html">DefaultTenantService</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/multitenancy/MultiTenantEventListener.html" title="Class in org.grails.datastore.gorm.multitenancy">MultiTenantEventListener</a></span> - Class in <a href="./org/grails/datastore/gorm/multitenancy/package-summary.html">org.grails.datastore.gorm.multitenancy</a>
@@ -8033,6 +8037,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Mark the collection as no longer dirty.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormValidationApi.html#resetErrors(D)" title="Method in GormValidationApi">resetErrors(D)</a></span> - Method in <a href="org/grails/datastore/gorm/GormValidationApi.html">GormValidationApi</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/multitenancy/MultiTenancySettings.html#resolveConnectionForTenantId(org.grails.datastore.mapping.multitenancy.MultiTenancySettings.MultiTenancyMode, java.io.Serializable)" title="Method in MultiTenancySettings">resolveConnectionForTenantId(MultiTenancySettings.MultiTenancyMode, Serializable)</a></span> - Method in <a href="org/grails/datastore/mapping/multitenancy/MultiTenancySettings.html">MultiTenancySettings</a>
+</dt><dd> <div class="block">Resolves the connection to use for the given tenant id based on the current mode</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractProjectionImplementer.html#RESOLVED_PROPERTY_NAME" title="Field in AbstractProjectionImplementer">RESOLVED_PROPERTY_NAME</a></span> - Field in <a href="org/grails/datastore/gorm/services/implementers/AbstractProjectionImplementer.html">AbstractProjectionImplementer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/AssociationQueryProxyHandler.html#resolveDelegate(java.lang.Object)" title="Method in AssociationQueryProxyHandler">resolveDelegate(Object)</a></span> - Method in <a href="org/grails/datastore/mapping/proxy/AssociationQueryProxyHandler.html">AssociationQueryProxyHandler</a>
@@ -9247,6 +9253,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/multitenancy/TenantService.html" title="Interface in grails.gorm.multitenancy">TenantService</a></span> - Interface in <a href="./grails/gorm/multitenancy/package-summary.html">grails.gorm.multitenancy</a>
 </dt><dd><div class="block">A Service with utility methods for working with Multi-Tenancy</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#tenantService()" title="Method in AbstractServiceImplementer">tenantService()</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html">AbstractServiceImplementer</a>
+</dt><dd> <div class="block">@return The tenant service</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/multitenancy/transform/TenantTransform.html" title="Class in org.grails.datastore.gorm.multitenancy.transform">TenantTransform</a></span> - Class in <a href="./org/grails/datastore/gorm/multitenancy/transform/package-summary.html">org.grails.datastore.gorm.multitenancy.transform</a>
 </dt><dd><div class="block">Implementation of <a href='../../../../../../grails/gorm/multitenancy/Tenant.html' title='Tenant'>Tenant</a></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/rest/test/TestConnectionSource.html" title="Class in org.grails.datastore.rx.rest.test">TestConnectionSource</a></span> - Class in <a href="./org/grails/datastore/rx/rest/test/package-summary.html">org.grails.datastore.rx.rest.test</a>
@@ -9380,6 +9388,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/transactions/Transactional.html" title="Annotation Type in grails.gorm.transactions">Transactional</a></span> - Annotation Type in <a href="./grails/gorm/transactions/package-summary.html">grails.gorm.transactions</a>
 </dt><dd><div class="block">Describes transaction attributes on a method or class.</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#transactionalDatastore()" title="Method in AbstractServiceImplementer">transactionalDatastore()</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html">AbstractServiceImplementer</a>
+</dt><dd> <div class="block">@return The datastore expression</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html" title="Class in org.grails.datastore.gorm.transactions.transform">TransactionalTransform</a></span> - Class in <a href="./org/grails/datastore/gorm/transactions/transform/package-summary.html">org.grails.datastore.gorm.transactions.transform</a>
 </dt><dd><div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/transactions/TransactionCapableDatastore.html" title="Interface in org.grails.datastore.mapping.transactions">TransactionCapableDatastore</a></span> - Interface in <a href="./org/grails/datastore/mapping/transactions/package-summary.html">org.grails.datastore.mapping.transactions</a>
@@ -9390,6 +9400,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">A transaction object returned when the transaction is created.</div></dd>
 <dt><span class="strong"><a href="grails/gorm/transactions/TransactionService.html" title="Interface in grails.gorm.transactions">TransactionService</a></span> - Interface in <a href="./grails/gorm/transactions/package-summary.html">grails.gorm.transactions</a>
 </dt><dd><div class="block">A GORM service that simplifies the execution of transactions</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#transactionService()" title="Method in AbstractServiceImplementer">transactionService()</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html">AbstractServiceImplementer</a>
+</dt><dd> <div class="block">@return The transaction service</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/transactions/TransactionUtils.html" title="Class in org.grails.datastore.mapping.transactions">TransactionUtils</a></span> - Class in <a href="./org/grails/datastore/mapping/transactions/package-summary.html">org.grails.datastore.mapping.transactions</a>
 </dt><dd><div class="block">Utility methods for Transactions.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/AstUtils.html#TRANSFORM_APPLIED_MARKER" title="Field in AstUtils">TRANSFORM_APPLIED_MARKER</a></span> - Field in <a href="org/grails/datastore/mapping/reflect/AstUtils.html">AstUtils</a>
