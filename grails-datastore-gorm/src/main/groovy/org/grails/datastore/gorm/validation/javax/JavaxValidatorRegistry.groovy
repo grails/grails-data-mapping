@@ -93,7 +93,13 @@ class JavaxValidatorRegistry extends DefaultValidatorRegistry implements Validat
     Validator getValidator(PersistentEntity entity) {
         def ann = entity.javaClass.getAnnotation(Validated)
         if(ann != null && isAvailable()) {
-            return new GormValidatorAdapter(validatorFactory.getValidator())
+            def validator = validatorFactory.getValidator()
+            if(validator instanceof GormValidatorAdapter) {
+                return (Validator)validator
+            }
+            else {
+                return new GormValidatorAdapter(validator)
+            }
         }
         else {
             return super.getValidator(entity)
