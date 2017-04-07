@@ -427,11 +427,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-gorm-neo4j:6.0.10.BUILD-SNAPSHOT"</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-gorm-neo4j:6.1.1.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Then annotate your entities with the <code>grails.gorm.annotation.Entity</code> annotation and implement the <a href="../api/grails/neo4j/Neo4jEntity.html">Neo4jEntity</a> trait:</p>
+<p>Then annotate your entities with the <code>grails.gorm.annotation.Entity</code> annotation and implement the <a href="../api/grails/neo4j/Node.html">Node</a> trait:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -439,7 +439,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 import grails.gorm.annotation.*
 
 @Entity
-class Person implements Neo4jEntity&lt;Person&gt;{
+class Person implements Node&lt;Person&gt;{
     String name
 }</code></pre>
 </div>
