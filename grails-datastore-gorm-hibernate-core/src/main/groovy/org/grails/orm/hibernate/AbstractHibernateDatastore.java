@@ -44,6 +44,7 @@ import org.springframework.context.*;
 import org.springframework.core.env.PropertyResolver;
 
 import javax.annotation.PreDestroy;
+import javax.sql.DataSource;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Serializable;
@@ -248,6 +249,12 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         return sessionFactory;
     }
 
+    /**
+     * @return The {@link DataSource} being used by this datastore instance
+     */
+    public DataSource getDataSource() {
+        return ((HibernateConnectionSource)this.connectionSources.getDefaultConnectionSource()).getDataSource();
+    }
 
     // for testing
     public AbstractHibernateEventListener getEventTriggeringInterceptor() {
