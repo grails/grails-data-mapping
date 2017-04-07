@@ -64,7 +64,7 @@ class FindOneStringQueryImplementer extends AbstractStringQueryImplementer imple
             return true
         }
         else if(!AstUtils.isSubclassOfOrImplementsInterface(returnType, Iterable.name) && !returnType.isArray() && !returnType.packageName?.startsWith("rx.")) {
-            def queryAnnotation = AstUtils.findAnnotation(methodNode, Query)
+            def queryAnnotation = AstUtils.findAnnotation(methodNode, getAnnotationType())
             def query = queryAnnotation.getMember("value")
             if(query instanceof GStringExpression) {
                 GStringExpression gstring = (GStringExpression)query
