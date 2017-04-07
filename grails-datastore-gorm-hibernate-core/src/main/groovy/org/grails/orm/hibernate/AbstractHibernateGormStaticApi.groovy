@@ -377,8 +377,8 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     @Override
     List<D> findAll(CharSequence query) {
         if(query instanceof GString) {
-            List params = []
-            String hql = buildOrdinalParameterQueryFromGString((GString)query, params)
+            Map params = [:]
+            String hql = buildNamedParameterQueryFromGString((GString)query, params)
             return findAll(hql, params, Collections.emptyMap())
         }
         else {
@@ -389,8 +389,8 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     @Override
     List executeQuery(CharSequence query) {
         if(query instanceof GString) {
-            List params = []
-            String hql = buildOrdinalParameterQueryFromGString((GString)query, params)
+            Map params = [:]
+            String hql = buildNamedParameterQueryFromGString((GString)query, params)
             return executeQuery(hql, params, Collections.emptyMap())
         }
         else {
@@ -401,8 +401,8 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     @Override
     Integer executeUpdate(CharSequence query) {
         if(query instanceof GString) {
-            List params = []
-            String hql = buildOrdinalParameterQueryFromGString((GString)query, params)
+            Map params = [:]
+            String hql = buildNamedParameterQueryFromGString((GString)query, params)
             return executeUpdate(hql, params, Collections.emptyMap())
         }
         else {
@@ -413,8 +413,8 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     @Override
     D find(CharSequence query) {
         if(query instanceof GString) {
-            List params = []
-            String hql = buildOrdinalParameterQueryFromGString((GString)query, params)
+            Map params = [:]
+            String hql = buildNamedParameterQueryFromGString((GString)query, params)
             return find(hql, params, Collections.emptyMap())
         }
         else {
