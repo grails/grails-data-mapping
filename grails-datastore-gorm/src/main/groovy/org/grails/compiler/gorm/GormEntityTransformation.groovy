@@ -60,7 +60,7 @@ import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.AstUtils
 import org.grails.datastore.mapping.reflect.ClassUtils
 import org.grails.datastore.mapping.reflect.NameUtils
-
+import static org.codehaus.groovy.ast.tools.GeneralUtils.*
 import javax.persistence.Embeddable
 import javax.persistence.Id
 import javax.persistence.ManyToMany
@@ -105,14 +105,16 @@ class GormEntityTransformation extends AbstractASTTransformation implements Comp
     private static final ListExpression IGNORED_PROPERTIES = new ListExpression();
 
     static {
-        IGNORED_PROPERTIES.addExpression(GeneralUtils.constX(GormProperties.DIRTY_PROPERTY_NAMES))
-        IGNORED_PROPERTIES.addExpression(GeneralUtils.constX(GormProperties.ERRORS))
-        IGNORED_PROPERTIES.addExpression(GeneralUtils.constX(GormProperties.DIRTY))
-        IGNORED_PROPERTIES.addExpression(GeneralUtils.constX(GormProperties.ATTACHED))
-        IGNORED_PROPERTIES.addExpression(GeneralUtils.constX(GormProperties.VERSION))
-        IGNORED_PROPERTIES.addExpression(GeneralUtils.constX(GormProperties.PROPERTIES))
-        IGNORED_PROPERTIES.addExpression(GeneralUtils.constX(GormProperties.META_CLASS))
-        IGNORED_PROPERTIES.addExpression(GeneralUtils.constX(GormProperties.TENANT_IDENTITY))
+        IGNORED_PROPERTIES.addExpression(constX(GormProperties.DIRTY_PROPERTY_NAMES))
+        IGNORED_PROPERTIES.addExpression(constX(GormProperties.ERRORS))
+        IGNORED_PROPERTIES.addExpression(constX(GormProperties.DIRTY))
+        IGNORED_PROPERTIES.addExpression(constX(GormProperties.ATTACHED))
+        IGNORED_PROPERTIES.addExpression(constX(GormProperties.VERSION))
+        IGNORED_PROPERTIES.addExpression(constX(GormProperties.PROPERTIES))
+        IGNORED_PROPERTIES.addExpression(constX(GormProperties.META_CLASS))
+        IGNORED_PROPERTIES.addExpression(constX(GormProperties.TENANT_IDENTITY))
+        // GORM for mongodb ignores
+        IGNORED_PROPERTIES.addExpression(constX("dbo"))
     }
 
     protected CompilationUnit compilationUnit
