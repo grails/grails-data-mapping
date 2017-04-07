@@ -659,7 +659,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/UpdateStringQueryImplementer.html#applyDefaultTransactionHandling(org.codehaus.groovy.ast.MethodNode)" title="Method in UpdateStringQueryImplementer">applyDefaultTransactionHandling(MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/UpdateStringQueryImplementer.html">UpdateStringQueryImplementer</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/boot/compiler/GormCompilerAutoConfiguration.html#applyDependencies(org.springframework.boot.cli.compiler.DependencyCustomizer)" title="Method in GormCompilerAutoConfiguration">applyDependencies(DependencyCustomizer)</a></span> - Method in <a href="org/grails/datastore/gorm/boot/compiler/GormCompilerAutoConfiguration.html">GormCompilerAutoConfiguration</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/boot/compiler/GormCompilerAutoConfiguration.html#applyDependencies(DependencyCustomizer)" title="Method in GormCompilerAutoConfiguration">applyDependencies(DependencyCustomizer)</a></span> - Method in <a href="org/grails/datastore/gorm/boot/compiler/GormCompilerAutoConfiguration.html">GormCompilerAutoConfiguration</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/finders/DynamicFinder.html#applyDetachedCriteria(org.grails.datastore.mapping.query.Query, org.grails.datastore.gorm.query.criteria.AbstractDetachedCriteria)" title="Method in DynamicFinder">applyDetachedCriteria(Query, AbstractDetachedCriteria)</a></span> - Method in <a href="org/grails/datastore/gorm/finders/DynamicFinder.html">DynamicFinder</a>
 </dt><dd> <div class="block">Applies the given detached criteria to the given query</div></dd>
@@ -6042,6 +6042,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">Datastore implementation that uses a Hibernate SessionFactory underneath.</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/HibernateDatastore.html#HibernateDatastore(java.lang.Package)" title="Constructor in HibernateDatastore">HibernateDatastore(Package)</a></span> - Constructor in <a href="org/grails/orm/hibernate/HibernateDatastore.html">HibernateDatastore</a>
 </dt><dd> <div class="block">Construct a Hibernate datastore scanning the given packages</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/boot/autoconfigure/HibernateGormAutoConfiguration.html#hibernateDatastore()" title="Method in HibernateGormAutoConfiguration">hibernateDatastore()</a></span> - Method in <a href="org/grails/datastore/gorm/boot/autoconfigure/HibernateGormAutoConfiguration.html">HibernateGormAutoConfiguration</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/support/HibernateDatastoreConnectionSourcesRegistrar.html" title="Class in org.grails.orm.hibernate.support">HibernateDatastoreConnectionSourcesRegistrar</a></span> - Class in <a href="./org/grails/orm/hibernate/support/package-summary.html">org.grails.orm.hibernate.support</a>
 </dt><dd><div class="block">A factory bean that looks up a datastore by connection name</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/support/HibernateDatastoreConnectionSourcesRegistrar.html#HibernateDatastoreConnectionSourcesRegistrar(Iterable<String>)" title="Constructor in HibernateDatastoreConnectionSourcesRegistrar">HibernateDatastoreConnectionSourcesRegistrar(Iterable&lt;String&gt;)</a></span> - Constructor in <a href="org/grails/orm/hibernate/support/HibernateDatastoreConnectionSourcesRegistrar.html">HibernateDatastoreConnectionSourcesRegistrar</a>
@@ -6172,6 +6174,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/test/mixin/hibernate/HibernateTestMixin.html" title="Class in grails.test.mixin.hibernate">HibernateTestMixin</a></span> - Class in <a href="./grails/test/mixin/hibernate/package-summary.html">grails.test.mixin.hibernate</a>
 </dt><dd><div class="block">A testing plugin for Hibernate</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/boot/autoconfigure/HibernateGormAutoConfiguration.html#hibernateTransactionManager()" title="Method in HibernateGormAutoConfiguration">hibernateTransactionManager()</a></span> - Method in <a href="org/grails/datastore/gorm/boot/autoconfigure/HibernateGormAutoConfiguration.html">HibernateGormAutoConfiguration</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/cfg/HibernateUtils.html" title="Class in org.grails.orm.hibernate.cfg">HibernateUtils</a></span> - Class in <a href="./org/grails/orm/hibernate/cfg/package-summary.html">org.grails.orm.hibernate.cfg</a>
 </dt><dd><div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/support/HibernateVersionSupport.html" title="Class in org.grails.orm.hibernate.support">HibernateVersionSupport</a></span> - Class in <a href="./org/grails/orm/hibernate/support/package-summary.html">org.grails.orm.hibernate.support</a>
@@ -9427,8 +9431,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/BasicTypeConverterRegistrar.html#register(org.springframework.core.convert.converter.ConverterRegistry)" title="Method in BasicTypeConverterRegistrar">register(ConverterRegistry)</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/BasicTypeConverterRegistrar.html">BasicTypeConverterRegistrar</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/boot/autoconfigure/HibernateGormAutoConfiguration.html#registerBeanDefinitions(org.springframework.core.type.AnnotationMetadata, org.springframework.beans.factory.support.BeanDefinitionRegistry)" title="Method in HibernateGormAutoConfiguration">registerBeanDefinitions(AnnotationMetadata, BeanDefinitionRegistry)</a></span> - Method in <a href="org/grails/datastore/gorm/boot/autoconfigure/HibernateGormAutoConfiguration.html">HibernateGormAutoConfiguration</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.GrailsBeanBuilderInit.html#registerBeans(org.springframework.beans.factory.support.BeanDefinitionRegistry, groovy.lang.Closure)" title="Method in AbstractDatastoreInitializer.GrailsBeanBuilderInit">registerBeans(BeanDefinitionRegistry, Closure)</a></span> - Method in <a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.GrailsBeanBuilderInit.html">AbstractDatastoreInitializer.GrailsBeanBuilderInit</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.GroovyBeanReaderInit.html#registerBeans(org.springframework.beans.factory.support.BeanDefinitionRegistry, groovy.lang.Closure)" title="Method in AbstractDatastoreInitializer.GroovyBeanReaderInit">registerBeans(BeanDefinitionRegistry, Closure)</a></span> - Method in <a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.GroovyBeanReaderInit.html">AbstractDatastoreInitializer.GroovyBeanReaderInit</a>
@@ -9905,6 +9907,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/GrailsSessionContext.html#sessionFactory" title="Field in GrailsSessionContext">sessionFactory</a></span> - Field in <a href="org/grails/orm/hibernate/GrailsSessionContext.html">GrailsSessionContext</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/boot/autoconfigure/HibernateGormAutoConfiguration.html#sessionFactory()" title="Method in HibernateGormAutoConfiguration">sessionFactory()</a></span> - Method in <a href="org/grails/datastore/gorm/boot/autoconfigure/HibernateGormAutoConfiguration.html">HibernateGormAutoConfiguration</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/HibernateGormStaticApi.html#sessionFactory" title="Field in HibernateGormStaticApi">sessionFactory</a></span> - Field in <a href="org/grails/orm/hibernate/HibernateGormStaticApi.html">HibernateGormStaticApi</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/cfg/HibernateMappingContextConfiguration.html#sessionFactoryBeanName" title="Field in HibernateMappingContextConfiguration">sessionFactoryBeanName</a></span> - Field in <a href="org/grails/orm/hibernate/cfg/HibernateMappingContextConfiguration.html">HibernateMappingContextConfiguration</a>
@@ -9958,6 +9962,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/orm/hibernate/HibernateDatastore.html#setApplicationContext(org.springframework.context.ApplicationContext)" title="Method in HibernateDatastore">setApplicationContext(ApplicationContext)</a></span> - Method in <a href="org/grails/orm/hibernate/HibernateDatastore.html">HibernateDatastore</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/support/HibernateDatastoreFactoryBean.html#setApplicationContext(org.springframework.context.ApplicationContext)" title="Method in HibernateDatastoreFactoryBean">setApplicationContext(ApplicationContext)</a></span> - Method in <a href="org/grails/orm/hibernate/support/HibernateDatastoreFactoryBean.html">HibernateDatastoreFactoryBean</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/boot/autoconfigure/HibernateGormAutoConfiguration.html#setApplicationContext(org.springframework.context.ApplicationContext)" title="Method in HibernateGormAutoConfiguration">setApplicationContext(ApplicationContext)</a></span> - Method in <a href="org/grails/datastore/gorm/boot/autoconfigure/HibernateGormAutoConfiguration.html">HibernateGormAutoConfiguration</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/cfg/HibernateMappingContextConfiguration.html#setApplicationContext(org.springframework.context.ApplicationContext)" title="Method in HibernateMappingContextConfiguration">setApplicationContext(ApplicationContext)</a></span> - Method in <a href="org/grails/orm/hibernate/cfg/HibernateMappingContextConfiguration.html">HibernateMappingContextConfiguration</a>
 </dt><dd> <div class="block"></div></dd>
@@ -10106,8 +10112,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#setEntryValue(T, java.lang.String, java.lang.Object)" title="Method in NativeEntryEntityPersister">setEntryValue(T, String, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block">Sets a value on an entry</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/Property.html#setEnumType(java.lang.String)" title="Method in Property">setEnumType(String)</a></span> - Method in <a href="org/grails/datastore/mapping/config/Property.html">Property</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/boot/autoconfigure/HibernateGormAutoConfiguration.html#setEnvironment(org.springframework.core.env.Environment)" title="Method in HibernateGormAutoConfiguration">setEnvironment(Environment)</a></span> - Method in <a href="org/grails/datastore/gorm/boot/autoconfigure/HibernateGormAutoConfiguration.html">HibernateGormAutoConfiguration</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormValidationApi.html#setErrors(D, org.springframework.validation.Errors)" title="Method in GormValidationApi">setErrors(D, Errors)</a></span> - Method in <a href="org/grails/datastore/gorm/GormValidationApi.html">GormValidationApi</a>
 </dt><dd> <div class="block">Sets the errors for an instance</div></dd>

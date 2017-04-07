@@ -236,8 +236,20 @@ extends <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore
                         
                         <tr class="altColor">
                             <td class="colFirst">
+                                <code><a href="#HibernateDatastore(javax.sql.DataSource, org.springframework.core.env.PropertyResolver, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher, java.lang.Class)">HibernateDatastore</a></strong>
+                                (javax.sql.DataSource dataSource, org.springframework.core.env.PropertyResolver configuration, <a href='../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Class... classes)</code><br>Create a new HibernateDatastore for the given connection sources and mapping context</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst">
                                 <code><a href="#HibernateDatastore(org.springframework.core.env.PropertyResolver, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher, java.lang.Package)">HibernateDatastore</a></strong>
                                 (org.springframework.core.env.PropertyResolver configuration, <a href='../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Package... packagesToScan)</code><br>Construct a Hibernate datastore scanning the given packages</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst">
+                                <code><a href="#HibernateDatastore(javax.sql.DataSource, org.springframework.core.env.PropertyResolver, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher, java.lang.Package)">HibernateDatastore</a></strong>
+                                (javax.sql.DataSource dataSource, org.springframework.core.env.PropertyResolver configuration, <a href='../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Package... packagesToScan)</code><br>Construct a Hibernate datastore scanning the given packages for the given datasource</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -520,11 +532,29 @@ extends <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore
                             </li>
                         </ul>
                     
+                        <a name="HibernateDatastore(javax.sql.DataSource, org.springframework.core.env.PropertyResolver, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher, java.lang.Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;<strong>HibernateDatastore</strong>(javax.sql.DataSource dataSource, org.springframework.core.env.PropertyResolver configuration, <a href='../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Class... classes)</h4>
+                                <p> Create a new HibernateDatastore for the given connection sources and mapping context
+     <DL><DT><B>Parameters:</B></DT><DD><code>configuration</code> -  The configuration</DD><DD><code>eventPublisher</code> -  The <a href='../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html' title='ConfigurableApplicationEventPublisher'>ConfigurableApplicationEventPublisher</a> instance</DD><DD><code>classes</code> -  The persistent classes</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="HibernateDatastore(org.springframework.core.env.PropertyResolver, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher, java.lang.Package)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;<strong>HibernateDatastore</strong>(org.springframework.core.env.PropertyResolver configuration, <a href='../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Package... packagesToScan)</h4>
                                 <p> Construct a Hibernate datastore scanning the given packages
+     <DL><DT><B>Parameters:</B></DT><DD><code>configuration</code> -  The configuration</DD><DD><code>eventPublisher</code> -  The event publisher</DD><DD><code>packagesToScan</code> -  The packages to scan</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="HibernateDatastore(javax.sql.DataSource, org.springframework.core.env.PropertyResolver, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher, java.lang.Package)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;<strong>HibernateDatastore</strong>(javax.sql.DataSource dataSource, org.springframework.core.env.PropertyResolver configuration, <a href='../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Package... packagesToScan)</h4>
+                                <p> Construct a Hibernate datastore scanning the given packages for the given datasource
      <DL><DT><B>Parameters:</B></DT><DD><code>configuration</code> -  The configuration</DD><DD><code>eventPublisher</code> -  The event publisher</DD><DD><code>packagesToScan</code> -  The packages to scan</DD></DL></p>
                             </li>
                         </ul>
