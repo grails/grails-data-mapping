@@ -10,6 +10,75 @@ import spock.lang.Issue
  * @author Graeme Rocher
  */
 class DirtyCheckTransformationSpec extends Specification {
+    @Issue('https://github.com/grails/grails-data-mapping/issues/894')
+    void "Test transform doesn't make getters require static compilation"() {
+        when:"A Dirty checkable class with generic types is parsed"
+        def gcl = new GroovyClassLoader()
+        Class cls = gcl.parseClass('''
+package org.grails.datastore.gorm.dirty.checking
+
+
+import grails.gorm.annotation.*
+
+
+
+@Entity
+class Player extends AbstractGraphDomain {
+    Application __app__
+    String __appName__
+    String name
+
+    static transients = ['__app__']
+
+    Application get__app__() {
+        if (!__app__ && __appName__) {
+            __app__ = Player.findByName(__appName__)
+        }
+        return __app__
+    }
+    
+    void set__app__(Application application) {
+        if (application) {
+            this.__appName__ = application.name
+            this.__app__ = application
+        }
+        else {
+            this.__appName__ = null
+            this.__app__ = null
+        }
+    }
+
+}
+@Entity
+class Application extends AbstractGraphDomain {
+
+    String name
+    String appVersion
+
+    static constraints = {
+        appVersion nullable: true
+    }
+}
+abstract class AbstractGraphDomain {
+
+    static mapWith = "neo4j"
+
+    Date dateCreated
+    Date lastUpdated
+
+    static constraints = {
+        dateCreated nullable: true, bindable: false
+        lastUpdated nullable: true, bindable: false
+    }
+}
+
+''')
+
+        def child = cls.newInstance()
+
+        then:"The generic types are retained"
+        child != null
+    }
 
     void "Test dirty check with abstract inheritance"() {
         when:"A Dirty checkable class with generic types is parsed"

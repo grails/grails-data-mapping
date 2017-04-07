@@ -137,7 +137,7 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
                     continue
                 }
 
-                final getterAndSetter = gettersAndSetters[propertyName]
+                final GetterAndSetter getterAndSetter = gettersAndSetters[propertyName]
                 final FieldNode propertyField = pn.getField()
                 final List<AnnotationNode> allAnnotationNodes = pn.annotations + propertyField.annotations
                 if(getterAndSetter?.getter != null) {
@@ -195,7 +195,7 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
 
                     // first add the getter
                     ClassNode originalReturnType = pn.getType()
-                    ClassNode returnType;
+                    ClassNode returnType
                     if(!originalReturnType.getNameWithoutPackage().equals(VOID)) {
                         if(ClassHelper.isPrimitiveType(originalReturnType.redirect())) {
                             returnType = originalReturnType.getPlainNodeReference()
@@ -210,29 +210,39 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
                     String fieldName = propertyField.getName()
                     String getterName = NameUtils.getGetterName(propertyName, false)
 
-                    def getter = classNode.addMethod(getterName, PUBLIC, returnType, ZERO_PARAMETERS, null, returnS(varX(fieldName)))
-                    getter.addAnnotation(DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE)
-                    staticCompilationVisitor.visitMethod(
-                            getter
-                    )
-                    if(booleanProperty) {
-                        classNode.addMethod(NameUtils.getGetterName(propertyName, true), PUBLIC, returnType, ZERO_PARAMETERS, null, returnS(varX(fieldName)))
+                    MethodNode getter = classNode.getMethod(getterName, ZERO_PARAMETERS)
+                    if(getter == null) {
+
+                        getter = classNode.addMethod(getterName, PUBLIC, returnType, ZERO_PARAMETERS, null, returnS(varX(fieldName)))
+
+                        getter.addAnnotation(DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE)
+                        staticCompilationVisitor.visitMethod(
+                                getter
+                        )
+                        if(booleanProperty) {
+                            classNode.addMethod(NameUtils.getGetterName(propertyName, true), PUBLIC, returnType, ZERO_PARAMETERS, null, returnS(varX(fieldName)))
+                        }
                     }
 
                     // now add the setter that tracks changes. Each setters becomes:
                     // void setFoo(String foo) { markDirty("foo", foo); this.foo = foo }
-                    final setterName = NameUtils.getSetterName(propertyName)
-                    final setterParameter = param(returnType, propertyName)
-                    final setterBody = new BlockStatement()
-                    MethodCallExpression markDirtyMethodCall = createMarkDirtyMethodCall(markDirtyMethodNode, propertyName, setterParameter)
-                    setterBody.addStatement( stmt(markDirtyMethodCall) )
-                    setterBody.addStatement( assignS( propX( varX("this"), fieldName ), varX( setterParameter )))
+                    final String setterName = NameUtils.getSetterName(propertyName)
+                    final Parameter setterParameter = param(returnType, propertyName)
+                    MethodNode setter = classNode.getMethod(getterName, setterParameter)
+                    if(setter == null) {
+                        final BlockStatement setterBody = new BlockStatement()
+                        MethodCallExpression markDirtyMethodCall = createMarkDirtyMethodCall(markDirtyMethodNode, propertyName, setterParameter)
+                        setterBody.addStatement( stmt(markDirtyMethodCall) )
+                        setterBody.addStatement( assignS( propX( varX("this"), fieldName ), varX( setterParameter )))
 
-                    MethodNode setter = classNode.addMethod(setterName, PUBLIC, ClassHelper.VOID_TYPE, params(setterParameter), null, setterBody)
-                    setter.addAnnotation(DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE)
-                    staticCompilationVisitor.visitMethod(
-                            setter
-                    )
+                        setter = classNode.addMethod(setterName, PUBLIC, ClassHelper.VOID_TYPE, params(setterParameter), null, setterBody)
+                        setter.addAnnotation(DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE)
+                        staticCompilationVisitor.visitMethod(
+                                setter
+                        )
+                    }
+                    else {
+                    }
                 }
                 else if(getterAndSetter.hasBoth()) {
                     // if both a setter and getter are present, we get hold of the setter and weave the markDirty method call into it
@@ -317,7 +327,7 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
         return copiedReturnType;
     }
     protected void weaveIntoExistingSetter(String propertyName, GetterAndSetter getterAndSetter, MethodNode markDirtyMethodNode) {
-        final setterMethod = getterAndSetter.setter
+        final MethodNode setterMethod = getterAndSetter.setter
         if(setterMethod.annotations.any { AnnotationNode an -> an.classNode.name == 'grails.persistence.PersistenceMethod'} ) return
 
         if(!setterMethod.getAnnotations(DIRTY_CHECKED_PROPERTY_CLASS_NODE)) {
