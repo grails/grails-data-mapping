@@ -359,7 +359,10 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
      */
     public void enableMultiTenancyFilter() {
         Serializable currentId = Tenants.currentId(getClass());
-        if(!ConnectionSource.DEFAULT.equals(currentId)) {
+        if(ConnectionSource.DEFAULT.equals(currentId)) {
+            disableMultiTenancyFilter();
+        }
+        else {
             getHibernateTemplate()
                     .getSessionFactory()
                     .getCurrentSession()
