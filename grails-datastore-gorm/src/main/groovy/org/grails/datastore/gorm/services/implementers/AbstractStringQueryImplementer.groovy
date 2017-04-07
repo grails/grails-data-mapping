@@ -11,6 +11,7 @@ import org.codehaus.groovy.ast.expr.GStringExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.Statement
 import org.codehaus.groovy.control.SourceUnit
+import org.grails.datastore.gorm.services.ServiceImplementer
 import org.grails.datastore.gorm.services.transform.QueryStringTransformer
 import org.grails.datastore.mapping.reflect.AstUtils
 
@@ -63,7 +64,7 @@ abstract class AbstractStringQueryImplementer extends AbstractReadOperationImple
             body.addStatement(
                 buildQueryReturnStatement(domainClassNode, abstractMethodNode, newMethodNode, transformed)
             )
-            annotationNode.setMember("value", constX("IMPLEMENTED"))
+            annotationNode.setMember("value", constX(IMPLEMENTED))
         }
     }
 

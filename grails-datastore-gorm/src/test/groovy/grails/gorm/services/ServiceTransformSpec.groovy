@@ -483,6 +483,37 @@ class Foo {
         org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
     }
 
+    void "test @Query annotation with projection"() {
+        when:"The service transform is applied to an interface it can't implement"
+        Class service = new GroovyClassLoader().parseClass('''
+import grails.gorm.services.*
+import grails.gorm.annotation.Entity
+
+@Service(Foo)
+interface MyService {
+
+    @Query("select max(${f.age}) from ${Foo f} where f.title like $pattern") 
+    int searchByTitle(String pattern)
+}
+@Entity
+class Foo {
+    String title
+    int age
+}
+
+''')
+
+        then:
+        service.isInterface()
+        println service.classLoader.loadedClasses
+
+        when:"the impl is obtained"
+        Class impl = service.classLoader.loadClass("\$MyServiceImplementation")
+
+        then:"The impl is valid"
+        org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
+    }
+
 
     void "test @Query update annotation"() {
         when:"The service transform is applied to an interface it can't implement"

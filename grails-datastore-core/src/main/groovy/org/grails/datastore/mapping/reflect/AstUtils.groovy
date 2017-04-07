@@ -30,8 +30,11 @@ import org.codehaus.groovy.ast.PropertyNode
 import org.codehaus.groovy.ast.expr.ArgumentListExpression
 import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.Expression
+import org.codehaus.groovy.ast.expr.MapEntryExpression
+import org.codehaus.groovy.ast.expr.MapExpression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
+import org.codehaus.groovy.ast.tools.GeneralUtils
 import org.codehaus.groovy.classgen.VariableScopeVisitor
 import org.codehaus.groovy.control.Janitor
 import org.codehaus.groovy.control.SourceUnit
@@ -851,5 +854,18 @@ class AstUtils {
             }
         }
         return isCompatibleReturnType
+    }
+
+    /**
+     * Builds a map
+     * @param map The map
+     * @return The map expression
+     */
+    static MapExpression mapX(Map<String, ? extends Expression> map) {
+        def me = new MapExpression()
+        for(entry in map) {
+            me.addMapEntryExpression(new MapEntryExpression(GeneralUtils.constX(entry.key), entry.value))
+        }
+        return me
     }
 }

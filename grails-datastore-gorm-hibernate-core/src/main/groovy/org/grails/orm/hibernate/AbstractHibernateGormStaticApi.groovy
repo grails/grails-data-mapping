@@ -577,7 +577,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         }
 
         return (List<D>) template.execute { Session session ->
-            def q = session.createQuery(query.toString())
+            Query q = session.createQuery(query.toString())
             template.applySettings(q)
 
             populateQueryArguments(q, params)

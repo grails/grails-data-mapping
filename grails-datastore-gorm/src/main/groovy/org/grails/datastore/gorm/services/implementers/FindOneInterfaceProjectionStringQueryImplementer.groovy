@@ -28,8 +28,8 @@ class FindOneInterfaceProjectionStringQueryImplementer extends FindOneStringQuer
     }
 
     @Override
-    protected Statement buildQueryReturnStatement(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, Expression args) {
-        ReturnStatement rs = (ReturnStatement)super.buildQueryReturnStatement(domainClassNode, abstractMethodNode, newMethodNode, args)
-        return buildInterfaceProjection(domainClassNode, abstractMethodNode, rs.expression, args, newMethodNode)
+    protected Statement buildQueryReturnStatement(ClassNode domainClassNode, MethodNode abstractMethodNode, MethodNode newMethodNode, Expression queryArg) {
+        ReturnStatement rs = (ReturnStatement)super.buildQueryReturnStatement(domainClassNode, abstractMethodNode, newMethodNode, queryArg)
+        return buildInterfaceProjection(domainClassNode, abstractMethodNode, rs.expression, queryArg, newMethodNode)
     }
 }

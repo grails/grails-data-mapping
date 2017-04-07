@@ -388,6 +388,9 @@ interface ProductService {
     @Query("from ${Product p} where $p.name like $pattern")
     Product searchWithQuery(String pattern)
 
+    @Query("select ${p.type} from ${Product p} where $p.name like $pattern")
+    String searchProductType(String pattern)
+
     @Query("from ${Product p} where $p.name like $pattern")
     List<Product> searchAllWithQuery(String pattern)
 
