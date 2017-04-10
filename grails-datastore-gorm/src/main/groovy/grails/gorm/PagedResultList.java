@@ -35,7 +35,7 @@ public class PagedResultList<E> implements Serializable, List<E> {
     private static final long serialVersionUID = -5820655628956173929L;
 
     private final Query query;
-    protected final List<E> resultList;
+    protected List<E> resultList;
     protected int totalCount = Integer.MIN_VALUE;
 
     public PagedResultList(Query query) {
