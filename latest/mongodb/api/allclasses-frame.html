@@ -78,9 +78,11 @@
 <li><a href="org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html" title="class in org.grails.datastore.gorm.transform" target="classFrame">AbstractTraitApplyingGormASTTransformation</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/AbstractWhereImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">AbstractWhereImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/AbstractWriteOperationImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">AbstractWriteOperationImplementer</a></li>
+<li><a href="org/grails/datastore/gorm/services/implementers/AdaptedImplementer.html" title="interface in org.grails.datastore.gorm.services.implementers" target="classFrame"><I>AdaptedImplementer</I></a></li>
 <li><a href="org/grails/compiler/gorm/AdditionalGormEntityTransformation.html" title="interface in org.grails.compiler.gorm" target="classFrame"><I>AdditionalGormEntityTransformation</I></a></li>
 <li><a href="org/grails/datastore/gorm/timestamp/AggregateTimestampProvider.html" title="class in org.grails.datastore.gorm.timestamp" target="classFrame">AggregateTimestampProvider</a></li>
 <li><a href="org/grails/datastore/mapping/multitenancy/AllTenantsResolver.html" title="interface in org.grails.datastore.mapping.multitenancy" target="classFrame"><I>AllTenantsResolver</I></a></li>
+<li><a href="org/grails/datastore/gorm/services/implementers/AnnotatedServiceImplementer.html" title="interface in org.grails.datastore.gorm.services.implementers" target="classFrame"><I>AnnotatedServiceImplementer</I></a></li>
 <li><a href="org/grails/datastore/gorm/utils/AnnotationMetadataReader.html" title="class in org.grails.datastore.gorm.utils" target="classFrame">AnnotationMetadataReader</a></li>
 <li><a href="org/grails/datastore/gorm/query/transform/ApplyDetachedCriteriaTransform.html" title="annotation type in org.grails.datastore.gorm.query.transform" target="classFrame">ApplyDetachedCriteriaTransform</a></li>
 <li><a href="org/grails/datastore/mapping/model/types/Association.html" title="class in org.grails.datastore.mapping.model.types" target="classFrame">Association</a></li>
@@ -89,6 +91,7 @@
 <li><a href="org/grails/datastore/mapping/query/AssociationQuery.html" title="class in org.grails.datastore.mapping.query" target="classFrame">AssociationQuery</a></li>
 <li><a href="org/grails/datastore/mapping/engine/AssociationQueryExecutor.html" title="interface in org.grails.datastore.mapping.engine" target="classFrame"><I>AssociationQueryExecutor</I></a></li>
 <li><a href="org/grails/datastore/mapping/proxy/AssociationQueryProxyHandler.html" title="class in org.grails.datastore.mapping.proxy" target="classFrame">AssociationQueryProxyHandler</a></li>
+<li><a href="org/grails/datastore/mapping/reflect/AstGenericsUtils.html" title="class in org.grails.datastore.mapping.reflect" target="classFrame">AstGenericsUtils</a></li>
 <li><a href="org/grails/datastore/gorm/transform/AstMethodDispatchUtils.html" title="class in org.grails.datastore.gorm.transform" target="classFrame">AstMethodDispatchUtils</a></li>
 <li><a href="org/grails/datastore/gorm/transform/AstPropertyResolveUtils.html" title="class in org.grails.datastore.gorm.transform" target="classFrame">AstPropertyResolveUtils</a></li>
 <li><a href="org/grails/datastore/mapping/reflect/AstUtils.html" title="class in org.grails.datastore.mapping.reflect" target="classFrame">AstUtils</a></li>
@@ -248,13 +251,16 @@
 <li><a href="org/grails/datastore/mapping/reflect/FieldEntityAccess.html" title="class in org.grails.datastore.mapping.reflect" target="classFrame">FieldEntityAccess</a></li>
 <li><a href="org/grails/datastore/gorm/finders/FindAllByBooleanFinder.html" title="class in org.grails.datastore.gorm.finders" target="classFrame">FindAllByBooleanFinder</a></li>
 <li><a href="org/grails/datastore/gorm/finders/FindAllByFinder.html" title="class in org.grails.datastore.gorm.finders" target="classFrame">FindAllByFinder</a></li>
+<li><a href="org/grails/datastore/gorm/services/implementers/FindAllByImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindAllByImplementer</a></li>
+<li><a href="org/grails/datastore/gorm/services/implementers/FindAllByInterfaceProjectionImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindAllByInterfaceProjectionImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindAllImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindAllImplementer</a></li>
+<li><a href="org/grails/datastore/gorm/services/implementers/FindAllInterfaceProjectionImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindAllInterfaceProjectionImplementer</a></li>
+<li><a href="org/grails/datastore/gorm/services/implementers/FindAllPropertyProjectionImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindAllPropertyProjectionImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindAllStringQueryImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindAllStringQueryImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindAllWhereImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindAllWhereImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindAndDeleteImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindAndDeleteImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/finders/FindByBooleanFinder.html" title="class in org.grails.datastore.gorm.finders" target="classFrame">FindByBooleanFinder</a></li>
 <li><a href="org/grails/datastore/gorm/finders/FindByFinder.html" title="class in org.grails.datastore.gorm.finders" target="classFrame">FindByFinder</a></li>
-<li><a href="org/grails/datastore/gorm/services/implementers/FindByImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindByImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindOneByImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindOneByImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindOneByInterfaceProjectionImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindOneByInterfaceProjectionImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/FindOneImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindOneImplementer</a></li>
@@ -266,7 +272,6 @@
 <li><a href="org/grails/datastore/gorm/services/implementers/FindOneWhereImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindOneWhereImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/finders/FindOrCreateByFinder.html" title="class in org.grails.datastore.gorm.finders" target="classFrame">FindOrCreateByFinder</a></li>
 <li><a href="org/grails/datastore/gorm/finders/FindOrSaveByFinder.html" title="class in org.grails.datastore.gorm.finders" target="classFrame">FindOrSaveByFinder</a></li>
-<li><a href="org/grails/datastore/gorm/services/implementers/FindPropertyProjectImplementer.html" title="class in org.grails.datastore.gorm.services.implementers" target="classFrame">FindPropertyProjectImplementer</a></li>
 <li><a href="org/grails/datastore/gorm/finders/FinderMethod.html" title="interface in org.grails.datastore.gorm.finders" target="classFrame"><I>FinderMethod</I></a></li>
 <li><a href="org/grails/datastore/mapping/multitenancy/resolvers/FixedTenantResolver.html" title="class in org.grails.datastore.mapping.multitenancy.resolvers" target="classFrame">FixedTenantResolver</a></li>
 <li><a href="org/grails/datastore/mapping/query/criteria/FunctionCallingCriterion.html" title="class in org.grails.datastore.mapping.query.criteria" target="classFrame">FunctionCallingCriterion</a></li>
@@ -315,6 +320,7 @@
 <li><a href="org/grails/datastore/mapping/core/IdentityGenerationException.html" title="class in org.grails.datastore.mapping.core" target="classFrame">IdentityGenerationException</a></li>
 <li><a href="org/grails/datastore/mapping/model/IdentityMapping.html" title="interface in org.grails.datastore.mapping.model" target="classFrame"><I>IdentityMapping</I></a></li>
 <li><a href="org/grails/datastore/mapping/model/IllegalMappingException.html" title="class in org.grails.datastore.mapping.model" target="classFrame">IllegalMappingException</a></li>
+<li><a href="org/grails/datastore/gorm/services/Implemented.html" title="annotation type in org.grails.datastore.gorm.services" target="classFrame">Implemented</a></li>
 <li><a href="org/grails/datastore/mapping/core/connections/InMemoryConnectionSources.html" title="class in org.grails.datastore.mapping.core.connections" target="classFrame">InMemoryConnectionSources</a></li>
 <li><a href="org/grails/datastore/mapping/model/lifecycle/Initializable.html" title="interface in org.grails.datastore.mapping.model.lifecycle" target="classFrame"><I>Initializable</I></a></li>
 <li><a href="org/grails/datastore/gorm/bootstrap/support/InstanceFactoryBean.html" title="class in org.grails.datastore.gorm.bootstrap.support" target="classFrame">InstanceFactoryBean</a></li>
@@ -324,6 +330,10 @@
 <li><a href="org/grails/datastore/mapping/model/types/conversion/IntArrayToIntegerArrayConverter.html" title="class in org.grails.datastore.mapping.model.types.conversion" target="classFrame">IntArrayToIntegerArrayConverter</a></li>
 <li><a href="org/grails/datastore/mapping/model/types/conversion/IntegerToByteConverter.html" title="class in org.grails.datastore.mapping.model.types.conversion" target="classFrame">IntegerToByteConverter</a></li>
 <li><a href="org/grails/datastore/mapping/model/types/conversion/IntegerToShortConverter.html" title="class in org.grails.datastore.mapping.model.types.conversion" target="classFrame">IntegerToShortConverter</a></li>
+<li><a href="org/grails/datastore/gorm/services/implementers/InterfaceProjectionBuilder.html" title="trait in org.grails.datastore.gorm.services.implementers" target="classFrame"><I>InterfaceProjectionBuilder</I></a></li>
+<li><a href="org/grails/datastore/gorm/services/implementers/IterableInterfaceProjectionBuilder.html" title="trait in org.grails.datastore.gorm.services.implementers" target="classFrame"><I>IterableInterfaceProjectionBuilder</I></a></li>
+<li><a href="org/grails/datastore/gorm/services/implementers/IterableProjectionServiceImplementer.html" title="interface in org.grails.datastore.gorm.services.implementers" target="classFrame"><I>IterableProjectionServiceImplementer</I></a></li>
+<li><a href="org/grails/datastore/gorm/services/implementers/IterableServiceImplementer.html" title="interface in org.grails.datastore.gorm.services.implementers" target="classFrame"><I>IterableServiceImplementer</I></a></li>
 <li><a href="org/grails/datastore/mapping/proxy/JavassistProxyFactory.html" title="class in org.grails.datastore.mapping.proxy" target="classFrame">JavassistProxyFactory</a></li>
 <li><a href="org/grails/datastore/gorm/validation/javax/JavaxValidatorRegistry.html" title="class in org.grails.datastore.gorm.validation.javax" target="classFrame">JavaxValidatorRegistry</a></li>
 <li><a href="grails/gorm/services/Join.html" title="annotation type in grails.gorm.services" target="classFrame">Join</a></li>
@@ -385,6 +395,7 @@
 <li><a href="org/grails/datastore/gorm/internal/MethodInvokingClosure.html" title="class in org.grails.datastore.gorm.internal" target="classFrame">MethodInvokingClosure</a></li>
 <li><a href="org/grails/datastore/gorm/validation/javax/services/implementers/MethodValidationImplementer.html" title="class in org.grails.datastore.gorm.validation.javax.services.implementers" target="classFrame">MethodValidationImplementer</a></li>
 <li><a href="grails/mongodb/geo/Metric.html" title="class in grails.mongodb.geo" target="classFrame">Metric</a></li>
+<li><a href="org/grails/datastore/mapping/engine/ModificationTrackingEntityAccess.html" title="class in org.grails.datastore.mapping.engine" target="classFrame">ModificationTrackingEntityAccess</a></li>
 <li><a href="grails/mongodb/api/MongoAllOperations.html" title="interface in grails.mongodb.api" target="classFrame"><I>MongoAllOperations</I></a></li>
 <li><a href="org/grails/datastore/mapping/mongo/config/MongoAttribute.html" title="class in org.grails.datastore.mapping.mongo.config" target="classFrame">MongoAttribute</a></li>
 <li><a href="org/grails/datastore/gorm/mongo/bean/factory/MongoClientFactoryBean.html" title="class in org.grails.datastore.gorm.mongo.bean.factory" target="classFrame">MongoClientFactoryBean</a></li>
@@ -441,6 +452,7 @@
 <li><a href="org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html" title="enum in org.grails.datastore.mapping.multitenancy.MultiTenancySettings" target="classFrame">MultiTenancySettings.MultiTenancyMode</a></li>
 <li><a href="grails/gorm/MultiTenant.html" title="trait in grails.gorm" target="classFrame"><I>MultiTenant</I></a></li>
 <li><a href="org/grails/datastore/mapping/multitenancy/MultiTenantCapableDatastore.html" title="interface in org.grails.datastore.mapping.multitenancy" target="classFrame"><I>MultiTenantCapableDatastore</I></a></li>
+<li><a href="org/grails/datastore/gorm/jdbc/MultiTenantDataSource.html" title="class in org.grails.datastore.gorm.jdbc" target="classFrame">MultiTenantDataSource</a></li>
 <li><a href="org/grails/datastore/gorm/multitenancy/MultiTenantEventListener.html" title="class in org.grails.datastore.gorm.multitenancy" target="classFrame">MultiTenantEventListener</a></li>
 <li><a href="org/grails/datastore/mapping/core/connections/MultipleConnectionSourceCapableDatastore.html" title="interface in org.grails.datastore.mapping.core.connections" target="classFrame"><I>MultipleConnectionSourceCapableDatastore</I></a></li>
 <li><a href="org/grails/datastore/mapping/reflect/NameUtils.html" title="class in org.grails.datastore.mapping.reflect" target="classFrame">NameUtils</a></li>
@@ -450,6 +462,7 @@
 <li><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.NativeEntryModifyingEntityAccess.html" title="class in org.grails.datastore.mapping.engine.NativeEntryEntityPersister" target="classFrame">NativeEntryEntityPersister.NativeEntryModifyingEntityAccess</a></li>
 <li><a href="org/grails/datastore/gorm/mongo/Near.html" title="class in org.grails.datastore.gorm.mongo" target="classFrame">Near</a></li>
 <li><a href="org/grails/datastore/gorm/mongo/NearSphere.html" title="class in org.grails.datastore.gorm.mongo" target="classFrame">NearSphere</a></li>
+<li><a href="org/grails/datastore/gorm/services/implementers/NoResultServiceImplementer.html" title="interface in org.grails.datastore.gorm.services.implementers" target="classFrame"><I>NoResultServiceImplementer</I></a></li>
 <li><a href="org/grails/datastore/mapping/multitenancy/resolvers/NoTenantResolver.html" title="class in org.grails.datastore.mapping.multitenancy.resolvers" target="classFrame">NoTenantResolver</a></li>
 <li><a href="org/grails/datastore/mapping/engine/NonPersistentTypeException.html" title="class in org.grails.datastore.mapping.engine" target="classFrame">NonPersistentTypeException</a></li>
 <li><a href="grails/gorm/transactions/NotTransactional.html" title="annotation type in grails.gorm.transactions" target="classFrame">NotTransactional</a></li>
@@ -498,6 +511,7 @@
 <li><a href="org/grails/datastore/mapping/engine/event/PreLoadEvent.html" title="class in org.grails.datastore.mapping.engine.event" target="classFrame">PreLoadEvent</a></li>
 <li><a href="org/grails/datastore/mapping/query/event/PreQueryEvent.html" title="class in org.grails.datastore.mapping.query.event" target="classFrame">PreQueryEvent</a></li>
 <li><a href="org/grails/datastore/mapping/engine/event/PreUpdateEvent.html" title="class in org.grails.datastore.mapping.engine.event" target="classFrame">PreUpdateEvent</a></li>
+<li><a href="org/grails/datastore/gorm/services/implementers/PrefixedServiceImplementer.html" title="interface in org.grails.datastore.gorm.services.implementers" target="classFrame"><I>PrefixedServiceImplementer</I></a></li>
 <li><a href="org/grails/datastore/mapping/query/api/ProjectionList.html" title="interface in org.grails.datastore.mapping.query.api" target="classFrame"><I>ProjectionList</I></a></li>
 <li><a href="org/grails/datastore/mapping/query/Projections.html" title="class in org.grails.datastore.mapping.query" target="classFrame">Projections</a></li>
 <li><a href="org/grails/datastore/mapping/config/Property.html" title="class in org.grails.datastore.mapping.config" target="classFrame">Property</a></li>
@@ -582,6 +596,7 @@
 <li><a href="org/grails/datastore/mapping/query/QueryCreator.html" title="interface in org.grails.datastore.mapping.query" target="classFrame"><I>QueryCreator</I></a></li>
 <li><a href="org/grails/datastore/mapping/query/event/QueryEventType.html" title="enum in org.grails.datastore.mapping.query.event" target="classFrame">QueryEventType</a></li>
 <li><a href="org/grails/datastore/mapping/query/QueryException.html" title="class in org.grails.datastore.mapping.query" target="classFrame">QueryException</a></li>
+<li><a href="org/grails/datastore/gorm/services/implementers/QueryStringImplementer.html" title="interface in org.grails.datastore.gorm.services.implementers" target="classFrame"><I>QueryStringImplementer</I></a></li>
 <li><a href="org/grails/datastore/gorm/services/transform/QueryStringTransformer.html" title="class in org.grails.datastore.gorm.services.transform" target="classFrame">QueryStringTransformer</a></li>
 <li><a href="org/grails/datastore/mapping/query/api/QueryableCriteria.html" title="interface in org.grails.datastore.mapping.query.api" target="classFrame"><I>QueryableCriteria</I></a></li>
 <li><a href="grails/gorm/transactions/ReadOnly.html" title="annotation type in grails.gorm.transactions" target="classFrame">ReadOnly</a></li>
@@ -601,6 +616,7 @@
 <li><a href="org/grails/datastore/mapping/services/Service.html" title="trait in org.grails.datastore.mapping.services" target="classFrame"><I>Service</I></a></li>
 <li><a href="org/grails/datastore/gorm/services/ServiceEnhancer.html" title="interface in org.grails.datastore.gorm.services" target="classFrame"><I>ServiceEnhancer</I></a></li>
 <li><a href="org/grails/datastore/gorm/services/ServiceImplementer.html" title="interface in org.grails.datastore.gorm.services" target="classFrame"><I>ServiceImplementer</I></a></li>
+<li><a href="org/grails/datastore/gorm/services/ServiceImplementerAdapter.html" title="interface in org.grails.datastore.gorm.services" target="classFrame"><I>ServiceImplementerAdapter</I></a></li>
 <li><a href="org/grails/datastore/mapping/services/ServiceNotFoundException.html" title="class in org.grails.datastore.mapping.services" target="classFrame">ServiceNotFoundException</a></li>
 <li><a href="org/grails/datastore/mapping/services/ServiceRegistry.html" title="interface in org.grails.datastore.mapping.services" target="classFrame"><I>ServiceRegistry</I></a></li>
 <li><a href="org/grails/datastore/gorm/bootstrap/support/ServiceRegistryFactoryBean.html" title="class in org.grails.datastore.gorm.bootstrap.support" target="classFrame">ServiceRegistryFactoryBean</a></li>
@@ -621,6 +637,8 @@
 <li><a href="org/grails/datastore/bson/codecs/encoders/SimpleEncoder.html" title="class in org.grails.datastore.bson.codecs.encoders" target="classFrame">SimpleEncoder</a></li>
 <li><a href="org/grails/datastore/bson/codecs/encoders/SimpleEncoder.TypeEncoder.html" title="interface in org.grails.datastore.bson.codecs.encoders.SimpleEncoder" target="classFrame"><I>SimpleEncoder.TypeEncoder</I></a></li>
 <li><a href="org/grails/datastore/gorm/services/implementers/SingleResultInterfaceProjectionBuilder.html" title="trait in org.grails.datastore.gorm.services.implementers" target="classFrame"><I>SingleResultInterfaceProjectionBuilder</I></a></li>
+<li><a href="org/grails/datastore/gorm/services/implementers/SingleResultProjectionServiceImplementer.html" title="interface in org.grails.datastore.gorm.services.implementers" target="classFrame"><I>SingleResultProjectionServiceImplementer</I></a></li>
+<li><a href="org/grails/datastore/gorm/services/implementers/SingleResultServiceImplementer.html" title="interface in org.grails.datastore.gorm.services.implementers" target="classFrame"><I>SingleResultServiceImplementer</I></a></li>
 <li><a href="org/grails/datastore/mapping/core/connections/SingletonConnectionSources.html" title="class in org.grails.datastore.mapping.core.connections" target="classFrame">SingletonConnectionSources</a></li>
 <li><a href="org/grails/datastore/mapping/core/connections/SingletonConnectionSources.NullConnectionFactory.html" title="class in org.grails.datastore.mapping.core.connections.SingletonConnectionSources" target="classFrame">SingletonConnectionSources.NullConnectionFactory</a></li>
 <li><a href="org/grails/datastore/mapping/core/grailsversion/Snapshot.html" title="class in org.grails.datastore.mapping.core.grailsversion" target="classFrame">Snapshot</a></li>
