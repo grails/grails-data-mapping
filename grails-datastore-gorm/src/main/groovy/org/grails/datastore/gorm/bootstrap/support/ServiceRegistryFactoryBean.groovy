@@ -10,7 +10,12 @@ import org.springframework.beans.factory.BeanFactory
 import org.springframework.beans.factory.BeanFactoryAware
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.beans.factory.InitializingBean
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
+import org.springframework.context.ConfigurableApplicationContext
 
 import java.beans.Introspector
 
@@ -43,9 +48,11 @@ class ServiceRegistryFactoryBean implements FactoryBean<ServiceRegistry>, BeanFa
 
     @Override
     void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        if(beanFactory instanceof ConfigurableBeanFactory) {
-            ConfigurableBeanFactory configurableBeanFactory = (ConfigurableBeanFactory)beanFactory
-            for(service in datastore.services) {
+        if(beanFactory instanceof ConfigurableListableBeanFactory) {
+            AutowireCapableBeanFactory autowireCapableBeanFactory = beanFactory instanceof AutowireCapableBeanFactory ? (AutowireCapableBeanFactory)beanFactory : null
+            ConfigurableListableBeanFactory configurableListableBeanFactory = (ConfigurableListableBeanFactory)beanFactory
+
+            for(org.grails.datastore.mapping.services.Service service in datastore.services) {
                 def serviceClass = service.getClass()
                 Service ann = serviceClass.getAnnotation(Service)
                 String serviceName = ann?.name()
@@ -53,14 +60,18 @@ class ServiceRegistryFactoryBean implements FactoryBean<ServiceRegistry>, BeanFa
                     serviceName = Introspector.decapitalize(serviceClass.simpleName)
                 }
 
-                if(!configurableBeanFactory.containsBean(serviceName)) {
-                    configurableBeanFactory.registerSingleton(serviceName, service)
+                if(!configurableListableBeanFactory.containsBean(serviceName)) {
+                    autowireCapableBeanFactory?.autowireBean(service)
+                    service.setDatastore(datastore)
+                    configurableListableBeanFactory.registerSingleton(serviceName, service)
                 }
                 else {
                     String root = Introspector.decapitalize( datastore.getClass().simpleName - 'Datastore' )
                     serviceName = "${root}${NameUtils.capitalize(serviceName)}"
-                    if(!configurableBeanFactory.containsBean(serviceName)) {
-                        configurableBeanFactory.registerSingleton(serviceName, service)
+                    if(!configurableListableBeanFactory.containsBean(serviceName)) {
+                        autowireCapableBeanFactory?.autowireBean(service)
+                        service.setDatastore(datastore)
+                        configurableListableBeanFactory.registerSingleton(serviceName, service)
                     }
                 }
             }
