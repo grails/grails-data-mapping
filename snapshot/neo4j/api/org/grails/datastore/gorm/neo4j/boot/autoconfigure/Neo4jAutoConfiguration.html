@@ -107,6 +107,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <pre>@groovy.transform.CompileStatic
 @org.springframework.context.annotation.Configuration
 @org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean(Neo4jDatastore)
+@org.springframework.boot.autoconfigure.AutoConfigureBefore(DispatcherServletAutoConfiguration)
 class Neo4jAutoConfiguration
 extends java.lang.Object
 
