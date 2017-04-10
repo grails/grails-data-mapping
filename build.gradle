@@ -8,7 +8,7 @@ buildscript {
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2"
         classpath "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.0"
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.8"
         classpath "io.github.groovylang.groovydoc:groovydoc-gradle-plugin:1.0.1"
     }
 }
@@ -80,10 +80,6 @@ group = "org.grails"
 apply plugin: 'idea'
 apply plugin: 'project-report'
 apply plugin: 'io.codearte.nexus-staging'
-
-nexusStaging {
-    delayBetweenRetriesInMillis = 5000
-}
 
 ext {
     isCiBuild = project.hasProperty("isCiBuild")
