@@ -15,10 +15,10 @@
  */
 package org.grails.orm.hibernate
 
+import grails.gorm.validation.CascadingValidator
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormValidateable
-import org.grails.datastore.gorm.validation.CascadingValidator
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.model.types.Embedded
