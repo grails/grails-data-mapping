@@ -40,7 +40,7 @@ public class PagedResultList<E> implements Serializable, List<E> {
 
     public PagedResultList(Query query) {
         this.query = query;
-        this.resultList = query.list();
+        this.resultList = query == null ? Collections.<E>emptyList() : query.list();
     }
 
     /**
