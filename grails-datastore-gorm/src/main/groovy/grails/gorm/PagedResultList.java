@@ -34,12 +34,13 @@ public class PagedResultList<E> implements Serializable, List<E> {
 
     private static final long serialVersionUID = -5820655628956173929L;
 
-    private Query query;
-    protected List<E> resultList;
+    private final Query query;
+    protected final List<E> resultList;
     protected int totalCount = Integer.MIN_VALUE;
 
     public PagedResultList(Query query) {
         this.query = query;
+        this.resultList = query.list();
     }
 
     /**
@@ -47,81 +48,67 @@ public class PagedResultList<E> implements Serializable, List<E> {
      */
     public int getTotalCount() {
         initialize();
-        if (totalCount == Integer.MIN_VALUE) {
-            Query newQuery = (Query)query.clone();
-            newQuery.projections().count();
-            Number result = (Number) newQuery.singleResult();
-            totalCount = result == null ? 0 : result.intValue();
-        }
-
         return totalCount;
     }
 
     @Override
     public E get(int i) {
-        initialize();
         return resultList.get(i);
     }
 
     @Override
     public E set(int i, E o) {
-        initialize();
         return resultList.set(i, o);
     }
 
     @Override
     public E remove(int i) {
-        initialize();
         return resultList.remove(i);
     }
 
     @Override
     public int indexOf(Object o) {
-        initialize();
         return resultList.indexOf(o);
     }
 
     @Override
     public int lastIndexOf(Object o) {
-        initialize();
         return resultList.lastIndexOf(o);
     }
 
     @Override
     public ListIterator<E> listIterator() {
-        initialize();
         return resultList.listIterator();
     }
 
     @Override
     public ListIterator<E> listIterator(int index) {
-        initialize();
         return resultList.listIterator(index);
     }
 
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
-        initialize();
         return resultList.subList(fromIndex, toIndex);
     }
 
     @Override
     public void add(int i, E o) {
-        initialize();
         resultList.add(i, o);
     }
 
 
 
     protected void initialize() {
-        if (resultList == null) {
-            resultList = query.list();
+        if (totalCount == Integer.MIN_VALUE) {
+            Query newQuery = (Query)query.clone();
+            newQuery.projections().count();
+            Number result = (Number) newQuery.singleResult();
+            totalCount = result == null ? 0 : result.intValue();
         }
     }
 
     @Override
     public int size() {
-        initialize();
         return resultList.size();
     }
 
@@ -132,84 +119,71 @@ public class PagedResultList<E> implements Serializable, List<E> {
 
     @Override
     public boolean contains(Object o) {
-        initialize();
         return resultList.contains(o);
     }
 
     @Override
     public Iterator<E> iterator() {
-        initialize();
         return resultList.iterator();
     }
 
     @Override
     public Object[] toArray() {
-        initialize();
         return resultList.toArray();
     }
 
     @Override
     public <T> T[] toArray(T[] a) {
-        initialize();
         return resultList.toArray(a);
     }
 
     @Override
     public boolean add(E e) {
-        initialize();
         return resultList.add(e);
     }
 
     @Override
     public boolean remove(Object o) {
-        initialize();
         return resultList.remove(o);
     }
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        initialize();
         return resultList.containsAll(c);
     }
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
-        initialize();
         return resultList.addAll(c);
     }
 
     @Override
     public boolean addAll(int index, Collection<? extends E> c) {
-        initialize();
         return resultList.addAll(index, c);
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        initialize();
         return resultList.removeAll(c);
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        initialize();
         return resultList.retainAll(c);
     }
 
     @Override
     public void clear() {
-        resultList = new ArrayList<E>();
+        resultList.clear();
     }
 
     @Override
     public boolean equals(Object o) {
-        initialize();
         return resultList.equals(o);
     }
 
     @Override
     public int hashCode() {
-        initialize();
         return resultList.hashCode();
     }
 
