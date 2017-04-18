@@ -14,10 +14,11 @@
  */
 package org.grails.datastore.gorm.events;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Function;
 
 import org.grails.datastore.gorm.timestamp.DefaultTimestampProvider;
 import org.grails.datastore.gorm.timestamp.TimestampProvider;
@@ -184,4 +185,86 @@ public class AutoTimestampEventListener extends AbstractPersistenceEventListener
     public void setTimestampProvider(TimestampProvider timestampProvider) {
         this.timestampProvider = timestampProvider;
     }
+
+    private void processAllEntries(final Set<Map.Entry<String, Boolean>> entries, final Runnable runnable)  {
+        Map<String, Boolean> originalValues = new LinkedHashMap<String, Boolean>();
+        for(Map.Entry<String, Boolean> entry: entries) {
+            originalValues.put(entry.getKey(), entry.getValue());
+            entry.setValue(false);
+        }
+        runnable.run();
+        for(Map.Entry<String, Boolean> entry: entries) {
+            entry.setValue(originalValues.get(entry.getKey()));
+        }
+    }
+
+    private void processEntries(final List<Class> classes, Map<String, Boolean> entities, final Runnable runnable) {
+        Set<Map.Entry<String, Boolean>> entries = new HashSet<>();
+        final List<String> classNames = new ArrayList<>(classes.size());
+        for(Class clazz: classes) {
+            classNames.add(clazz.getName());
+        }
+        for (Map.Entry<String, Boolean> entry: entities.entrySet()) {
+            if (classNames.contains(entry.getKey())) {
+                entries.add(entry);
+            }
+        }
+        processAllEntries(entries, runnable);
+    }
+
+    public void withoutLastUpdated(final Runnable runnable)  {
+        processAllEntries(entitiesWithLastUpdated.entrySet(), runnable);
+    }
+
+    public void withoutLastUpdated(final List<Class> classes, final Runnable runnable)  {
+        processEntries(classes, entitiesWithLastUpdated, runnable);
+    }
+
+    public void withoutLastUpdated(final Class clazz, final Runnable runnable)  {
+        ArrayList<Class> list = new ArrayList<Class>(1);
+        list.add(clazz);
+        withoutLastUpdated(list, runnable);
+    }
+
+    public void withoutDateCreated(final Runnable runnable)  {
+        processAllEntries(entitiesWithDateCreated.entrySet(), runnable);
+    }
+
+    public void withoutDateCreated(final List<Class> classes, final Runnable runnable)  {
+        processEntries(classes, entitiesWithDateCreated, runnable);
+    }
+
+    public void withoutDateCreated(final Class clazz, final Runnable runnable)  {
+        ArrayList<Class> list = new ArrayList<Class>(1);
+        list.add(clazz);
+        withoutDateCreated(list, runnable);
+    }
+
+    public void withoutTimestamps(final Runnable runnable)  {
+        withoutDateCreated(new Runnable() {
+            @Override
+            public void run() {
+                withoutLastUpdated(runnable);
+            }
+        });
+    }
+
+    public void withoutTimestamps(final List<Class> classes, final Runnable runnable)  {
+        withoutDateCreated(classes, new Runnable() {
+            @Override
+            public void run() {
+                withoutLastUpdated(classes, runnable);
+            }
+        });
+    }
+
+    public void withoutTimestamps(final Class clazz, final Runnable runnable)  {
+        withoutDateCreated(clazz, new Runnable() {
+            @Override
+            public void run() {
+                withoutLastUpdated(clazz, runnable);
+            }
+        });
+    }
+
 }
