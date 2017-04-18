@@ -210,34 +210,73 @@ public class AutoTimestampEventListener extends AbstractPersistenceEventListener
         processAllEntries(entries, runnable);
     }
 
+    /**
+     * Temporarily disables the last updated processing during the execution of the runnable
+     * 
+     * @param runnable The code to execute while the last updated listener is disabled
+     */
     public void withoutLastUpdated(final Runnable runnable)  {
         processAllEntries(entitiesWithLastUpdated.entrySet(), runnable);
     }
 
+    /**
+     * Temporarily disables the last updated processing only on the provided classes during the execution of the runnable
+     *
+     * @param classes Which classes to disable the last updated processing for
+     * @param runnable The code to execute while the last updated listener is disabled
+     */
     public void withoutLastUpdated(final List<Class> classes, final Runnable runnable)  {
         processEntries(classes, entitiesWithLastUpdated, runnable);
     }
 
+    /**
+     * Temporarily disables the last updated processing only on the provided class during the execution of the runnable
+     *
+     * @param clazz Which class to disable the last updated processing for
+     * @param runnable The code to execute while the last updated listener is disabled
+     */
     public void withoutLastUpdated(final Class clazz, final Runnable runnable)  {
         ArrayList<Class> list = new ArrayList<Class>(1);
         list.add(clazz);
         withoutLastUpdated(list, runnable);
     }
 
+    /**
+     * Temporarily disables the date created processing during the execution of the runnable
+     *
+     * @param runnable The code to execute while the date created listener is disabled
+     */
     public void withoutDateCreated(final Runnable runnable)  {
         processAllEntries(entitiesWithDateCreated.entrySet(), runnable);
     }
 
+    /**
+     * Temporarily disables the date created processing only on the provided classes during the execution of the runnable
+     *
+     * @param classes Which classes to disable the date created processing for
+     * @param runnable The code to execute while the date created listener is disabled
+     */
     public void withoutDateCreated(final List<Class> classes, final Runnable runnable)  {
         processEntries(classes, entitiesWithDateCreated, runnable);
     }
 
+    /**
+     * Temporarily disables the date created processing only on the provided class during the execution of the runnable
+     *
+     * @param clazz Which class to disable the date created processing for
+     * @param runnable The code to execute while the date created listener is disabled
+     */
     public void withoutDateCreated(final Class clazz, final Runnable runnable)  {
         ArrayList<Class> list = new ArrayList<Class>(1);
         list.add(clazz);
         withoutDateCreated(list, runnable);
     }
 
+    /**
+     * Temporarily disables the timestamp processing during the execution of the runnable
+     *
+     * @param runnable The code to execute while the timestamp listeners are disabled
+     */
     public void withoutTimestamps(final Runnable runnable)  {
         withoutDateCreated(new Runnable() {
             @Override
@@ -247,6 +286,12 @@ public class AutoTimestampEventListener extends AbstractPersistenceEventListener
         });
     }
 
+    /**
+     * Temporarily disables the timestamp processing only on the provided classes during the execution of the runnable
+     *
+     * @param classes Which classes to disable the timestamp processing for
+     * @param runnable The code to execute while the timestamp listeners are disabled
+     */
     public void withoutTimestamps(final List<Class> classes, final Runnable runnable)  {
         withoutDateCreated(classes, new Runnable() {
             @Override
@@ -256,6 +301,12 @@ public class AutoTimestampEventListener extends AbstractPersistenceEventListener
         });
     }
 
+    /**
+     * Temporarily disables the timestamp processing during the execution of the runnable
+     *
+     * @param clazz Which class to disable the timestamp processing for
+     * @param runnable The code to execute while the timestamp listeners are disabled
+     */
     public void withoutTimestamps(final Class clazz, final Runnable runnable)  {
         withoutDateCreated(clazz, new Runnable() {
             @Override
