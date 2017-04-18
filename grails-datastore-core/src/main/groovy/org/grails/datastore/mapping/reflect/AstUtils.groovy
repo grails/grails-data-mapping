@@ -21,19 +21,24 @@ import groovy.transform.TypeChecked
 import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.AnnotatedNode
 import org.codehaus.groovy.ast.AnnotationNode
+import org.codehaus.groovy.ast.ClassCodeExpressionTransformer
 import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
+import org.codehaus.groovy.ast.CodeVisitorSupport
 import org.codehaus.groovy.ast.GenericsType
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.PropertyNode
+import org.codehaus.groovy.ast.VariableScope
 import org.codehaus.groovy.ast.expr.ArgumentListExpression
+import org.codehaus.groovy.ast.expr.ClosureExpression
 import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.MapEntryExpression
 import org.codehaus.groovy.ast.expr.MapExpression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
+import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.tools.GeneralUtils
 import org.codehaus.groovy.classgen.VariableScopeVisitor
 import org.codehaus.groovy.control.Janitor
@@ -63,7 +68,6 @@ import static org.codehaus.groovy.ast.tools.GenericsUtils.correctToGenericsSpecR
 @CompileStatic
 class AstUtils {
     private static final String SPEC_CLASS = "spock.lang.Specification"
-    private static final Set<String> JUNIT_ANNOTATION_NAMES = new HashSet<String>(Arrays.asList("org.junit.Before", "org.junit.After"))
     private static final Class<?>[] EMPTY_JAVA_CLASS_ARRAY = []
     private static final Class<?>[] OBJECT_CLASS_ARG = [Object.class]
 
@@ -252,12 +256,11 @@ class AstUtils {
      * @return true if classNode is marked with annotationClass, otherwise false
      */
     static boolean hasAnnotation(final MethodNode methodNode, final Class<? extends Annotation> annotationClass) {
-        def classNode = new ClassNode(annotationClass)
-        return hasAnnotation(methodNode, classNode)
+        AstAnnotationUtils.hasAnnotation(methodNode, annotationClass)
     }
 
     static boolean hasAnnotation(MethodNode methodNode, ClassNode annotationClassNode) {
-        return !methodNode.getAnnotations(annotationClassNode).isEmpty()
+        AstAnnotationUtils.hasAnnotation(methodNode, annotationClassNode)
     }
 
     /**
@@ -277,12 +280,7 @@ class AstUtils {
      * @return True if it does
      */
     static boolean hasJunitAnnotation(MethodNode md) {
-        for (AnnotationNode annotation in md.getAnnotations()) {
-            if(JUNIT_ANNOTATION_NAMES.contains(annotation.getClassNode().getName())) {
-                return true
-            }
-        }
-        return false
+        AstAnnotationUtils.hasJunitAnnotation(md)
     }
 
 
@@ -293,17 +291,11 @@ class AstUtils {
      * @return true if classNode is marked with annotationClass, otherwise false
      */
     static boolean hasAnnotation(final MethodNode methodNode, String annotationClassName) {
-        List<AnnotationNode> annos = methodNode.getAnnotations()
-        for(ann in annos) {
-            if(ann.classNode.name == annotationClassName) return true
-        }
-        return false
+        AstAnnotationUtils.hasAnnotation(methodNode, annotationClassName)
     }
 
     static boolean hasAnnotation(List<AnnotationNode> annotationNodes, AnnotationNode annotationNode) {
-        return annotationNodes.any() { AnnotationNode ann ->
-            ann.classNode.equals(annotationNode.classNode)
-        }
+        AstAnnotationUtils.hasAnnotation(annotationNodes, annotationNode)
     }
 
 
@@ -313,12 +305,7 @@ class AstUtils {
      * @return true if classNode is marked with any of the annotations in annotationsToLookFor
      */
     static boolean hasAnyAnnotations(final ClassNode classNode, final Class<? extends Annotation>... annotationsToLookFor) {
-        for (Class<? extends Annotation> annotationClass : annotationsToLookFor) {
-            if(hasAnnotation(classNode, annotationClass)) {
-                return true
-            }
-        }
-        return false
+        AstAnnotationUtils.hasAnyAnnotations(classNode, annotationsToLookFor)
     }
 
     /**
@@ -328,7 +315,7 @@ class AstUtils {
      * @return true if classNode is marked with annotationClass, otherwise false
      */
     static boolean hasAnnotation(final ClassNode classNode, final Class<? extends Annotation> annotationClass) {
-        return !classNode.getAnnotations(new ClassNode(annotationClass)).isEmpty()
+        AstAnnotationUtils.hasAnnotation(classNode, annotationClass)
     }
 
     static Parameter[] copyParameters(Parameter[] parameterTypes) {
@@ -635,7 +622,7 @@ class AstUtils {
      * @param annotationClass The annotation class
      */
     static void addAnnotationIfNecessary(AnnotatedNode classNode, Class<? extends Annotation> annotationClass) {
-        addAnnotationOrGetExisting(classNode, annotationClass)
+        AstAnnotationUtils.addAnnotationIfNecessary(classNode, annotationClass)
     }
 
     /**
@@ -645,7 +632,7 @@ class AstUtils {
      * @param annotationClass The annotation class
      */
     static AnnotationNode addAnnotationOrGetExisting(AnnotatedNode classNode, Class<? extends Annotation> annotationClass) {
-        return addAnnotationOrGetExisting(classNode, annotationClass, Collections.<String, Object>emptyMap())
+        AstAnnotationUtils.addAnnotationOrGetExisting(classNode, annotationClass)
     }
 
     /**
@@ -662,51 +649,23 @@ class AstUtils {
      * @param annotationClass The annotation class
      */
     static AnnotationNode addAnnotationOrGetExisting(AnnotatedNode annotatedNode, Class<? extends Annotation> annotationClass, Map<String, Object> members) {
-        ClassNode annotationClassNode = ClassHelper.make(annotationClass)
-        return addAnnotationOrGetExisting(annotatedNode, annotationClassNode, members)
+        AstAnnotationUtils.addAnnotationOrGetExisting(annotatedNode, annotationClass, members)
     }
 
     static AnnotationNode addAnnotationOrGetExisting(AnnotatedNode annotatedNode, ClassNode annotationClassNode) {
-        return addAnnotationOrGetExisting(annotatedNode, annotationClassNode, Collections.<String, Object>emptyMap())
+        AstAnnotationUtils.addAnnotationOrGetExisting(annotatedNode, annotationClassNode)
     }
 
     static AnnotationNode addAnnotationOrGetExisting(AnnotatedNode annotatedNode, ClassNode annotationClassNode, Map<String, Object> members) {
-        List<AnnotationNode> annotations = annotatedNode.getAnnotations()
-        AnnotationNode annotationToAdd = new AnnotationNode(annotationClassNode)
-        if (annotations.isEmpty()) {
-            annotatedNode.addAnnotation(annotationToAdd)
-        }
-        else {
-            AnnotationNode existing = findAnnotation(annotationClassNode, annotations)
-            if (existing != null){
-                annotationToAdd = existing
-            }
-            else {
-                annotatedNode.addAnnotation(annotationToAdd)
-            }
-        }
-
-        if(members != null && !members.isEmpty()) {
-            for (Map.Entry<String, Object> memberEntry : members.entrySet()) {
-                Object value = memberEntry.getValue()
-                annotationToAdd.setMember( memberEntry.getKey(), value instanceof Expression ? (Expression)value : new ConstantExpression(value))
-            }
-        }
-        return annotationToAdd
+        AstAnnotationUtils.addAnnotationOrGetExisting(annotatedNode, annotationClassNode, members)
     }
 
     static AnnotationNode findAnnotation(AnnotatedNode classNode, Class<?> type) {
-        List<AnnotationNode> annotations = classNode.getAnnotations()
-        return annotations == null ? null : findAnnotation(new ClassNode(type),annotations)
+        AstAnnotationUtils.findAnnotation(classNode, type)
     }
 
     static AnnotationNode findAnnotation(AnnotatedNode annotationClassNode, List<AnnotationNode> annotations) {
-        for (AnnotationNode annotation : annotations) {
-            if (annotation.getClassNode().equals(annotationClassNode)) {
-                return annotation
-            }
-        }
-        return null
+        AstAnnotationUtils.findAnnotation(annotationClassNode, annotations)
     }
 
     /**
@@ -867,5 +826,51 @@ class AstUtils {
             me.addMapEntryExpression(new MapEntryExpression(GeneralUtils.constX(entry.key), entry.value))
         }
         return me
+    }
+
+    /**
+     * Makes a closure aware of the given methods arguments
+     *
+     * @param methodNode The method
+     * @param closure The existing closure
+     * @return A new closure aware of the method arguments
+     */
+    static ClosureExpression makeClosureAwareOfArguments(MethodNode methodNode, ClosureExpression closure) {
+        // make a copy
+        ClosureExpression closureExpression = new ClosureExpression(closure.parameters, closure.code)
+        closure.setCode(new BlockStatement())
+        VariableScope scope = methodNode.variableScope
+        closureExpression.setVariableScope(scope)
+        if (scope != null) {
+            for (Parameter p in methodNode.parameters) {
+                p.setClosureSharedVariable(true)
+                scope.putReferencedLocalVariable(p)
+                scope.putDeclaredVariable(p)
+            }
+        }
+
+        CodeVisitorSupport variableTransformer = new ClassCodeExpressionTransformer() {
+            @Override
+            protected SourceUnit getSourceUnit() {
+                methodNode.declaringClass.module.context
+            }
+
+            @Override
+            Expression transform(Expression exp) {
+                if (exp instanceof VariableExpression) {
+                    VariableExpression var = (VariableExpression) exp
+                    def local = scope.getReferencedLocalVariable(var.name)
+                    if (local != null) {
+                        def newExpr = new VariableExpression(local)
+                        newExpr.setClosureSharedVariable(true)
+                        newExpr.setAccessedVariable(local)
+                        return newExpr
+                    }
+                }
+                return super.transform(exp)
+            }
+        }
+        variableTransformer.visitClosureExpression(closureExpression)
+        return closureExpression
     }
 }

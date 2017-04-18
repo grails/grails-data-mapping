@@ -55,41 +55,8 @@ abstract class AbstractWhereImplementer extends AbstractReadOperationImplementer
         SourceUnit sourceUnit = abstractMethodNode.declaringClass.module.context
         if(expr instanceof ClosureExpression) {
             ClosureExpression originalClosureExpression = (ClosureExpression) expr
-            // make a copy
-            ClosureExpression closureExpression = new ClosureExpression(originalClosureExpression.parameters, originalClosureExpression.code)
-            originalClosureExpression.setCode(new BlockStatement())
-            VariableScope scope = newMethodNode.variableScope
-            closureExpression.setVariableScope(scope)
-            if(scope != null) {
-                for(Parameter p in newMethodNode.parameters) {
-                    p.setClosureSharedVariable(true)
-                    scope.putReferencedLocalVariable(p)
-                    scope.putDeclaredVariable(p)
-                }
-            }
+            ClosureExpression closureExpression = AstUtils.makeClosureAwareOfArguments(newMethodNode, originalClosureExpression)
             DetachedCriteriaTransformer transformer = new DetachedCriteriaTransformer(sourceUnit)
-            CodeVisitorSupport variableTransformer = new ClassCodeExpressionTransformer() {
-                @Override
-                protected SourceUnit getSourceUnit() {
-                    sourceUnit
-                }
-
-                @Override
-                Expression transform(Expression exp) {
-                    if(exp instanceof VariableExpression) {
-                        VariableExpression var = (VariableExpression)exp
-                        def local = scope.getReferencedLocalVariable(var.name)
-                        if(local != null) {
-                            def newExpr = new VariableExpression(local)
-                            newExpr.setClosureSharedVariable(true)
-                            newExpr.setAccessedVariable(local)
-                            return newExpr
-                        }
-                    }
-                    return super.transform(exp)
-                }
-            }
-            variableTransformer.visitClosureExpression(closureExpression)
             transformer.transformClosureExpression( domainClassNode, closureExpression)
 
             BlockStatement body = (BlockStatement)newMethodNode.getCode()
@@ -120,6 +87,7 @@ abstract class AbstractWhereImplementer extends AbstractReadOperationImplementer
             AstUtils.error(sourceUnit, annotationNode, "@Where value must be a closure")
         }
     }
+
 
     protected ClassNode getDetachedCriteriaType(ClassNode domainClassNode) {
         ClassHelper.make(DetachedCriteria)
