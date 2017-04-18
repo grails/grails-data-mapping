@@ -544,47 +544,53 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>static&nbsp;org.codehaus.groovy.ast.expr.ClosureExpression</code></td>
+                            <td class="colLast"><code><strong><a href="#makeClosureAwareOfArguments(org.codehaus.groovy.ast.MethodNode, org.codehaus.groovy.ast.expr.ClosureExpression)">makeClosureAwareOfArguments</a></strong>(org.codehaus.groovy.ast.MethodNode methodNode, org.codehaus.groovy.ast.expr.ClosureExpression closure)</code><br>Makes a closure aware of the given methods arguments</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.codehaus.groovy.ast.expr.MapExpression</code></td>
                             <td class="colLast"><code><strong><a href="#mapX(Map<String, ? extends Expression>)">mapX</a></strong>(java.util.Map&lt;java.lang.String, ? extends org.codehaus.groovy.ast.expr.Expression&gt; map)</code><br>Builds a map</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.codehaus.groovy.ast.ClassNode</code></td>
                             <td class="colLast"><code><strong><a href="#nonGeneric(org.codehaus.groovy.ast.ClassNode)">nonGeneric</a></strong>(org.codehaus.groovy.ast.ClassNode type)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.codehaus.groovy.ast.ClassNode</code></td>
                             <td class="colLast"><code><strong><a href="#nonGeneric(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.ClassNode)">nonGeneric</a></strong>(org.codehaus.groovy.ast.ClassNode type, org.codehaus.groovy.ast.ClassNode wildcardReplacement)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#processVariableScopes(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)">processVariableScopes</a></strong>(org.codehaus.groovy.control.SourceUnit source, org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.MethodNode methodNode)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.codehaus.groovy.ast.ClassNode</code></td>
                             <td class="colLast"><code><strong><a href="#replaceGenericsPlaceholders(org.codehaus.groovy.ast.ClassNode, Map<String, ClassNode>)">replaceGenericsPlaceholders</a></strong>(org.codehaus.groovy.ast.ClassNode type, java.util.Map&lt;java.lang.String, org.codehaus.groovy.ast.ClassNode&gt; genericsPlaceholders)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.codehaus.groovy.ast.ClassNode</code></td>
                             <td class="colLast"><code><strong><a href="#replaceGenericsPlaceholders(org.codehaus.groovy.ast.ClassNode, Map<String, ClassNode>, org.codehaus.groovy.ast.ClassNode)">replaceGenericsPlaceholders</a></strong>(org.codehaus.groovy.ast.ClassNode type, java.util.Map&lt;java.lang.String, org.codehaus.groovy.ast.ClassNode&gt; genericsPlaceholders, org.codehaus.groovy.ast.ClassNode defaultPlaceholder)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.codehaus.groovy.ast.expr.VariableExpression</code></td>
                             <td class="colLast"><code><strong><a href="#varThis()">varThis</a></strong>()</code><br>@return A new this variable</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#warning(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ASTNode, java.lang.String)">warning</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, org.codehaus.groovy.ast.ASTNode node, java.lang.String warningMessage)</code><br></td>
@@ -1188,6 +1194,15 @@ static&nbsp;boolean <strong>isDomainClass</strong>(org.codehaus.groovy.ast.Class
                             <li class="blockList">
                                 <h4>static&nbsp;boolean <strong>isSubclassOfOrImplementsInterface</strong>(org.codehaus.groovy.ast.ClassNode childClass, java.lang.String superClassName)</h4>
                                 <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="makeClosureAwareOfArguments(org.codehaus.groovy.ast.MethodNode, org.codehaus.groovy.ast.expr.ClosureExpression)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;org.codehaus.groovy.ast.expr.ClosureExpression <strong>makeClosureAwareOfArguments</strong>(org.codehaus.groovy.ast.MethodNode methodNode, org.codehaus.groovy.ast.expr.ClosureExpression closure)</h4>
+                                <p> Makes a closure aware of the given methods arguments
+     <DL><DT><B>Returns:</B></DT><DD>A new closure aware of the method arguments</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>methodNode</code> -  The method</DD><DD><code>closure</code> -  The existing closure</DD></DL></p>
                             </li>
                         </ul>
                     
