@@ -100,6 +100,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 
 
     <p> In order to support all versions of Hibernate 5.x we have to create proxy factories dynamically
+
+ This class is full of horrible hacks that we can remove when support for Hibernate versions below 5.2 is dropped.
  <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>6.1</DD></DL></p>
 
           </li>
@@ -140,11 +142,6 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>static&nbsp;org.hibernate.proxy.HibernateProxy</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#createProxy(java.lang.String, Class<?>, Class<?>, java.io.Serializable, java.lang.reflect.Method, java.lang.reflect.Method, org.hibernate.type.CompositeType, java.lang.Object, boolean)">createProxy</a></strong>(java.lang.String entityName, java.lang.Class&lt;?&gt; persistentClass, java.lang.Class&lt;?&gt;[] interfaces, java.io.Serializable id, java.lang.reflect.Method getIdentifierMethod, java.lang.reflect.Method setIdentifierMethod, org.hibernate.type.CompositeType componentIdType, java.lang.Object sessionObject, boolean overridesEquals)</code><br>Creates a proxy factory dynamically at runtime</td>
-                        </tr>
-                        
-                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;org.hibernate.proxy.ProxyFactory</strong></code></td>
                             <td class="colLast"><code><strong><a href="#createProxyFactory()">createProxyFactory</a></strong>()</code><br>@return Dynamically builds the proxy factory</td>
                         </tr>
@@ -198,16 +195,6 @@ if (location.href.indexOf('is-external=true') == -1) {
                     <!--   -->
                 </a>
                     <h3>Method Detail</h3>
-                    
-                        <a name="createProxy(java.lang.String, Class<?>, Class<?>, java.io.Serializable, java.lang.reflect.Method, java.lang.reflect.Method, org.hibernate.type.CompositeType, java.lang.Object, boolean)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>@groovy.transform.CompileDynamic
-static&nbsp;org.hibernate.proxy.HibernateProxy <strong>createProxy</strong>(java.lang.String entityName, java.lang.Class&lt;?&gt; persistentClass, java.lang.Class&lt;?&gt;[] interfaces, java.io.Serializable id, java.lang.reflect.Method getIdentifierMethod, java.lang.reflect.Method setIdentifierMethod, org.hibernate.type.CompositeType componentIdType, java.lang.Object sessionObject, boolean overridesEquals)</h4>
-                                <p> Creates a proxy factory dynamically at runtime
-     <DL><DT><B>Returns:</B></DT><DD>The proxy factory instance</DD></DL></p>
-                            </li>
-                        </ul>
                     
                         <a name="createProxyFactory()"><!-- --></a>
                         <ul class="blockListLast">
