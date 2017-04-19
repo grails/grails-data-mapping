@@ -56,6 +56,8 @@ import java.lang.annotation.Annotation
 import java.lang.reflect.Modifier
 import java.util.regex.Pattern
 
+import static org.codehaus.groovy.ast.ClassHelper.int_TYPE
+import static org.codehaus.groovy.ast.ClassHelper.make
 import static org.codehaus.groovy.ast.tools.GenericsUtils.correctToGenericsSpecRecurse
 
 
@@ -732,8 +734,36 @@ class AstUtils {
         return false
     }
 
+    /**
+     * Whether the given class node implements the given interface name
+     *
+     * @param classNode The class node
+     * @param interfaceName The interface name
+     * @return True if it does
+     */
     static boolean implementsInterface(ClassNode classNode, String interfaceName) {
-        return findInterface(classNode, interfaceName) != null
+        ClassNode interfaceNode = make(interfaceName)
+        return implementsInterface(classNode, interfaceNode)
+    }
+    /**
+     * Whether the given class node implements the given interface node
+     *
+     * @param classNode The class node
+     * @param itfc The interface
+     * @return True if it does
+     */
+    static boolean implementsInterface(ClassNode classNode, Class itfc) {
+        return classNode.getAllInterfaces().contains(make(itfc))
+    }
+    /**
+     * Whether the given class node implements the given interface node
+     *
+     * @param classNode The class node
+     * @param interfaceName The interface node
+     * @return True if it does
+     */
+    static boolean implementsInterface(ClassNode classNode, ClassNode interfaceNode) {
+        return classNode.getAllInterfaces().contains(interfaceNode)
     }
 
     /**
