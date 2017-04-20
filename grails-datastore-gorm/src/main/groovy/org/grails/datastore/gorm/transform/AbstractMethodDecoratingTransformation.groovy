@@ -29,6 +29,7 @@ import org.codehaus.groovy.transform.trait.Traits
 
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
+import java.beans.Introspector
 import java.lang.reflect.Modifier
 
 import static org.codehaus.groovy.ast.ClassHelper.*
@@ -154,7 +155,16 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
 
 
         // Move the existing logic into a new method called "$tt_methodName()"
-        String renamedMethodName = getRenamedMethodPrefix() + methodNode.getName()
+        String renamedMethodName
+        ClassNode superClass = classNode.getSuperClass()
+        MethodNode superMethod = superClass?.getMethod(methodNode.name, methodNode.parameters)
+        if(superMethod != null) {
+            renamedMethodName = getRenamedMethodPrefix() + Introspector.decapitalize(classNode.nameWithoutPackage) + '_' + methodNode.getName()
+        }
+        else {
+            renamedMethodName = getRenamedMethodPrefix() + methodNode.getName()
+        }
+
         Parameter[] newParameters = prepareNewMethodParameters(methodNode, GenericsUtils.addMethodGenerics(methodNode, genericsSpec) )
         MethodNode renamedMethod = moveOriginalCodeToNewMethod(methodNode, renamedMethodName, newParameters, classNode, sourceUnit, genericsSpec)
         MethodCallExpression originalMethodCall = buildCallToOriginalMethod(classNode, renamedMethod)
@@ -265,6 +275,7 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
 
     protected MethodNode moveOriginalCodeToNewMethod(MethodNode methodNode, String renamedMethodName, Parameter[] newParameters, ClassNode classNode, SourceUnit source, Map<String, ClassNode> genericsSpec) {
         Statement body = methodNode.code
+
         MethodNode renamedMethodNode = new MethodNode(
                 renamedMethodName,
                 Modifier.PROTECTED, resolveReturnTypeForNewMethod(methodNode),

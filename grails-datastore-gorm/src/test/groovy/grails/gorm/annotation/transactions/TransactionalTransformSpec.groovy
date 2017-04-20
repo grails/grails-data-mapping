@@ -2,6 +2,7 @@ package grails.gorm.annotation.transactions
 
 
 import grails.core.DefaultGrailsApplication
+import grails.gorm.transactions.Transactional
 import grails.spring.BeanBuilder
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import org.grails.datastore.mapping.core.Datastore
@@ -30,6 +31,36 @@ import java.lang.reflect.Field
 /**
  */
 class TransactionalTransformSpec extends Specification {
+
+    void "test child method that calls super"() {
+        when:"A service uses a generic argument"
+        def (parent, child) = new GroovyShell().evaluate('''
+import grails.gorm.transactions.Transactional
+import groovy.transform.CompileStatic
+
+abstract class ParentService {
+
+    @Transactional
+    String doSomething(String arg) {
+        "parent $arg"
+    }
+
+}
+class ChildService extends ParentService {
+
+    @Transactional
+    String doSomething(String arg) {
+        super.doSomething(arg)
+    }
+
+}
+
+[ParentService, ChildService]
+''')
+        then:
+        parent.getMethod("doSomething", String).getAnnotation(Transactional)
+        child.getMethod("doSomething", String).getAnnotation(Transactional)
+    }
 
     void "test transactional transform with generics"() {
         when:"A service uses a generic argument"
