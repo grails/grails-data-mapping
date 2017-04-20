@@ -5712,6 +5712,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/GrailsHibernateTransactionManager.html" title="Class in org.grails.orm.hibernate">GrailsHibernateTransactionManager</a></span> - Class in <a href="./org/grails/orm/hibernate/package-summary.html">org.grails.orm.hibernate</a>
 </dt><dd><div class="block">Extends the standard class to always set the flush mode to manual when in a read-only transaction.</div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/GrailsHibernateTransactionManager.html#GrailsHibernateTransactionManager(org.hibernate.SessionFactory, javax.sql.DataSource, org.hibernate.FlushMode)" title="Constructor in GrailsHibernateTransactionManager">GrailsHibernateTransactionManager(SessionFactory, DataSource, FlushMode)</a></span> - Constructor in <a href="org/grails/orm/hibernate/GrailsHibernateTransactionManager.html">GrailsHibernateTransactionManager</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/cfg/GrailsHibernateUtil.html" title="Class in org.grails.orm.hibernate.cfg">GrailsHibernateUtil</a></span> - Class in <a href="./org/grails/orm/hibernate/cfg/package-summary.html">org.grails.orm.hibernate.cfg</a>
 </dt><dd><div class="block">Utility methods for configuring Hibernate inside Grails.</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/cfg/GrailsIdentifierGeneratorFactory.html" title="Class in org.grails.orm.hibernate.cfg">GrailsIdentifierGeneratorFactory</a></span> - Class in <a href="./org/grails/orm/hibernate/cfg/package-summary.html">org.grails.orm.hibernate.cfg</a>
@@ -5930,6 +5932,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/Datastore.html#hasCurrentSession()" title="Method in Datastore">hasCurrentSession()</a></span> - Method in <a href="org/grails/datastore/mapping/core/Datastore.html">Datastore</a>
 </dt><dd> <div class="block">Checks if there is a current session.</div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/HibernateDatastore.html#hasCurrentSession()" title="Method in HibernateDatastore">hasCurrentSession()</a></span> - Method in <a href="org/grails/orm/hibernate/HibernateDatastore.html">HibernateDatastore</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormValidationApi.html#hasDatastore" title="Field in GormValidationApi">hasDatastore</a></span> - Field in <a href="org/grails/datastore/gorm/GormValidationApi.html">GormValidationApi</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/events/AutoTimestampEventListener.html#hasDateCreated(java.lang.String)" title="Method in AutoTimestampEventListener">hasDateCreated(String)</a></span> - Method in <a href="org/grails/datastore/gorm/events/AutoTimestampEventListener.html">AutoTimestampEventListener</a>
@@ -6343,8 +6347,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="grails/gorm/services/Service.html#implementers" title="Field in Service">implementers</a></span> - Field in <a href="grails/gorm/services/Service.html">Service</a>
 </dt><dd> <div class="block">
  @default {}<DL><DT><B>Returns:</B></DT><DD>Any additional implementers to apply</DD></DL></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/AstUtils.html#implementsInterface(org.codehaus.groovy.ast.ClassNode, java.lang.String)" title="Method in AstUtils">implementsInterface(ClassNode, String)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/AstUtils.html">AstUtils</a>
-</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/AstUtils.html#implementsInterface(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.ClassNode)" title="Method in AstUtils">implementsInterface(ClassNode, ClassNode)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/AstUtils.html">AstUtils</a>
+</dt><dd> <div class="block">Whether the given class node implements the given interface node</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/AstUtils.html#implementsOrInheritsZeroArgMethod(org.codehaus.groovy.ast.ClassNode, java.lang.String)" title="Method in AstUtils">implementsOrInheritsZeroArgMethod(ClassNode, String)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/AstUtils.html">AstUtils</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/AstUtils.html#implementsZeroArgMethod(org.codehaus.groovy.ast.ClassNode, java.lang.String)" title="Method in AstUtils">implementsZeroArgMethod(ClassNode, String)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/AstUtils.html">AstUtils</a>
@@ -10158,8 +10162,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/Session.html#setFlushMode(javax.persistence.FlushModeType)" title="Method in Session">setFlushMode(FlushModeType)</a></span> - Method in <a href="org/grails/datastore/mapping/core/Session.html">Session</a>
 </dt><dd> <div class="block">The flush mode, defaults to FlushModeType.AUTO</div></dd>
-<dt><span class="strong"><a href="org/grails/orm/hibernate/GrailsHibernateTransactionManager.html#setFlushModeManual(def)" title="Method in GrailsHibernateTransactionManager">setFlushModeManual(def)</a></span> - Method in <a href="org/grails/orm/hibernate/GrailsHibernateTransactionManager.html">GrailsHibernateTransactionManager</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/InstanceApiHelper.html#setFlushModeManual()" title="Method in InstanceApiHelper">setFlushModeManual()</a></span> - Method in <a href="org/grails/orm/hibernate/InstanceApiHelper.html">InstanceApiHelper</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/ToOne.html#setForeignKeyInChild(boolean)" title="Method in ToOne">setForeignKeyInChild(boolean)</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/ToOne.html">ToOne</a>
@@ -10266,6 +10268,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Obtains an objects identifer</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/AbstractHibernateGormInstanceApi.html#setObjectToReadOnly(java.lang.Object)" title="Method in AbstractHibernateGormInstanceApi">setObjectToReadOnly(Object)</a></span> - Method in <a href="org/grails/orm/hibernate/AbstractHibernateGormInstanceApi.html">AbstractHibernateGormInstanceApi</a>
 </dt><dd> <div class="block">Sets the target object to read-only using the given SessionFactory instance. </div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/HibernateGormInstanceApi.html#setObjectToReadOnly(java.lang.Object)" title="Method in HibernateGormInstanceApi">setObjectToReadOnly(Object)</a></span> - Method in <a href="org/grails/orm/hibernate/HibernateGormInstanceApi.html">HibernateGormInstanceApi</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/AbstractHibernateGormInstanceApi.html#setObjectToReadWrite(java.lang.Object)" title="Method in AbstractHibernateGormInstanceApi">setObjectToReadWrite(Object)</a></span> - Method in <a href="org/grails/orm/hibernate/AbstractHibernateGormInstanceApi.html">AbstractHibernateGormInstanceApi</a>
 </dt><dd> <div class="block">Sets the target object to read-write, allowing Hibernate to dirty check it and auto-flush changes.</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/cfg/GrailsHibernateUtil.html#setObjectToReadWrite(java.lang.Object, org.hibernate.SessionFactory)" title="Method in GrailsHibernateUtil">setObjectToReadWrite(Object, SessionFactory)</a></span> - Method in <a href="org/grails/orm/hibernate/cfg/GrailsHibernateUtil.html">GrailsHibernateUtil</a>
@@ -11445,7 +11449,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/AbstractHibernateDatastore.html#withFlushMode(org.grails.orm.hibernate.AbstractHibernateDatastore.FlushMode, Callable<Boolean>)" title="Method in AbstractHibernateDatastore">withFlushMode(AbstractHibernateDatastore.FlushMode, Callable&lt;Boolean&gt;)</a></span> - Method in <a href="org/grails/orm/hibernate/AbstractHibernateDatastore.html">AbstractHibernateDatastore</a>
 </dt><dd> <div class="block">Execute the given operation with the given flush mode</div></dd>
-<dt><span class="strong"><a href="org/grails/orm/hibernate/HibernateDatastore.html#withFlushMode(FlushMode, Callable<Boolean>)" title="Method in HibernateDatastore">withFlushMode(FlushMode, Callable&lt;Boolean&gt;)</a></span> - Method in <a href="org/grails/orm/hibernate/HibernateDatastore.html">HibernateDatastore</a>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/HibernateDatastore.html#withFlushMode(org.hibernate.FlushMode, Callable<Boolean>)" title="Method in HibernateDatastore">withFlushMode(FlushMode, Callable&lt;Boolean&gt;)</a></span> - Method in <a href="org/grails/orm/hibernate/HibernateDatastore.html">HibernateDatastore</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/DefaultTenantService.html#withId(java.io.Serializable, Closure<T>)" title="Method in DefaultTenantService">withId(Serializable, Closure&lt;T&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/services/DefaultTenantService.html">DefaultTenantService</a>
 </dt><dd> <div class="block"></div></dd>

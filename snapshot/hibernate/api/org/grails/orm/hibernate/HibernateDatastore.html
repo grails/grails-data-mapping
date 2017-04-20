@@ -370,33 +370,38 @@ extends <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code>boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#hasCurrentSession()">hasCurrentSession</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;<a href='../../../../org/grails/orm/hibernate/HibernateGormEnhancer.html'>HibernateGormEnhancer</a></strong></code></td>
                             <td class="colLast"><code><strong><a href="#initialize()">initialize</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>org.hibernate.Session</strong></code></td>
                             <td class="colLast"><code><strong><a href="#openSession()">openSession</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#registerEventListeners(org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher)">registerEventListeners</a></strong>(<a href='../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#setApplicationContext(org.springframework.context.ApplicationContext)">setApplicationContext</a></strong>(org.springframework.context.ApplicationContext applicationContext)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#setMessageSource(org.springframework.context.MessageSource)">setMessageSource</a></strong>(org.springframework.context.MessageSource messageSource)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#withFlushMode(FlushMode, Callable<Boolean>)">withFlushMode</a></strong>(<a href='../../../../FlushMode.html'>FlushMode</a> flushMode, java.util.concurrent.Callable&lt;java.lang.Boolean&gt; callable)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#withFlushMode(org.hibernate.FlushMode, Callable<Boolean>)">withFlushMode</a></strong>(org.hibernate.FlushMode flushMode, java.util.concurrent.Callable&lt;java.lang.Boolean&gt; callable)</code><br></td>
                         </tr>
                         
                     </table>
@@ -732,6 +737,15 @@ public&nbsp;<a href='../../../../org/grails/orm/hibernate/cfg/HibernateMappingCo
                             </li>
                         </ul>
                     
+                        <a name="hasCurrentSession()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Override
+public&nbsp;boolean <strong>hasCurrentSession</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="initialize()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -774,11 +788,11 @@ public&nbsp;void <strong>setMessageSource</strong>(org.springframework.context.M
                             </li>
                         </ul>
                     
-                        <a name="withFlushMode(FlushMode, Callable<Boolean>)"><!-- --></a>
+                        <a name="withFlushMode(org.hibernate.FlushMode, Callable<Boolean>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-public&nbsp;void <strong>withFlushMode</strong>(<a href='../../../../FlushMode.html'>FlushMode</a> flushMode, java.util.concurrent.Callable&lt;java.lang.Boolean&gt; callable)</h4>
+public&nbsp;void <strong>withFlushMode</strong>(org.hibernate.FlushMode flushMode, java.util.concurrent.Callable&lt;java.lang.Boolean&gt; callable)</h4>
                                 <p></p>
                             </li>
                         </ul>
