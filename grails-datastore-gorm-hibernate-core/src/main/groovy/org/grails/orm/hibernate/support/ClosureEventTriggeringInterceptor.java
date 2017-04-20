@@ -52,16 +52,46 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     //    private final Logger log = LoggerFactory.getLogger(getClass());
     private static final long serialVersionUID = 1;
 
-    public static final String ONLOAD_EVENT = "onLoad";
-    public static final String ONLOAD_SAVE = "onSave";
-    public static final String BEFORE_LOAD_EVENT = "beforeLoad";
-    public static final String BEFORE_INSERT_EVENT = "beforeInsert";
-    public static final String AFTER_INSERT_EVENT = "afterInsert";
-    public static final String BEFORE_UPDATE_EVENT = "beforeUpdate";
-    public static final String AFTER_UPDATE_EVENT = "afterUpdate";
-    public static final String BEFORE_DELETE_EVENT = "beforeDelete";
-    public static final String AFTER_DELETE_EVENT = "afterDelete";
-    public static final String AFTER_LOAD_EVENT = "afterLoad";
+    /**
+     * @deprecated Use {@link AbstractPersistenceEvent#ONLOAD_EVENT} instead
+     */
+    public static final String ONLOAD_EVENT = AbstractPersistenceEvent.ONLOAD_EVENT;
+    /**
+     * @deprecated Use {@link AbstractPersistenceEvent#ONLOAD_SAVE} instead
+     */
+    public static final String ONLOAD_SAVE = AbstractPersistenceEvent.ONLOAD_SAVE;
+    /**
+     * @deprecated Use {@link AbstractPersistenceEvent#BEFORE_LOAD_EVENT} instead
+     */
+    public static final String BEFORE_LOAD_EVENT = AbstractPersistenceEvent.BEFORE_LOAD_EVENT;
+    /**
+     * @deprecated Use {@link AbstractPersistenceEvent#BEFORE_INSERT_EVENT} instead
+     */
+    public static final String BEFORE_INSERT_EVENT = AbstractPersistenceEvent.BEFORE_INSERT_EVENT;
+    /**
+     * @deprecated Use {@link AbstractPersistenceEvent#AFTER_INSERT_EVENT} instead
+     */
+    public static final String AFTER_INSERT_EVENT = AbstractPersistenceEvent.AFTER_INSERT_EVENT;
+    /**
+     * @deprecated Use {@link AbstractPersistenceEvent#BEFORE_UPDATE_EVENT} instead
+     */
+    public static final String BEFORE_UPDATE_EVENT = AbstractPersistenceEvent.BEFORE_UPDATE_EVENT;
+    /**
+     * @deprecated Use {@link AbstractPersistenceEvent#AFTER_UPDATE_EVENT} instead
+     */
+    public static final String AFTER_UPDATE_EVENT = AbstractPersistenceEvent.AFTER_UPDATE_EVENT;
+    /**
+     * @deprecated Use {@link AbstractPersistenceEvent#BEFORE_DELETE_EVENT} instead
+     */
+    public static final String BEFORE_DELETE_EVENT = AbstractPersistenceEvent.BEFORE_DELETE_EVENT;
+    /**
+     * @deprecated Use {@link AbstractPersistenceEvent#AFTER_DELETE_EVENT} instead
+     */
+    public static final String AFTER_DELETE_EVENT = AbstractPersistenceEvent.AFTER_DELETE_EVENT;
+    /**
+     * @deprecated Use {@link AbstractPersistenceEvent#AFTER_LOAD_EVENT} instead
+     */
+    public static final String AFTER_LOAD_EVENT = AbstractPersistenceEvent.AFTER_LOAD_EVENT;
 
     protected AbstractHibernateDatastore datastore;
     protected ConfigurableApplicationEventPublisher eventPublisher;
@@ -225,7 +255,7 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     }
 
     @Deprecated
-    public static final void addNullabilityCheckerPreInsertEventListener(EventListenerRegistry listenerRegistry) {
+    public static void addNullabilityCheckerPreInsertEventListener(EventListenerRegistry listenerRegistry) {
         listenerRegistry.getEventListenerGroup(EventType.PRE_INSERT).appendListener(NULLABILITY_CHECKER_INSTANCE);
     }
 

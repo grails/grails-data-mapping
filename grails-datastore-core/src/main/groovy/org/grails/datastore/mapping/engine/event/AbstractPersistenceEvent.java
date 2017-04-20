@@ -30,6 +30,17 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 @SuppressWarnings("serial")
 public abstract class AbstractPersistenceEvent extends ApplicationEvent {
 
+    public static final String ONLOAD_EVENT = "onLoad";
+    public static final String ONLOAD_SAVE = "onSave";
+    public static final String BEFORE_LOAD_EVENT = "beforeLoad";
+    public static final String BEFORE_INSERT_EVENT = "beforeInsert";
+    public static final String AFTER_INSERT_EVENT = "afterInsert";
+    public static final String BEFORE_UPDATE_EVENT = "beforeUpdate";
+    public static final String AFTER_UPDATE_EVENT = "afterUpdate";
+    public static final String BEFORE_DELETE_EVENT = "beforeDelete";
+    public static final String AFTER_DELETE_EVENT = "afterDelete";
+    public static final String AFTER_LOAD_EVENT = "afterLoad";
+
     private final PersistentEntity entity;
     private final Object entityObject;
     private final EntityAccess entityAccess;

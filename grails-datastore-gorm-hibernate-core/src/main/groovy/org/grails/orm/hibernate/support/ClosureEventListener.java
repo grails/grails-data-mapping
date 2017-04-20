@@ -22,6 +22,7 @@ import org.grails.datastore.gorm.GormValidateable;
 import org.grails.datastore.gorm.support.BeforeValidateHelper.BeforeValidateEventTriggerCaller;
 import org.grails.datastore.gorm.support.EventTriggerCaller;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
+import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
 import org.grails.datastore.mapping.engine.event.ValidationEvent;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
@@ -94,22 +95,22 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
         Class domainClazz = persistentEntity.getJavaClass();
         this.domainMetaClass = GroovySystem.getMetaClassRegistry().getMetaClass(domainClazz);
         this.isMultiTenant = ClassUtils.isMultiTenant(domainClazz);
-        saveOrUpdateCaller = buildCaller(ClosureEventTriggeringInterceptor.ONLOAD_SAVE, domainClazz);
-        beforeInsertCaller = buildCaller(ClosureEventTriggeringInterceptor.BEFORE_INSERT_EVENT, domainClazz);
-        EventTriggerCaller preLoadEventCaller = buildCaller(ClosureEventTriggeringInterceptor.ONLOAD_EVENT, domainClazz);
+        saveOrUpdateCaller = buildCaller(AbstractPersistenceEvent.ONLOAD_SAVE, domainClazz);
+        beforeInsertCaller = buildCaller(AbstractPersistenceEvent.BEFORE_INSERT_EVENT, domainClazz);
+        EventTriggerCaller preLoadEventCaller = buildCaller(AbstractPersistenceEvent.ONLOAD_EVENT, domainClazz);
         if (preLoadEventCaller  == null) {
-            this.preLoadEventCaller = buildCaller(ClosureEventTriggeringInterceptor.BEFORE_LOAD_EVENT, domainClazz);
+            this.preLoadEventCaller = buildCaller(AbstractPersistenceEvent.BEFORE_LOAD_EVENT, domainClazz);
         }
         else {
             this.preLoadEventCaller = preLoadEventCaller;
         }
 
-        postLoadEventListener = buildCaller(ClosureEventTriggeringInterceptor.AFTER_LOAD_EVENT, domainClazz);
-        postInsertEventListener = buildCaller(ClosureEventTriggeringInterceptor.AFTER_INSERT_EVENT, domainClazz);
-        postUpdateEventListener = buildCaller(ClosureEventTriggeringInterceptor.AFTER_UPDATE_EVENT, domainClazz);
-        postDeleteEventListener = buildCaller(ClosureEventTriggeringInterceptor.AFTER_DELETE_EVENT, domainClazz);
-        preDeleteEventListener = buildCaller(ClosureEventTriggeringInterceptor.BEFORE_DELETE_EVENT, domainClazz);
-        preUpdateEventListener = buildCaller(ClosureEventTriggeringInterceptor.BEFORE_UPDATE_EVENT, domainClazz);
+        postLoadEventListener = buildCaller(AbstractPersistenceEvent.AFTER_LOAD_EVENT, domainClazz);
+        postInsertEventListener = buildCaller(AbstractPersistenceEvent.AFTER_INSERT_EVENT, domainClazz);
+        postUpdateEventListener = buildCaller(AbstractPersistenceEvent.AFTER_UPDATE_EVENT, domainClazz);
+        postDeleteEventListener = buildCaller(AbstractPersistenceEvent.AFTER_DELETE_EVENT, domainClazz);
+        preDeleteEventListener = buildCaller(AbstractPersistenceEvent.BEFORE_DELETE_EVENT, domainClazz);
+        preUpdateEventListener = buildCaller(AbstractPersistenceEvent.BEFORE_UPDATE_EVENT, domainClazz);
 
         beforeValidateEventListener = new BeforeValidateEventTriggerCaller(domainClazz, domainMetaClass);
 
