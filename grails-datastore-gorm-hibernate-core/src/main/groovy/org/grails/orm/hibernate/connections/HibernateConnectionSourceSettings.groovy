@@ -257,7 +257,7 @@ class HibernateConnectionSourceSettings extends ConnectionSourceSettings {
             /**
              * The default flush mode
              */
-            FlushMode mode = FlushMode.MANUAL
+            FlushMode mode = FlushMode.COMMIT
 
             /**
              * We use a separate enum here because the classes differ between Hibernate 3 and 4
@@ -268,16 +268,16 @@ class HibernateConnectionSourceSettings extends ConnectionSourceSettings {
                 MANUAL(0),
                 COMMIT(5),
                 AUTO(10),
-                ALWAYS(20);
+                ALWAYS(20)
 
-                private final int level;
+                private final int level
 
                 FlushMode(int level) {
-                    this.level = level;
+                    this.level = level
                 }
 
-                public int getLevel() {
-                    return level;
+                int getLevel() {
+                    return level
                 }
             }
         }
