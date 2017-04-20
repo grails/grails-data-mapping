@@ -449,7 +449,19 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#implementsInterface(org.codehaus.groovy.ast.ClassNode, java.lang.String)">implementsInterface</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.String interfaceName)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#implementsInterface(org.codehaus.groovy.ast.ClassNode, java.lang.String)">implementsInterface</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.String interfaceName)</code><br>Whether the given class node implements the given interface name</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>static&nbsp;boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#implementsInterface(org.codehaus.groovy.ast.ClassNode, java.lang.Class)">implementsInterface</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.Class itfc)</code><br>Whether the given class node implements the given interface node</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>static&nbsp;boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#implementsInterface(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.ClassNode)">implementsInterface</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.ClassNode interfaceNode)</code><br>Whether the given class node implements the given interface node</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -1064,7 +1076,26 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>static&nbsp;boolean <strong>implementsInterface</strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.String interfaceName)</h4>
-                                <p></p>
+                                <p> Whether the given class node implements the given interface name
+     <DL><DT><B>Returns:</B></DT><DD>True if it does</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>classNode</code> -  The class node</DD><DD><code>interfaceName</code> -  The interface name</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="implementsInterface(org.codehaus.groovy.ast.ClassNode, java.lang.Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;boolean <strong>implementsInterface</strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.Class itfc)</h4>
+                                <p> Whether the given class node implements the given interface node
+     <DL><DT><B>Returns:</B></DT><DD>True if it does</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>classNode</code> -  The class node</DD><DD><code>itfc</code> -  The interface</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="implementsInterface(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;boolean <strong>implementsInterface</strong>(org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.ast.ClassNode interfaceNode)</h4>
+                                <p> Whether the given class node implements the given interface node
+     <DL><DT><B>Returns:</B></DT><DD>True if it does</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>classNode</code> -  The class node</DD><DD><code>interfaceName</code> -  The interface node</DD></DL></p>
                             </li>
                         </ul>
                     
