@@ -447,6 +447,14 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingContext.html#addTypeConverter(org.springframework.core.convert.converter.Converter)" title="Method in MappingContext">addTypeConverter(Converter)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingContext.html">MappingContext</a>
 </dt><dd> <div class="block">Add a converter used to convert property values to and from the datastore</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html#AFTER_DELETE_EVENT" title="Field in AbstractPersistenceEvent">AFTER_DELETE_EVENT</a></span> - Field in <a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html">AbstractPersistenceEvent</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html#AFTER_INSERT_EVENT" title="Field in AbstractPersistenceEvent">AFTER_INSERT_EVENT</a></span> - Field in <a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html">AbstractPersistenceEvent</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html#AFTER_LOAD_EVENT" title="Field in AbstractPersistenceEvent">AFTER_LOAD_EVENT</a></span> - Field in <a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html">AbstractPersistenceEvent</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html#AFTER_UPDATE_EVENT" title="Field in AbstractPersistenceEvent">AFTER_UPDATE_EVENT</a></span> - Field in <a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html">AbstractPersistenceEvent</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/transactions/support/SpringSessionSynchronization.html#afterCommit()" title="Method in SpringSessionSynchronization">afterCommit()</a></span> - Method in <a href="org/grails/datastore/mapping/transactions/support/SpringSessionSynchronization.html">SpringSessionSynchronization</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/transactions/support/SpringSessionSynchronization.html#afterCompletion(int)" title="Method in SpringSessionSynchronization">afterCompletion(int)</a></span> - Method in <a href="org/grails/datastore/mapping/transactions/support/SpringSessionSynchronization.html">SpringSessionSynchronization</a>
@@ -718,6 +726,14 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/validation/BeanFactoryValidatorRegistry.html#BeanFactoryValidatorRegistry(org.springframework.beans.factory.BeanFactory)" title="Constructor in BeanFactoryValidatorRegistry">BeanFactoryValidatorRegistry(BeanFactory)</a></span> - Constructor in <a href="org/grails/datastore/mapping/validation/BeanFactoryValidatorRegistry.html">BeanFactoryValidatorRegistry</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/BeanEntityAccess.html#beanWrapper" title="Field in BeanEntityAccess">beanWrapper</a></span> - Field in <a href="org/grails/datastore/mapping/engine/BeanEntityAccess.html">BeanEntityAccess</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html#BEFORE_DELETE_EVENT" title="Field in AbstractPersistenceEvent">BEFORE_DELETE_EVENT</a></span> - Field in <a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html">AbstractPersistenceEvent</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html#BEFORE_INSERT_EVENT" title="Field in AbstractPersistenceEvent">BEFORE_INSERT_EVENT</a></span> - Field in <a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html">AbstractPersistenceEvent</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html#BEFORE_LOAD_EVENT" title="Field in AbstractPersistenceEvent">BEFORE_LOAD_EVENT</a></span> - Field in <a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html">AbstractPersistenceEvent</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html#BEFORE_UPDATE_EVENT" title="Field in AbstractPersistenceEvent">BEFORE_UPDATE_EVENT</a></span> - Field in <a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html">AbstractPersistenceEvent</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/support/BeforeValidateHelper.html#BEFORE_VALIDATE" title="Field in BeforeValidateHelper">BEFORE_VALIDATE</a></span> - Field in <a href="org/grails/datastore/gorm/support/BeforeValidateHelper.html">BeforeValidateHelper</a>
 </dt><dd> <div class="block"></div></dd>
@@ -6891,6 +6907,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/OneToOne.html" title="Class in org.grails.datastore.mapping.model.types">OneToOne</a></span> - Class in <a href="./org/grails/datastore/mapping/model/types/package-summary.html">org.grails.datastore.mapping.model.types</a>
 </dt><dd><div class="block">Models a one-to-one association</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/OneToOne.html#OneToOne(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.lang.String, java.lang.Class)" title="Constructor in OneToOne">OneToOne(PersistentEntity, MappingContext, String, Class)</a></span> - Constructor in <a href="org/grails/datastore/mapping/model/types/OneToOne.html">OneToOne</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html#ONLOAD_EVENT" title="Field in AbstractPersistenceEvent">ONLOAD_EVENT</a></span> - Field in <a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html">AbstractPersistenceEvent</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html#ONLOAD_SAVE" title="Field in AbstractPersistenceEvent">ONLOAD_SAVE</a></span> - Field in <a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html">AbstractPersistenceEvent</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEventListener.html#onPersistenceEvent(org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent)" title="Method in AbstractPersistenceEventListener">onPersistenceEvent(AbstractPersistenceEvent)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/event/AbstractPersistenceEventListener.html">AbstractPersistenceEventListener</a>
 </dt><dd> <div class="block"></div></dd>
