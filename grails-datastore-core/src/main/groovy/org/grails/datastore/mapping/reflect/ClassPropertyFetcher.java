@@ -303,8 +303,21 @@ public class ClassPropertyFetcher {
                 MetaMethod setter = beanProperty.getSetter();
                 if(getter instanceof CachedMethod && setter instanceof CachedMethod) {
                     try {
-                        return new PropertyDescriptor(propertyName, ((CachedMethod) getter).getCachedMethod(), ((CachedMethod) setter).getCachedMethod());
+                        Method getterMethod = ((CachedMethod) getter).getCachedMethod();
+                        Method setterMethod = ((CachedMethod) setter).getCachedMethod();
+                        if(getterMethod.getReturnType().equals(setterMethod.getParameterTypes()[0])) {
+                            return new PropertyDescriptor(propertyName, getterMethod, setterMethod);
+                        }
+                        else {
+                            String getterName = NameUtils.getGetterName(propertyName);
+                            String setterName = NameUtils.getSetterName(propertyName);
+                            getterMethod = declaringClass.getMethod(getterName);
+                            setterMethod = declaringClass.getMethod(setterName, getterMethod.getReturnType());
+                            return new PropertyDescriptor(propertyName, getterMethod, setterMethod);
+                        }
                     } catch (IntrospectionException e) {
+                        return null;
+                    } catch (NoSuchMethodException e) {
                         return null;
                     }
                 }
