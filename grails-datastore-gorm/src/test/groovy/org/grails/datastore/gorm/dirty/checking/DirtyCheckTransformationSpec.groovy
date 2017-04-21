@@ -109,6 +109,63 @@ abstract class Author {
         child.name == "Stephen King"
     }
 
+    @Issue('https://github.com/grails/grails-data-mapping/issues/917')
+    void "Test dirty check with with custom setter"() {
+        when:"A Dirty checkable class with generic types is parsed"
+        def gcl = new GroovyClassLoader()
+        Class cls = gcl.parseClass('''
+package org.grails.datastore.gorm.dirty.checking
+
+import grails.gorm.dirty.checking.DirtyCheck
+
+@DirtyCheck
+class Author  {
+    String name
+    
+    void setName(String name) {
+        this.name = name
+    }
+}
+
+''')
+
+        def child = cls.newInstance()
+        child.trackChanges()
+        child.name = "Stephen King"
+        then:"The generic types are retained"
+        child.hasChanged()
+        child.hasChanged('name')
+        child.name == "Stephen King"
+    }
+
+    @Issue('https://github.com/grails/grails-data-mapping/issues/917')
+    void "Test dirty check with with custom getter"() {
+        when:"A Dirty checkable class with generic types is parsed"
+        def gcl = new GroovyClassLoader()
+        Class cls = gcl.parseClass('''
+package org.grails.datastore.gorm.dirty.checking
+
+import grails.gorm.dirty.checking.DirtyCheck
+
+@DirtyCheck
+class Author  {
+    String name
+    
+    void getName() {
+        this.name
+    }
+}
+
+''')
+
+        def child = cls.newInstance()
+        child.trackChanges()
+        child.name = "Stephen King"
+        then:"The generic types are retained"
+        child.hasChanged()
+        child.hasChanged('name')
+        child.name == "Stephen King"
+    }
 
     void "Test dirty check with generic types"() {
         when:"A Dirty checkable class with generic types is parsed"
