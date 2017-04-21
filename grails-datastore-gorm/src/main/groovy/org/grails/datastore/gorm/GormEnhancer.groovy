@@ -184,7 +184,7 @@ class GormEnhancer {
                         targetObject
                     }
                     mc."removeFrom${prop.capitilizedName}" = { arg ->
-                        if (javaClass.isInstance(arg)) {
+                        if (javaClass?.isInstance(arg) || isBasic) {
                             final targetObject = delegate
                             targetObject[prop.name]?.remove(arg)
                             if (targetObject instanceof DirtyCheckable) {
