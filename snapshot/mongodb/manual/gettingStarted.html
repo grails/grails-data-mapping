@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Basic Setup</title>
+<title>Untitled</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -418,41 +418,22 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
 </head>
-<body class="article toc2 toc-left">
+<body class="article">
 <div id="header">
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel2">
-<li><a href="#_basic_setup">Basic Setup</a></li>
-<li><a href="#_common_errors">Common Errors</a></li>
-<li><a href="#_setup_within_grails_2_x">Setup within Grails 2.x</a></li>
-<li><a href="#_configuring_mongodb">Configuring MongoDB</a></li>
-</ul>
-</div>
 </div>
 <div id="content">
-<div class="sect2">
-<h3 id="_basic_setup">Basic Setup</h3>
 <div class="paragraph">
-<p>To get started with GORM for MongoDB within Grails you need configure it as a dependency in <code>build.gradle</code>:</p>
+<p>To get started with GORM for MongoDB you need configure it as a dependency in <code>build.gradle</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">dependencies {
-    compile 'org.grails.plugins:mongodb:6.1.2.BUILD-SNAPSHOT'
+    compile 'org.grails.plugins:mongodb:6.0.10.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>If you are using a version of Grails 3 earlier than 3.3 then you may need to enforce the GORM version. If you are using Grails 3.2.7 or above this can be done by modifying the <code>gormVersion</code> setting in <code>gradle.properties</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-properties" data-lang="properties">gormVersion=6.1.2.BUILD-SNAPSHOT</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Otherwise if you are using an earlier version of Grails you can force the GORM version by adding the following block directly above the <code>dependencies</code> block:</p>
+<p>If you are using a version of Grails 3 earlier than 3.3 then you may need to enforce the GORM version by adding the following block directly above the <code>dependencies</code> block:</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
@@ -461,7 +442,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("6.1.2.BUILD-SNAPSHOT")
+            details.useVersion("6.0.10.BUILD-SNAPSHOT")
         }
     }
 }
@@ -470,60 +451,18 @@ dependencies {
 }</code></pre>
 </div>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_common_errors">Common Errors</h3>
-<div class="paragraph">
-<p>If you receive an error that indicates a failure to resolve the <code>grails-datastore-simple</code> dependency you may need to add the following to <code>build.gradle</code> directly above the <code>dependencies</code> block:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">configurations.all {
-    exclude module:'grails-datastore-simple'
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If you receive an error at runtime such as:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">Caused by: org.bson.codecs.configuration.CodecConfigurationException: Can't find a codec for class org.bson.BsonDecimal128.
-        at org.bson.codecs.configuration.CodecCache.getOrThrow(CodecCache.java:46)
-        at org.bson.codecs.configuration.ProvidersCodecRegistry.get(ProvidersCodecRegistry.java:63)
-        at org.bson.codecs.configuration.ChildCodecRegistry.get(ChildCodecRegistry.java:51)
-        at org.bson.codecs.BsonTypeCodecMap.&lt;init&gt;(BsonTypeCodecMap.java:44)
-        at org.bson.codecs.BsonDocumentCodec.&lt;init&gt;(BsonDocumentCodec.java:65)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>It means you have an older version of the MongoDB Java driver on your classpath and you should add the following declaration to <code>build.gradle</code> to ensure the dependency is correct:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.mongodb:mongodb-driver:3.4.2"</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_setup_within_grails_2_x">Setup within Grails 2.x</h3>
 <div class="paragraph">
 <p>For Grails 2.x you need to modify <code>BuildConfig.groovy</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">plugins {
-    compile ':mongodb:6.1.2.BUILD-SNAPSHOT'
+    compile ':mongodb:6.0.10.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_configuring_mongodb">Configuring MongoDB</h3>
 <div class="paragraph">
-<p>With that done you need to set up a running MongoDB server. Refer to the <a href="https://docs.mongodb.com/getting-started/shell/">MongoDB Documentation</a> for an explanation on how to startup a MongoDB instance. Once installed, starting MongoDB is typically a matter of executing the following command:</p>
+<p>With that done you need to set up a running MongoDB server. Refer to the <a href="#ref-orgmanual-MongoDB Documentation">MongoDB Documentation</a> for an explanation on how to startup a MongoDB instance. Once installed, starting MongoDB is typically a matter of executing the following command:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -567,7 +506,6 @@ dependencies {
         username: "blah"
         password: "blah"
         databaseName: "foo"</code></pre>
-</div>
 </div>
 </div>
 </div>
