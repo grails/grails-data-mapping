@@ -80,27 +80,6 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         cd ..
 
 
-        echo "Triggering REST Client build"
-        git clone https://${GH_TOKEN}@github.com/grails/gorm-rest-client.git gorm-rest-client
-        cd gorm-rest-client
-        echo "$(date)" > .snapshot
-        git add .snapshot
-
-        if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
-            if [[ $TRAVIS_TAG =~ [M\d|RC\d] ]]; then            
-               echo "gormVersion=${TRAVIS_TAG:1}" > gradle.properties  
-            else 
-               echo "gormVersion=${TRAVIS_TAG:1}.RELEASE" > gradle.properties
-            fi            
-
-            git add gradle.properties
-            git commit -m "New GORM Release $TRAVIS_TAG"
-        else
-            git commit -m "New Core Snapshot: $(date)"
-        fi
-        git push
-        cd ..
-
         echo "Triggering Neo4j build"
         git clone -b 6.0.x https://${GH_TOKEN}@github.com/grails/gorm-neo4j.git gorm-neo4j
         cd gorm-neo4j
