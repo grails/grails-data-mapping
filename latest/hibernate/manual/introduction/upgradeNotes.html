@@ -435,7 +435,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-gorm-async:6.1.1.RELEASE"</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-gorm-async:6.1.2.RELEASE"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -462,10 +462,10 @@ class Person implements AsyncEntity&lt;Person&gt; {
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">> Could not resolve all dependencies for configuration ':example:runtime'.
-   > Could not find org.grails:grails-datastore-simple:6.1.1.RELEASE.
+   > Could not find org.grails:grails-datastore-simple:6.1.2.RELEASE.
      Searched in the following locations:
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.1.RELEASE/grails-datastore-simple-6.1.1.RELEASE.pom
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.1.RELEASE/grails-datastore-simple-6.1.1.RELEASE.jar
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.2.RELEASE/grails-datastore-simple-6.1.2.RELEASE.pom
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.2.RELEASE/grails-datastore-simple-6.1.2.RELEASE.jar
      Required by:
          project :example > org.grails:grails-dependencies:3.2.4 >
             ...</code></pre>
@@ -586,6 +586,22 @@ grails.gorm.default.mapping = {
 <h4 id="_fail_on_error_package_setting_renamed">Fail on Error Package Setting Renamed</h4>
 <div class="paragraph">
 <p>The <code>grails.gorm.failOnError</code> setting can no longer be used to configure the packages to enable fail on error. Instead <code>grails.gorm.failOnErrorPackages</code> should be used.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_dirty_checking_for_abstract_base_classes">Dirty Checking for Abstract Base Classes</h4>
+<div class="paragraph">
+<p>Domain objects can inherit from abstract base classes defined in the <code>src</code> directory. Previous versions of GORM performed dirty checking automatically on fields from any abstract base class. GORM 6.1 requires that the abstract base class be marked with the <code>@DirtyCheck</code> annotation to include the base class fields in domain object dirty checking:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.gorm.dirty.checking.DirtyCheck
+
+@DirtyCheck
+abstract class BaseDomainObject {
+    String baseClassField
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
