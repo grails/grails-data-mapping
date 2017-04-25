@@ -868,10 +868,10 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">> Could not resolve all dependencies for configuration ':example:runtime'.
-   > Could not find org.grails:grails-datastore-simple:6.1.2.BUILD-SNAPSHOT.
+   > Could not find org.grails:grails-datastore-simple:6.1.3.BUILD-SNAPSHOT.
      Searched in the following locations:
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.2.BUILD-SNAPSHOT/grails-datastore-simple-6.1.2.BUILD-SNAPSHOT.pom
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.2.BUILD-SNAPSHOT/grails-datastore-simple-6.1.2.BUILD-SNAPSHOT.jar
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.3.BUILD-SNAPSHOT/grails-datastore-simple-6.1.3.BUILD-SNAPSHOT.pom
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.3.BUILD-SNAPSHOT/grails-datastore-simple-6.1.3.BUILD-SNAPSHOT.jar
      Required by:
          project :example > org.grails:grails-dependencies:3.2.4 >
             ...</code></pre>
@@ -1004,7 +1004,7 @@ Embedded documents may also require updating.
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile 'org.grails.plugins:mongodb:6.1.2.BUILD-SNAPSHOT'
+    compile 'org.grails.plugins:mongodb:6.1.3.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
@@ -1013,7 +1013,7 @@ Embedded documents may also require updating.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=6.1.2.BUILD-SNAPSHOT</code></pre>
+<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=6.1.3.BUILD-SNAPSHOT</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1026,7 +1026,7 @@ Embedded documents may also require updating.
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("6.1.2.BUILD-SNAPSHOT")
+            details.useVersion("6.1.3.BUILD-SNAPSHOT")
         }
     }
 }
@@ -1080,7 +1080,7 @@ dependencies {
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">plugins {
-    compile ':mongodb:6.1.2.BUILD-SNAPSHOT'
+    compile ':mongodb:6.1.3.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
@@ -1288,7 +1288,7 @@ dependencies {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-mongodb-spring-boot:6.1.2.BUILD-SNAPSHOT")</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-mongodb-spring-boot:6.1.3.BUILD-SNAPSHOT")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1345,7 +1345,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-mongodb:6.1.2.BUILD-SNAPSHOT"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-mongodb:6.1.3.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 <div class="paragraph">
