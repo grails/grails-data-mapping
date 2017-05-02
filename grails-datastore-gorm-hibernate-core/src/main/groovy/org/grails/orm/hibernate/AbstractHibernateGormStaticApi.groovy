@@ -1,5 +1,6 @@
 package org.grails.orm.hibernate
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.proxy.ProxyHandler
 import org.grails.datastore.mapping.reflect.ClassUtils
@@ -221,6 +222,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
      * @return A result or null if no result found
      */
     @Override
+    @CompileDynamic
     D find(CharSequence query, Map queryNamedArgs, Map args) {
         queryNamedArgs = new LinkedHashMap(queryNamedArgs)
         args = new LinkedHashMap(args)
@@ -250,6 +252,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     protected abstract HibernateHqlQuery createHqlQuery(Session session, Query q)
 
     @Override
+    @CompileDynamic
     D find(CharSequence query, Collection params, Map args) {
         if(query instanceof GString) {
             throw new GrailsQueryException("Unsafe query [$query]. GORM cannot automatically escape a GString value when combined with ordinal parameters, so this query is potentially vulnerable to HQL injection attacks. Please embed the parameters within the GString so they can be safely escaped.");
@@ -281,6 +284,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     }
 
     @Override
+    @CompileDynamic
     List<D> findAll(CharSequence query, Map params, Map args) {
         params = new LinkedHashMap(params)
         args = new LinkedHashMap(args)
@@ -473,6 +477,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     }
 
     @Override
+    @CompileDynamic
     List<D> findAll(CharSequence query, Collection params, Map args) {
         if(query instanceof GString) {
             throw new GrailsQueryException("Unsafe query [$query]. GORM cannot automatically escape a GString value when combined with ordinal parameters, so this query is potentially vulnerable to HQL injection attacks. Please embed the parameters within the GString so they can be safely escaped.");
@@ -567,6 +572,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
 
 
     @Override
+    @CompileDynamic
     List executeQuery(CharSequence query, Map params, Map args) {
         def template = hibernateTemplate
         args = new HashMap(args)
@@ -577,7 +583,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         }
 
         return (List<D>) template.execute { Session session ->
-            Query q = session.createQuery(query.toString())
+            def q = session.createQuery(query.toString())
             template.applySettings(q)
 
             populateQueryArguments(q, params)
@@ -589,6 +595,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     }
 
     @Override
+    @CompileDynamic
     List executeQuery(CharSequence query, Collection params, Map args) {
         if(query instanceof GString) {
             throw new GrailsQueryException("Unsafe query [$query]. GORM cannot automatically escape a GString value when combined with ordinal parameters, so this query is potentially vulnerable to HQL injection attacks. Please embed the parameters within the GString so they can be safely escaped.");
