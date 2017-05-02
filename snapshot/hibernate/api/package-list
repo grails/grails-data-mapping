@@ -98,6 +98,7 @@ org.grails.datastore.mapping.transactions
 org.grails.datastore.mapping.transactions.support
 org.grails.datastore.mapping.validation
 org.grails.orm.hibernate
+org.grails.orm.hibernate.access
 org.grails.orm.hibernate.cfg
 org.grails.orm.hibernate.compiler
 org.grails.orm.hibernate.connections
