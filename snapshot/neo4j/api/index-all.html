@@ -2636,12 +2636,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/keyvalue/mapping/config/Family.html#Family(java.lang.String, java.lang.String)" title="Constructor in Family">Family(String, String)</a></span> - Constructor in <a href="org/grails/datastore/mapping/keyvalue/mapping/config/Family.html">Family</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/AssociationQueryProxyHandler.html#fastClass" title="Field in AssociationQueryProxyHandler">fastClass</a></span> - Field in <a href="org/grails/datastore/mapping/proxy/AssociationQueryProxyHandler.html">AssociationQueryProxyHandler</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/EntityReflector.html#fastClass()" title="Method in EntityReflector">fastClass()</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/EntityReflector.html">EntityReflector</a>
 </dt><dd> <div class="block">@return The fast class</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/SessionEntityProxyMethodHandler.html#fastClass" title="Field in SessionEntityProxyMethodHandler">fastClass</a></span> - Field in <a href="org/grails/datastore/mapping/proxy/SessionEntityProxyMethodHandler.html">SessionEntityProxyMethodHandler</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/Property.html#fetch(javax.persistence.FetchType)" title="Method in Property">fetch(FetchType)</a></span> - Method in <a href="org/grails/datastore/mapping/config/Property.html">Property</a>
 </dt><dd> <div class="block">Configure the fetch strategy</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html#fetchStrategies" title="Field in AbstractDetachedCriteria">fetchStrategies</a></span> - Field in <a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html">AbstractDetachedCriteria</a>
@@ -2650,6 +2646,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/Query.html#fetchStrategy(java.lang.String)" title="Method in Query">fetchStrategy(String)</a></span> - Method in <a href="org/grails/datastore/mapping/query/Query.html">Query</a>
 </dt><dd> <div class="block">Obtain the fetch strategy for the given property</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/EntityReflector.PropertyReader.html#field()" title="Method in EntityReflector.PropertyReader">field()</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/EntityReflector.PropertyReader.html">EntityReflector.PropertyReader</a>
+</dt><dd> <div class="block">@return The field or null if the field cannot be resolved</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/EntityReflector.PropertyWriter.html#field()" title="Method in EntityReflector.PropertyWriter">field()</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/EntityReflector.PropertyWriter.html">EntityReflector.PropertyWriter</a>
+</dt><dd> <div class="block">@return The field or null if the field cannot be resolved</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractDatastoreMethodDecoratingTransformation.html#FIELD_TARGET_DATASTORE" title="Field in AbstractDatastoreMethodDecoratingTransformation">FIELD_TARGET_DATASTORE</a></span> - Field in <a href="org/grails/datastore/gorm/transform/AbstractDatastoreMethodDecoratingTransformation.html">AbstractDatastoreMethodDecoratingTransformation</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/FieldEntityAccess.html" title="Class in org.grails.datastore.mapping.reflect">FieldEntityAccess</a></span> - Class in <a href="./org/grails/datastore/mapping/reflect/package-summary.html">org.grails.datastore.mapping.reflect</a>
@@ -4278,6 +4278,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/FindAllPropertyProjectionImplementer.html#getQueryMethodToInvoke(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)" title="Method in FindAllPropertyProjectionImplementer">getQueryMethodToInvoke(ClassNode, MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/FindAllPropertyProjectionImplementer.html">FindAllPropertyProjectionImplementer</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getReader()" title="Method in AbstractPersistentProperty">getReader()</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractPersistentProperty.html">AbstractPersistentProperty</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/PersistentProperty.html#getReader()" title="Method in PersistentProperty">getReader()</a></span> - Method in <a href="org/grails/datastore/mapping/model/PersistentProperty.html">PersistentProperty</a>
+</dt><dd> <div class="block">@return The reader for this property</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html#getReference()" title="Method in ClassPropertyFetcher">getReference()</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html">ClassPropertyFetcher</a>
 </dt><dd> <div class="block">@Deprecated will be removed in a future version of GORM</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Association.html#getReferencedPropertyName()" title="Method in Association">getReferencedPropertyName()</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Association.html">Association</a>
@@ -4403,6 +4407,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">@return Obtain the tenant resolver</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/Neo4jDatastore.html#getTenantResolver()" title="Method in Neo4jDatastore">getTenantResolver()</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/Neo4jDatastore.html">Neo4jDatastore</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/EntityReflector.PropertyReader.html#getter()" title="Method in EntityReflector.PropertyReader">getter()</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/EntityReflector.PropertyReader.html">EntityReflector.PropertyReader</a>
+</dt><dd> <div class="block">@return The getter</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/GroovyObjectMethodHandler.html#getThisMetaClass()" title="Method in GroovyObjectMethodHandler">getThisMetaClass()</a></span> - Method in <a href="org/grails/datastore/mapping/proxy/GroovyObjectMethodHandler.html">GroovyObjectMethodHandler</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/events/AutoTimestampEventListener.html#getTimestampProvider()" title="Method in AutoTimestampEventListener">getTimestampProvider()</a></span> - Method in <a href="org/grails/datastore/gorm/events/AutoTimestampEventListener.html">AutoTimestampEventListener</a>
@@ -4509,6 +4515,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/PersistentEntity.html#getVersion()" title="Method in PersistentEntity">getVersion()</a></span> - Method in <a href="org/grails/datastore/mapping/model/PersistentEntity.html">PersistentEntity</a>
 </dt><dd> <div class="block">Returns the version property.</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getWriter()" title="Method in AbstractPersistentProperty">getWriter()</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractPersistentProperty.html">AbstractPersistentProperty</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/PersistentProperty.html#getWriter()" title="Method in PersistentProperty">getWriter()</a></span> - Method in <a href="org/grails/datastore/mapping/model/PersistentProperty.html">PersistentProperty</a>
+</dt><dd> <div class="block">@return The writer for this property</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/jdbc/DatabaseDriver.html#getXaDataSourceClassName()" title="Method in DatabaseDriver">getXaDataSourceClassName()</a></span> - Method in <a href="org/grails/datastore/gorm/jdbc/DatabaseDriver.html">DatabaseDriver</a>
 </dt><dd> <div class="block">Return the XA driver source class name.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/transform/GlobalDetachedCriteriaASTTransformation.html" title="Class in org.grails.datastore.gorm.query.transform">GlobalDetachedCriteriaASTTransformation</a></span> - Class in <a href="./org/grails/datastore/gorm/query/transform/package-summary.html">org.grails.datastore.gorm.query.transform</a>
@@ -8537,6 +8547,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">The tenant resolver to use</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/multitenancy/MultiTenancySettings.html#setTenantResolver(org.grails.datastore.mapping.multitenancy.TenantResolver)" title="Method in MultiTenancySettings">setTenantResolver(TenantResolver)</a></span> - Method in <a href="org/grails/datastore/mapping/multitenancy/MultiTenancySettings.html">MultiTenancySettings</a>
 </dt><dd> <div class="block">Sets the tenant resolver to use</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/EntityReflector.PropertyWriter.html#setter()" title="Method in EntityReflector.PropertyWriter">setter()</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/EntityReflector.PropertyWriter.html">EntityReflector.PropertyWriter</a>
+</dt><dd> <div class="block">@return The getter</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/GroovyObjectMethodHandler.html#setThisMetaClass(groovy.lang.MetaClass)" title="Method in GroovyObjectMethodHandler">setThisMetaClass(MetaClass)</a></span> - Method in <a href="org/grails/datastore/mapping/proxy/GroovyObjectMethodHandler.html">GroovyObjectMethodHandler</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/neo4j/Neo4jTransaction.html#setTimeout(int)" title="Method in Neo4jTransaction">setTimeout(int)</a></span> - Method in <a href="org/grails/datastore/gorm/neo4j/Neo4jTransaction.html">Neo4jTransaction</a>
