@@ -37,8 +37,10 @@ import javax.persistence.FetchType;
  *
  * @author Graeme Rocher
  * @since 1.0
+ * @deprecated Use a concrete mapping context implementation instead
  */
 @SuppressWarnings("rawtypes")
+@Deprecated
 public class GrailsDomainClassPersistentEntity implements PersistentEntity, ValidatorProvider {
 
     private GrailsDomainClass domainClass;

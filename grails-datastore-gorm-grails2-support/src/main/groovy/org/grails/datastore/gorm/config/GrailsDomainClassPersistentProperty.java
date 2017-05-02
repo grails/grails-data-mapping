@@ -19,6 +19,7 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.PropertyMapping;
+import org.grails.datastore.mapping.reflect.EntityReflector;
 import org.grails.datastore.mapping.reflect.NameUtils;
 
 /**
@@ -66,5 +67,15 @@ public class GrailsDomainClassPersistentProperty implements PersistentProperty {
     @Override
     public boolean isInherited() {
         return property.isInherited();
+    }
+
+    @Override
+    public EntityReflector.PropertyReader getReader() {
+        return null;
+    }
+
+    @Override
+    public EntityReflector.PropertyWriter getWriter() {
+        return null;
     }
 }

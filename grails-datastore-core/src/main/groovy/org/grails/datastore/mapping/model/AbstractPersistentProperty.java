@@ -17,6 +17,7 @@ package org.grails.datastore.mapping.model;
 import java.beans.PropertyDescriptor;
 
 import org.grails.datastore.mapping.config.Property;
+import org.grails.datastore.mapping.reflect.EntityReflector;
 import org.grails.datastore.mapping.reflect.NameUtils;
 
 /**
@@ -28,10 +29,10 @@ import org.grails.datastore.mapping.reflect.NameUtils;
  */
 @SuppressWarnings("rawtypes")
 public abstract class AbstractPersistentProperty<T extends Property> implements PersistentProperty<T> {
-    protected PersistentEntity owner;
-    protected MappingContext context;
-    protected String name;
-    protected Class type;
+    protected final PersistentEntity owner;
+    protected final MappingContext context;
+    protected final String name;
+    protected final Class type;
     protected Boolean inherited;
 
     public AbstractPersistentProperty(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
@@ -101,5 +102,13 @@ public abstract class AbstractPersistentProperty<T extends Property> implements 
         return inherited;
     }
 
+    @Override
+    public EntityReflector.PropertyReader getReader() {
+        return getOwner().getReflector().getPropertyReader(getName());
+    }
 
+    @Override
+    public EntityReflector.PropertyWriter getWriter() {
+        return getOwner().getReflector().getPropertyWriter(getName());
+    }
 }

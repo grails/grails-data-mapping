@@ -1,13 +1,11 @@
 package org.grails.datastore.mapping.reflect;
 
-import org.codehaus.groovy.runtime.InvokerHelper;
 import org.codehaus.groovy.transform.trait.Traits;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.proxy.EntityProxy;
 import org.springframework.cglib.reflect.FastClass;
-import org.springframework.cglib.reflect.FastMethod;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.util.ReflectionUtils;
@@ -15,7 +13,6 @@ import org.springframework.util.ReflectionUtils;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class FieldEntityAccess implements EntityAccess {
 
-    private static Map<String, EntityReflector> REFLECTORS  = new ConcurrentHashMap<String, EntityReflector>();
+    private static Map<String, EntityReflector> REFLECTORS  = new ConcurrentHashMap<>();
 
     private final PersistentEntity persistentEntity;
     private final Object entity;
@@ -165,16 +162,14 @@ public class FieldEntityAccess implements EntityAccess {
         final PropertyWriter identifierWriter;
         final String identifierName;
         final Class identifierType;
-        final Map<String, PropertyReader> readerMap = new HashMap<String, PropertyReader>();
-        final Map<String, PropertyWriter> writerMap = new HashMap<String, PropertyWriter>();
-        final FastClass fastClass;
+        final Map<String, PropertyReader> readerMap = new HashMap<>();
+        final Map<String, PropertyWriter> writerMap = new HashMap<>();
+        FastClass fastClass;
 
         public FieldEntityReflector(PersistentEntity entity) {
             this.entity = entity;
-            Class javaClass = entity.getJavaClass();
             PersistentProperty identity = entity.getIdentity();
             ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
-            fastClass = FastClass.create(javaClass);
             if(identity != null) {
                 String identityName = identity.getName();
                 this.identifierName = identityName;
@@ -227,6 +222,7 @@ public class FieldEntityAccess implements EntityAccess {
             Class traitClass = traitBridge.traitClass();
             return getTraitFieldName(traitClass, fieldName);
         }
+
         private String getTraitFieldName(Class traitClass, String fieldName) {
             return traitClass.getName().replace('.','_') + "__" + fieldName;
         }
@@ -239,6 +235,9 @@ public class FieldEntityAccess implements EntityAccess {
 
         @Override
         public FastClass fastClass() {
+            if(fastClass == null) {
+                fastClass = FastClass.create(entity.getJavaClass());
+            }
             return fastClass;
         }
 
@@ -325,6 +324,16 @@ public class FieldEntityAccess implements EntityAccess {
             }
 
             @Override
+            public Field field() {
+                return null;
+            }
+
+            @Override
+            public Method getter() {
+                return method;
+            }
+
+            @Override
             public Class propertyType() {
                 return method.getReturnType();
             }
@@ -346,6 +355,16 @@ public class FieldEntityAccess implements EntityAccess {
             }
 
             @Override
+            public Field field() {
+                return null;
+            }
+
+            @Override
+            public Method setter() {
+                return method;
+            }
+
+            @Override
             public Class propertyType() {
                 return propertyType;
             }
@@ -356,59 +375,24 @@ public class FieldEntityAccess implements EntityAccess {
             }
         }
 
-        static class FastMethodReader implements PropertyReader {
-            final FastMethod method;
-
-            public FastMethodReader(FastMethod method) {
-                this.method = method;
-            }
-
-            @Override
-            public Class propertyType() {
-                return method.getReturnType();
-            }
-
-            @Override
-            public Object read(Object object) {
-                try {
-                    return method.invoke(object, InvokerHelper.EMPTY_ARGS);
-                } catch (InvocationTargetException e) {
-                    ReflectionUtils.handleInvocationTargetException(e);
-                    return null;
-                }
-            }
-        }
-
-        static class FastMethodWriter implements PropertyWriter {
-            final FastMethod method;
-            final Class propertyType;
-
-            public FastMethodWriter(FastMethod method, Class propertyType) {
-                this.method = method;
-                this.propertyType = propertyType;
-            }
-
-            @Override
-            public Class propertyType() {
-                return propertyType;
-            }
-
-            @Override
-            public void write(Object object, Object value) {
-                try {
-                    method.invoke(object, new Object[]{value});
-                } catch (InvocationTargetException e) {
-                    ReflectionUtils.handleInvocationTargetException(e);
-                }
-            }
-        }
-
         static class FieldReader implements PropertyReader {
             final Field field;
+            final Method getter;
 
-            public FieldReader(Field field) {
+            public FieldReader(Field field, Method getter) {
                 this.field = field;
+                this.getter = getter;
                 ReflectionUtils.makeAccessible(field);
+            }
+
+            @Override
+            public Field field() {
+                return field;
+            }
+
+            @Override
+            public Method getter() {
+                return getter;
             }
 
             @Override
@@ -429,10 +413,22 @@ public class FieldEntityAccess implements EntityAccess {
 
         static class FieldWriter implements PropertyWriter {
             final Field field;
+            final Method setter;
 
-            public FieldWriter(Field field) {
+            public FieldWriter(Field field, Method setter) {
                 this.field = field;
+                this.setter = setter;
                 ReflectionUtils.makeAccessible(field);
+            }
+
+            @Override
+            public Field field() {
+                return field;
+            }
+
+            @Override
+            public Method setter() {
+                return setter;
             }
 
             @Override
@@ -474,8 +470,8 @@ public class FieldEntityAccess implements EntityAccess {
                 Field field = ReflectionUtils.findField(javaClass, propertyName);
                 if(field != null) {
                     ReflectionUtils.makeAccessible(field);
-                    propertyReader = new FieldReader(field);
-                    propertyWriter = new FieldWriter(field);
+                    propertyReader = new FieldReader(field, ReflectionUtils.findMethod(javaClass, NameUtils.getGetterName(propertyName)));
+                    propertyWriter = new FieldWriter(field, ReflectionUtils.findMethod(javaClass, NameUtils.getSetterName(propertyName), field.getType()));
                 }
                 else {
                     PropertyDescriptor descriptor = cpf.getPropertyDescriptor(propertyName);
@@ -497,31 +493,23 @@ public class FieldEntityAccess implements EntityAccess {
 
                     }
                     if(traitFieldName != null) {
-
                         field = ReflectionUtils.findField(javaClass, traitFieldName);
                         if(field != null) {
                             ReflectionUtils.makeAccessible(field);
-                            propertyReader = new FieldReader(field);
-                            propertyWriter = new FieldWriter(field);
+                            propertyReader = new FieldReader(field, readMethod);
+                            propertyWriter = new FieldWriter(field, descriptor.getWriteMethod());
                         }
                         else {
                             Method writeMethod = descriptor.getWriteMethod();
-                            if(readMethod.getDeclaringClass().equals(fastClass.getJavaClass())) {
-                                propertyReader = new FastMethodReader(fastClass.getMethod(readMethod));
-                                propertyWriter = new FastMethodWriter(fastClass.getMethod(writeMethod), descriptor.getPropertyType());
-                            }
-                            else {
-                                propertyReader = new ReflectMethodReader(readMethod);
-                                propertyWriter = new ReflectionMethodWriter(writeMethod, descriptor.getPropertyType());
-
-                            }
+                            propertyReader = new ReflectMethodReader(readMethod);
+                            propertyWriter = new ReflectionMethodWriter(writeMethod, descriptor.getPropertyType());
                         }
                     }
                     else {
-                        propertyReader = new FastMethodReader(fastClass.getMethod(readMethod));
+                        propertyReader = new ReflectMethodReader(readMethod);
                         Method writeMethod = descriptor.getWriteMethod();
                         if(writeMethod != null) {
-                            propertyWriter = new FastMethodWriter(fastClass.getMethod(writeMethod), descriptor.getPropertyType());
+                            propertyWriter = new ReflectionMethodWriter(writeMethod, descriptor.getPropertyType());
                         }
                     }
                 }

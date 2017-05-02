@@ -41,7 +41,6 @@ public class SessionEntityProxyMethodHandler extends EntityProxyMethodHandler {
     private final Session session;
     private final Class cls;
     private final Serializable id;
-    protected final FastClass fastClass;
     protected Object target;
 
 
@@ -50,8 +49,6 @@ public class SessionEntityProxyMethodHandler extends EntityProxyMethodHandler {
         this.session = session;
         this.cls = cls;
         this.id = id;
-        final PersistentEntity entity = session.getMappingContext().getPersistentEntity(proxyClass.getName());
-        this.fastClass = FieldEntityAccess.getOrIntializeReflector(entity).fastClass();
     }
 
     @Override
@@ -87,28 +84,20 @@ public class SessionEntityProxyMethodHandler extends EntityProxyMethodHandler {
 
     protected Object handleInvocationFallback(Object self, Method thisMethod, Object[] args) {
         Object actualTarget = getProxyTarget(self);
-        FastMethod fastMethod;
         if(!thisMethod.getDeclaringClass().isInstance(actualTarget)) {
             if(Modifier.isPublic(thisMethod.getModifiers())) {
-                try {
-                    fastMethod = fastClass.getMethod(thisMethod);
-                } catch (Exception e) {
-                    fastMethod = null;
-                    org.springframework.util.ReflectionUtils.handleReflectionException(e);
+                final Method method = ReflectionUtils.findMethod(actualTarget.getClass(), thisMethod.getName(), thisMethod.getParameterTypes());
+                if(method != null) {
+                    ReflectionUtils.makeAccessible(method);
+                    thisMethod = method;
                 }
             } else {
                 final Method method = ReflectionUtils.findMethod(actualTarget.getClass(), thisMethod.getName(), thisMethod.getParameterTypes());
-                fastMethod = fastClass.getMethod(method);
+                if(method != null) {
+                    thisMethod = method;
+                }
             }
         }
-        else {
-            fastMethod = fastClass.getMethod(thisMethod);
-        }
-        try {
-            return fastMethod.invoke(actualTarget, args);
-        } catch (InvocationTargetException e) {
-            org.springframework.util.ReflectionUtils.handleReflectionException(e);
-        }
-        return null;
+        return ReflectionUtils.invokeMethod(thisMethod, actualTarget, args);
     }
 }

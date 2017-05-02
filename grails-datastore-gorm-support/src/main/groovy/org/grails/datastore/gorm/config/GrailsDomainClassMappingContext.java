@@ -35,8 +35,10 @@ import java.util.Map;
  *
  * @author Graeme Rocher
  * @since 1.0
+ * @deprecated Use a concrete mapping context implementation instead
  */
 @SuppressWarnings("rawtypes")
+@Deprecated
 public class GrailsDomainClassMappingContext extends AbstractMappingContext implements ApplicationContextAware {
 
     private GrailsApplication grailsApplication;

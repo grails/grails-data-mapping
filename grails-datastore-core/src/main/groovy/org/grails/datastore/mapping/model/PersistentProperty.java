@@ -1,6 +1,7 @@
 package org.grails.datastore.mapping.model;
 
 import org.grails.datastore.mapping.config.Property;
+import org.grails.datastore.mapping.reflect.EntityReflector;
 
 /**
  * @author Graeme Rocher
@@ -52,4 +53,14 @@ public interface PersistentProperty<T extends Property> {
      * @return Whether this property is inherited
      */
     boolean isInherited();
+
+    /**
+     * @return The reader for this property
+     */
+    EntityReflector.PropertyReader getReader();
+
+    /**
+     * @return The writer for this property
+     */
+    EntityReflector.PropertyWriter getWriter();
 }

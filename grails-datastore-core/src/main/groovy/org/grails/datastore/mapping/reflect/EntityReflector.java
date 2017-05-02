@@ -5,6 +5,8 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 import org.springframework.cglib.reflect.FastClass;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -21,7 +23,9 @@ public interface EntityReflector {
     PersistentEntity getPersitentEntity();
     /**
      * @return The fast class
+     * @deprecated Do not use
      */
+    @Deprecated
     FastClass fastClass();
     /**
      * @return The identity type
@@ -99,6 +103,17 @@ public interface EntityReflector {
     PropertyWriter getPropertyWriter(String name);
 
     interface PropertyReader {
+
+        /**
+         * @return The field or null if the field cannot be resolved
+         */
+        Field field();
+
+        /**
+         * @return The getter
+         */
+        Method getter();
+
         /**
          * @return The property type
          */
@@ -114,6 +129,15 @@ public interface EntityReflector {
     }
 
     interface PropertyWriter {
+        /**
+         * @return The field or null if the field cannot be resolved
+         */
+        Field field();
+
+        /**
+         * @return The getter
+         */
+        Method setter();
         /**
          * @return The property type
          */
