@@ -862,8 +862,8 @@ abstract class AbstractDetachedCriteria<T> implements Criteria, Cloneable {
         criteria.@orders = new ArrayList(this.orders)
         criteria.defaultMax = defaultMax
         criteria.defaultOffset = defaultOffset
-        criteria.fetchStrategies = new HashMap<>(this.fetchStrategies)
-        criteria.joinTypes = new HashMap<>(this.joinTypes)
+        criteria.@fetchStrategies = new HashMap<>(this.fetchStrategies)
+        criteria.@joinTypes = new HashMap<>(this.joinTypes)
         return criteria
     }
 
