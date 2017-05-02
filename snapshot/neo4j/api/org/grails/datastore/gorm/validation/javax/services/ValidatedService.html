@@ -163,11 +163,17 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code><a href='../../../../../../../org/grails/datastore/mapping/validation/ValidationErrors.html'>ValidationErrors</a></code></td>
+                            <td class="colLast"><code><strong><a href="#asErrors(java.lang.Object, ConstraintViolationException)">asErrors</a></strong>(java.lang.Object object, <a href='../../../../../../../ConstraintViolationException.html'>ConstraintViolationException</a> e)</code><br>Converts a ConstraintViolationException to errors</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../../../ValidatorFactory.html'>ValidatorFactory</a></code></td>
                             <td class="colLast"><code><strong><a href="#getValidatorFactory()">getValidatorFactory</a></strong>()</code><br>@return The validator factory for this service</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#validate(java.lang.Object, java.lang.reflect.Method, java.lang.Object)">validate</a></strong>(java.lang.Object instance, java.lang.reflect.Method method, java.lang.Object... args)</code><br>Validate the given method for the given arguments</td>
@@ -223,6 +229,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                     <!--   -->
                 </a>
                     <h3>Method Detail</h3>
+                    
+                        <a name="asErrors(java.lang.Object, ConstraintViolationException)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../../../../org/grails/datastore/mapping/validation/ValidationErrors.html'>ValidationErrors</a> <strong>asErrors</strong>(java.lang.Object object, <a href='../../../../../../../ConstraintViolationException.html'>ConstraintViolationException</a> e)</h4>
+                                <p> Converts a ConstraintViolationException to errors
+     <DL><DT><B>Returns:</B></DT><DD>The errors</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>object</code> -  The validated object</DD><DD><code>e</code> -  The exception</DD></DL></p>
+                            </li>
+                        </ul>
                     
                         <a name="getValidatorFactory()"><!-- --></a>
                         <ul class="blockListLast">
