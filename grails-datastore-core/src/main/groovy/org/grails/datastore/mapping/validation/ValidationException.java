@@ -24,6 +24,8 @@ import org.springframework.validation.ObjectError;
 
 /**
  * Exception thrown when a validation error occurs
+ *
+ * @author Graeme Rocher
  */
 public class ValidationException extends DataIntegrityViolationException {
 
@@ -49,11 +51,21 @@ public class ValidationException extends DataIntegrityViolationException {
     }
 
 
-    private String fullMessage;
+    private final String fullMessage;
+    private final Errors errors;
 
     public ValidationException(String msg, Errors errors) {
         super(msg);
         fullMessage = formatErrors(errors, msg);
+        this.errors = errors;
+    }
+
+    /**
+     * @return The errors object
+     * @since 6.1.3
+     */
+    public Errors getErrors() {
+        return errors;
     }
 
     @Override

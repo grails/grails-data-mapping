@@ -1,8 +1,10 @@
 package org.grails.datastore.gorm.validation.javax.services
 
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.validation.javax.ConstraintViolationUtils
 import org.grails.datastore.gorm.validation.javax.JavaxValidatorRegistry
 import org.grails.datastore.mapping.services.Service
+import org.grails.datastore.mapping.validation.ValidationErrors
 
 import javax.validation.Configuration
 import javax.validation.ConstraintViolation
@@ -74,5 +76,16 @@ trait ValidatedService<T> extends Service<T> {
         if(!constraintViolations.isEmpty()) {
             throw new ConstraintViolationException(constraintViolations)
         }
+    }
+
+    /**
+     * Converts a ConstraintViolationException to errors
+     *
+     * @param object The validated object
+     * @param e The exception
+     * @return The errors
+     */
+    ValidationErrors asErrors(Object object, ConstraintViolationException e) {
+        ConstraintViolationUtils.asErrors(object, e)
     }
 }
