@@ -577,19 +577,6 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
      */
     public static void applyDetachedCriteria(Query query, AbstractDetachedCriteria detachedCriteria) {
         if (detachedCriteria != null) {
-            List<Query.Criterion> criteria = detachedCriteria.getCriteria();
-            for (Query.Criterion criterion : criteria) {
-                query.add(criterion);
-            }
-            List<Query.Projection> projections = detachedCriteria.getProjections();
-            for (Query.Projection projection : projections) {
-                query.projections().add(projection);
-            }
-            List<Query.Order> orders = detachedCriteria.getOrders();
-            for (Query.Order order : orders) {
-                query.order(order);
-            }
-
             Map<String, FetchType> fetchStrategies = detachedCriteria.getFetchStrategies();
             for (Map.Entry<String, FetchType> entry : fetchStrategies.entrySet()) {
                 String property = entry.getKey();
@@ -606,6 +593,18 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
                     case LAZY:
                         query.select(property);
                 }
+            }
+            List<Query.Criterion> criteria = detachedCriteria.getCriteria();
+            for (Query.Criterion criterion : criteria) {
+                query.add(criterion);
+            }
+            List<Query.Projection> projections = detachedCriteria.getProjections();
+            for (Query.Projection projection : projections) {
+                query.projections().add(projection);
+            }
+            List<Query.Order> orders = detachedCriteria.getOrders();
+            for (Query.Order order : orders) {
+                query.order(order);
             }
         }
     }
