@@ -542,10 +542,12 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Applies sorting logic to the given query from the given map</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html#applyTransactionalAttributeSettings(org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.expr.VariableExpression, org.codehaus.groovy.ast.stmt.BlockStatement)" title="Method in TransactionalTransform">applyTransactionalAttributeSettings(AnnotationNode, VariableExpression, BlockStatement)</a></span> - Method in <a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html">TransactionalTransform</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingSupport.html#areAssociationsDirty(org.grails.datastore.mapping.core.Session, org.grails.datastore.mapping.model.PersistentEntity, java.lang.Object)" title="Method in DirtyCheckingSupport">areAssociationsDirty(Session, PersistentEntity, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingSupport.html">DirtyCheckingSupport</a>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingSupport.html#areAssociationsDirty(org.grails.datastore.mapping.model.PersistentEntity, java.lang.Object)" title="Method in DirtyCheckingSupport">areAssociationsDirty(PersistentEntity, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingSupport.html">DirtyCheckingSupport</a>
 </dt><dd> <div class="block">Checks whether associations are dirty</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#areCollectionsEqual(java.lang.Object, java.lang.Object)" title="Method in NativeEntryEntityPersister">areCollectionsEqual(Object, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingSupport.html#areEmbeddedDirty(org.grails.datastore.mapping.model.PersistentEntity, java.lang.Object)" title="Method in DirtyCheckingSupport">areEmbeddedDirty(PersistentEntity, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingSupport.html">DirtyCheckingSupport</a>
+</dt><dd> <div class="block">Checks whether embedded associations are dirty</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#areEqual(java.lang.Object, java.lang.Object, java.lang.String)" title="Method in NativeEntryEntityPersister">areEqual(Object, Object, String)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/finders/DynamicFinder.html#ARGUMENT_CACHE" title="Field in DynamicFinder">ARGUMENT_CACHE</a></span> - Field in <a href="org/grails/datastore/gorm/finders/DynamicFinder.html">DynamicFinder</a>
@@ -2627,6 +2629,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Execute the given closure for each tenant. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Embedded.html" title="Class in org.grails.datastore.mapping.model.types">Embedded</a></span> - Class in <a href="./org/grails/datastore/mapping/model/types/package-summary.html">org.grails.datastore.mapping.model.types</a>
 </dt><dd><div class="block">Models an embedded component</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html#embedded" title="Field in AbstractPersistentEntity">embedded</a></span> - Field in <a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html">AbstractPersistentEntity</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Embedded.html#Embedded(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.lang.String, java.lang.Class)" title="Constructor in Embedded">Embedded(PersistentEntity, MappingContext, String, Class)</a></span> - Constructor in <a href="org/grails/datastore/mapping/model/types/Embedded.html">Embedded</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/config/GormProperties.html#EMBEDDED" title="Field in GormProperties">EMBEDDED</a></span> - Field in <a href="org/grails/datastore/mapping/model/config/GormProperties.html">GormProperties</a>
@@ -3816,8 +3820,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Obtains only the direct children (1 level down) for the given root entity</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/Query.Order.html#getDirection()" title="Method in Query.Order">getDirection()</a></span> - Method in <a href="org/grails/datastore/mapping/query/Query.Order.html">Query.Order</a>
 </dt><dd> <div class="block">@return The direction order by</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/EntityReflector.html#getDirtyCheckingState(java.lang.Object)" title="Method in EntityReflector">getDirtyCheckingState(Object)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/EntityReflector.html">EntityReflector</a>
+</dt><dd> <div class="block">@return Obtains the dirty checking state for the given entity</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#getDirtyPropertyNames()" title="Method in GormEntity">getDirtyPropertyNames()</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
-</dt><dd> <div class="block">Obtains a list of property names that are dirty</div></dd>
+</dt><dd> <div class="block">Obtains a list of property names that are dirty. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormInstanceApi.html#getDirtyPropertyNames(D)" title="Method in GormInstanceApi">getDirtyPropertyNames(D)</a></span> - Method in <a href="org/grails/datastore/gorm/GormInstanceApi.html">GormInstanceApi</a>
 </dt><dd> <div class="block">Obtains a list of property names that are dirty</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html#getDiscriminator()" title="Method in AbstractPersistentEntity">getDiscriminator()</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html">AbstractPersistentEntity</a>
@@ -3844,8 +3850,12 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/mongo/engine/AbstractMongoObectEntityPersister.html#getEmbedded(T, java.lang.String)" title="Method in AbstractMongoObectEntityPersister">getEmbedded(T, String)</a></span> - Method in <a href="org/grails/datastore/mapping/mongo/engine/AbstractMongoObectEntityPersister.html">AbstractMongoObectEntityPersister</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html#getEmbedded()" title="Method in AbstractPersistentEntity">getEmbedded()</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html">AbstractPersistentEntity</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#getEmbedded(T, java.lang.String)" title="Method in NativeEntryEntityPersister">getEmbedded(T, String)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block">Implementors should override to provide support for embedded objects.</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/PersistentEntity.html#getEmbedded()" title="Method in PersistentEntity">getEmbedded()</a></span> - Method in <a href="org/grails/datastore/mapping/model/PersistentEntity.html">PersistentEntity</a>
+</dt><dd> <div class="block">A list of embedded associations for this entity. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/bson/codecs/BigDecimalCodec.html#getEncoderClass()" title="Method in BigDecimalCodec">getEncoderClass()</a></span> - Method in <a href="org/grails/datastore/bson/codecs/BigDecimalCodec.html">BigDecimalCodec</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/bson/codecs/BigIntegerCodec.html#getEncoderClass()" title="Method in BigIntegerCodec">getEncoderClass()</a></span> - Method in <a href="org/grails/datastore/bson/codecs/BigIntegerCodec.html">BigIntegerCodec</a>
@@ -4500,7 +4510,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/PersistentEntity.html#getPersistentPropertyNames()" title="Method in PersistentEntity">getPersistentPropertyNames()</a></span> - Method in <a href="org/grails/datastore/mapping/model/PersistentEntity.html">PersistentEntity</a>
 </dt><dd> <div class="block">A list of property names that a persistent</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#getPersistentValue(java.lang.String)" title="Method in GormEntity">getPersistentValue(String)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
-</dt><dd> <div class="block">Gets the original persisted value of a field.</div></dd>
+</dt><dd> <div class="block">Gets the original persisted value of a field. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormInstanceApi.html#getPersistentValue(D, java.lang.String)" title="Method in GormInstanceApi">getPersistentValue(D, String)</a></span> - Method in <a href="org/grails/datastore/gorm/GormInstanceApi.html">GormInstanceApi</a>
 </dt><dd> <div class="block">Gets the original persisted value of a field.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/AbstractSession.html#getPersister(java.lang.Object)" title="Method in AbstractSession">getPersister(Object)</a></span> - Method in <a href="org/grails/datastore/mapping/core/AbstractSession.html">AbstractSession</a>
@@ -5827,7 +5837,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/DelegatingGormEntityApi.html#isDirty()" title="Method in DelegatingGormEntityApi">isDirty()</a></span> - Method in <a href="org/grails/datastore/gorm/DelegatingGormEntityApi.html">DelegatingGormEntityApi</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#isDirty()" title="Method in GormEntity">isDirty()</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
-</dt><dd> <div class="block">Checks whether an entity is dirty</div></dd>
+</dt><dd> <div class="block">Checks whether an entity is dirty. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntityApi.html#isDirty()" title="Method in GormEntityApi">isDirty()</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntityApi.html">GormEntityApi</a>
 </dt><dd> <div class="block">Checks whether an entity is dirty</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormInstanceApi.html#isDirty(D)" title="Method in GormInstanceApi">isDirty(D)</a></span> - Method in <a href="org/grails/datastore/gorm/GormInstanceApi.html">GormInstanceApi</a>
