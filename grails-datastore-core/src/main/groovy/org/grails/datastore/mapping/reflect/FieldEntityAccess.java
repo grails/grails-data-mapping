@@ -1,6 +1,7 @@
 package org.grails.datastore.mapping.reflect;
 
 import org.codehaus.groovy.transform.trait.Traits;
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
@@ -164,11 +165,16 @@ public class FieldEntityAccess implements EntityAccess {
         final Class identifierType;
         final Map<String, PropertyReader> readerMap = new HashMap<>();
         final Map<String, PropertyWriter> writerMap = new HashMap<>();
+        final Field dirtyCheckingStateField;
         FastClass fastClass;
 
         public FieldEntityReflector(PersistentEntity entity) {
             this.entity = entity;
             PersistentProperty identity = entity.getIdentity();
+            dirtyCheckingStateField = ReflectionUtils.findField(entity.getJavaClass(), getTraitFieldName(DirtyCheckable.class, "$changedProperties"));
+            if(dirtyCheckingStateField != null) {
+                ReflectionUtils.makeAccessible(dirtyCheckingStateField);
+            }
             ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
             if(identity != null) {
                 String identityName = identity.getName();
@@ -231,6 +237,18 @@ public class FieldEntityAccess implements EntityAccess {
         @Override
         public PersistentEntity getPersitentEntity() {
             return this.entity;
+        }
+
+        @Override
+        public Map<String, Object> getDirtyCheckingState(Object entity) {
+            if(dirtyCheckingStateField != null) {
+                try {
+                    return (Map<String, Object>) dirtyCheckingStateField.get(entity);
+                } catch (Throwable e) {
+                    return null;
+                }
+            }
+            return null;
         }
 
         @Override

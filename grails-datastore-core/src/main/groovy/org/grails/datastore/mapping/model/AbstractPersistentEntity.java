@@ -24,10 +24,7 @@ import org.grails.datastore.mapping.config.Entity;
 import org.grails.datastore.mapping.core.EntityCreationException;
 import org.grails.datastore.mapping.core.exceptions.ConfigurationException;
 import org.grails.datastore.mapping.model.config.GormProperties;
-import org.grails.datastore.mapping.model.types.Association;
-import org.grails.datastore.mapping.model.types.Identity;
-import org.grails.datastore.mapping.model.types.OneToMany;
-import org.grails.datastore.mapping.model.types.TenantId;
+import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.multitenancy.MultiTenancySettings;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.grails.datastore.mapping.reflect.EntityReflector;
@@ -46,6 +43,7 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
     protected final MappingContext context;
     protected List<PersistentProperty> persistentProperties;
     protected List<Association> associations;
+    protected List<Embedded> embedded;
     protected Map<String, PersistentProperty> propertiesByName = new HashMap<String,PersistentProperty>();
     protected Map<String, PersistentProperty> mappedPropertiesByName = new HashMap<String,PersistentProperty>();
     protected PersistentProperty identity;
@@ -137,6 +135,7 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
 
             persistentPropertyNames = new ArrayList<>();
             associations = new ArrayList();
+            embedded  = new ArrayList();
 
 
             boolean multiTenancyEnabled = isMultiTenant && context.getMultiTenancyMode() == MultiTenancySettings.MultiTenancyMode.DISCRIMINATOR;
@@ -166,12 +165,20 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
                 if (persistentProperty instanceof Association) {
                     associations.add((Association) persistentProperty);
                 }
-
+                if( persistentProperty instanceof Embedded) {
+                    embedded.add((Embedded)persistentProperty);
+                }
                 propertiesByName.put(persistentProperty.getName(), persistentProperty);
                 final String targetName = persistentProperty.getMapping().getMappedForm().getTargetName();
                 if(targetName != null) {
                     mappedPropertiesByName.put(targetName, persistentProperty);
                 }
+            }
+            if(associations.isEmpty()) {
+                associations = Collections.emptyList();
+            }
+            if(embedded.isEmpty()) {
+                embedded = Collections.emptyList();
             }
 
             if(identity == null && compositeIdentity == null) {
@@ -373,6 +380,11 @@ public abstract class AbstractPersistentEntity<T extends Entity> implements Pers
 
     public List<Association> getAssociations() {
         return associations;
+    }
+
+    @Override
+    public List<Embedded> getEmbedded() {
+        return embedded;
     }
 
     public PersistentProperty getPropertyByName(String name) {

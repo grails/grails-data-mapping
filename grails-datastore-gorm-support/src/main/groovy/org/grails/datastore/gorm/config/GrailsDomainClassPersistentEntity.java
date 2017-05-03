@@ -15,10 +15,7 @@
 
 package org.grails.datastore.gorm.config;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import grails.core.GrailsDomainClass;
 import grails.core.GrailsDomainClassProperty;
@@ -205,6 +202,11 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Vali
 
     public List<Association> getAssociations() {
         return associations;
+    }
+
+    @Override
+    public List<Embedded> getEmbedded() {
+        return Collections.emptyList();
     }
 
     public PersistentProperty getPropertyByName(String name) {

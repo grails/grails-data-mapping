@@ -16,6 +16,7 @@
 package org.grails.orm.hibernate.support;
 
 
+import grails.gorm.dirty.checking.DirtyCheck;
 import org.grails.datastore.gorm.events.ConfigurableApplicationContextEventPublisher;
 import org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
@@ -23,6 +24,9 @@ import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
 import org.grails.datastore.mapping.engine.ModificationTrackingEntityAccess;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.model.types.Embedded;
+import org.grails.datastore.mapping.proxy.ProxyHandler;
 import org.grails.orm.hibernate.AbstractHibernateDatastore;
 import org.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
 import org.hibernate.Hibernate;
@@ -96,8 +100,13 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     protected AbstractHibernateDatastore datastore;
     protected ConfigurableApplicationEventPublisher eventPublisher;
 
+    private MappingContext mappingContext;
+    private ProxyHandler proxyHandler;
+
     public void setDatastore(AbstractHibernateDatastore datastore) {
         this.datastore = datastore;
+        this.mappingContext = datastore.getMappingContext();
+        this.proxyHandler = mappingContext.getProxyHandler();
     }
 
     public void setEventPublisher(ConfigurableApplicationEventPublisher eventPublisher) {
@@ -107,7 +116,7 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     @Override
     public void onSaveOrUpdate(SaveOrUpdateEvent hibernateEvent) throws HibernateException {
         Object entity = getEntity(hibernateEvent);
-        if(entity != null && datastore.getMappingContext().getProxyHandler().isInitialized(entity)) {
+        if(entity != null && proxyHandler.isInitialized(entity)) {
             activateDirtyChecking(entity);
             org.grails.datastore.mapping.engine.event.SaveOrUpdateEvent grailsEvent = new org.grails.datastore.mapping.engine.event.SaveOrUpdateEvent(
                     this.datastore, entity);
@@ -142,7 +151,6 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     public boolean onPreInsert(PreInsertEvent hibernateEvent) {
         Object entity = hibernateEvent.getEntity();
         Class type = Hibernate.getClass(entity);
-        MappingContext mappingContext = datastore.getMappingContext();
         PersistentEntity persistentEntity = mappingContext.getPersistentEntity(type.getName());
         AbstractPersistenceEvent grailsEvent;
         ModificationTrackingEntityAccess entityAccess = null;
@@ -254,12 +262,6 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
         return false;
     }
 
-    @Deprecated
-    public static void addNullabilityCheckerPreInsertEventListener(EventListenerRegistry listenerRegistry) {
-        listenerRegistry.getEventListenerGroup(EventType.PRE_INSERT).appendListener(NULLABILITY_CHECKER_INSTANCE);
-    }
-
-    private static final PreInsertEventListener NULLABILITY_CHECKER_INSTANCE = new NullabilityCheckerPreInsertEventListener();
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -270,13 +272,6 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     }
 
     @SuppressWarnings("serial")
-    private static class NullabilityCheckerPreInsertEventListener implements PreInsertEventListener {
-        public boolean onPreInsert(PreInsertEvent event) {
-            new Nullability(event.getSession()).checkNullability(event.getState(), event.getPersister(), false);
-            return false;
-        }
-    }
-
     /**
      * Prevents hitting the database for an extra check if the row exists in the database.
      *
@@ -290,9 +285,22 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
 
     private void activateDirtyChecking(Object entity) {
         if(entity instanceof DirtyCheckable) {
+            PersistentEntity persistentEntity = mappingContext.getPersistentEntity(Hibernate.getClass(entity).getName());
             DirtyCheckable dirtyCheckable = (DirtyCheckable) entity;
-            if(dirtyCheckable.listDirtyPropertyNames().isEmpty()) {
+            Map<String, Object> dirtyCheckingState = persistentEntity.getReflector().getDirtyCheckingState(entity);
+            if(dirtyCheckingState == null) {
                 dirtyCheckable.trackChanges();
+                for (Embedded association : persistentEntity.getEmbedded()) {
+                    if(DirtyCheckable.class.isAssignableFrom(association.getType())) {
+                        Object embedded = association.getReader().read(entity);
+                        if(embedded != null) {
+                            DirtyCheckable embeddedCheck = (DirtyCheckable) embedded;
+                            if(embeddedCheck.listDirtyPropertyNames().isEmpty()) {
+                                embeddedCheck.trackChanges();
+                            }
+                        }
+                    }
+                }
             }
         }
     }

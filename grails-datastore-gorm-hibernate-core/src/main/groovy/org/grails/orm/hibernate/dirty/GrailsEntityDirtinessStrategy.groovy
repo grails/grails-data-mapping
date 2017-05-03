@@ -17,9 +17,15 @@ package org.grails.orm.hibernate.dirty
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckingSupport
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.config.GormProperties
+import org.grails.datastore.mapping.model.types.Embedded
 import org.hibernate.CustomEntityDirtinessStrategy
+import org.hibernate.Hibernate
 import org.hibernate.Session
 import org.hibernate.engine.spi.SessionImplementor
 import org.hibernate.engine.spi.Status
@@ -43,7 +49,7 @@ class GrailsEntityDirtinessStrategy implements CustomEntityDirtinessStrategy {
 
     @Override
     boolean isDirty(Object entity, EntityPersister persister, Session session) {
-        !session.contains(entity) || cast(entity).hasChanged()
+        !session.contains(entity) || cast(entity).hasChanged() || DirtyCheckingSupport.areEmbeddedDirty(GormEnhancer.findEntity(Hibernate.getClass(entity)), entity)
     }
 
     @Override
@@ -68,7 +74,25 @@ class GrailsEntityDirtinessStrategy implements CustomEntityDirtinessStrategy {
                                         return dirtyCheckable.hasChanged()
                                     }
                                     else {
-                                        return dirtyCheckable.hasChanged(propertyName)
+                                        if(dirtyCheckable.hasChanged(propertyName)) {
+                                            return true
+                                        }
+                                        else {
+                                            PersistentEntity gormEntity = GormEnhancer.findEntity(Hibernate.getClass(entity))
+                                            PersistentProperty prop = gormEntity.getPropertyByName(attributeInformation.name)
+                                            if(prop instanceof Embedded) {
+                                                def val = prop.reader.read(entity)
+                                                if( val instanceof DirtyCheckable ) {
+                                                    return ((DirtyCheckable)val).hasChanged()
+                                                }
+                                                else {
+                                                    return false
+                                                }
+                                            }
+                                            else {
+                                                return false
+                                            }
+                                        }
                                     }
                                 }
                                 else {

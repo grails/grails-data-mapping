@@ -34,6 +34,8 @@ public abstract class AbstractPersistentProperty<T extends Property> implements 
     protected final String name;
     protected final Class type;
     protected Boolean inherited;
+    private EntityReflector.PropertyReader reader;
+    private EntityReflector.PropertyWriter writer;
 
     public AbstractPersistentProperty(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         this(owner, context, descriptor.getName(), descriptor.getPropertyType());
@@ -65,10 +67,10 @@ public abstract class AbstractPersistentProperty<T extends Property> implements 
     @Override
     public String toString() {
         String mappingType = getClass().getName();
-        if(mappingType.contains("$")) {
+        if (mappingType.contains("$")) {
             mappingType = getClass().getSuperclass().getName();
         }
-        return getName() + ":" + getType().getName() + " ("+mappingType+")";
+        return getName() + ":" + getType().getName() + " (" + mappingType + ")";
     }
 
     public boolean isNullable() {
@@ -78,17 +80,16 @@ public abstract class AbstractPersistentProperty<T extends Property> implements 
 
     @Override
     public boolean isInherited() {
-        if(inherited == null) {
+        if (inherited == null) {
 
-            if(owner.isRoot()) {
+            if (owner.isRoot()) {
                 inherited = false;
-            }
-            else {
+            } else {
                 PersistentEntity parentEntity = owner.getParentEntity();
                 boolean foundInParent = false;
-                while(parentEntity != null) {
+                while (parentEntity != null) {
                     final PersistentProperty p = parentEntity.getPropertyByName(name);
-                    if(p != null) {
+                    if (p != null) {
                         foundInParent = true;
                         break;
                     }
@@ -104,11 +105,17 @@ public abstract class AbstractPersistentProperty<T extends Property> implements 
 
     @Override
     public EntityReflector.PropertyReader getReader() {
-        return getOwner().getReflector().getPropertyReader(getName());
+        if (reader == null) {
+            reader = getOwner().getReflector().getPropertyReader(getName());
+        }
+        return reader;
     }
 
     @Override
     public EntityReflector.PropertyWriter getWriter() {
-        return getOwner().getReflector().getPropertyWriter(getName());
+        if (writer == null) {
+            writer = getOwner().getReflector().getPropertyWriter(getName());
+        }
+        return writer;
     }
 }

@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Used for reflective data
@@ -21,6 +22,11 @@ public interface EntityReflector {
      * The entity
      */
     PersistentEntity getPersitentEntity();
+
+    /**
+     * @return Obtains the dirty checking state for the given entity
+     */
+    Map<String, Object> getDirtyCheckingState(Object entity);
     /**
      * @return The fast class
      * @deprecated Do not use

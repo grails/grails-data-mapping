@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.grails.datastore.mapping.model.lifecycle.Initializable;
 import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.model.types.Embedded;
 import org.grails.datastore.mapping.model.types.TenantId;
 import org.grails.datastore.mapping.reflect.EntityReflector;
 
@@ -101,6 +102,14 @@ public interface PersistentEntity extends Initializable {
      * @return A list of associations
      */
     List <Association> getAssociations();
+
+    /**
+     * A list of embedded associations for this entity. This is typically
+     * a subset of the list returned by {@link #getPersistentProperties()}
+     *
+     * @return A list of associations
+     */
+    List <Embedded> getEmbedded();
 
     /**
      * Obtains a PersistentProperty instance by name

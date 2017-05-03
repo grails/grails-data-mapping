@@ -21,6 +21,7 @@ import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.model.types.Embedded
 import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.mapping.reflect.EntityReflector
@@ -99,6 +100,31 @@ class DirtyCheckingSupport {
         return false
     }
 
+
+    /**
+     * Checks whether embedded associations are dirty
+     *
+     * @param session The session
+     * @param entity The entity
+     * @param instance The instance
+     * @return True if they are
+     */
+    static boolean areEmbeddedDirty(PersistentEntity entity, Object instance) {
+        if(instance == null) return false
+
+
+        final associations = entity.getEmbedded()
+        for(Embedded a in associations) {
+            final value = a.reader.read(instance)
+            if(value instanceof DirtyCheckable) {
+                DirtyCheckable dirtyCheckable = (DirtyCheckable) value
+                if(dirtyCheckable.hasChanged()) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
     /**
      * Wraps a collection in dirty checking capability
      *
