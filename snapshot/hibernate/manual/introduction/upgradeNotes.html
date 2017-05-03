@@ -503,6 +503,18 @@ class Person implements AsyncEntity&lt;Person&gt; {
 </div>
 </div>
 <div class="sect3">
+<h4 id="_write_operations_without_a_transaction">Write Operations without a Transaction</h4>
+<div class="paragraph">
+<p>With the aforementioned changes to the default flush mode, write operations that are not surrounded by a transaction may not propagate changes to the database unless <code>flush:true</code> is explicitly passed or the session explicitly flushed.</p>
+</div>
+<div class="paragraph">
+<p>Not using a transaction around a write operation is considered bad practise as the connection is essentially in auto commit mode. If your code is structured this way we recommend that you add the necessary <code>@Transactional</code> transformation to surround the write operation.</p>
+</div>
+<div class="paragraph">
+<p>Also note that Hibernate 5.2 and above throw an exception if you attempt a write operation outside of a transaction, and although this is not the case in the current version of GORM it is a possibility that GORM will follow this path and also throw exception for this case in the future.</p>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_changes_to_configuration_model">Changes to Configuration Model</h4>
 <div class="paragraph">
 <p>In preparation for Hibernate 5.2 support the previous "SessionFactoryBean" notion has been removed. Now if you wish to customize <code>SessionFactory</code> creation you should instead register a custom <code>org.grails.orm.hibernate.connections.HibernateConnectionSourceFactory</code> in Spring.</p>
