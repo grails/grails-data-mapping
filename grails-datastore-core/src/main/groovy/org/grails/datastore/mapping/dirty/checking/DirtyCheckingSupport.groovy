@@ -45,12 +45,27 @@ class DirtyCheckingSupport {
      * @param entity The entity
      * @param instance The instance
      * @return True if they are
+     * @deprecated Use {@link #areAssociationsDirty(org.grails.datastore.mapping.model.PersistentEntity, java.lang.Object)} instead
      */
+    @Deprecated
     static boolean areAssociationsDirty(Session session, PersistentEntity entity, Object instance) {
+        areAssociationsDirty(entity, instance)
+    }
+
+
+    /**
+     * Checks whether associations are dirty
+     *
+     * @param session The session
+     * @param entity The entity
+     * @param instance The instance
+     * @return True if they are
+     */
+    static boolean areAssociationsDirty(PersistentEntity entity, Object instance) {
         if(!instance) return false
 
 
-        MappingContext mappingContext = session.mappingContext
+        MappingContext mappingContext = entity.mappingContext
         final proxyFactory = mappingContext.proxyFactory
         final EntityReflector entityReflector = mappingContext.getEntityReflector(entity)
 

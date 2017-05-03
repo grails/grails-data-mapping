@@ -197,7 +197,9 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
     }
 
     /**
-     * Checks whether a field is dirty
+     * Checks whether a field is dirty. Note that unlike {@link #hasChanged()} this method will inspect the
+     * persistence context (session) which may or may not contain a more accurate reflection of the initial loaded state
+     * depending on the underlying GORM implementation.
      *
      * @param instance The instance
      * @param fieldName The name of the field
@@ -209,7 +211,9 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
     }
 
     /**
-     * Checks whether an entity is dirty
+     * Checks whether an entity is dirty. Note that unlike {@link #hasChanged()} this method will inspect the
+     * persistence context (session) which may or may not contain a more accurate reflection of the initial loaded state
+     * depending on the underlying GORM implementation.
      *
      * @param instance The instance
      * @return true if it is dirty
@@ -220,7 +224,9 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
     }
 
     /**
-     * Obtains a list of property names that are dirty
+     * Obtains a list of property names that are dirty. Note that unlike {@link #listDirtyPropertyNames()} this method will inspect the
+     * persistence context (session) which may or may not contain a more accurate reflection of the initial loaded state
+     * depending on the underlying GORM implementation.
      *
      * @param instance The instance
      * @return A list of property names that are dirty
@@ -231,7 +237,9 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
     }
 
     /**
-     * Gets the original persisted value of a field.
+     * Gets the original persisted value of a field. Note that unlike {@link #getOriginalValue(java.lang.String)} this method will inspect the
+     * persistence context (session) which may or may not contain a more accurate reflection of the initial loaded state
+     * depending on the underlying GORM implementation.
      *
      * @param fieldName The field name
      * @return The original persisted value

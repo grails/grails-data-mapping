@@ -281,7 +281,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> implements GormInstanceOpera
      */
     boolean isDirty(D instance) {
         if(instance instanceof DirtyCheckable) {
-            return ((DirtyCheckable)instance).hasChanged() || (datastore.hasCurrentSession() && DirtyCheckingSupport.areAssociationsDirty(datastore.currentSession, persistentEntity, instance))
+            return ((DirtyCheckable)instance).hasChanged() || DirtyCheckingSupport.areAssociationsDirty(persistentEntity, instance)
         }
         return true
     }
