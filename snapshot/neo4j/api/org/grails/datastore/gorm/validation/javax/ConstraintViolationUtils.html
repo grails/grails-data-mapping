@@ -142,8 +142,14 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;<a href='../../../../../../org/grails/datastore/mapping/validation/ValidationErrors.html'>ValidationErrors</a></code></td>
+                            <td class="colLast"><code>static&nbsp;org.springframework.validation.Errors</code></td>
                             <td class="colLast"><code><strong><a href="#asErrors(java.lang.Object, ConstraintViolationException)">asErrors</a></strong>(java.lang.Object object, <a href='../../../../../../ConstraintViolationException.html'>ConstraintViolationException</a> e)</code><br>Converts a ConstraintViolationException to errors</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>static&nbsp;org.springframework.validation.Errors</code></td>
+                            <td class="colLast"><code><strong><a href="#asErrors(java.lang.Object, Set<ConstraintViolation>)">asErrors</a></strong>(java.lang.Object object, java.util.Set&lt;ConstraintViolation&gt; constraintViolations)</code><br>Converts a ConstraintViolation instances to errors</td>
                         </tr>
                         
                     </table>
@@ -199,8 +205,17 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="asErrors(java.lang.Object, ConstraintViolationException)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;<a href='../../../../../../org/grails/datastore/mapping/validation/ValidationErrors.html'>ValidationErrors</a> <strong>asErrors</strong>(java.lang.Object object, <a href='../../../../../../ConstraintViolationException.html'>ConstraintViolationException</a> e)</h4>
+                                <h4>static&nbsp;org.springframework.validation.Errors <strong>asErrors</strong>(java.lang.Object object, <a href='../../../../../../ConstraintViolationException.html'>ConstraintViolationException</a> e)</h4>
                                 <p> Converts a ConstraintViolationException to errors
+     <DL><DT><B>Returns:</B></DT><DD>The errors</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>object</code> -  The validated object</DD><DD><code>e</code> -  The exception</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="asErrors(java.lang.Object, Set<ConstraintViolation>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;org.springframework.validation.Errors <strong>asErrors</strong>(java.lang.Object object, java.util.Set&lt;ConstraintViolation&gt; constraintViolations)</h4>
+                                <p> Converts a ConstraintViolation instances to errors
      <DL><DT><B>Returns:</B></DT><DD>The errors</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>object</code> -  The validated object</DD><DD><code>e</code> -  The exception</DD></DL></p>
                             </li>
                         </ul>
