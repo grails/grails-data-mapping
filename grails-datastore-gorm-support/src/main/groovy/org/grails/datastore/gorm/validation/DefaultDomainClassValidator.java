@@ -107,7 +107,7 @@ public class DefaultDomainClassValidator extends GrailsDomainClassValidator impl
                         Errors existingErrors = validateable.getErrors();
                         if(existingErrors != null && existingErrors.hasErrors()) {
                             for(FieldError error : existingErrors.getFieldErrors()) {
-                                String path = errors.getNestedPath() + propertyName + '.' + error.getField();
+                                String path = propertyName + '.' + error.getField();
                                 errors.rejectValue(path, error.getCode(), error.getArguments(), error.getDefaultMessage());
                             }
                         }
