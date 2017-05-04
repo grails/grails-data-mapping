@@ -1,5 +1,6 @@
 package org.grails.compiler.gorm
 
+import grails.gorm.dirty.checking.DirtyCheck
 import grails.gorm.dirty.checking.DirtyCheckedProperty
 import groovy.transform.CompilationUnitAware
 import groovy.transform.CompileStatic
@@ -43,6 +44,7 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
     public static final String METHOD_NAME_MARK_DIRTY = "markDirty"
     public static final ConstantExpression CONSTANT_NULL = new ConstantExpression(null)
     public static final ClassNode DIRTY_CHECKED_PROPERTY_CLASS_NODE = ClassHelper.make(DirtyCheckedProperty)
+    public static final ClassNode DIRTY_CHECK_CLASS_NODE = ClassHelper.make(DirtyCheck)
     public static final AnnotationNode DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE = new AnnotationNode(DIRTY_CHECKED_PROPERTY_CLASS_NODE)
 
     static {
@@ -68,17 +70,24 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
     void performInjectionOnAnnotatedClass(SourceUnit source, ClassNode classNode) {
         // First add a local field that will store the change tracking state. The field is a simple list of property names that have changed
         // the field is only added to root clauses that extend from java.lang.Object
-        final changeTrackableClassNode = new ClassNode(DirtyCheckable).getPlainNodeReference()
-        final markDirtyMethodNode = changeTrackableClassNode.getMethod(METHOD_NAME_MARK_DIRTY, new Parameter(ClassHelper.STRING_TYPE, "propertyName"), new Parameter(ClassHelper.OBJECT_TYPE, "newValue"))
+        final ClassNode changeTrackableClassNode = new ClassNode(DirtyCheckable).getPlainNodeReference()
+        final MethodNode markDirtyMethodNode = changeTrackableClassNode.getMethod(METHOD_NAME_MARK_DIRTY, new Parameter(ClassHelper.STRING_TYPE, "propertyName"), new Parameter(ClassHelper.OBJECT_TYPE, "newValue"))
 
 
-        def superClass = classNode.getSuperClass()
-        final shouldWeave = superClass.equals(OBJECT_CLASS_NODE)
+        ClassNode superClass = classNode.getSuperClass()
+        boolean shouldWeave = superClass.equals(OBJECT_CLASS_NODE)
 
-        def dirtyCheckableTrait = ClassHelper.make(DirtyCheckable).getPlainNodeReference()
+        ClassNode dirtyCheckableTrait = ClassHelper.make(DirtyCheckable).getPlainNodeReference()
 
-        if(!shouldWeave) {
-            shouldWeave = !classNode.implementsInterface(dirtyCheckableTrait)
+        while(!shouldWeave) {
+            if(isDomainClass(superClass) || !superClass.getAnnotations(DIRTY_CHECK_CLASS_NODE).isEmpty()) {
+                break
+            }
+            superClass = superClass.getSuperClass()
+            if(superClass == null || superClass.equals(OBJECT_CLASS_NODE)) {
+                shouldWeave = true
+                break
+            }
         }
 
         if(shouldWeave ) {
