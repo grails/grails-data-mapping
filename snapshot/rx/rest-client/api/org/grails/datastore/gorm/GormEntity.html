@@ -504,7 +504,7 @@ trait GormEntity
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.util.List</code></td>
-                            <td class="colLast"><code><strong><a href="#getDirtyPropertyNames()">getDirtyPropertyNames</a></strong>()</code><br>Obtains a list of property names that are dirty</td>
+                            <td class="colLast"><code><strong><a href="#getDirtyPropertyNames()">getDirtyPropertyNames</a></strong>()</code><br>Obtains a list of property names that are dirty. </td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -528,7 +528,7 @@ trait GormEntity
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.lang.Object</code></td>
-                            <td class="colLast"><code><strong><a href="#getPersistentValue(java.lang.String)">getPersistentValue</a></strong>(java.lang.String fieldName)</code><br>Gets the original persisted value of a field.</td>
+                            <td class="colLast"><code><strong><a href="#getPersistentValue(java.lang.String)">getPersistentValue</a></strong>(java.lang.String fieldName)</code><br>Gets the original persisted value of a field. </td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -564,13 +564,13 @@ trait GormEntity
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#isDirty(java.lang.String)">isDirty</a></strong>(java.lang.String fieldName)</code><br>Checks whether a field is dirty</td>
+                            <td class="colLast"><code><strong><a href="#isDirty(java.lang.String)">isDirty</a></strong>(java.lang.String fieldName)</code><br>Checks whether a field is dirty. </td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#isDirty()">isDirty</a></strong>()</code><br>Checks whether an entity is dirty</td>
+                            <td class="colLast"><code><strong><a href="#isDirty()">isDirty</a></strong>()</code><br>Checks whether an entity is dirty. </td>
                         </tr>
                         
                         <tr class="altColor">
@@ -1387,7 +1387,9 @@ trait GormEntity
                             <li class="blockList">
                                 <h4>@javax.persistence.Transient
 java.util.List <strong>getDirtyPropertyNames</strong>()</h4>
-                                <p> Obtains a list of property names that are dirty
+                                <p> Obtains a list of property names that are dirty. Note that unlike <a href='#listDirtyPropertyNames()'>listDirtyPropertyNames()</a> this method will inspect the
+ persistence context (session) which may or may not contain a more accurate reflection of the initial loaded state
+ depending on the underlying GORM implementation.
      <DL><DT><B>Returns:</B></DT><DD>A list of property names that are dirty</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD></DL></p>
                             </li>
                         </ul>
@@ -1423,7 +1425,9 @@ static&nbsp;<a href='../../../../org/grails/datastore/gorm/query/GormQueryOperat
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>java.lang.Object <strong>getPersistentValue</strong>(java.lang.String fieldName)</h4>
-                                <p> Gets the original persisted value of a field.
+                                <p> Gets the original persisted value of a field. Note that unlike <a href='#getOriginalValue(java.lang.String)'>getOriginalValue(java.lang.String)</a> this method will inspect the
+ persistence context (session) which may or may not contain a more accurate reflection of the initial loaded state
+ depending on the underlying GORM implementation.
      <DL><DT><B>Returns:</B></DT><DD>The original persisted value</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>fieldName</code> -  The field name</DD></DL></p>
                             </li>
                         </ul>
@@ -1478,7 +1482,9 @@ boolean <strong>isAttached</strong>()</h4>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>boolean <strong>isDirty</strong>(java.lang.String fieldName)</h4>
-                                <p> Checks whether a field is dirty
+                                <p> Checks whether a field is dirty. Note that unlike <a href='#hasChanged()'>hasChanged()</a> this method will inspect the
+ persistence context (session) which may or may not contain a more accurate reflection of the initial loaded state
+ depending on the underlying GORM implementation.
      <DL><DT><B>Returns:</B></DT><DD>true if the field is dirty</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD><DD><code>fieldName</code> -  The name of the field</DD></DL></p>
                             </li>
                         </ul>
@@ -1488,7 +1494,9 @@ boolean <strong>isAttached</strong>()</h4>
                             <li class="blockList">
                                 <h4>@javax.persistence.Transient
 boolean <strong>isDirty</strong>()</h4>
-                                <p> Checks whether an entity is dirty
+                                <p> Checks whether an entity is dirty. Note that unlike <a href='#hasChanged()'>hasChanged()</a> this method will inspect the
+ persistence context (session) which may or may not contain a more accurate reflection of the initial loaded state
+ depending on the underlying GORM implementation.
      <DL><DT><B>Returns:</B></DT><DD>true if it is dirty</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD></DL></p>
                             </li>
                         </ul>
