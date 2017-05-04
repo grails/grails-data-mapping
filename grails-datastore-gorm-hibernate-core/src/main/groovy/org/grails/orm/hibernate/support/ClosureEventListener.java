@@ -21,7 +21,6 @@ import groovy.lang.MetaClass;
 import org.grails.datastore.gorm.GormValidateable;
 import org.grails.datastore.gorm.support.BeforeValidateHelper.BeforeValidateEventTriggerCaller;
 import org.grails.datastore.gorm.support.EventTriggerCaller;
-import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.engine.event.ValidationEvent;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
@@ -38,12 +37,14 @@ import org.hibernate.engine.spi.ActionQueue;
 import org.hibernate.engine.spi.ExecutableList;
 import org.hibernate.event.spi.*;
 import org.hibernate.persister.entity.EntityPersister;
+import org.hibernate.tuple.entity.EntityMetamodel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.Errors;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -291,18 +292,17 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
 
     private void synchronizePersisterState(AbstractPreDatabaseOperationEvent event, Object[] state) {
         EntityPersister persister = event.getPersister();
-        String[] propertyNames = persister.getPropertyNames();
-        synchronizePersisterState(event, state, persister, propertyNames);
+        synchronizePersisterState(event, state, persister, persister.getPropertyNames());
     }
 
     private void synchronizePersisterState(AbstractPreDatabaseOperationEvent event, Object[] state, EntityPersister persister, String[] propertyNames) {
         Object entity = event.getEntity();
         EntityReflector reflector = persistentEntity.getReflector();
         HashMap<Integer, Object> changedState= new HashMap<>();
-        int[] indexes = HibernateVersionSupport.resolveAttributeIndexes(persister, propertyNames);
+        EntityMetamodel entityMetamodel = persister.getEntityMetamodel();
         for (int i = 0; i < propertyNames.length; i++) {
             String p = propertyNames[i];
-            int index = indexes[i];
+            int index = entityMetamodel.getPropertyIndex(p);
             PersistentProperty property = persistentEntity.getPropertyByName(p);
             if (property == null) {
                 continue;
