@@ -5,6 +5,8 @@ import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.validation.constraints.AbstractConstraint
+import org.grails.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.query.api.BuildableCriteria
 import org.grails.datastore.mapping.reflect.EntityReflector
 import org.springframework.context.MessageSource
@@ -45,7 +47,15 @@ class UniqueConstraint extends AbstractConstraint {
     protected void processValidate(Object target, Object propertyValue, Errors errors) {
 
         DetachedCriteria detachedCriteria = new DetachedCriteria(constraintOwningClass)
-        EntityReflector reflector = detachedCriteria.getPersistentEntity().getReflector()
+
+        MappingContext mappingContext = detachedCriteria.getPersistentEntity()
+                                                        .getMappingContext()
+        PersistentEntity targetEntity = mappingContext.getPersistentEntity(mappingContext.getProxyHandler().getProxiedClass(target).getName())
+        if(targetEntity == null) {
+            throw new IllegalStateException("Cannot validate object [$target]. It is not a persistent entity")
+        }
+
+        EntityReflector reflector = targetEntity.reflector
         String constraintPropertyName = this.constraintPropertyName
         List group = this.group
 
