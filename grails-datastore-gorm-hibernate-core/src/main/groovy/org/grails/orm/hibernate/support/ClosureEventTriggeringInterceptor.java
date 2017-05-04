@@ -35,6 +35,7 @@ import org.hibernate.engine.internal.Nullability;
 import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.*;
 import org.hibernate.persister.entity.EntityPersister;
+import org.hibernate.tuple.entity.EntityMetamodel;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -190,11 +191,10 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     }
 
     private void synchronizeHibernateState(EntityPersister persister, Object[] state, Map<String, Object> modifiedProperties) {
-        Set<String> properties = modifiedProperties.keySet();
-        Iterator<String> propertyIterator = properties.iterator();
-        int[] indexes = HibernateVersionSupport.resolveAttributeIndexes(persister, properties);
-        for (int index : indexes) {
-            state[index] = modifiedProperties.get(propertyIterator.next());
+        EntityMetamodel entityMetamodel = persister.getEntityMetamodel();
+        for(Map.Entry<String,Object> entry : modifiedProperties.entrySet()) {
+            int index = entityMetamodel.getPropertyIndex(entry.getKey());
+            state[index] = entry.getValue();
         }
     }
 
