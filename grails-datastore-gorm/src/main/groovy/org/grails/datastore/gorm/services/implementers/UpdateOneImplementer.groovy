@@ -22,6 +22,7 @@ import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.expr.StaticMethodCallExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
+import org.codehaus.groovy.ast.stmt.Statement
 import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.AstUtils
@@ -76,9 +77,12 @@ class UpdateOneImplementer extends AbstractSaveImplementer implements SingleResu
         body.addStatement(
             declS( entityVar, lookupCall)
         )
+        BlockStatement ifBody = block()
+        Statement saveStmt = bindParametersAndSave(domainClassNode, abstractMethodNode, parameters[1..-1] as Parameter[], ifBody, entityVar)
+        ifBody.addStatement(saveStmt)
         body.addStatement(
             ifS( notNullX(entityVar),
-                    bindParametersAndSave(domainClassNode, abstractMethodNode, parameters[1..-1] as Parameter[], body, entityVar)
+                ifBody
             )
         )
     }

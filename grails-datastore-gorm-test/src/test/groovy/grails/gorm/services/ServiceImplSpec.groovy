@@ -6,6 +6,7 @@ import grails.validation.ValidationException
 import groovy.json.JsonOutput
 import org.grails.datastore.gorm.validation.constraints.eval.DefaultConstraintEvaluator
 import org.grails.datastore.gorm.validation.constraints.registry.DefaultConstraintRegistry
+import org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry
 import org.grails.datastore.mapping.simple.SimpleMapDatastore
 import org.springframework.context.support.StaticMessageSource
 import spock.lang.AutoCleanup
@@ -19,6 +20,10 @@ class ServiceImplSpec extends Specification {
     @AutoCleanup SimpleMapDatastore datastore = new SimpleMapDatastore(
         Product
     )
+
+    def setup() {
+        datastore.mappingContext.setValidatorRegistry(new DefaultValidatorRegistry(datastore.mappingContext, datastore.connectionSources.defaultConnectionSource.settings))
+    }
 
     void "test inter service interaction"() {
         given:
@@ -211,6 +216,20 @@ class ServiceImplSpec extends Specification {
         productService.find("Tomato", "Vegetable") == null
         productService.find("Tomato", "Fruit") != null
 
+        when:"An update is attempted with invalid parameters"
+        product = productService.updateProduct(product.id, "")
+
+        then:"The errors are available on the object"
+        def e = thrown(ValidationException)
+        e.errors != null
+        e.errors.hasFieldErrors('type')
+
+        when:"An update is attempted on a non-existent object"
+        product = productService.updateProduct(999, "blah")
+
+        then:"The result is null"
+        product == null
+
     }
 
     void 'test property projection'() {
@@ -339,6 +358,7 @@ class Product {
 
     static constraints = {
         name blank:false
+        type blank: false
     }
 }
 
