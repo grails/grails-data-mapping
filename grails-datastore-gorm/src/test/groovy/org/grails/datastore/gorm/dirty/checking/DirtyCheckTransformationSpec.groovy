@@ -109,6 +109,41 @@ abstract class Author {
         child.name == "Stephen King"
     }
 
+
+
+    void "Test dirty check with abstract inheritance via @Entity"() {
+        when:"A Dirty checkable class with generic types is parsed"
+        def gcl = new GroovyClassLoader()
+        Class cls = gcl.parseClass('''
+package org.grails.datastore.gorm.dirty.checking
+
+import grails.gorm.annotation.*
+
+@Entity
+class ContentText extends AbstractContent {
+
+    String message
+}
+
+@Entity
+abstract class AbstractContent {
+    Long id
+    Long version
+}
+
+''')
+
+        def child = cls.newInstance()
+        child.trackChanges()
+        child.message = "Test"
+
+        then:"The generic types are retained"
+        child.hasChanged()
+        child.hasChanged("message")
+        child.message == "Test"
+    }
+
+
     @Issue('https://github.com/grails/grails-data-mapping/issues/917')
     void "Test dirty check with with custom setter"() {
         when:"A Dirty checkable class with generic types is parsed"

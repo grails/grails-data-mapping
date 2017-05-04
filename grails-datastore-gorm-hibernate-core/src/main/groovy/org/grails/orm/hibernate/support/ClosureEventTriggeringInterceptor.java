@@ -284,8 +284,9 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     }
 
     private void activateDirtyChecking(Object entity) {
-        if(entity instanceof DirtyCheckable) {
+        if(entity instanceof DirtyCheckable && proxyHandler.isInitialized(entity)) {
             PersistentEntity persistentEntity = mappingContext.getPersistentEntity(Hibernate.getClass(entity).getName());
+            entity = proxyHandler.unwrap(entity);
             DirtyCheckable dirtyCheckable = (DirtyCheckable) entity;
             Map<String, Object> dirtyCheckingState = persistentEntity.getReflector().getDirtyCheckingState(entity);
             if(dirtyCheckingState == null) {
