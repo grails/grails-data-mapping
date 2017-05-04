@@ -1,8 +1,12 @@
 package org.grails.datastore.gorm.validation.javax
 
+import grails.gorm.services.Service
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.validation.ValidationErrors
+import org.springframework.validation.Errors
+import org.springframework.validation.MapBindingResult
 
+import javax.validation.ConstraintViolation
 import javax.validation.ConstraintViolationException
 
 /**
@@ -21,18 +25,29 @@ class ConstraintViolationUtils {
      * @param e The exception
      * @return The errors
      */
-    static ValidationErrors asErrors(Object object, ConstraintViolationException e) {
-        ValidationErrors errors = new ValidationErrors(object)
-        for (violation in e.constraintViolations) {
+    static Errors asErrors(Object object, ConstraintViolationException e) {
+        Set<ConstraintViolation> constraintViolations = e.constraintViolations
+        return asErrors(object, constraintViolations)
+    }
+
+    /**
+     * Converts a ConstraintViolation instances to errors
+     *
+     * @param object The validated object
+     * @param e The exception
+     * @return The errors
+     */
+    static Errors asErrors(Object object, Set<ConstraintViolation> constraintViolations) {
+        Service ann = object.getClass().getAnnotation(Service)
+        String objectName = ann != null ? ann.name() : object.getClass().simpleName
+        Map errorMap = [:]
+        Errors errors = new MapBindingResult(errorMap, objectName)
+        for (violation in constraintViolations) {
             String property = violation.propertyPath.last().name
-            String code = "${object.getClass().simpleName}.${violation.propertyPath}"
+            errorMap.put(property, violation.invalidValue)
+            String code = "${objectName}.${violation.propertyPath}"
             String message = "${property} $violation.message"
-            if(object.hasProperty(property)) {
-                errors.rejectValue(property, code,[violation.invalidValue] as Object[], message)
-            }
-            else {
-                errors.reject(code, [violation.invalidValue] as Object[], message)
-            }
+            errors.rejectValue(property, code, [violation.invalidValue] as Object[], message)
         }
         return errors
     }

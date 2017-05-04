@@ -1,6 +1,7 @@
 package grails.gorm.services
 
 import grails.gorm.annotation.Entity
+import grails.validation.ValidationException
 import org.grails.datastore.gorm.validation.javax.services.ValidatedService
 import org.springframework.transaction.PlatformTransactionManager
 import spock.lang.Specification
@@ -24,7 +25,11 @@ import javax.validation.constraints.*
 @Service(Foo)
 interface MyService {
 
-    Foo find(@NotNull String title)
+    @grails.gorm.transactions.NotTransactional
+    Foo find(@NotNull String title) throws javax.validation.ConstraintViolationException
+    
+    @grails.gorm.transactions.NotTransactional
+    Foo findAgain(@NotNull @org.hibernate.validator.constraints.NotBlank String title)
 }
 @Entity
 class Foo {
@@ -57,7 +62,7 @@ class Foo {
 
 
         when:
-        instance.validate(instance, impl.getMethod("find", String), [null] as Object[])
+        instance.find(null)
 
         then:
         def e = thrown( ConstraintViolationException)
@@ -65,6 +70,15 @@ class Foo {
         e.constraintViolations.first().message == 'may not be null'
         e.constraintViolations.first().propertyPath.toString() == 'find.title'
 
+        when:
+        instance.findAgain("")
+
+        then:
+        def e2 = thrown( ValidationException )
+        e2.message
+        e2.errors.hasErrors()
+        e2.errors.hasFieldErrors('title')
+        e2.errors.getFieldValue('title') == ""
     }
 }
 

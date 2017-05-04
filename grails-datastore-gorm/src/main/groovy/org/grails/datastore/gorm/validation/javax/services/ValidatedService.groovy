@@ -5,6 +5,8 @@ import org.grails.datastore.gorm.validation.javax.ConstraintViolationUtils
 import org.grails.datastore.gorm.validation.javax.JavaxValidatorRegistry
 import org.grails.datastore.mapping.services.Service
 import org.grails.datastore.mapping.validation.ValidationErrors
+import org.grails.datastore.mapping.validation.ValidationException
+import org.springframework.validation.Errors
 
 import javax.validation.Configuration
 import javax.validation.ConstraintViolation
@@ -69,12 +71,31 @@ trait ValidatedService<T> extends Service<T> {
      * @param instance The instance
      * @param method The method
      * @param args The arguments
+     *
+     * @throws ConstraintViolationException If a validation error occurs
      */
-    void validate(Object instance, Method method, Object...args) {
+    void javaxValidate(Object instance, Method method, Object...args) throws ConstraintViolationException {
         ExecutableValidator validator = executableValidatorMap.get(method)
         Set<ConstraintViolation> constraintViolations = validator.validateParameters(instance, method, args)
         if(!constraintViolations.isEmpty()) {
             throw new ConstraintViolationException(constraintViolations)
+        }
+    }
+
+    /**
+     * Validate the given method for the given arguments
+     *
+     * @param instance The instance
+     * @param method The method
+     * @param args The arguments
+     *
+     * @throws ValidationException If a validation error occurs
+     */
+    void validate(Object instance, Method method, Object...args) throws ValidationException {
+        ExecutableValidator validator = executableValidatorMap.get(method)
+        Set<ConstraintViolation> constraintViolations = validator.validateParameters(instance, method, args)
+        if(!constraintViolations.isEmpty()) {
+            throw ValidationException.newInstance("Validation failed for method: $method.name ", asErrors(instance, constraintViolations))
         }
     }
 
@@ -85,7 +106,18 @@ trait ValidatedService<T> extends Service<T> {
      * @param e The exception
      * @return The errors
      */
-    ValidationErrors asErrors(Object object, ConstraintViolationException e) {
+    Errors asErrors(Object object, ConstraintViolationException e) {
         ConstraintViolationUtils.asErrors(object, e)
+    }
+
+    /**
+     * Converts a ConstraintViolationException to errors
+     *
+     * @param object The validated object
+     * @param e The exception
+     * @return The errors
+     */
+    Errors asErrors(Object object, Set<ConstraintViolation> constraintViolations) {
+        ConstraintViolationUtils.asErrors(object, constraintViolations)
     }
 }

@@ -12,6 +12,7 @@ import org.grails.datastore.gorm.validation.javax.services.ValidatedService
 import org.grails.datastore.mapping.reflect.ClassUtils
 
 import javax.validation.Constraint
+import javax.validation.ConstraintViolationException
 import javax.validation.ParameterNameProvider
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -31,6 +32,7 @@ import static org.grails.datastore.mapping.reflect.AstUtils.*
 class MethodValidationImplementer implements ServiceEnhancer {
 
     private static final String VALIDATED_METHOD = '$validatedMethod'
+    private static final ClassNode CONSTRAINT_EXCEPTION = ClassHelper.make(ConstraintViolationException)
 
     @Override
     boolean doesImplement(ClassNode domainClass, MethodNode methodNode) {
@@ -97,7 +99,8 @@ class MethodValidationImplementer implements ServiceEnhancer {
 
         // add a first line to the method body that validates the method
         ArrayExpression argArray = new ArrayExpression(OBJECT_TYPE, validateArgsList)
-        MethodCallExpression validateCall = callThisD(ValidatedService, "validate", args(varThis(), varX(methodField),argArray))
+        String validateMethodName = abstractMethodNode.exceptions?.contains( CONSTRAINT_EXCEPTION ) ? "javaxValidate" : "validate"
+        MethodCallExpression validateCall = callThisD(ValidatedService, validateMethodName, args(varThis(), varX(methodField),argArray))
         if(body instanceof BlockStatement) {
             ((BlockStatement)body).statements.add(0, stmt( validateCall ))
         }
