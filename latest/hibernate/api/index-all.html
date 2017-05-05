@@ -445,8 +445,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingContext.html#addMappingContextListener(org.grails.datastore.mapping.model.MappingContext.Listener)" title="Method in MappingContext">addMappingContextListener(MappingContext.Listener)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingContext.html">MappingContext</a>
 </dt><dd> <div class="block">Adds a new mapping context listener instance</div></dd>
-<dt><span class="strong"><a href="org/grails/orm/hibernate/support/ClosureEventTriggeringInterceptor.html#addNullabilityCheckerPreInsertEventListener(org.hibernate.event.service.spi.EventListenerRegistry)" title="Method in ClosureEventTriggeringInterceptor">addNullabilityCheckerPreInsertEventListener(EventListenerRegistry)</a></span> - Method in <a href="org/grails/orm/hibernate/support/ClosureEventTriggeringInterceptor.html">ClosureEventTriggeringInterceptor</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html#addOwner(java.lang.Class)" title="Method in AbstractPersistentEntity">addOwner(Class)</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html">AbstractPersistentEntity</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/PersistentEntity.html#addOwner(java.lang.Class)" title="Method in PersistentEntity">addOwner(Class)</a></span> - Method in <a href="org/grails/datastore/mapping/model/PersistentEntity.html">PersistentEntity</a>
@@ -705,10 +703,12 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html#applyTransactionalAttributeSettings(org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.expr.VariableExpression, org.codehaus.groovy.ast.stmt.BlockStatement)" title="Method in TransactionalTransform">applyTransactionalAttributeSettings(AnnotationNode, VariableExpression, BlockStatement)</a></span> - Method in <a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html">TransactionalTransform</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingSupport.html#areAssociationsDirty(org.grails.datastore.mapping.core.Session, org.grails.datastore.mapping.model.PersistentEntity, java.lang.Object)" title="Method in DirtyCheckingSupport">areAssociationsDirty(Session, PersistentEntity, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingSupport.html">DirtyCheckingSupport</a>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingSupport.html#areAssociationsDirty(org.grails.datastore.mapping.model.PersistentEntity, java.lang.Object)" title="Method in DirtyCheckingSupport">areAssociationsDirty(PersistentEntity, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingSupport.html">DirtyCheckingSupport</a>
 </dt><dd> <div class="block">Checks whether associations are dirty</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#areCollectionsEqual(java.lang.Object, java.lang.Object)" title="Method in NativeEntryEntityPersister">areCollectionsEqual(Object, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingSupport.html#areEmbeddedDirty(org.grails.datastore.mapping.model.PersistentEntity, java.lang.Object)" title="Method in DirtyCheckingSupport">areEmbeddedDirty(PersistentEntity, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingSupport.html">DirtyCheckingSupport</a>
+</dt><dd> <div class="block">Checks whether embedded associations are dirty</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#areEqual(java.lang.Object, java.lang.Object, java.lang.String)" title="Method in NativeEntryEntityPersister">areEqual(Object, Object, String)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/query/AbstractHibernateCriteriaBuilder.LogicalExpression.html#args" title="Field in AbstractHibernateCriteriaBuilder.LogicalExpression">args</a></span> - Field in <a href="org/grails/orm/hibernate/query/AbstractHibernateCriteriaBuilder.LogicalExpression.html">AbstractHibernateCriteriaBuilder.LogicalExpression</a>
@@ -797,6 +797,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/Query.Order.html#asc(java.lang.String)" title="Method in Query.Order">asc(String)</a></span> - Method in <a href="org/grails/datastore/mapping/query/Query.Order.html">Query.Order</a>
 </dt><dd> <div class="block">Creates a new order for the given property in ascending order</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/javax/ConstraintViolationUtils.html#asErrors(java.lang.Object, Set<ConstraintViolation>)" title="Method in ConstraintViolationUtils">asErrors(Object, Set&lt;ConstraintViolation&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/javax/ConstraintViolationUtils.html">ConstraintViolationUtils</a>
+</dt><dd> <div class="block">Converts a ConstraintViolation instances to errors</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/javax/services/ValidatedService.html#asErrors(java.lang.Object, Set<ConstraintViolation>)" title="Method in ValidatedService">asErrors(Object, Set&lt;ConstraintViolation&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/javax/services/ValidatedService.html">ValidatedService</a>
+</dt><dd> <div class="block">Converts a ConstraintViolationException to errors</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/cfg/AbstractIdentityEnumType.html#assemble(java.io.Serializable, java.lang.Object)" title="Method in AbstractIdentityEnumType">assemble(Serializable, Object)</a></span> - Method in <a href="org/grails/orm/hibernate/cfg/AbstractIdentityEnumType.html">AbstractIdentityEnumType</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/AstUtils.html#ASSIGNMENT_OPERATOR" title="Field in AstUtils">ASSIGNMENT_OPERATOR</a></span> - Field in <a href="org/grails/datastore/mapping/reflect/AstUtils.html">AstUtils</a>
@@ -1287,6 +1291,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/AbstractHibernateGormStaticApi.html#buildOrdinalParameterQueryFromGString(groovy.lang.GString, java.util.List)" title="Method in AbstractHibernateGormStaticApi">buildOrdinalParameterQueryFromGString(GString, List)</a></span> - Method in <a href="org/grails/orm/hibernate/AbstractHibernateGormStaticApi.html">AbstractHibernateGormStaticApi</a>
 </dt><dd> <div class="block">Processes a query converting GString expressions into parameters</div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/access/TraitPropertyAccessStrategy.html#buildPropertyAccess(java.lang.Class, java.lang.String)" title="Method in TraitPropertyAccessStrategy">buildPropertyAccess(Class, String)</a></span> - Method in <a href="org/grails/orm/hibernate/access/TraitPropertyAccessStrategy.html">TraitPropertyAccessStrategy</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/cfg/GrailsHibernateUtil.html#buildProxyFactory(org.hibernate.mapping.PersistentClass)" title="Method in GrailsHibernateUtil">buildProxyFactory(PersistentClass)</a></span> - Method in <a href="org/grails/orm/hibernate/cfg/GrailsHibernateUtil.html">GrailsHibernateUtil</a>
 </dt><dd> <div class="block">Constructs a proxy factory instance</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/proxy/GroovyAwarePojoEntityTuplizer.html#buildProxyFactory(org.hibernate.mapping.PersistentClass, org.hibernate.property.access.spi.Getter, org.hibernate.property.access.spi.Setter)" title="Method in GroovyAwarePojoEntityTuplizer">buildProxyFactory(PersistentClass, Getter, Setter)</a></span> - Method in <a href="org/grails/orm/hibernate/proxy/GroovyAwarePojoEntityTuplizer.html">GroovyAwarePojoEntityTuplizer</a>
@@ -1898,6 +1904,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/javax/GormValidatorFactoryAdapter.GormValidatorContext.html#constraintValidatorFactory(javax.validation.ConstraintValidatorFactory)" title="Method in GormValidatorFactoryAdapter.GormValidatorContext">constraintValidatorFactory(ConstraintValidatorFactory)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/javax/GormValidatorFactoryAdapter.GormValidatorContext.html">GormValidatorFactoryAdapter.GormValidatorContext</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/javax/ConstraintViolationUtils.html" title="Class in org.grails.datastore.gorm.validation.javax">ConstraintViolationUtils</a></span> - Class in <a href="./org/grails/datastore/gorm/validation/javax/package-summary.html">org.grails.datastore.gorm.validation.javax</a>
+</dt><dd><div class="block">Utility methods for handling ConstraintViolationException</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/AbstractHibernateSession.html#contains(java.lang.Object)" title="Method in AbstractHibernateSession">contains(Object)</a></span> - Method in <a href="org/grails/orm/hibernate/AbstractHibernateSession.html">AbstractHibernateSession</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html#contains(java.lang.Object)" title="Method in AbstractPersistentCollection">contains(Object)</a></span> - Method in <a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html">AbstractPersistentCollection</a>
@@ -2796,6 +2804,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html#dirty" title="Field in AbstractPersistentCollection">dirty</a></span> - Field in <a href="org/grails/datastore/mapping/collection/AbstractPersistentCollection.html">AbstractPersistentCollection</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html#DIRTY_CHECK_CLASS_NODE" title="Field in DirtyCheckingTransformer">DIRTY_CHECK_CLASS_NODE</a></span> - Field in <a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html">DirtyCheckingTransformer</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html#DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE" title="Field in DirtyCheckingTransformer">DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE</a></span> - Field in <a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html">DirtyCheckingTransformer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html#DIRTY_CHECKED_PROPERTY_CLASS_NODE" title="Field in DirtyCheckingTransformer">DIRTY_CHECKED_PROPERTY_CLASS_NODE</a></span> - Field in <a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html">DirtyCheckingTransformer</a>
@@ -3115,6 +3125,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Execute the given closure for each tenant. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Embedded.html" title="Class in org.grails.datastore.mapping.model.types">Embedded</a></span> - Class in <a href="./org/grails/datastore/mapping/model/types/package-summary.html">org.grails.datastore.mapping.model.types</a>
 </dt><dd><div class="block">Models an embedded component</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html#embedded" title="Field in AbstractPersistentEntity">embedded</a></span> - Field in <a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html">AbstractPersistentEntity</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Embedded.html#Embedded(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.lang.String, java.lang.Class)" title="Constructor in Embedded">Embedded(PersistentEntity, MappingContext, String, Class)</a></span> - Constructor in <a href="org/grails/datastore/mapping/model/types/Embedded.html">Embedded</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/config/GormProperties.html#EMBEDDED" title="Field in GormProperties">EMBEDDED</a></span> - Field in <a href="org/grails/datastore/mapping/model/config/GormProperties.html">GormProperties</a>
@@ -3463,12 +3475,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/keyvalue/mapping/config/Family.html#Family(java.lang.String, java.lang.String)" title="Constructor in Family">Family(String, String)</a></span> - Constructor in <a href="org/grails/datastore/mapping/keyvalue/mapping/config/Family.html">Family</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/AssociationQueryProxyHandler.html#fastClass" title="Field in AssociationQueryProxyHandler">fastClass</a></span> - Field in <a href="org/grails/datastore/mapping/proxy/AssociationQueryProxyHandler.html">AssociationQueryProxyHandler</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/EntityReflector.html#fastClass()" title="Method in EntityReflector">fastClass()</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/EntityReflector.html">EntityReflector</a>
 </dt><dd> <div class="block">@return The fast class</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/SessionEntityProxyMethodHandler.html#fastClass" title="Field in SessionEntityProxyMethodHandler">fastClass</a></span> - Field in <a href="org/grails/datastore/mapping/proxy/SessionEntityProxyMethodHandler.html">SessionEntityProxyMethodHandler</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/Property.html#fetch(javax.persistence.FetchType)" title="Method in Property">fetch(FetchType)</a></span> - Method in <a href="org/grails/datastore/mapping/config/Property.html">Property</a>
 </dt><dd> <div class="block">Configure the fetch strategy</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/query/AbstractHibernateCriteriaBuilder.html#fetchMode(java.lang.String, org.hibernate.FetchMode)" title="Method in AbstractHibernateCriteriaBuilder">fetchMode(String, FetchMode)</a></span> - Method in <a href="org/grails/orm/hibernate/query/AbstractHibernateCriteriaBuilder.html">AbstractHibernateCriteriaBuilder</a>
@@ -3479,6 +3487,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/Query.html#fetchStrategy(java.lang.String)" title="Method in Query">fetchStrategy(String)</a></span> - Method in <a href="org/grails/datastore/mapping/query/Query.html">Query</a>
 </dt><dd> <div class="block">Obtain the fetch strategy for the given property</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/EntityReflector.PropertyReader.html#field()" title="Method in EntityReflector.PropertyReader">field()</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/EntityReflector.PropertyReader.html">EntityReflector.PropertyReader</a>
+</dt><dd> <div class="block">@return The field or null if the field cannot be resolved</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/EntityReflector.PropertyWriter.html#field()" title="Method in EntityReflector.PropertyWriter">field()</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/EntityReflector.PropertyWriter.html">EntityReflector.PropertyWriter</a>
+</dt><dd> <div class="block">@return The field or null if the field cannot be resolved</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractDatastoreMethodDecoratingTransformation.html#FIELD_TARGET_DATASTORE" title="Field in AbstractDatastoreMethodDecoratingTransformation">FIELD_TARGET_DATASTORE</a></span> - Field in <a href="org/grails/datastore/gorm/transform/AbstractDatastoreMethodDecoratingTransformation.html">AbstractDatastoreMethodDecoratingTransformation</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/FieldEntityAccess.html" title="Class in org.grails.datastore.mapping.reflect">FieldEntityAccess</a></span> - Class in <a href="./org/grails/datastore/mapping/reflect/package-summary.html">org.grails.datastore.mapping.reflect</a>
@@ -4055,7 +4067,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/orm/hibernate/AbstractHibernateGormInstanceApi.html#getAssumedUnsaved()" title="Method in AbstractHibernateGormInstanceApi">getAssumedUnsaved()</a></span> - Method in <a href="org/grails/orm/hibernate/AbstractHibernateGormInstanceApi.html">AbstractHibernateGormInstanceApi</a>
 </dt><dd> <div class="block">Prevents hitting the database for an extra check if the row exists in the database.</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/support/ClosureEventTriggeringInterceptor.html#getAssumedUnsaved()" title="Method in ClosureEventTriggeringInterceptor">getAssumedUnsaved()</a></span> - Method in <a href="org/grails/orm/hibernate/support/ClosureEventTriggeringInterceptor.html">ClosureEventTriggeringInterceptor</a>
-</dt><dd> <div class="block">Prevents hitting the database for an extra check if the row exists in the database.</div></dd>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/schemaless/DynamicAttributes.html#getAt(java.lang.String)" title="Method in DynamicAttributes">getAt(String)</a></span> - Method in <a href="org/grails/datastore/gorm/schemaless/DynamicAttributes.html">DynamicAttributes</a>
 </dt><dd> <div class="block">Obtains a dynamic attribute</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/utils/InstanceProxy.html#getAt(java.lang.String)" title="Method in InstanceProxy">getAt(String)</a></span> - Method in <a href="org/grails/datastore/gorm/utils/InstanceProxy.html">InstanceProxy</a>
@@ -4350,8 +4362,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Obtains only the direct children (1 level down) for the given root entity</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/Query.Order.html#getDirection()" title="Method in Query.Order">getDirection()</a></span> - Method in <a href="org/grails/datastore/mapping/query/Query.Order.html">Query.Order</a>
 </dt><dd> <div class="block">@return The direction order by</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/EntityReflector.html#getDirtyCheckingState(java.lang.Object)" title="Method in EntityReflector">getDirtyCheckingState(Object)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/EntityReflector.html">EntityReflector</a>
+</dt><dd> <div class="block">@return Obtains the dirty checking state for the given entity</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#getDirtyPropertyNames()" title="Method in GormEntity">getDirtyPropertyNames()</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
-</dt><dd> <div class="block">Obtains a list of property names that are dirty</div></dd>
+</dt><dd> <div class="block">Obtains a list of property names that are dirty. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormInstanceApi.html#getDirtyPropertyNames(D)" title="Method in GormInstanceApi">getDirtyPropertyNames(D)</a></span> - Method in <a href="org/grails/datastore/gorm/GormInstanceApi.html">GormInstanceApi</a>
 </dt><dd> <div class="block">Obtains a list of property names that are dirty</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/HibernateGormInstanceApi.html#getDirtyPropertyNames(D)" title="Method in HibernateGormInstanceApi">getDirtyPropertyNames(D)</a></span> - Method in <a href="org/grails/orm/hibernate/HibernateGormInstanceApi.html">HibernateGormInstanceApi</a>
@@ -4370,8 +4384,12 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/FindOneByImplementer.html#getDynamicFinderPrefix()" title="Method in FindOneByImplementer">getDynamicFinderPrefix()</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/FindOneByImplementer.html">FindOneByImplementer</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html#getEmbedded()" title="Method in AbstractPersistentEntity">getEmbedded()</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html">AbstractPersistentEntity</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#getEmbedded(T, java.lang.String)" title="Method in NativeEntryEntityPersister">getEmbedded(T, String)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block">Implementors should override to provide support for embedded objects.</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/PersistentEntity.html#getEmbedded()" title="Method in PersistentEntity">getEmbedded()</a></span> - Method in <a href="org/grails/datastore/mapping/model/PersistentEntity.html">PersistentEntity</a>
+</dt><dd> <div class="block">A list of embedded associations for this entity. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractClassMapping.html#getEntity()" title="Method in AbstractClassMapping">getEntity()</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractClassMapping.html">AbstractClassMapping</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/query/AbstractHibernateQuery.html#getEntity()" title="Method in AbstractHibernateQuery">getEntity()</a></span> - Method in <a href="org/grails/orm/hibernate/query/AbstractHibernateQuery.html">AbstractHibernateQuery</a>
@@ -4446,6 +4464,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Obtains the errors for an instance</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormValidationApi.html#getErrors(D)" title="Method in GormValidationApi">getErrors(D)</a></span> - Method in <a href="org/grails/datastore/gorm/GormValidationApi.html">GormValidationApi</a>
 </dt><dd> <div class="block">Obtains the errors for an instance</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/validation/ValidationException.html#getErrors()" title="Method in ValidationException">getErrors()</a></span> - Method in <a href="org/grails/datastore/mapping/validation/ValidationException.html">ValidationException</a>
+</dt><dd> <div class="block">@return The errors object</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/HibernateMappingContextSessionFactoryBean.html#getEventListeners()" title="Method in HibernateMappingContextSessionFactoryBean">getEventListeners()</a></span> - Method in <a href="org/grails/orm/hibernate/HibernateMappingContextSessionFactoryBean.html">HibernateMappingContextSessionFactoryBean</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/AbstractHibernateDatastore.html#getEventTriggeringInterceptor()" title="Method in AbstractHibernateDatastore">getEventTriggeringInterceptor()</a></span> - Method in <a href="org/grails/orm/hibernate/AbstractHibernateDatastore.html">AbstractHibernateDatastore</a>
@@ -5130,7 +5150,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/PersistentEntity.html#getPersistentPropertyNames()" title="Method in PersistentEntity">getPersistentPropertyNames()</a></span> - Method in <a href="org/grails/datastore/mapping/model/PersistentEntity.html">PersistentEntity</a>
 </dt><dd> <div class="block">A list of property names that a persistent</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#getPersistentValue(java.lang.String)" title="Method in GormEntity">getPersistentValue(String)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
-</dt><dd> <div class="block">Gets the original persisted value of a field.</div></dd>
+</dt><dd> <div class="block">Gets the original persisted value of a field. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormInstanceApi.html#getPersistentValue(D, java.lang.String)" title="Method in GormInstanceApi">getPersistentValue(D, String)</a></span> - Method in <a href="org/grails/datastore/gorm/GormInstanceApi.html">GormInstanceApi</a>
 </dt><dd> <div class="block">Gets the original persisted value of a field.</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/HibernateGormInstanceApi.html#getPersistentValue(D, java.lang.String)" title="Method in HibernateGormInstanceApi">getPersistentValue(D, String)</a></span> - Method in <a href="org/grails/orm/hibernate/HibernateGormInstanceApi.html">HibernateGormInstanceApi</a>
@@ -5333,6 +5353,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/FindAllPropertyProjectionImplementer.html#getQueryMethodToInvoke(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)" title="Method in FindAllPropertyProjectionImplementer">getQueryMethodToInvoke(ClassNode, MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/FindAllPropertyProjectionImplementer.html">FindAllPropertyProjectionImplementer</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getReader()" title="Method in AbstractPersistentProperty">getReader()</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractPersistentProperty.html">AbstractPersistentProperty</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/PersistentProperty.html#getReader()" title="Method in PersistentProperty">getReader()</a></span> - Method in <a href="org/grails/datastore/mapping/model/PersistentProperty.html">PersistentProperty</a>
+</dt><dd> <div class="block">@return The reader for this property</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html#getReference()" title="Method in ClassPropertyFetcher">getReference()</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html">ClassPropertyFetcher</a>
 </dt><dd> <div class="block">@Deprecated will be removed in a future version of GORM</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Association.html#getReferencedPropertyName()" title="Method in Association">getReferencedPropertyName()</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Association.html">Association</a>
@@ -5492,6 +5516,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">@return The tenant resolver</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/multitenancy/MultiTenantCapableDatastore.html#getTenantResolver()" title="Method in MultiTenantCapableDatastore">getTenantResolver()</a></span> - Method in <a href="org/grails/datastore/mapping/multitenancy/MultiTenantCapableDatastore.html">MultiTenantCapableDatastore</a>
 </dt><dd> <div class="block">@return Obtain the tenant resolver</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/EntityReflector.PropertyReader.html#getter()" title="Method in EntityReflector.PropertyReader">getter()</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/EntityReflector.PropertyReader.html">EntityReflector.PropertyReader</a>
+</dt><dd> <div class="block">@return The getter</div></dd>
 <dt><span class="strong"><a href="grails/orm/bootstrap/HibernateDatastoreSpringInitializer.html#getTestDbUrl()" title="Method in HibernateDatastoreSpringInitializer">getTestDbUrl()</a></span> - Method in <a href="grails/orm/bootstrap/HibernateDatastoreSpringInitializer.html">HibernateDatastoreSpringInitializer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/test/mixin/hibernate/HibernateTestMixin.html#getTestPluginUsages()" title="Method in HibernateTestMixin">getTestPluginUsages()</a></span> - Method in <a href="grails/test/mixin/hibernate/HibernateTestMixin.html">HibernateTestMixin</a>
@@ -5620,6 +5646,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/PersistentEntity.html#getVersion()" title="Method in PersistentEntity">getVersion()</a></span> - Method in <a href="org/grails/datastore/mapping/model/PersistentEntity.html">PersistentEntity</a>
 </dt><dd> <div class="block">Returns the version property.</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getWriter()" title="Method in AbstractPersistentProperty">getWriter()</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractPersistentProperty.html">AbstractPersistentProperty</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/PersistentProperty.html#getWriter()" title="Method in PersistentProperty">getWriter()</a></span> - Method in <a href="org/grails/datastore/mapping/model/PersistentProperty.html">PersistentProperty</a>
+</dt><dd> <div class="block">@return The writer for this property</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/jdbc/DatabaseDriver.html#getXaDataSourceClassName()" title="Method in DatabaseDriver">getXaDataSourceClassName()</a></span> - Method in <a href="org/grails/datastore/gorm/jdbc/DatabaseDriver.html">DatabaseDriver</a>
 </dt><dd> <div class="block">Return the XA driver source class name.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/transform/GlobalDetachedCriteriaASTTransformation.html" title="Class in org.grails.datastore.gorm.query.transform">GlobalDetachedCriteriaASTTransformation</a></span> - Class in <a href="./org/grails/datastore/gorm/query/transform/package-summary.html">org.grails.datastore.gorm.query.transform</a>
@@ -6872,7 +6902,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/DelegatingGormEntityApi.html#isDirty()" title="Method in DelegatingGormEntityApi">isDirty()</a></span> - Method in <a href="org/grails/datastore/gorm/DelegatingGormEntityApi.html">DelegatingGormEntityApi</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#isDirty()" title="Method in GormEntity">isDirty()</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
-</dt><dd> <div class="block">Checks whether an entity is dirty</div></dd>
+</dt><dd> <div class="block">Checks whether an entity is dirty. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntityApi.html#isDirty()" title="Method in GormEntityApi">isDirty()</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntityApi.html">GormEntityApi</a>
 </dt><dd> <div class="block">Checks whether an entity is dirty</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormInstanceApi.html#isDirty(D)" title="Method in GormInstanceApi">isDirty(D)</a></span> - Method in <a href="org/grails/datastore/gorm/GormInstanceApi.html">GormInstanceApi</a>
@@ -7360,6 +7390,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/JavassistProxyFactory.html" title="Class in org.grails.datastore.mapping.proxy">JavassistProxyFactory</a></span> - Class in <a href="./org/grails/datastore/mapping/proxy/package-summary.html">org.grails.datastore.mapping.proxy</a>
 </dt><dd><div class="block">A proxy factory that uses Javassist to create proxies</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/validation/javax/services/ValidatedService.html#javaxValidate(java.lang.Object, java.lang.reflect.Method, java.lang.Object)" title="Method in ValidatedService">javaxValidate(Object, Method, Object)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/javax/services/ValidatedService.html">ValidatedService</a>
+</dt><dd> <div class="block">Validate the given method for the given arguments</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/javax/JavaxValidatorRegistry.html" title="Class in org.grails.datastore.gorm.validation.javax">JavaxValidatorRegistry</a></span> - Class in <a href="./org/grails/datastore/gorm/validation/javax/package-summary.html">org.grails.datastore.gorm.validation.javax</a>
 </dt><dd><div class="block">A validator registry that creates validators</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/javax/JavaxValidatorRegistry.html#JavaxValidatorRegistry(org.grails.datastore.mapping.model.MappingContext, org.grails.datastore.mapping.core.connections.ConnectionSourceSettings, org.springframework.context.MessageSource)" title="Constructor in JavaxValidatorRegistry">JavaxValidatorRegistry(MappingContext, ConnectionSourceSettings, MessageSource)</a></span> - Constructor in <a href="org/grails/datastore/gorm/validation/javax/JavaxValidatorRegistry.html">JavaxValidatorRegistry</a>
@@ -9562,8 +9594,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/AbstractHibernateGormInstanceApi.html#resetInsertActive()" title="Method in AbstractHibernateGormInstanceApi">resetInsertActive()</a></span> - Method in <a href="org/grails/orm/hibernate/AbstractHibernateGormInstanceApi.html">AbstractHibernateGormInstanceApi</a>
 </dt><dd> <div class="block">Clears the ThreadLocal variable set by markInsertActive().</div></dd>
-<dt><span class="strong"><a href="org/grails/orm/hibernate/support/HibernateVersionSupport.html#resolveAttributeIndexes(org.hibernate.persister.entity.EntityPersister, java.lang.String)" title="Method in HibernateVersionSupport">resolveAttributeIndexes(EntityPersister, String)</a></span> - Method in <a href="org/grails/orm/hibernate/support/HibernateVersionSupport.html">HibernateVersionSupport</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/multitenancy/MultiTenancySettings.html#resolveConnectionForTenantId(org.grails.datastore.mapping.multitenancy.MultiTenancySettings.MultiTenancyMode, java.io.Serializable)" title="Method in MultiTenancySettings">resolveConnectionForTenantId(MultiTenancySettings.MultiTenancyMode, Serializable)</a></span> - Method in <a href="org/grails/datastore/mapping/multitenancy/MultiTenancySettings.html">MultiTenancySettings</a>
 </dt><dd> <div class="block">Resolves the connection to use for the given tenant id based on the current mode</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractProjectionImplementer.html#RESOLVED_PROPERTY_NAME" title="Field in AbstractProjectionImplementer">RESOLVED_PROPERTY_NAME</a></span> - Field in <a href="org/grails/datastore/gorm/services/implementers/AbstractProjectionImplementer.html">AbstractProjectionImplementer</a>
@@ -10423,6 +10453,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">The tenant resolver to use</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/multitenancy/MultiTenancySettings.html#setTenantResolver(org.grails.datastore.mapping.multitenancy.TenantResolver)" title="Method in MultiTenancySettings">setTenantResolver(TenantResolver)</a></span> - Method in <a href="org/grails/datastore/mapping/multitenancy/MultiTenancySettings.html">MultiTenancySettings</a>
 </dt><dd> <div class="block">Sets the tenant resolver to use</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/EntityReflector.PropertyWriter.html#setter()" title="Method in EntityReflector.PropertyWriter">setter()</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/EntityReflector.PropertyWriter.html">EntityReflector.PropertyWriter</a>
+</dt><dd> <div class="block">@return The getter</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/GroovyObjectMethodHandler.html#setThisMetaClass(groovy.lang.MetaClass)" title="Method in GroovyObjectMethodHandler">setThisMetaClass(MetaClass)</a></span> - Method in <a href="org/grails/datastore/mapping/proxy/GroovyObjectMethodHandler.html">GroovyObjectMethodHandler</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/transactions/SessionOnlyTransaction.html#setTimeout(int)" title="Method in SessionOnlyTransaction">setTimeout(int)</a></span> - Method in <a href="org/grails/datastore/mapping/transactions/SessionOnlyTransaction.html">SessionOnlyTransaction</a>
@@ -11025,6 +11057,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Checks for any custom cascading saves set up via the mapping DSL and records them within the persistent property.</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/cfg/GrailsDomainBinder.html#trackCustomCascadingSaves(org.grails.orm.hibernate.cfg.Mapping, Iterable<PersistentProperty>)" title="Method in GrailsDomainBinder">trackCustomCascadingSaves(Mapping, Iterable&lt;PersistentProperty&gt;)</a></span> - Method in <a href="org/grails/orm/hibernate/cfg/GrailsDomainBinder.html">GrailsDomainBinder</a>
 </dt><dd> <div class="block">Checks for any custom cascading saves set up via the mapping DSL and records them within the persistent property.</div></dd>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/access/TraitPropertyAccessStrategy.html" title="Class in org.grails.orm.hibernate.access">TraitPropertyAccessStrategy</a></span> - Class in <a href="./org/grails/orm/hibernate/access/package-summary.html">org.grails.orm.hibernate.access</a>
+</dt><dd><div class="block">Support reading and writing trait fields with Hibernate 5+</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/transactions/Transaction.html" title="Interface in org.grails.datastore.mapping.transactions">Transaction</a></span> - Interface in <a href="./org/grails/datastore/mapping/transactions/package-summary.html">org.grails.datastore.mapping.transactions</a>
 </dt><dd><div class="block">Class giving the ability to start, commit and rollback a transaction.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/AbstractSession.html#transaction" title="Field in AbstractSession">transaction</a></span> - Field in <a href="org/grails/datastore/mapping/core/AbstractSession.html">AbstractSession</a>
