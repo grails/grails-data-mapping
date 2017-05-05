@@ -32,6 +32,23 @@ class RestBuilderSpec extends Specification {
         ConvertersConfigurationHolder.clear()
     }
 
+    @Issue('https://github.com/grails/grails-data-mapping/issues/932')
+    def "Test marshallers are not registered multiple times"() {
+        when:
+        new RestBuilder()
+        def currentConfiguration = ConvertersConfigurationHolder.getConverterConfiguration(JSON)
+
+        then:
+        currentConfiguration.orderedObjectMarshallers.size() == 5
+
+        when:
+        new RestBuilder()
+        currentConfiguration = ConvertersConfigurationHolder.getConverterConfiguration(JSON)
+
+        then:
+        currentConfiguration.orderedObjectMarshallers.size() == 5
+    }
+
     def "Test proxy configuration"() {
         when:"RestBuilder is configured with proxy settings"
             def rest = new RestBuilder(proxy:['localhost':8888])

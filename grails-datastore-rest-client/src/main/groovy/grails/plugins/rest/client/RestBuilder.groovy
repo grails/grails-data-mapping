@@ -56,6 +56,12 @@ import org.springframework.web.client.RestTemplate
 @CompileStatic
 class RestBuilder {
 
+    private static final GroovyBeanMarshaller DEFAULT_GROOVY_MARSHALLER = new GroovyBeanMarshaller()
+    private static final MapMarshaller DEFAULT_MAP_MARSHALLER = new MapMarshaller()
+    private static final ArrayMarshaller DEFAULT_ARRAY_MARSHALLER = new ArrayMarshaller()
+    private static final ByteArrayMarshaller DEFAULT_BYTE_MARSHALLER = new ByteArrayMarshaller()
+    private static final CollectionMarshaller DEFAULT_COLLECTION_MARSHALLER = new CollectionMarshaller()
+
     RestTemplate restTemplate = new RestTemplate()
 
     RestBuilder(Map settings = [:]) {
@@ -67,11 +73,13 @@ class RestBuilder {
             if(currentConfiguration instanceof DefaultConverterConfiguration) {
                 // init manually
                 DefaultConverterConfiguration defaultConfig = ((DefaultConverterConfiguration)currentConfiguration)
-                defaultConfig.registerObjectMarshaller(new GroovyBeanMarshaller(), -1)
-                defaultConfig.registerObjectMarshaller(new MapMarshaller(), -1)
-                defaultConfig.registerObjectMarshaller(new ArrayMarshaller(), -1)
-                defaultConfig.registerObjectMarshaller(new ByteArrayMarshaller(), -1)
-                defaultConfig.registerObjectMarshaller(new CollectionMarshaller(), -1)
+                if(!defaultConfig.orderedObjectMarshallers.contains(DEFAULT_GROOVY_MARSHALLER)) {
+                    defaultConfig.registerObjectMarshaller(DEFAULT_GROOVY_MARSHALLER, -1)
+                    defaultConfig.registerObjectMarshaller(DEFAULT_MAP_MARSHALLER, -1)
+                    defaultConfig.registerObjectMarshaller(DEFAULT_ARRAY_MARSHALLER, -1)
+                    defaultConfig.registerObjectMarshaller(DEFAULT_BYTE_MARSHALLER, -1)
+                    defaultConfig.registerObjectMarshaller(DEFAULT_COLLECTION_MARSHALLER, -1)
+                }
             }
         }
 
