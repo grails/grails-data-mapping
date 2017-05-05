@@ -302,7 +302,9 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
         EntityMetamodel entityMetamodel = persister.getEntityMetamodel();
         for (int i = 0; i < propertyNames.length; i++) {
             String p = propertyNames[i];
-            int index = entityMetamodel.getPropertyIndex(p);
+            Integer index = entityMetamodel.getPropertyIndexOrNull(p);
+            if(index == null) continue;
+            
             PersistentProperty property = persistentEntity.getPropertyByName(p);
             if (property == null) {
                 continue;

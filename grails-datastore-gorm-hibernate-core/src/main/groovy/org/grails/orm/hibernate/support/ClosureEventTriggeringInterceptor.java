@@ -152,8 +152,10 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     private void synchronizeHibernateState(EntityPersister persister, Object[] state, Map<String, Object> modifiedProperties) {
         EntityMetamodel entityMetamodel = persister.getEntityMetamodel();
         for(Map.Entry<String,Object> entry : modifiedProperties.entrySet()) {
-            int index = entityMetamodel.getPropertyIndex(entry.getKey());
-            state[index] = entry.getValue();
+            Integer index = entityMetamodel.getPropertyIndexOrNull(entry.getKey());
+            if(index != null) {
+                state[index] = entry.getValue();
+            }
         }
     }
 
