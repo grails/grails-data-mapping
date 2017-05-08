@@ -6,9 +6,6 @@ import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.MappingContext
 import spock.lang.Specification
 
-/**
- * Created by jameskleeh on 4/18/17.
- */
 class AutoTimestampEventListenerSpec extends Specification {
 
     TestEventListener listener
@@ -47,6 +44,17 @@ class AutoTimestampEventListenerSpec extends Specification {
         dateCreatedBaseState[Foo.getName()] == true
         dateCreatedBaseState[Bar.getName()] == true
         dateCreatedBaseState[FooBar.getName()] == true
+
+        when:
+        updateBaseStates()
+
+        then:
+        lastUpdatedBaseState[Foo.getName()] == true
+        lastUpdatedBaseState[Bar.getName()] == true
+        lastUpdatedBaseState[FooBar.getName()] == true
+        dateCreatedBaseState[Foo.getName()] == true
+        dateCreatedBaseState[Bar.getName()] == true
+        dateCreatedBaseState[FooBar.getName()] == true
     }
 
     void "test withoutLastUpdated(Class)"() {
@@ -58,6 +66,17 @@ class AutoTimestampEventListenerSpec extends Specification {
         then:
         lastUpdatedBaseState[Foo.getName()] == true
         lastUpdatedBaseState[Bar.getName()] == false
+        lastUpdatedBaseState[FooBar.getName()] == true
+        dateCreatedBaseState[Foo.getName()] == true
+        dateCreatedBaseState[Bar.getName()] == true
+        dateCreatedBaseState[FooBar.getName()] == true
+
+        when:
+        updateBaseStates()
+
+        then:
+        lastUpdatedBaseState[Foo.getName()] == true
+        lastUpdatedBaseState[Bar.getName()] == true
         lastUpdatedBaseState[FooBar.getName()] == true
         dateCreatedBaseState[Foo.getName()] == true
         dateCreatedBaseState[Bar.getName()] == true
@@ -77,6 +96,17 @@ class AutoTimestampEventListenerSpec extends Specification {
         dateCreatedBaseState[Foo.getName()] == true
         dateCreatedBaseState[Bar.getName()] == true
         dateCreatedBaseState[FooBar.getName()] == true
+
+        when:
+        updateBaseStates()
+
+        then:
+        lastUpdatedBaseState[Foo.getName()] == true
+        lastUpdatedBaseState[Bar.getName()] == true
+        lastUpdatedBaseState[FooBar.getName()] == true
+        dateCreatedBaseState[Foo.getName()] == true
+        dateCreatedBaseState[Bar.getName()] == true
+        dateCreatedBaseState[FooBar.getName()] == true
     }
 
     void "test withoutDateCreated"() {
@@ -92,6 +122,17 @@ class AutoTimestampEventListenerSpec extends Specification {
         dateCreatedBaseState[Foo.getName()] == false
         dateCreatedBaseState[Bar.getName()] == false
         dateCreatedBaseState[FooBar.getName()] == false
+
+        when:
+        updateBaseStates()
+
+        then:
+        lastUpdatedBaseState[Foo.getName()] == true
+        lastUpdatedBaseState[Bar.getName()] == true
+        lastUpdatedBaseState[FooBar.getName()] == true
+        dateCreatedBaseState[Foo.getName()] == true
+        dateCreatedBaseState[Bar.getName()] == true
+        dateCreatedBaseState[FooBar.getName()] == true
     }
 
     void "test withoutDateCreated(Class)"() {
@@ -106,6 +147,17 @@ class AutoTimestampEventListenerSpec extends Specification {
         lastUpdatedBaseState[FooBar.getName()] == true
         dateCreatedBaseState[Foo.getName()] == true
         dateCreatedBaseState[Bar.getName()] == false
+        dateCreatedBaseState[FooBar.getName()] == true
+
+        when:
+        updateBaseStates()
+
+        then:
+        lastUpdatedBaseState[Foo.getName()] == true
+        lastUpdatedBaseState[Bar.getName()] == true
+        lastUpdatedBaseState[FooBar.getName()] == true
+        dateCreatedBaseState[Foo.getName()] == true
+        dateCreatedBaseState[Bar.getName()] == true
         dateCreatedBaseState[FooBar.getName()] == true
     }
 
@@ -122,6 +174,17 @@ class AutoTimestampEventListenerSpec extends Specification {
         dateCreatedBaseState[Foo.getName()] == true
         dateCreatedBaseState[Bar.getName()] == false
         dateCreatedBaseState[FooBar.getName()] == false
+
+        when:
+        updateBaseStates()
+
+        then:
+        lastUpdatedBaseState[Foo.getName()] == true
+        lastUpdatedBaseState[Bar.getName()] == true
+        lastUpdatedBaseState[FooBar.getName()] == true
+        dateCreatedBaseState[Foo.getName()] == true
+        dateCreatedBaseState[Bar.getName()] == true
+        dateCreatedBaseState[FooBar.getName()] == true
     }
 
 
@@ -138,6 +201,17 @@ class AutoTimestampEventListenerSpec extends Specification {
         dateCreatedBaseState[Foo.getName()] == false
         dateCreatedBaseState[Bar.getName()] == false
         dateCreatedBaseState[FooBar.getName()] == false
+
+        when:
+        updateBaseStates()
+
+        then:
+        lastUpdatedBaseState[Foo.getName()] == true
+        lastUpdatedBaseState[Bar.getName()] == true
+        lastUpdatedBaseState[FooBar.getName()] == true
+        dateCreatedBaseState[Foo.getName()] == true
+        dateCreatedBaseState[Bar.getName()] == true
+        dateCreatedBaseState[FooBar.getName()] == true
     }
 
     void "test withoutTimestamps(Class)"() {
@@ -152,6 +226,17 @@ class AutoTimestampEventListenerSpec extends Specification {
         lastUpdatedBaseState[FooBar.getName()] == true
         dateCreatedBaseState[Foo.getName()] == true
         dateCreatedBaseState[Bar.getName()] == false
+        dateCreatedBaseState[FooBar.getName()] == true
+
+        when:
+        updateBaseStates()
+
+        then:
+        lastUpdatedBaseState[Foo.getName()] == true
+        lastUpdatedBaseState[Bar.getName()] == true
+        lastUpdatedBaseState[FooBar.getName()] == true
+        dateCreatedBaseState[Foo.getName()] == true
+        dateCreatedBaseState[Bar.getName()] == true
         dateCreatedBaseState[FooBar.getName()] == true
     }
 
@@ -168,6 +253,17 @@ class AutoTimestampEventListenerSpec extends Specification {
         dateCreatedBaseState[Foo.getName()] == true
         dateCreatedBaseState[Bar.getName()] == false
         dateCreatedBaseState[FooBar.getName()] == false
+
+        when:
+        updateBaseStates()
+
+        then:
+        lastUpdatedBaseState[Foo.getName()] == true
+        lastUpdatedBaseState[Bar.getName()] == true
+        lastUpdatedBaseState[FooBar.getName()] == true
+        dateCreatedBaseState[Foo.getName()] == true
+        dateCreatedBaseState[Bar.getName()] == true
+        dateCreatedBaseState[FooBar.getName()] == true
     }
 }
 
