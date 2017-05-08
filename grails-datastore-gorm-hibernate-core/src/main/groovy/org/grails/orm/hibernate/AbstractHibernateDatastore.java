@@ -16,9 +16,8 @@ package org.grails.orm.hibernate;
 
 import grails.gorm.multitenancy.Tenants;
 import groovy.lang.Closure;
-import org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry;
-import org.grails.datastore.gorm.validation.javax.JavaxValidatorRegistry;
 import org.grails.datastore.gorm.validation.registry.support.ValidatorRegistries;
+import org.grails.datastore.gorm.events.AutoTimestampEventListener;
 import org.grails.datastore.mapping.config.Settings;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Datastore;
@@ -70,6 +69,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     protected final MultiTenancySettings.MultiTenancyMode multiTenantMode;
     protected final SchemaHandler schemaHandler;
     protected AbstractHibernateEventListener eventTriggeringInterceptor;
+    protected AutoTimestampEventListener autoTimestampEventListener;
     protected final boolean osivReadOnly;
     protected final boolean passReadOnlyToHibernate;
     protected final boolean isCacheQueries;
@@ -259,6 +259,13 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     // for testing
     public AbstractHibernateEventListener getEventTriggeringInterceptor() {
         return eventTriggeringInterceptor;
+    }
+
+    /**
+     * @return The event listener that populates lastUpdated and dateCreated
+     */
+    public AutoTimestampEventListener getAutoTimestampEventListener() {
+        return autoTimestampEventListener;
     }
 
     /**
