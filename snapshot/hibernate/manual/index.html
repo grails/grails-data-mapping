@@ -5507,6 +5507,50 @@ If you have <code>nullable: false</code> constraints on either <code>dateCreated
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>It is also possible to disable the automatic timestamping temporarily. This is most typically done in the case of a test where you need to define values for the <code>dateCreated</code> or <code>lastUpdated</code> in the past. It may also be useful for importing old data from other systems where you would like to keep the current values of the timestamps.</p>
+</div>
+<div class="paragraph">
+<p>Timestamps can be temporarily disabled for all domains, a specified list of domains, or a single domain. To get started, you need to get a reference to the <code>AutoTimestampEventListener</code>. If you already have access to the datastore, you can execute the <code>getAutoTimestampEventListener</code> method. If you don&#8217;t have access to the datastore, inject the appropriate bean eg. <code>hibernateDatastore</code> and execute the method.</p>
+</div>
+<div class="paragraph">
+<p>Once you have a reference to the event listener, you can execute <code>withoutDateCreated</code>, <code>withoutLastUpdated</code>, or <code>withoutTimestamps</code>. The <code>withoutTimestamps</code> method will temporarily disable both <code>dateCreated</code> and <code>lastUpdated</code>.</p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">//Only the dateCreated property handling will be disabled for only the Foo domain</span>
+autoTimestampEventListener.withoutDateCreated(Foo) {
+    <span class="keyword">new</span> Foo(<span class="key">dateCreated</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>() - <span class="integer">1</span>).save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+}
+
+<span class="comment">//Only the lastUpdated property handling will be disabled for only the Foo and Bar domains</span>
+autoTimestampEventListener.withoutLastUpdated(Foo, Bar) {
+    <span class="keyword">new</span> Foo(<span class="key">lastUpdated</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>() - <span class="integer">1</span>, <span class="key">bar</span>: <span class="keyword">new</span> Bar(<span class="key">lastUpdated</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>() + <span class="integer">1</span>)).save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+}
+
+<span class="comment">//All timestamp property handling will be disabled for all domains</span>
+autoTimestampEventListener.withoutTimestamps {
+    <span class="keyword">new</span> Foo(<span class="key">dateCreated</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>() - <span class="integer">2</span>, <span class="key">lastUpdated</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>() - <span class="integer">1</span>).save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+    <span class="keyword">new</span> Bar(<span class="key">dateCreated</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>() - <span class="integer">2</span>, <span class="key">lastUpdated</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>() - <span class="integer">1</span>).save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+    <span class="keyword">new</span> FooBar(<span class="key">dateCreated</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>() - <span class="integer">2</span>, <span class="key">lastUpdated</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>() - <span class="integer">1</span>).save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Because the timestamp handling is only disabled for the duration of the closure, you must flush the session during the closure execution!
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 <div class="sect2">
