@@ -182,7 +182,6 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
             LOG.debug("Opening single Hibernate session in HibernatePersistenceContextInterceptor");
             Session session = getSession();
             HibernateRuntimeUtils.enableDynamicFilterEnablerIfPresent(sf, session);
-            session.setFlushMode(FlushMode.AUTO);
             TransactionSynchronizationManager.bindResource(sf, new SessionHolder(session));
         }
     }
