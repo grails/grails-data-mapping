@@ -963,6 +963,50 @@ If you have <code>nullable: false</code> constraints on either <code>dateCreated
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>It is also possible to disable the automatic timestamping temporarily. This is most typically done in the case of a test where you need to define values for the <code>dateCreated</code> or <code>lastUpdated</code> in the past. It may also be useful for importing old data from other systems where you would like to keep the current values of the timestamps.</p>
+</div>
+<div class="paragraph">
+<p>Timestamps can be temporarily disabled for all domains, a specified list of domains, or a single domain. To get started, you need to get a reference to the <code>AutoTimestampEventListener</code>. If you already have access to the datastore, you can execute the <code>getAutoTimestampEventListener</code> method. You can also inject the bean that corresponds to your GORM implementation: <code>timestampInterceptor</code> for Hibernate, <code>mongoTimestampInterceptor</code> for MongoDB.</p>
+</div>
+<div class="paragraph">
+<p>Once you have a reference to the event listener, you can execute <code>withoutDateCreated</code>, <code>withoutLastUpdated</code>, or <code>withoutTimestamps</code>. The <code>withoutTimestamps</code> method will temporarily disable both <code>dateCreated</code> and <code>lastUpdated</code>.</p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">//Only the dateCreated property handling will be disabled for only the Foo domain
+autoTimestampEventListener.withoutDateCreated(Foo) {
+    new Foo(dateCreated: new Date() - 1).save(flush: true)
+}
+
+//Only the lastUpdated property handling will be disabled for only the Foo and Bar domains
+autoTimestampEventListener.withoutLastUpdated(Foo, Bar) {
+    new Foo(lastUpdated: new Date() - 1, bar: new Bar(lastUpdated: new Date() + 1)).save(flush: true)
+}
+
+//All timestamp property handling will be disabled for all domains
+autoTimestampEventListener.withoutTimestamps {
+    new Foo(dateCreated: new Date() - 2, lastUpdated: new Date() - 1).save(flush: true)
+    new Bar(dateCreated: new Date() - 2, lastUpdated: new Date() - 1).save(flush: true)
+    new FooBar(dateCreated: new Date() - 2, lastUpdated: new Date() - 1).save(flush: true)
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Because the timestamp handling is only disabled for the duration of the closure, you must flush the session during the closure execution!
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 <div id="footer">
