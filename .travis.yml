@@ -12,7 +12,6 @@ env:
   - GRADLE_OPTS="-Xmx768m -Xms256m -XX:MaxPermSize=256m -XX:+CMSClassUnloadingEnabled"
   - GIT_NAME="Graeme Rocher"
   - GIT_EMAIL="graeme.rocher@gmail.com"
-  - secure: f2DAQhvxnzr4zptig+H8vPMWr+pMCLw29oHG+A1U20IBowgSrHThfpleIXRTi45Frmv7tSyD5S9Zq+v/tM5Mh2NLljVugYsg7EGIbLVGQQPmnjhG934RyYpwJM+CzypOR8QH9YqTQtzbFUDGpqJ01A2viHsM8nLCp1vxuhW1srU=
   - secure: J+KWbE5RaZvcEibGWp2X4yR7bDKyRR0Yi+fm7Fyzs8PDpI3qJj/OqYiffgjGWPMFvGsYcH7pyhaYeFz1Z/8qcNGU6pw3/QV412WqWLO1pbWQZdrGbEgES0kpZzy/rliLBYwtuIS5DyjY3L3t4D2S2vcwZpvTWU9eqVikCC+R2eg=
   - secure: YM7rkQX1UzKuvMdjw8qCAQ0kWHJFpHZBvOoPaF3kuUUEbfFj/LgEh0xERnKyKz5QduRQipEFgpy492yJT1cb1wrH2YPt1cP+oDq9KOQr6vJB6Z/Xz0WsrgrU80rUBm4KrKXPRe/DMq/Lv3twnnB3Deub3nKSERidDW40JSnMLIE=
   - secure: X1ffz/ywsPMxaN73nH86Pr4RD7q0p0IaKI7v+5yPvX2g59LY4aJFYEl9Jt65e8+c0mkESNXxocQ1dnL4lehXBFrC4rTWhJvly4URa81clbY8l5EOTZQha/tyGXUOYyaGK409LrEcmLOGSvBTV3YsV83xhMTLhrOZ1VwI5zL6MjE=
@@ -25,6 +24,7 @@ env:
   - secure: D604qHBpW7UuFuxkhu/cqVzpEESkkipWTKyz3j75i2k+ocQXcYXSj3zDMk4Hmo/iTHszwCgXk1w/5aj+mxRVecewmXmpFk3Q63qPvJprAjcvatmxp82aBmmpPd9GHjKbyLmu6Gn3R8QtX6yAT75T9lf4Y1FMi9mVwFPOtLiSEs0=
   - secure: TNZ8oWsN+E1gkvxhyTHjguyakIWm+T9KxoZVNq+OoHv2kuyWTIbTJUtP3JVyXX+P+B9F9o+8Kkxp5jomgW0cRdjWxQebceeGlrNAzTVvvOm7tVFFxLjzjRnUPsWKfGXkIzSagvFdSgHIpinDqrtERD10pbym2ZDwqRCejCMjz0U=
   - secure: io7oNZbf/aYRn+a73x6B/8yjg27CYVVdwRobQ+vZBNwBzS31bBcC/8pMtIpsBFqSEtE8GrSM4dYtMSFSj5PasiMg6PgYG/frsbtgGmRqTBkmENfv2EIO+Ex0pgycL+hCUVtPqD9j3mwhfPWkim9vPdmpYe2BbQuTYs0spJuu6PQ=
+  - secure: QAOp5FWfiedjxQV2qGUlfZqvvsaBIAL9RyE1JnrcRsnNU6YIxeNCoJlafTYrn241IPU8q+E1M4yjIZOCDnl+CRTuukbo0sNIY+Sb92jA4nb+DRVnxphc0SOrFV1R90QekSnAX+C4+PAsgRasvjNJeNJVPV3P0HzJfzV3bLSPtb4=
 before_install:
 - ./openssl-setup.sh
 matrix:
