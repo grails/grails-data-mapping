@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Common Problems</title>
+<title>Untitled</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -423,55 +423,29 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>To use GORM 6.1.4.BUILD-SNAPSHOT for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
+<p>To use GORM 6.0.12.BUILD-SNAPSHOT for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">dependencies {
-    compile "org.grails.plugins:hibernate5:6.1.4.BUILD-SNAPSHOT"
+    compile "org.grails.plugins:hibernate5:6.0.12.BUILD-SNAPSHOT"
     compile "org.hibernate:hibernate-ehcache"
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>If you are using a version of Grails 3 earlier than 3.3 then you may need to enforce the GORM version. If you are using Grails 3.2.7 or above this can be done by modifying the <code>gormVersion</code> setting in <code>gradle.properties</code>:</p>
+<p>If you are using a version of Grails 3 earlier than 3.2 then you may need to enforce the GORM version by adding the following block:</p>
 </div>
 <div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-properties" data-lang="properties">gormVersion=6.1.4.BUILD-SNAPSHOT</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Otherwise if you are using an earlier version of Grails you can force the GORM version by adding the following block directly above the <code>dependencies</code> block:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">configurations.all {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("6.1.4.BUILD-SNAPSHOT")
+            details.useVersion("6.0.12.BUILD-SNAPSHOT")
         }
     }
-}
-dependencies {
-    ...
 }</code></pre>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_common_problems">Common Problems</h3>
-<div class="paragraph">
-<p>If you receive an error that indicates a failure to resolve the <code>grails-datastore-simple</code> dependency you may need to add the following to <code>build.gradle</code> directly above the <code>dependencies</code> block:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">configurations.all {
-    exclude module:'grails-datastore-simple'
-}</code></pre>
-</div>
 </div>
 </div>
 </div>
