@@ -535,7 +535,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#standalone">GORM for Neo4j without Grails</a></li>
 </ul>
 </li>
-<li><a href="#mapping">Mapping Domain Classes to Nodes</a>
+<li><a href="#mapping">Mapping Domain Classes to Neo4j Nodes</a>
 <ul class="sectlevel2">
 <li><a href="#idGeneration">Neo4j ID generators</a></li>
 <li><a href="#associations">Understanding Association Mapping</a></li>
@@ -543,23 +543,13 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#schemaless">Dynamic Properties and Associations</a></li>
 </ul>
 </li>
-<li><a href="#relationships">Mapping Domain Classes to Relationships</a>
-<ul class="sectlevel2">
-<li><a href="#relationshipType">Controlling the Relationship Type</a></li>
-<li><a href="#relationshipType">Querying and Relationships</a></li>
-</ul>
-</li>
 <li><a href="#querying">Querying with GORM for Neo4j</a>
 <ul class="sectlevel2">
 <li><a href="#lazyLoading">Understanding Lazy Loading</a></li>
 <li><a href="#cypher">Querying with Cypher</a></li>
 <li><a href="#indexing">Defining the Query Index</a></li>
-<li><a href="#paths">Querying for Paths</a></li>
-<li><a href="#queryingRelationships">Querying for Relationships</a></li>
-<li><a href="#dataServices">GORM for Neo4j Data Services</a></li>
 </ul>
 </li>
-<li><a href="#testing">Testing</a></li>
 <li><a href="#multipleDataSources">Multiple Data Sources</a>
 <ul class="sectlevel2">
 <li><a href="#_configuring_multiple_bolt_drivers">Configuring Multiple Bolt Drivers</a></li>
@@ -680,31 +670,6 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 <div class="sect2">
 <h3 id="releaseNotes">Release History</h3>
-<div class="sect3">
-<h4 id="_6_1_x">6.1.x</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Support for assigned identifiers</p>
-</li>
-<li>
-<p>Batch inserts with UNWIND and FOREACH when using assigned ids</p>
-</li>
-<li>
-<p>Support for mapping entities to Neo4j Relationships</p>
-</li>
-<li>
-<p>Support for querying Neo4j Paths</p>
-</li>
-<li>
-<p>Support for lists basic types</p>
-</li>
-<li>
-<p>Upgrade to Neo4j Bolt Driver 1.2</p>
-</li>
-</ul>
-</div>
-</div>
 <div class="sect3">
 <h4 id="_6_0_x">6.0.x</h4>
 <div class="ulist">
@@ -833,55 +798,7 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="upgrading">Upgrading from previous versions</h3>
 <div class="paragraph">
-<p>If you are upgrading from a previous version of the plugin to the 6.1.2.RELEASE, you will need to take into account the following changes.</p>
-</div>
-<div class="sect3">
-<h4 id="_removal_of_grails_datastore_simple">Removal of grails-datastore-simple</h4>
-<div class="paragraph">
-<p>The <code>grails-datastore-simple</code> and <code>grails-datastore-gorm-test</code> dependencies have been combined into a single <code>grails-datastore-gorm-test</code> dependency.</p>
-</div>
-<div class="paragraph">
-<p>Unfortunately existing versions of Grails still depend on the old <code>grails-datastore-simple</code> dependency. And you may receive an error such as:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">> Could not resolve all dependencies for configuration ':example:runtime'.
-   > Could not find org.grails:grails-datastore-simple:6.1.2.RELEASE.
-     Searched in the following locations:
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.2.RELEASE/grails-datastore-simple-6.1.2.RELEASE.pom
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.2.RELEASE/grails-datastore-simple-6.1.2.RELEASE.jar
-     Required by:
-         project :example > org.grails:grails-dependencies:3.2.4 >
-            ...</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If you are upgrading you will need to exclude this dependency using the following Gradle syntax directly before the <code>dependencies</code> block:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">configurations.all { <span class="predefined-type">Configuration</span> c -&gt;
-    c.exclude(<span class="key">group</span>:<span class="string"><span class="delimiter">'</span><span class="content">org.grails</span><span class="delimiter">'</span></span>,<span class="key">module</span>:<span class="string"><span class="delimiter">'</span><span class="content">grails-datastore-simple</span><span class="delimiter">'</span></span>)
-}
-dependencies {
-    ....
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_native_identifiers_by_default">Native Identifiers by Default</h4>
-<div class="paragraph">
-<p>Since 6.1, GORM for Neo4j uses native node and relationship identifiers by default for ids instead of the prevous snowflake id generation strategy. If you wish to revert to the previous strategy you can do so by applying the following configuration:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">grails.gorm.neo4j.default.mapping = {
-    id <span class="key">generator</span>:<span class="string"><span class="delimiter">'</span><span class="content">snowflake</span><span class="delimiter">'</span></span>
-}</code></pre>
-</div>
-</div>
+<p>If you are upgrading from a previous version of the plugin to the 6.0.12.BUILD-SNAPSHOT, you will need to take into account the following changes.</p>
 </div>
 <div class="sect3">
 <h4 id="_configuration_changes">Configuration Changes</h4>
@@ -944,7 +861,7 @@ dependencies {
 <div class="sect3">
 <h4 id="_general_neo4j_3_x_changes">General Neo4j 3.x Changes</h4>
 <div class="paragraph">
-<p>Since GORM for Neo4j 6.1.2.RELEASE is based on Neo4j 3.x, if you are upgrading from Neo4j 2.x there will be other changes related to Neo4j 3 that you may need to make. These are described in the <a href="https://neo4j.com/guides/upgrade/">upgrade guide</a> on the Neo4j website.</p>
+<p>Since GORM for Neo4j 6.0.12.BUILD-SNAPSHOT is based on Neo4j 3.x, if you are upgrading from Neo4j 2.x there will be other changes related to Neo4j 3 that you may need to make. These are described in the <a href="https://neo4j.com/guides/upgrade/">upgrade guide</a> on the Neo4j website.</p>
 </div>
 </div>
 </div>
@@ -960,37 +877,9 @@ dependencies {
 <p>For Grails 3.x you need to edit your <code>build.gradle</code> file and add the plugin as a dependency:</p>
 </div>
 <div class="listingblock">
-<div class="title">build.gradle</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-	compile 'org.grails.plugins:neo4j:6.1.2'
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If you are using a version of Grails 3 earlier than 3.3 then you may need to enforce the GORM version. If you are using Grails 3.2.7 or above this can be done by modifying the <code>gormVersion</code> setting in <code>gradle.properties</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=6.1.2.RELEASE</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Otherwise if you are using an earlier version of Grails you can force the GORM version by adding the following block directly above the <code>dependencies</code> block:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">configurations.all {
-    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-        if( details.requested.group == 'org.grails' &&
-            details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("6.1.2.RELEASE")
-        }
-    }
-}
-dependencies {
-    ...
+	compile 'org.grails.plugins:neo4j:6.0.12.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
@@ -1012,7 +901,7 @@ GORM for Neo4j requires Grails 2.5.x or above and Neo4j 3.0.x or above, if you w
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">plugins {
-    compile ':neo4j:6.1.2'
+    compile ':neo4j:6.0.12.BUILD-SNAPSHOT'
     build ':tomcat:8.22'
 }</code></pre>
 </div>
@@ -1151,7 +1040,7 @@ The Neo4j server uses Jetty, so when you add Neo4j as embedded Grails will also 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-neo4j-spring-boot:6.1.2.RELEASE")</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-neo4j-spring-boot:6.0.12.BUILD-SNAPSHOT")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1211,11 +1100,11 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-neo4j:6.1.2.RELEASE"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-neo4j:6.0.12.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Then annotate your entities with the <code>grails.gorm.annotation.Entity</code> annotation and implement the <a href="../api/grails/neo4j/Node.html">Node</a> trait:</p>
+<p>Then annotate your entities with the <code>grails.gorm.annotation.Entity</code> annotation and implement the <a href="../api/grails/neo4j/Neo4jEntity.html">Neo4jEntity</a> trait:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1223,7 +1112,7 @@ If your GORM entities are in a different package specify the package name as the
 <span class="keyword">import</span> <span class="include">grails.gorm.annotation.*</span>
 
 <span class="annotation">@Entity</span>
-<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> Node&lt;Person&gt;{
+<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> Neo4jEntity&lt;Person&gt;{
     <span class="predefined-type">String</span> name
 }</code></pre>
 </div>
@@ -1264,7 +1153,7 @@ println Person.count()</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="mapping">Mapping Domain Classes to Nodes</h2>
+<h2 id="mapping">Mapping Domain Classes to Neo4j Nodes</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>GORM for Neo4j will map each Grails domain instance to a Node in the node space. For example given the following domain class:</p>
@@ -1277,13 +1166,11 @@ println Person.count()</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Each domain class will implement the <a href="../api/grails/neo4j/Neo4jEntity.html">Neo4jEntity</a> trait. You can define this explicitly if you prefer (the <code>Node</code> trait is a subtrait of <code>Neo4jEntity</code>):</p>
+<p>Each domain class will implement the <a href="../api/grails/neo4j/Neo4jEntity.html">Neo4jEntity</a> trait. You can define this explicitly if you prefer:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.neo4j.Node</span>
-
-<span class="type">class</span> <span class="class">Pet</span> <span class="directive">implements</span> Node&lt;Pet&gt; {
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Pet</span> <span class="directive">implements</span> Neo4jEntity&lt;Pet&gt; {
     <span class="predefined-type">String</span> name
 }</code></pre>
 </div>
@@ -1323,21 +1210,31 @@ If you want to see what queries GORM for Neo4j generates, enabling logging for t
 <div class="sect2">
 <h3 id="idGeneration">Neo4j ID generators</h3>
 <div class="paragraph">
-<p>GORM by default uses a native Neo4j node identifiers for each <code>id</code> property of a domain class.
-These have a couple of disadvantages that should encourage you to use an alternative id generation strategy:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Neo4j node ids are more like internal identifiers used by Neo4j to identify nodes (equivalent to the <code>rowid</code> in a SQL database), but can be potentially re-used if data is deleted and recreated. This makes them not appropriate for use as a public facing key.</p>
-</li>
-<li>
-<p>In order to obtain a Node id GORM must perform an insert (similar to the way GORM for Hibernate has to perform a SQL INSERT if the id generation strategy is an auto-increment column), which means it cannot efficiently batch up Cypher <code>CREATE</code> statements.</p>
-</li>
-</ol>
+<p>GORM by default uses a custom identity generator based on the Snowflake algorithm and stores the generated identifier in a property of each Neo4j node called <code>__id__</code>.</p>
 </div>
 <div class="paragraph">
-<p>This last disadvantage can be worked around by using the <code>saveAll</code> method to save multiple domain classes at once:</p>
+<p>This has the advantage of enabling GORM to batch insert operations into a single CREATE cypher statement, hence why it is the default.</p>
+</div>
+<div class="paragraph">
+<p>However, if you prefer to use native Neo4j node identifiers then you can do so by changing the generator used in the mapping:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Club</span> {
+
+    ...
+    static mapping = {
+        id <span class="key">generator</span>:<span class="string"><span class="delimiter">'</span><span class="content">native</span><span class="delimiter">'</span></span>
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will instead use the Neo4j node identifier as the object identifier with the downside being that GORM has to execute individual CREATE  statements for each new object saved, similar to the way GORM for Hibernate has to perform a SQL INSERT if the id generation strategy is an auto-increment column.</p>
+</div>
+<div class="paragraph">
+<p>This disadvantage can be worked around by using the <code>saveAll</code> method to save multiple domain classes at once:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1348,100 +1245,15 @@ These have a couple of disadvantages that should encourage you to use an alterna
 </div>
 </div>
 <div class="paragraph">
-<p>However, it is generally better to consider a different id generation strategy.</p>
-</div>
-<div class="sect3">
-<h4 id="_assigned_identifiers">Assigned Identifiers</h4>
-<div class="paragraph">
-<p>The recommended approach is to use <code>assigned</code> identifiers that relate to your domain. For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Owner</span> {
-    <span class="predefined-type">String</span> name
-    <span class="directive">static</span> hasMany = [<span class="key">pets</span>:Pet]
-    <span class="directive">static</span> mapping = node {
-        id <span class="key">generator</span>:<span class="string"><span class="delimiter">'</span><span class="content">assigned</span><span class="delimiter">'</span></span>, <span class="key">name</span>:<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>
-    }
-}
-<span class="type">class</span> <span class="class">Pet</span> {
-    <span class="predefined-type">String</span> name
-    <span class="directive">static</span> belongsTo = [<span class="key">owner</span>:<span class="predefined-type">Owner</span>]
-    <span class="directive">static</span> mapping = node {
-        id <span class="key">generator</span>:<span class="string"><span class="delimiter">'</span><span class="content">assigned</span><span class="delimiter">'</span></span>, <span class="key">name</span>:<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>With assigned identifiers GORM can do a much better job of optimizing write operations. For example the following logic:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">new</span> <span class="predefined-type">Owner</span>(<span class="key">name</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>)
-        .addToPets(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Dino</span><span class="delimiter">&quot;</span></span>)
-        .addToPets(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Joe</span><span class="delimiter">&quot;</span></span>)
-        .save()
-<span class="keyword">new</span> <span class="predefined-type">Owner</span>(<span class="key">name</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Barney</span><span class="delimiter">&quot;</span></span>)
-        .addToPets(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Hoppy</span><span class="delimiter">&quot;</span></span>)
-        .save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>GORM will generate the following Cypher:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="cypher">UNWIND {ownerBatch} as row
-CREATE (owner:Owner)
-SET owner += row.props
-FOREACH (pets IN row.pets |
-    CREATE (pet:Pet)
-    SET pet += pets.props
-    MERGE (owner)-[:PETS]-&gt;(pet)
-)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Notice how <code>UNWIND</code> and <code>FOREACH</code> are used to create both the entity and its associations in one go, significantly improving write performance for large data sets.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_snowflake_identifiers">Snowflake Identifiers</h4>
-<div class="paragraph">
-<p>Another option is a custom identity generator based on the Snowflake algorithm and stores the generated identifier in a property of each Neo4j node called <code>__id__</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">grails.neo4j.mapping.MappingBuilder.*</span>
-<span class="type">class</span> <span class="class">Club</span> {
-    <span class="predefined-type">String</span> name
-    ...
-    static mapping = node {
-        id {
-            generator <span class="string"><span class="delimiter">&quot;</span><span class="content">snowflake</span><span class="delimiter">&quot;</span></span>
-        }
-    }
-
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_globally_changing_identity_strategy">Globally Changing Identity Strategy</h4>
-<div class="paragraph">
 <p>If you wish to globally change id generation then you can do so in <code>grails-app/conf/application.groovy</code> (<code>Config.groovy</code> in Grails 2.x):</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">grails.neo4j.default.mapping = {
-    id <span class="key">generator</span>:<span class="string"><span class="delimiter">'</span><span class="content">assigned</span><span class="delimiter">'</span></span>
+    id <span class="key">generator</span>:<span class="string"><span class="delimiter">'</span><span class="content">native</span><span class="delimiter">'</span></span>
 }</code></pre>
 </div>
 </div>
-</div>
-<div class="sect3">
-<h4 id="_custom_identifiers">Custom Identifiers</h4>
 <div class="paragraph">
 <p>In addition, if you wish to use a custom identity generation strategy you can do so by specifying a class name that implements the <code>IdGenerator</code> interface:</p>
 </div>
@@ -1450,7 +1262,6 @@ FOREACH (pets IN row.pets |
 <pre class="CodeRay highlight"><code data-lang="groovy">grails.neo4j.default.mapping = {
     id <span class="key">generator</span>:<span class="string"><span class="delimiter">'</span><span class="content">com.foo.MyIdGenerator</span><span class="delimiter">'</span></span>
 }</code></pre>
-</div>
 </div>
 </div>
 </div>
@@ -1472,22 +1283,11 @@ FOREACH (pets IN row.pets |
 </div>
 </div>
 <div class="paragraph">
-<p>When you save the relationship:</p>
+<p>Will generate a Cypher relationship creation query as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">new</span> <span class="predefined-type">Owner</span>(<span class="key">name</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>)
-    .addToPets(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Dino</span><span class="delimiter">&quot;</span></span>)
-    .save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)
-    .discard()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>save()</code> method will generate a Cypher relationship creation query as follows:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="cypher">MATCH (from:Owner),(to:Pet) WHERE ID(from) = {start} AND ID(to) IN {end} MERGE (from)-[r:PETS]-&gt;(to)</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">MATCH (<span class="key">from</span>:<span class="predefined-type">Owner</span> {<span class="key">__id__</span>:{start}}), (<span class="key">to</span>:Pet) WHERE to.__id__ IN {end} CREATE (from)-[<span class="key">r</span>:PETS]-&gt;(to)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1552,18 +1352,6 @@ For more information on defining relationships with GORM, see the <a href="http:
 }</code></pre>
 </div>
 </div>
-<div class="admonitionblock warning">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-warning" title="Warning"></i>
-</td>
-<td class="content">
-Dynamic labels have a negative impact on write performance as GORM is unable to batch operations with dynamic labels so should be used sparingly.
-</td>
-</tr>
-</table>
-</div>
 <div class="paragraph">
 <p>Or mix static and dynamic labels:</p>
 </div>
@@ -1575,7 +1363,7 @@ Dynamic labels have a negative impact on write performance as GORM is unable to 
 </div>
 </div>
 <div class="paragraph">
-<p>At the cost of read/write performance you can define dynamic labels based on an instance:</p>
+<p>At a small read/write performance cost you can define dynamic labels based on an instance:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1638,187 +1426,8 @@ Dynamic labels have a negative impact on write performance as GORM is unable to 
   p.save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)</code></pre>
 </div>
 </div>
-<div class="admonitionblock warning">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-warning" title="Warning"></i>
-</td>
-<td class="content">
-Dynamic associations have a runtime performance cost as when you access any dynamic property GORM has to issue a separate query to retrieve that association if the value is null, use with care.
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="relationships">Mapping Domain Classes to Relationships</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>In addition to being able to map a domain class to a Neo4j <code>Node</code>, since 6.1 you are able to map a domain class to a Neo4j <code>Relationship</code>.</p>
-</div>
-<div class="paragraph">
-<p>For example consider the following domain model:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.neo4j.*</span>
-
-<span class="type">class</span> <span class="class">Movie</span> {
-    <span class="predefined-type">String</span> title
-    <span class="directive">static</span> hasMany = [<span class="key">cast</span>:CastMember]
-}
-
-<span class="type">class</span> <span class="class">CastMember</span> <span class="directive">implements</span> Relationship&lt;Person, Movie&gt; {
-    <span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; roles = <span class="type">[]</span>
-}
-
-<span class="type">class</span> <span class="class">Person</span> {
-    <span class="predefined-type">String</span> name
-    <span class="directive">static</span> hasMany = [<span class="key">appearances</span>:CastMember]
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The <code>CastMember</code> class implements the <a href="../api/grails/neo4j/Relationship.html">Relationship</a> trait which takes two generic arguments: The class that represents the start of the relationship and the class that represents the end.</p>
-</div>
-<div class="paragraph">
-<p>You can then use regular GORM methods to query the <code>CastMember</code> relationship. In addition because Neo4j relationships are dynamic you can assign additional properties to them at runtime. For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> castMember = <span class="keyword">new</span> CastMember(
-    <span class="key">from</span>: <span class="keyword">new</span> Person(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Keanu</span><span class="delimiter">&quot;</span></span>),
-    <span class="key">to</span>: <span class="keyword">new</span> Movie(<span class="key">title</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">The Matrix</span><span class="delimiter">&quot;</span></span>),
-    <span class="key">roles</span>: [<span class="string"><span class="delimiter">&quot;</span><span class="content">Neo</span><span class="delimiter">&quot;</span></span>])
-
-castMember[<span class="string"><span class="delimiter">'</span><span class="content">realName</span><span class="delimiter">'</span></span>] = <span class="string"><span class="delimiter">&quot;</span><span class="content">Thomas Anderson</span><span class="delimiter">&quot;</span></span>
-castMember.save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In the above example the <code>roles</code> property is saved as a property of the relationship, as is the dynamic <code>realName</code> property.</p>
-</div>
-<div class="paragraph">
-<p>You can then query relationships using these properties:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">CastMember cm = CastMember.findByRoles([<span class="string"><span class="delimiter">'</span><span class="content">Neo</span><span class="delimiter">'</span></span>])
-Person person = cm.from
-println person.name</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The above example will produce a Cypher query that queries the relationship rather than the nodes:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>MATCH (n:Person)-[from:CASTMEMBER]-&gt;(to:Movie) WHERE ( r.roles={1} ) RETURN r as rel, from as from, to as to
- ] for params [[1:[Neo]]</pre>
-</div>
-</div>
-<div class="sect2">
-<h3 id="relationshipType">Controlling the Relationship Type</h3>
-<div class="paragraph">
-<p>You will have noticed from the previous example that the relationship type is <code>CASTMEMBER</code>.</p>
-</div>
-<div class="paragraph">
-<p>By default GORM uses the class name for the relationship type. You can configure an alternative default using the <code>mapping</code> block if necessary:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.neo4j.*</span>
-<span class="keyword">import</span> <span class="include">static</span> <span class="include">grails.neo4j.mapping.MappingBuilder.*</span>
-
-<span class="directive">static</span> mapping = relationship {
-   type <span class="string"><span class="delimiter">&quot;</span><span class="content">ACTED_IN</span><span class="delimiter">&quot;</span></span>
-   direction Direction.OUTGOING
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The above example also demonstrates configuring the <code>direction</code> of the relationship.</p>
-</div>
-<div class="paragraph">
-<p>You can also assign a per instance relationship type overriding the default:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> castMember = <span class="keyword">new</span> CastMember(
-    <span class="key">type</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">DIRECTED</span><span class="delimiter">&quot;</span></span>
-    <span class="key">from</span>: <span class="keyword">new</span> Person(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Lana Wachowski</span><span class="delimiter">&quot;</span></span>),
-    <span class="key">to</span>: <span class="keyword">new</span> Movie(<span class="key">title</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">The Matrix</span><span class="delimiter">&quot;</span></span>))
-    .save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And then later use the type in queries:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;CastMember&gt; directors = CastMember.findAllByType(<span class="string"><span class="delimiter">&quot;</span><span class="content">DIRECTED</span><span class="delimiter">&quot;</span></span>)</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="relationshipType">Querying and Relationships</h3>
-<div class="paragraph">
-<p>Generally all types of GORM queries work with relationships. There is some special handling for the <code>from</code> and <code>to</code> properties of a relationship to make it possible to query these and use projections.</p>
-</div>
-<div class="paragraph">
-<p>When you query any other property of a relationship the relationship&#8217;s properties are queried. When using <code>from</code> and <code>to</code> however, the nodes that form both ends of the relationship are queried instead.</p>
-</div>
-<div class="paragraph">
-<p>Consider this query:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span> keanuCastings = CastMember.where {
-    from.name == <span class="string"><span class="delimiter">&quot;</span><span class="content">Keanu</span><span class="delimiter">&quot;</span></span>
-}.list()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The above <code>where</code> query will produce the following cypher query:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>MATCH (from:Person)-[r:ACTED_IN]-&gt;(to:Movie) WHERE ( ( from.name={1} ) ) RETURN r as rel, from as from, to</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Notice that the <code>from</code> end of the relationship is queried. You can also apply projections to the <code>to</code> and <code>from</code> associations. For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">DetachedCriteria&lt;CastMember&gt; baseQuery = CastMember.where {
-    from.name == <span class="string"><span class="delimiter">&quot;</span><span class="content">Keanu</span><span class="delimiter">&quot;</span></span>
-} <i class="conum" data-value="1"></i><b>(1)</b>
-<span class="type">int</span> totalKeanuMovies = baseQuery.projections {
-    countDistinct(<span class="string"><span class="delimiter">&quot;</span><span class="content">to.title</span><span class="delimiter">&quot;</span></span>)
-}.get() <i class="conum" data-value="2"></i><b>(2)</b>
-
-<span class="predefined-type">List</span>&lt;<span class="predefined-type">String</span>&gt; keanuMovieTitles = baseQuery.property(<span class="string"><span class="delimiter">'</span><span class="content">to.title</span><span class="delimiter">'</span></span>).list() <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Create a <code>DetachedCriteria</code> query</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Use a projection to get the total count of movie titles</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Use a project to get only the movie titles</td>
-</tr>
-</table>
+<p>The downside of dynamic associations is that GORM has to issue a separate query for each loaded instance when retrieving entities. If you have a small amount of data this is not a problem, but for larger data sets it is not recommended.</p>
 </div>
 </div>
 </div>
@@ -1895,58 +1504,13 @@ If you want to see what queries GORM for Neo4j generates, enabling logging for t
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="cypher">MATCH (n:Club) WHERE ( ID(n)={1} ) RETURN n as data</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>As you can see the <code>teams</code> association is not loaded in the query and nor is the <code>league</code> association. Note that if you were to make the <code>league</code> association nullable:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Club</span> {
- ...
- static belongsTo = [<span class="key">league</span>:League]
- <span class="directive">static</span> constraints = {
-    league <span class="key">nullable</span>:<span class="predefined-constant">true</span>
- }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This would alter the query executed to:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="cypher">MATCH (n:Club) WHERE ( ID(n) = {1} )
+<pre class="CodeRay highlight"><code data-lang="groovy">MATCH (<span class="key">n</span>:Club) WHERE ( n.__id__={<span class="integer">1</span>} )
 OPTIONAL MATCH(n)-[:LEAGUE]-&gt;(leagueNode)
-RETURN n as data, collect(DISTINCT ID(leagueNode)) as leagueIds</code></pre>
+RETURN n <span class="keyword">as</span> data, collect(DISTINCT leagueNode.__id__) <span class="keyword">as</span> leagueIds</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Note that only the ID of the <code>league</code> association is retrieved.</p>
-</div>
-<div class="paragraph">
-<p>The reason the <code>id</code> of the associated entity is retrieved is to differentiate between whether an association exists or is <code>null</code>. You can restore the previous behaviour by making the <code>league</code> association <code>lazy</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Club</span> {
- ...
- static belongsTo = [<span class="key">league</span>:League]
- <span class="directive">static</span> constraints = {
-    league <span class="key">nullable</span>:<span class="predefined-constant">true</span>
- }
- <span class="directive">static</span> mapping = {
-    league <span class="key">lazy</span>:<span class="predefined-constant">true</span>
- }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>However if you were to access the <code>league</code> association and it were <code>null</code> you would get an exception.</p>
-</div>
-<div class="paragraph">
-<p>With all of these approaches, if you then iterate over the teams you will get a second query to obtain the teams:</p>
+<p>As you can see the <code>teams</code> association is not loaded in the query, and only the ID of the <code>league</code> association is retrieved. If you then iterate over the teams you will get a second query to obtain the teams:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1960,7 +1524,7 @@ RETURN n as data, collect(DISTINCT ID(leagueNode)) as leagueIds</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">MATCH (<span class="key">from</span>:Club)-[:TEAMS]-&gt;(<span class="key">to</span>:Team) WHERE ID(from) = {id} RETURN to <span class="keyword">as</span> data</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">MATCH (<span class="key">from</span>:Club)&lt;-[:CLUB]-(<span class="key">to</span>:Team) WHERE from.__id__ = {id} RETURN to <span class="keyword">as</span> data</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1989,9 +1553,10 @@ RETURN n as data, collect(DISTINCT ID(leagueNode)) as leagueIds</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="cypher">MATCH (n:Club) WHERE ( n.name={1} )
-OPTIONAL MATCH(n)-[:TEAMS]-&gt;(teamsNode) WITH n, collect(DISTINCT teamsNode) as teamsNodes
-RETURN n as data, teamsNodes</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">MATCH (<span class="key">n</span>:Club) WHERE ( n.name={<span class="integer">1</span>} )
+OPTIONAL MATCH(n)&lt;-[:CLUB]-(teamsNode)
+OPTIONAL MATCH(n)-[:LEAGUE]-&gt;(leagueNode)
+RETURN n <span class="keyword">as</span> data, collect(DISTINCT leagueNode.__id__) <span class="keyword">as</span> leagueIds, collect(DISTINCT teamsNode) <span class="keyword">as</span> teamsNodes</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2035,19 +1600,11 @@ RETURN n as data, teamsNodes</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Note that the first returned item should be the node itself. To execute cypher queries and work with the raw results use <code>executeCypher</code>:</p>
+<p>Note that the first returned item should be the node itself. To execute cypher queries and work with the raw results use <code>cypherStatic</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">StatementResult result = Club.executeCypher(<span class="string"><span class="delimiter">&quot;</span><span class="content">MATCH n where n.name = {1} RETURN n</span><span class="delimiter">&quot;</span></span>, [<span class="string"><span class="delimiter">'</span><span class="content">FC Bayern Muenchen</span><span class="delimiter">'</span></span>])</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Or alternatively you can use <code>executeQuery</code> which will return a list of results:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Node&gt; nodes = Club.executeQuery(<span class="string"><span class="delimiter">&quot;</span><span class="content">MATCH n where n.name = {1} RETURN n</span><span class="delimiter">&quot;</span></span>, [<span class="string"><span class="delimiter">'</span><span class="content">FC Bayern Muenchen</span><span class="delimiter">'</span></span>])</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">StatementResult result = Club.cypherStatic(<span class="string"><span class="delimiter">&quot;</span><span class="content">MATCH n where n.name = {1} RETURN n</span><span class="delimiter">&quot;</span></span>, [<span class="string"><span class="delimiter">'</span><span class="content">FC Bayern Muenchen</span><span class="delimiter">'</span></span>])</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2058,18 +1615,6 @@ RETURN n as data, teamsNodes</code></pre>
 <pre class="CodeRay highlight"><code data-lang="groovy">Node myNode = ...
  Club club = myNode <span class="keyword">as</span> Club</code></pre>
 </div>
-</div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-This also works for <code>Relationship</code> and <code>Path</code> types
-</td>
-</tr>
-</table>
 </div>
 <div class="paragraph">
 <p>You can also convert any <a href="http://neo4j.com/docs/api/java-driver/1.0/org/neo4j/driver/v1/StatementResult.html">org.neo4j.driver.v1.StatementResult</a> instance to a list of domain classes:</p>
@@ -2120,247 +1665,6 @@ List&lt;Club&gt; clubs = result.toList(Club)</code></pre>
     }
 }</code></pre>
 </div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="paths">Querying for Paths</h3>
-<div class="paragraph">
-<p>Since 6.1, GORM for Neo4j features support for Neo4j path queries. To use path queries you must implement the <code>grails.neo4j.Node</code> trait in your domain class. For example given the following class:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@EqualsAndHashCode</span>(includes = <span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>)
-<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> Node&lt;Person&gt; {
-    <span class="predefined-type">String</span> name
-    <span class="directive">static</span> hasMany = [<span class="key">friends</span>: Person]
-
-    <span class="directive">static</span> mapping = node {
-        id(<span class="key">generator</span>:<span class="string"><span class="delimiter">'</span><span class="content">assigned</span><span class="delimiter">'</span></span>, <span class="key">name</span>:<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>)
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And the following setup data:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">Person joe = <span class="keyword">new</span> Person(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Joe</span><span class="delimiter">&quot;</span></span>)
-Person barney = <span class="keyword">new</span> Person(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Barney</span><span class="delimiter">&quot;</span></span>)
-                      .addToFriends(joe)
-Person fred = <span class="keyword">new</span> Person(<span class="key">name</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>)
-                      .addToFriends(barney)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Which creates a friend graph it is possible to find out the shortest path from one friend to another with the <code>findShortestPath</code> method which returns a <code>grails.neo4j.Path</code> instance:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">Path&lt;Person, Person&gt; path = Person.findShortestPath(fred, joe, <span class="integer">15</span>)
-<span class="keyword">for</span>(Path.Segment&lt;Person, Person&gt; segment <span class="keyword">in</span> path) {
-    println segment.start().name
-    println segment.end().name
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can also find the shortest path without first loading the entities using proxies:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">Path&lt;Person, Person&gt; path = Person.findShortestPath(Person.proxy(<span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>), Person.proxy(<span class="string"><span class="delimiter">&quot;</span><span class="content">Joe</span><span class="delimiter">&quot;</span></span>), <span class="integer">15</span>)
-<span class="keyword">for</span>(Path.Segment&lt;Person, Person&gt; segment <span class="keyword">in</span> path) {
-    println segment.start().name
-    println segment.end().name
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Finally it is also possible to use Cypher queries to find a path:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">String</span> from = <span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>
-<span class="predefined-type">String</span> to = <span class="string"><span class="delimiter">&quot;</span><span class="content">Joe</span><span class="delimiter">&quot;</span></span>
-Path&lt;Person, Person&gt; path = Person.findPath(<span class="string"><span class="delimiter">&quot;</span><span class="content">MATCH (from:Person),(to:Person), p = shortestPath((from)-[*..15]-(to)) WHERE from.name = </span><span class="inline"><span class="inline-delimiter">$</span>from</span><span class="content"> AND to.name = </span><span class="inline"><span class="inline-delimiter">$</span>to</span><span class="content"> RETURN p</span><span class="delimiter">&quot;</span></span>)
-<span class="keyword">for</span>(Path.Segment&lt;Person, Person&gt; segment <span class="keyword">in</span> path) {
-    println segment.start().name
-    println segment.end().name
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="queryingRelationships">Querying for Relationships</h3>
-<div class="paragraph">
-<p>In addition to being able to query for paths since 6.1, GORM for Neo4j features support for Neo4j relationship queries. To use path queries you must implement the <code>grails.neo4j.Node</code> trait in your domain class. For example given the following class:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@EqualsAndHashCode</span>(includes = <span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>)
-<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> Node&lt;Person&gt; {
-    <span class="predefined-type">String</span> name
-    <span class="directive">static</span> hasMany = [<span class="key">friends</span>: Person]
-
-    <span class="directive">static</span> mapping = node {
-        id(<span class="key">generator</span>:<span class="string"><span class="delimiter">'</span><span class="content">assigned</span><span class="delimiter">'</span></span>, <span class="key">name</span>:<span class="string"><span class="delimiter">'</span><span class="content">name</span><span class="delimiter">'</span></span>)
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can find a relationship between two entities with the following query:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">String</span> from = <span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>
-<span class="predefined-type">String</span> to = <span class="string"><span class="delimiter">&quot;</span><span class="content">Barney</span><span class="delimiter">&quot;</span></span>
-Relationship&lt;Person, Person&gt; rel = Person.findRelationship(Person.proxy(from), Person.proxy(to))</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The arguments can be retrieved instances or unloaded proxies to nodes.</p>
-</div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-Querying for relationships in this way is not as flexible as using relationship entities. Consider <a href="#relationships">mapping an entity to a relationship</a>.
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>You can also find all the relationships between two entities:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">String</span> from = <span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>
-<span class="predefined-type">String</span> to = <span class="string"><span class="delimiter">&quot;</span><span class="content">Barney</span><span class="delimiter">&quot;</span></span>
-<span class="predefined-type">List</span>&lt;Relationship&lt;Person, Person&gt;&gt; rels = Person.findRelationships(Person.proxy(from), Person.proxy(to))</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Or find all the relationships between two entity types:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span>&lt;Relationship&lt;Person, Person&gt;&gt; rels = Person.findRelationships(Person, Person, [<span class="key">max</span>:<span class="integer">10</span>])
-<span class="keyword">for</span>(rel <span class="keyword">in</span> rels) {
-    println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Type </span><span class="inline"><span class="inline-delimiter">${</span>rel.type<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
-    println(<span class="string"><span class="delimiter">&quot;</span><span class="content">From </span><span class="inline"><span class="inline-delimiter">${</span>rel.from.name<span class="inline-delimiter">}</span></span><span class="content"> to </span><span class="inline"><span class="inline-delimiter">${</span>rel.to.name<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>)
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="dataServices">GORM for Neo4j Data Services</h3>
-<div class="paragraph">
-<p>Additional support for <a href="http://gorm.grails.org/6.1.x/hibernate/manual/index.html#dataServices">GORM Data Services</a> exists in GORM for Neo4j beyond what is already offered by GORM core.</p>
-</div>
-<div class="paragraph">
-<p>For example if you declare a data service interface:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Service</span>(Person)
-<span class="type">interface</span> PersonService {
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can use the <code>@Cypher</code> annotation to automatically implement methods that execute Cypher queries:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Cypher</span>(<span class="string"><span class="delimiter">&quot;&quot;&quot;</span><span class="content">MATCH </span><span class="inline"><span class="inline-delimiter">${</span>Person from<span class="inline-delimiter">}</span></span><span class="content">,</span><span class="inline"><span class="inline-delimiter">${</span>Person to<span class="inline-delimiter">}</span></span><span class="content">, p = shortestPath((</span><span class="inline"><span class="inline-delimiter">$</span>from</span><span class="content">)-[*..15]-(</span><span class="inline"><span class="inline-delimiter">$</span>to</span><span class="content">))
-           WHERE </span><span class="inline"><span class="inline-delimiter">$</span>from</span><span class="content">.name = </span><span class="inline"><span class="inline-delimiter">$</span>start</span><span class="content"> AND </span><span class="inline"><span class="inline-delimiter">$</span>to</span><span class="content">.name = </span><span class="inline"><span class="inline-delimiter">$</span>end</span><span class="content">
-           RETURN p</span><span class="delimiter">&quot;&quot;&quot;</span></span>)
-Path&lt;Person, Person&gt; findPath(<span class="predefined-type">String</span> start, <span class="predefined-type">String</span> end)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Notice how you can use the class names within the Cypher query and it will correctly translate the declaration into the appropriate node <code>MATCH</code> statement.</p>
-</div>
-<div class="paragraph">
-<p>Variable references within the <code>@Cypher</code> string declaration are also compile time checked.</p>
-</div>
-<div class="paragraph">
-<p>You can also automatically implement Cypher update operations:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Cypher</span>(<span class="string"><span class="delimiter">&quot;&quot;&quot;</span><span class="content">MATCH </span><span class="inline"><span class="inline-delimiter">${</span>Person p<span class="inline-delimiter">}</span></span><span class="content">
-           WHERE </span><span class="inline"><span class="inline-delimiter">$</span>p</span><span class="content">.name = </span><span class="inline"><span class="inline-delimiter">$</span>name</span><span class="content">
-           SET p.age = </span><span class="inline"><span class="inline-delimiter">$</span>age</span><span class="delimiter">&quot;&quot;&quot;</span></span>)
-<span class="type">void</span> updatePerson(<span class="predefined-type">String</span> name, <span class="type">int</span> age)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Finally, support for implementing methods that find paths is also possible. For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">Path&lt;Person, Person&gt; findPath(Person from, Person to)</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="testing">Testing</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>It is relatively trivial to write unit tests that use GORM for Neo4j. If you wish to use an embedded version of Neo4j simply add the <code>neo4j-harness</code> dependency to your <code>build.gradle</code> file:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">testRuntime "org.neo4j.test:neo4j-harness:3.1.2"</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then create a <a href="http://spockframework.org">Spock</a> specification and declare a <code>@Shared</code> field using the <code>Neo4jDatastore</code> constructor with the domain classes you wish to test:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Shared</span> <span class="annotation">@AutoCleanup</span> Neo4jDatastore datastore = <span class="keyword">new</span> Neo4jDatastore(getClass().getPackage())</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The <code>@AutoCleanup</code> annotation will ensure the datastore is shutdown correctly after the test completes
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>If the test is in the same package as your domain classes then you can also setup package scanning instead of hard coding each domain class name:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Shared</span> <span class="annotation">@AutoCleanup</span> Neo4jDatastore datastore
-        = <span class="keyword">new</span> Neo4jDatastore(getClass().getPackage())</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Then annotate each test method with the <code>grails.gorm.transactions.Rollback</code> annotation:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Rollback</span>
-<span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test something</span><span class="delimiter">&quot;</span></span>() {
-
-}</code></pre>
 </div>
 </div>
 </div>
@@ -2474,21 +1778,9 @@ The <code>@AutoCleanup</code> annotation will ensure the datastore is shutdown c
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span>.withConnection(<span class="string"><span class="delimiter">&quot;</span><span class="content">moreBooks</span><span class="delimiter">&quot;</span></span>) {
-    list()
+    <span class="predefined-type">Book</span>.list()
 }</code></pre>
 </div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The call to <code>list()</code> should not be prefixed with <code>Book.</code> as this will use the default connection
-</td>
-</tr>
-</table>
 </div>
 <div class="paragraph">
 <p>Any logic executed within the body of the closure will use the alternate connection. Once the close finishes execution GORM will switch back to the default connection automatically.</p>
