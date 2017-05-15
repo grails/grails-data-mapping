@@ -101,9 +101,9 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
 
             void deindex(value, primaryKey) {
                 def index = getIndexName(value)
-                def indexed = indices[index]
+                List indexed = indices[index]
                 if (indexed) {
-                    indexed.remove(primaryKey)
+                    indexed.removeElement(primaryKey)
                 }
             }
 
