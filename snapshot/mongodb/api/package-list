@@ -9,7 +9,6 @@ grails.mongodb
 grails.mongodb.api
 grails.mongodb.bootstrap
 grails.mongodb.geo
-grails.mongodb.mapping
 grails.plugins.mongodb
 grails.plugins.rx.mongodb
 grails.test.mongodb
