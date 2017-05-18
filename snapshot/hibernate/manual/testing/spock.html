@@ -483,12 +483,12 @@ class Person {
 <div class="sect3">
 <h4 id="_spock_and_transactions">Spock and Transactions</h4>
 <div class="paragraph">
-<p>Note that in general you have to wrap your test execution logic in a session or transaction. The easiest way to do this is with <code>grails.gorm.transactions.Transactional</code>:</p>
+<p>Note that in general you have to wrap your test execution logic in a session or transaction. The easiet way to do this is with <code>grails.transaction.Transactional</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">...
-import grails.gorm.transactions.*
+import grails.transaction.Rollback
 import org.springframework.transaction.PlatformTransactionManager
 
 class ExampleSpec extends Specification {
@@ -534,7 +534,7 @@ class ExampleSpec extends Specification {
 </table>
 </div>
 <div class="paragraph">
-<p>In the example above, each test method is wrapped in a transaction that rolls back any changes using the <code>grails.gorm.transactions.Rollback</code> annotation.</p>
+<p>In the example above, each test method is wrapped in a transaction that rolls back any changes using the <code>grails.transaction.Rollback</code> method.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
