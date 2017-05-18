@@ -1,0 +1,18 @@
+configurations {
+    documentation
+}
+dependencies {
+    compile project(":grails-datastore-gorm"), {
+        exclude group:"org.grails", module:'grails-async'
+        exclude group:"org.grails", module:'grails-datastore-core'
+    }
+    compile project(":grails-datastore-core")
+    documentation "org.grails:grails-async:$grailsVersion"
+    documentation "org.springframework:spring-beans:$springVersion"
+    compileOnly("org.hibernate:hibernate-validator:$hibernateValidatorVersion")
+    compile 'io.reactivex.rxjava2:rxjava:2.1.0'
+}
+
+tasks.withType(Groovydoc) {
+    classpath = classpath += configurations.documentation
+}
