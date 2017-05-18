@@ -40,4 +40,9 @@ class ModificationTrackingEntityAccess implements EntityAccess {
         modifiedProperties.put(name, value)
         target.setProperty(name, value)
     }
+
+    @Override
+    Object getProperty(String name) {
+        target.getProperty(name)
+    }
 }
