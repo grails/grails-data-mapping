@@ -311,6 +311,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         }
     }
 
+    @CompileDynamic // required for Hibernate 5.2 compatibility
     def <D> D findWithSql(CharSequence sql) {
         IHibernateTemplate template = hibernateTemplate
         return (D) template.execute { Session session ->
@@ -351,6 +352,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
      * @param args The arguments
      * @return All entities matching the SQL query
      */
+    @CompileDynamic // required for Hibernate 5.2 compatibility
     List<D> findAllWithSql(CharSequence sql, Map args = Collections.emptyMap()) {
         IHibernateTemplate template = hibernateTemplate
         return (List<D>) template.execute { Session session ->
