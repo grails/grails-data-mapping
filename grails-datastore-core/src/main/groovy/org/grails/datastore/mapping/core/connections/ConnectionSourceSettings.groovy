@@ -33,7 +33,10 @@ class ConnectionSourceSettings implements Settings {
 
     /**
      * Whether to auto flush
+     *
+     * @deprecated Enabling this is generally the wrong thing to do as it will degrade performance. Hence deprecated
      */
+    @Deprecated
     boolean autoFlush = false
 
     /**
