@@ -870,7 +870,52 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_write_operations_without_a_transaction">1.2.4. Write Operations without a Transaction</h4>
+<h4 id="_multiple_data_source_configuration_changes">1.2.4. Multiple Data Source Configuration Changes</h4>
+<div class="paragraph">
+<p>Configuration of multiple data sources has changed such that the default data source should be configured at the top level and additional data sources should be configured below the <code>dataSources</code> block. In other words instead of:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">dataSources</span>:
+    <span class="key">dataSource</span>:
+        <span class="error">...</span>
+    <span class="key">anotherDataSource</span>:
+        <span class="error">...</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The configuration should instead be structured as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">dataSource</span>:
+        <span class="error">...</span>
+<span class="key">dataSources</span>:
+    <span class="key">anotherDataSource</span>:
+        <span class="error">...</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In addition Hibernate specific configuration should be nested below each data source definition. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">dataSource</span>:
+    <span class="key">url</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">..</span><span class="delimiter">&quot;</span></span>
+<span class="key">hibernate</span>:
+    <span class="key">flush</span>:
+        <span class="key">mode</span>: <span class="string"><span class="content">COMMIT</span></span>
+<span class="key">dataSources</span>:
+    <span class="key">anotherDataSource</span>:
+        <span class="key">url</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">..</span><span class="delimiter">&quot;</span></span>
+        <span class="key">hibernate</span>:
+            <span class="key">flush</span>:
+                <span class="key">mode</span>: <span class="string"><span class="content">AUTO</span></span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_write_operations_without_a_transaction">1.2.5. Write Operations without a Transaction</h4>
 <div class="paragraph">
 <p>With the aforementioned changes to the default flush mode, write operations that are not surrounded by a transaction may not propagate changes to the database unless <code>flush:true</code> is explicitly passed or the session explicitly flushed.</p>
 </div>
@@ -882,13 +927,13 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_changes_to_configuration_model">1.2.5. Changes to Configuration Model</h4>
+<h4 id="_changes_to_configuration_model">1.2.6. Changes to Configuration Model</h4>
 <div class="paragraph">
 <p>In preparation for Hibernate 5.2 support the previous "SessionFactoryBean" notion has been removed. Now if you wish to customize <code>SessionFactory</code> creation you should instead register a custom <code>org.grails.orm.hibernate.connections.HibernateConnectionSourceFactory</code> in Spring.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_identityenumtype_handling_changed">1.2.6. IdentityEnumType Handling Changed</h4>
+<h4 id="_identityenumtype_handling_changed">1.2.7. IdentityEnumType Handling Changed</h4>
 <div class="paragraph">
 <p>Previous versions of GORM shipped with a <code>org.grails.orm.hibernate.cfg.IdentityEnumType</code> class for altering the handling of enums. In order to support different versions of Hibernate 5.x which feature different signatures for the <code>org.hibernate.usertype.UserType</code> interface this class has been removed.</p>
 </div>
@@ -904,7 +949,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_changes_to_support_hibernate_5_2">1.2.7. Changes to Support Hibernate 5.2</h4>
+<h4 id="_changes_to_support_hibernate_5_2">1.2.8. Changes to Support Hibernate 5.2</h4>
 <div class="paragraph">
 <p>Hibernate 5.2 includes many breaking API changes, in order to support Hibernate 5.2 several classes have been removed or rewritten. Including:</p>
 </div>
@@ -929,7 +974,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_domain_autowiring_disabled_by_default">1.2.8. Domain Autowiring Disabled by Default</h4>
+<h4 id="_domain_autowiring_disabled_by_default">1.2.9. Domain Autowiring Disabled by Default</h4>
 <div class="paragraph">
 <p>Spring autowiring of domain instances has been disabled by default because it represents a performance bottleneck. If you are autowiring services into your domain instances you will need to re-enable using the <code>mapping</code> block:</p>
 </div>
@@ -945,7 +990,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_field_accesstype_by_default">1.2.9. Field AccessType by Default</h4>
+<h4 id="_field_accesstype_by_default">1.2.10. Field AccessType by Default</h4>
 <div class="paragraph">
 <p>Previous versions of GORM used property access to read and write values to entities by default. In other words the respective getters and setters were used when reflecting on the instances. GORM 6.1 uses field access by default instead, which means the field is used when reading and writing data via reflection to instances.</p>
 </div>
@@ -962,13 +1007,13 @@ grails.gorm.default.mapping = {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_fail_on_error_package_setting_renamed">1.2.10. Fail on Error Package Setting Renamed</h4>
+<h4 id="_fail_on_error_package_setting_renamed">1.2.11. Fail on Error Package Setting Renamed</h4>
 <div class="paragraph">
 <p>The <code>grails.gorm.failOnError</code> setting can no longer be used to configure the packages to enable fail on error. Instead <code>grails.gorm.failOnErrorPackages</code> should be used.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_new_dirty_checking_implementation">1.2.11. New Dirty Checking Implementation</h4>
+<h4 id="_new_dirty_checking_implementation">1.2.12. New Dirty Checking Implementation</h4>
 <div class="paragraph">
 <p>GORM now includes its own implementation of dirty checking in order to improve performance. This implementation uses the <code>DirtyCheckable</code> trait to store changes in the entity itself so that Hibernate does not have to do internal array comparison to verify whether an object has changed or not.</p>
 </div>
@@ -986,7 +1031,7 @@ grails.gorm.default.mapping = {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_dirty_checking_for_abstract_base_classes">1.2.12. Dirty Checking for Abstract Base Classes</h4>
+<h4 id="_dirty_checking_for_abstract_base_classes">1.2.13. Dirty Checking for Abstract Base Classes</h4>
 <div class="paragraph">
 <p>Domain objects can inherit from abstract base classes defined in the <code>src</code> directory. Previous versions of GORM performed dirty checking automatically on fields from any abstract base class. GORM 6.1 requires that the abstract base class be marked with the <code>@DirtyCheck</code> annotation to include the base class fields in domain object dirty checking:</p>
 </div>
@@ -1002,7 +1047,7 @@ grails.gorm.default.mapping = {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_dirty_checking_for_embedded_classes">1.2.13. Dirty Checking for Embedded Classes</h4>
+<h4 id="_dirty_checking_for_embedded_classes">1.2.14. Dirty Checking for Embedded Classes</h4>
 <div class="paragraph">
 <p>Domain objects embed classes defined in the <code>src</code> directory. Previous versions of GORM performed dirty checking automatically on fields an embedded entity. GORM 6.1 requires that the embedded class be marked with the <code>@DirtyCheck</code> annotation to include the embedded class fields in domain object dirty checking:</p>
 </div>
