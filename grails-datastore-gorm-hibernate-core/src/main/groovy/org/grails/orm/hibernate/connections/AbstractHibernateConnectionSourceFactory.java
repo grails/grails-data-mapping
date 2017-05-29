@@ -44,6 +44,11 @@ public abstract class AbstractHibernateConnectionSourceFactory extends AbstractC
         return Settings.SETTING_DATASOURCES;
     }
 
+    @Override
+    public <F extends ConnectionSourceSettings> HibernateConnectionSourceSettings buildRuntimeSettings(String name, PropertyResolver configuration, F fallbackSettings) {
+        return buildSettingsWithPrefix(configuration, fallbackSettings, "");
+    }
+
     /**
      * Creates a ConnectionSource for the given DataSource
      *
@@ -78,17 +83,32 @@ public abstract class AbstractHibernateConnectionSourceFactory extends AbstractC
         }
         else {
             String prefix = Settings.SETTING_DATASOURCES + "." + name;
-            builder = new HibernateConnectionSourceSettingsBuilder(configuration, prefix, fallbackSettings);
+            settings = buildSettingsWithPrefix(configuration, fallbackSettings, prefix);
+        }
+        return settings;
+    }
 
-            DataSourceSettings dsfallbackSettings = null;
-            if(fallbackSettings instanceof HibernateConnectionSourceSettings) {
-                dsfallbackSettings = ((HibernateConnectionSourceSettings)fallbackSettings).getDataSource();
-            }
-            else if(fallbackSettings instanceof DataSourceSettings) {
-                dsfallbackSettings = (DataSourceSettings) fallbackSettings;
-            }
+    private <F extends ConnectionSourceSettings> HibernateConnectionSourceSettings buildSettingsWithPrefix(PropertyResolver configuration, F fallbackSettings, String prefix) {
+        HibernateConnectionSourceSettingsBuilder builder;
+        HibernateConnectionSourceSettings settings;
+        builder = new HibernateConnectionSourceSettingsBuilder(configuration, prefix, fallbackSettings);
 
-            settings = builder.build();
+        DataSourceSettings dsfallbackSettings = null;
+        if(fallbackSettings instanceof HibernateConnectionSourceSettings) {
+            dsfallbackSettings = ((HibernateConnectionSourceSettings)fallbackSettings).getDataSource();
+        }
+        else if(fallbackSettings instanceof DataSourceSettings) {
+            dsfallbackSettings = (DataSourceSettings) fallbackSettings;
+        }
+
+        settings = builder.build();
+        if(prefix.length() == 0) {
+            // if the prefix is zero length then this is a datasource added at runtime using ConnectionSources.addConnectionSource
+            DataSourceSettingsBuilder dataSourceSettingsBuilder = new DataSourceSettingsBuilder(configuration, prefix, dsfallbackSettings);
+            DataSourceSettings dataSourceSettings = dataSourceSettingsBuilder.build();
+            settings.setDataSource(dataSourceSettings);
+        }
+        else {
             if(configuration.getProperty(prefix + ".dataSource", Map.class, Collections.emptyMap()).isEmpty()) {
                 DataSourceSettingsBuilder dataSourceSettingsBuilder = new DataSourceSettingsBuilder(configuration, prefix, dsfallbackSettings);
                 DataSourceSettings dataSourceSettings = dataSourceSettingsBuilder.build();
