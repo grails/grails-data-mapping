@@ -338,7 +338,7 @@ public class ClassPropertyFetcher {
                         Method foundGetter = declaringClass.getDeclaredMethod(NameUtils.getGetterName(propertyName));
                         if(foundGetter != null) {
 
-                            Method foundSetter = declaringClass.getDeclaredMethod(NameUtils.getSetterName(propertyName), getter.getReturnType());
+                            Method foundSetter = declaringClass.getDeclaredMethod(NameUtils.getSetterName(propertyName), foundGetter.getReturnType());
                             if(foundSetter != null) {
                                 try {
                                     return new PropertyDescriptor(propertyName, foundGetter, foundSetter);
