@@ -802,7 +802,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-async:6.1.3.RELEASE"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-async:6.1.4.RELEASE"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -829,10 +829,10 @@ table.CodeRay td.code>pre{padding:0}
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">> Could not resolve all dependencies for configuration ':example:runtime'.
-   > Could not find org.grails:grails-datastore-simple:6.1.3.RELEASE.
+   > Could not find org.grails:grails-datastore-simple:6.1.4.RELEASE.
      Searched in the following locations:
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.3.RELEASE/grails-datastore-simple-6.1.3.RELEASE.pom
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.3.RELEASE/grails-datastore-simple-6.1.3.RELEASE.jar
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.4.RELEASE/grails-datastore-simple-6.1.4.RELEASE.pom
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.4.RELEASE/grails-datastore-simple-6.1.4.RELEASE.jar
      Required by:
          project :example > org.grails:grails-dependencies:3.2.4 >
             ...</code></pre>
@@ -870,7 +870,52 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_write_operations_without_a_transaction">1.2.4. Write Operations without a Transaction</h4>
+<h4 id="_multiple_data_source_configuration_changes">1.2.4. Multiple Data Source Configuration Changes</h4>
+<div class="paragraph">
+<p>Configuration of multiple data sources has changed such that the default data source should be configured at the top level and additional data sources should be configured below the <code>dataSources</code> block. In other words instead of:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">dataSources</span>:
+    <span class="key">dataSource</span>:
+        <span class="error">...</span>
+    <span class="key">anotherDataSource</span>:
+        <span class="error">...</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The configuration should instead be structured as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">dataSource</span>:
+        <span class="error">...</span>
+<span class="key">dataSources</span>:
+    <span class="key">anotherDataSource</span>:
+        <span class="error">...</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In addition Hibernate specific configuration should be nested below each data source definition. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">dataSource</span>:
+    <span class="key">url</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">..</span><span class="delimiter">&quot;</span></span>
+<span class="key">hibernate</span>:
+    <span class="key">flush</span>:
+        <span class="key">mode</span>: <span class="string"><span class="content">COMMIT</span></span>
+<span class="key">dataSources</span>:
+    <span class="key">anotherDataSource</span>:
+        <span class="key">url</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">..</span><span class="delimiter">&quot;</span></span>
+        <span class="key">hibernate</span>:
+            <span class="key">flush</span>:
+                <span class="key">mode</span>: <span class="string"><span class="content">AUTO</span></span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_write_operations_without_a_transaction">1.2.5. Write Operations without a Transaction</h4>
 <div class="paragraph">
 <p>With the aforementioned changes to the default flush mode, write operations that are not surrounded by a transaction may not propagate changes to the database unless <code>flush:true</code> is explicitly passed or the session explicitly flushed.</p>
 </div>
@@ -882,13 +927,13 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_changes_to_configuration_model">1.2.5. Changes to Configuration Model</h4>
+<h4 id="_changes_to_configuration_model">1.2.6. Changes to Configuration Model</h4>
 <div class="paragraph">
 <p>In preparation for Hibernate 5.2 support the previous "SessionFactoryBean" notion has been removed. Now if you wish to customize <code>SessionFactory</code> creation you should instead register a custom <code>org.grails.orm.hibernate.connections.HibernateConnectionSourceFactory</code> in Spring.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_identityenumtype_handling_changed">1.2.6. IdentityEnumType Handling Changed</h4>
+<h4 id="_identityenumtype_handling_changed">1.2.7. IdentityEnumType Handling Changed</h4>
 <div class="paragraph">
 <p>Previous versions of GORM shipped with a <code>org.grails.orm.hibernate.cfg.IdentityEnumType</code> class for altering the handling of enums. In order to support different versions of Hibernate 5.x which feature different signatures for the <code>org.hibernate.usertype.UserType</code> interface this class has been removed.</p>
 </div>
@@ -904,7 +949,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_changes_to_support_hibernate_5_2">1.2.7. Changes to Support Hibernate 5.2</h4>
+<h4 id="_changes_to_support_hibernate_5_2">1.2.8. Changes to Support Hibernate 5.2</h4>
 <div class="paragraph">
 <p>Hibernate 5.2 includes many breaking API changes, in order to support Hibernate 5.2 several classes have been removed or rewritten. Including:</p>
 </div>
@@ -929,7 +974,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_domain_autowiring_disabled_by_default">1.2.8. Domain Autowiring Disabled by Default</h4>
+<h4 id="_domain_autowiring_disabled_by_default">1.2.9. Domain Autowiring Disabled by Default</h4>
 <div class="paragraph">
 <p>Spring autowiring of domain instances has been disabled by default because it represents a performance bottleneck. If you are autowiring services into your domain instances you will need to re-enable using the <code>mapping</code> block:</p>
 </div>
@@ -945,7 +990,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_field_accesstype_by_default">1.2.9. Field AccessType by Default</h4>
+<h4 id="_field_accesstype_by_default">1.2.10. Field AccessType by Default</h4>
 <div class="paragraph">
 <p>Previous versions of GORM used property access to read and write values to entities by default. In other words the respective getters and setters were used when reflecting on the instances. GORM 6.1 uses field access by default instead, which means the field is used when reading and writing data via reflection to instances.</p>
 </div>
@@ -962,13 +1007,13 @@ grails.gorm.default.mapping = {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_fail_on_error_package_setting_renamed">1.2.10. Fail on Error Package Setting Renamed</h4>
+<h4 id="_fail_on_error_package_setting_renamed">1.2.11. Fail on Error Package Setting Renamed</h4>
 <div class="paragraph">
 <p>The <code>grails.gorm.failOnError</code> setting can no longer be used to configure the packages to enable fail on error. Instead <code>grails.gorm.failOnErrorPackages</code> should be used.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_new_dirty_checking_implementation">1.2.11. New Dirty Checking Implementation</h4>
+<h4 id="_new_dirty_checking_implementation">1.2.12. New Dirty Checking Implementation</h4>
 <div class="paragraph">
 <p>GORM now includes its own implementation of dirty checking in order to improve performance. This implementation uses the <code>DirtyCheckable</code> trait to store changes in the entity itself so that Hibernate does not have to do internal array comparison to verify whether an object has changed or not.</p>
 </div>
@@ -986,7 +1031,7 @@ grails.gorm.default.mapping = {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_dirty_checking_for_abstract_base_classes">1.2.12. Dirty Checking for Abstract Base Classes</h4>
+<h4 id="_dirty_checking_for_abstract_base_classes">1.2.13. Dirty Checking for Abstract Base Classes</h4>
 <div class="paragraph">
 <p>Domain objects can inherit from abstract base classes defined in the <code>src</code> directory. Previous versions of GORM performed dirty checking automatically on fields from any abstract base class. GORM 6.1 requires that the abstract base class be marked with the <code>@DirtyCheck</code> annotation to include the base class fields in domain object dirty checking:</p>
 </div>
@@ -1002,7 +1047,7 @@ grails.gorm.default.mapping = {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_dirty_checking_for_embedded_classes">1.2.13. Dirty Checking for Embedded Classes</h4>
+<h4 id="_dirty_checking_for_embedded_classes">1.2.14. Dirty Checking for Embedded Classes</h4>
 <div class="paragraph">
 <p>Domain objects embed classes defined in the <code>src</code> directory. Previous versions of GORM performed dirty checking automatically on fields an embedded entity. GORM 6.1 requires that the embedded class be marked with the <code>@DirtyCheck</code> annotation to include the embedded class fields in domain object dirty checking:</p>
 </div>
@@ -1024,12 +1069,12 @@ grails.gorm.default.mapping = {
 <h2 id="gettingStarted">2. Getting Started</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To use GORM 6.1.3 for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
+<p>To use GORM 6.1.4 for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile "org.grails.plugins:hibernate5:6.1.3"
+    compile "org.grails.plugins:hibernate5:6.1.4"
     compile "org.hibernate:hibernate-ehcache"
 }</code></pre>
 </div>
@@ -1039,7 +1084,7 @@ grails.gorm.default.mapping = {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=6.1.3.RELEASE</code></pre>
+<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=6.1.4.RELEASE</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1052,7 +1097,7 @@ grails.gorm.default.mapping = {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("6.1.3.RELEASE")
+            details.useVersion("6.1.4.RELEASE")
         }
     }
 }
@@ -1078,7 +1123,7 @@ dependencies {
 <div class="sect2">
 <h3 id="hibernateVersions">2.2. Configuring Different Hibernate Versions</h3>
 <div class="paragraph">
-<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.1.3.RELEASE.</p>
+<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.1.4.RELEASE.</p>
 </div>
 <div class="sect3">
 <h4 id="_grails_3_2_x_and_above_with_hibernate_4">2.2.1. Grails 3.2.x and above with Hibernate 4</h4>
@@ -1144,7 +1189,7 @@ configurations.all {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.1.3.RELEASE")
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.1.4.RELEASE")
 compile "org.hibernate:hibernate-core:5.1.0.Final"
 compile "org.hibernate:hibernate-ehcache:5.1.0.Final"
 runtime "com.h2database:h2:1.4.192"
@@ -1277,7 +1322,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:6.1.3.RELEASE"
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:6.1.4.RELEASE"
 runtime "com.h2database:h2:1.4.192"
 runtime "org.apache.tomcat:tomcat-jdbc:8.5.0"
 runtime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"
@@ -5777,6 +5822,50 @@ If you have <code>nullable: false</code> constraints on either <code>dateCreated
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>It is also possible to disable the automatic timestamping temporarily. This is most typically done in the case of a test where you need to define values for the <code>dateCreated</code> or <code>lastUpdated</code> in the past. It may also be useful for importing old data from other systems where you would like to keep the current values of the timestamps.</p>
+</div>
+<div class="paragraph">
+<p>Timestamps can be temporarily disabled for all domains, a specified list of domains, or a single domain. To get started, you need to get a reference to the <code>AutoTimestampEventListener</code>. If you already have access to the datastore, you can execute the <code>getAutoTimestampEventListener</code> method. If you don&#8217;t have access to the datastore, inject the <code>autoTimestampEventListener</code> bean.</p>
+</div>
+<div class="paragraph">
+<p>Once you have a reference to the event listener, you can execute <code>withoutDateCreated</code>, <code>withoutLastUpdated</code>, or <code>withoutTimestamps</code>. The <code>withoutTimestamps</code> method will temporarily disable both <code>dateCreated</code> and <code>lastUpdated</code>.</p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="comment">//Only the dateCreated property handling will be disabled for only the Foo domain</span>
+autoTimestampEventListener.withoutDateCreated(Foo) {
+    <span class="keyword">new</span> Foo(<span class="key">dateCreated</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>() - <span class="integer">1</span>).save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+}
+
+<span class="comment">//Only the lastUpdated property handling will be disabled for only the Foo and Bar domains</span>
+autoTimestampEventListener.withoutLastUpdated(Foo, Bar) {
+    <span class="keyword">new</span> Foo(<span class="key">lastUpdated</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>() - <span class="integer">1</span>, <span class="key">bar</span>: <span class="keyword">new</span> Bar(<span class="key">lastUpdated</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>() + <span class="integer">1</span>)).save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+}
+
+<span class="comment">//All timestamp property handling will be disabled for all domains</span>
+autoTimestampEventListener.withoutTimestamps {
+    <span class="keyword">new</span> Foo(<span class="key">dateCreated</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>() - <span class="integer">2</span>, <span class="key">lastUpdated</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>() - <span class="integer">1</span>).save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+    <span class="keyword">new</span> Bar(<span class="key">dateCreated</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>() - <span class="integer">2</span>, <span class="key">lastUpdated</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>() - <span class="integer">1</span>).save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+    <span class="keyword">new</span> FooBar(<span class="key">dateCreated</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>() - <span class="integer">2</span>, <span class="key">lastUpdated</span>: <span class="keyword">new</span> <span class="predefined-type">Date</span>() - <span class="integer">1</span>).save(<span class="key">flush</span>: <span class="predefined-constant">true</span>)
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Because the timestamp handling is only disabled for the duration of the closure, you must flush the session during the closure execution!
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -7819,7 +7908,7 @@ RxJava 2.x support is planned for a future release
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx:6.1.3.RELEASE"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx:6.1.4.RELEASE"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -8487,7 +8576,7 @@ sessionFactory.openSession()</code></pre>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:6.1.3.RELEASE"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:6.1.4.RELEASE"</code></pre>
 </div>
 </div>
 </div>
