@@ -312,7 +312,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     }
 
     @CompileDynamic // required for Hibernate 5.2 compatibility
-    def <D> D findWithSql(CharSequence sql) {
+    def <D> D findWithSql(CharSequence sql, Map args = Collections.emptyMap()) {
         IHibernateTemplate template = hibernateTemplate
         return (D) template.execute { Session session ->
 
@@ -334,6 +334,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
                 }
             }
             q.addEntity(persistentClass)
+            populateQueryArguments(q, args)
             q.setMaxResults(1)
             def results = createHqlQuery(session, q).list()
             if(results.isEmpty()) {

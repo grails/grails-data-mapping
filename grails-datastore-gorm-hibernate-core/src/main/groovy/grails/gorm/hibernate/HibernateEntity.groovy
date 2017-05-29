@@ -22,11 +22,38 @@ trait HibernateEntity<D> extends GormEntity<D> {
      * @return The object
      */
     static List<D> findAllWithSql(CharSequence sql) {
-        currentHibernateStaticApi().findAllWithSql sql
+        currentHibernateStaticApi().findAllWithSql sql, Collections.emptyMap()
     }
 
+    /**
+     * Finds an entity for the given SQL query
+     *
+     * @param sql The sql query
+     * @return The entity
+     */
     static D findWithSql(CharSequence sql) {
-        currentHibernateStaticApi().findWithSql(sql)
+        currentHibernateStaticApi().findWithSql(sql, Collections.emptyMap())
+    }
+
+    /**
+     * Finds all objects for the given string-based query
+     *
+     * @param sql The query
+     *
+     * @return The object
+     */
+    static List<D> findAllWithSql(CharSequence sql, Map args) {
+        currentHibernateStaticApi().findAllWithSql sql, args
+    }
+
+    /**
+     * Finds an entity for the given SQL query
+     *
+     * @param sql The sql query
+     * @return The entity
+     */
+    static D findWithSql(CharSequence sql, Map args) {
+        currentHibernateStaticApi().findWithSql(sql, args)
     }
 
     private static AbstractHibernateGormStaticApi currentHibernateStaticApi() {
