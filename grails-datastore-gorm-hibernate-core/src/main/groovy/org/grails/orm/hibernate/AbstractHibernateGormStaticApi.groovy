@@ -39,7 +39,6 @@ import java.util.regex.Pattern
 abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
 
     protected ProxyHandler proxyHandler
-    protected Pattern queryPattern
     protected IHibernateTemplate hibernateTemplate
     protected ConversionService conversionService
 
@@ -50,7 +49,6 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     AbstractHibernateGormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders, PlatformTransactionManager transactionManager, IHibernateTemplate hibernateTemplate) {
         super(persistentClass, datastore, finders, transactionManager)
         this.hibernateTemplate = hibernateTemplate
-        this.queryPattern = ~/(?i)\s*from(?-i)\s+[${persistentEntity.name}|${persistentEntity.javaClass.simpleName}].*/
         this.conversionService = datastore.mappingContext.conversionService
         this.proxyHandler = datastore.mappingContext.proxyHandler
     }
@@ -232,9 +230,6 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
 
         String queryString = query.toString()
         query = normalizeMultiLineQueryString(queryString)
-        if (!queryPattern.matcher(query).matches()) {
-            throw new GrailsQueryException("Invalid query [$query] for domain class [$persistentEntity.name]");
-        }
 
         def template = hibernateTemplate
         queryNamedArgs = new HashMap(queryNamedArgs)
@@ -260,9 +255,6 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
 
         String queryString = query.toString()
         query = normalizeMultiLineQueryString(queryString)
-        if (!queryPattern.matcher(query).matches()) {
-            throw new GrailsQueryException("Invalid query [$query] for domain class [$persistentEntity.name]");
-        }
 
         args = new HashMap(args)
         def template = hibernateTemplate
@@ -294,9 +286,6 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
 
         String queryString = query.toString()
         query = normalizeMultiLineQueryString(queryString)
-        if (!queryPattern.matcher(query).matches()) {
-            throw new GrailsQueryException("Invalid query [$query] for domain class [$persistentEntity.name]");
-        }
 
         def template = hibernateTemplate
         return (List<D>) template.execute { Session session ->
@@ -483,20 +472,17 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
     @CompileDynamic
     List<D> findAll(CharSequence query, Collection params, Map args) {
         if(query instanceof GString) {
-            throw new GrailsQueryException("Unsafe query [$query]. GORM cannot automatically escape a GString value when combined with ordinal parameters, so this query is potentially vulnerable to HQL injection attacks. Please embed the parameters within the GString so they can be safely escaped.");
+            throw new GrailsQueryException("Unsafe query [$query]. GORM cannot automatically escape a GString value when combined with ordinal parameters, so this query is potentially vulnerable to HQL injection attacks. Please embed the parameters within the GString so they can be safely escaped.")
         }
 
         String queryString = query.toString()
         query = normalizeMultiLineQueryString(queryString)
-        if (!queryPattern.matcher(query).matches()) {
-            throw new GrailsQueryException("Invalid query [$query] for domain class [$persistentEntity.name]");
-        }
 
         args = new HashMap(args)
 
         def template = hibernateTemplate
         return (List<D>) template.execute { Session session ->
-            def q = session.createQuery(queryString)
+            def q = session.createQuery(query)
             template.applySettings(q)
 
             params.eachWithIndex { val, int i ->
