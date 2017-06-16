@@ -15,12 +15,6 @@ import javax.persistence.Transient
 @CompileStatic
 trait DirtyCheckable {
 
-    /**
-     * For internal use, do not use
-     */
-    @Deprecated
-    public static final  String DIRTY_CLASS_MARKER = '$DIRTY_MARKER'
-
     @Transient
     private transient Map<String, Object> $changedProperties
 
