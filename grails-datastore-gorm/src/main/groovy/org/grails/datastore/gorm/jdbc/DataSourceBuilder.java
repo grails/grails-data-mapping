@@ -94,6 +94,9 @@ public class DataSourceBuilder {
     }
 
     private void bind(DataSource result) {
+        if(properties.containsKey("dbProperties")) {
+            coerceDbProperties();
+        }
         MutablePropertyValues properties = new MutablePropertyValues(this.properties);
         new RelaxedDataBinder(result).withAlias("url", "jdbcUrl")
                 .withAlias("username", "user").bind(properties);
@@ -102,6 +105,22 @@ public class DataSourceBuilder {
     public DataSourceBuilder properties( Map<String, String> properties) {
         this.properties.putAll(properties);
         return this;
+    }
+
+    private void coerceDbProperties() {
+        Map propertiesMap = this.properties;
+        Object dbPropertiesObject = propertiesMap.get("dbProperties");
+        if(dbPropertiesObject instanceof Map) {
+            Map dbProperties = (Map) dbPropertiesObject;
+            Properties properties = new Properties();
+            for (Object key : dbProperties.keySet()) {
+                Object value = dbProperties.get(key);
+                if(value != null) {
+                    properties.put(key.toString(), value.toString());
+                }
+            }
+            propertiesMap.put("dbProperties", properties);
+        }
     }
 
     public DataSourceBuilder type(Class<? extends DataSource> type) {

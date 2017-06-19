@@ -18,7 +18,8 @@ class DataSourceConnectionSourceFactorySpec extends Specification {
         Map config = [
                 'dataSource.url':"jdbc:h2:mem:grailsDB;MVCC=TRUE;LOCK_TIMEOUT=10000",
                 'dataSource.dbCreate': 'update',
-                'dataSource.dialect': Oracle8iDialect.name
+                'dataSource.dialect': Oracle8iDialect.name,
+                'dataSource.properties.dbProperties': [useSSL: false]
         ]
         def connectionSource = factory.create(ConnectionSource.DEFAULT, DatastoreUtils.createPropertyResolver(config))
 
