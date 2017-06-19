@@ -156,9 +156,8 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
 
         // Move the existing logic into a new method called "$tt_methodName()"
         String renamedMethodName
-        ClassNode superClass = classNode.getSuperClass()
-        MethodNode superMethod = superClass?.getMethod(methodNode.name, methodNode.parameters)
-        if(superMethod != null) {
+        boolean superMethod = findAnnotation(methodNode, Override) || classNode.getSuperClass()?.getMethod(methodNode.name, methodNode.parameters) != null
+        if(superMethod) {
             renamedMethodName = getRenamedMethodPrefix() + Introspector.decapitalize(classNode.nameWithoutPackage) + '_' + methodNode.getName()
         }
         else {
