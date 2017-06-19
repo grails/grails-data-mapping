@@ -19,6 +19,7 @@ import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.Parameter
+import org.codehaus.groovy.ast.expr.ArgumentListExpression
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.grails.datastore.gorm.GormEntity
@@ -42,7 +43,8 @@ class FindOneByImplementer extends FindAllByImplementer implements SingleResultS
         Parameter[] parameters = newMethodNode.parameters
         if(parameters.length == 1 && parameters[0].name == GormProperties.IDENTITY) {
             // add a method that invokes get(id)
-            Expression queryMethodCall = callX(findStaticApiForConnectionId(domainClassNode, newMethodNode), "get", args(parameters))
+            ArgumentListExpression argList = buildArgs(parameters, abstractMethodNode, body)
+            Expression queryMethodCall = callX(findStaticApiForConnectionId(domainClassNode, newMethodNode), "get", argList)
             body.addStatement(
                 returnS(
                     queryMethodCall

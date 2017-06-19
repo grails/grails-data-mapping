@@ -15,12 +15,17 @@
  */
 package org.grails.datastore.gorm.services.implementers
 
+import grails.gorm.services.Join
 import groovy.transform.CompileStatic
 import groovy.transform.Memoized
+import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
+import org.codehaus.groovy.ast.Parameter
+import org.codehaus.groovy.ast.expr.ArgumentListExpression
 import org.codehaus.groovy.ast.expr.Expression
+import org.codehaus.groovy.ast.expr.MapExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.Statement
 import org.grails.datastore.gorm.GormEntity
@@ -31,7 +36,8 @@ import org.grails.datastore.mapping.core.Ordered
 import org.grails.datastore.mapping.reflect.AstUtils
 
 import static org.codehaus.groovy.ast.tools.GeneralUtils.*
-
+import static org.codehaus.groovy.ast.ClassHelper.*
+import static org.grails.datastore.mapping.reflect.AstUtils.*
 /**
  * Automatically implement services that find objects based an arguments
  *
@@ -78,7 +84,8 @@ class FindAllByImplementer extends AbstractArrayOrIterableResultImplementer impl
         BlockStatement body = (BlockStatement)newMethodNode.getCode()
         ClassNode returnType = newMethodNode.returnType
         String methodName = newMethodNode.name
-        int parameterCount = newMethodNode.parameters.length
+        Parameter[] parameters = newMethodNode.parameters
+        int parameterCount = parameters.length
         MatchSpec matchSpec = null
         for(String prefix in getHandledPrefixes()) {
             matchSpec = buildMatchSpec(prefix, methodName, parameterCount)
@@ -93,15 +100,16 @@ class FindAllByImplementer extends AbstractArrayOrIterableResultImplementer impl
         else {
             // validate the properties
             for(String propertyName in matchSpec.propertyNames) {
-                if(!AstUtils.hasProperty(domainClassNode, propertyName)) {
-                    AstUtils.error(abstractMethodNode.declaringClass.module.context, abstractMethodNode, "Cannot implement finder for non-existent property [$propertyName] of class [$domainClassNode.name]")
+                if(!hasProperty(domainClassNode, propertyName)) {
+                    error(abstractMethodNode.declaringClass.module.context, abstractMethodNode, "Cannot implement finder for non-existent property [$propertyName] of class [$domainClassNode.name]")
                 }
             }
 
             // add a method that invokes list()
             String methodPrefix = getDynamicFinderPrefix()
             String finderCallName = "${methodPrefix}${matchSpec.queryExpression}"
-            Expression findCall = callX(findStaticApiForConnectionId(domainClassNode, newMethodNode), finderCallName, args(newMethodNode.parameters))
+            ArgumentListExpression argList = buildArgs(parameters, abstractMethodNode, body)
+            Expression findCall = callX(findStaticApiForConnectionId(domainClassNode, newMethodNode), finderCallName, argList)
             if(isArray || ClassHelper.isNumberType(returnType)) {
                 // handle array cast
                 findCall = castX( returnType.plainNodeReference, findCall)
@@ -111,6 +119,28 @@ class FindAllByImplementer extends AbstractArrayOrIterableResultImplementer impl
             )
         }
 
+    }
+
+    protected ArgumentListExpression buildArgs(Parameter[] parameters, MethodNode abstractMethodNode, BlockStatement body) {
+        ArgumentListExpression argList = args(parameters)
+        AnnotationNode joinAnn = findAnnotation(abstractMethodNode, Join)
+        if (joinAnn != null) {
+            def joinMap = mapX((joinAnn.getMember('value').text): constX('join'))
+            if (parameters.length > 0) {
+                if (parameters[-1].name == 'args' && parameters[-1].type == MAP_TYPE) {
+                    body.addStatement(
+                            stmt(callX(varX(parameters[-1]), "put", args(constX("fetch"), joinMap)))
+                    )
+                }
+                else {
+                    argList.addExpression(mapX(fetch: joinMap))
+                }
+            } else {
+
+                argList.addExpression(mapX(fetch: joinMap))
+            }
+        }
+        argList
     }
 
     protected Statement buildReturnStatement(ClassNode domainClass, MethodNode abstractMethodNode, MethodNode newMethodNode, Expression queryExpression) {
