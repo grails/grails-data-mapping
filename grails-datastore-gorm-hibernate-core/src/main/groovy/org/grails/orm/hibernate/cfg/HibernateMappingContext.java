@@ -16,6 +16,7 @@
 package org.grails.orm.hibernate.cfg;
 
 import grails.gorm.annotation.Entity;
+import grails.gorm.hibernate.HibernateEntity;
 import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
 import org.grails.datastore.gorm.GormEntity;
@@ -26,7 +27,6 @@ import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
 import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.model.config.JpaMappingConfigurationStrategy;
-import org.grails.datastore.mapping.multitenancy.MultiTenancySettings;
 import org.grails.datastore.mapping.reflect.ClassUtils;
 import org.grails.orm.hibernate.connections.HibernateConnectionSourceSettings;
 import org.grails.orm.hibernate.proxy.SimpleHibernateProxyHandler;
@@ -72,6 +72,7 @@ public class HibernateMappingContext extends AbstractMappingContext {
         this.proxyFactory = new SimpleHibernateProxyHandler();
         addPersistentEntities(persistentClasses);
     }
+
     public HibernateMappingContext(HibernateConnectionSourceSettings settings, Class...persistentClasses) {
         this(settings, null, persistentClasses);
     }
@@ -141,9 +142,17 @@ public class HibernateMappingContext extends AbstractMappingContext {
     @Override
     protected PersistentEntity createPersistentEntity(Class javaClass) {
         if(GormEntity.class.isAssignableFrom(javaClass)) {
-            return new HibernatePersistentEntity(javaClass, this);
+            Object mappingStrategy = resolveMappingStrategy(javaClass);
+            if(isValidMappingStrategy(javaClass, mappingStrategy)) {
+                return new HibernatePersistentEntity(javaClass, this);
+            }
         }
         return null;
+    }
+
+    @Override
+    protected boolean isValidMappingStrategy(Class javaClass, Object mappingStrategy) {
+        return HibernateEntity.class.isAssignableFrom(javaClass) || super.isValidMappingStrategy(javaClass, mappingStrategy);
     }
 
     @Override

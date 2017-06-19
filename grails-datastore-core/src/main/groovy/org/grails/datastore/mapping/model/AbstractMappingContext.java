@@ -15,6 +15,8 @@
 package org.grails.datastore.mapping.model;
 
 import java.beans.Introspector;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -25,6 +27,7 @@ import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings;
 import org.grails.datastore.mapping.engine.BeanEntityAccess;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
+import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.model.lifecycle.Initializable;
 import org.grails.datastore.mapping.model.types.conversion.DefaultConversionService;
 import org.grails.datastore.mapping.multitenancy.MultiTenancySettings;
@@ -431,6 +434,33 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
     }
 
     protected abstract PersistentEntity createPersistentEntity(Class javaClass);
+
+    protected Object resolveMappingStrategy(Class javaClass){
+        try {
+            Field field = javaClass.getDeclaredField(GormProperties.MAPPING_STRATEGY);
+            if(field != null && Modifier.isStatic(field.getModifiers())) {
+                field.setAccessible(true);
+                return field.get(javaClass);
+            }
+        } catch (Throwable e) {
+            return null;
+        }
+        return null;
+    }
+
+    protected boolean isValidMappingStrategy(Class javaClass, Object mappingStrategy) {
+        if(mappingStrategy == null) {
+            return true;
+        }
+
+        String name = getClass().getSimpleName();
+        String suffix = MappingContext.class.getSimpleName();
+        if(name.endsWith(suffix)) {
+            name = name.substring(0, name.length() - suffix.length()).toLowerCase(Locale.ENGLISH);
+            return name.equalsIgnoreCase(mappingStrategy.toString());
+        }
+        return false;
+    }
 
     protected PersistentEntity createPersistentEntity(Class javaClass, boolean external) {
         return createPersistentEntity(javaClass);
