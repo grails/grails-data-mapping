@@ -142,16 +142,21 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;org.hibernate.Query</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#createQuery(org.hibernate.Session, java.lang.String)">createQuery</a></strong>(org.hibernate.Session session, java.lang.String query)</code><br>Creates a query</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;org.hibernate.FlushMode</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getFlushMode(org.hibernate.Session)">getFlushMode</a></strong>(org.hibernate.Session session)</code><br>Get the native Hibernate FlushMode, adapting between Hibernate 5.0/5.1 and 5.2+.</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>static&nbsp;boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isAtLeastVersion(java.lang.String)">isAtLeastVersion</a></strong>(java.lang.String required)</code><br>Check the current hibernate version</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>static&nbsp;void</strong></code></td>
                             <td class="colLast"><code><strong><a href="#setFlushMode(org.hibernate.Session, org.hibernate.FlushMode)">setFlushMode</a></strong>(org.hibernate.Session session, org.hibernate.FlushMode flushMode)</code><br>Set the native Hibernate FlushMode, adapting between Hibernate 5.0/5.1 and 5.2+.</td>
                         </tr>
@@ -205,6 +210,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                     <!--   -->
                 </a>
                     <h3>Method Detail</h3>
+                    
+                        <a name="createQuery(org.hibernate.Session, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;static&nbsp;org.hibernate.Query <strong>createQuery</strong>(org.hibernate.Session session, java.lang.String query)</h4>
+                                <p> Creates a query
+     <DL><DT><B>Returns:</B></DT><DD>The created query</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>session</code> -  The session</DD><DD><code>query</code> -  The query</DD></DL></p>
+                            </li>
+                        </ul>
                     
                         <a name="getFlushMode(org.hibernate.Session)"><!-- --></a>
                         <ul class="blockListLast">
