@@ -2300,8 +2300,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/JavassistProxyFactory.html#createMethodHandler(org.grails.datastore.mapping.core.Session, java.lang.Class, java.lang.Class, java.io.Serializable)" title="Method in JavassistProxyFactory">createMethodHandler(Session, Class, Class, Serializable)</a></span> - Method in <a href="org/grails/datastore/mapping/proxy/JavassistProxyFactory.html">JavassistProxyFactory</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/query/NamedQueriesBuilder.html#createNamedCriteriaProxy(groovy.lang.Closure)" title="Method in NamedQueriesBuilder">createNamedCriteriaProxy(Closure)</a></span> - Method in <a href="org/grails/datastore/gorm/query/NamedQueriesBuilder.html">NamedQueriesBuilder</a>
-</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#createNamedQuery(java.lang.Class, java.lang.String, java.lang.Object)" title="Method in GormEnhancer">createNamedQuery(Class, String, Object)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
+</dt><dd> <div class="block">Finds a named query for the given entity</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#createNativeObjectForEmbedded(org.grails.datastore.mapping.model.types.Association, java.lang.Object)" title="Method in NativeEntryEntityPersister">createNativeObjectForEmbedded(Association, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#createNewEntry(java.lang.String, java.lang.Object)" title="Method in NativeEntryEntityPersister">createNewEntry(String, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
@@ -3631,7 +3631,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/FindOneImplementer.html#findMethodToInvoke(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)" title="Method in FindOneImplementer">findMethodToInvoke(ClassNode, MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/FindOneImplementer.html">FindOneImplementer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#findNamedQuery(java.lang.Class, java.lang.String)" title="Method in GormEnhancer">findNamedQuery(Class, String)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
-</dt><dd> <div class="block">Finds a named query for the given entity</div></dd>
+</dt><dd> <div class="block">@deprecated Use #createNamedQuery(entity, queryName) instead</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/FindOneByImplementer.html" title="Class in org.grails.datastore.gorm.services.implementers">FindOneByImplementer</a></span> - Class in <a href="./org/grails/datastore/gorm/services/implementers/package-summary.html">org.grails.datastore.gorm.services.implementers</a>
 </dt><dd><div class="block">Handles implementation for a finder that returns a single result</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/FindOneByInterfaceProjectionImplementer.html" title="Class in org.grails.datastore.gorm.services.implementers">FindOneByInterfaceProjectionImplementer</a></span> - Class in <a href="./org/grails/datastore/gorm/services/implementers/package-summary.html">org.grails.datastore.gorm.services.implementers</a>
@@ -4931,7 +4931,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/builtin/UniqueConstraint.html#getName()" title="Method in UniqueConstraint">getName()</a></span> - Method in <a href="org/grails/datastore/gorm/validation/constraints/builtin/UniqueConstraint.html">UniqueConstraint</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#getNamedQuery(java.lang.String)" title="Method in GormEntity">getNamedQuery(String)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#getNamedQuery(java.lang.String, java.lang.Object)" title="Method in GormEntity">getNamedQuery(String, Object)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
 </dt><dd> <div class="block">Looks up a named query</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/cfg/AbstractGrailsDomainBinder.html#getNameForPropertyAndPath(org.grails.datastore.mapping.model.PersistentProperty, java.lang.String)" title="Method in AbstractGrailsDomainBinder">getNameForPropertyAndPath(PersistentProperty, String)</a></span> - Method in <a href="org/grails/orm/hibernate/cfg/AbstractGrailsDomainBinder.html">AbstractGrailsDomainBinder</a>
 </dt><dd> <div class="block"></div></dd>
@@ -8251,8 +8251,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/NamedQueriesBuilder.html" title="Class in org.grails.datastore.gorm.query">NamedQueriesBuilder</a></span> - Class in <a href="./org/grails/datastore/gorm/query/package-summary.html">org.grails.datastore.gorm.query</a>
 </dt><dd><div class="block">Handles creation of named queries</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/query/NamedQueriesBuilder.html#NamedQueriesBuilder(org.grails.datastore.mapping.model.PersistentEntity, List<FinderMethod>)" title="Constructor in NamedQueriesBuilder">NamedQueriesBuilder(PersistentEntity, List&lt;FinderMethod&gt;)</a></span> - Constructor in <a href="org/grails/datastore/gorm/query/NamedQueriesBuilder.html">NamedQueriesBuilder</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/NameUtils.html" title="Class in org.grails.datastore.mapping.reflect">NameUtils</a></span> - Class in <a href="./org/grails/datastore/mapping/reflect/package-summary.html">org.grails.datastore.mapping.reflect</a>
 </dt><dd><div class="block">@author Graeme Rocher</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/cfg/AbstractGrailsDomainBinder.html#NAMING_STRATEGIES" title="Field in AbstractGrailsDomainBinder">NAMING_STRATEGIES</a></span> - Field in <a href="org/grails/orm/hibernate/cfg/AbstractGrailsDomainBinder.html">AbstractGrailsDomainBinder</a>
