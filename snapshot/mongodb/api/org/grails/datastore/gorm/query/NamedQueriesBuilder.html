@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -119,58 +119,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 
         <!-- =========== PROPERTY SUMMARY =========== -->
         
-         <ul class="blockList">
-                <li class="blockList"><a name="property_summary"><!--   --></a>
-                    <h3>Properties Summary</h3>
-                    <ul class="blockList">
-                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Properties Summary table, listing nested classes, and an explanation">
-                        <caption><span>Properties</span><span class="tabEnd">&nbsp;</span></caption>
-                        <tr>
-                            <th class="colFirst" scope="col">Type</th>
-                            <th class="colLast" scope="col">Name and description</th>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code><strong><a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a></strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#entity">entity</a></code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code><strong>java.util.List&lt;<a href='../../../../../org/grails/datastore/gorm/finders/FinderMethod.html' title='FinderMethod'>FinderMethod</a>&gt;</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#finders">finders</a></code><br></td>
-                        </tr>
-                        
-                    </table>
-                   </ul>
-                </li>
-            </ul>
-        
 
         <!-- =========== ELEMENT SUMMARY =========== -->
         
 
-        
-        <!-- ======== CONSTRUCTOR SUMMARY ======== -->
-        <ul class="blockList">
-                <li class="blockList"><a name="constructor_summary"><!--   --></a>
-                    <h3>Constructor Summary</h3>
-                    <ul class="blockList">
-                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructors Summary table">
-                        <caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
-                        <tr>
-                            <th class="colFirst" scope="col">Constructor and description</th>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst">
-                                <code><a href="#NamedQueriesBuilder(org.grails.datastore.mapping.model.PersistentEntity, List<FinderMethod>)">NamedQueriesBuilder</a>
-                                (<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.util.List&lt;<a href='../../../../../org/grails/datastore/gorm/finders/FinderMethod.html' title='FinderMethod'>FinderMethod</a>&gt; finders)</code><br></td>
-                        </tr>
-                        
-                    </table>
-                   </ul>
-              </li>
-        </ul>
         
 
         
@@ -190,17 +142,11 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;<a href='../../../../../org/grails/datastore/gorm/query/NamedCriteriaProxy.html'>NamedCriteriaProxy</a></code></td>
-                            <td class="colLast"><code><strong><a href="#createNamedCriteriaProxy(groovy.lang.Closure)">createNamedCriteriaProxy</a></strong>(groovy.lang.Closure criteriaClosure)</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.util.Map&lt;java.lang.String, <a href='../../../../../org/grails/datastore/gorm/query/GormQueryOperations.html' title='GormQueryOperations'>GormQueryOperations</a>&gt;</code></td>
+                            <td class="colLast"><code>java.util.Map&lt;java.lang.String, groovy.lang.Closure&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#evaluate(groovy.lang.Closure)">evaluate</a></strong>(groovy.lang.Closure namedQueriesClosure)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.lang.Object</code></td>
                             <td class="colLast"><code><strong><a href="#methodMissing(java.lang.String, def)">methodMissing</a></strong>(java.lang.String name, java.lang.Object args)</code><br></td>
@@ -242,53 +188,9 @@ if (location.href.indexOf('is-external=true') == -1) {
             
 
             
-            <!-- =========== PROPERTY DETAIL =========== -->
-            <ul class="blockList">
-                <li class="blockList"><a name="prop_detail">
-                    <!--   -->
-                </a>
-                    <h3>Property Detail</h3>
-                    
-                        <a name="entity"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>final&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> <strong>entity</strong></h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="finders"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>final&nbsp;java.util.List&lt;<a href='../../../../../org/grails/datastore/gorm/finders/FinderMethod.html' title='FinderMethod'>FinderMethod</a>&gt; <strong>finders</strong></h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                </li>
-            </ul>
-            
 
             
 
-            
-            <!-- =========== CONSTRUCTOR DETAIL =========== -->
-            <ul class="blockList">
-                <li class="blockList"><a name="constructor_detail">
-                    <!--   -->
-                </a>
-                    <h3>Constructor Detail</h3>
-                    
-                        <a name="NamedQueriesBuilder(org.grails.datastore.mapping.model.PersistentEntity, List<FinderMethod>)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><strong>NamedQueriesBuilder</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.util.List&lt;<a href='../../../../../org/grails/datastore/gorm/finders/FinderMethod.html' title='FinderMethod'>FinderMethod</a>&gt; finders)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                </li>
-            </ul>
             
 
 
@@ -300,20 +202,11 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Method Detail</h3>
                     
-                        <a name="createNamedCriteriaProxy(groovy.lang.Closure)"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
-protected&nbsp;<a href='../../../../../org/grails/datastore/gorm/query/NamedCriteriaProxy.html'>NamedCriteriaProxy</a> <strong>createNamedCriteriaProxy</strong>(groovy.lang.Closure criteriaClosure)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
                         <a name="evaluate(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@groovy.transform.CompileStatic
-java.util.Map&lt;java.lang.String, <a href='../../../../../org/grails/datastore/gorm/query/GormQueryOperations.html' title='GormQueryOperations'>GormQueryOperations</a>&gt; <strong>evaluate</strong>(groovy.lang.Closure namedQueriesClosure)</h4>
+java.util.Map&lt;java.lang.String, groovy.lang.Closure&gt; <strong>evaluate</strong>(groovy.lang.Closure namedQueriesClosure)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -360,11 +253,11 @@ java.util.Map&lt;java.lang.String, <a href='../../../../../org/grails/datastore/
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     
