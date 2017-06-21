@@ -3,6 +3,7 @@ package grails.gorm.tests
 import grails.persistence.Entity
 
 import spock.lang.Ignore
+import spock.lang.IgnoreRest
 
 /**
  * @author graemerocher
