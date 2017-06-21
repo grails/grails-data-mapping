@@ -18,6 +18,7 @@ package org.grails.datastore.mapping.reflect
 import groovy.transform.CompileStatic
 import groovy.transform.Memoized
 import org.codehaus.groovy.ast.ASTNode
+import org.codehaus.groovy.ast.AnnotatedNode
 import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
@@ -31,6 +32,7 @@ import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.control.Janitor
 import org.codehaus.groovy.control.SourceUnit
 import org.springframework.util.StringUtils
+import static org.codehaus.groovy.ast.tools.GenericsUtils.correctToGenericsSpecRecurse
 
 import javax.persistence.Entity
 import java.lang.annotation.Annotation
@@ -149,6 +151,59 @@ class AstUtils {
             }
         }
         return false;
+    }
+
+
+    static Parameter[] copyParameters(Parameter[] parameterTypes) {
+        return copyParameters(parameterTypes, null)
+    }
+
+    static Parameter[] copyParameters(Parameter[] parameterTypes, Map<String, ClassNode> genericsPlaceholders) {
+        Parameter[] newParameterTypes = new Parameter[parameterTypes.length]
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Parameter parameterType = parameterTypes[i]
+            Parameter newParameter = new Parameter(replaceGenericsPlaceholders(parameterType.getType(), genericsPlaceholders), parameterType.getName(), parameterType.getInitialExpression())
+            copyAnnotations(parameterType, newParameter)
+            newParameterTypes[i] = newParameter
+        }
+        return newParameterTypes
+    }
+
+    static Parameter[] copyParameters(Map<String, ClassNode> genericsSpec, Parameter[] parameterTypes, List<String> currentMethodGenPlaceholders) {
+        Parameter[] newParameterTypes = new Parameter[parameterTypes.length]
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Parameter parameterType = parameterTypes[i]
+            ClassNode newParamType = correctToGenericsSpecRecurse(genericsSpec, parameterType.getType(), currentMethodGenPlaceholders)
+            Parameter newParameter = new Parameter(newParamType, parameterType.getName(), parameterType.getInitialExpression())
+            newParameter.addAnnotations(parameterType.getAnnotations())
+            newParameterTypes[i] = newParameter
+        }
+        return newParameterTypes
+    }
+
+    static void copyAnnotations(final AnnotatedNode from, final AnnotatedNode to) {
+        copyAnnotations(from, to, null, null)
+    }
+
+    static void copyAnnotations(final AnnotatedNode from, final AnnotatedNode to, final Set<String> included, final Set<String> excluded) {
+        final List<AnnotationNode> annotationsToCopy = from.getAnnotations()
+        for(final AnnotationNode node : annotationsToCopy) {
+            String annotationClassName = node.getClassNode().getName()
+            if((excluded==null || !excluded.contains(annotationClassName)) &&
+                    (included==null || included.contains(annotationClassName))) {
+                final AnnotationNode copyOfAnnotationNode = cloneAnnotation(node)
+                to.addAnnotation(copyOfAnnotationNode)
+            }
+        }
+    }
+
+    static AnnotationNode cloneAnnotation(final AnnotationNode node) {
+        final AnnotationNode copyOfAnnotationNode = new AnnotationNode(node.getClassNode())
+        final Map<String, Expression> members = node.getMembers()
+        for(final Map.Entry<String, Expression> entry : members.entrySet()) {
+            copyOfAnnotationNode.addMember(entry.getKey(), entry.getValue())
+        }
+        return copyOfAnnotationNode
     }
 
     public static ClassNode nonGeneric(ClassNode type) {

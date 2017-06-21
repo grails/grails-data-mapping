@@ -58,6 +58,7 @@ import org.grails.datastore.gorm.query.GormQueryOperations
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.AstUtils
 import org.grails.datastore.mapping.reflect.NameUtils
+import static org.codehaus.groovy.ast.tools.GeneralUtils.*
 
 import java.lang.annotation.Annotation
 import java.lang.reflect.Modifier
