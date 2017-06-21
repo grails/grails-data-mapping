@@ -1,5 +1,6 @@
 package org.grails.orm.hibernate.query;
 
+import grails.gorm.MultiTenant;
 import groovy.lang.*;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.*;
@@ -109,6 +110,9 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
 
     public void setDatastore(AbstractHibernateDatastore datastore) {
         this.datastore = datastore;
+        if(MultiTenant.class.isAssignableFrom(targetClass)) {
+            datastore.enableMultiTenancyFilter();
+        }
     }
 
     public void setConversionService(ConversionService conversionService) {
@@ -1620,7 +1624,7 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
             // Check for pagination params
             if (name.equals(LIST_CALL) && args.length == 2) {
                 paginationEnabledList = true;
-                orderEntries = new ArrayList<Order>();
+                orderEntries = new ArrayList<>();
                 invokeClosureNode(args[1]);
             }
             else {

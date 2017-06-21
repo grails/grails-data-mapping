@@ -44,10 +44,12 @@ class PartitionMultiTenancySpec extends Specification {
 
         when:"And the new @CurrentTenant transformation deals with the details for you!"
         bookService.saveBook("The Stand")
+        bookService.saveBook("The Shining")
 
         then:
-        bookService.countBooks() == 1
-        bookDataService.countBooks()== 1
+        bookService.countBooks() == 2
+        bookDataService.countBooks()== 2
+        bookService.findBooks("The Shining")[0].title == "The Shining"
 
         when:"Swapping to another schema and we get the right results!"
         System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "bar")
@@ -69,13 +71,21 @@ class Book implements MultiTenant<Book> {
 class BookService {
 
     void saveBook(String title) {
-        new Book(title:"The Stand").save()
+        new Book(title:title).save()
     }
 
     @ReadOnly
     int countBooks() {
         Book.count()
     }
+
+    @ReadOnly
+    List<Book> findBooks(String title) {
+        (List<Book>)Book.withCriteria {
+            eq('title', title)
+        }
+    }
+
 }
 
 @CurrentTenant
