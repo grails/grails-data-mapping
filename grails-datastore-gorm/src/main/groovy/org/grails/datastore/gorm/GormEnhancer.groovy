@@ -26,6 +26,7 @@ import org.grails.datastore.gorm.finders.*
 import org.grails.datastore.gorm.internal.InstanceMethodInvokingClosure
 import org.grails.datastore.gorm.internal.StaticMethodInvokingClosure
 import org.grails.datastore.gorm.query.GormQueryOperations
+import org.grails.datastore.gorm.query.NamedCriteriaProxy
 import org.grails.datastore.gorm.query.NamedQueriesBuilder
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.connections.ConnectionSource
@@ -56,7 +57,7 @@ import java.util.concurrent.ConcurrentHashMap
 @CompileStatic
 class GormEnhancer implements Closeable {
 
-    private static final Map<String, Map<String, GormQueryOperations>> NAMED_QUERIES = new ConcurrentHashMap<>()
+    private static final Map<String, Map<String, Closure>> NAMED_QUERIES = new ConcurrentHashMap<>()
 
     private static final Map<String, Map<String,GormStaticApi>> STATIC_APIS = new ConcurrentHashMap<String, Map<String,GormStaticApi>>().withDefault { String key ->
         return new ConcurrentHashMap<String, GormStaticApi>()
@@ -178,6 +179,14 @@ class GormEnhancer implements Closeable {
     }
 
     /**
+     * @deprecated Use #createNamedQuery(entity, queryName) instead
+     */
+    @Deprecated
+    static GormQueryOperations findNamedQuery(Class entity, String queryName) {
+        return createNamedQuery(entity, queryName)
+    }
+
+    /**
      * Finds a named query for the given entity
      *
      * @param entity The entity name
@@ -185,30 +194,61 @@ class GormEnhancer implements Closeable {
      *
      * @return The named query or null if it doesn't exist
      */
-    static GormQueryOperations findNamedQuery(Class entity, String queryName) {
+    static GormQueryOperations createNamedQuery(Class entity, String queryName) {
+        createNamedQuery(entity, queryName, null)
+    }
+
+    /**
+     * Finds a named query for the given entity
+     *
+     * @param entity The entity name
+     * @param queryName The query name
+     *
+     * @return The named query or null if it doesn't exist
+     */
+    static GormQueryOperations createNamedQuery(Class entity, String queryName, Object... args) {
         def className = entity.getName()
         def namedQueries = NAMED_QUERIES.get(className)
         if(namedQueries == null) {
-            def cpf = ClassPropertyFetcher.forClass(entity)
-            def closure = cpf.getStaticPropertyValue(GormProperties.NAMED_QUERIES, Closure.class)
-            if(closure != null) {
+            synchronized (NAMED_QUERIES) {
+                namedQueries = NAMED_QUERIES.get(className)
+                if(namedQueries == null) {
 
-                def evaluator = new NamedQueriesBuilder(findEntity(entity), findStaticApi(entity).gormDynamicFinders)
-                namedQueries = evaluator.evaluate(closure)
-                NAMED_QUERIES.put(className, namedQueries)
-                return namedQueries.get(queryName)
-            }
-            else {
-                NAMED_QUERIES.put(className, new LinkedHashMap<String, GormQueryOperations>());
+                    ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity)
+                    Closure closure = cpf.getStaticPropertyValue(GormProperties.NAMED_QUERIES, Closure.class)
+                    if(closure != null) {
+                        closure = (Closure)closure.clone()
+                        def evaluator = new NamedQueriesBuilder()
+                        namedQueries = evaluator.evaluate(closure)
+                        NAMED_QUERIES.put(className, namedQueries)
+                        return buildNamedCriteriaProxy(entity, namedQueries, queryName, args)
+                    }
+                    else {
+                        NAMED_QUERIES.put(className, Collections.emptyMap())
+                    }
+                }
+
             }
 
         }
         else {
-            return namedQueries.get(queryName)
+            return buildNamedCriteriaProxy(entity, namedQueries, queryName, args)
         }
         return null
     }
 
+    private static NamedCriteriaProxy buildNamedCriteriaProxy(Class entity, Map<String, Closure> namedQueries, String queryName, Object... args) {
+        NamedCriteriaProxy namedCriteriaProxy = null
+        GormStaticApi staticApi = findStaticApi(entity)
+        Closure namedQueryClosure = namedQueries.get(queryName)
+        if (namedQueryClosure != null) {
+            namedCriteriaProxy = new NamedCriteriaProxy((Closure) namedQueryClosure.clone(), staticApi.gormPersistentEntity, staticApi.gormDynamicFinders)
+            if (args != null) {
+                namedCriteriaProxy.call(args)
+            }
+        }
+        return namedCriteriaProxy
+    }
 
     /**
      * Find the tenant id for the given entity

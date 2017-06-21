@@ -26,10 +26,48 @@ import spock.lang.Specification
  */
 class GormEntityTransformSpec extends Specification{
 
-    void "test parse withTransaction usage in spock"() {
+
+    void "test parse named queries"() {
         def classLoader = new GroovyClassLoader()
         when:
         Class bookClass = classLoader.parseClass('''
+import grails.gorm.annotation.Entity
+@Entity
+class Book {
+    String title
+
+    static namedQueries = {
+        startsWithA {->
+            like 'title', 'A%'
+        }
+        
+        startsWithB {
+            like 'title', 'B%'
+        }
+        
+        startsWithLetter { String letter ->
+            like 'title', letter
+        }
+    }
+}
+
+
+''')
+
+        then:
+        new ClassNode(bookClass).methods
+        bookClass.getMethod('getStartsWithA')
+        bookClass.getMethod('startsWithA')
+        bookClass.getMethod('getStartsWithB')
+        bookClass.getMethod('startsWithB')
+        bookClass.getMethod('startsWithLetter', String)
+
+    }
+
+    void "test parse withTransaction usage in spock"() {
+            def classLoader = new GroovyClassLoader()
+            when:
+            Class bookClass = classLoader.parseClass('''
 import grails.gorm.annotation.Entity
 @Entity
 class Book {
@@ -44,7 +82,7 @@ class Book {
 
 
 ''')
-        Class spockClass = classLoader.parseClass('''
+            Class spockClass = classLoader.parseClass('''
 class HibernateSpecSpec extends spock.lang.Specification {
 
     void setupSpec() {
