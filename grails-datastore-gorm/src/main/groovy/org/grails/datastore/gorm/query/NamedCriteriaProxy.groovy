@@ -230,41 +230,39 @@ class NamedCriteriaProxy<D> implements GormQueryOperations<D> {
             return method.invoke(javaClass, methodName, preparedClosure, args)
         }
 
-        if (!queryBuilder && javaClass.metaClass.getMetaProperty(methodName)) {
-            def nextInChain = javaClass.metaClass.getMetaProperty(methodName).getProperty(entity)
-            nextInChain.previousInChain = this
-            return nextInChain(args)
-        }
-
-
-        def getterName = NameUtils.getGetterName(methodName)
-        def metaProperty = ReflectionUtils.findMethod(javaClass, getterName)
-        if (metaProperty && Modifier.isStatic(metaProperty.modifiers)) {
-            def staticProperty = javaClass."$getterName"()
-            if (staticProperty instanceof NamedCriteriaProxy) {
-                def nestedCriteria = staticProperty.criteriaClosure.clone()
-                nestedCriteria.delegate = this
-                nestedCriteria(*args)
-                return this
+        if (queryBuilder == null) {
+            NamedCriteriaProxy nextInChain = GormEnhancer.createNamedQuery(javaClass, methodName)
+            if(nextInChain != null) {
+                nextInChain.previousInChain = this
+                return nextInChain.call(args)
+            }
+            else {
+                throw new MissingMethodException(methodName, javaClass, args)
             }
         }
-        try {
-            return queryBuilder."${methodName}"(*args)
-        } catch (MissingMethodException e) {
+        else {
+
             try {
                 return queryBuilder."${methodName}"(*args)
-            } catch (MissingMethodException mme) {
-                def targetType = queryBuilder?.targetClass
-                def proxy = GormEnhancer.findNamedQuery(targetType, methodName)
-                if (proxy != null) {
-                    def nestedCriteria = proxy.criteriaClosure.clone()
-                    nestedCriteria.delegate = this
-                    nestedCriteria(*args)
-                    return this
+            } catch (MissingMethodException e) {
+                try {
+                    return queryBuilder."${methodName}"(*args)
+                } catch (MissingMethodException mme) {
+                    def targetType = queryBuilder?.targetClass
+                    NamedCriteriaProxy proxy = GormEnhancer.createNamedQuery(targetType, methodName)
+                    if (proxy != null) {
+                        Closure nestedCriteria = proxy.criteriaClosure.clone()
+                        nestedCriteria.delegate = this
+                        nestedCriteria(*args)
+                        return this
+                    }
+                    else {
+                        throw mme
+                    }
                 }
-                throw mme
             }
         }
+
     }
 
     private Closure getPreparedCriteriaClosure(additionalCriteriaClosure = null) {

@@ -21,6 +21,7 @@ import grails.gorm.PagedResultList
 import grails.gorm.api.GormAllOperations
 import grails.gorm.multitenancy.Tenants
 import grails.gorm.transactions.GrailsTransactionTemplate
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 
@@ -29,6 +30,7 @@ import org.grails.datastore.gorm.async.GormAsyncStaticApi
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.multitenancy.TenantDelegatingGormOperations
+import org.grails.datastore.gorm.query.NamedCriteriaProxy
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.DatastoreUtils
 import org.grails.datastore.mapping.core.Session
@@ -131,11 +133,22 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
      * @param args The arguments
      * @return The result of the method call
      */
-    @CompileStatic(TypeCheckingMode.SKIP)
+    @CompileDynamic
     def methodMissing(String methodName, Object args) {
         FinderMethod method = gormDynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
         if (!method) {
-            throw new MissingMethodException(methodName, persistentClass, args)
+            if(args && args[-1] instanceof Closure) {
+                NamedCriteriaProxy proxy = GormEnhancer.createNamedQuery(persistentClass, methodName)
+                if(proxy != null) {
+                    return proxy.call(args)
+                }
+                else {
+                    throw new MissingMethodException(methodName, persistentClass, args)
+                }
+            }
+            else {
+                throw new MissingMethodException(methodName, persistentClass, args)
+            }
         }
 
         // if the class is multi tenant, don't cache the method because the tenant will need to be resolved
