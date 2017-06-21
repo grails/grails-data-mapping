@@ -16,9 +16,8 @@
 package org.grails.orm.hibernate.support;
 
 import org.grails.datastore.mapping.core.grailsversion.GrailsVersion;
-import org.hibernate.FlushMode;
-import org.hibernate.Hibernate;
-import org.hibernate.Session;
+import org.grails.datastore.mapping.reflect.ClassUtils;
+import org.hibernate.*;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
@@ -38,6 +37,7 @@ public class HibernateVersionSupport {
 
     private static Method getFlushMode;
     private static Method setFlushMode;
+    private static Method createQuery;
 
     static {
         try {
@@ -45,6 +45,7 @@ public class HibernateVersionSupport {
 
             getFlushMode = Session.class.getMethod("getHibernateFlushMode");
             setFlushMode = Session.class.getMethod("setHibernateFlushMode", FlushMode.class);
+
             getFlushMode.setAccessible(true);
             setFlushMode.setAccessible(true);
         }
@@ -60,8 +61,24 @@ public class HibernateVersionSupport {
                 throw new IllegalStateException("No compatible Hibernate getFlushMode signature found", ex2);
             }
         }
+
+        try {
+            // Hibernate 5.2+ createQuery
+            ClassLoader classLoader = HibernateVersionSupport.class.getClassLoader();
+            Class queryProducerClass = org.springframework.util.ClassUtils.forName("org.hibernate.query.QueryProducer", classLoader);
+            createQuery = queryProducerClass.getMethod("createQuery", String.class);
+            createQuery.setAccessible(true);
+        } catch (Throwable e) {
+            try {
+                // Hibernate 5.1+ createQuery
+                createQuery = SharedSessionContract.class.getMethod("createQuery", String.class);
+                createQuery.setAccessible(true);
+            } catch (Throwable e1) {
+                throw new IllegalStateException("Incompatible version of Hibernate on classpath", e1);
+            }
+        }
         // Check that it is the Hibernate FlushMode type, not JPA's...
-        Assert.state(FlushMode.class == getFlushMode.getReturnType());
+        Assert.state(FlushMode.class == getFlushMode.getReturnType(), "Incompatible version of Hibernate on classpath");
     }
 
     /**
@@ -101,4 +118,14 @@ public class HibernateVersionSupport {
         }
     }
 
+    /**
+     * Creates a query
+     *
+     * @param session The session
+     * @param query The query
+     * @return The created query
+     */
+    public static Query createQuery(Session session, String query) {
+        return (Query) ReflectionUtils.invokeMethod(createQuery, session, query);
+    }
 }
