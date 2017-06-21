@@ -29,7 +29,6 @@ import org.grails.datastore.mapping.model.types.OneToMany
 import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.query.api.BuildableCriteria
 import org.grails.datastore.mapping.query.api.Criteria
-import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.mapping.reflect.EntityReflector
 import org.springframework.transaction.TransactionDefinition
 
@@ -1327,7 +1326,19 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      */
     @Deprecated
     static GormQueryOperations<D> getNamedQuery(String queryName) {
-        GormEnhancer.findNamedQuery(this, queryName)
+        GormEnhancer.createNamedQuery(this, queryName)
+    }
+    /**
+     * Looks up a named query
+     *
+     * @param queryName The name of the query
+     * @return The query or null
+     *
+     * @deprecated Named queries are deprecated, use where queries instead
+     */
+    @Deprecated
+    static GormQueryOperations<D> getNamedQuery(String queryName, Object...args) {
+        GormEnhancer.createNamedQuery(this, queryName, args)
     }
 
     private GormInstanceApi<D> currentGormInstanceApi() {

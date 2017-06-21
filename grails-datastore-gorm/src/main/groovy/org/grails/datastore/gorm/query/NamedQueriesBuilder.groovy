@@ -26,19 +26,12 @@ import org.grails.datastore.mapping.reflect.NameUtils
  * @author Jeff Brown
  */
 class NamedQueriesBuilder {
-    final PersistentEntity entity
-    final List<FinderMethod> finders
 
     private boolean initialized = false
-    private Map<String, GormQueryOperations> namedQueries = [:]
-
-    NamedQueriesBuilder(PersistentEntity entity, List<FinderMethod> finders) {
-        this.entity = entity
-        this.finders = finders
-    }
+    private Map<String, Closure> namedQueries = [:]
 
     @CompileStatic
-    Map<String, GormQueryOperations> evaluate(Closure namedQueriesClosure) {
+    Map<String, Closure> evaluate(Closure namedQueriesClosure) {
         Closure closure = (Closure)namedQueriesClosure.clone()
         closure.resolveStrategy = Closure.DELEGATE_ONLY
         closure.delegate = this
@@ -47,15 +40,10 @@ class NamedQueriesBuilder {
         return namedQueries
     }
 
-    @CompileStatic
-    protected NamedCriteriaProxy createNamedCriteriaProxy(Closure criteriaClosure) {
-        new NamedCriteriaProxy(criteriaClosure, entity, finders)
-    }
-
     def methodMissing(String name, args) {
         if (args && args[0] instanceof Closure && !initialized) {
             Closure criteriaClosure = (Closure)args[0]
-            namedQueries.put(name, createNamedCriteriaProxy(criteriaClosure))
+            namedQueries.put(name, criteriaClosure)
 
             return null
         }

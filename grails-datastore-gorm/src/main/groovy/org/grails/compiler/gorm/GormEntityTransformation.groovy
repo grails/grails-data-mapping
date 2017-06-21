@@ -54,6 +54,7 @@ import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.AbstractASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
+import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.gorm.query.GormQueryOperations
 import org.grails.datastore.mapping.model.config.GormProperties
@@ -94,7 +95,7 @@ class GormEntityTransformation extends AbstractASTTransformation implements Comp
     public static final AnnotationNode JPA_ID_ANNOTATION_NODE = new AnnotationNode(ClassHelper.make(Id))
     public static final AnnotationNode JPA_TRANSIENT_ANNOTATION_NODE = new AnnotationNode(ClassHelper.make(Transient))
 
-    private static final String GET_NAMED_QUERY = "getNamedQuery"
+    private static final String CREATE_NAMED_QUERY = "createNamedQuery"
     private static ClassNode GORM_ENTITY_CLASS_NODE = ClassHelper.make(GormEntity)
     private static MethodNode ADD_TO_METHOD_NODE =  GORM_ENTITY_CLASS_NODE.getMethods("addTo").get(0)
     private static MethodNode REMOVE_FROM_METHOD_NODE =  GORM_ENTITY_CLASS_NODE.getMethods("removeFrom").get(0)
@@ -298,28 +299,56 @@ class GormEntityTransformation extends AbstractASTTransformation implements Comp
                             ExpressionStatement es = (ExpressionStatement)s
                             if(es.expression instanceof MethodCallExpression) {
                                 MethodCallExpression mce = (MethodCallExpression) es.expression
-                                def methodName = mce.getMethodAsString()
+                                String methodName = mce.getMethodAsString()
 
+                                Expression argsX = mce.arguments
 
-                                def namedQueryGetter = NameUtils.getGetterName(methodName)
-                                def existing = thisClassNode.getMethod(namedQueryGetter, AstUtils.ZERO_PARAMETERS)
+                                if(argsX instanceof ArgumentListExpression) {
+                                    ArgumentListExpression ale = (ArgumentListExpression)argsX
+                                    Expression first = ale.expressions.size() == 1 ? ale.getExpression(0) : null
+                                    if(first instanceof ClosureExpression) {
+                                        ClosureExpression closureX = (ClosureExpression) first
+                                        Parameter[] closureParams = closureX.parameters
+                                        boolean hasParameters = closureParams != null && closureParams.length > 0
+                                        Parameter[] newParams = hasParameters ? AstUtils.copyParameters(closureParams) : AstUtils.ZERO_PARAMETERS
+                                        MethodNode existing = thisClassNode.getMethod(methodName, newParams)
 
-                                if(existing == null || !existing.getDeclaringClass().equals(thisClassNode)) {
-                                    def queryOperationsClassNode = AstUtils.nonGeneric( ClassHelper.make(GormQueryOperations) )
-                                    final GenericsType[] genericsTypes = queryOperationsClassNode.getGenericsTypes()
-                                    final Map<String, ClassNode> parameterNameToParameterValue = new LinkedHashMap<String, ClassNode>()
-                                    if(genericsTypes != null) {
-                                        for(GenericsType gt : genericsTypes) {
-                                            parameterNameToParameterValue.put(gt.getName(), thisClassNode.getPlainNodeReference());
+                                        if(existing == null || !existing.getDeclaringClass().equals(thisClassNode)) {
+                                            def queryOperationsClassNode = AstUtils.nonGeneric( ClassHelper.make(GormQueryOperations) )
+                                            final GenericsType[] genericsTypes = queryOperationsClassNode.getGenericsTypes()
+                                            final Map<String, ClassNode> parameterNameToParameterValue = new LinkedHashMap<String, ClassNode>()
+                                            if(genericsTypes != null) {
+                                                for(GenericsType gt : genericsTypes) {
+                                                    parameterNameToParameterValue.put(gt.getName(), thisClassNode.getPlainNodeReference());
+                                                }
+                                            }
+                                            AstUtils.replaceGenericsPlaceholders(queryOperationsClassNode, parameterNameToParameterValue)
+
+                                            def methodBody = new BlockStatement()
+                                            ArgumentListExpression createNamedQueryArgs = args(classX(thisClassNode), constX(methodName))
+                                            for(arg in args(newParams)) {
+                                                createNamedQueryArgs.addExpression(arg)
+                                            }
+                                            MethodCallExpression createNamedQueryCall = callX(classX(GormEnhancer), CREATE_NAMED_QUERY, createNamedQueryArgs)
+                                            List<MethodNode> createNamedQueryMethods = ClassHelper.makeCached(GormEnhancer).getMethods(CREATE_NAMED_QUERY)
+                                            if(!createNamedQueryMethods.isEmpty()) {
+                                                createNamedQueryCall.setMethodTarget(createNamedQueryMethods.find() { MethodNode mn -> hasParameters ? mn.parameters.length == 3 : mn.parameters.length == 2})
+                                            }
+                                            methodBody.addStatement(returnS(createNamedQueryCall))
+                                            MethodNode newMethod = new MethodNode(methodName, Modifier.PUBLIC | Modifier.STATIC, queryOperationsClassNode, newParams, null, methodBody)
+                                            thisClassNode.addMethod(newMethod)
+
+                                            if(!hasParameters) {
+
+                                                String namedQueryGetter = NameUtils.getGetterName(methodName)
+                                                existing = thisClassNode.getMethod(namedQueryGetter, AstUtils.ZERO_PARAMETERS)
+                                                if(existing == null || !existing.getDeclaringClass().equals(thisClassNode)) {
+                                                    newMethod = new MethodNode(namedQueryGetter, Modifier.PUBLIC | Modifier.STATIC, queryOperationsClassNode, AstUtils.ZERO_PARAMETERS, null, methodBody)
+                                                    thisClassNode.addMethod( newMethod)
+                                                }
+                                            }
                                         }
                                     }
-                                    AstUtils.replaceGenericsPlaceholders(queryOperationsClassNode, parameterNameToParameterValue)
-
-                                    def methodBody = new BlockStatement()
-
-                                    def getNamedQueryMethodCall = new MethodCallExpression(new VariableExpression("this"), GET_NAMED_QUERY, new ArgumentListExpression(new ConstantExpression(methodName)))
-                                    methodBody.addStatement(new ReturnStatement(getNamedQueryMethodCall))
-                                    thisClassNode.addMethod( new MethodNode(namedQueryGetter, Modifier.PUBLIC | Modifier.STATIC, queryOperationsClassNode, AstUtils.ZERO_PARAMETERS, null, methodBody))
                                 }
 
                             }
