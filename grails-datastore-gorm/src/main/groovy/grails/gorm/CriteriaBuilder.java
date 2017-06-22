@@ -141,7 +141,7 @@ public class CriteriaBuilder extends AbstractCriteriaBuilder implements Buildabl
         ensureQueryIsInitialized();
 
         paginationEnabledList = true;
-        orderEntries = new ArrayList<Query.Order>();
+        orderEntries = new ArrayList<>();
         invokeClosureNode(callable);
         populateArgumentsForCriteria(targetClass, query, paginateParams);
         for (Query.Order orderEntry : orderEntries) {

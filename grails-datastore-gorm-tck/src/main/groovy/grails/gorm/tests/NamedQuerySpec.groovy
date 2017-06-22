@@ -10,6 +10,40 @@ import spock.lang.IgnoreRest
  */
 class NamedQuerySpec extends GormDatastoreSpec {
 
+    void "Test Named Query Passing Multiple Params To Nested Named Query"() {
+        given:
+        def now = new Date()
+
+        new Publication(title: "Some Book",
+                datePublished: now - 10, paperback: false).save()
+        new Publication(title: "Some Book",
+                datePublished: now - 1000, paperback: true).save()
+        new Publication(title: "Some Book",
+                datePublished: now - 2, paperback: true).save()
+
+        new Publication(title: "Some Title",
+                datePublished: now - 2, paperback: false).save()
+        new Publication(title: "Some Title",
+                datePublished: now - 1000, paperback: false).save()
+        new Publication(title: "Some Title",
+                datePublished: now - 2, paperback: true).save(flush:true)
+        session.clear()
+
+        expect:
+        Publication.count() == 6
+
+        when:
+        def results = Publication.thisWeeksPaperbacks().list()
+
+        then:
+        results?.size() == 2
+
+        when:
+        results = Publication.queryThatNestsMultipleLevels().list()
+
+        then:
+        results?.size() == 2
+    }
 
     void "Test findWhere method after chaining named queries"() {
         given:
@@ -1134,6 +1168,11 @@ class Publication implements Serializable {
             paperbacks()
             def today = new Date()
             publishedBetween(today - 7, today)
+        }
+
+        queryThatNestsMultipleLevels {
+            // this nested query will call other nested queries
+            thisWeeksPaperbacks()
         }
     }
 }
