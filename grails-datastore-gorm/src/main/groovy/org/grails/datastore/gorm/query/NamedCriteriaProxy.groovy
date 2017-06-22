@@ -252,6 +252,7 @@ class NamedCriteriaProxy<D> implements GormQueryOperations<D> {
                     NamedCriteriaProxy proxy = GormEnhancer.createNamedQuery(targetType, methodName)
                     if (proxy != null) {
                         Closure nestedCriteria = proxy.criteriaClosure.clone()
+                        nestedCriteria.setResolveStrategy(Closure.DELEGATE_ONLY)
                         nestedCriteria.delegate = this
                         nestedCriteria(*args)
                         return this
