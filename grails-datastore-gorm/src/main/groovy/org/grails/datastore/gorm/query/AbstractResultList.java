@@ -26,23 +26,25 @@ import java.util.*;
  */
 public abstract class AbstractResultList extends AbstractList implements Closeable {
     protected int offset = 0;
-    protected List initializedObjects = new ArrayList();
+    protected final List initializedObjects;
     private int internalIndex;
     private Integer size;
     protected boolean initialized = false;
     protected Iterator<Object> cursor;
 
     public AbstractResultList(int offset, Iterator<Object> cursor) {
-        this.offset = offset;
-        this.cursor = cursor;
-        this.initialized = !cursor.hasNext();
+        this(offset, -1, cursor);
     }
 
     public AbstractResultList(int offset, Integer size, Iterator<Object> cursor) {
         this.offset = offset;
-        this.size = size;
+        boolean hasSize = size > -1;
+        if(hasSize) {
+            this.size = size;
+        }
         this.cursor = cursor;
         this.initialized = !cursor.hasNext();
+        this.initializedObjects = hasSize ? new ArrayList(size) : new ArrayList();
     }
 
     public Iterator<Object> getCursor() {
@@ -98,7 +100,8 @@ public abstract class AbstractResultList extends AbstractList implements Closeab
         if(!cursor.hasNext()) {
             initialized = true;
         }
-        initializedObjects.add(internalIndex++, next);
+        initializedObjects.add(next);
+        internalIndex = initializedObjects.size();
         return next;
     }
 
@@ -113,8 +116,6 @@ public abstract class AbstractResultList extends AbstractList implements Closeab
         if (index > (size() - 1)) {
             throw new ArrayIndexOutOfBoundsException("Cannot set element at index " + index + " for cursor size " + size());
         } else {
-            // initialize
-            get(index);
             return initializedObjects.set(index, o);
         }
     }
