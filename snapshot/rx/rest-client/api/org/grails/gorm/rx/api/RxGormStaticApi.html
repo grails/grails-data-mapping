@@ -686,7 +686,7 @@ extends java.lang.Object
                                 <h4>@java.lang.Override
 D <strong>create</strong>()</h4>
                                 <p> Retrieve an instance by id
-     <DL><DT><B>Returns:</B></DT><DD>An observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>id</code> -  The id of the instance</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>id</code> -  The id of the instance</DD></DL><DL><DT><B>Returns:</B></DT><DD>An observable</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -739,7 +739,7 @@ java.util.Observable&lt;java.lang.Number&gt; <strong>deleteAll</strong>(D... obj
                             <li class="blockList">
                                 <h4>java.util.Observable&lt;java.lang.Number&gt; <strong>deleteAll</strong>(java.lang.Iterable objects)</h4>
                                 <p> Batch deletes a number of objects in one go
-     <DL><DT><B>Returns:</B></DT><DD>The number of objects actually deleted</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>objects</code> -  The objects to delete</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>objects</code> -  The objects to delete</DD></DL><DL><DT><B>Returns:</B></DT><DD>The number of objects actually deleted</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -766,7 +766,7 @@ java.util.Observable&lt;java.lang.Boolean&gt; <strong>exists</strong>(java.io.Se
                             <li class="blockList">
                                 <h4>java.util.Observable&lt;D&gt; <strong>find</strong>(groovy.lang.Closure callable)</h4>
                                 <p> Uses detached criteria to build a query and then execute it returning an observable
-     <DL><DT><B>Returns:</B></DT><DD>The observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL><DL><DT><B>Returns:</B></DT><DD>The observable</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -783,7 +783,7 @@ java.util.Observable&lt;java.lang.Boolean&gt; <strong>exists</strong>(java.io.Se
                             <li class="blockList">
                                 <h4>java.util.Observable&lt;D&gt; <strong>findAll</strong>(groovy.lang.Closure callable)</h4>
                                 <p> Uses detached criteria to build a query and then execute it returning an observable
-     <DL><DT><B>Returns:</B></DT><DD>The observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL><DL><DT><B>Returns:</B></DT><DD>The observable</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -792,7 +792,7 @@ java.util.Observable&lt;java.lang.Boolean&gt; <strong>exists</strong>(java.io.Se
                             <li class="blockList">
                                 <h4>java.util.Observable&lt;D&gt; <strong>findAllWhere</strong>(java.util.Map queryMap)</h4>
                                 <p> Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
-     <DL><DT><B>Returns:</B></DT><DD>A single result</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>queryMap</code> -  The map of conditions</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>queryMap</code> -  The map of conditions</DD></DL><DL><DT><B>Returns:</B></DT><DD>A single result</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -801,7 +801,7 @@ java.util.Observable&lt;java.lang.Boolean&gt; <strong>exists</strong>(java.io.Se
                             <li class="blockList">
                                 <h4>java.util.Observable&lt;D&gt; <strong>findAllWhere</strong>(java.util.Map queryMap, java.util.Map args)</h4>
                                 <p> Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
-     <DL><DT><B>Returns:</B></DT><DD>A single result</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>queryMap</code> -  The map of conditions</DD><DD><code>args</code> -  The Query arguments</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>queryMap</code> -  The map of conditions</DD><DD><code>args</code> -  The Query arguments</DD></DL><DL><DT><B>Returns:</B></DT><DD>A single result</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -811,7 +811,7 @@ java.util.Observable&lt;java.lang.Boolean&gt; <strong>exists</strong>(java.io.Se
                                 <h4>java.util.Observable&lt;D&gt; <strong>findOrCreateWhere</strong>(java.util.Map queryMap)</h4>
                                 <p> Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand").  If
  a matching persistent entity is not found a new entity is created and returned.
-     <DL><DT><B>Returns:</B></DT><DD>A single result</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>queryMap</code> -  The map of conditions</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>queryMap</code> -  The map of conditions</DD></DL><DL><DT><B>Returns:</B></DT><DD>A single result</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -821,7 +821,7 @@ java.util.Observable&lt;java.lang.Boolean&gt; <strong>exists</strong>(java.io.Se
                                 <h4>java.util.Observable&lt;D&gt; <strong>findOrSaveWhere</strong>(java.util.Map queryMap)</h4>
                                 <p> Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand").  If
  a matching persistent entity is not found a new entity is created, saved and returned.
-     <DL><DT><B>Returns:</B></DT><DD>A single result</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>queryMap</code> -  The map of conditions</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>queryMap</code> -  The map of conditions</DD></DL><DL><DT><B>Returns:</B></DT><DD>A single result</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -830,7 +830,7 @@ java.util.Observable&lt;java.lang.Boolean&gt; <strong>exists</strong>(java.io.Se
                             <li class="blockList">
                                 <h4>java.util.Observable&lt;D&gt; <strong>findWhere</strong>(java.util.Map queryMap)</h4>
                                 <p> Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
-     <DL><DT><B>Returns:</B></DT><DD>A single result</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>queryMap</code> -  The map of conditions</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>queryMap</code> -  The map of conditions</DD></DL><DL><DT><B>Returns:</B></DT><DD>A single result</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -839,7 +839,7 @@ java.util.Observable&lt;java.lang.Boolean&gt; <strong>exists</strong>(java.io.Se
                             <li class="blockList">
                                 <h4>java.util.Observable&lt;D&gt; <strong>findWhere</strong>(java.util.Map queryMap, java.util.Map args)</h4>
                                 <p> Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
-     <DL><DT><B>Returns:</B></DT><DD>A single result</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>queryMap</code> -  The map of conditions</DD><DD><code>args</code> -  The Query arguments</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>queryMap</code> -  The map of conditions</DD><DD><code>args</code> -  The Query arguments</DD></DL><DL><DT><B>Returns:</B></DT><DD>A single result</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -848,7 +848,7 @@ java.util.Observable&lt;java.lang.Boolean&gt; <strong>exists</strong>(java.io.Se
                             <li class="blockList">
                                 <h4>java.util.Observable&lt;D&gt; <strong>first</strong>(java.lang.String property)</h4>
                                 <p> Finds the first object sorted by propertyName
-     <DL><DT><B>Returns:</B></DT><DD>A single that will emit the first object, if it exists</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>propertyName</code> -  the name of the property to sort by</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>propertyName</code> -  the name of the property to sort by</DD></DL><DL><DT><B>Returns:</B></DT><DD>A single that will emit the first object, if it exists</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -924,7 +924,7 @@ java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt; <strong>i
                             <li class="blockList">
                                 <h4>java.util.Observable&lt;D&gt; <strong>last</strong>(java.lang.String property)</h4>
                                 <p> Finds the last object sorted by propertyName
-     <DL><DT><B>Returns:</B></DT><DD>A single that will emit the first object, if it exists</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>propertyName</code> -  the name of the property to sort by</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>propertyName</code> -  the name of the property to sort by</DD></DL><DL><DT><B>Returns:</B></DT><DD>A single that will emit the first object, if it exists</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1027,7 +1027,7 @@ java.util.Observable&lt;D&gt; <strong>save</strong>(D instance, java.util.Map ar
                                 <h4>@java.lang.Override
 java.util.Observable&lt;java.util.List&lt;java.io.Serializable&gt;&gt; <strong>saveAll</strong>(java.lang.Iterable&lt;D&gt; objects, java.util.Map arguments = Collections.emptyMap()</h4>
                                 <p> Batch saves all of the given objects
-     <DL><DT><B>Returns:</B></DT><DD>An observable that emits the identifiers of the saved objects</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>objects</code> -  The objects to save</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>objects</code> -  The objects to save</DD></DL><DL><DT><B>Returns:</B></DT><DD>An observable that emits the identifiers of the saved objects</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1063,7 +1063,7 @@ java.lang.Object <strong>staticPropertyMissing</strong>(java.lang.String propert
                             <li class="blockList">
                                 <h4><a href='../../../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; <strong>where</strong>(groovy.lang.Closure callable)</h4>
                                 <p>
-     <DL><DT><B>Returns:</B></DT><DD>The DetachedCriteria instance</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure containing detached criteria definition</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure containing detached criteria definition</DD></DL><DL><DT><B>Returns:</B></DT><DD>The DetachedCriteria instance</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1072,7 +1072,7 @@ java.lang.Object <strong>staticPropertyMissing</strong>(java.lang.String propert
                             <li class="blockList">
                                 <h4><a href='../../../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; <strong>whereAny</strong>(groovy.lang.Closure callable)</h4>
                                 <p>
-     <DL><DT><B>Returns:</B></DT><DD>The DetachedCriteria instance</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure containing detached criteria definition</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure containing detached criteria definition</DD></DL><DL><DT><B>Returns:</B></DT><DD>The DetachedCriteria instance</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1081,7 +1081,7 @@ java.lang.Object <strong>staticPropertyMissing</strong>(java.lang.String propert
                             <li class="blockList">
                                 <h4><a href='../../../../../grails/gorm/rx/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; <strong>whereLazy</strong>(groovy.lang.Closure callable)</h4>
                                 <p>
-     <DL><DT><B>Returns:</B></DT><DD>The DetachedCriteria instance that is lazily initialized</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure containing detached criteria definition</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure containing detached criteria definition</DD></DL><DL><DT><B>Returns:</B></DT><DD>The DetachedCriteria instance that is lazily initialized</DD></DL></p>
                             </li>
                         </ul>
                     

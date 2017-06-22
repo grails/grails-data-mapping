@@ -91,7 +91,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li>org.grails.datastore.rx.RxDatastoreClient
+<li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li><ul class="inheritance"></ul></li><li>org.grails.gorm.rx.config.Settings
 </ul>
 <div class="description">
     <ul class="blockList">
@@ -99,7 +99,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Superinterfaces:</dt>
-                <dd><a href='../../../../../org/grails/datastore/mapping/query/QueryCreator.html'>QueryCreator</a>, <a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourcesProvider.html'>ConnectionSourcesProvider</a>, <a href='../../../../../org/grails/gorm/rx/config/Settings.html'>Settings</a>, java.lang.AutoCloseable, <a href='../../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a></dd>
+                <dd><a href='../../../../../org/grails/datastore/rx/RxDatastoreClient.html'>RxDatastoreClient</a>, java.lang.AutoCloseable, <a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourcesProvider.html'>ConnectionSourcesProvider</a>, <a href='../../../../../org/grails/datastore/mapping/query/QueryCreator.html'>QueryCreator</a>, <a href='../../../../../org/grails/gorm/rx/config/Settings.html'>Settings</a></dd>
             </dl>
 
     <p> Internal non-client methods implemented by the implementor
@@ -282,7 +282,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4><a href='../../../../../org/grails/gorm/rx/api/RxGormInstanceApi.html'>RxGormInstanceApi</a> <strong>createInstanceApi</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p> Creates an instance API (used for instance methods)
-     <DL><DT><B>Returns:</B></DT><DD>The instance API</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The instance API</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -291,7 +291,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4><a href='../../../../../org/grails/gorm/rx/api/RxGormInstanceApi.html'>RxGormInstanceApi</a> <strong>createInstanceApi</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.String connectionSourceName)</h4>
                                 <p> Creates an instance API (used for instance methods)
-     <DL><DT><B>Returns:</B></DT><DD>The instance API</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The instance API</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -300,7 +300,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4><a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> <strong>createQuery</strong>(java.lang.Class type, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</h4>
                                 <p> Create a query, passing the entity state
-     <DL><DT><B>Returns:</B></DT><DD>The query</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>type</code> -  The type</DD><DD><code>queryState</code> -  The query state</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>type</code> -  The type</DD><DD><code>queryState</code> -  The query state</DD></DL><DL><DT><B>Returns:</B></DT><DD>The query</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -309,7 +309,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4><a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> <strong>createQuery</strong>(java.lang.Class type, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, java.util.Map arguments)</h4>
                                 <p> Create a query, passing the entity state
-     <DL><DT><B>Returns:</B></DT><DD>The query</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>type</code> -  The type</DD><DD><code>queryState</code> -  The query state</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>type</code> -  The type</DD><DD><code>queryState</code> -  The query state</DD></DL><DL><DT><B>Returns:</B></DT><DD>The query</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -318,7 +318,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4><a href='../../../../../org/grails/gorm/rx/api/RxGormStaticApi.html'>RxGormStaticApi</a> <strong>createStaticApi</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p> Creates a static API (used for static methods)
-     <DL><DT><B>Returns:</B></DT><DD>The static API</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The static API</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -327,7 +327,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4><a href='../../../../../org/grails/gorm/rx/api/RxGormStaticApi.html'>RxGormStaticApi</a> <strong>createStaticApi</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.String connectionSourceName)</h4>
                                 <p> Creates a static API (used for static methods)
-     <DL><DT><B>Returns:</B></DT><DD>The static API</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The static API</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -336,7 +336,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4><a href='../../../../../org/grails/gorm/rx/api/RxGormValidationApi.html'>RxGormValidationApi</a> <strong>createValidationApi</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p> Creates a validation API (used for validation methods)
-     <DL><DT><B>Returns:</B></DT><DD>The validation API</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The validation API</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -345,7 +345,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4><a href='../../../../../org/grails/gorm/rx/api/RxGormValidationApi.html'>RxGormValidationApi</a> <strong>createValidationApi</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.String connectionSourceName)</h4>
                                 <p> Creates a validation API (used for validation methods)
-     <DL><DT><B>Returns:</B></DT><DD>The validation API</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The validation API</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -354,7 +354,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>&lt;T1&gt; java.util.Observable&lt;T1&gt; <strong>get</strong>(java.lang.Class&lt;T1&gt; type, java.io.Serializable id, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</h4>
                                 <p> Obtain an instance passing the query state
-     <DL><DT><B>Returns:</B></DT><DD>The observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>type</code> -  The type</DD><DD><code>id</code> -  The id</DD><DD><code>queryState</code> -  The query state</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>type</code> -  The type</DD><DD><code>id</code> -  The id</DD><DD><code>queryState</code> -  The query state</DD></DL><DL><DT><B>Returns:</B></DT><DD>The observable</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -372,7 +372,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>&lt;T1&gt; <a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a>&lt;T1&gt; <strong>proxy</strong>(java.lang.Class&lt;T1&gt; type, java.io.Serializable id, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</h4>
                                 <p> Obtain an <a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a> for the given type and id
-     <DL><DT><B>Returns:</B></DT><DD>An <a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a></DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>type</code> -  The type</DD><DD><code>id</code> -  The id</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>type</code> -  The type</DD><DD><code>id</code> -  The id</DD></DL><DL><DT><B>Returns:</B></DT><DD>An <a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -381,7 +381,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4><a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html'>ObservableProxy</a> <strong>proxy</strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query, <a href='../../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</h4>
                                 <p> Obtain an <a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a> that executes the given query to initialize
-     <DL><DT><B>Returns:</B></DT><DD>An <a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a></DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD></DL><DL><DT><B>Returns:</B></DT><DD>An <a href='../../../../../grails/gorm/rx/proxy/ObservableProxy.html' title='ObservableProxy'>ObservableProxy</a></DD></DL></p>
                             </li>
                         </ul>
                     

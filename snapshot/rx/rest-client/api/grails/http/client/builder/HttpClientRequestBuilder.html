@@ -419,7 +419,7 @@ if (location.href.indexOf('is-external=true') == -1) {
  <pre><code>
  restBuilder.get("http://..") {*      accept "application/xml"
 }* </code></pre>
-     <DL><DT><B>Returns:</B></DT><DD>The customizer</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>contentTypes</code> -  The content types</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>contentTypes</code> -  The content types</DD></DL><DL><DT><B>Returns:</B></DT><DD>The customizer</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -432,7 +432,7 @@ if (location.href.indexOf('is-external=true') == -1) {
  <pre><code>
  builder.put("http://..") {*      auth "myuser", "mypassword"
 }* </code></pre>
-     <DL><DT><B>Returns:</B></DT><DD>The request</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>username</code> -  The username</DD><DD><code>password</code> -  The password</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>username</code> -  The username</DD><DD><code>password</code> -  The password</DD></DL><DL><DT><B>Returns:</B></DT><DD>The request</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -445,7 +445,7 @@ if (location.href.indexOf('is-external=true') == -1) {
  <pre><code>
  builder.put("http://..") {*      auth myToken
 }* </code></pre>
-     <DL><DT><B>Returns:</B></DT><DD>The customizer</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>accessToken</code> -  The access token</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>accessToken</code> -  The access token</DD></DL><DL><DT><B>Returns:</B></DT><DD>The customizer</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -464,9 +464,9 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <h4>protected&nbsp;java.util.Observable <strong>createBodyWriter</strong>(groovy.lang.Closure callable)</h4>
                                 <p>
 //     * Builds a multipart form
-//     *     <DL><DT><B>Returns:</B></DT><DD>this object
-//</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>formDefinition</code> -  The form definition
-//     *</DD></DL></p>
+//     *     <DL><DT><B>Parameters:</B></DT><DD><code>formDefinition</code> -  The form definition
+//     *</DD></DL><DL><DT><B>Returns:</B></DT><DD>this object
+//</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -475,7 +475,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a> <strong>form</strong>(@groovy.lang.DelegatesTo(FormDataBuilder) groovy.lang.Closure formDefinition)</h4>
                                 <p> Builds a form
-     <DL><DT><B>Returns:</B></DT><DD>this object</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>formDefinition</code> -  The form definition</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>formDefinition</code> -  The form definition</DD></DL><DL><DT><B>Returns:</B></DT><DD>this object</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -484,7 +484,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a> <strong>header</strong>(java.lang.CharSequence name, java.lang.Object value)</h4>
                                 <p> Sets a request header
-     <DL><DT><B>Returns:</B></DT><DD>This request</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the header</DD><DD><code>value</code> -  The value of the header</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the header</DD><DD><code>value</code> -  The value of the header</DD></DL><DL><DT><B>Returns:</B></DT><DD>This request</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -492,7 +492,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a> <strong>json</strong>(@groovy.lang.DelegatesTo(StreamingJsonBuilder) groovy.lang.Closure callable)</h4>
-                                <p> Adds JSON to the body of the request <DL><DT><B>Returns:</B></DT><DD></DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable that defines the JSON</DD></DL></p>
+                                <p> Adds JSON to the body of the request <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable that defines the JSON</DD></DL><DL><DT><B>Returns:</B></DT><DD></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -501,7 +501,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a> <strong>json</strong>(java.util.List array)</h4>
                                 <p> Adds JSON to the body of the request
-     <DL><DT><B>Returns:</B></DT><DD>This request</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>array</code> -  The JSON array</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>array</code> -  The JSON array</DD></DL><DL><DT><B>Returns:</B></DT><DD>This request</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -510,7 +510,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a> <strong>json</strong>(java.util.Map json)</h4>
                                 <p> Adds JSON to the body of the request
-     <DL><DT><B>Returns:</B></DT><DD>This request</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>json</code> -  The JSON as a map</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>json</code> -  The JSON as a map</DD></DL><DL><DT><B>Returns:</B></DT><DD>This request</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -519,7 +519,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a> <strong>json</strong>(java.lang.String json)</h4>
                                 <p> Adds JSON to the body of the request
-     <DL><DT><B>Returns:</B></DT><DD>This request</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>json</code> -  The JSON as a map</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>json</code> -  The JSON as a map</DD></DL><DL><DT><B>Returns:</B></DT><DD>This request</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -528,7 +528,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a> <strong>method</strong>(java.lang.CharSequence method)</h4>
                                 <p> Sets the method of the request
-     <DL><DT><B>Returns:</B></DT><DD>This request</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>method</code> -  The HTTP method</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>method</code> -  The HTTP method</DD></DL><DL><DT><B>Returns:</B></DT><DD>This request</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -537,7 +537,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a> <strong>uri</strong>(java.lang.CharSequence uri)</h4>
                                 <p> Sets the URI of the request
-     <DL><DT><B>Returns:</B></DT><DD>the request</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>uri</code> -  The uriTemplate of the request</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>uri</code> -  The uriTemplate of the request</DD></DL><DL><DT><B>Returns:</B></DT><DD>the request</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -546,7 +546,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a> <strong>withBody</strong>(@groovy.transform.stc.ClosureParams(value=SimpleType.class, options="java.io.BufferedWriter") groovy.lang.Closure callable)</h4>
                                 <p> Execute the given logic with receiving a write to write to
-     <DL><DT><B>Returns:</B></DT><DD>The builder</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable that accepts a BufferedWriter</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable that accepts a BufferedWriter</DD></DL><DL><DT><B>Returns:</B></DT><DD>The builder</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -555,7 +555,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a> <strong>xml</strong>(java.lang.String xml)</h4>
                                 <p> Sets the body of the request to the XML string argument.
-     <DL><DT><B>Returns:</B></DT><DD>This customizer</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>xml</code> -  The XML to be used as the body of the request</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>xml</code> -  The XML to be used as the body of the request</DD></DL><DL><DT><B>Returns:</B></DT><DD>This customizer</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -564,7 +564,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a> <strong>xml</strong>(@groovy.lang.DelegatesTo(StreamingMarkupBuilder) groovy.lang.Closure closure)</h4>
                                 <p> Sets the body of the request to the XML defined by the closure. Uses groovy.xml.StreamingMarkupBuilder to produce the XML
-     <DL><DT><B>Returns:</B></DT><DD>This customizer</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>closure</code> -  The closure that defines the XML</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>closure</code> -  The closure that defines the XML</DD></DL><DL><DT><B>Returns:</B></DT><DD>This customizer</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -573,7 +573,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4><a href='../../../../grails/http/client/builder/HttpClientRequestBuilder.html'>HttpClientRequestBuilder</a> <strong>xml</strong>(groovy.util.slurpersupport.GPathResult xml)</h4>
                                 <p> Sets the body of the request to the XML GPathResult argument.
-     <DL><DT><B>Returns:</B></DT><DD>This customizer</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>xml</code> -  The XML to be used as the body of the request</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>xml</code> -  The XML to be used as the body of the request</DD></DL><DL><DT><B>Returns:</B></DT><DD>This customizer</DD></DL></p>
                             </li>
                         </ul>
                     

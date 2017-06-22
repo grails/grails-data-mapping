@@ -215,7 +215,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>void <strong>eachTenant</strong>(groovy.lang.Closure callable)</h4>
                                 <p> Execute the given closure for each tenant. This method will create a new datastore session for the scope of the call and hence is designed to be used to manage the connection life cycle
-     <DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -224,7 +224,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>&lt;T&gt; T <strong>withCurrent</strong>(groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Execute the given closure with the current tenant. This method will create a new datastore session for the scope of the call and hence is designed to be used to manage the connection life cycle
-     <DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -233,7 +233,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>&lt;T&gt; T <strong>withId</strong>(java.io.Serializable tenantId, groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Execute the given closure with given tenant id. This method will create a new datastore session for the scope of the call and hence is designed to be used to manage the connection life cycle
-     <DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>tenantId</code> -  The tenant id</DD><DD><code>callable</code> -  The closure</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>tenantId</code> -  The tenant id</DD><DD><code>callable</code> -  The closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -243,7 +243,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <h4>&lt;T&gt; T <strong>withoutId</strong>(groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Execute the given closure without any tenant id. In Multi tenancy mode SINGLE this will execute against the default data source. If multi tenancy mode
  MULTI this will execute without including the "tenantId" on any query. Use with caution.
-     <DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
                             </li>
                         </ul>
                     

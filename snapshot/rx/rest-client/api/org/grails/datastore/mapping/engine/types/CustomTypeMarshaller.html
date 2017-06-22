@@ -100,7 +100,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
     <p> Interface for defining custom datastore types beyond the simple and association
  types supported out of the box.
- <DL><DT><B>Parameters:</B></DT><DD><code><T></code> -  The target type to be marshalled</DD><DD><code><N></code> -  The native database type</DD><DD><code><Q></code> -  The return type of the query</DD></DL><DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>1.0</DD></DL></p>
+ <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>1.0</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code><T></code> -  The target type to be marshalled</DD><DD><code><N></code> -  The native database type</DD><DD><code><Q></code> -  The return type of the query</DD></DL></p>
 
           </li>
     </ul>
@@ -222,7 +222,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;Q <strong>query</strong>(@java.lang.SuppressWarnings("rawtypes") <a href='../../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, <a href='../../../../../../org/grails/datastore/mapping/query/Query.PropertyCriterion.html'>PropertyCriterion</a> criterion, Q nativeQuery)</h4>
                                 <p> Populates a query
-     <DL><DT><B>Returns:</B></DT><DD>The native query</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>property</code> -  The property being converted</DD><DD><code>criterion</code> -  The criterion</DD><DD><code>nativeQuery</code> -  The nativeQuery</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>property</code> -  The property being converted</DD><DD><code>criterion</code> -  The criterion</DD><DD><code>nativeQuery</code> -  The nativeQuery</DD></DL><DL><DT><B>Returns:</B></DT><DD>The native query</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -231,7 +231,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;T <strong>read</strong>(@java.lang.SuppressWarnings("rawtypes") <a href='../../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, N source)</h4>
                                 <p> Converts a value from its native form
-     <DL><DT><B>Returns:</B></DT><DD>The converted type</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>property</code> -  The property being converted</DD><DD><code>source</code> -  The native form</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>property</code> -  The property being converted</DD><DD><code>source</code> -  The native form</DD></DL><DL><DT><B>Returns:</B></DT><DD>The converted type</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -240,7 +240,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;boolean <strong>supports</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context)</h4>
                                 <p> Whether the marshaller supports the given datastore type
-     <DL><DT><B>Returns:</B></DT><DD>True if it is supported</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>context</code> -  The context type</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>context</code> -  The context type</DD></DL><DL><DT><B>Returns:</B></DT><DD>True if it is supported</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -259,7 +259,7 @@ public&nbsp;boolean <strong>supports</strong>(<a href='../../../../../../org/gra
                             <li class="blockList">
                                 <h4>public&nbsp;java.lang.Object <strong>write</strong>(@java.lang.SuppressWarnings("rawtypes") <a href='../../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, T value, N nativeTarget)</h4>
                                 <p> Converts a value to its native form
-     <DL><DT><B>Returns:</B></DT><DD>The written value</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>property</code> -  The property being converted</DD><DD><code>value</code> -  The value</DD><DD><code>nativeTarget</code> -  The nativeTarget</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>property</code> -  The property being converted</DD><DD><code>value</code> -  The value</DD><DD><code>nativeTarget</code> -  The nativeTarget</DD></DL><DL><DT><B>Returns:</B></DT><DD>The written value</DD></DL></p>
                             </li>
                         </ul>
                     

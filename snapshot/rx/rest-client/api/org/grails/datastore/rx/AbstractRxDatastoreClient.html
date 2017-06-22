@@ -702,7 +702,7 @@ extends java.lang.Object
                             <li class="blockList">
                                 <h4>java.util.Observable&lt;java.lang.Number&gt; <strong>batchDelete</strong>(<a href='../../../../org/grails/datastore/rx/batch/BatchOperation.html'>BatchOperation</a> operation)</h4>
                                 <p> Executes a batch delete operation
-     <DL><DT><B>Returns:</B></DT><DD>The total number of records deleted</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>operation</code> -  The batch operation</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>operation</code> -  The batch operation</DD></DL><DL><DT><B>Returns:</B></DT><DD>The total number of records deleted</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -711,7 +711,7 @@ extends java.lang.Object
                             <li class="blockList">
                                 <h4>java.util.Observable&lt;java.lang.Number&gt; <strong>batchWrite</strong>(<a href='../../../../org/grails/datastore/rx/batch/BatchOperation.html'>BatchOperation</a> operation)</h4>
                                 <p> Executes a batch write operation
-     <DL><DT><B>Returns:</B></DT><DD>The total number of records updated, deleted or inserted</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>operation</code> -  The batch operation</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>operation</code> -  The batch operation</DD></DL><DL><DT><B>Returns:</B></DT><DD>The total number of records updated, deleted or inserted</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -729,7 +729,7 @@ final&nbsp;void <strong>close</strong>()</h4>
                             <li class="blockList">
                                 <h4><a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> <strong>createEntityQuery</strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState)</h4>
                                 <p> Creates a query for the given entity
-     <DL><DT><B>Returns:</B></DT><DD>The query object</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The query object</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -738,7 +738,7 @@ final&nbsp;void <strong>close</strong>()</h4>
                             <li class="blockList">
                                 <h4><a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> <strong>createEntityQuery</strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../org/grails/datastore/rx/query/QueryState.html'>QueryState</a> queryState, java.util.Map arguments)</h4>
                                 <p> Creates a query for the given entity
-     <DL><DT><B>Returns:</B></DT><DD>The query object</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The query object</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -890,7 +890,7 @@ java.util.Observable&lt;java.lang.Number&gt; <strong>deleteAll</strong>(java.lan
                             <li class="blockList">
                                 <h4>java.io.Serializable <strong>generateIdentifier</strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.Object instance, <a href='../../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> reflector)</h4>
                                 <p> Generates an identifier for the given entity and instance
-     <DL><DT><B>Returns:</B></DT><DD>The generated identifier</DD></DL><DL><DT><B>Parameters:</B></DT><DD>entity</DD><DD>instance</DD><DD>reflector</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD>entity</DD><DD>instance</DD><DD>reflector</DD></DL><DL><DT><B>Returns:</B></DT><DD>The generated identifier</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -909,7 +909,7 @@ java.util.Observable <strong>get</strong>(java.lang.Class&lt;T&gt; type, java.io
                                 <h4>&lt;T1&gt; @java.lang.Override
 final&nbsp;java.util.Observable&lt;T1&gt; <strong>get</strong>(java.lang.Class&lt;T1&gt; type, java.io.Serializable id)</h4>
                                 <p> Retrieve and instance of the given type and id
-     <DL><DT><B>Returns:</B></DT><DD>An observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>type</code> -  The type</DD><DD><code>id</code> -  The id</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>type</code> -  The type</DD><DD><code>id</code> -  The id</DD></DL><DL><DT><B>Returns:</B></DT><DD>An observable</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1023,7 +1023,7 @@ boolean <strong>isSchemaless</strong>()</h4>
                                 <h4>&lt;T1&gt; @java.lang.Override
 final&nbsp;java.util.Observable&lt;T1&gt; <strong>persist</strong>(<a href='../../../../T1.html'>T1</a> instance, java.util.Map&lt;java.lang.String, java.lang.Object&gt; arguments)</h4>
                                 <p> Persist an instance
-     <DL><DT><B>Returns:</B></DT><DD>An observable</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD></DL><DL><DT><B>Returns:</B></DT><DD>An observable</DD></DL></p>
                             </li>
                         </ul>
                     

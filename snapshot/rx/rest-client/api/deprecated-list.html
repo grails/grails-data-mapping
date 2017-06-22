@@ -76,6 +76,8 @@ if (location.href.indexOf('is-external=true') == -1) {
         
         <li><a href="#field">Deprecated Field</a></li>
         
+        <li><a href="#property">Deprecated Property</a></li>
+        
     </ul>
 </div>
 <div class="contentContainer">
@@ -111,6 +113,30 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </td>
                 <td>
                     <div class="block"><i>@deprecated  Do not use</i></div>
+                </td>
+            </tr>
+            
+            </tbody>
+        </table>
+    </li>
+</ul>
+
+
+<!-- Deprecated fields/properties/enum constant types -->
+    <a name="property"><!--   --></a><ul class="blockList">
+    <li class="blockList">
+        <table border="0" cellpadding="3" cellspacing="0" summary="Deprecated Properties table, listing deprecated properties, and an explanation">
+            <caption><span>Deprecated Properties</span><span class="tabEnd">&nbsp;</span></caption>
+            <tr>
+                <th class="colOne" scope="col">Property and Description</th>
+            </tr>
+            <tbody>
+            <tr class="altColor">
+                <td class="colOne">
+                    <strong><a href="org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html#autoFlush">ConnectionSourceSettings#autoFlush</a></strong>
+                </td>
+                <td>
+                    <div class="block"><i>Whether to auto flush</i></div>
                 </td>
             </tr>
             
@@ -210,7 +236,17 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </td>
             </tr>
             <tr class="altColor">
+                <td class="colOne"><strong><a href="org/grails/datastore/gorm/GormEnhancer.html#findNamedQuery(java.lang.Class, java.lang.String)">GormEnhancer#findNamedQuery</a></strong>(java.lang.Class entity, java.lang.String queryName)
+                    <div class="block"><i>@deprecated Use #createNamedQuery(entity, queryName) instead</i></div>
+                </td>
+            </tr>
+            <tr class="altColor">
                 <td class="colOne"><strong><a href="org/grails/datastore/gorm/GormEntity.html#getNamedQuery(java.lang.String)">GormEntity#getNamedQuery</a></strong>(java.lang.String queryName)
+                    <div class="block"><i>Looks up a named query</i></div>
+                </td>
+            </tr>
+            <tr class="rowColor">
+                <td class="colOne"><strong><a href="org/grails/datastore/gorm/GormEntity.html#getNamedQuery(java.lang.String, java.lang.Object)">GormEntity#getNamedQuery</a></strong>(java.lang.String queryName, java.lang.Object args)
                     <div class="block"><i>Looks up a named query</i></div>
                 </td>
             </tr>

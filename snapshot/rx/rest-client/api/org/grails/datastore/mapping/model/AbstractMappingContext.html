@@ -465,6 +465,18 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>protected&nbsp;boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#isValidMappingStrategy(java.lang.Class, java.lang.Object)">isValidMappingStrategy</a></strong>(java.lang.Class javaClass, java.lang.Object mappingStrategy)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>protected&nbsp;java.lang.Object</code></td>
+                            <td class="colLast"><code><strong><a href="#resolveMappingStrategy(java.lang.Class)">resolveMappingStrategy</a></strong>(java.lang.Class javaClass)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#setCanInitializeEntities(boolean)">setCanInitializeEntities</a></strong>(boolean canInitializeEntities)</code><br></td>
                         </tr>
@@ -677,7 +689,7 @@ extends java.lang.Object
                             <li class="blockList">
                                 <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> <strong>addExternalPersistentEntity</strong>(java.lang.Class javaClass)</h4>
                                 <p> Adds an external PersistentEntity instance, one that is not managed and persisted by this context
-     <DL><DT><B>Returns:</B></DT><DD>The PersistentEntity instance</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class representing the entity</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class representing the entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The PersistentEntity instance</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -702,7 +714,7 @@ extends java.lang.Object
                             <li class="blockList">
                                 <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> <strong>addPersistentEntity</strong>(java.lang.Class javaClass, boolean override)</h4>
                                 <p> Adds a PersistentEntity instance
-     <DL><DT><B>Returns:</B></DT><DD>The PersistentEntity instance</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class representing the entity</DD><DD><code>override</code> -   Whether to override an existing entity</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class representing the entity</DD><DD><code>override</code> -   Whether to override an existing entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The PersistentEntity instance</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -711,7 +723,7 @@ extends java.lang.Object
                             <li class="blockList">
                                 <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> <strong>addPersistentEntity</strong>(java.lang.Class javaClass)</h4>
                                 <p> Adds a PersistentEntity instance
-     <DL><DT><B>Returns:</B></DT><DD>The PersistentEntity instance</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class representing the entity</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class representing the entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The PersistentEntity instance</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -812,7 +824,7 @@ public&nbsp;java.util.Collection&lt;<a href='../../../../../org/grails/datastore
                                 <h4>@java.lang.Override
 public&nbsp;<a href='../../../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> <strong>getEntityReflector</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p> Obtains a <a href='../../../../../org/grails/datastore/mapping/reflect/EntityReflector.html' title='EntityReflector'>EntityReflector</a> instance for the given entity
-     <DL><DT><B>Returns:</B></DT><DD>The class data</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The class data</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -821,7 +833,7 @@ public&nbsp;<a href='../../../../../org/grails/datastore/mapping/reflect/EntityR
                             <li class="blockList">
                                 <h4>public&nbsp;org.springframework.validation.Validator <strong>getEntityValidator</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p> Retrieves a validator for an entity
-     <DL><DT><B>Returns:</B></DT><DD>The validator or null if there is none</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity The entity</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity The entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The validator or null if there is none</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -905,7 +917,7 @@ public&nbsp;<a href='../../../../../org/grails/datastore/mapping/validation/Vali
                             <li class="blockList">
                                 <h4>public&nbsp;boolean <strong>isInInheritanceHierarchy</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p> Returns true if the given entity is in an inheritance hierarchy
-     <DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -929,6 +941,22 @@ public&nbsp;<a href='../../../../../org/grails/datastore/mapping/validation/Vali
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;boolean <strong>isPersistentEntity</strong>(java.lang.Object value)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="isValidMappingStrategy(java.lang.Class, java.lang.Object)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;boolean <strong>isValidMappingStrategy</strong>(java.lang.Class javaClass, java.lang.Object mappingStrategy)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="resolveMappingStrategy(java.lang.Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>protected&nbsp;java.lang.Object <strong>resolveMappingStrategy</strong>(java.lang.Class javaClass)</h4>
                                 <p></p>
                             </li>
                         </ul>
