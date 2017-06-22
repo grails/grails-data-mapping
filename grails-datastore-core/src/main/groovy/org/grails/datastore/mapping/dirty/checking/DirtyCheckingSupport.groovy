@@ -32,7 +32,7 @@ import org.grails.datastore.mapping.reflect.EntityReflector
  */
 @CompileStatic
 class DirtyCheckingSupport {
-
+    public static final  String DIRTY_CLASS_MARKER = '$DIRTY_MARKER'
     /**
      * Checks whether associations are dirty
      *

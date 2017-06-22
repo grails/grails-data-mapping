@@ -13,8 +13,6 @@ import org.grails.datastore.mapping.proxy.EntityProxy
 @CompileStatic
 public trait DirtyCheckable {
 
-    public static final  String DIRTY_CLASS_MARKER = '$DIRTY_MARKER'
-
     private transient Map<String, Object> $changedProperties
 
     /**
@@ -54,7 +52,7 @@ public trait DirtyCheckable {
      * Marks this instance as dirty
      */
     void markDirty() {
-        if( $changedProperties != null) $changedProperties.put getClass().name, DIRTY_CLASS_MARKER
+        if( $changedProperties != null) $changedProperties.put getClass().name, DirtyCheckingSupport.DIRTY_CLASS_MARKER
     }
 
     /**
