@@ -38,7 +38,7 @@ public abstract class AbstractResultList extends AbstractList implements Closeab
 
     public AbstractResultList(int offset, Integer size, Iterator<Object> cursor) {
         this.offset = offset;
-        boolean hasSize = size > -1;
+        boolean hasSize = size != null && size > -1;
         if(hasSize) {
             this.size = size;
         }
