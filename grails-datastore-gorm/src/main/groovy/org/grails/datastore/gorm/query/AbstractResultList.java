@@ -146,25 +146,42 @@ public abstract class AbstractResultList extends AbstractList implements Closeab
 
 
         return new Iterator() {
+            int iteratorIndex = 0;
             Object current;
             public boolean hasNext() {
-
-                boolean hasMore = cursor.hasNext();
-                if (!hasMore) {
-                    initialized = true;
+                if(iteratorIndex < internalIndex) {
+                    return true;
                 }
-                return hasMore;
+                else if(!initialized) {
+
+                    boolean hasMore = cursor.hasNext();
+                    if (!hasMore) {
+                        initialized = true;
+                    }
+                    return hasMore;
+                }
+                return false;
             }
 
             @SuppressWarnings("unchecked")
             public Object next() {
-                current = convertObject();
-                return current;
+                if(iteratorIndex < internalIndex) {
+                    current = initializedObjects.get(iteratorIndex);
+                }
+                else {
+                    current = convertObject();
+                }
+                try {
+                    return current;
+                } finally {
+                    iteratorIndex++;
+                }
             }
 
             public void remove() {
-                internalIndex--;
-                initializedObjects.remove(current);
+                if(current != null) {
+                    initializedObjects.remove(current);
+                }
             }
         };
     }
