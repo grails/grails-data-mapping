@@ -249,7 +249,7 @@ trait Node
                             <li class="blockList">
                                 <h4>static&nbsp;<a href='../../grails/neo4j/Path.html' title='Path'>Path</a>&lt;D, D&gt; <strong>findPath</strong>(java.lang.CharSequence cypher)</h4>
                                 <p> Execute cypher that finds a path to the given entity
-     <DL><DT><B>Returns:</B></DT><DD>The path</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>cypher</code> -  The cypher</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>cypher</code> -  The cypher</DD></DL><DL><DT><B>Returns:</B></DT><DD>The path</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -258,7 +258,7 @@ trait Node
                             <li class="blockList">
                                 <h4>static&nbsp;<a href='../../grails/neo4j/Path.html' title='Path'>Path</a>&lt;D, D&gt; <strong>findPath</strong>(java.lang.CharSequence cypher, java.util.Map params)</h4>
                                 <p> Execute cypher that finds a path to the given entity
-     <DL><DT><B>Returns:</B></DT><DD>The path or null if non exists</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>cypher</code> -  The cypher</DD><DD><code>params</code> -  The parameters</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>cypher</code> -  The cypher</DD><DD><code>params</code> -  The parameters</DD></DL><DL><DT><B>Returns:</B></DT><DD>The path or null if non exists</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -267,7 +267,7 @@ trait Node
                             <li class="blockList">
                                 <h4>&lt;T&gt; static&nbsp;<a href='../../grails/neo4j/Path.html' title='Path'>Path</a>&lt;D, T&gt; <strong>findPathTo</strong>(java.lang.Class&lt;T&gt; type, java.lang.CharSequence cypher)</h4>
                                 <p> Execute cypher that finds a path to the given entity
-     <DL><DT><B>Returns:</B></DT><DD>The path</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>type</code> -  The type to find a path to</DD><DD><code>cypher</code> -  The cypher</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>type</code> -  The type to find a path to</DD><DD><code>cypher</code> -  The cypher</DD></DL><DL><DT><B>Returns:</B></DT><DD>The path</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -276,7 +276,7 @@ trait Node
                             <li class="blockList">
                                 <h4>&lt;T&gt; static&nbsp;<a href='../../grails/neo4j/Path.html' title='Path'>Path</a>&lt;D, T&gt; <strong>findPathTo</strong>(java.lang.Class&lt;T&gt; type, java.lang.CharSequence cypher, java.util.Map params)</h4>
                                 <p> Execute cypher that finds a path to the given entity
-     <DL><DT><B>Returns:</B></DT><DD>The path</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>cypher</code> -  The cypher</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>cypher</code> -  The cypher</DD></DL><DL><DT><B>Returns:</B></DT><DD>The path</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -285,7 +285,7 @@ trait Node
                             <li class="blockList">
                                 <h4>&lt;F extends GormEntity, T extends GormEntity&gt; static&nbsp;<a href='../../grails/neo4j/Relationship.html' title='Relationship'>Relationship</a>&lt;F, T&gt; <strong>findRelationship</strong>(F from, T to)</h4>
                                 <p> Finds a relationship between two entities
-     <DL><DT><B>Returns:</B></DT><DD>The relationship or null if it doesn't exist</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>from</code> -  The from entity (can be a proxy)</DD><DD><code>to</code> -  The to entity (can be a proxy)</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>from</code> -  The from entity (can be a proxy)</DD><DD><code>to</code> -  The to entity (can be a proxy)</DD></DL><DL><DT><B>Returns:</B></DT><DD>The relationship or null if it doesn't exist</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -294,7 +294,7 @@ trait Node
                             <li class="blockList">
                                 <h4>&lt;F extends GormEntity, T extends GormEntity&gt; static&nbsp;java.util.List&lt;<a href='../../grails/neo4j/Relationship.html' title='Relationship'>Relationship</a>&lt;F, T&gt;&gt; <strong>findRelationships</strong>(F from, T to, java.util.Map params = Collections.emptyMap()</h4>
                                 <p> Finds a relationship between two entities
-     <DL><DT><B>Returns:</B></DT><DD>The relationship or null if it doesn't exist</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>from</code> -  The from entity (can be a proxy)</DD><DD><code>to</code> -  The to entity (can be a proxy)</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>from</code> -  The from entity (can be a proxy)</DD><DD><code>to</code> -  The to entity (can be a proxy)</DD></DL><DL><DT><B>Returns:</B></DT><DD>The relationship or null if it doesn't exist</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -303,7 +303,7 @@ trait Node
                             <li class="blockList">
                                 <h4>&lt;F extends GormEntity, T extends GormEntity&gt; static&nbsp;java.util.List&lt;<a href='../../grails/neo4j/Relationship.html' title='Relationship'>Relationship</a>&lt;F, T&gt;&gt; <strong>findRelationships</strong>(java.lang.Class&lt;F&gt; from, java.lang.Class&lt;T&gt; to, java.util.Map params = Collections.emptyMap()</h4>
                                 <p> Finds a relationship between two entity types
-     <DL><DT><B>Returns:</B></DT><DD>The relationship or null if it doesn't exist</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>from</code> -  The from entity (can be a proxy)</DD><DD><code>to</code> -  The to entity (can be a proxy)</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>from</code> -  The from entity (can be a proxy)</DD><DD><code>to</code> -  The to entity (can be a proxy)</DD></DL><DL><DT><B>Returns:</B></DT><DD>The relationship or null if it doesn't exist</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -312,7 +312,7 @@ trait Node
                             <li class="blockList">
                                 <h4>&lt;F, T&gt; static&nbsp;<a href='../../grails/neo4j/Path.html' title='Path'>Path</a>&lt;F, T&gt; <strong>findShortestPath</strong>(F from, T to, int maxDistance = 10)</h4>
                                 <p> Finds a path between two entities
-     <DL><DT><B>Returns:</B></DT><DD>The path or null if non exists</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>from</code> -  The from entity (can be a proxy)</DD><DD><code>to</code> -  The to entity (can be a proxy)</DD><DD><code>maxDistance</code> -  The maximum distance to traverse (defaults to 10)</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>from</code> -  The from entity (can be a proxy)</DD><DD><code>to</code> -  The to entity (can be a proxy)</DD><DD><code>maxDistance</code> -  The maximum distance to traverse (defaults to 10)</DD></DL><DL><DT><B>Returns:</B></DT><DD>The path or null if non exists</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -321,7 +321,7 @@ trait Node
                             <li class="blockList">
                                 <h4>java.lang.Object <strong>propertyMissing</strong>(java.lang.String name)</h4>
                                 <p> Allows accessing to dynamic properties with the dot operator
-     <DL><DT><B>Returns:</B></DT><DD>The property value</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD><DD><code>name</code> -  The property name</DD></DL></p>
+     <DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD><DD><code>name</code> -  The property name</DD></DL><DL><DT><B>Returns:</B></DT><DD>The property value</DD></DL></p>
                             </li>
                         </ul>
                     
