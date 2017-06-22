@@ -50,6 +50,7 @@ import org.codehaus.groovy.syntax.Token
 import org.codehaus.groovy.syntax.Types
 import org.codehaus.groovy.transform.trait.Traits
 import org.springframework.util.StringUtils
+import static org.codehaus.groovy.ast.tools.GenericsUtils.correctToGenericsSpecRecurse
 
 import javax.persistence.Entity
 import java.lang.annotation.Annotation
