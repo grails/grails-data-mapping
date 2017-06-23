@@ -822,6 +822,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Build a new mapping</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/api/BuildableCriteria.html" title="Interface in org.grails.datastore.mapping.query.api">BuildableCriteria</a></span> - Interface in <a href="./org/grails/datastore/mapping/query/api/package-summary.html">org.grails.datastore.mapping.query.api</a>
 </dt><dd><div class="block">@author Jeff Brown</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/FindAllByImplementer.html#buildArgs(org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.MethodNode, org.codehaus.groovy.ast.stmt.BlockStatement)" title="Method in FindAllByImplementer">buildArgs(Parameter, MethodNode, BlockStatement)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/FindAllByImplementer.html">FindAllByImplementer</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/support/EventTriggerCaller.html#buildCaller(java.lang.String, Class<?>, groovy.lang.MetaClass, Class<?>)" title="Method in EventTriggerCaller">buildCaller(String, Class&lt;?&gt;, MetaClass, Class&lt;?&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/support/EventTriggerCaller.html">EventTriggerCaller</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#buildCallToOriginalMethod(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)" title="Method in AbstractMethodDecoratingTransformation">buildCallToOriginalMethod(ClassNode, MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html">AbstractMethodDecoratingTransformation</a>
@@ -1631,8 +1633,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/simple/SimpleMapDatastore.html#createMultipleDataSources(Iterable<String>, org.springframework.core.env.PropertyResolver)" title="Method in SimpleMapDatastore">createMultipleDataSources(Iterable&lt;String&gt;, PropertyResolver)</a></span> - Method in <a href="org/grails/datastore/mapping/simple/SimpleMapDatastore.html">SimpleMapDatastore</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/query/NamedQueriesBuilder.html#createNamedCriteriaProxy(groovy.lang.Closure)" title="Method in NamedQueriesBuilder">createNamedCriteriaProxy(Closure)</a></span> - Method in <a href="org/grails/datastore/gorm/query/NamedQueriesBuilder.html">NamedQueriesBuilder</a>
-</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#createNamedQuery(java.lang.Class, java.lang.String, java.lang.Object)" title="Method in GormEnhancer">createNamedQuery(Class, String, Object)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
+</dt><dd> <div class="block">Finds a named query for the given entity</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#createNativeObjectForEmbedded(org.grails.datastore.mapping.model.types.Association, java.lang.Object)" title="Method in NativeEntryEntityPersister">createNativeObjectForEmbedded(Association, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#createNewEntry(java.lang.String, java.lang.Object)" title="Method in NativeEntryEntityPersister">createNewEntry(String, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
@@ -2055,8 +2057,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html#DIRTY_CHECKED_PROPERTY_CLASS_NODE" title="Field in DirtyCheckingTransformer">DIRTY_CHECKED_PROPERTY_CLASS_NODE</a></span> - Field in <a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html">DirtyCheckingTransformer</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckable.html#DIRTY_CLASS_MARKER" title="Field in DirtyCheckable">DIRTY_CLASS_MARKER</a></span> - Field in <a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckable.html">DirtyCheckable</a>
-</dt><dd> <div class="block">For internal use, do not use</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingSupport.html#DIRTY_CLASS_MARKER" title="Field in DirtyCheckingSupport">DIRTY_CLASS_MARKER</a></span> - Field in <a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingSupport.html">DirtyCheckingSupport</a>
 </dt><dd> <div class="block">Used internally as a marker. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/config/GormProperties.html#DIRTY" title="Field in GormProperties">DIRTY</a></span> - Field in <a href="org/grails/datastore/mapping/model/config/GormProperties.html">GormProperties</a>
@@ -2725,7 +2725,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/FindOneImplementer.html#findMethodToInvoke(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)" title="Method in FindOneImplementer">findMethodToInvoke(ClassNode, MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/FindOneImplementer.html">FindOneImplementer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEnhancer.html#findNamedQuery(java.lang.Class, java.lang.String)" title="Method in GormEnhancer">findNamedQuery(Class, String)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEnhancer.html">GormEnhancer</a>
-</dt><dd> <div class="block">Finds a named query for the given entity</div></dd>
+</dt><dd> <div class="block">@deprecated Use #createNamedQuery(entity, queryName) instead</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/FindOneByImplementer.html" title="Class in org.grails.datastore.gorm.services.implementers">FindOneByImplementer</a></span> - Class in <a href="./org/grails/datastore/gorm/services/implementers/package-summary.html">org.grails.datastore.gorm.services.implementers</a>
 </dt><dd><div class="block">Handles implementation for a finder that returns a single result</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/FindOneByInterfaceProjectionImplementer.html" title="Class in org.grails.datastore.gorm.services.implementers">FindOneByInterfaceProjectionImplementer</a></span> - Class in <a href="./org/grails/datastore/gorm/services/implementers/package-summary.html">org.grails.datastore.gorm.services.implementers</a>
@@ -3886,7 +3886,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/constraints/ValidatorConstraint.html#getName()" title="Method in ValidatorConstraint">getName()</a></span> - Method in <a href="org/grails/datastore/gorm/validation/constraints/ValidatorConstraint.html">ValidatorConstraint</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#getNamedQuery(java.lang.String)" title="Method in GormEntity">getNamedQuery(String)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#getNamedQuery(java.lang.String, java.lang.Object)" title="Method in GormEntity">getNamedQuery(String, Object)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
 </dt><dd> <div class="block">Looks up a named query</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/impl/PendingOperation.html#getNativeEntry()" title="Method in PendingOperation">getNativeEntry()</a></span> - Method in <a href="org/grails/datastore/mapping/core/impl/PendingOperation.html">PendingOperation</a>
 </dt><dd> <div class="block">@return The native entry to persist</div></dd>
@@ -5854,6 +5854,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/services/DefaultServiceRegistry.html#isValidInterface(java.lang.Class)" title="Method in DefaultServiceRegistry">isValidInterface(Class)</a></span> - Method in <a href="org/grails/datastore/mapping/services/DefaultServiceRegistry.html">DefaultServiceRegistry</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractMappingContext.html#isValidMappingStrategy(java.lang.Class, java.lang.Object)" title="Method in AbstractMappingContext">isValidMappingStrategy(Class, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractMappingContext.html">AbstractMappingContext</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#isValidParameter(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.Parameter, java.lang.String)" title="Method in AbstractServiceImplementer">isValidParameter(ClassNode, Parameter, String)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html">AbstractServiceImplementer</a>
 </dt><dd> <div class="block">Check whether the given parameter is a valid property of the domain class</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractProjectionImplementer.html#isValidPropertyType(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.ClassNode)" title="Method in AbstractProjectionImplementer">isValidPropertyType(ClassNode, ClassNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/AbstractProjectionImplementer.html">AbstractProjectionImplementer</a>
@@ -6616,8 +6618,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/NamedQueriesBuilder.html" title="Class in org.grails.datastore.gorm.query">NamedQueriesBuilder</a></span> - Class in <a href="./org/grails/datastore/gorm/query/package-summary.html">org.grails.datastore.gorm.query</a>
 </dt><dd><div class="block">Handles creation of named queries</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/query/NamedQueriesBuilder.html#NamedQueriesBuilder(org.grails.datastore.mapping.model.PersistentEntity, List<FinderMethod>)" title="Constructor in NamedQueriesBuilder">NamedQueriesBuilder(PersistentEntity, List&lt;FinderMethod&gt;)</a></span> - Constructor in <a href="org/grails/datastore/gorm/query/NamedQueriesBuilder.html">NamedQueriesBuilder</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/NameUtils.html" title="Class in org.grails.datastore.mapping.reflect">NameUtils</a></span> - Class in <a href="./org/grails/datastore/mapping/reflect/package-summary.html">org.grails.datastore.mapping.reflect</a>
 </dt><dd><div class="block">@author Graeme Rocher</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/impl/PendingOperationAdapter.html#nativeEntry" title="Field in PendingOperationAdapter">nativeEntry</a></span> - Field in <a href="org/grails/datastore/mapping/core/impl/PendingOperationAdapter.html">PendingOperationAdapter</a>
@@ -7855,6 +7855,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/simple/query/SimpleMapQuery.html#resolveIfEmbedded(def, def)" title="Method in SimpleMapQuery">resolveIfEmbedded(def, def)</a></span> - Method in <a href="org/grails/datastore/mapping/simple/query/SimpleMapQuery.html">SimpleMapQuery</a>
 </dt><dd> <div class="block">If the property name refers to an embedded property like 'foo.startDate', then we need
  resolve the value of startDate by walking through the key list.</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractMappingContext.html#resolveMappingStrategy(java.lang.Class)" title="Method in AbstractMappingContext">resolveMappingStrategy(Class)</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractMappingContext.html">AbstractMappingContext</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#resolvePrefix(org.codehaus.groovy.ast.MethodNode)" title="Method in AbstractServiceImplementer">resolvePrefix(MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html">AbstractServiceImplementer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/PrefixedServiceImplementer.html#resolvePrefix(org.codehaus.groovy.ast.MethodNode)" title="Method in PrefixedServiceImplementer">resolvePrefix(MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/PrefixedServiceImplementer.html">PrefixedServiceImplementer</a>
