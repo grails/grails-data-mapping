@@ -16,13 +16,13 @@ buildscript {
 
 
 project.ext {
-    springVersion = "4.3.9.RELEASE"
-    grailsVersion = "3.2.11"
+    springVersion = "4.3.7.RELEASE"
+    grailsVersion = "3.2.8"
     grails2Version = '2.5.6'
     slf4jVersion = "1.7.22"
     junitVersion = "4.12"
     javassistVersion = "3.21.0-GA"
-    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.12'
+    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.11'
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
     projectMajorVersion = "6"
