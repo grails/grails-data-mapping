@@ -19,9 +19,12 @@ import grails.core.DefaultGrailsApplication
 import grails.core.GrailsApplication
 import grails.gorm.annotation.Entity
 import grails.gorm.validation.CascadingValidator
+import grails.gorm.validation.PersistentEntityValidator
 import groovy.transform.NotYetImplemented
 import org.grails.core.DefaultGrailsDomainClass
 import org.grails.core.artefact.DomainClassArtefactHandler
+import org.grails.datastore.gorm.validation.constraints.eval.DefaultConstraintEvaluator
+import org.grails.datastore.gorm.validation.constraints.registry.DefaultConstraintRegistry
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.validation.GrailsDomainClassValidator
 import org.springframework.context.MessageSource
@@ -87,6 +90,34 @@ class CircularCascadeSpec extends GormDatastoreSpec {
         splinter.save(failOnError: true)
     }
 
+    @Issue('https://github.com/grails/grails-data-mapping/issues/967')
+    void "test circular cascade does not stackoverflow with persistent entity validator"() {
+        given:
+        SchoolPerson splinter = new SchoolPerson(name: 'Master Splinter')
+        PersistentEntity entity = session.datastore.getMappingContext().getPersistentEntity(SchoolPerson.name)
+        def messageSource = Mock(MessageSource)
+        messageSource.getMessage(_,_, _, _) >> 'test'
+        def evaluator = new DefaultConstraintEvaluator(new DefaultConstraintRegistry(messageSource), session.datastore.mappingContext, null)
+        session.datastore.getMappingContext().addEntityValidator(entity, new PersistentEntityValidator(entity, messageSource, evaluator))
+        SchoolPerson leo = new SchoolPerson(name: 'Leonardo')
+        SchoolPerson donnie = new SchoolPerson(name: 'Donatello')
+        SchoolPerson mikey = new SchoolPerson(name: 'Michelangelo')
+        SchoolPerson raph = new SchoolPerson(name: 'Raphael')
+
+        splinter.addToStudents(leo)
+        splinter.addToStudents(donnie)
+        splinter.addToStudents(mikey)
+        splinter.addToStudents(raph)
+
+        leo.peers = [donnie, mikey, raph]
+        donnie.peers = [leo, mikey, raph]
+        mikey.peers = [leo, donnie, raph]
+        raph.peers = [leo, donnie, mikey]
+
+        expect:
+        splinter.save(failOnError: true)
+    }
+
     @Override
     List getDomainClasses() {
         [SchoolPerson]
@@ -103,6 +134,7 @@ class SchoolPerson {
     static mappedBy = [students: 'none', peers: 'none']
 
     static constraints = {
+        master nullable: true
     }
     static mapping = {
         peers cascade: 'none'
