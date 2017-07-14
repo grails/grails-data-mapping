@@ -17,7 +17,6 @@ package grails.plugins.rest.client
 import grails.converters.JSON
 import grails.converters.XML
 import grails.web.JSONBuilder
-import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.StreamingMarkupBuilder
@@ -390,12 +389,8 @@ class RequestCustomizer {
             mvm[name].add value    
         }
         else {
-            putObject(name, value)
+            List<Object> values = [(Object)value]
+            mvm.put(name, values)
         }        
-    }
-
-    @CompileDynamic
-    private List<Object> putObject(String name, value) {
-        mvm.put(name, [value])
     }
 }
