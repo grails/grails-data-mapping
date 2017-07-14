@@ -7,6 +7,7 @@ import org.grails.datastore.mapping.core.connections.ConnectionSource;
 import org.grails.datastore.mapping.engine.event.*;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.types.TenantId;
+import org.grails.datastore.mapping.multitenancy.MultiTenantCapableDatastore;
 import org.grails.datastore.mapping.multitenancy.exceptions.TenantException;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.event.PostQueryEvent;
@@ -59,7 +60,15 @@ public class MultiTenantEventListener implements PersistenceEventListener {
                     if(supportsSourceType(datastore.getClass()) && this.datastore.equals(datastore)) {
                         TenantId tenantId = entity.getTenantId();
                         if(tenantId != null) {
-                            Serializable currentId = Tenants.currentId(datastore.getClass());
+                            Serializable currentId;
+
+                            if(datastore instanceof MultiTenantCapableDatastore) {
+                                currentId = Tenants.currentId((MultiTenantCapableDatastore) datastore);
+                            }
+                            else {
+                                currentId = Tenants.currentId(datastore.getClass());
+                            }
+
                             query.eq(tenantId.getName(), currentId );
                         }
                     }
@@ -74,7 +83,14 @@ public class MultiTenantEventListener implements PersistenceEventListener {
                         datastore = GormEnhancer.findDatastore(entity.getJavaClass());
                     }
                     if(supportsSourceType(datastore.getClass()) && this.datastore.equals(datastore)) {
-                        Serializable currentId = Tenants.currentId(datastore.getClass());
+                        Serializable currentId;
+
+                        if(datastore instanceof MultiTenantCapableDatastore) {
+                            currentId = Tenants.currentId((MultiTenantCapableDatastore) datastore);
+                        }
+                        else {
+                            currentId = Tenants.currentId(datastore.getClass());
+                        }
                         if(currentId != null) {
                             try {
                                 preInsertEvent.getEntityAccess().setProperty(tenantId.getName(), currentId);

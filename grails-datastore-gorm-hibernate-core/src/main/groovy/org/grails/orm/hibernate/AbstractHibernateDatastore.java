@@ -205,7 +205,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     }
 
     public Serializable resolveTenantIdentifier() throws TenantNotFoundException {
-        return Tenants.currentId(getClass());
+        return Tenants.currentId(this);
     }
 
     public boolean isAutoFlush() {
@@ -372,7 +372,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
      *
      */
     public void enableMultiTenancyFilter() {
-        Serializable currentId = Tenants.currentId(getClass());
+        Serializable currentId = Tenants.currentId(this);
         if(ConnectionSource.DEFAULT.equals(currentId)) {
             disableMultiTenancyFilter();
         }

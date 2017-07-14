@@ -2,6 +2,7 @@ package org.grails.orm.hibernate.query;
 
 import grails.gorm.MultiTenant;
 import groovy.lang.*;
+import org.grails.datastore.mapping.multitenancy.MultiTenancySettings;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.*;
 import org.grails.datastore.mapping.reflect.NameUtils;
@@ -110,7 +111,7 @@ public abstract class AbstractHibernateCriteriaBuilder extends GroovyObjectSuppo
 
     public void setDatastore(AbstractHibernateDatastore datastore) {
         this.datastore = datastore;
-        if(MultiTenant.class.isAssignableFrom(targetClass)) {
+        if(MultiTenant.class.isAssignableFrom(targetClass) && datastore.getMultiTenancyMode() == MultiTenancySettings.MultiTenancyMode.DISCRIMINATOR ) {
             datastore.enableMultiTenancyFilter();
         }
     }

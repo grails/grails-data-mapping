@@ -267,7 +267,7 @@ class GormEnhancer implements Closeable {
 
                 MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore)defaultDatastore
                 if(multiTenantCapableDatastore.getMultiTenancyMode() == MultiTenancySettings.MultiTenancyMode.DATABASE) {
-                    return Tenants.currentId( (Class<Datastore>) defaultDatastore.getClass() )
+                    return Tenants.currentId( multiTenantCapableDatastore )
                 }
                 else {
                     return ConnectionSource.DEFAULT

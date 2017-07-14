@@ -7,6 +7,7 @@ import org.grails.datastore.mapping.core.connections.ConnectionSource;
 import org.grails.datastore.mapping.engine.event.*;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.types.TenantId;
+import org.grails.datastore.mapping.multitenancy.MultiTenantCapableDatastore;
 import org.grails.datastore.mapping.multitenancy.exceptions.TenantException;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.event.PreQueryEvent;
@@ -60,7 +61,14 @@ public class MultiTenantEventListener implements PersistenceEventListener {
                         hibernateDatastore = GormEnhancer.findDatastore(entity.getJavaClass());
                     }
                     if(supportsSourceType(hibernateDatastore.getClass())) {
-                        Serializable currentId = Tenants.currentId(hibernateDatastore.getClass());
+                        Serializable currentId;
+
+                        if(hibernateDatastore instanceof MultiTenantCapableDatastore) {
+                            currentId = Tenants.currentId((MultiTenantCapableDatastore) hibernateDatastore);
+                        }
+                        else {
+                            currentId = Tenants.currentId(hibernateDatastore.getClass());
+                        }
                         if(currentId != null) {
                             try {
                                 preInsertEvent.getEntityAccess().setProperty(tenantId.getName(), currentId);
