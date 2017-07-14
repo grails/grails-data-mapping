@@ -204,7 +204,7 @@ class RequestCustomizer {
      */
     RequestCustomizer json(JSON json) {
         body = json
-        if (!headers.contentType) {
+        if (!headers.getContentType()) {
             contentType MediaType.APPLICATION_JSON_VALUE
         }
         return this
@@ -218,7 +218,7 @@ class RequestCustomizer {
      */
     RequestCustomizer json(JSONElement json) {
         body = json
-        if (!headers.contentType) {
+        if (!headers.getContentType()) {
             contentType MediaType.APPLICATION_JSON_VALUE
         }
         return this
@@ -232,7 +232,7 @@ class RequestCustomizer {
      */
     RequestCustomizer json(String json) {
         body = json
-        if (!headers.contentType) {
+        if (!headers.getContentType()) {
             contentType MediaType.APPLICATION_JSON_VALUE
         }
         return this
@@ -258,7 +258,7 @@ class RequestCustomizer {
         def b = new StreamingMarkupBuilder()
         Writable markup = (Writable)b.bind(closure)
         body = markup
-        if (!headers.contentType) {
+        if (!headers.getContentType()) {
             contentType MediaType.APPLICATION_XML_VALUE
         }
         return this
@@ -272,7 +272,7 @@ class RequestCustomizer {
      */
     RequestCustomizer xml(XML xml) {
         body = xml
-        if (!headers.contentType) {
+        if (!headers.getContentType()) {
             contentType MediaType.APPLICATION_XML_VALUE
         }
         return this
@@ -286,7 +286,7 @@ class RequestCustomizer {
      */
     RequestCustomizer xml(String xml) {
         body = xml
-        if (!headers.contentType) {
+        if (!headers.getContentType()) {
             contentType MediaType.APPLICATION_XML_VALUE
         }
         return this
@@ -300,7 +300,7 @@ class RequestCustomizer {
      */
     RequestCustomizer xml(GPathResult xml) {
         body = xml
-        if (!headers.contentType) {
+        if (!headers.getContentType()) {
             contentType MediaType.APPLICATION_XML_VALUE
         }
         return this
@@ -344,13 +344,13 @@ class RequestCustomizer {
      */
     RequestCustomizer body(content) {
         if ( (content instanceof JSON) || (content instanceof JSONElement)) {
-            if (!headers.contentType) {
+            if (!headers.getContentType()) {
                 contentType MediaType.APPLICATION_JSON_VALUE
             }
             body = content
         }
         else if( (content instanceof XML) || (content instanceof GPathResult)) {
-            if (!headers.contentType) {
+            if (!headers.getContentType()) {
                 contentType MediaType.APPLICATION_XML_VALUE
             }
             body = content
