@@ -10,6 +10,7 @@ import org.grails.datastore.gorm.validation.constraints.registry.DefaultValidato
 import org.grails.datastore.mapping.simple.SimpleMapDatastore
 import org.springframework.context.support.StaticMessageSource
 import spock.lang.AutoCleanup
+import spock.lang.Issue
 import spock.lang.Specification
 
 /**
@@ -343,6 +344,25 @@ class ServiceImplSpec extends Specification {
 
 
     }
+
+    @Issue('https://github.com/grails/grails-data-mapping/issues/968')
+    void "Test @where with association query"() {
+        given:
+        ProductService productService = datastore.getService(ProductService)
+        new Product(name: "Pineapple", type: "Fruit")
+                .addToAttributes(name: 'Spikey')
+                .addToAttributes(name: 'Yellow')
+                .save(flush:true)
+        new Product(name: "Apple", type: "Fruit")
+                .addToAttributes(name: 'Round')
+                .addToAttributes(name: 'Green')
+                .save(flush:true)
+
+        expect:
+        productService.findWithAttr('Spikey').name == 'Pineapple'
+        productService.findWithAttr('Green').name == 'Apple'
+
+    }
 }
 
 interface ProductInfo {
@@ -425,6 +445,9 @@ interface ProductService {
 
     @Where({ type ==~ pattern })
     Number howManyProducts(String pattern)
+
+    @Where({ attributes.name == attr })
+    Product findWithAttr(String attr)
 
     List<String> listProductName(String type)
 

@@ -1054,8 +1054,20 @@ abstract class AbstractDetachedCriteria<T> implements Criteria, Cloneable {
         if(lastArg instanceof Closure) {
             Closure callable = lastArg
             callable.resolveStrategy = Closure.DELEGATE_FIRST
-            callable.delegate = associationCriteria
-            callable.call()
+
+            Closure parentCallable = callable
+            while(parentCallable.delegate instanceof Closure) {
+                parentCallable = (Closure)parentCallable.delegate
+            }
+
+            def previous = parentCallable.delegate
+
+            try {
+                parentCallable.delegate = associationCriteria
+                callable.call()
+            } finally {
+                parentCallable.delegate = previous
+            }
         }
     }
 
