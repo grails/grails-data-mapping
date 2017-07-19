@@ -54,7 +54,9 @@ class GrailsEntityDirtinessStrategy implements CustomEntityDirtinessStrategy {
 
     @Override
     void resetDirty(Object entity, EntityPersister persister, Session session) {
-        cast(entity).trackChanges()
+        if (canDirtyCheck(entity, persister, session)) {
+            cast(entity).trackChanges()
+        }
     }
 
     @Override
