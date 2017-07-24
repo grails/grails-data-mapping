@@ -1928,7 +1928,14 @@ public abstract class AbstractGrailsDomainBinder {
 
             Class<?> userType = getUserType(currentGrailsProp);
 
-            if (collectionType != null) {
+            if (userType != null) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("[GrailsDomainBinder] Binding property [" + currentGrailsProp.getName() + "] as SimpleValue");
+                }
+                value = new SimpleValue(mappings, table);
+                bindSimpleValue(currentGrailsProp, null, (SimpleValue) value, EMPTY_PATH, mappings, sessionFactoryBeanName);
+            }
+            else if (collectionType != null) {
                 String typeName = getTypeName(currentGrailsProp, getPropertyConfig(currentGrailsProp),gormMapping);
                 if ("serializable".equals(typeName)) {
                     value = new SimpleValue(mappings, table);
@@ -1942,13 +1949,6 @@ public abstract class AbstractGrailsDomainBinder {
                     mappings.addCollection(collection);
                     value = collection;
                 }
-            }
-            else if (userType != null) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("[GrailsDomainBinder] Binding property [" + currentGrailsProp.getName() + "] as SimpleValue");
-                }
-                value = new SimpleValue(mappings, table);
-                bindSimpleValue(currentGrailsProp, null, (SimpleValue) value, EMPTY_PATH, mappings, sessionFactoryBeanName);
             }
             else if (currentGrailsProp.getType().isEnum()) {
                 value = new SimpleValue(mappings, table);
@@ -3359,7 +3359,6 @@ public abstract class AbstractGrailsDomainBinder {
                                          String path, Mappings mappings, String sessionFactoryBeanName) throws MappingException {
                     org.hibernate.mapping.Set coll = new org.hibernate.mapping.Set(mappings, owner);
                     coll.setCollectionTable(owner.getTable());
-                    coll.setTypeName(getTypeName(property));
                     binder.bindCollection(property, coll, owner, mappings, path, sessionFactoryBeanName);
                     return coll;
                 }
@@ -3373,7 +3372,6 @@ public abstract class AbstractGrailsDomainBinder {
                                          String path, Mappings mappings, String sessionFactoryBeanName) throws MappingException {
                     org.hibernate.mapping.List coll = new org.hibernate.mapping.List(mappings, owner);
                     coll.setCollectionTable(owner.getTable());
-                    coll.setTypeName(getTypeName(property));
                     binder.bindCollection(property, coll, owner, mappings, path, sessionFactoryBeanName);
                     return coll;
                 }
@@ -3386,7 +3384,6 @@ public abstract class AbstractGrailsDomainBinder {
                                          String path, Mappings mappings, String sessionFactoryBeanName) throws MappingException {
                     Bag coll = new Bag(mappings, owner);
                     coll.setCollectionTable(owner.getTable());
-                    coll.setTypeName(getTypeName(property));
                     binder.bindCollection(property, coll, owner, mappings, path, sessionFactoryBeanName);
                     return coll;
                 }
@@ -3398,7 +3395,6 @@ public abstract class AbstractGrailsDomainBinder {
                 public Collection create(ToMany property, PersistentClass owner,
                                          String path, Mappings mappings, String sessionFactoryBeanName) throws MappingException {
                     org.hibernate.mapping.Map map = new org.hibernate.mapping.Map(mappings, owner);
-                    map.setTypeName(getTypeName(property));
                     binder.bindCollection(property, map, owner, mappings, path, sessionFactoryBeanName);
                     return map;
                 }
@@ -3409,10 +3405,6 @@ public abstract class AbstractGrailsDomainBinder {
         public CollectionType collectionTypeForClass(Class<?> clazz) {
             createInstances();
             return INSTANCES.get(clazz);
-        }
-
-        public String getTypeName(ToMany property) {
-            return binder.getTypeName(property, binder.getPropertyConfig(property), getMapping(property.getOwner()));
         }
     }
 
