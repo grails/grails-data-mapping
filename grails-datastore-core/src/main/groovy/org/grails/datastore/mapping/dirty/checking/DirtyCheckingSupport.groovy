@@ -38,7 +38,6 @@ class DirtyCheckingSupport {
      * Used internally as a marker. Do not use in user code
      */
     public static final  Map DIRTY_CLASS_MARKER = [:]
-
     /**
      * Checks whether associations are dirty
      *
