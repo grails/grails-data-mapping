@@ -182,8 +182,7 @@ public class GroovyObjectMethodHandler implements MethodHandler {
                 }
                 return Void.class;
             } else if (INVOKE_METHOD.equals(methodName)) {
-                invokeThisMethod(self, args[0].toString(), (Object[])args[1]);
-                return Void.class;
+                return invokeThisMethod(self, args[0].toString(), (Object[])args[1]);
             }
         }
         return INVOKE_IMPLEMENTATION;
