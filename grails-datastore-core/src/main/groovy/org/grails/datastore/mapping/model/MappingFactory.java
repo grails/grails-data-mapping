@@ -103,6 +103,7 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             URL.class.getName(),
             UUID.class.getName(),
             "org.bson.types.ObjectId",
+            "java.time.Instant",
             "java.time.LocalDateTime",
             "java.time.LocalDate",
             "java.time.LocalTime",
