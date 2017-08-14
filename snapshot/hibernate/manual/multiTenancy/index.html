@@ -617,7 +617,10 @@ dataSource:
 </div>
 </div>
 <div class="paragraph">
-<p>The <code>TenantResolver</code> must also implement the <code>AllTenantsResolver</code> interface and return the schema names of all tenants. This gives you the option to hard code these, place them in configuration or read them from the default schema dynamically.</p>
+<p>The <code>TenantResolver</code> can optionally implement the <code>AllTenantsResolver</code> interface and return the schema names of all tenants. This gives you the option to hard code these, place them in configuration or read them from the default schema dynamically.</p>
+</div>
+<div class="paragraph">
+<p>If the <code>AllTenantsResolver</code> resolver is not implemented then GORM will use the configured <a href="../api/org/grails/org/hibernate/jdbc/schema/SchemaHandler.html">SchemaHandler</a> to resolve all the schema names from the database which it will use for the tenants.</p>
 </div>
 </div>
 <div class="sect3">
@@ -626,7 +629,7 @@ dataSource:
 <p>On startup, if <code>dataSource.dbCreate</code> is set to create the database at runtime, then GORM will attempt to create the schemas if they are missing.</p>
 </div>
 <div class="paragraph">
-<p>To do this it uses an instance <a href="../api/org/grails/org/hibernate/jdbc/schema/SchemaHandler.html">SchemaHandler</a> which by default uses the <code>CREATE SCHEMA [name]</code> syntax.</p>
+<p>To do this it uses an instance <a href="../api/org/grails/org/hibernate/jdbc/schema/SchemaHandler.html">SchemaHandler</a> which by default uses the <code>CREATE SCHEMA [name]</code> syntax, but can be overridden and customized for other database dialects as necessary.</p>
 </div>
 <div class="paragraph">
 <p>If you want to use this feature and create schemas at runtime depending on the database you may need to configure an alternate implementation:</p>
@@ -637,6 +640,30 @@ dataSource:
     dbCreate: create-drop
     schemaHandler: foo.bar.MySchemaHandler</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>You can disable completely runtime schema creation by removing the <code>dbCreate</code> option or setting it to <code>none</code>.</p>
+</div>
+<div class="paragraph">
+<p>If you wish to add a schema whilst the application is running then you can use the <code>addTenantForSchema</code> of the <code>HibernateDatastore</code> class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">HibernateDatastore datastore = ...
+datastore.addTenantForSchema("myNewSchema")</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If <code>dbCreate</code> is disabled then you will have to create the schema manually prior to invoking this method
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect3">
@@ -830,7 +857,7 @@ sessionFactory.openSession()</code></pre>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-web:6.0.12.RELEASE"</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-web:6.1.7.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 </div>
