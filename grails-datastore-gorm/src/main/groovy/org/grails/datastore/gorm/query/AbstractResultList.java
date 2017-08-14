@@ -113,11 +113,21 @@ public abstract class AbstractResultList extends AbstractList implements Closeab
 
     @Override
     public Object set(int index, Object o) {
-        if (index > (size() - 1)) {
-            throw new ArrayIndexOutOfBoundsException("Cannot set element at index " + index + " for cursor size " + size());
-        } else {
-            return initializedObjects.set(index, o);
-        }
+        Object previous = get(index);
+        initializedObjects.set(index, o);
+        return previous;
+    }
+
+    @Override
+    public void add(int index, Object element) {
+        initializeFully();
+        this.initializedObjects.add(index, element);
+    }
+
+    @Override
+    public Object remove(int index) {
+        initializeFully();
+        return this.initializedObjects.remove(index);
     }
 
     @Override
