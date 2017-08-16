@@ -3322,7 +3322,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html#getArtefactTypes()" title="Method in DirtyCheckingTransformer">getArtefactTypes()</a></span> - Method in <a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html">DirtyCheckingTransformer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Association.html#getAssociatedEntity()" title="Method in Association">getAssociatedEntity()</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Association.html">Association</a>
-</dt><dd> <div class="block"></div></dd>
+</dt><dd> <div class="block">@return The entity associated with the this association</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Basic.html#getAssociatedEntity()" title="Method in Basic">getAssociatedEntity()</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Basic.html">Basic</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/api/AssociationCriteria.html#getAssociation()" title="Method in AssociationCriteria">getAssociation()</a></span> - Method in <a href="org/grails/datastore/mapping/query/api/AssociationCriteria.html">AssociationCriteria</a>
@@ -3898,7 +3898,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/ManyToMany.html#getInversePropertyName()" title="Method in ManyToMany">getInversePropertyName()</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/ManyToMany.html">ManyToMany</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Association.html#getInverseSide()" title="Method in Association">getInverseSide()</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Association.html">Association</a>
-</dt><dd> <div class="block">@return The inverside side or null if the association is not bidirectional</div></dd>
+</dt><dd> <div class="block">@return The inverse side or null if the association is not bidirectional</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Basic.html#getInverseSide()" title="Method in Basic">getInverseSide()</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Basic.html">Basic</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html#getJavaClass()" title="Method in AbstractPersistentEntity">getJavaClass()</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html">AbstractPersistentEntity</a>
@@ -4435,7 +4435,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html#getReference()" title="Method in ClassPropertyFetcher">getReference()</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html">ClassPropertyFetcher</a>
 </dt><dd> <div class="block">@Deprecated will be removed in a future version of GORM</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Association.html#getReferencedPropertyName()" title="Method in Association">getReferencedPropertyName()</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Association.html">Association</a>
-</dt><dd> <div class="block"></div></dd>
+</dt><dd> <div class="block">@return Returns the name of the inverse property or null if this association is unidirectional</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html#getReflector()" title="Method in AbstractPersistentEntity">getReflector()</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html">AbstractPersistentEntity</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/FieldEntityAccess.html#getReflector(java.lang.String)" title="Method in FieldEntityAccess">getReflector(String)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/FieldEntityAccess.html">FieldEntityAccess</a>
@@ -5594,7 +5594,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Association.html#isBasic()" title="Method in Association">isBasic()</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Association.html">Association</a>
 </dt><dd> <div class="block">@return Whether this association is embedded</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Association.html#isBidirectional()" title="Method in Association">isBidirectional()</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Association.html">Association</a>
-</dt><dd> <div class="block"></div></dd>
+</dt><dd> <div class="block">@return True if the association is bidirectional</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/grailsversion/Snapshot.html#isBuildSnapshot()" title="Method in Snapshot">isBuildSnapshot()</a></span> - Method in <a href="org/grails/datastore/mapping/core/grailsversion/Snapshot.html">Snapshot</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/AbstractSession.html#isCached(java.lang.Class, java.io.Serializable)" title="Method in AbstractSession">isCached(Class, Serializable)</a></span> - Method in <a href="org/grails/datastore/mapping/core/AbstractSession.html">AbstractSession</a>
@@ -5909,6 +5909,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Whether the function is called on the value or on the property</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/support/AbstractDatastorePersistenceContextInterceptor.html#isOpen()" title="Method in AbstractDatastorePersistenceContextInterceptor">isOpen()</a></span> - Method in <a href="org/grails/datastore/gorm/support/AbstractDatastorePersistenceContextInterceptor.html">AbstractDatastorePersistenceContextInterceptor</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Association.html#isOrphanRemoval()" title="Method in Association">isOrphanRemoval()</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Association.html">Association</a>
+</dt><dd> <div class="block">@return Whether orphaned entities should be removed when cascading deletes to this association</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html#isOwningEntity(org.grails.datastore.mapping.model.PersistentEntity)" title="Method in AbstractPersistentEntity">isOwningEntity(PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractPersistentEntity.html">AbstractPersistentEntity</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/PersistentEntity.html#isOwningEntity(org.grails.datastore.mapping.model.PersistentEntity)" title="Method in PersistentEntity">isOwningEntity(PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/mapping/model/PersistentEntity.html">PersistentEntity</a>
@@ -8640,7 +8642,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/api/QueryArgumentsAware.html#setArguments(java.util.Map)" title="Method in QueryArgumentsAware">setArguments(Map)</a></span> - Method in <a href="org/grails/datastore/mapping/query/api/QueryArgumentsAware.html">QueryArgumentsAware</a>
 </dt><dd> <div class="block">@param arguments The query arguments</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Association.html#setAssociatedEntity(org.grails.datastore.mapping.model.PersistentEntity)" title="Method in Association">setAssociatedEntity(PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Association.html">Association</a>
-</dt><dd> <div class="block"></div></dd>
+</dt><dd> <div class="block">Sets the associated entity</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/document/config/Attribute.html#setAttr(java.lang.String)" title="Method in Attribute">setAttr(String)</a></span> - Method in <a href="org/grails/datastore/mapping/document/config/Attribute.html">Attribute</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/AbstractAttributeStoringSession.html#setAttribute(java.lang.Object, java.lang.String, java.lang.Object)" title="Method in AbstractAttributeStoringSession">setAttribute(Object, String, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/core/AbstractAttributeStoringSession.html">AbstractAttributeStoringSession</a>
@@ -8782,7 +8784,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/bootstrap/support/InstanceFactoryBean.html#setObjectType(Class<?>)" title="Method in InstanceFactoryBean">setObjectType(Class&lt;?&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/bootstrap/support/InstanceFactoryBean.html">InstanceFactoryBean</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Association.html#setOwningSide(boolean)" title="Method in Association">setOwningSide(boolean)</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Association.html">Association</a>
-</dt><dd> <div class="block"></div></dd>
+</dt><dd> <div class="block">Sets whether this association is the owning side</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Basic.html#setOwningSide(boolean)" title="Method in Basic">setOwningSide(boolean)</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Basic.html">Basic</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/finders/DynamicFinder.html#setPattern(java.lang.String)" title="Method in DynamicFinder">setPattern(String)</a></span> - Method in <a href="org/grails/datastore/gorm/finders/DynamicFinder.html">DynamicFinder</a>
@@ -8846,7 +8848,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/support/AbstractDatastorePersistenceContextInterceptor.html#setReadWrite()" title="Method in AbstractDatastorePersistenceContextInterceptor">setReadWrite()</a></span> - Method in <a href="org/grails/datastore/gorm/support/AbstractDatastorePersistenceContextInterceptor.html">AbstractDatastorePersistenceContextInterceptor</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Association.html#setReferencedPropertyName(java.lang.String)" title="Method in Association">setReferencedPropertyName(String)</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Association.html">Association</a>
-</dt><dd> <div class="block"></div></dd>
+</dt><dd> <div class="block">Sets the name of the inverse property</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html#setResourceLoader(org.springframework.core.io.ResourceLoader)" title="Method in AbstractDatastoreInitializer">setResourceLoader(ResourceLoader)</a></span> - Method in <a href="org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html">AbstractDatastoreInitializer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/event/PostQueryEvent.html#setResults(java.util.List)" title="Method in PostQueryEvent">setResults(List)</a></span> - Method in <a href="org/grails/datastore/mapping/query/event/PostQueryEvent.html">PostQueryEvent</a>
