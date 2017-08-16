@@ -155,63 +155,73 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>java.util.List&lt;javax.persistence.CascadeType&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#cascades">cascades</a></code><br>For specifying the cascade type using javax.persistence.CascadeType</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#derived">derived</a></code><br>@return Whether the property is derived or not</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>javax.persistence.FetchType</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#fetchStrategy">fetchStrategy</a></code><br>@return The strategy to use to fetch the property (lazy or eager)</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#formula">formula</a></code><br>The formula used to build the property</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#generator">generator</a></code><br>Set the id generator name or class.</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.util.List&lt;java.lang.String&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#inList">inList</a></code><br>@return List of valid values</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#index">index</a></code><br>@return Whether this property is index</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.Boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#lazy">lazy</a></code><br>Whether to use lazy proxies for each association. </td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.Comparable</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#max">max</a></code><br>@return The maximum value</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.Number</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#maxSize">maxSize</a></code><br>@return The maximum size</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.Comparable</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#min">min</a></code><br>@return The minimum value</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.Number</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#minSize">minSize</a></code><br>@return The minimum size</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#nullable">nullable</a></code><br>@return Whether the property is nullable</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#orphanRemoval">orphanRemoval</a></code><br>Whether an entity of an orphaned association should be removed</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -485,6 +495,15 @@ extends java.lang.Object
                             </li>
                         </ul>
                     
+                        <a name="cascades"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.util.List&lt;javax.persistence.CascadeType&gt; <strong>cascades</strong></h4>
+                                <p> For specifying the cascade type using javax.persistence.CascadeType
+     </p>
+                            </li>
+                        </ul>
+                    
                         <a name="derived"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -593,6 +612,15 @@ extends java.lang.Object
                                 <h4>boolean <strong>nullable</strong></h4>
                                 <p>
      <DL><DT><B>Returns:</B></DT><DD>Whether the property is nullable</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="orphanRemoval"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>boolean <strong>orphanRemoval</strong></h4>
+                                <p> Whether an entity of an orphaned association should be removed
+     </p>
                             </li>
                         </ul>
                     
