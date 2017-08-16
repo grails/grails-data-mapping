@@ -179,7 +179,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code><a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a></strong></code></td>
-                            <td class="colLast"><code><strong><a href="#getAssociatedEntity()">getAssociatedEntity</a></strong>()</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getAssociatedEntity()">getAssociatedEntity</a></strong>()</code><br>@return The entity associated with the this association</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -194,12 +194,12 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code><a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a></strong></code></td>
-                            <td class="colLast"><code><strong><a href="#getInverseSide()">getInverseSide</a></strong>()</code><br>@return The inverside side or null if the association is not bidirectional</td>
+                            <td class="colLast"><code><strong><a href="#getInverseSide()">getInverseSide</a></strong>()</code><br>@return The inverse side or null if the association is not bidirectional</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>java.lang.String</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#getReferencedPropertyName()">getReferencedPropertyName</a></strong>()</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getReferencedPropertyName()">getReferencedPropertyName</a></strong>()</code><br>@return Returns the name of the inverse property or null if this association is unidirectional</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -209,7 +209,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#isBidirectional()">isBidirectional</a></strong>()</code><br></td>
+                            <td class="colLast"><code><strong><a href="#isBidirectional()">isBidirectional</a></strong>()</code><br>@return True if the association is bidirectional</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -229,25 +229,30 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>boolean</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#isOrphanRemoval()">isOrphanRemoval</a></strong>()</code><br>@return Whether orphaned entities should be removed when cascading deletes to this association</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>boolean</strong></code></td>
                             <td class="colLast"><code><strong><a href="#isOwningSide()">isOwningSide</a></strong>()</code><br>Returns whether this side owns the relationship. </td>
                         </tr>
                         
-                        <tr class="rowColor">
-                            <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#setAssociatedEntity(org.grails.datastore.mapping.model.PersistentEntity)">setAssociatedEntity</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> associatedEntity)</code><br></td>
-                        </tr>
-                        
                         <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#setOwningSide(boolean)">setOwningSide</a></strong>(boolean owningSide)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setAssociatedEntity(org.grails.datastore.mapping.model.PersistentEntity)">setAssociatedEntity</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> associatedEntity)</code><br>Sets the associated entity</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#setReferencedPropertyName(java.lang.String)">setReferencedPropertyName</a></strong>(java.lang.String referencedPropertyName)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setOwningSide(boolean)">setOwningSide</a></strong>(boolean owningSide)</code><br>Sets whether this association is the owning side</td>
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code>void</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#setReferencedPropertyName(java.lang.String)">setReferencedPropertyName</a></strong>(java.lang.String referencedPropertyName)</code><br>Sets the name of the inverse property</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>java.lang.String</strong></code></td>
                             <td class="colLast"><code><strong><a href="#toString()">toString</a></strong>()</code><br></td>
                         </tr>
@@ -268,7 +273,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html' title='AbstractPersistentProperty'>AbstractPersistentProperty</a></strong></code></td>
-                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#isNullable()' title='isNullable'>isNullable</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getWriter()' title='getWriter'>getWriter</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getCapitilizedName()' title='getCapitilizedName'>getCapitilizedName</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getReader()' title='getReader'>getReader</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#toString()' title='toString'>toString</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getName()' title='getName'>getName</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#isInherited()' title='isInherited'>isInherited</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getType()' title='getType'>getType</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getOwner()' title='getOwner'>getOwner</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#wait(long, int)' title='wait'>wait</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#wait(long)' title='wait'>wait</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#wait()' title='wait'>wait</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#equals(java.lang.Object)' title='equals'>equals</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#hashCode()' title='hashCode'>hashCode</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getClass()' title='getClass'>getClass</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#notify()' title='notify'>notify</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#notifyAll()' title='notifyAll'>notifyAll</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getMapping()' title='getMapping'>getMapping</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getWriter()' title='getWriter'>getWriter</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#isNullable()' title='isNullable'>isNullable</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getReader()' title='getReader'>getReader</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getCapitilizedName()' title='getCapitilizedName'>getCapitilizedName</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#toString()' title='toString'>toString</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getName()' title='getName'>getName</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#isInherited()' title='isInherited'>isInherited</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getType()' title='getType'>getType</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getOwner()' title='getOwner'>getOwner</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#wait(long, int)' title='wait'>wait</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#wait(long)' title='wait'>wait</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#wait()' title='wait'>wait</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#equals(java.lang.Object)' title='equals'>equals</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#hashCode()' title='hashCode'>hashCode</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getClass()' title='getClass'>getClass</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#notify()' title='notify'>notify</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#notifyAll()' title='notifyAll'>notifyAll</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#getMapping()' title='getMapping'>getMapping</a></code></td>
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class java.lang.Object</strong></code></td>
@@ -354,7 +359,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> <strong>getAssociatedEntity</strong>()</h4>
-                                <p></p>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>The entity associated with the this association</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -380,7 +386,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;<a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> <strong>getInverseSide</strong>()</h4>
                                 <p>
-     <DL><DT><B>Returns:</B></DT><DD>The inverside side or null if the association is not bidirectional</DD></DL></p>
+     <DL><DT><B>Returns:</B></DT><DD>The inverse side or null if the association is not bidirectional</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -388,7 +394,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;java.lang.String <strong>getReferencedPropertyName</strong>()</h4>
-                                <p></p>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>Returns the name of the inverse property or null if this association is unidirectional</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -405,7 +412,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;boolean <strong>isBidirectional</strong>()</h4>
-                                <p></p>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>True if the association is bidirectional</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -436,6 +444,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
+                        <a name="isOrphanRemoval()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>public&nbsp;boolean <strong>isOrphanRemoval</strong>()</h4>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>Whether orphaned entities should be removed when cascading deletes to this association</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="isOwningSide()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -450,7 +467,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;void <strong>setAssociatedEntity</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> associatedEntity)</h4>
-                                <p></p>
+                                <p> Sets the associated entity
+     <DL><DT><B>Parameters:</B></DT><DD><code>associatedEntity</code> -  The associated entity</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -458,7 +476,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;void <strong>setOwningSide</strong>(boolean owningSide)</h4>
-                                <p></p>
+                                <p> Sets whether this association is the owning side
+     <DL><DT><B>Parameters:</B></DT><DD><code>owningSide</code> -  True if it is</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -466,7 +485,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;void <strong>setReferencedPropertyName</strong>(java.lang.String referencedPropertyName)</h4>
-                                <p></p>
+                                <p> Sets the name of the inverse property
+     <DL><DT><B>Parameters:</B></DT><DD><code>referencedPropertyName</code> -  The referenced property name</DD></DL></p>
                             </li>
                         </ul>
                     
