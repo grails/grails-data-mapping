@@ -39,12 +39,14 @@ public abstract class Association<T extends Property> extends AbstractPersistent
     private PersistentEntity associatedEntity;
     private String referencedPropertyName;
     private boolean owningSide;
+    private boolean orphanRemoval = false;
     private Set<CascadeType> cascadeOperations;
 
     private static final Map<String, CascadeType> cascadeTypeConversions = new LinkedHashMap<>();
 
     static {
         cascadeTypeConversions.put("all", CascadeType.ALL);
+        cascadeTypeConversions.put("all-delete-orphan", CascadeType.ALL);
         cascadeTypeConversions.put("merge", CascadeType.MERGE);
         cascadeTypeConversions.put("save-update", CascadeType.PERSIST);
         cascadeTypeConversions.put("delete", CascadeType.REMOVE);
@@ -63,34 +65,6 @@ public abstract class Association<T extends Property> extends AbstractPersistent
         super(owner, context, name, type);
     }
 
-    private void buildCascadeOperations() {
-        final String cascade = this.getMapping().getMappedForm().getCascade();
-        if (cascade != null) {
-            final String[] specifiedOperations = cascade.toLowerCase().split(",");
-            cascadeOperations = new HashSet<>();
-            for(final String operation: specifiedOperations) {
-                final String key = operation.trim();
-                if (cascadeTypeConversions.containsKey(key)) {
-                    cascadeOperations.add(cascadeTypeConversions.get(key));
-                }
-            }
-            cascadeOperations = Collections.unmodifiableSet(cascadeOperations);
-        } else {
-            if (isOwningSide()) {
-                cascadeOperations = DEFAULT_OWNER_CASCADE;
-            }
-            else {
-                if((this instanceof ManyToOne) && isBidirectional()) {
-                    // don't cascade by default to many-to-one that is not owned
-                    cascadeOperations = Collections.<CascadeType>emptySet();
-                }
-                else {
-                    cascadeOperations = DEFAULT_CHILD_CASCADE;
-                }
-            }
-        }
-    }
-
     /**
      * @return The fetch strategy for the association
      */
@@ -98,12 +72,22 @@ public abstract class Association<T extends Property> extends AbstractPersistent
         return getMapping().getMappedForm().getFetchStrategy();
     }
 
+    /**
+     * @return True if the association is bidirectional
+     */
     public boolean isBidirectional() {
         return associatedEntity != null && referencedPropertyName != null;
     }
 
     /**
-     * @return The inverside side or null if the association is not bidirectional
+     * @return Whether orphaned entities should be removed when cascading deletes to this association
+     */
+    public boolean isOrphanRemoval() {
+        return orphanRemoval;
+    }
+
+    /**
+     * @return The inverse side or null if the association is not bidirectional
      */
     public Association getInverseSide() {
         final PersistentProperty associatedProperty = associatedEntity.getPropertyByName(referencedPropertyName);
@@ -161,13 +145,6 @@ public abstract class Association<T extends Property> extends AbstractPersistent
         return this instanceof Basic;
     }
 
-    protected Set<CascadeType> getCascadeOperations() {
-        if (cascadeOperations == null) {
-            buildCascadeOperations();
-        }
-        return cascadeOperations;
-    }
-
     /**
      * Returns whether this side owns the relationship. This controls
      * the default cascading behavior if none is specified
@@ -178,22 +155,42 @@ public abstract class Association<T extends Property> extends AbstractPersistent
         return owningSide;
     }
 
+    /**
+     * Sets whether this association is the owning side
+     *
+     * @param owningSide True if it is
+     */
     public void setOwningSide(boolean owningSide) {
         this.owningSide = owningSide;
     }
 
+    /**
+     * Sets the associated entity
+     *
+     * @param associatedEntity The associated entity
+     */
     public void setAssociatedEntity(PersistentEntity associatedEntity) {
         this.associatedEntity = associatedEntity;
     }
 
+    /**
+     * @return The entity associated with the this association
+     */
     public PersistentEntity getAssociatedEntity() {
         return associatedEntity;
     }
 
+    /**
+     * Sets the name of the inverse property
+     * @param referencedPropertyName The referenced property name
+     */
     public void setReferencedPropertyName(String referencedPropertyName) {
         this.referencedPropertyName = referencedPropertyName;
     }
 
+    /**
+     * @return Returns the name of the inverse property or null if this association is unidirectional
+     */
     public String getReferencedPropertyName() {
         return referencedPropertyName;
     }
@@ -215,13 +212,51 @@ public abstract class Association<T extends Property> extends AbstractPersistent
      */
     public boolean isCircular() {
         PersistentEntity associatedEntity = getAssociatedEntity();
-        if(associatedEntity == null) {
-            return false;
-        }
-        else {
-            return associatedEntity.getJavaClass().isAssignableFrom(owner.getJavaClass());
-        }
+        return associatedEntity != null && associatedEntity.getJavaClass().isAssignableFrom(owner.getJavaClass());
     }
 
+    protected Set<CascadeType> getCascadeOperations() {
+        if (cascadeOperations == null) {
+            buildCascadeOperations();
+        }
+        return cascadeOperations;
+    }
+
+    private void buildCascadeOperations() {
+        T mappedForm = this.getMapping().getMappedForm();
+        this.orphanRemoval = mappedForm.isOrphanRemoval();
+        final String cascade = mappedForm.getCascade();
+        if (cascade != null) {
+            final String[] specifiedOperations = cascade.toLowerCase().split(",");
+            cascadeOperations = new HashSet<>();
+            for(final String operation: specifiedOperations) {
+                final String key = operation.trim();
+                if (cascadeTypeConversions.containsKey(key)) {
+                    cascadeOperations.add(cascadeTypeConversions.get(key));
+                }
+                if(key.contains("delete-orphan")) {
+                    this.orphanRemoval = true;
+                }
+            }
+            cascadeOperations = Collections.unmodifiableSet(cascadeOperations);
+        } else {
+            List<CascadeType> cascades = mappedForm.getCascades();
+            if(cascades != null) {
+                this.cascadeOperations = Collections.unmodifiableSet(new HashSet<>(cascades));
+            }
+            else if (isOwningSide()) {
+                cascadeOperations = DEFAULT_OWNER_CASCADE;
+            }
+            else {
+                if((this instanceof ManyToOne) && isBidirectional()) {
+                    // don't cascade by default to many-to-one that is not owned
+                    cascadeOperations = Collections.<CascadeType>emptySet();
+                }
+                else {
+                    cascadeOperations = DEFAULT_CHILD_CASCADE;
+                }
+            }
+        }
+    }
 
 }

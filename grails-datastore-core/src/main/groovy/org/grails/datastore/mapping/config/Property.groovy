@@ -22,6 +22,7 @@ import org.springframework.beans.MutablePropertyValues
 import org.springframework.validation.DataBinder
 
 import javax.persistence.AccessType
+import javax.persistence.CascadeType
 import javax.persistence.EnumType
 import javax.persistence.FetchType
 
@@ -101,11 +102,21 @@ class Property implements Cloneable {
      * @return Whether the property is derived or not
      */
     boolean derived
+
+    /**
+     * Whether an entity of an orphaned association should be removed
+     */
+    boolean orphanRemoval = false
     /**
      * Cascading strategy for this property. Only makes sense if the
      * property is an association or collection.
      */
     String cascade
+
+    /**
+     * For specifying the cascade type using {@link CascadeType}
+     */
+    List<CascadeType> cascades
     /**
      * The formula used to build the property
      */
