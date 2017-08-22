@@ -322,6 +322,16 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                         call.setMethod(WHERE_LAZY);
                     }
                 }
+                else {
+                    varType = var.getType();
+                    if(varType != null && varType.getName().equals(DETACHED_CRITERIA_CLASS_NODE.getName()) && isCandidateWhereMethod(method, arguments)) {
+                        GenericsType[] genericsTypes = varType.getGenericsTypes();
+                        if(genericsTypes != null && genericsTypes.length == 1) {
+                            this.currentClassNode = genericsTypes[0].getType();
+                            visitMethodCallOnDetachedCriteria(this.currentClassNode, (ArgumentListExpression) arguments);
+                        }
+                    }
+                }
             } else if (objectExpression instanceof PropertyExpression && !(((PropertyExpression) objectExpression).getProperty() instanceof GStringExpression)) {
                 PropertyExpression pe = (PropertyExpression) objectExpression;
                 String propName = pe.getPropertyAsString();
@@ -427,6 +437,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     }
 
     private boolean isCandidateMethod(String methodName, Expression arguments, Set<String> candidateMethods) {
+
         if (candidateMethods.contains(methodName)) {
             if (arguments instanceof ArgumentListExpression) {
                 ArgumentListExpression ale = (ArgumentListExpression) arguments;
@@ -437,7 +448,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                         return true;
                     } else if (expression instanceof VariableExpression) {
                         VariableExpression ve = (VariableExpression) expression;
-                        if (detachedCriteriaVariables.containsKey(ve.getName()) || DETACHED_CRITERIA_CLASS_NODE.getName().equals(ve.getType().getName())) {
+                        if (detachedCriteriaVariables.containsKey(ve.getName()) || isDetachedCriteriaVariable(ve)) {
                             return true;
                         }
                     }
@@ -446,6 +457,11 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         }
 
         return false;
+    }
+
+    private boolean isDetachedCriteriaVariable(VariableExpression ve) {
+        String variableType = ve.getType().getName();
+        return DETACHED_CRITERIA_CLASS_NODE.getName().equals(variableType);
     }
 
     @Override

@@ -109,6 +109,24 @@ class Project {
         then:"The results are correct"
         people.size() == 2
     }
+
+    @Issue('https://github.com/grails/grails-data-mapping/issues/982')
+    def "test transform method that operates on returned query"() {
+        given:"A bunch of people"
+        createPeople()
+
+
+        when:"A method is called that returns where"
+        DetachedCriteria<Person> query = Person.withAge(10)
+        query = query.where {
+            lastName == 'Simpson'
+        }
+        def people = query.list()
+
+        then:"The results are correct"
+        people.size() == 2
+    }
+
     @Issue('GRAILS-9425')
     def "Test that static definition of where query works with associations"() {
         given:"given a project and some todos"
