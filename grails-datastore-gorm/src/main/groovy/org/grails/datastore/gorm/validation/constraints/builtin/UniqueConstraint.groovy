@@ -7,6 +7,9 @@ import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.validation.constraints.AbstractConstraint
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.query.api.BuildableCriteria
 import org.grails.datastore.mapping.reflect.EntityReflector
 import org.springframework.context.MessageSource
@@ -58,6 +61,16 @@ class UniqueConstraint extends AbstractConstraint {
         EntityReflector reflector = targetEntity.reflector
         String constraintPropertyName = this.constraintPropertyName
         List group = this.group
+
+        PersistentProperty persistentProperty = targetEntity.getPropertyByName(constraintPropertyName)
+        boolean isToOne = persistentProperty instanceof ToOne
+        if(isToOne) {
+            def associationId = ((Association)persistentProperty).getAssociatedEntity().getReflector().getIdentifier(propertyValue)
+            if(associationId == null) {
+                // unsaved entity
+                return
+            }
+        }
 
         detachedCriteria = detachedCriteria.build {
             eq(constraintPropertyName, propertyValue)
