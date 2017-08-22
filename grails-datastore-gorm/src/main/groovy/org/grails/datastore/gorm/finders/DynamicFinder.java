@@ -19,6 +19,7 @@ import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,6 +54,7 @@ import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.BuildableCriteria;
 import org.grails.datastore.mapping.query.api.QueryArgumentsAware;
 import org.grails.datastore.mapping.reflect.ClassUtils;
+import org.grails.datastore.mapping.reflect.NameUtils;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.util.ReflectionUtils;
@@ -623,42 +625,74 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
     }
 
     protected MethodExpression findMethodExpression(Class clazz, String expression) {
-        MethodExpression me = null;
-        final Matcher matcher = methodExpressinPattern.matcher(expression);
-
-        if (matcher.find()) {
-            Constructor constructor = methodExpressions.get(matcher.group(1));
-            try {
-                me = (MethodExpression) constructor.newInstance(clazz,
-                        calcPropertyName(expression, constructor.getDeclaringClass().getSimpleName()));
-            } catch (Exception e) {
-                // ignore
-            }
-        }
-        if (me == null) {
-            me = new Equal(clazz, calcPropertyName(expression, Equal.class.getSimpleName()));
-        }
-
-        return me;
+        return findMethodExpressionInternal(clazz, expression);
     }
 
     protected static MethodExpression findMethodExpression(String expression) {
+        return findMethodExpressionInternal(null, expression);
+    }
+
+    private static MethodExpression findMethodExpressionInternal(final Class clazz, String expression) {
         MethodExpression me = null;
         final Matcher matcher = methodExpressinPattern.matcher(expression);
-
+        Class methodExpressionClass = Equal.class;
+        Constructor methodExpressionConstructor = null;
+        String clause = methodExpressionClass.getSimpleName();
         if (matcher.find()) {
-            Constructor constructor = methodExpressions.get(matcher.group(1));
+            clause = matcher.group(1);
+            methodExpressionConstructor = methodExpressions.get(clause);
+            if(methodExpressionConstructor != null) {
+                methodExpressionClass = methodExpressionConstructor.getDeclaringClass();
+            }
+        }
+
+        String propertyName = calcPropertyName(expression, methodExpressionClass.getSimpleName());
+        boolean negation = false;
+        if (propertyName.endsWith(NOT)) {
+            int i = propertyName.lastIndexOf(NOT);
+            propertyName = propertyName.substring(0, i);
+            negation = true;
+        }
+
+        if (!StringUtils.hasLength(propertyName)) {
+            throw new IllegalArgumentException("No property name specified in clause: " + clause);
+        }
+
+        propertyName = NameUtils.decapitalize(propertyName);
+        if(methodExpressionConstructor != null) {
             try {
-                me = (MethodExpression) constructor.newInstance(null,
-                        calcPropertyName(expression, constructor.getDeclaringClass().getSimpleName()));
+                me = (MethodExpression) methodExpressionConstructor.newInstance(clazz, propertyName);
             } catch (Exception e) {
                 // ignore
             }
         }
         if (me == null) {
-            me = new Equal(calcPropertyName(expression, Equal.class.getSimpleName()));
+            me = new Equal(clazz, propertyName);
         }
+        if(negation) {
+            final MethodExpression finalMe = me;
+            return new MethodExpression(clazz, propertyName) {
+                @Override
+                public Query.Criterion createCriterion() {
+                    return new Query.Negation().add(finalMe.createCriterion());
+                }
 
+                @Override
+                public void setArguments(Object[] arguments) {
+                    finalMe.setArguments(arguments);
+                }
+
+                @Override
+                public int getArgumentsRequired() {
+                    return finalMe.getArgumentsRequired();
+                }
+
+                @Override
+                public Object[] getArguments() {
+                    return finalMe.getArguments();
+                }
+            };
+        }
         return me;
     }
 
@@ -718,16 +752,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
             propName = queryParameter;
         }
 
-        if (propName.endsWith(NOT)) {
-            int i = propName.lastIndexOf(NOT);
-            propName = propName.substring(0, i);
-        }
-
-        if (!StringUtils.hasLength(propName)) {
-            throw new IllegalArgumentException("No property name specified in clause: " + clause);
-        }
-
-        return propName.substring(0,1).toLowerCase(Locale.ENGLISH) + propName.substring(1);
+        return propName;
     }
 
     /**
