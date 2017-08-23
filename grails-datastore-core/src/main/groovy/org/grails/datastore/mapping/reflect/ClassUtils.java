@@ -90,7 +90,7 @@ public class ClassUtils {
             }
             return clazz.isAssignableFrom(primitiveClass);
         }
-        else if(type.isArray() && Iterable.class.isAssignableFrom(type)) {
+        else if(type.isArray() && Iterable.class.isAssignableFrom(clazz)) {
             return true;
         }
         return clazz.isAssignableFrom(type);
