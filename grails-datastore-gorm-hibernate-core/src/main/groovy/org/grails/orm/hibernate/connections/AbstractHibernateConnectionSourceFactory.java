@@ -1,5 +1,6 @@
 package org.grails.orm.hibernate.connections;
 
+import org.grails.datastore.gorm.jdbc.connections.CachedDataSourceConnectionSourceFactory;
 import org.grails.datastore.mapping.core.connections.*;
 import org.grails.orm.hibernate.cfg.Settings;
 import org.grails.datastore.gorm.jdbc.connections.DataSourceConnectionSourceFactory;
@@ -21,7 +22,7 @@ import java.util.Map;
  */
 public abstract class AbstractHibernateConnectionSourceFactory extends AbstractConnectionSourceFactory<SessionFactory, HibernateConnectionSourceSettings> {
 
-    protected DataSourceConnectionSourceFactory dataSourceConnectionSourceFactory = new DataSourceConnectionSourceFactory();
+    protected DataSourceConnectionSourceFactory dataSourceConnectionSourceFactory = new CachedDataSourceConnectionSourceFactory();
 
     /**
      * Sets the factory for creating SQL {@link DataSource} connection sources
