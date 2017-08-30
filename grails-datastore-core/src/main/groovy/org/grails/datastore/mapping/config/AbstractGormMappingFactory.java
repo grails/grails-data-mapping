@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.grails.datastore.mapping.config.groovy.DefaultMappingConfigurationBuilder;
 import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
+import org.grails.datastore.mapping.keyvalue.mapping.config.Family;
 import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
@@ -82,7 +83,7 @@ public abstract class AbstractGormMappingFactory<R extends Entity, T extends Pro
             }
             List<Object> values = ClassPropertyFetcher.getStaticPropertyValuesFromInheritanceHierarchy(entity.getJavaClass(),GormProperties.MAPPING, Object.class);
             for (Object value : values) {
-                if(value instanceof MappingDefinition) {
+                if(value instanceof MappingDefinition && !(family instanceof Family)) {
                     MappingDefinition definition = (MappingDefinition) value;
                     definition.configure(family);
                 }
