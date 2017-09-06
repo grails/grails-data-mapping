@@ -209,7 +209,7 @@ class Entity<P extends Property> {
      */
     Entity tenantId(String tenantIdProperty) {
         P pc = getOrInitializePropertyConfig(GormProperties.TENANT_IDENTITY)
-        pc.name == tenantIdProperty
+        pc.name = tenantIdProperty
         return this
     }
     /**
