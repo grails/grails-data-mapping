@@ -26,7 +26,7 @@ class SubDomainTenantResolver implements TenantResolver{
         if(requestAttributes instanceof ServletWebRequest) {
 
             HttpServletRequest httpServletRequest = ((ServletWebRequest) requestAttributes).getRequest()
-            String subdomain = httpServletRequest.getRequestURL().toString();
+            String subdomain = httpServletRequest.getRequestURL().toString()
             String requestURI = httpServletRequest.getRequestURI()
             def i = requestURI.length()
             if(i > 0) {
