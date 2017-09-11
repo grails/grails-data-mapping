@@ -572,6 +572,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#multiTenancy">Multi-Tenancy</a>
 <ul class="sectlevel2">
 <li><a href="#_configuring_multi_tenancy">Configuring Multi Tenancy</a></li>
+<li><a href="#_multi_tenancy_transformations">Multi-Tenancy Transformations</a></li>
 <li><a href="#_multi_tenancy_modes">Multi Tenancy Modes</a></li>
 <li><a href="#_dynamic_connectionsources">Dynamic ConnectionSources</a></li>
 </ul>
@@ -2596,6 +2597,59 @@ ConnectionSources&lt;MongoClient, MongoConnectionSourceSettings&gt; connectionSo
         <span class="key">multiTenancy</span>:
             <span class="key">mode</span>: <span class="string"><span class="content">DATABASE</span></span>
             <span class="key">tenantResolverClass</span>: <span class="string"><span class="content">org.grails.datastore.mapping.multitenancy.web.SubDomainTenantResolver</span></span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_multi_tenancy_transformations">Multi-Tenancy Transformations</h3>
+<div class="paragraph">
+<p>The following transformations can be applied to any class to simplify greatly the development of Multi-Tenant applications. These include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>@CurrentTenant</code> - Resolve the current tenant for the context of a class or method</p>
+</li>
+<li>
+<p><code>@Tenant</code> - Use a specific tenant for the context of a class or method</p>
+</li>
+<li>
+<p><code>@WithoutTenant</code> - Execute logic without a specific tenant (using the default connection)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.gorm.multitenancy.*</span>
+
+<span class="comment">// resolve the current tenant for every method</span>
+<span class="annotation">@CurrentTenant</span>
+<span class="type">class</span> <span class="class">TeamService</span> {
+
+    <span class="comment">// execute the countPlayers method without a tenant id</span>
+    <span class="annotation">@WithoutTenant</span>
+    <span class="type">int</span> countPlayers() {
+        Player.count()
+    }
+
+    <span class="comment">// use the tenant id &quot;another&quot; for all GORM logic within the method</span>
+    <span class="annotation">@Tenant</span>({<span class="string"><span class="delimiter">&quot;</span><span class="content">another</span><span class="delimiter">&quot;</span></span>})
+    <span class="predefined-type">List</span>&lt;Team&gt; allTwoTeams() {
+        Team.list()
+    }
+
+    <span class="predefined-type">List</span>&lt;Team&gt; listTeams() {
+        Team.list(<span class="key">max</span>:<span class="integer">10</span>)
+    }
+
+    <span class="annotation">@Transactional</span>
+    <span class="type">void</span> addTeam(<span class="predefined-type">String</span> name) {
+        <span class="keyword">new</span> Team(<span class="key">name</span>:name).save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)
+    }
+}</code></pre>
 </div>
 </div>
 </div>
