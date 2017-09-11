@@ -33,7 +33,7 @@ class CookieTenantResolver implements TenantResolver {
         if(requestAttributes instanceof ServletWebRequest) {
 
             HttpServletRequest servletRequest = ((ServletWebRequest) requestAttributes).getRequest()
-            Cookie[] cookies = servletRequest.getCookies();
+            Cookie[] cookies = servletRequest.getCookies()
             if(cookies != null) {
 
                 for (Cookie cookie : cookies) {
