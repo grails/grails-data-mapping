@@ -798,7 +798,7 @@ public abstract class AbstractHibernateQuery extends Query {
 
     private Object singleResultViaListCall() {
         criteria.setMaxResults(1);
-        if(hibernateProjectionList.isRowCount()) {
+        if(hibernateProjectionList != null && hibernateProjectionList.isRowCount()) {
             criteria.setFirstResult(0);
         }
         List results = criteria.list();
