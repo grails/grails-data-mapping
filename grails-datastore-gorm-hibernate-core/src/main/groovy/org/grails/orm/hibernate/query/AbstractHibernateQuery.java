@@ -798,6 +798,9 @@ public abstract class AbstractHibernateQuery extends Query {
 
     private Object singleResultViaListCall() {
         criteria.setMaxResults(1);
+        if(hibernateProjectionList.isRowCount()) {
+            criteria.setFirstResult(0);
+        }
         List results = criteria.list();
         if(results.size()>0) {
             return proxyHandler.unwrap(results.get(0));
@@ -905,6 +908,11 @@ public abstract class AbstractHibernateQuery extends Query {
     protected class HibernateProjectionList extends ProjectionList {
 
         org.hibernate.criterion.ProjectionList projectionList = Projections.projectionList();
+        private boolean rowCount = false;
+
+        public boolean isRowCount() {
+            return rowCount;
+        }
 
         public org.hibernate.criterion.ProjectionList getHibernateProjectionList() {
             return projectionList;
@@ -937,6 +945,7 @@ public abstract class AbstractHibernateQuery extends Query {
         @Override
         public org.grails.datastore.mapping.query.api.ProjectionList rowCount() {
             projectionList.add(Projections.rowCount());
+            this.rowCount = true;
             return this;
         }
 
@@ -949,6 +958,7 @@ public abstract class AbstractHibernateQuery extends Query {
         @Override
         public ProjectionList count() {
             projectionList.add(Projections.rowCount());
+            this.rowCount = true;
             return this;
         }
 
