@@ -483,6 +483,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>o.g.d.m.multitenancy.web.SessionTenantResolver</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the current tenant from the HTTP session using the attribute <code>gorm.tenantId</code> by default</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>o.g.d.m.multitenancy.web.HttpHeaderTenantResolver</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the current tenant from the request HTTP Header using the header name <code>gorm.tenantId</code> by default</p></td>
+</tr>
 </tbody>
 </table>
 <div class="paragraph">
