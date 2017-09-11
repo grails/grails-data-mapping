@@ -1,7 +1,6 @@
 package org.grails.datastore.mapping.multitenancy.web
 
 import groovy.transform.CompileStatic
-import org.grails.datastore.mapping.core.connections.ConnectionSource
 import org.grails.datastore.mapping.multitenancy.TenantResolver
 import org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException
 import org.springframework.web.context.request.RequestAttributes
@@ -11,13 +10,19 @@ import org.springframework.web.context.request.ServletWebRequest
 import javax.servlet.http.HttpServletRequest
 
 /**
- * A tenant resolver that resolves the tenant from the Subdomain
+ * A tenant resolver that resolves the tenant from the request HTTP Header
  *
- * @author Graeme Rocher
- * @since 6.0
+ * @author Sergio del Amo
+ * @since 6.1.7
  */
 @CompileStatic
-class SubDomainTenantResolver implements TenantResolver{
+class HttpHeaderTenantResolver implements TenantResolver {
+    public static final String HEADER_NAME = "gorm.tenantId"
+
+    /**
+     * The name of the header
+     */
+    String headerName = HEADER_NAME
 
     @Override
     Serializable resolveTenantIdentifier() {
@@ -26,19 +31,12 @@ class SubDomainTenantResolver implements TenantResolver{
         if(requestAttributes instanceof ServletWebRequest) {
 
             HttpServletRequest httpServletRequest = ((ServletWebRequest) requestAttributes).getRequest()
-            String subdomain = httpServletRequest.getRequestURL().toString()
-            String requestURI = httpServletRequest.getRequestURI()
-            def i = requestURI.length()
-            if(i > 0) {
-                subdomain = subdomain.substring(0, subdomain.length()-i)
+            String tenantId = httpServletRequest.getHeader(headerName.toLowerCase())
+
+            if ( tenantId ) {
+                return tenantId
             }
-            subdomain = subdomain.substring(subdomain.indexOf("/") + 2);
-            if( subdomain.indexOf(".") > -1 ) {
-                return subdomain.substring(0, subdomain.indexOf("."))
-            }
-            else {
-                return ConnectionSource.DEFAULT
-            }
+            throw new TenantNotFoundException("Tenant could not be resolved from HTTP Header: ${headerName}")
         }
         throw new TenantNotFoundException("Tenant could not be resolved outside a web request")
     }
