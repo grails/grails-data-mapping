@@ -613,10 +613,11 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#multiTenancy">12. Multi-Tenancy</a>
 <ul class="sectlevel2">
 <li><a href="#_multi_tenancy_modes">12.1. Multi-Tenancy Modes</a></li>
-<li><a href="#_database_per_tenant">12.2. Database Per Tenant</a></li>
-<li><a href="#_schema_per_tenant">12.3. Schema Per Tenant</a></li>
-<li><a href="#_partitioned_multi_tenancy">12.4. Partitioned Multi-Tenancy</a></li>
-<li><a href="#_understanding_tenant_resolvers">12.5. Understanding Tenant Resolvers</a></li>
+<li><a href="#_multi_tenancy_transformations">12.2. Multi-Tenancy Transformations</a></li>
+<li><a href="#_database_per_tenant">12.3. Database Per Tenant</a></li>
+<li><a href="#_schema_per_tenant">12.4. Schema Per Tenant</a></li>
+<li><a href="#_partitioned_multi_tenancy">12.5. Partitioned Multi-Tenancy</a></li>
+<li><a href="#_understanding_tenant_resolvers">12.6. Understanding Tenant Resolvers</a></li>
 </ul>
 </li>
 <li><a href="#constraints">13. Validation and Constraints</a>
@@ -802,7 +803,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-async:6.1.6.RELEASE"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-async:6.1.7.RELEASE"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -829,10 +830,10 @@ table.CodeRay td.code>pre{padding:0}
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">> Could not resolve all dependencies for configuration ':example:runtime'.
-   > Could not find org.grails:grails-datastore-simple:6.1.6.RELEASE.
+   > Could not find org.grails:grails-datastore-simple:6.1.7.RELEASE.
      Searched in the following locations:
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.6.RELEASE/grails-datastore-simple-6.1.6.RELEASE.pom
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.6.RELEASE/grails-datastore-simple-6.1.6.RELEASE.jar
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.7.RELEASE/grails-datastore-simple-6.1.7.RELEASE.pom
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.7.RELEASE/grails-datastore-simple-6.1.7.RELEASE.jar
      Required by:
          project :example > org.grails:grails-dependencies:3.2.4 >
             ...</code></pre>
@@ -1069,12 +1070,12 @@ grails.gorm.default.mapping = {
 <h2 id="gettingStarted">2. Getting Started</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To use GORM 6.1.6 for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
+<p>To use GORM 6.1.7 for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile "org.grails.plugins:hibernate5:6.1.6"
+    compile "org.grails.plugins:hibernate5:6.1.7"
     compile "org.hibernate:hibernate-ehcache"
 }</code></pre>
 </div>
@@ -1084,7 +1085,7 @@ grails.gorm.default.mapping = {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=6.1.6.RELEASE</code></pre>
+<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=6.1.7.RELEASE</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1097,7 +1098,7 @@ grails.gorm.default.mapping = {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("6.1.6.RELEASE")
+            details.useVersion("6.1.7.RELEASE")
         }
     }
 }
@@ -1123,7 +1124,7 @@ dependencies {
 <div class="sect2">
 <h3 id="hibernateVersions">2.2. Configuring Different Hibernate Versions</h3>
 <div class="paragraph">
-<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.1.6.RELEASE.</p>
+<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.1.7.RELEASE.</p>
 </div>
 <div class="sect3">
 <h4 id="_grails_3_2_x_and_above_with_hibernate_4">2.2.1. Grails 3.2.x and above with Hibernate 4</h4>
@@ -1189,7 +1190,7 @@ configurations.all {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.1.6.RELEASE")
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.1.7.RELEASE")
 compile "org.hibernate:hibernate-core:5.1.0.Final"
 compile "org.hibernate:hibernate-ehcache:5.1.0.Final"
 runtime "com.h2database:h2:1.4.192"
@@ -1322,7 +1323,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:6.1.6.RELEASE"
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:6.1.7.RELEASE"
 runtime "com.h2database:h2:1.4.192"
 runtime "org.apache.tomcat:tomcat-jdbc:8.5.0"
 runtime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"
@@ -7223,7 +7224,7 @@ TransactionService transactionService = datastore.getService(TransactionService)
 <div class="sect3">
 <h4 id="_writing_a_simple_data_service">10.1.1. Writing a Simple Data Service</h4>
 <div class="paragraph">
-<p>To write a Data Service you should create either an interface (although abstract classes can also be used, more about that later) and annotate it with the <code>grails.gorm.services.Service</code> annotation with the domain class the service applies to:</p>
+<p>In a Grails application you can create a Data Service in either <code>src/main/groovy</code> or <code>grails-app/services</code>. To write a Data Service you should create either an interface (although abstract classes can also be used, more about that later) and annotate it with the <code>grails.gorm.services.Service</code> annotation with the domain class the service applies to:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -7908,7 +7909,7 @@ RxJava 2.x support is planned for a future release
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx:6.1.6.RELEASE"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx:6.1.7.RELEASE"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -8170,12 +8171,65 @@ ConnectionSources&lt;SessionFactory, HibernateConnectionSourceSettings&gt; conne
 </div>
 </div>
 <div class="sect2">
-<h3 id="_database_per_tenant">12.2. Database Per Tenant</h3>
+<h3 id="_multi_tenancy_transformations">12.2. Multi-Tenancy Transformations</h3>
+<div class="paragraph">
+<p>The following transformations can be applied to any class to simplify greatly the development of Multi-Tenant applications. These include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>@CurrentTenant</code> - Resolve the current tenant for the context of a class or method</p>
+</li>
+<li>
+<p><code>@Tenant</code> - Use a specific tenant for the context of a class or method</p>
+</li>
+<li>
+<p><code>@WithoutTenant</code> - Execute logic without a specific tenant (using the default connection)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.gorm.multitenancy.*</span>
+
+<span class="comment">// resolve the current tenant for every method</span>
+<span class="annotation">@CurrentTenant</span>
+<span class="type">class</span> <span class="class">TeamService</span> {
+
+    <span class="comment">// execute the countPlayers method without a tenant id</span>
+    <span class="annotation">@WithoutTenant</span>
+    <span class="type">int</span> countPlayers() {
+        Player.count()
+    }
+
+    <span class="comment">// use the tenant id &quot;another&quot; for all GORM logic within the method</span>
+    <span class="annotation">@Tenant</span>({<span class="string"><span class="delimiter">&quot;</span><span class="content">another</span><span class="delimiter">&quot;</span></span>})
+    <span class="predefined-type">List</span>&lt;Team&gt; allTwoTeams() {
+        Team.list()
+    }
+
+    <span class="predefined-type">List</span>&lt;Team&gt; listTeams() {
+        Team.list(<span class="key">max</span>:<span class="integer">10</span>)
+    }
+
+    <span class="annotation">@Transactional</span>
+    <span class="type">void</span> addTeam(<span class="predefined-type">String</span> name) {
+        <span class="keyword">new</span> Team(<span class="key">name</span>:name).save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_database_per_tenant">12.3. Database Per Tenant</h3>
 <div class="paragraph">
 <p>Using a database per tenant is the most secure way to isolate each tenants data and builds upon GORM&#8217;s existing support for <a href="#multipleDataSources">Multiple Data Sources</a>.</p>
 </div>
 <div class="sect3">
-<h4 id="_configuration">12.2.1. Configuration</h4>
+<h4 id="_configuration">12.3.1. Configuration</h4>
 <div class="paragraph">
 <p>In order to activate database-per-tenant multi-tenancy you need to set the multi-tenancy mode to <code>DATABASE</code> in your configuration and supply a <a href="../api/org/grails/datastore/mapping/multitenancy/TenantResolver.html">TenantResolver</a>:</p>
 </div>
@@ -8201,7 +8255,7 @@ ConnectionSources&lt;SessionFactory, HibernateConnectionSourceSettings&gt; conne
 </div>
 </div>
 <div class="sect3">
-<h4 id="_multi_tenant_domain_classes">12.2.2. Multi Tenant Domain Classes</h4>
+<h4 id="_multi_tenant_domain_classes">12.3.2. Multi Tenant Domain Classes</h4>
 <div class="paragraph">
 <p>With the above configuration in place you then to need to implement the <a href="../api/grails/gorm/MultiTenant.html">MultiTenant</a> trait in the domain classes you want to be regarded as multi tenant:</p>
 </div>
@@ -8217,7 +8271,7 @@ ConnectionSources&lt;SessionFactory, HibernateConnectionSourceSettings&gt; conne
 </div>
 </div>
 <div class="sect3">
-<h4 id="_multi_tenancy_and_the_session_factory">12.2.3. Multi Tenancy and the Session Factory</h4>
+<h4 id="_multi_tenancy_and_the_session_factory">12.3.3. Multi Tenancy and the Session Factory</h4>
 <div class="paragraph">
 <p>Note that if you reference the default <code>SessionFactory</code> or <code>PlatformTransactionManager</code> in your classes that are injected via Spring, these will not be tenant aware and will point directly to default data source.</p>
 </div>
@@ -8237,7 +8291,7 @@ SessionFactory sessionFactory = hibernateDatastore
 </div>
 </div>
 <div class="sect3">
-<h4 id="_multi_tenancy_with_sessions">12.2.4. Multi Tenancy with Sessions</h4>
+<h4 id="_multi_tenancy_with_sessions">12.3.4. Multi Tenancy with Sessions</h4>
 <div class="paragraph">
 <p>When working with GORM typically you need a session bound to the current thread in order for GORM and transactions to work consistently. If you switch to a different tenant then it may be that the session bound to the current thread no longer matches the underlying <code>SessionFactory</code> being used by the tenant. With this in mind you may wants to use the <a href="../api/grails/gorm/multitenancy/Tenants.html">Tenants</a> class to ensure the correct session is bound for the current tenant:</p>
 </div>
@@ -8277,7 +8331,7 @@ SessionFactory sessionFactory = hibernateDatastore
 </div>
 </div>
 <div class="sect3">
-<h4 id="_adding_tenants_at_runtime">12.2.5. Adding Tenants at Runtime</h4>
+<h4 id="_adding_tenants_at_runtime">12.3.5. Adding Tenants at Runtime</h4>
 <div class="paragraph">
 <p>Provisioning and creating SQL databases at runtime is non-trivial and beyond the scope of what GORM offers, however the <a href="#connectionSources">ConnectionSources API</a> does provide a way to hook into GORM to make this possible.</p>
 </div>
@@ -8314,12 +8368,12 @@ If you are interested in more examples, an <a href="https://github.com/grails/go
 </div>
 </div>
 <div class="sect2">
-<h3 id="_schema_per_tenant">12.3. Schema Per Tenant</h3>
+<h3 id="_schema_per_tenant">12.4. Schema Per Tenant</h3>
 <div class="paragraph">
 <p>Schema-per-tenant is when a single database is used, but a different database schema is used for each tenant.</p>
 </div>
 <div class="sect3">
-<h4 id="_configuration_2">12.3.1. Configuration</h4>
+<h4 id="_configuration_2">12.4.1. Configuration</h4>
 <div class="paragraph">
 <p>In order to activate schema-per-tenant multi-tenancy you need to set the multi-tenancy mode to <code>SCHEMA</code> in your configuration and supply a <a href="../api/org/grails/datastore/mapping/multitenancy/TenantResolver.html">TenantResolver</a>:</p>
 </div>
@@ -8343,7 +8397,7 @@ If you are interested in more examples, an <a href="https://github.com/grails/go
 </div>
 </div>
 <div class="sect3">
-<h4 id="_runtime_schema_creation">12.3.2. Runtime Schema Creation</h4>
+<h4 id="_runtime_schema_creation">12.4.2. Runtime Schema Creation</h4>
 <div class="paragraph">
 <p>On startup, if <code>dataSource.dbCreate</code> is set to create the database at runtime, then GORM will attempt to create the schemas if they are missing.</p>
 </div>
@@ -8386,14 +8440,14 @@ If <code>dbCreate</code> is disabled then you will have to create the schema man
 </div>
 </div>
 <div class="sect3">
-<h4 id="_schema_per_tenant_caveats">12.3.3. Schema-Per-Tenant Caveats</h4>
+<h4 id="_schema_per_tenant_caveats">12.4.3. Schema-Per-Tenant Caveats</h4>
 <div class="paragraph">
 <p>In order to support a schema-per-tenant, just like the <code>DATABASE</code> Multi-Tenancy mode, GORM uses a unique <code>SessionFactory</code> per tenant. So all of the same considerations regarding session management apply.</p>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_partitioned_multi_tenancy">12.4. Partitioned Multi-Tenancy</h3>
+<h3 id="_partitioned_multi_tenancy">12.5. Partitioned Multi-Tenancy</h3>
 <div class="paragraph">
 <p>Partitioned multi-tenancy is when a discriminator column is used in each multi-tenant class in order to partition the data.</p>
 </div>
@@ -8410,7 +8464,7 @@ When using a discriminator all data for all tenants is stored in a single databa
 </table>
 </div>
 <div class="sect3">
-<h4 id="_configuration_3">12.4.1. Configuration</h4>
+<h4 id="_configuration_3">12.5.1. Configuration</h4>
 <div class="paragraph">
 <p>In order to activate discriminator-based multi-tenancy you need to set the multi-tenancy mode to <code>DISCRIMINATOR</code> in your configuration and supply a <a href="../api/org/grails/datastore/mapping/multitenancy/TenantResolver.html">TenantResolver</a>:</p>
 </div>
@@ -8440,7 +8494,7 @@ The specified <code>TenantResolver</code> will also need to implement the <a hre
 </div>
 </div>
 <div class="sect3">
-<h4 id="_mapping_domain_classes">12.4.2. Mapping Domain Classes</h4>
+<h4 id="_mapping_domain_classes">12.5.2. Mapping Domain Classes</h4>
 <div class="paragraph">
 <p>Like the other forms of multi-tenancy you then need to implement the <a href="../api/grails/gorm/MultiTenant.html">MultiTenant</a> trait in the domain classes that are multi-tenant. In addition, you also need to specify a discriminator column. The default discriminator column is called <code>tenantId</code>, for example:</p>
 </div>
@@ -8469,7 +8523,7 @@ The specified <code>TenantResolver</code> will also need to implement the <a hre
 </div>
 </div>
 <div class="sect3">
-<h4 id="_querying_and_caveats">12.4.3. Querying and Caveats</h4>
+<h4 id="_querying_and_caveats">12.5.3. Querying and Caveats</h4>
 <div class="paragraph">
 <p>The discriminator-based multi-tenancy transparently adds a Hibernate filter that is activated when you query the domain class and you can also use the <a href="../api/grails/gorm/multitenancy/Tenants.html">Tenants</a> API to switch between tenants:</p>
 </div>
@@ -8506,7 +8560,7 @@ sessionFactory.openSession()</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_understanding_tenant_resolvers">12.5. Understanding Tenant Resolvers</h3>
+<h3 id="_understanding_tenant_resolvers">12.6. Understanding Tenant Resolvers</h3>
 <div class="paragraph">
 <p>As mentioned previously the <a href="../api/org/grails/datastore/mapping/multitenancy/TenantResolver.html">TenantResolver</a> interface is how you define the value of the <a href="../api/grails/gorm/multitenancy/Tenants.html#currentId()">current tenant</a>.</p>
 </div>
@@ -8514,7 +8568,7 @@ sessionFactory.openSession()</code></pre>
 <p>This section will cover a few more details about implementing <code>TenantResolver</code> instances.</p>
 </div>
 <div class="sect3">
-<h4 id="_specifying_the_tenant_resolver">12.5.1. Specifying the Tenant Resolver</h4>
+<h4 id="_specifying_the_tenant_resolver">12.6.1. Specifying the Tenant Resolver</h4>
 <div class="paragraph">
 <p>As already mentioned you can specify the <code>TenantResolver</code> via configuration using the <code>grails.gorm.tenantResolverClass</code> setting:</p>
 </div>
@@ -8532,7 +8586,7 @@ sessionFactory.openSession()</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_built_in_tenant_resolvers">12.5.2. Built-in Tenant Resolvers</h4>
+<h4 id="_built_in_tenant_resolvers">12.6.2. Built-in Tenant Resolvers</h4>
 <div class="paragraph">
 <p>The following table contains all of the <code>TenantResolver</code> implementations that ship with GORM and are usable out of the box. The package name has been shorted from <code>org.grails.datastore.mapping</code> to <code>o.g.d.m</code> for brevity:</p>
 </div>
@@ -8568,6 +8622,10 @@ sessionFactory.openSession()</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>o.g.d.m.multitenancy.web.SessionTenantResolver</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the current tenant from the HTTP session using the attribute <code>gorm.tenantId</code> by default</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>o.g.d.m.multitenancy.web.HttpHeaderTenantResolver</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the current tenant from the request HTTP Header using the header name <code>gorm.tenantId</code> by default</p></td>
+</tr>
 </tbody>
 </table>
 <div class="paragraph">
@@ -8576,12 +8634,12 @@ sessionFactory.openSession()</code></pre>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:6.1.6.RELEASE"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:6.1.7.RELEASE"</code></pre>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_the_alltenantsresolver_interface">12.5.3. The AllTenantsResolver interface</h4>
+<h4 id="_the_alltenantsresolver_interface">12.6.3. The AllTenantsResolver interface</h4>
 <div class="paragraph">
 <p>If you are using discriminator-based multi-tenancy then you may need to implement the <a href="../api/org/grails/datastore/mapping/multitenancy/AllTenantsResolver.html">AllTenantsResolver</a> interface in your <code>TenantResolver</code> implentation if you want to at any point iterate over all available tenants.</p>
 </div>
@@ -8602,7 +8660,7 @@ sessionFactory.openSession()</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_implementing_web_tenant_resolvers">12.5.4. Implementing Web Tenant Resolvers</h4>
+<h4 id="_implementing_web_tenant_resolvers">12.6.4. Implementing Web Tenant Resolvers</h4>
 <div class="paragraph">
 <p>If you wish to implement your own tenant resolver for Grails or Spring Boot then it is possible do so using the <code>RequestContextHolder</code> class without needing to inject any dependencies. For example the <code>SubDomainTenantResolver</code> implementation is as follows:</p>
 </div>
