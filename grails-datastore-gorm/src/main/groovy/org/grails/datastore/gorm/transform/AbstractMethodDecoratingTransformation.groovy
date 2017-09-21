@@ -26,6 +26,7 @@ import org.codehaus.groovy.control.ErrorCollector
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.transform.sc.StaticCompileTransformation
 import org.codehaus.groovy.transform.trait.Traits
+import org.grails.datastore.mapping.reflect.NameUtils
 
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
@@ -76,6 +77,13 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
         Map<String, ClassNode> genericsSpec = GenericsUtils.createGenericsSpec(classNode)
         List<MethodNode> methods = new ArrayList<MethodNode>(classNode.getMethods())
 
+        List<String> setterMethodNames = []
+        for (MethodNode md in methods) {
+            if (isSetter(md)) {
+                setterMethodNames.add(md.name)
+            }
+        }
+
         for (MethodNode md in methods) {
             String methodName = md.name
             int modifiers = md.modifiers
@@ -94,7 +102,15 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
 
                 if (METHOD_NAME_EXCLUDES.contains(methodName)) continue
 
-                if (isSetter(md) || isGetter(md)) continue
+                if (isSetter(md)) continue
+
+                if (isGetter(md)) {
+                    final String propertyName = NameUtils.getPropertyNameForGetterOrSetter(md.name)
+                    final String setterName = NameUtils.getSetterName(propertyName)
+
+                    //If a setter exists for the getter, don't apply the transformation
+                    if (setterMethodNames.contains(setterName)) continue
+                }
 
                 // don't apply to methods added by traits
                 if (hasAnnotation(md, Traits.TraitBridge.class)) continue
