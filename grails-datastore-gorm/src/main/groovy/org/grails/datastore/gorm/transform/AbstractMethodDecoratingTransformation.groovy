@@ -78,9 +78,12 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
         List<MethodNode> methods = new ArrayList<MethodNode>(classNode.getMethods())
 
         List<String> setterMethodNames = []
-        for (MethodNode md in methods) {
+        Iterator<MethodNode> methodNodeIterator = methods.iterator()
+        while (methodNodeIterator.hasNext()) {
+            MethodNode md = methodNodeIterator.next()
             if (isSetter(md)) {
                 setterMethodNames.add(md.name)
+                methodNodeIterator.remove()
             }
         }
 
@@ -101,8 +104,6 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
                 }
 
                 if (METHOD_NAME_EXCLUDES.contains(methodName)) continue
-
-                if (isSetter(md)) continue
 
                 if (isGetter(md)) {
                     final String propertyName = NameUtils.getPropertyNameForGetterOrSetter(md.name)
