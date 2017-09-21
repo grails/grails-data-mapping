@@ -416,7 +416,8 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
                     name = 'propagationBehavior'
                     expr = callX(expr, "value", ZERO_ARGUMENTS)
                 }
-                else if(name != 'value') {
+
+                if(name != 'value') {
                     methodBody.addStatement(
                         assignS(propX(transactionAttributeVar, name), expr)
                     )
