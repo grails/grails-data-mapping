@@ -819,6 +819,7 @@ new BookService()
         def applicationContext = bb.createApplicationContext()
         def bean = applicationContext.getBean('testService')
         bean.name = 'Grails'
+
         then:
         applicationContext.transactionManager != null
         bean.transactionManager != null
@@ -946,6 +947,44 @@ class SomeClass {
         MultipleCompilationErrorsException ex = thrown()
         ex.message.contains 'Cannot find matching method java.lang.String#lastName()'
 
+    }
+
+    void "test transactional behavior is applied to getter methods without a setter"() {
+        when:
+        def someClass = new GroovyShell().evaluate('''
+package demo
+
+    import grails.gorm.transactions.*
+    import org.springframework.transaction.support.*
+    
+@Transactional
+class SomeClass {
+
+    public void setAge(String name) {
+        assert !TransactionSynchronizationManager.isActualTransactionActive()
+    }
+
+    public String getAge() {
+        assert !TransactionSynchronizationManager.isActualTransactionActive()
+        'valid'
+    }
+
+    public String getPhone() {
+        assert TransactionSynchronizationManager.isActualTransactionActive()
+        'valid'
+    }
+}
+
+new SomeClass()
+''')
+
+        final transactionManager = getPlatformTransactionManager()
+        someClass.transactionManager = transactionManager
+        someClass.setAge('x')
+
+        then:
+        someClass.getAge()
+        someClass.getPhone()
     }
 }
 @grails.transaction.Transactional
