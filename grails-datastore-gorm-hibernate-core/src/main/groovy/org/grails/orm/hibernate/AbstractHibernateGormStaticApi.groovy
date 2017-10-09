@@ -15,11 +15,10 @@ import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.core.Datastore
-import org.grails.orm.hibernate.support.HibernateVersionSupport
 import org.hibernate.Criteria
 import org.hibernate.FlushMode
-import org.hibernate.Query
-import org.hibernate.SQLQuery
+import org.hibernate.query.NativeQuery
+import org.hibernate.query.Query
 import org.hibernate.Session
 import org.hibernate.criterion.Example
 import org.hibernate.criterion.Projections
@@ -28,7 +27,6 @@ import org.hibernate.transform.DistinctRootEntityResultTransformer
 import org.springframework.core.convert.ConversionService
 import org.springframework.transaction.PlatformTransactionManager
 
-import java.util.regex.Pattern
 
 /**
  * Abstract implementation of the Hibernate static API for GORM, providing String-based method implementations
@@ -234,7 +232,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         def template = hibernateTemplate
         queryNamedArgs = new HashMap(queryNamedArgs)
         return (D) template.execute { Session session ->
-            Query q = HibernateVersionSupport.createQuery(session, queryString)
+            Query q = session.createQuery(queryString)
             template.applySettings(q)
 
             populateQueryArguments(q, queryNamedArgs)
@@ -258,7 +256,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         args = new HashMap(args)
         def template = hibernateTemplate
         return (D) template.execute { Session session ->
-            Query q = HibernateVersionSupport.createQuery(session, queryString)
+            Query q = session.createQuery(queryString)
             template.applySettings(q)
 
             params.eachWithIndex { val, int i ->
@@ -287,7 +285,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
 
         def template = hibernateTemplate
         return (List<D>) template.execute { Session session ->
-            Query q = HibernateVersionSupport.createQuery(session, queryString)
+            Query q = session.createQuery(queryString)
             template.applySettings(q)
 
             populateQueryArguments(q, params)
@@ -298,7 +296,6 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         }
     }
 
-    @CompileDynamic // required for Hibernate 5.2 compatibility
     def <D> D findWithSql(CharSequence sql, Map args = Collections.emptyMap()) {
         IHibernateTemplate template = hibernateTemplate
         return (D) template.execute { Session session ->
@@ -308,7 +305,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
                 sql = buildOrdinalParameterQueryFromGString((GString)sql, params)
             }
 
-            SQLQuery q = session.createSQLQuery(sql.toString())
+            NativeQuery q = session.createNativeQuery(sql.toString())
 
             template.applySettings(q)
 
@@ -340,7 +337,6 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
      * @param args The arguments
      * @return All entities matching the SQL query
      */
-    @CompileDynamic // required for Hibernate 5.2 compatibility
     List<D> findAllWithSql(CharSequence sql, Map args = Collections.emptyMap()) {
         IHibernateTemplate template = hibernateTemplate
         return (List<D>) template.execute { Session session ->
@@ -350,7 +346,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
                 sql = buildOrdinalParameterQueryFromGString((GString)sql, params)
             }
 
-            SQLQuery q = session.createSQLQuery(sql.toString())
+            NativeQuery q = session.createNativeQuery(sql.toString())
 
             template.applySettings(q)
 
@@ -479,7 +475,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
 
         def template = hibernateTemplate
         return (List<D>) template.execute { Session session ->
-            Query q = HibernateVersionSupport.createQuery(session, queryString)
+            Query q = session.createQuery(queryString)
             template.applySettings(q)
 
             params.eachWithIndex { val, int i ->
@@ -568,7 +564,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         }
 
         return (List<D>) template.execute { Session session ->
-            Query q = HibernateVersionSupport.createQuery(session, query.toString())
+            Query q = session.createQuery(query.toString())
             template.applySettings(q)
 
             populateQueryArguments(q, params)
@@ -589,7 +585,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
         args = new HashMap(args)
 
         return (List<D>) template.execute { Session session ->
-            Query q = HibernateVersionSupport.createQuery(session, query.toString())
+            Query q = session.createQuery(query.toString())
             template.applySettings(q)
 
             params.eachWithIndex { val, int i ->

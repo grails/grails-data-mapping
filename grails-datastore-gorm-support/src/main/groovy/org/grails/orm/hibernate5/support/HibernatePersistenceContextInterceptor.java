@@ -6,7 +6,6 @@ import org.grails.core.lifecycle.ShutdownOperations;
 import org.grails.datastore.mapping.core.connections.ConnectionSource;
 import org.grails.orm.hibernate.AbstractHibernateDatastore;
 import org.grails.orm.hibernate.support.HibernateRuntimeUtils;
-import org.grails.orm.hibernate.support.HibernateVersionSupport;
 import org.grails.orm.hibernate.support.SessionFactoryAwarePersistenceContextInterceptor;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
@@ -71,7 +70,7 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
      */
     public HibernatePersistenceContextInterceptor(String dataSourceName) {
         this.dataSourceName = dataSourceName;
-        this.transactionRequired = HibernateVersionSupport.isAtLeastVersion("5.2.0.Final");
+        this.transactionRequired = true;
     }
 
     /* (non-Javadoc)
