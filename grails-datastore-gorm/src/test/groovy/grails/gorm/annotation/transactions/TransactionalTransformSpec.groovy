@@ -1009,7 +1009,7 @@ new SomeClass()
 
         final transactionManager = getPlatformTransactionManager()
         someClass.transactionManager = transactionManager
-        someClass.setupTheThing('x')
+        someClass.setupSessionAfterLogin('x')
 
         then:
         noExceptionThrown()
