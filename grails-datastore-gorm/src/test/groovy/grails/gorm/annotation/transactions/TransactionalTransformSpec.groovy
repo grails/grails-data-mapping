@@ -826,7 +826,7 @@ new BookService()
         bean.process() != null
         bean.isActualTransactionActive() == false
         bean.name == 'Grails'
-        bean.isActive() == false
+        bean.isActive() == true
     }
 
     @Issue(['GRAILS-11145', 'GRAILS-11134'])
@@ -1017,7 +1017,7 @@ new SomeClass()
 }
 
 
-@grails.transaction.Transactional
+@grails.gorm.transactions.Transactional
 class TransactionalTransformSpecService implements InitializingBean {
     String name
 
@@ -1025,7 +1025,7 @@ class TransactionalTransformSpecService implements InitializingBean {
         return transactionStatus
     }
 
-    @grails.transaction.NotTransactional
+    @grails.gorm.transactions.NotTransactional
     public boolean isActualTransactionActive() {
         return TransactionSynchronizationManager.isActualTransactionActive()
     }
