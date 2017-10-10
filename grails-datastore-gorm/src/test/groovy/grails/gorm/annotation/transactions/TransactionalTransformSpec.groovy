@@ -986,7 +986,37 @@ new SomeClass()
         someClass.getAge()
         someClass.getPhone()
     }
+
+    void "test transactional behavior is applied to methods that aren't setters but start with set"() {
+        when:
+        def someClass = new GroovyShell().evaluate('''
+package demo
+
+    import grails.gorm.transactions.*
+    import org.springframework.transaction.support.*
+    
+@Transactional
+class SomeClass {
+
+    public void setupSessionAfterLogin(String username) {
+        assert TransactionSynchronizationManager.isActualTransactionActive()
+    }
+
 }
+
+new SomeClass()
+''')
+
+        final transactionManager = getPlatformTransactionManager()
+        someClass.transactionManager = transactionManager
+        someClass.setupTheThing('x')
+
+        then:
+        noExceptionThrown()
+    }
+}
+
+
 @grails.transaction.Transactional
 class TransactionalTransformSpecService implements InitializingBean {
     String name
