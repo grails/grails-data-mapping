@@ -128,13 +128,27 @@ public class NameUtils {
     }
 
     /**
-     * Converts class name to property name using JavaBean decaplization
+     * Converts class name to property name using JavaBean decapitalization
      *
      * @param name The class name
      * @return The decapitalized name
      */
     public static String decapitalize(String name) {
         return Introspector.decapitalize(name);
+    }
+
+    /**
+     * Transforms the first character of a string into a lowercase letter
+     * @param name String to be transformed
+     * @return Original string with the first char as a lowercase letter
+     */
+    public static String decapitalizeFirstChar(String name) {
+        if (name == null || name.length() == 0) {
+            return name;
+        }
+        char chars[] = name.toCharArray();
+        chars[0] = Character.toLowerCase(chars[0]);
+        return new String(chars);
     }
 
     /**
