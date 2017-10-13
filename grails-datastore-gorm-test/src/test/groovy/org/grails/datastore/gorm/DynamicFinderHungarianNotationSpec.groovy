@@ -16,4 +16,8 @@ class DynamicFinderHungarianNotationSpec extends GormDatastoreSpec {
         ClassWithHungarianNotation.countByISize(2) == 1
         ClassWithHungarianNotation.findByISize(2).iSize == 2
     }
+
+    List getDomainClasses() {
+        [ClassWithHungarianNotation]
+    }
 }

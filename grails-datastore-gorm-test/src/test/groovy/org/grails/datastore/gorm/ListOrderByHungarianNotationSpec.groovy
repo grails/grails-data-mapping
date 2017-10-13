@@ -16,4 +16,8 @@ class ListOrderByHungarianNotationSpec extends GormDatastoreSpec {
         then:
         ClassWithHungarianNotation.listOrderByISize(order: 'desc')*.iSize == [3, 2]
     }
+
+    List getDomainClasses() {
+        [ClassWithHungarianNotation]
+    }
 }
