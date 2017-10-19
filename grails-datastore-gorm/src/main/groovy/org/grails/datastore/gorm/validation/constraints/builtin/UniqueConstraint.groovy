@@ -65,7 +65,7 @@ class UniqueConstraint extends AbstractConstraint {
         PersistentProperty persistentProperty = targetEntity.getPropertyByName(constraintPropertyName)
         boolean isToOne = persistentProperty instanceof ToOne
         if(isToOne) {
-            def associationId = ((Association)persistentProperty).getAssociatedEntity().getReflector().getIdentifier(propertyValue)
+            def associationId = ((Association) persistentProperty).getAssociatedEntity().getReflector().getIdentifier(propertyValue)
             if(associationId == null) {
                 // unsaved entity
                 return
@@ -76,9 +76,16 @@ class UniqueConstraint extends AbstractConstraint {
             eq(constraintPropertyName, propertyValue)
             if(!group.isEmpty()) {
                 for(prop in group) {
-                    def propName = prop.toString()
+                    String propName = prop.toString()
                     def value = reflector.getProperty(target, propName)
                     if(value != null) {
+                        PersistentProperty associated = targetEntity.getPropertyByName(propName)
+                        if(associated instanceof ToOne) {
+                            def associationId = ((Association) associated).getAssociatedEntity().getReflector().getIdentifier(value)
+                            if(associationId == null) {
+                                continue
+                            }
+                        }
                         eq propName, value
                     }
                 }
@@ -94,6 +101,7 @@ class UniqueConstraint extends AbstractConstraint {
             }
         }
     }
+
 
     @Override
     boolean supports(Class type) {
