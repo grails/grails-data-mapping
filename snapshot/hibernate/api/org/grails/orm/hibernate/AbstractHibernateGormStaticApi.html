@@ -250,7 +250,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;<a href='../../../../org/grails/orm/hibernate/query/HibernateHqlQuery.html'>HibernateHqlQuery</a></strong></code></td>
-                            <td class="colLast"><code><strong><a href="#createHqlQuery(org.hibernate.Session, org.hibernate.Query)">createHqlQuery</a></strong>(org.hibernate.Session session, org.hibernate.Query q)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#createHqlQuery(org.hibernate.Session, Query)">createHqlQuery</a></strong>(org.hibernate.Session session, <a href='../../../../Query.html'>Query</a> q)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -420,12 +420,12 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#populateQueryArguments(org.hibernate.Query, java.util.Map)">populateQueryArguments</a></strong>(org.hibernate.Query q, java.util.Map args)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#populateQueryArguments(Query, java.util.Map)">populateQueryArguments</a></strong>(<a href='../../../../Query.html'>Query</a> q, java.util.Map args)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#populateQueryWithNamedArguments(org.hibernate.Query, java.util.Map)">populateQueryWithNamedArguments</a></strong>(org.hibernate.Query q, java.util.Map queryNamedArgs)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#populateQueryWithNamedArguments(Query, java.util.Map)">populateQueryWithNamedArguments</a></strong>(<a href='../../../../Query.html'>Query</a> q, java.util.Map queryNamedArgs)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -605,10 +605,10 @@ java.lang.Integer <strong>count</strong>()</h4>
                             </li>
                         </ul>
                     
-                        <a name="createHqlQuery(org.hibernate.Session, org.hibernate.Query)"><!-- --></a>
+                        <a name="createHqlQuery(org.hibernate.Session, Query)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;<a href='../../../../org/grails/orm/hibernate/query/HibernateHqlQuery.html'>HibernateHqlQuery</a> <strong>createHqlQuery</strong>(org.hibernate.Session session, org.hibernate.Query q)</h4>
+                                <h4>protected&nbsp;<a href='../../../../org/grails/orm/hibernate/query/HibernateHqlQuery.html'>HibernateHqlQuery</a> <strong>createHqlQuery</strong>(org.hibernate.Session session, <a href='../../../../Query.html'>Query</a> q)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -787,8 +787,7 @@ java.util.List&lt;D&gt; <strong>findAllWhere</strong>(java.util.Map queryMap, ja
                         <a name="findAllWithSql(java.lang.CharSequence, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileDynamic // required for Hibernate 5.2 compatibility
-java.util.List&lt;D&gt; <strong>findAllWithSql</strong>(java.lang.CharSequence sql, java.util.Map args = Collections.emptyMap()</h4>
+                                <h4>java.util.List&lt;D&gt; <strong>findAllWithSql</strong>(java.lang.CharSequence sql, java.util.Map args = Collections.emptyMap()</h4>
                                 <p> Finds all results for this entity for the given SQL query
      <DL><DT><B>Returns:</B></DT><DD>All entities matching the SQL query</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>sql</code> -  The SQL query</DD><DD><code>args</code> -  The arguments</DD></DL></p>
                             </li>
@@ -806,8 +805,7 @@ D <strong>findWhere</strong>(java.util.Map queryMap, java.util.Map args)</h4>
                         <a name="findWithSql(java.lang.CharSequence, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileDynamic // required for Hibernate 5.2 compatibility
-D <strong>findWithSql</strong>(java.lang.CharSequence sql, java.util.Map args = Collections.emptyMap()</h4>
+                                <h4>D <strong>findWithSql</strong>(java.lang.CharSequence sql, java.util.Map args = Collections.emptyMap()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -906,18 +904,18 @@ D <strong>load</strong>(java.io.Serializable id)</h4>
                             </li>
                         </ul>
                     
-                        <a name="populateQueryArguments(org.hibernate.Query, java.util.Map)"><!-- --></a>
+                        <a name="populateQueryArguments(Query, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>populateQueryArguments</strong>(org.hibernate.Query q, java.util.Map args)</h4>
+                                <h4>protected&nbsp;void <strong>populateQueryArguments</strong>(<a href='../../../../Query.html'>Query</a> q, java.util.Map args)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="populateQueryWithNamedArguments(org.hibernate.Query, java.util.Map)"><!-- --></a>
+                        <a name="populateQueryWithNamedArguments(Query, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>populateQueryWithNamedArguments</strong>(org.hibernate.Query q, java.util.Map queryNamedArgs)</h4>
+                                <h4>protected&nbsp;void <strong>populateQueryWithNamedArguments</strong>(<a href='../../../../Query.html'>Query</a> q, java.util.Map queryNamedArgs)</h4>
                                 <p></p>
                             </li>
                         </ul>
