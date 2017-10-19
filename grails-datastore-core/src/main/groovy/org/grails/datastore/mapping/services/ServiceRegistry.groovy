@@ -18,5 +18,5 @@ interface ServiceRegistry {
      * @param interfaceType The interface type
      * @return
      */
-    public <T extends Service> T getService(Class<T> interfaceType) throws ServiceNotFoundException
+    public <T> T getService(Class<T> interfaceType) throws ServiceNotFoundException
 }
