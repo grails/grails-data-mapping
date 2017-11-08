@@ -552,10 +552,11 @@ article.quote,
 	margin: 0;
 	padding-bottom: 12px;
 	overflow: auto;
+	margin-bottom: 50px;
 }
 
-.guidegroup {
-	margin-bottom: 50px;
+.twocolumns .column article.quote:first-child {
+	margin-top: 50px;
 }
 
 .twocolumns .column .guidegroup:first-child {
