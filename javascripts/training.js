@@ -21,7 +21,7 @@ function showElementsByClassName(className) {
 }
 
 var ociTrainingTrack = 11;
-getJSON('http://plugins.grails.org/api/training/'+ ociTrainingTrack, function(err, data) {
+getJSON('https://grailsplugins.cfapps.io/api/training/'+ ociTrainingTrack, function(err, data) {
     var msg = '';
     if (err != null) {
         msg = 'Something went wrong while retrieving OCI training offerings';
