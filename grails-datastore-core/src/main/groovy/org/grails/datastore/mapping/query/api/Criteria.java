@@ -15,6 +15,7 @@
 package org.grails.datastore.mapping.query.api;
 
 import groovy.lang.Closure;
+import goovy.lang.DelegatesTo;
 import org.grails.datastore.mapping.query.Query;
 
 import java.util.Collection;
