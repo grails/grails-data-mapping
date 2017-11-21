@@ -208,21 +208,21 @@ public interface Criteria  {
      *
      * @return This criteria
      */
-    Criteria and(Closure callable);
+    Criteria and(@DelegatesTo(Criteria) Closure callable);
 
     /**
      * Creates a logical disjunction
      * @param callable The closure
      * @return This criteria
      */
-    Criteria or(Closure callable);
+    Criteria or(@DelegatesTo(Criteria) Closure callable);
 
     /**
      * Creates a logical negation
      * @param callable The closure
      * @return This criteria
      */
-    Criteria not(Closure callable);
+    Criteria not(@DelegatesTo(Criteria) Closure callable);
 
     /**
      * Creates an "in" Criterion based on the specified property name and list of values
