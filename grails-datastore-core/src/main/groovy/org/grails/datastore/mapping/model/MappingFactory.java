@@ -24,15 +24,7 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.grails.datastore.mapping.config.Entity;
@@ -117,6 +109,7 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             Serializable.class.getName(),
             URI.class.getName(),
             URL.class.getName(),
+            UUID.class.getName(),
             "org.bson.types.ObjectId")));
     }
 
