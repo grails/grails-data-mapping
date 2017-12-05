@@ -1,36 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="94px" height="94px" viewBox="0 0 94 94" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+<svg width="95px" height="95px" viewBox="0 0 95 95" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
     <title>restapis</title>
     <desc>Created with Sketch.</desc>
-    <defs>
-        <linearGradient x1="14.871862%" y1="15.6436714%" x2="90.0886164%" y2="86.1367324%" id="linearGradient-1">
-            <stop stop-color="#FEB672" offset="0%"></stop>
-            <stop stop-color="#FEB978" offset="2.09%"></stop>
-            <stop stop-color="#FECEA1" offset="17.34%"></stop>
-            <stop stop-color="#FFE0C3" offset="32.97%"></stop>
-            <stop stop-color="#FFEEDD" offset="48.85%"></stop>
-            <stop stop-color="#FFF7F0" offset="65.06%"></stop>
-            <stop stop-color="#FFFDFB" offset="81.83%"></stop>
-            <stop stop-color="#FFFFFF" offset="100%"></stop>
-        </linearGradient>
-        <linearGradient x1="84.9506272%" y1="82.9508515%" x2="-0.296278599%" y2="12.5033368%" id="linearGradient-2">
-            <stop stop-color="#FEB672" offset="0%"></stop>
-            <stop stop-color="#FECB9B" offset="15.77%"></stop>
-            <stop stop-color="#FFDEBF" offset="32.5%"></stop>
-            <stop stop-color="#FFECDB" offset="49.38%"></stop>
-            <stop stop-color="#FFF7EF" offset="66.26%"></stop>
-            <stop stop-color="#FFFDFB" offset="83.12%"></stop>
-            <stop stop-color="#FFFFFF" offset="100%"></stop>
-        </linearGradient>
-    </defs>
+    <defs></defs>
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="restapis" transform="translate(1.000000, 1.000000)">
+        <g id="restapis" transform="translate(2.000000, 1.000000)">
             <circle id="Oval" stroke="#FFFFFF" stroke-width="2.8347" cx="45.848" cy="46.128" r="45.374"></circle>
-            <circle id="Oval" stroke="#FFFFFF" stroke-width="2.8347" cx="45.848" cy="46.128" r="45.374"></circle>
-            <g id="Group" transform="translate(23.000000, 23.000000)" fill-rule="nonzero">
-                <path d="M22.811,34.194 C32.766,47.766 42.509,30.406 42.494,19.966 C42.478,7.623 29.968,0.725 22.803,0.725 C11.302,0.725 0.349,10.23 0.349,23.235 C0.349,37.69 12.905,45.696 22.803,45.696 C20.563,45.374 13.097,43.774 12.997,26.581 C12.93,14.953 16.791,10.306 22.786,12.35 C22.922,12.4 29.399,14.956 29.399,23.306 C29.398,31.619 22.811,34.194 22.811,34.194 Z" id="path7508" fill="url(#linearGradient-1)"></path>
-                <path d="M22.798,12.342 C16.22,10.075 8.161,15.496 8.161,26.357 C8.161,44.088 21.301,45.698 22.893,45.698 C34.394,45.698 45.347,36.193 45.347,23.188 C45.347,8.733 32.791,0.726 22.893,0.726 C25.636,0.347 37.669,3.693 37.669,20.143 C37.669,30.87 28.683,36.709 22.838,34.215 C22.704,34.164 16.225,31.609 16.225,23.259 C16.226,14.945 22.798,12.342 22.798,12.342 Z" id="path7510" fill="url(#linearGradient-2)"></path>
+            <circle id="Oval" stroke="#FFFFFF" stroke-width="2.8347" cx="45.374" cy="46.374" r="45.374"></circle>
+            <g id="Group" transform="translate(17.000000, 9.000000)" font-size="50" font-family="Courier-Bold, Courier" fill="#FFFFFF" font-weight="bold">
+                <g id="Group-2">
+                    <text id="{">
+                        <tspan x="0.497558594" y="48">{</tspan>
+                    </text>
+                    <text id="{-copy" transform="translate(41.500000, 44.000000) rotate(180.000000) translate(-41.500000, -44.000000) ">
+                        <tspan x="26.4975586" y="62">{</tspan>
+                    </text>
+                </g>
             </g>
         </g>
     </g>
