@@ -5,6 +5,7 @@ cache:
 language: groovy
 jdk:
 - oraclejdk7
+dist: precise
 env:
   global:
   - TERM=dumb
