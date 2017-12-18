@@ -27,7 +27,6 @@ import org.springframework.util.ReflectionUtils
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
-import java.lang.reflect.Parameter
 
 /**
  * A generic configuration builder that implementers can implement to construct the configuration from the source {@link PropertyResolver}
@@ -304,13 +303,14 @@ abstract class ConfigurationBuilder<B, C> {
                 List<Object> args = []
 
                 boolean appendArgName = parameterTypes.length > 1
+                int argIndex = 0
 
-                for (Parameter parameter: method.getParameters()) {
-                    Class argType = parameter.type
+                for (Class argType: parameterTypes) {
                     String propertyPathForArg = propertyPath
                     if (appendArgName) {
-                        propertyPathForArg += ".${parameter.name}"
+                        propertyPathForArg += ".arg${argIndex}"
                     }
+                    argIndex++
                     def valueOfMethod = ReflectionUtils.findMethod(argType, 'valueOf')
                     if (valueOfMethod != null && Modifier.isStatic(valueOfMethod.modifiers)) {
                         try {
