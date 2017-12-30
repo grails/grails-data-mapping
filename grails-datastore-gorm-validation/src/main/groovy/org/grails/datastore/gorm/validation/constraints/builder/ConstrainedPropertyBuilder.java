@@ -205,7 +205,9 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
                     importFromConstrainedPropertyAttributes.put(
                             importFromAppliedConstraintName, importFromAppliedConstraintParameter);
                 }
-
+                //add any metaContraints
+                importFromConstrainedPropertyAttributes.putAll(importFromConstrainedProperty.getMetaConstraints());
+                
                 createNode(targetPropertyName, importFromConstrainedPropertyAttributes);
             }
         }
