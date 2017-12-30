@@ -118,9 +118,35 @@ class CircularCascadeSpec extends GormDatastoreSpec {
         splinter.save(failOnError: true)
     }
 
+    void addValidator(Class... classes) {
+        classes.each { Class clazz ->
+            PersistentEntity entity = session.datastore.getMappingContext().getPersistentEntity(clazz.name)
+            def messageSource = Mock(MessageSource)
+            messageSource.getMessage(_,_, _, _) >> 'test'
+            def evaluator = new DefaultConstraintEvaluator(new DefaultConstraintRegistry(messageSource), session.datastore.mappingContext, null)
+            session.datastore.getMappingContext().addEntityValidator(entity, new PersistentEntityValidator(entity, messageSource, evaluator))
+        }
+    }
+
+    @Issue('https://github.com/grails/grails-data-mapping/issues/1006')
+    void "test multiple child associations are validated"() {
+        given:
+        addValidator(ActivityValidate, SportValidate, TeamValidate, ArenaValidate)
+        ActivityValidate activity = new ActivityValidate(name: "Game")
+        SportValidate sport = new SportValidate(name: 'Basketball')
+        sport.addToTeams(new TeamValidate())
+        sport.addToArenas(new ArenaValidate())
+        activity.addToSports(sport)
+
+        expect:
+        !activity.validate()
+        activity.errors.hasFieldErrors('sports[0].teams[0].name')
+        activity.errors.hasFieldErrors('sports[0].arenas[0].name')
+    }
+
     @Override
     List getDomainClasses() {
-        [SchoolPerson]
+        [SchoolPerson, ActivityValidate, SportValidate, TeamValidate, ArenaValidate]
     }
 }
 
@@ -139,4 +165,28 @@ class SchoolPerson {
     static mapping = {
         peers cascade: 'none'
     }
+}
+
+@Entity
+class ActivityValidate {
+    String name
+
+    static hasMany = [sports: SportValidate]
+}
+
+@Entity
+class SportValidate {
+    String name
+
+    static hasMany = [teams: TeamValidate, arenas: ArenaValidate]
+}
+
+@Entity
+class TeamValidate {
+    String name
+}
+
+@Entity
+class ArenaValidate {
+    String name
 }

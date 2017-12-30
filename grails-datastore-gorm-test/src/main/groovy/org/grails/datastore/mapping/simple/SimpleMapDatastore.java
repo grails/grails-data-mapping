@@ -30,6 +30,7 @@ import org.grails.datastore.gorm.GormValidationApi;
 import org.grails.datastore.gorm.events.*;
 import org.grails.datastore.gorm.multitenancy.MultiTenantEventListener;
 import org.grails.datastore.gorm.utils.ClasspathEntityScanner;
+import org.grails.datastore.mapping.config.Settings;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.DatastoreUtils;
@@ -40,7 +41,6 @@ import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingConte
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.multitenancy.MultiTenancySettings;
-import org.grails.datastore.mapping.multitenancy.MultiTenantCapableDatastore;
 import org.grails.datastore.mapping.multitenancy.SchemaMultiTenantCapableDatastore;
 import org.grails.datastore.mapping.multitenancy.TenantResolver;
 import org.grails.datastore.mapping.simple.connections.SimpleMapConnectionSourceFactory;
@@ -69,6 +69,7 @@ public class SimpleMapDatastore extends AbstractDatastore implements Closeable, 
     private final ConnectionSources<Map<String,Map>, ConnectionSourceSettings> connectionSources;
     private final MultiTenancySettings.MultiTenancyMode multiTenancyMode;
     protected final Map<String, SimpleMapDatastore> datastoresByConnectionSource = new LinkedHashMap<>();
+    protected final boolean failOnError;
 
     public SimpleMapDatastore(ConnectionSources<Map<String,Map>, ConnectionSourceSettings> connectionSources, MappingContext mappingContext, ConfigurableApplicationEventPublisher eventPublisher) {
         super(mappingContext);
@@ -81,6 +82,8 @@ public class SimpleMapDatastore extends AbstractDatastore implements Closeable, 
         MultiTenancySettings multiTenancy = defaultConnectionSource.getSettings().getMultiTenancy();
         this.multiTenancyMode = multiTenancy.getMode();
         this.tenantResolver = multiTenancy.getTenantResolver();
+        PropertyResolver config = connectionSources.getBaseConfiguration();
+        this.failOnError = config.getProperty(Settings.SETTING_FAIL_ON_ERROR, Boolean.class, false);
         if(!(connectionSources instanceof SingletonConnectionSources)) {
 
             Iterable<ConnectionSource<Map<String,Map>, ConnectionSourceSettings>> allConnectionSources = connectionSources.getAllConnectionSources();
@@ -160,9 +163,19 @@ public class SimpleMapDatastore extends AbstractDatastore implements Closeable, 
         setApplicationContext(ctx);
     }
 
+    private static PropertyResolver getConfiguration(ConfigurableApplicationContext ctx) {
+        PropertyResolver propertyResolver;
+        try {
+            propertyResolver = ctx.getBean(PropertyResolver.class);
+        } catch (Exception e) {
+            propertyResolver = DatastoreUtils.createPropertyResolver(null);
+        }
+        return propertyResolver;
+    }
+
     @Deprecated
     public SimpleMapDatastore(ConfigurableApplicationContext ctx) {
-        this(DatastoreUtils.createPropertyResolver(null), new ConfigurableApplicationContextEventPublisher(ctx));
+        this(getConfiguration(ctx), new ConfigurableApplicationContextEventPublisher(ctx));
         setApplicationContext(ctx);
     }
 
@@ -216,14 +229,16 @@ public class SimpleMapDatastore extends AbstractDatastore implements Closeable, 
 
             @Override
             protected <D> GormValidationApi<D> getValidationApi(Class<D> cls, String qualifier) {
-                SimpleMapDatastore neo4jDatastore = getDatastoreForQualifier(cls, qualifier);
-                return new GormValidationApi<>(cls, neo4jDatastore);
+                SimpleMapDatastore datastore = getDatastoreForQualifier(cls, qualifier);
+                return new GormValidationApi<>(cls, datastore);
             }
 
             @Override
             protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls, String qualifier) {
-                SimpleMapDatastore neo4jDatastore = getDatastoreForQualifier(cls, qualifier);
-                return new GormInstanceApi<>(cls,neo4jDatastore);
+                SimpleMapDatastore datastore = getDatastoreForQualifier(cls, qualifier);
+                GormInstanceApi<D> instanceApi = new GormInstanceApi<>(cls, datastore);
+                instanceApi.setFailOnError(failOnError);
+                return instanceApi;
             }
 
             private <D> SimpleMapDatastore getDatastoreForQualifier(Class<D> cls, String qualifier) {

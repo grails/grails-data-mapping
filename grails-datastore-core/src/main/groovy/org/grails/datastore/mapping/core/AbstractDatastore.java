@@ -98,7 +98,7 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
     }
 
     @Override
-    public <T extends Service> T getService(Class<T> interfaceType) throws ServiceNotFoundException {
+    public <T> T getService(Class<T> interfaceType) throws ServiceNotFoundException {
         return serviceRegistry.getService(interfaceType);
     }
 

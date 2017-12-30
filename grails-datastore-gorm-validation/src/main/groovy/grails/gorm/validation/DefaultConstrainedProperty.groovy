@@ -720,4 +720,11 @@ class DefaultConstrainedProperty implements ConstrainedProperty {
     Object getMetaConstraintValue(String name) {
         return metaConstraints.get(name)
     }
+
+    /**
+     * @return Returns the metaConstraints.
+     */
+    Map<String, Object> getMetaConstraints() {
+        return metaConstraints
+    }
 }

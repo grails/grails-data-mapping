@@ -658,7 +658,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
             throw new IllegalArgumentException("No property name specified in clause: " + clause);
         }
 
-        propertyName = NameUtils.decapitalize(propertyName);
+        propertyName = NameUtils.decapitalizeFirstChar(propertyName);
         if(methodExpressionConstructor != null) {
             try {
                 me = (MethodExpression) methodExpressionConstructor.newInstance(clazz, propertyName);

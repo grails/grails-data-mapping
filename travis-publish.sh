@@ -36,7 +36,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
 
         echo "Triggering Hibernate 5 build"
-        git clone https://${GH_TOKEN}@github.com/grails/gorm-hibernate5.git gorm-hibernate5
+        git clone -b 6.1.x https://${GH_TOKEN}@github.com/grails/gorm-hibernate5.git gorm-hibernate5
         cd gorm-hibernate5
         echo "$(date)" > .snapshot
         git add .snapshot
