@@ -80,9 +80,9 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
     private static final String RESOURCE_PATTERN = "/**/*.class";
 
     private static final TypeFilter[] ENTITY_TYPE_FILTERS = new TypeFilter[] {
-          new AnnotationTypeFilter(Entity.class, false),
-          new AnnotationTypeFilter(Embeddable.class, false),
-          new AnnotationTypeFilter(MappedSuperclass.class, false)};
+            new AnnotationTypeFilter(Entity.class, false),
+            new AnnotationTypeFilter(Embeddable.class, false),
+            new AnnotationTypeFilter(MappedSuperclass.class, false)};
 
     private ResourcePatternResolver resourcePatternResolver;
     private ServiceRegistry serviceRegistry;
@@ -106,7 +106,7 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
 
     private boolean shouldMapWithGorm(GrailsDomainClass domainClass) {
         return !AnnotationDomainClassArtefactHandler.isJPADomainClass(domainClass.getClazz()) &&
-               domainClass.getMappingStrategy().equalsIgnoreCase(GrailsDomainClass.GORM);
+                domainClass.getMappingStrategy().equalsIgnoreCase(GrailsDomainClass.GORM);
     }
 
     /* (non-Javadoc)
@@ -144,7 +144,7 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
                 LOG.debug("[GrailsAnnotationConfiguration] ["+domainClasses.size()+"] Grails domain classes to bind to persistence runtime");
 
             // do Grails class configuration
-            DefaultGrailsDomainConfiguration.configureDomainBinder(grailsApplication, domainClasses);
+            DefaultGrailsDomainConfiguration.configureDomainBinder(grailsApplication, domainClasses, this.dataSourceName);
 
             for (GrailsDomainClass domainClass : domainClasses) {
 
