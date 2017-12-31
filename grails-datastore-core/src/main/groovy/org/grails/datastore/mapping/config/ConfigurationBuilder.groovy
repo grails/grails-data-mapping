@@ -165,7 +165,6 @@ abstract class ConfigurationBuilder<B, C> {
                 }
 
                 String propertyPath = startingPrefix ? "${startingPrefix}.${settingName}" : settingName
-                println propertyPath
 
                 if (parameterTypes.length == 1) {
                     Class argType = parameterTypes[0]
