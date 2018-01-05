@@ -15,31 +15,28 @@
  */
 package org.grails.orm.hibernate
 
-import grails.gorm.validation.CascadingValidator
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormValidateable
 import org.grails.datastore.mapping.core.Datastore
-import org.grails.datastore.mapping.model.config.GormProperties
-import org.grails.datastore.mapping.model.types.Embedded
-import org.grails.datastore.mapping.proxy.ProxyHandler
-import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
-import org.grails.datastore.mapping.reflect.ClassUtils
-import org.grails.datastore.mapping.reflect.EntityReflector
-import org.grails.orm.hibernate.support.HibernateRuntimeUtils
-import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.mapping.engine.event.ValidationEvent
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.model.types.Embedded
 import org.grails.datastore.mapping.model.types.ToOne
+import org.grails.datastore.mapping.proxy.ProxyHandler
+import org.grails.datastore.mapping.reflect.ClassUtils
+import org.grails.datastore.mapping.reflect.EntityReflector
+import org.grails.orm.hibernate.support.HibernateRuntimeUtils
 import org.hibernate.*
 import org.springframework.beans.BeanWrapperImpl
 import org.springframework.beans.InvalidPropertyException
 import org.springframework.dao.DataAccessException
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
-
 
 /**
  * Abstract extension of the {@link GormInstanceApi} class that provides common logic shared by Hibernate 3 and Hibernate 4
@@ -76,7 +73,6 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
     static final ThreadLocal<Boolean> insertActiveThreadLocal = new ThreadLocal<Boolean>()
 
 
-
     protected SessionFactory sessionFactory
     protected ClassLoader classLoader
     protected IHibernateTemplate hibernateTemplate
@@ -93,7 +89,6 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
         this.autoFlush = datastore.autoFlush
         this.failOnError = datastore.failOnError
     }
-
 
 
     @Override
@@ -119,15 +114,16 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
                     deepValidate = ClassUtils.getBooleanFromMap(ARGUMENT_DEEP_VALIDATE, arguments);
                 }
 
-                if (deepValidate && (validator instanceof CascadingValidator)) {
-                    ((CascadingValidator)validator).validate target, errors, deepValidate
-                }
-                else {
+                if (validator instanceof org.grails.datastore.gorm.validation.CascadingValidator) {
+                    ((org.grails.datastore.gorm.validation.CascadingValidator) validator).validate target, errors, deepValidate
+                } else if (validator instanceof grails.gorm.validation.CascadingValidator) {
+                    ((grails.gorm.validation.CascadingValidator) validator).validate target, errors, deepValidate
+                } else {
                     validator.validate target, errors
                 }
 
                 if (errors.hasErrors()) {
-                    handleValidationError(domainClass,target,errors);
+                    handleValidationError(domainClass, target, errors);
                     if (shouldFail(arguments)) {
                         throw validationException.newInstance("Validation Error(s) occurred during save()", errors)
                     }
@@ -151,11 +147,9 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
         try {
             if (shouldInsert(arguments)) {
                 return performInsert(target, shouldFlush)
-            }
-            else if(shouldMerge(arguments)) {
+            } else if (shouldMerge(arguments)) {
                 return performMerge(target, shouldFlush)
-            }
-            else {
+            } else {
                 return performSave(target, shouldFlush)
             }
         } finally {
@@ -193,7 +187,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
         try {
             hibernateTemplate.execute { Session session ->
                 session.delete instance
-                if(flush) {
+                if (flush) {
                     session.flush()
                 }
             }
@@ -255,7 +249,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
             if (flush) {
                 flushSession session
             }
-            return (D)merged
+            return (D) merged
         }
     }
 
@@ -294,8 +288,8 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
         EntityReflector reflector = datastore.mappingContext.getEntityReflector(entity)
         IHibernateTemplate t = this.hibernateTemplate
         for (PersistentProperty prop in entity.associations) {
-            if(prop instanceof ToOne && !(prop instanceof Embedded)) {
-                ToOne toOne = (ToOne)prop
+            if (prop instanceof ToOne && !(prop instanceof Embedded)) {
+                ToOne toOne = (ToOne) prop
 
                 def propertyName = prop.name
                 def propValue = reflector.getProperty(target, propertyName)
@@ -309,13 +303,13 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
                 }
 
                 def identity = otherSide.identity
-                if(identity == null) {
+                if (identity == null) {
                     continue
                 }
 
                 def otherSideReflector = datastore.mappingContext.getEntityReflector(otherSide)
                 try {
-                    def id = (Serializable)otherSideReflector.getProperty(propValue, identity.name);
+                    def id = (Serializable) otherSideReflector.getProperty(propValue, identity.name);
                     if (id) {
                         final Object associatedInstance = t.get(prop.type, id)
                         if (associatedInstance) {
@@ -334,7 +328,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
     /**
      * Checks whether validation should be performed
      * @return true if the domain class should be validated
-     * @param arguments  The arguments to the validate method
+     * @param arguments The arguments to the validate method
      * @param domainClass The domain class
      */
     private boolean shouldValidate(Map arguments, PersistentEntity entity) {
@@ -386,7 +380,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
         if (entity) {
             for (Association association in entity.associations) {
                 if (association instanceof ToOne) {
-                    if(proxyHandler.isInitialized(target, association.name)) {
+                    if (proxyHandler.isInitialized(target, association.name)) {
                         def bean = new BeanWrapperImpl(target)
                         def propertyValue = bean.getPropertyValue(association.name)
                         if (propertyValue != null) {
@@ -435,10 +429,9 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
      */
     @CompileDynamic
     protected void setErrorsOnInstance(Object target, Errors errors) {
-        if(target instanceof GormValidateable) {
-            ((GormValidateable)target).setErrors(errors)
-        }
-        else {
+        if (target instanceof GormValidateable) {
+            ((GormValidateable) target).setErrors(errors)
+        } else {
             target."$GormProperties.ERRORS" = errors
         }
     }
@@ -478,7 +471,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
         if (target.hasProperty(GormProperties.VERSION)) {
             Object version = target."${GormProperties.VERSION}"
             if (version instanceof Long) {
-                target."${GormProperties.VERSION}" = ++((Long)version)
+                target."${GormProperties.VERSION}" = ++((Long) version)
             }
         }
     }
