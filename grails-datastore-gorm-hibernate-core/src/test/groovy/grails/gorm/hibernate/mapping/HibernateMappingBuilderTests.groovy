@@ -5,7 +5,6 @@ package grails.gorm.hibernate.mapping
  */
 import org.grails.orm.hibernate.cfg.CompositeIdentity
 import org.grails.orm.hibernate.cfg.HibernateMappingBuilder
-import org.grails.orm.hibernate.cfg.Mapping
 import org.grails.orm.hibernate.cfg.PropertyConfig
 import org.hibernate.FetchMode
 
@@ -725,7 +724,7 @@ class HibernateMappingBuilderTests extends GroovyTestCase {
                 column name: "currency", sqlType: "char", length: 3
             }
         }
-        shouldFail {
+        assert shouldFail {
             builder.evaluate {
                 amount scale: 2
             }
