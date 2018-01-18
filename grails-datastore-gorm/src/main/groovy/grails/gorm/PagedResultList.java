@@ -96,10 +96,10 @@ public class PagedResultList<E> implements Serializable, List<E> {
         resultList.add(i, o);
     }
 
-
-
     protected void initialize() {
-        if (totalCount == Integer.MIN_VALUE) {
+        if (query == null) {
+            totalCount = 0;
+        } else if (totalCount == Integer.MIN_VALUE) {
             Query newQuery = (Query)query.clone();
             newQuery.projections().count();
             Number result = (Number) newQuery.singleResult();
