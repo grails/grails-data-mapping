@@ -2143,6 +2143,90 @@ If you have a property called "none" on your domain class, this approach won&#82
 </table>
 </div>
 </div>
+<div class="sect4">
+<h5 id="_replacing_a_many_to_one_collection">Replacing a many-to-one collection</h5>
+<div class="paragraph">
+<p>Given these GORM entities:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Book</span> {
+    <span class="predefined-type">String</span> name
+    <span class="directive">static</span> hasMany = [<span class="key">reviews</span>: Review]
+}
+<span class="type">class</span> <span class="class">Review</span> {
+    <span class="predefined-type">String</span> author
+    <span class="predefined-type">String</span> quote
+    <span class="directive">static</span> belongsTo = [<span class="key">book</span>: <span class="predefined-type">Book</span>]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Imagine you have a book with two reviews:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Daemon</span><span class="delimiter">'</span></span>)
+                .addToReviews(<span class="keyword">new</span> Review(<span class="key">quote</span>: <span class="string"><span class="delimiter">'</span><span class="content">Daemon does for surfing the Web what Jaws did for swimming in the ocean.</span><span class="delimiter">'</span></span>, <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Chicago Sun-Times</span><span class="delimiter">'</span></span>))
+                .addToReviews(<span class="keyword">new</span> Review(<span class="key">quote</span>: <span class="string"><span class="delimiter">'</span><span class="content">Daemon is wet-yourself scary, tech-savvy, mind-blowing!</span><span class="delimiter">'</span></span>, <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Paste Magazine</span><span class="delimiter">'</span></span>))
+                .save()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You could create a method to replace the <code>reviews</code> collection as illustrated next:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span> replaceReviews(<span class="predefined-type">Serializable</span> idParam, <span class="predefined-type">List</span>&lt;Review&gt; newReviews) {
+    <span class="predefined-type">Book</span> book = <span class="predefined-type">Book</span>.where { id == idParam }.join(<span class="string"><span class="delimiter">'</span><span class="content">reviews</span><span class="delimiter">'</span></span>).get()
+    clearReviews(book)
+    newReviews.each { book.addToReviews(<span class="local-variable">it</span>) }
+    book.save()
+}
+
+<span class="type">void</span> clearReviews(<span class="predefined-type">Book</span> book) {
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">Serializable</span>&gt; ids = <span class="type">[]</span>
+    book.reviews.collect().each {
+        book.removeFromReviews(<span class="local-variable">it</span>)
+        ids &lt;&lt; <span class="local-variable">it</span>.id
+    }
+    Review.executeUpdate(<span class="string"><span class="delimiter">&quot;</span><span class="content">delete Review r where r.id in :ids</span><span class="delimiter">&quot;</span></span>, [<span class="key">ids</span>: ids])
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively you could leverage <a href="http://docs.grails.org/latest/ref/Database%20Mapping/cascade.html">cascade</a> behaviour.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Book</span> {
+    <span class="predefined-type">String</span> name
+    <span class="directive">static</span> hasMany = [<span class="key">reviews</span>: Review]
+    <span class="directive">static</span> mappping = {
+        reviews <span class="key">cascade</span>: <span class="string"><span class="delimiter">'</span><span class="content">all-delete-orphan</span><span class="delimiter">'</span></span>
+    }
+}
+<span class="type">class</span> <span class="class">Review</span> {
+    <span class="predefined-type">String</span> author
+    <span class="predefined-type">String</span> quote
+    <span class="directive">static</span> belongsTo = [<span class="key">book</span>: <span class="predefined-type">Book</span>]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The cascade behaviour takes cares of deleting every orphan <code>Review</code>. Thus, invoking <code>.clear()</code> suffices to remove the book' previous reviews.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span> replaceReviews(<span class="predefined-type">Serializable</span> idParam, <span class="predefined-type">List</span>&lt;Review&gt; newReviews) {
+    <span class="predefined-type">Book</span> book = <span class="predefined-type">Book</span>.where { id == idParam }.join(<span class="string"><span class="delimiter">'</span><span class="content">reviews</span><span class="delimiter">'</span></span>).get()
+    book.reviews.clear()
+    newReviews.each { book.addToReviews(<span class="local-variable">it</span>) }
+    book.save()
+}</code></pre>
+</div>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="oneToMany">5.1.2. One-to-many</h4>
