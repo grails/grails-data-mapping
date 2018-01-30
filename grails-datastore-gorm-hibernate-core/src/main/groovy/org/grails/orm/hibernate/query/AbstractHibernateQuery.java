@@ -178,6 +178,9 @@ public abstract class AbstractHibernateQuery extends Query {
 
             if(association instanceof Embedded) {
                 String associationName = association.getName();
+                if (getCurrentAlias() != null) {
+                    associationName = getCurrentAlias() + '.' + associationName;
+                }
                 for (Criterion c : criteria) {
                     final org.hibernate.criterion.Criterion hibernateCriterion = getHibernateCriterionAdapter().toHibernateCriterion(this, c, associationName);
                     if (hibernateCriterion != null) {

@@ -282,7 +282,7 @@ class SimpleMapQuery extends Query {
     ]
 
     protected queryAssociation(allEntities, Association association, Closure callable) {
-        allEntities.findAll {
+        allEntities?.findAll {
             def propertyName = association.name
             if (association instanceof ToOne) {
 
@@ -307,7 +307,7 @@ class SimpleMapQuery extends Query {
                     return associatedEntities.any(callable)
                 }
             }
-        }.keySet().toList()
+        }?.keySet()?.toList()
     }
 
     protected queryAssociationList(allEntities, Association association, Closure callable) {
