@@ -163,8 +163,10 @@ public class DefaultConstraintEvaluator implements ConstraintsEvaluator {
                         DefaultConstrainedProperty constrainedProperty = new DefaultConstrainedProperty(theClass, propertyName, propertyType, constraintRegistry);
                         constrainedProperty.setOrder(constrainedProperties.size() + 1);
                         constrainedProperties.put(propertyName, constrainedProperty);
-                        applyDefaultNullableConstraint(constrainedProperty, defaultNullable);
                         applyDefaultConstraints(propertyName, null, constrainedProperty, defaultConstraints);
+                        if (!constrainedProperty.hasAppliedConstraint(ConstrainedProperty.NULLABLE_CONSTRAINT)) {
+                            applyDefaultNullableConstraint(constrainedProperty, defaultNullable);
+                        }
                     }
                 }
             }
