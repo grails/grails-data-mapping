@@ -1,19 +1,17 @@
 package org.grails.datastore.gorm
 
-import grails.gorm.tests.GormDatastoreSpec
-import grails.gorm.validation.PersistentEntityValidator
+import grails.gorm.transactions.Transactional
 import grails.persistence.Entity
-import org.grails.datastore.gorm.validation.constraints.eval.DefaultConstraintEvaluator
 import org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry
 import org.grails.datastore.mapping.config.Settings
 import org.grails.datastore.mapping.core.DatastoreUtils
-import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.simple.SimpleMapDatastore
-import org.springframework.context.MessageSource
 import spock.lang.AutoCleanup
+import spock.lang.Issue
 import spock.lang.Shared
+import spock.lang.Specification
 
-class EmbeddedAssociationWithNoEntityAndGlobalNullableConstraintSpec extends GormDatastoreSpec {
+class EmbeddedAssociationWithNoEntityAndGlobalNullableConstraintSpec extends Specification {
 
     @Shared @AutoCleanup SimpleMapDatastore datastore = new SimpleMapDatastore(
         DatastoreUtils.createPropertyResolver((Settings.SETTING_DEFAULT_CONSTRAINTS): { '*'(nullable: true) }),
@@ -21,8 +19,10 @@ class EmbeddedAssociationWithNoEntityAndGlobalNullableConstraintSpec extends Gor
         User2
     )
 
+    @Transactional
+    @Issue('https://github.com/grails/grails-core/issues/10867')
     void "global constraints are applied to embedded properties defined as POGO"() {
-        given:
+        given: 'a user with only a few properties set'
         def user = new User2()
         user.username = 'admin'
         user.address.city = 'Madrid'
@@ -30,24 +30,11 @@ class EmbeddedAssociationWithNoEntityAndGlobalNullableConstraintSpec extends Gor
         def context = datastore.mappingContext
         context.setValidatorRegistry(new DefaultValidatorRegistry(context, datastore.getConnectionSources().getDefaultConnectionSource().settings))
 
-        PersistentEntity entityUser = datastore.getMappingContext().getPersistentEntity(User2.name)
-        def validatorUser = new PersistentEntityValidator(entityUser, Mock(MessageSource), new DefaultConstraintEvaluator())
-        session.datastore.mappingContext.addEntityValidator(entityUser, validatorUser)
-
-        PersistentEntity entityAddress = datastore.getMappingContext().getPersistentEntity(User2.name)
-        def validatorAddress = new PersistentEntityValidator(entityAddress, Mock(MessageSource), new DefaultConstraintEvaluator())
-        session.datastore.mappingContext.addEntityValidator(entityAddress, validatorAddress)
-
-        when:
+        when: 'validating the user'
         user.validate()
 
-        then:
+        then: 'it has no errors because global constraints are applied'
         !user.hasErrors()
-    }
-
-    @Override
-    List getDomainClasses() {
-        [User2]
     }
 }
 
@@ -65,6 +52,7 @@ class User2 {
 }
 
 class Address2 {
+    Long id
     String city
     String postCode
 }
