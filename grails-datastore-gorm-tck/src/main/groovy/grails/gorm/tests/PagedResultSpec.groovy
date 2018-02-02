@@ -18,8 +18,14 @@ class PagedResultSpec extends GormDatastoreSpec {
     }
 
     void "Test that a getTotalCount will return 0 on empty result"() {
-        expect:
-            (Person.createCriteria().list(max: 1) { lt 'id', 0 }).getTotalCount() == 0
+        given:"Some people"
+            createPeople()
+
+        when:"A query is executed that returns no results"
+            def results = Person.createCriteria().list(max: 1) { eq 'lastName', 'NotFound' })
+        
+        then:
+            results.totalCount == 0
     }
 
     void "Test that a paged result list is returned from the critera with pagination params"() {
