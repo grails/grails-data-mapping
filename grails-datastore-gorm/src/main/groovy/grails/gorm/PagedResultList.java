@@ -97,13 +97,15 @@ public class PagedResultList<E> implements Serializable, List<E> {
     }
 
     protected void initialize() {
-        if (query == null) {
-            totalCount = 0;
-        } else if (totalCount == Integer.MIN_VALUE) {
-            Query newQuery = (Query)query.clone();
-            newQuery.projections().count();
-            Number result = (Number) newQuery.singleResult();
-            totalCount = result == null ? 0 : result.intValue();
+        if (totalCount == Integer.MIN_VALUE) {
+            if (query == null) {
+                totalCount = 0;
+            } else {
+                Query newQuery = (Query)query.clone();
+                newQuery.projections().count();
+                Number result = (Number) newQuery.singleResult();
+                totalCount = result == null ? 0 : result.intValue();
+            }
         }
     }
 
