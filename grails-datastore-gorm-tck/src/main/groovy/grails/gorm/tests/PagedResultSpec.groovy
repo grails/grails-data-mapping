@@ -22,7 +22,9 @@ class PagedResultSpec extends GormDatastoreSpec {
             createPeople()
 
         when:"A query is executed that returns no results"
-            def results = Person.createCriteria().list(max: 1) { eq 'lastName', 'NotFound' })
+            def results = Person.createCriteria().list(max: 1) { 
+                eq 'lastName', 'NotFound' 
+            }
         
         then:
             results.totalCount == 0
