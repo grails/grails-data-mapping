@@ -6,10 +6,12 @@ import org.springframework.context.MessageSourceResolvable
 import org.springframework.context.NoSuchMessageException
 import spock.lang.Specification
 
+import javax.persistence.Entity
+
 /**
  * Created by gonmarques on 23/12/17.
  */
-class BlankConstraintTest extends Specification {
+class BlankConstraintSpec extends Specification {
 
     void "Test a blank constraint that allows blank values"() {
         given: "A blank constraint that allows blank values"
@@ -102,6 +104,7 @@ class BlankConstraintTest extends Specification {
     }
 }
 
+@Entity
 class Person {
     String name
 }
