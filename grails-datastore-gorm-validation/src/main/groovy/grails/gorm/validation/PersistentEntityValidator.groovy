@@ -245,7 +245,7 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
                     continue
                 }
                 if (associatedPersistentProperty instanceof Association) {
-                    if(association.doesCascade(CascadeType.PERSIST, CascadeType.MERGE)) {
+                    if(((Association)associatedPersistentProperty).doesCascade(CascadeType.PERSIST, CascadeType.MERGE)) {
                         if(association.isBidirectional() && associatedPersistentProperty == association.inverseSide) {
                             // If this property is the inverse side of the currently processed association then
                             // we don't want to process it because that would cause a potential infinite loop
