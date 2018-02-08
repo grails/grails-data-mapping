@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Untitled</title>
+<title>Using the withTransaction Method</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -428,6 +428,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p>However, GORM classes have been enhanced to make this simpler with the <a href="../api/org/grails/datastore/gorm/GormEntity.html#withTransaction(groovy.lang.Closure)">withTransaction(Closure)</a>  method. This method has a single parameter, a Closure, which has a single parameter which is a Spring <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/transaction/TransactionStatus.html">TransactionStatus</a> instance.</p>
 </div>
+<div class="sect3">
+<h4 id="_using_the_withtransaction_method">Using the withTransaction Method</h4>
 <div class="paragraph">
 <p>Here&#8217;s an example of using <code>withTransaction</code> in a controller methods:</p>
 </div>
@@ -453,28 +455,40 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="paragraph">
-<p>In this example we rollback the transaction if the destination account is not active.</p>
-</div>
-<div class="paragraph">
-<p>Also, if an <code>Exception</code> (both checked or runtime exception) or <code>Error</code> is thrown during the process the transaction will automatically be rolled back..</p>
-</div>
-<div class="admonitionblock warning">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-warning" title="Warning"></i>
-</td>
-<td class="content">
-GORM versions prior to 6.0.0 did not roll back transactions for a checked <code>Exception</code>.
-</td>
-</tr>
-</table>
+<p>In this example we rollback the transaction if the destination account is not active. Also, if an unchecked <code>Exception</code> or <code>Error</code> (but not a checked <code>Exception</code>, even though Groovy doesn&#8217;t require that you catch checked exceptions) is thrown during the process the transaction will automatically be rolled back.</p>
 </div>
 <div class="paragraph">
 <p>You can also use "save points" to rollback a transaction to a particular point in time if you don&#8217;t want to rollback the entire transaction. This can be achieved through the use of Spring&#8217;s <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/transaction/SavepointManager.html">SavePointManager</a> interface.</p>
 </div>
 <div class="paragraph">
 <p>The <code>withTransaction</code> method deals with the begin/commit/rollback logic for you within the scope of the block.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_using_transactionservice">Using TransactionService</h4>
+<div class="paragraph">
+<p>Since GORM 6.1, if you need more flexibility then instead you can instead take advantage of the <a href="../api/grails/gorm/transactions/TransactionService.html">TransactionService</a>, which can be obtained by looking it up from from the <code>HibernateDatastore</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.gorm.transactions.*
+
+TransactionService transactionService = datastore.getService(TransactionService)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or via dependency injection:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.gorm.transactions.*
+
+@Autowired TransactionService transactionService</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once you have an instance then there are various including <code>withTransaction</code>, <code>withRollback</code>, <code>withNewTransaction</code> etc. which helps with the construction of programmatic transactions.</p>
+</div>
 </div>
 </div>
 <div id="footer">

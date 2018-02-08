@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Flush Mode Now COMMIT by Default</title>
+<title>Separation of GORM Async</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -423,6 +423,67 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="sect3">
+<h4 id="_separation_of_gorm_async">Separation of GORM Async</h4>
+<div class="paragraph">
+<p>GORM Async has been separated from GORM core and is no longer added by default to entities.</p>
+</div>
+<div class="paragraph">
+<p>This was done in order to reduce the number of dependencies necessary to use GORM and to add flexibility in terms of the Async API used in the future.</p>
+</div>
+<div class="paragraph">
+<p>In order to enable GORM Async you need to add the necessary dependency to <code>build.gradle</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-gorm-async:6.1.9.BUILD-SNAPSHOT"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And make your entities implement the <code>AsyncEntity</code> trait:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.gorm.async.*
+
+class Person implements AsyncEntity&lt;Person&gt; {
+  ...
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_removal_of_grails_datastore_simple">Removal of grails-datastore-simple</h4>
+<div class="paragraph">
+<p>The <code>grails-datastore-simple</code> and <code>grails-datastore-gorm-test</code> dependencies have been combined into a single <code>grails-datastore-gorm-test</code> dependency.</p>
+</div>
+<div class="paragraph">
+<p>Unfortunately existing versions of Grails still depend on the old <code>grails-datastore-simple</code> dependency. And you may receive an error such as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">> Could not resolve all dependencies for configuration ':example:runtime'.
+   > Could not find org.grails:grails-datastore-simple:6.1.9.BUILD-SNAPSHOT.
+     Searched in the following locations:
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.9.BUILD-SNAPSHOT/grails-datastore-simple-6.1.9.BUILD-SNAPSHOT.pom
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.9.BUILD-SNAPSHOT/grails-datastore-simple-6.1.9.BUILD-SNAPSHOT.jar
+     Required by:
+         project :example > org.grails:grails-dependencies:3.2.4 >
+            ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are upgrading you will need to exclude this dependency from <code>grails-dependencies</code> and remove any references from <code>build.gradle</code>. For example:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">    compile "org.grails:grails-dependencies:$grailsVersion", {
+        exclude module:'grails-datastore-simple'
+    }</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_flush_mode_now_commit_by_default">Flush Mode Now COMMIT by Default</h4>
 <div class="paragraph">
 <p>In previous versions of GORM the flush mode defaulted to AUTO. With this setting the session would be flushed with or without the presence of a transaction and before every query.</p>
@@ -442,15 +503,196 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
+<h4 id="_multiple_data_source_configuration_changes">Multiple Data Source Configuration Changes</h4>
+<div class="paragraph">
+<p>Configuration of multiple data sources has changed such that the default data source should be configured at the top level and additional data sources should be configured below the <code>dataSources</code> block. In other words instead of:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">dataSources:
+    dataSource:
+        ...
+    anotherDataSource:
+        ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The configuration should instead be structured as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">dataSource:
+        ...
+dataSources:
+    anotherDataSource:
+        ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In addition Hibernate specific configuration should be nested below each data source definition. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">dataSource:
+    url: ".."
+hibernate:
+    flush:
+        mode: COMMIT
+dataSources:
+    anotherDataSource:
+        url: ".."
+        hibernate:
+            flush:
+                mode: AUTO</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_write_operations_without_a_transaction">Write Operations without a Transaction</h4>
+<div class="paragraph">
+<p>With the aforementioned changes to the default flush mode, write operations that are not surrounded by a transaction may not propagate changes to the database unless <code>flush:true</code> is explicitly passed or the session explicitly flushed.</p>
+</div>
+<div class="paragraph">
+<p>Not using a transaction around a write operation is considered bad practise as the connection is essentially in auto commit mode. If your code is structured this way we recommend that you add the necessary <code>@Transactional</code> transformation to surround the write operation.</p>
+</div>
+<div class="paragraph">
+<p>Also note that Hibernate 5.2 and above throw an exception if you attempt a write operation outside of a transaction, and although this is not the case in the current version of GORM it is a possibility that GORM will follow this path and also throw exception for this case in the future.</p>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_changes_to_configuration_model">Changes to Configuration Model</h4>
 <div class="paragraph">
 <p>In preparation for Hibernate 5.2 support the previous "SessionFactoryBean" notion has been removed. Now if you wish to customize <code>SessionFactory</code> creation you should instead register a custom <code>org.grails.orm.hibernate.connections.HibernateConnectionSourceFactory</code> in Spring.</p>
 </div>
 </div>
 <div class="sect3">
+<h4 id="_identityenumtype_handling_changed">IdentityEnumType Handling Changed</h4>
+<div class="paragraph">
+<p>Previous versions of GORM shipped with a <code>org.grails.orm.hibernate.cfg.IdentityEnumType</code> class for altering the handling of enums. In order to support different versions of Hibernate 5.x which feature different signatures for the <code>org.hibernate.usertype.UserType</code> interface this class has been removed.</p>
+</div>
+<div class="paragraph">
+<p>If you wish to obtain the same functionality you need to change your <code>mapping</code> block to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">static mapping = {
+   myEnum enumType:"identity"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_changes_to_support_hibernate_5_2">Changes to Support Hibernate 5.2</h4>
+<div class="paragraph">
+<p>Hibernate 5.2 includes many breaking API changes, in order to support Hibernate 5.2 several classes have been removed or rewritten. Including:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>org.grails.orm.hibernate.proxy.GroovyAwareJavassistLazyInitializer</code></p>
+</li>
+<li>
+<p><code>org.grails.orm.hibernate.proxy.GroovyAwareJavassistProxyFactory</code></p>
+</li>
+<li>
+<p><code>org.grails.orm.hibernate.persister.entity.GroovyAwareJoinedSubclassEntityPersister</code></p>
+</li>
+<li>
+<p><code>org.grails.orm.hibernate.persister.entity.GroovyAwareSingleTableEntityPersister</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Most of these classes are considered internal, however if you have extended or references these classes you may need to modify your code appropriately.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_domain_autowiring_disabled_by_default">Domain Autowiring Disabled by Default</h4>
+<div class="paragraph">
+<p>Spring autowiring of domain instances has been disabled by default because it represents a performance bottleneck. If you are autowiring services into your domain instances you will need to re-enable using the <code>mapping</code> block:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">static mapping = {
+   autowire true
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that if enabled read performance will degrade.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_field_accesstype_by_default">Field AccessType by Default</h4>
+<div class="paragraph">
+<p>Previous versions of GORM used property access to read and write values to entities by default. In other words the respective getters and setters were used when reflecting on the instances. GORM 6.1 uses field access by default instead, which means the field is used when reading and writing data via reflection to instances.</p>
+</div>
+<div class="paragraph">
+<p>If you wish to continue to use property access this can be configured by altering the default mapping in your configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import javax.persistence.*
+grails.gorm.default.mapping = {
+   '*'(accessType: AccessType.PROPERTY)
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_fail_on_error_package_setting_renamed">Fail on Error Package Setting Renamed</h4>
 <div class="paragraph">
 <p>The <code>grails.gorm.failOnError</code> setting can no longer be used to configure the packages to enable fail on error. Instead <code>grails.gorm.failOnErrorPackages</code> should be used.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_new_dirty_checking_implementation">New Dirty Checking Implementation</h4>
+<div class="paragraph">
+<p>GORM now includes its own implementation of dirty checking in order to improve performance. This implementation uses the <code>DirtyCheckable</code> trait to store changes in the entity itself so that Hibernate does not have to do internal array comparison to verify whether an object has changed or not.</p>
+</div>
+<div class="paragraph">
+<p>There may however be some differences in behaviour, so if you wish to continue to use the Hibernate implementatino you can re-enable it with the following configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">hibernate:
+    hibernateDirtyChecking: true</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Some differences in behaviour and workarounds are covered below.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_dirty_checking_for_abstract_base_classes">Dirty Checking for Abstract Base Classes</h4>
+<div class="paragraph">
+<p>Domain objects can inherit from abstract base classes defined in the <code>src</code> directory. Previous versions of GORM performed dirty checking automatically on fields from any abstract base class. GORM 6.1 requires that the abstract base class be marked with the <code>@DirtyCheck</code> annotation to include the base class fields in domain object dirty checking:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.gorm.dirty.checking.DirtyCheck
+
+@DirtyCheck
+abstract class BaseDomainObject {
+    String baseClassField
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_dirty_checking_for_embedded_classes">Dirty Checking for Embedded Classes</h4>
+<div class="paragraph">
+<p>Domain objects embed classes defined in the <code>src</code> directory. Previous versions of GORM performed dirty checking automatically on fields an embedded entity. GORM 6.1 requires that the embedded class be marked with the <code>@DirtyCheck</code> annotation to include the embedded class fields in domain object dirty checking:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.gorm.dirty.checking.DirtyCheck
+
+@DirtyCheck
+abstract class BaseDomainObject {
+    String baseClassField
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
