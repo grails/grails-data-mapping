@@ -2,15 +2,12 @@ package org.grails.datastore.gorm.validation.constraints.builtin
 
 import grails.gorm.DetachedCriteria
 import groovy.transform.CompileStatic
-import org.grails.datastore.gorm.GormEnhancer
-import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.validation.constraints.AbstractConstraint
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.ToOne
-import org.grails.datastore.mapping.query.api.BuildableCriteria
 import org.grails.datastore.mapping.reflect.EntityReflector
 import org.springframework.context.MessageSource
 import org.springframework.validation.Errors
@@ -43,7 +40,11 @@ class UniqueConstraint extends AbstractConstraint {
 
     @Override
     protected Object validateParameter(Object constraintParameter) {
-        return constraintParameter instanceof Boolean || constraintParameter instanceof Iterable || constraintParameter instanceof CharSequence
+        if (constraintParameter instanceof Boolean) {
+            return constraintParameter
+        } else {
+            return constraintParameter instanceof Iterable || constraintParameter instanceof CharSequence
+        }
     }
 
     @Override
@@ -72,32 +73,34 @@ class UniqueConstraint extends AbstractConstraint {
             }
         }
 
-        detachedCriteria = detachedCriteria.build {
-            eq(constraintPropertyName, propertyValue)
-            if(!group.isEmpty()) {
-                for(prop in group) {
-                    String propName = prop.toString()
-                    def value = reflector.getProperty(target, propName)
-                    if(value != null) {
-                        PersistentProperty associated = targetEntity.getPropertyByName(propName)
-                        if(associated instanceof ToOne) {
-                            def associationId = ((Association) associated).getAssociatedEntity().getReflector().getIdentifier(value)
-                            if(associationId == null) {
-                                continue
+        if (constraintParameter) {
+            detachedCriteria = detachedCriteria.build {
+                eq(constraintPropertyName, propertyValue)
+                if (!group.isEmpty()) {
+                    for (prop in group) {
+                        String propName = prop.toString()
+                        def value = reflector.getProperty(target, propName)
+                        if (value != null) {
+                            PersistentProperty associated = targetEntity.getPropertyByName(propName)
+                            if (associated instanceof ToOne) {
+                                def associationId = ((Association) associated).getAssociatedEntity().getReflector().getIdentifier(value)
+                                if (associationId == null) {
+                                    continue
+                                }
                             }
+                            eq propName, value
                         }
-                        eq propName, value
                     }
                 }
-            }
-        }.id()
+            }.id()
 
-        def existingId = detachedCriteria.get()
-        if(existingId != null) {
-            def targetId = reflector.getIdentifier(target)
-            if(targetId != existingId) {
-                def args = [constraintPropertyName, constraintOwningClass, propertyValue] as Object[]
-                rejectValue(target, errors, "unique", args, getDefaultMessage("default.not.unique.message"))
+            def existingId = detachedCriteria.get()
+            if (existingId != null) {
+                def targetId = reflector.getIdentifier(target)
+                if (targetId != existingId) {
+                    def args = [constraintPropertyName, constraintOwningClass, propertyValue] as Object[]
+                    rejectValue(target, errors, "unique", args, getDefaultMessage("default.not.unique.message"))
+                }
             }
         }
     }
