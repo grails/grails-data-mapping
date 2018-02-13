@@ -5,6 +5,7 @@ import grails.gorm.MultiTenant
 import grails.gorm.annotation.Entity
 import grails.gorm.multitenancy.CurrentTenant
 import grails.gorm.multitenancy.Tenants
+import grails.gorm.multitenancy.WithoutTenant
 import grails.gorm.services.Service
 import grails.gorm.transactions.ReadOnly
 import grails.gorm.transactions.Transactional
@@ -28,7 +29,10 @@ class PartitionMultiTenancySpec extends Specification {
     @Shared IBookService bookDataService = datastore.getService(IBookService)
 
     void 'Test partitioned multi-tenancy with GORM services'() {
-        when:"When there is no tenant"
+        setup:
+        BookService bookService = new BookService()
+
+        when: "When there is no tenant"
         Book.count()
 
         then:"You still get an exception"
@@ -37,11 +41,9 @@ class PartitionMultiTenancySpec extends Specification {
         when:"But look you can change tenant"
         System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "12")
 
-        BookService bookService = new BookService()
-
         then:
         bookService.countBooks() == 0
-        bookDataService.countBooks()== 0
+        bookDataService.countBooks() == 0
 
         when:"And the new @CurrentTenant transformation deals with the details for you!"
         bookService.saveBook("The Stand")
@@ -59,18 +61,32 @@ class PartitionMultiTenancySpec extends Specification {
         bookService.countBooks() == 0
         bookDataService.countBooks() == 0
 
-        when: "calling a method from service annotated with @CurrentTenant from withoutId"
+        when: "calling a method save using Tenants.withoutId"
+        Book book1 = new Book(title: "The Secret", tenantId: 55)
+        Book book2 = new Book(title: "The Secret - 2", tenantId: 55)
+
         Tenants.withoutId {
-            Book book = new Book(title: "The Secret")
-            book.tenantId == 55l
-            bookDataService.save(book)
+            book1.save(flush: true)
+            book2.save(flush: true)
         }
 
-        and:"Swapping to another schema and we get the right results!"
+        and: "Swapping to another schema and we get the right results!"
         System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "55")
 
         then:
-        bookDataService.countBooks() == 1
+        bookService.countBooks() == 2
+        bookDataService.countBooks() == 2
+
+
+        when:
+        bookDataService.saveBook(
+                new Book(title: "The Secret 2")
+        )
+
+        then:
+        thrown(MissingPropertyException)
+
+
     }
 }
 
@@ -84,8 +100,13 @@ class Book implements MultiTenant<Book> {
 @Transactional
 class BookService {
 
+    @WithoutTenant
+    void saveBook(Book book) {
+        book.save()
+    }
+
     void saveBook(String title) {
-        new Book(title:title).save()
+        new Book(title: title).save()
     }
 
     @ReadOnly
@@ -95,7 +116,7 @@ class BookService {
 
     @ReadOnly
     List<Book> findBooks(String title) {
-        (List<Book>)Book.withCriteria {
+        (List<Book>) Book.withCriteria {
             eq('title', title)
         }
     }
@@ -108,7 +129,8 @@ interface IBookService {
 
     Book saveBook(String title)
 
-    Book save(Book book)
+    @WithoutTenant
+    Book saveBook(Book book)
 
     Integer countBooks()
 }
