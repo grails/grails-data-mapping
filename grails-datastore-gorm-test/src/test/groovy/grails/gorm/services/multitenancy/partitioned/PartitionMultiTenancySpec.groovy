@@ -4,6 +4,7 @@ package grails.gorm.services.multitenancy.partitioned
 import grails.gorm.MultiTenant
 import grails.gorm.annotation.Entity
 import grails.gorm.multitenancy.CurrentTenant
+import grails.gorm.multitenancy.Tenants
 import grails.gorm.services.Service
 import grails.gorm.transactions.ReadOnly
 import grails.gorm.transactions.Transactional
@@ -34,7 +35,7 @@ class PartitionMultiTenancySpec extends Specification {
         thrown(TenantNotFoundException)
 
         when:"But look you can change tenant"
-        System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "foo")
+        System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "12")
 
         BookService bookService = new BookService()
 
@@ -52,17 +53,30 @@ class PartitionMultiTenancySpec extends Specification {
         bookService.findBooks("The Shining")[0].title == "The Shining"
 
         when:"Swapping to another schema and we get the right results!"
-        System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "bar")
+        System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "13")
 
         then:
         bookService.countBooks() == 0
-        bookDataService.countBooks()== 0
+        bookDataService.countBooks() == 0
+
+        when: "calling a method from service annotated with @CurrentTenant from withoutId"
+        Tenants.withoutId {
+            Book book = new Book(title: "The Secret")
+            book.tenantId == 55l
+            bookDataService.save(book)
+        }
+
+        and:"Swapping to another schema and we get the right results!"
+        System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "55")
+
+        then:
+        bookDataService.countBooks() == 1
     }
 }
 
 @Entity
 class Book implements MultiTenant<Book> {
-    String tenantId
+    Long tenantId
     String title
 }
 
@@ -93,6 +107,8 @@ class BookService {
 interface IBookService {
 
     Book saveBook(String title)
+
+    Book save(Book book)
 
     Integer countBooks()
 }
