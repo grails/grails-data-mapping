@@ -71,6 +71,15 @@ where b.title =  and a.name = '''
         sourceUnit.errorCollector.errorCount == 1
     }
 
+    void 'test transform a hql query referencing a superclass property'() {
+        given:
+        def sourceUnit = sourceUnit()
+        transformedQuery(sourceUnit,'from ${Publisher p} where ${p.country} is null')
+
+        expect:
+        sourceUnit.errorCollector.errorCount == 0
+    }
+
     SourceUnit sourceUnit() {
         def config = new CompilerConfiguration(new Properties())
         def unit = new SourceUnit("test", 'test', config, new GroovyClassLoader(), new ErrorCollector(config))
@@ -110,6 +119,10 @@ class Author {
 }
 
 @Entity
-class Publisher {
+class Publisher extends AbstractPublisher {
     String name
+}
+
+abstract class AbstractPublisher {
+    String country
 }
