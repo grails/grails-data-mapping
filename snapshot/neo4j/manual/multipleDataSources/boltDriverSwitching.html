@@ -428,21 +428,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.withConnection("moreBooks") {
-    list()
+    Book.list()
 }</code></pre>
 </div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The call to <code>list()</code> should not be prefixed with <code>Book.</code> as this will use the default connection
-</td>
-</tr>
-</table>
 </div>
 <div class="paragraph">
 <p>Any logic executed within the body of the closure will use the alternate connection. Once the close finishes execution GORM will switch back to the default connection automatically.</p>
