@@ -65,10 +65,8 @@ class PartitionMultiTenancySpec extends Specification {
         Book book1 = new Book(title: "The Secret", tenantId: 55)
         Book book2 = new Book(title: "The Secret - 2", tenantId: 55)
 
-        Tenants.withoutId {
-            book1.save(flush: true)
-            book2.save(flush: true)
-        }
+        bookDataService.saveBook(book1)
+        bookDataService.saveBook(book2)
 
         and: "Swapping to another schema and we get the right results!"
         System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "55")
