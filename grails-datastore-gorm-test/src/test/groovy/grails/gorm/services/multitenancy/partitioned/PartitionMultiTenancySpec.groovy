@@ -31,6 +31,7 @@ class PartitionMultiTenancySpec extends Specification {
     void 'Test partitioned multi-tenancy with GORM services'() {
         setup:
         BookService bookService = new BookService()
+        System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "")
 
         when: "When there is no tenant"
         Book.count()
@@ -71,18 +72,18 @@ class PartitionMultiTenancySpec extends Specification {
         and: "Swapping to another schema and we get the right results!"
         System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "55")
 
-        then:
+        then: "two books are created with tenantId 55"
         bookService.countBooks() == 2
         bookDataService.countBooks() == 2
 
 
-        when:
-        bookDataService.saveBook(
-                new Book(title: "The Secret 2")
+        when: "book is saved without tenantId"
+        Book book3 = bookDataService.saveBook(
+                new Book(title: "The Road Trip")
         )
 
-        then:
-        thrown(MissingPropertyException)
+        then: "new book is saved without tenantId"
+        book3.id && !book3.tenantId
 
 
     }
