@@ -432,7 +432,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="title">build.gradle</div>
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">dependencies {
-	compile 'org.grails.plugins:neo4j:6.1.6.BUILD-SNAPSHOT'
+	compile 'org.grails.plugins:neo4j:6.2.0.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
@@ -441,7 +441,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-properties" data-lang="properties">gormVersion=6.1.6.BUILD-SNAPSHOT</code></pre>
+<pre class="highlight"><code class="language-properties" data-lang="properties">gormVersion=6.2.0.BUILD-SNAPSHOT</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -454,7 +454,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("6.1.6.BUILD-SNAPSHOT")
+            details.useVersion("6.2.0.BUILD-SNAPSHOT")
         }
     }
 }
@@ -481,7 +481,7 @@ GORM for Neo4j requires Grails 2.5.x or above and Neo4j 3.0.x or above, if you w
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">plugins {
-    compile ':neo4j:6.1.6.BUILD-SNAPSHOT'
+    compile ':neo4j:6.2.0.BUILD-SNAPSHOT'
     build ':tomcat:8.22'
 }</code></pre>
 </div>
