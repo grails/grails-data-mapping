@@ -1038,7 +1038,85 @@ If you experience PermGen errors when building documentation you may need to inc
 <div class="sect2">
 <h3 id="secondaryIndexes">Secondary Indexing</h3>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::understandingApi/secondaryIndexes.adoc[]</p>
+<p>Many datastores do not support secondary indexing or require you to build your own. In cases like this you will need to implement a <code>PropertyIndexer</code>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If the underlying datastore supports secondary indexes then it is ok to just return a <code>null</code> PropertyIndexer and let the datastore handle the indexing
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For example the <code>ConcurrentHashMap</code> implementation creates secondary indices by populating another <code>Map</code> containing the indices:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> index(value, primaryKey) {
+
+    <span class="keyword">def</span> index = getIndexName(value)
+    <span class="keyword">def</span> indexed = indices&lt;&lt;index&gt;&gt;
+    <span class="keyword">if</span> (indexed == <span class="predefined-constant">null</span>) {
+        indexed = <span class="type">[]</span>
+        indices&lt;&lt;index&gt;&gt; = indexed
+    }
+    <span class="keyword">if</span> (!indexed.contains(primaryKey)) {
+        indexed &lt;&lt; primaryKey
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The implementation for Redis is very similar and stores the primary key in a Redis set:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">public</span> <span class="type">void</span> index(<span class="directive">final</span> <span class="predefined-type">Object</span> value, <span class="directive">final</span> <span class="predefined-type">Long</span> primaryKey) {
+      <span class="keyword">if</span> (value == <span class="predefined-constant">null</span>) {
+          <span class="keyword">return</span>;
+      }
+      <span class="directive">final</span> <span class="predefined-type">String</span> primaryIndex = createRedisKey(value);
+      redisTemplate.sadd(primaryIndex, primaryKey);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>An index name is typically built from the entity name, property name and property value. The primary key of the entity is stored in this index for later querying. In fact there is a <code>query</code> method that needs to be implemented on <code>PropertyIndexer</code>. The <code>ConcurrentHashMap</code> implementation looks like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">List</span> query(value, <span class="type">int</span> offset, <span class="type">int</span> max) {
+    <span class="keyword">def</span> index = getIndexName(value)
+
+    <span class="keyword">def</span> indexed = indices&lt;&lt;index&gt;&gt;
+    <span class="keyword">if</span> (!indexed) {
+        <span class="keyword">return</span> <span class="predefined-type">Collections</span>.emptyList()
+    }
+    <span class="keyword">return</span> indexed[offset..max]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Depending on the characteristics of the underlying database you may want to do the indexing asynchronously or you may want to index into a search library such as Lucene. For datastores that are eventually consistent for example it makes sense to do all indexing asynchronously.</p>
+</div>
+<div class="paragraph">
+<p>Finally, when an object is deleted it will need to removed from the indices. This can be done with the <code>deindex</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">void</span> deindex(value, primaryKey) {
+    <span class="keyword">def</span> index = getIndexName(value)
+    <span class="keyword">def</span> indexed = indices&lt;&lt;index&gt;&gt;
+    <span class="keyword">if</span> (indexed) {
+        indexed.remove(primaryKey)
+    }
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect2">
