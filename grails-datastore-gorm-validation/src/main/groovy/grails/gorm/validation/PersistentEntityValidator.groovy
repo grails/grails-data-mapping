@@ -48,10 +48,10 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
         this.proxyHandler = mappingContext.getProxyHandler()
 
         def evaluated = constraintsEvaluator.evaluate(targetClass)
-        this.constrainedProperties = Collections.unmodifiableMap(evaluated)
-        if(constrainedProperties == null) {
+        if (evaluated == null) {
             throw new IllegalStateException("Constraint evaluator returned null for class: $targetClass")
         }
+        this.constrainedProperties = Collections.unmodifiableMap(evaluated)
     }
 
     @Override
