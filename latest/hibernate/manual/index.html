@@ -659,7 +659,7 @@ table.CodeRay td.code>pre{padding:0}
 <p><a href="http://gorm.grails.org/latest/cassandra/manual">GORM for Cassandra</a></p>
 </li>
 <li>
-<p><a href="http://gorm.grails.org/latest/rx/mongodb/manual">RxGORM for MongoDB</a></p>
+<p><a href="http://gorm.grails.org/latest/rx/manual">RxGORM for MongoDB</a></p>
 </li>
 <li>
 <p><a href="http://gorm.grails.org/latest/rx/rest-client/manual">RxGORM for REST</a></p>
@@ -803,7 +803,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-async:6.1.8.RELEASE"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-async:6.1.9.RELEASE"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -830,10 +830,10 @@ table.CodeRay td.code>pre{padding:0}
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">> Could not resolve all dependencies for configuration ':example:runtime'.
-   > Could not find org.grails:grails-datastore-simple:6.1.8.RELEASE.
+   > Could not find org.grails:grails-datastore-simple:6.1.9.RELEASE.
      Searched in the following locations:
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.8.RELEASE/grails-datastore-simple-6.1.8.RELEASE.pom
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.8.RELEASE/grails-datastore-simple-6.1.8.RELEASE.jar
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.9.RELEASE/grails-datastore-simple-6.1.9.RELEASE.pom
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.9.RELEASE/grails-datastore-simple-6.1.9.RELEASE.jar
      Required by:
          project :example > org.grails:grails-dependencies:3.2.4 >
             ...</code></pre>
@@ -1070,12 +1070,12 @@ grails.gorm.default.mapping = {
 <h2 id="gettingStarted">2. Getting Started</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To use GORM 6.1.8 for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
+<p>To use GORM 6.1.9 for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile "org.grails.plugins:hibernate5:6.1.8"
+    compile "org.grails.plugins:hibernate5:6.1.9"
     compile "org.hibernate:hibernate-ehcache"
 }</code></pre>
 </div>
@@ -1085,7 +1085,7 @@ grails.gorm.default.mapping = {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=6.1.8.RELEASE</code></pre>
+<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=6.1.9.RELEASE</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1098,7 +1098,7 @@ grails.gorm.default.mapping = {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("6.1.8.RELEASE")
+            details.useVersion("6.1.9.RELEASE")
         }
     }
 }
@@ -1124,7 +1124,7 @@ dependencies {
 <div class="sect2">
 <h3 id="hibernateVersions">2.2. Configuring Different Hibernate Versions</h3>
 <div class="paragraph">
-<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.1.8.RELEASE.</p>
+<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.1.9.RELEASE.</p>
 </div>
 <div class="sect3">
 <h4 id="_grails_3_2_x_and_above_with_hibernate_4">2.2.1. Grails 3.2.x and above with Hibernate 4</h4>
@@ -1190,7 +1190,7 @@ configurations.all {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.1.8.RELEASE")
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.1.9.RELEASE")
 compile "org.hibernate:hibernate-core:5.1.0.Final"
 compile "org.hibernate:hibernate-ehcache:5.1.0.Final"
 runtime "com.h2database:h2:1.4.192"
@@ -1323,7 +1323,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:6.1.8.RELEASE"
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:6.1.9.RELEASE"
 runtime "com.h2database:h2:1.4.192"
 runtime "org.apache.tomcat:tomcat-jdbc:8.5.0"
 runtime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"
@@ -2141,6 +2141,90 @@ If you have a property called "none" on your domain class, this approach won&#82
 </td>
 </tr>
 </table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_replacing_a_many_to_one_collection">Replacing a many-to-one collection</h5>
+<div class="paragraph">
+<p>Given these GORM entities:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Book</span> {
+    <span class="predefined-type">String</span> name
+    <span class="directive">static</span> hasMany = [<span class="key">reviews</span>: Review]
+}
+<span class="type">class</span> <span class="class">Review</span> {
+    <span class="predefined-type">String</span> author
+    <span class="predefined-type">String</span> quote
+    <span class="directive">static</span> belongsTo = [<span class="key">book</span>: <span class="predefined-type">Book</span>]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Imagine you have a book with two reviews:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">Daemon</span><span class="delimiter">'</span></span>)
+                .addToReviews(<span class="keyword">new</span> Review(<span class="key">quote</span>: <span class="string"><span class="delimiter">'</span><span class="content">Daemon does for surfing the Web what Jaws did for swimming in the ocean.</span><span class="delimiter">'</span></span>, <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Chicago Sun-Times</span><span class="delimiter">'</span></span>))
+                .addToReviews(<span class="keyword">new</span> Review(<span class="key">quote</span>: <span class="string"><span class="delimiter">'</span><span class="content">Daemon is wet-yourself scary, tech-savvy, mind-blowing!</span><span class="delimiter">'</span></span>, <span class="key">author</span>: <span class="string"><span class="delimiter">'</span><span class="content">Paste Magazine</span><span class="delimiter">'</span></span>))
+                .save()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You could create a method to replace the <code>reviews</code> collection as illustrated next:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span> replaceReviews(<span class="predefined-type">Serializable</span> idParam, <span class="predefined-type">List</span>&lt;Review&gt; newReviews) {
+    <span class="predefined-type">Book</span> book = <span class="predefined-type">Book</span>.where { id == idParam }.join(<span class="string"><span class="delimiter">'</span><span class="content">reviews</span><span class="delimiter">'</span></span>).get()
+    clearReviews(book)
+    newReviews.each { book.addToReviews(<span class="local-variable">it</span>) }
+    book.save()
+}
+
+<span class="type">void</span> clearReviews(<span class="predefined-type">Book</span> book) {
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">Serializable</span>&gt; ids = <span class="type">[]</span>
+    book.reviews.collect().each {
+        book.removeFromReviews(<span class="local-variable">it</span>)
+        ids &lt;&lt; <span class="local-variable">it</span>.id
+    }
+    Review.executeUpdate(<span class="string"><span class="delimiter">&quot;</span><span class="content">delete Review r where r.id in :ids</span><span class="delimiter">&quot;</span></span>, [<span class="key">ids</span>: ids])
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alternatively you could leverage <a href="http://docs.grails.org/latest/ref/Database%20Mapping/cascade.html">cascade</a> behaviour.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Book</span> {
+    <span class="predefined-type">String</span> name
+    <span class="directive">static</span> hasMany = [<span class="key">reviews</span>: Review]
+    <span class="directive">static</span> mappping = {
+        reviews <span class="key">cascade</span>: <span class="string"><span class="delimiter">'</span><span class="content">all-delete-orphan</span><span class="delimiter">'</span></span>
+    }
+}
+<span class="type">class</span> <span class="class">Review</span> {
+    <span class="predefined-type">String</span> author
+    <span class="predefined-type">String</span> quote
+    <span class="directive">static</span> belongsTo = [<span class="key">book</span>: <span class="predefined-type">Book</span>]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The cascade behaviour takes cares of deleting every orphan <code>Review</code>. Thus, invoking <code>.clear()</code> suffices to remove the book' previous reviews.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span> replaceReviews(<span class="predefined-type">Serializable</span> idParam, <span class="predefined-type">List</span>&lt;Review&gt; newReviews) {
+    <span class="predefined-type">Book</span> book = <span class="predefined-type">Book</span>.where { id == idParam }.join(<span class="string"><span class="delimiter">'</span><span class="content">reviews</span><span class="delimiter">'</span></span>).get()
+    book.reviews.clear()
+    newReviews.each { book.addToReviews(<span class="local-variable">it</span>) }
+    book.save()
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -7173,7 +7257,22 @@ These mappings will not work for default unidirectional one-to-many or many-to-m
 </div>
 </div>
 <div class="paragraph">
-<p>In this example we rollback the transaction if the destination account is not active. Also, if an unchecked <code>Exception</code> or <code>Error</code> (but not a checked <code>Exception</code>, even though Groovy doesn&#8217;t require that you catch checked exceptions) is thrown during the process the transaction will automatically be rolled back.</p>
+<p>In this example we rollback the transaction if the destination account is not active.</p>
+</div>
+<div class="paragraph">
+<p>Also, if an <code>Exception</code> (both checked or runtime exception) or <code>Error</code> is thrown during the process the transaction will automatically be rolled back..</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+GORM versions prior to 6.0.0 did not roll back transactions for a checked <code>Exception</code>.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>You can also use "save points" to rollback a transaction to a particular point in time if you don&#8217;t want to rollback the entire transaction. This can be achieved through the use of Spring&#8217;s <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/transaction/SavepointManager.html">SavePointManager</a> interface.</p>
@@ -7909,7 +8008,7 @@ RxJava 2.x support is planned for a future release
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx:6.1.8.RELEASE"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx:6.1.9.RELEASE"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -8634,7 +8733,7 @@ sessionFactory.openSession()</code></pre>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:6.1.8.RELEASE"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:6.1.9.RELEASE"</code></pre>
 </div>
 </div>
 </div>

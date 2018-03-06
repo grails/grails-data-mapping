@@ -455,7 +455,22 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="paragraph">
-<p>In this example we rollback the transaction if the destination account is not active. Also, if an unchecked <code>Exception</code> or <code>Error</code> (but not a checked <code>Exception</code>, even though Groovy doesn&#8217;t require that you catch checked exceptions) is thrown during the process the transaction will automatically be rolled back.</p>
+<p>In this example we rollback the transaction if the destination account is not active.</p>
+</div>
+<div class="paragraph">
+<p>Also, if an <code>Exception</code> (both checked or runtime exception) or <code>Error</code> is thrown during the process the transaction will automatically be rolled back..</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+GORM versions prior to 6.0.0 did not roll back transactions for a checked <code>Exception</code>.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>You can also use "save points" to rollback a transaction to a particular point in time if you don&#8217;t want to rollback the entire transaction. This can be achieved through the use of Spring&#8217;s <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/transaction/SavepointManager.html">SavePointManager</a> interface.</p>
