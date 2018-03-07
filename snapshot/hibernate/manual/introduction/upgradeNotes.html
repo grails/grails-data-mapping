@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Separation of GORM Async</title>
+<title>GORM 6.1.9 and Grails 3.2.x</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -422,6 +422,25 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 </div>
 <div id="content">
+<div class="sect3">
+<h4 id="_gorm_6_1_9_and_grails_3_2_x">GORM 6.1.9 and Grails 3.2.x</h4>
+<div class="paragraph">
+<p>Due to several factors, the version of Spring that GORM 6.1.9 requires was updated to 4.3.14. This may impact Grails 3.2.x users that have an older version on their classpath. For Grails 3.2 users that would like to upgrade to GORM 6.1.9, add the following configuration to your <code>build.gradle</code> above the <code>dependencies</code> block.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">configurations.all {
+  resolutionStrategy {
+    eachDependency { DependencyResolveDetails details -&gt;
+        if (details.requested.group == 'org.springframework') {
+          details.useVersion '4.3.14.RELEASE'
+        }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
 <div class="sect3">
 <h4 id="_separation_of_gorm_async">Separation of GORM Async</h4>
 <div class="paragraph">

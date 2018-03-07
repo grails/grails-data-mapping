@@ -791,7 +791,26 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="upgradeNotes">1.2. Upgrade Notes</h3>
 <div class="sect3">
-<h4 id="_separation_of_gorm_async">1.2.1. Separation of GORM Async</h4>
+<h4 id="_gorm_6_1_9_and_grails_3_2_x">1.2.1. GORM 6.1.9 and Grails 3.2.x</h4>
+<div class="paragraph">
+<p>Due to several factors, the version of Spring that GORM 6.1.9 requires was updated to 4.3.14. This may impact Grails 3.2.x users that have an older version on their classpath. For Grails 3.2 users that would like to upgrade to GORM 6.1.9, add the following configuration to your <code>build.gradle</code> above the <code>dependencies</code> block.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">configurations.all {
+  resolutionStrategy {
+    eachDependency { DependencyResolveDetails details -&gt;
+        <span class="keyword">if</span> (details.requested.group == <span class="string"><span class="delimiter">'</span><span class="content">org.springframework</span><span class="delimiter">'</span></span>) {
+          details.useVersion <span class="string"><span class="delimiter">'</span><span class="content">4.3.14.RELEASE</span><span class="delimiter">'</span></span>
+        }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_separation_of_gorm_async">1.2.2. Separation of GORM Async</h4>
 <div class="paragraph">
 <p>GORM Async has been separated from GORM core and is no longer added by default to entities.</p>
 </div>
@@ -820,7 +839,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_removal_of_grails_datastore_simple">1.2.2. Removal of grails-datastore-simple</h4>
+<h4 id="_removal_of_grails_datastore_simple">1.2.3. Removal of grails-datastore-simple</h4>
 <div class="paragraph">
 <p>The <code>grails-datastore-simple</code> and <code>grails-datastore-gorm-test</code> dependencies have been combined into a single <code>grails-datastore-gorm-test</code> dependency.</p>
 </div>
@@ -852,7 +871,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_flush_mode_now_commit_by_default">1.2.3. Flush Mode Now COMMIT by Default</h4>
+<h4 id="_flush_mode_now_commit_by_default">1.2.4. Flush Mode Now COMMIT by Default</h4>
 <div class="paragraph">
 <p>In previous versions of GORM the flush mode defaulted to AUTO. With this setting the session would be flushed with or without the presence of a transaction and before every query.</p>
 </div>
@@ -871,7 +890,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_multiple_data_source_configuration_changes">1.2.4. Multiple Data Source Configuration Changes</h4>
+<h4 id="_multiple_data_source_configuration_changes">1.2.5. Multiple Data Source Configuration Changes</h4>
 <div class="paragraph">
 <p>Configuration of multiple data sources has changed such that the default data source should be configured at the top level and additional data sources should be configured below the <code>dataSources</code> block. In other words instead of:</p>
 </div>
@@ -916,7 +935,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_write_operations_without_a_transaction">1.2.5. Write Operations without a Transaction</h4>
+<h4 id="_write_operations_without_a_transaction">1.2.6. Write Operations without a Transaction</h4>
 <div class="paragraph">
 <p>With the aforementioned changes to the default flush mode, write operations that are not surrounded by a transaction may not propagate changes to the database unless <code>flush:true</code> is explicitly passed or the session explicitly flushed.</p>
 </div>
@@ -928,13 +947,13 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_changes_to_configuration_model">1.2.6. Changes to Configuration Model</h4>
+<h4 id="_changes_to_configuration_model">1.2.7. Changes to Configuration Model</h4>
 <div class="paragraph">
 <p>In preparation for Hibernate 5.2 support the previous "SessionFactoryBean" notion has been removed. Now if you wish to customize <code>SessionFactory</code> creation you should instead register a custom <code>org.grails.orm.hibernate.connections.HibernateConnectionSourceFactory</code> in Spring.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_identityenumtype_handling_changed">1.2.7. IdentityEnumType Handling Changed</h4>
+<h4 id="_identityenumtype_handling_changed">1.2.8. IdentityEnumType Handling Changed</h4>
 <div class="paragraph">
 <p>Previous versions of GORM shipped with a <code>org.grails.orm.hibernate.cfg.IdentityEnumType</code> class for altering the handling of enums. In order to support different versions of Hibernate 5.x which feature different signatures for the <code>org.hibernate.usertype.UserType</code> interface this class has been removed.</p>
 </div>
@@ -950,7 +969,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_changes_to_support_hibernate_5_2">1.2.8. Changes to Support Hibernate 5.2</h4>
+<h4 id="_changes_to_support_hibernate_5_2">1.2.9. Changes to Support Hibernate 5.2</h4>
 <div class="paragraph">
 <p>Hibernate 5.2 includes many breaking API changes, in order to support Hibernate 5.2 several classes have been removed or rewritten. Including:</p>
 </div>
@@ -975,7 +994,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_domain_autowiring_disabled_by_default">1.2.9. Domain Autowiring Disabled by Default</h4>
+<h4 id="_domain_autowiring_disabled_by_default">1.2.10. Domain Autowiring Disabled by Default</h4>
 <div class="paragraph">
 <p>Spring autowiring of domain instances has been disabled by default because it represents a performance bottleneck. If you are autowiring services into your domain instances you will need to re-enable using the <code>mapping</code> block:</p>
 </div>
@@ -991,7 +1010,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_field_accesstype_by_default">1.2.10. Field AccessType by Default</h4>
+<h4 id="_field_accesstype_by_default">1.2.11. Field AccessType by Default</h4>
 <div class="paragraph">
 <p>Previous versions of GORM used property access to read and write values to entities by default. In other words the respective getters and setters were used when reflecting on the instances. GORM 6.1 uses field access by default instead, which means the field is used when reading and writing data via reflection to instances.</p>
 </div>
@@ -1008,13 +1027,13 @@ grails.gorm.default.mapping = {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_fail_on_error_package_setting_renamed">1.2.11. Fail on Error Package Setting Renamed</h4>
+<h4 id="_fail_on_error_package_setting_renamed">1.2.12. Fail on Error Package Setting Renamed</h4>
 <div class="paragraph">
 <p>The <code>grails.gorm.failOnError</code> setting can no longer be used to configure the packages to enable fail on error. Instead <code>grails.gorm.failOnErrorPackages</code> should be used.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_new_dirty_checking_implementation">1.2.12. New Dirty Checking Implementation</h4>
+<h4 id="_new_dirty_checking_implementation">1.2.13. New Dirty Checking Implementation</h4>
 <div class="paragraph">
 <p>GORM now includes its own implementation of dirty checking in order to improve performance. This implementation uses the <code>DirtyCheckable</code> trait to store changes in the entity itself so that Hibernate does not have to do internal array comparison to verify whether an object has changed or not.</p>
 </div>
@@ -1032,7 +1051,7 @@ grails.gorm.default.mapping = {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_dirty_checking_for_abstract_base_classes">1.2.13. Dirty Checking for Abstract Base Classes</h4>
+<h4 id="_dirty_checking_for_abstract_base_classes">1.2.14. Dirty Checking for Abstract Base Classes</h4>
 <div class="paragraph">
 <p>Domain objects can inherit from abstract base classes defined in the <code>src</code> directory. Previous versions of GORM performed dirty checking automatically on fields from any abstract base class. GORM 6.1 requires that the abstract base class be marked with the <code>@DirtyCheck</code> annotation to include the base class fields in domain object dirty checking:</p>
 </div>
@@ -1048,7 +1067,7 @@ grails.gorm.default.mapping = {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_dirty_checking_for_embedded_classes">1.2.14. Dirty Checking for Embedded Classes</h4>
+<h4 id="_dirty_checking_for_embedded_classes">1.2.15. Dirty Checking for Embedded Classes</h4>
 <div class="paragraph">
 <p>Domain objects embed classes defined in the <code>src</code> directory. Previous versions of GORM performed dirty checking automatically on fields an embedded entity. GORM 6.1 requires that the embedded class be marked with the <code>@DirtyCheck</code> annotation to include the embedded class fields in domain object dirty checking:</p>
 </div>
