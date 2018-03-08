@@ -29,6 +29,24 @@ class EnumHasManySpec extends GormDatastoreSpec{
         then:"The results are correct"
              Animal.findByName('zebra').traits.size() == 3
     }
+
+    void "Test removeFrom collection of enums"() {
+        setup:
+            Animal zebra = new Animal(name: 'zebra')
+            zebra.addToTraits(Trait.FOUR_LEGS)
+            zebra.addToTraits(Trait.TAIL)
+            zebra.addToTraits(Trait.STRIPES)
+
+        when:
+            zebra.removeFromTraits(Trait.FOUR_LEGS)
+            zebra.save(flush: true)
+
+        then:
+            zebra.traits.size() == 2
+            !zebra.traits.contains(Trait.FOUR_LEGS)
+            zebra.traits.contains(Trait.TAIL)
+            zebra.traits.contains(Trait.STRIPES)
+    }
 }
 
 @Entity
