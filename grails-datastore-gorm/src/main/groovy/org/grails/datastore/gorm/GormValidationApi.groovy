@@ -115,9 +115,9 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
             if (validator instanceof org.grails.datastore.gorm.validation.CascadingValidator) {
                 ((org.grails.datastore.gorm.validation.CascadingValidator) validator).validate instance, localErrors, arguments?.deepValidate != false
             } else if (validator instanceof grails.gorm.validation.CascadingValidator) {
-                ((grails.gorm.validation.CascadingValidator) validator).validate instance, errors, arguments?.deepValidate != false
+                ((grails.gorm.validation.CascadingValidator) validator).validate instance, localErrors, arguments?.deepValidate != false
             } else {
-                validator.validate instance, errors
+                validator.validate instance, localErrors
             }
 
             if (fields) {
