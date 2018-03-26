@@ -254,8 +254,8 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             return Collections.emptyMap();
         }
         Map values = new HashMap();
-        for (int i = maps.size(); i > 0; i--) {
-            Map map = maps.get(i - 1);
+        for (int i = 0; i < maps.size(); i++) {
+            Map map = maps.get(i);
             values.putAll(map);
         }
         return values;
