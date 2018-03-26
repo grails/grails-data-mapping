@@ -224,7 +224,22 @@ class HibernateConnectionSourceSettings extends ConnectionSourceSettings {
                 props.put('hibernate.entity_dirtiness_strategy', entity_dirtiness_strategy.name)
             }
 
-            props.put("hibernate.connection.handling_mode", "DELAYED_ACQUISITION_AND_HOLD")
+            // Hibernate 5.1/5.2: manually enforce connection release mode ON_CLOSE (the former default)
+            try {
+                // Try Hibernate 5.2
+                AvailableSettings.class.getField("CONNECTION_HANDLING")
+                props.put("hibernate.connection.handling_mode", "DELAYED_ACQUISITION_AND_HOLD")
+            }
+            catch (NoSuchFieldException ex) {
+                // Try Hibernate 5.1
+                try {
+                    AvailableSettings.class.getField("ACQUIRE_CONNECTIONS")
+                    props.put("hibernate.connection.release_mode", "ON_CLOSE")
+                }
+                catch (NoSuchFieldException ex2) {
+                    // on Hibernate 5.0.x or lower - no need to change the default there
+                }
+            }
 
             String prefix = "hibernate"
             props.putAll( additionalProperties )

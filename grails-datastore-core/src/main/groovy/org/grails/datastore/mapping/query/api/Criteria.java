@@ -15,6 +15,7 @@
 package org.grails.datastore.mapping.query.api;
 
 import groovy.lang.Closure;
+import groovy.lang.DelegatesTo;
 import org.grails.datastore.mapping.query.Query;
 
 import java.util.Collection;
@@ -208,21 +209,21 @@ public interface Criteria  {
      *
      * @return This criteria
      */
-    Criteria and(Closure callable);
+    Criteria and(@DelegatesTo(Criteria.class) Closure callable);
 
     /**
      * Creates a logical disjunction
      * @param callable The closure
      * @return This criteria
      */
-    Criteria or(Closure callable);
+    Criteria or(@DelegatesTo(Criteria.class) Closure callable);
 
     /**
      * Creates a logical negation
      * @param callable The closure
      * @return This criteria
      */
-    Criteria not(Closure callable);
+    Criteria not(@DelegatesTo(Criteria.class) Closure callable);
 
     /**
      * Creates an "in" Criterion based on the specified property name and list of values

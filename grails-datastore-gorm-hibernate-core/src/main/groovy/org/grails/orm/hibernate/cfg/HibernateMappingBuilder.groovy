@@ -475,8 +475,12 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
             property.max = namedArgs.max instanceof Comparable ? namedArgs.max : property.max
             property.min = namedArgs.min instanceof Comparable ? namedArgs.min : property.min
             property.range = namedArgs.range instanceof ObjectRange ? namedArgs.range : null
-            property.scale = namedArgs.scale instanceof Integer ? namedArgs.scale : property.scale
             property.inList = namedArgs.inList instanceof List ? namedArgs.inList : property.inList
+
+            // Need to guard around calling getScale() for multi-column properties (issue #1048)
+            if (namedArgs.scale instanceof Integer) {
+                property.scale = (Integer)namedArgs.scale
+            }
 
             if (namedArgs.fetch) {
                 switch(namedArgs.fetch) {

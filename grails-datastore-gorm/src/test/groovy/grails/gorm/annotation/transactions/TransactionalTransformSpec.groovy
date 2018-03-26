@@ -826,7 +826,7 @@ new BookService()
         bean.process() != null
         bean.isActualTransactionActive() == false
         bean.name == 'Grails'
-        bean.isActive() == false
+        bean.isActive() == true
     }
 
     @Issue(['GRAILS-11145', 'GRAILS-11134'])
@@ -986,8 +986,38 @@ new SomeClass()
         someClass.getAge()
         someClass.getPhone()
     }
+
+    void "test transactional behavior is applied to methods that aren't setters but start with set"() {
+        when:
+        def someClass = new GroovyShell().evaluate('''
+package demo
+
+    import grails.gorm.transactions.*
+    import org.springframework.transaction.support.*
+    
+@Transactional
+class SomeClass {
+
+    public void setupSessionAfterLogin(String username) {
+        assert TransactionSynchronizationManager.isActualTransactionActive()
+    }
+
 }
-@grails.transaction.Transactional
+
+new SomeClass()
+''')
+
+        final transactionManager = getPlatformTransactionManager()
+        someClass.transactionManager = transactionManager
+        someClass.setupSessionAfterLogin('x')
+
+        then:
+        noExceptionThrown()
+    }
+}
+
+
+@grails.gorm.transactions.Transactional
 class TransactionalTransformSpecService implements InitializingBean {
     String name
 
@@ -995,7 +1025,7 @@ class TransactionalTransformSpecService implements InitializingBean {
         return transactionStatus
     }
 
-    @grails.transaction.NotTransactional
+    @grails.gorm.transactions.NotTransactional
     public boolean isActualTransactionActive() {
         return TransactionSynchronizationManager.isActualTransactionActive()
     }

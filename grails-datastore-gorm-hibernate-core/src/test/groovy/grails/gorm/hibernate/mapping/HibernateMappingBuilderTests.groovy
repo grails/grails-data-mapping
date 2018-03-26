@@ -694,6 +694,43 @@ class HibernateMappingBuilderTests extends GroovyTestCase {
         shouldFail { mapping.columns.amount.sqlType }
     }
 
+    void testConstrainedPropertyWithMultipleColumns() {
+        def builder = new HibernateMappingBuilder("Foo")
+        builder.evaluate {
+            amount type: MyUserType, {
+                column name: "value"
+                column name: "currency", sqlType: "char", length: 3
+            }
+        }
+        def mapping = builder.evaluate {
+            amount nullable: true
+        }
+
+        assertEquals 2, mapping.columns.amount.columns.size()
+        assertEquals "value", mapping.columns.amount.columns[0].name
+        assertEquals "currency", mapping.columns.amount.columns[1].name
+        assertEquals "char", mapping.columns.amount.columns[1].sqlType
+        assertEquals 3, mapping.columns.amount.columns[1].length
+
+        shouldFail { mapping.columns.amount.column }
+        shouldFail { mapping.columns.amount.sqlType }
+    }
+
+    void testDisallowedConstrainedPropertyWithMultipleColumns() {
+        def builder = new HibernateMappingBuilder("Foo")
+        builder.evaluate {
+            amount type: MyUserType, {
+                column name: "value"
+                column name: "currency", sqlType: "char", length: 3
+            }
+        }
+        assert shouldFail {
+            builder.evaluate {
+                amount scale: 2
+            }
+        } == "Cannot treat multi-column property as a single-column property"
+    }
+
     void testPropertyWithUserTypeAndNoParams() {
         def builder = new HibernateMappingBuilder("Foo")
         def mapping = builder.evaluate {

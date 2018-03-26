@@ -98,8 +98,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         MultiTenancySettings multiTenancySettings = settings.getMultiTenancy();
         final TenantResolver multiTenantResolver = multiTenancySettings.getTenantResolver();
 
-        MultiTenancySettings.MultiTenancyMode multiTenancySettingsMode = multiTenancySettings.getMode();
-        this.multiTenantMode = multiTenancySettingsMode;
+        this.multiTenantMode = multiTenancySettings.getMode();
         Class<? extends SchemaHandler> schemaHandlerClass = settings.getDataSource().getSchemaHandler();
         this.schemaHandler = BeanUtils.instantiate(schemaHandlerClass);
         this.tenantResolver = multiTenantResolver;

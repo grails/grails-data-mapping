@@ -144,36 +144,40 @@ abstract class ConfigurationBuilder<B, C> {
                 }
                 def parameterTypes = method.parameterTypes
 
+                String settingName
+
+                boolean hasBuilderPrefix = builderMethodPrefix != null
+
+                if (hasBuilderPrefix && methodName.startsWith(builderMethodPrefix)) {
+                    settingName = methodName.substring(builderMethodPrefix.size()).uncapitalize()
+                }
+                else if(hasBuilderPrefix) {
+                    continue
+                }
+                else if(!hasBuilderPrefix &&
+                        ((org.grails.datastore.mapping.reflect.ReflectionUtils.isGetter(methodName, parameterTypes) && method.returnType.getAnnotation(Builder) == null) ||
+                        org.grails.datastore.mapping.reflect.ReflectionUtils.isSetter(methodName, parameterTypes))) {
+                    // don't process getters or setters, unless the getter returns a builder
+                    continue
+                }
+                else {
+                    settingName = methodName
+                }
+
+                String propertyPath = startingPrefix ? "${startingPrefix}.${settingName}" : settingName
+
                 if (parameterTypes.length == 1) {
                     Class argType = parameterTypes[0]
-                    String settingName
-
-                    boolean hasBuilderPrefix = builderMethodPrefix != null
-                    if (hasBuilderPrefix && methodName.startsWith(builderMethodPrefix)) {
-                        settingName = String.valueOf(Character.toLowerCase(methodName.charAt(4))) + methodName.substring(5)
-                    }
-                    else if(hasBuilderPrefix) {
-                        continue
-                    }
-                    else if(!hasBuilderPrefix && (org.grails.datastore.mapping.reflect.ReflectionUtils.isGetter(methodName, parameterTypes) ||
-                            org.grails.datastore.mapping.reflect.ReflectionUtils.isSetter(methodName, parameterTypes))) {
-                        // don't process getters by default
-                        continue
-                    }
-                    else {
-                        settingName = methodName
-                    }
 
                     def builderMethod = ReflectionUtils.findMethod(argType, 'builder')
-                    String propertyPath = startingPrefix ? "${startingPrefix}.${settingName}" : settingName
                     if (builderMethod != null && Modifier.isStatic(builderMethod.modifiers)) {
                         Method existingGetter = ReflectionUtils.findMethod(builderClass, NameUtils.getGetterName(methodName))
                         def newBuilder
 
-                        if( existingGetter != null ) {
+                        if (existingGetter != null) {
                             newBuilder = existingGetter.invoke(builder)
                         }
-                        if(newBuilder == null) {
+                        if (newBuilder == null) {
                             newBuilder = builderMethod.invoke(argType)
                         }
 
@@ -183,81 +187,78 @@ abstract class ConfigurationBuilder<B, C> {
                         buildRecurse(newBuilder, fallBackChildConfig, propertyPath)
 
                         def buildMethod = ReflectionUtils.findMethod(newBuilder.getClass(), 'build')
-                        if(buildMethod != null) {
+                        if (buildMethod != null) {
                             method.invoke(builder, buildMethod.invoke(newBuilder))
-                        }
-                        else {
-                            method.invoke(builder, newBuilder )
+                        } else {
+                            method.invoke(builder, newBuilder)
                         }
                         continue
                     }
 
                     def buildMethod = ReflectionUtils.findMethod(argType, 'build')
-                    if(buildMethod != null) {
+                    if (buildMethod != null) {
                         Method existingGetter = ReflectionUtils.findMethod(builderClass, NameUtils.getGetterName(methodName))
                         def newBuilder
 
-                        if( existingGetter != null ) {
+                        if (existingGetter != null) {
                             newBuilder = existingGetter.invoke(builder)
 
-                            if(newBuilder != null) {
+                            if (newBuilder != null) {
                                 Object fallBackChildConfig = getFallBackValue(fallBackConfig, settingName)
                                 newBuilder = newChildBuilderForFallback(newBuilder, fallBackChildConfig)
                                 buildRecurse(newBuilder, fallBackChildConfig, propertyPath)
                                 newChildBuilder(newBuilder, propertyPath)
-                                method.invoke(builder, newBuilder )
+                                method.invoke(builder, newBuilder)
                                 continue
                             }
                         }
                     }
 
                     Builder builderAnnotation = argType.getAnnotation(Builder)
-                    if(builderAnnotation != null && builderAnnotation.builderStrategy() == SimpleStrategy) {
+                    if (builderAnnotation != null && builderAnnotation.builderStrategy() == SimpleStrategy) {
                         Method existingGetter = ReflectionUtils.findMethod(builderClass, NameUtils.getGetterName(methodName))
                         def newBuilder
-                        if( existingGetter != null ) {
+                        if (existingGetter != null) {
                             newBuilder = existingGetter.invoke(builder)
                         }
-                        if(newBuilder == null) {
+                        if (newBuilder == null) {
                             newBuilder = argType.newInstance()
                         }
 
-                        if(newBuilder instanceof Map) {
+                        if (newBuilder instanceof Map) {
                             Map subMap = propertyResolver.getProperty(propertyPath, Map, Collections.emptyMap())
-                            if(!subMap.isEmpty()) {
-                                ((Map)newBuilder).putAll(subMap)
+                            if (!subMap.isEmpty()) {
+                                ((Map) newBuilder).putAll(subMap)
                             }
                         }
 
                         newChildBuilder(newBuilder, propertyPath)
 
                         Object fallBackChildConfig = getFallBackValue(fallBackConfig, methodName)
-                        buildRecurse(newBuilder,fallBackChildConfig, propertyPath)
+                        buildRecurse(newBuilder, fallBackChildConfig, propertyPath)
                         method.invoke(builder, newBuilder)
                         continue
                     }
 
-                    if(ConfigurationBuilder.isAssignableFrom(argType)) {
+                    if (ConfigurationBuilder.isAssignableFrom(argType)) {
                         try {
                             Method existingGetter = ReflectionUtils.findMethod(builderClass, NameUtils.getGetterName(methodName))
                             ConfigurationBuilder newBuilder
-                            if( existingGetter != null ) {
-                                newBuilder = (ConfigurationBuilder)existingGetter.invoke(builder)
+                            if (existingGetter != null) {
+                                newBuilder = (ConfigurationBuilder) existingGetter.invoke(builder)
                             }
-                            if(newBuilder == null) {
+                            if (newBuilder == null) {
 
-                                if(fallBackConfig != null && builderClass.isInstance(fallBackConfig)) {
+                                if (fallBackConfig != null && builderClass.isInstance(fallBackConfig)) {
 
-                                    ConfigurationBuilder fallbackBuilder = (ConfigurationBuilder)existingGetter.invoke(fallBackConfig)
-                                    if(fallbackBuilder != null) {
-                                        newBuilder = (ConfigurationBuilder)argType.newInstance(this.propertyResolver, propertyPath, fallbackBuilder.build())
+                                    ConfigurationBuilder fallbackBuilder = (ConfigurationBuilder) existingGetter.invoke(fallBackConfig)
+                                    if (fallbackBuilder != null) {
+                                        newBuilder = (ConfigurationBuilder) argType.newInstance(this.propertyResolver, propertyPath, fallbackBuilder.build())
+                                    } else {
+                                        newBuilder = (ConfigurationBuilder) argType.newInstance(this.propertyResolver, propertyPath)
                                     }
-                                    else {
-                                        newBuilder = (ConfigurationBuilder)argType.newInstance(this.propertyResolver, propertyPath)
-                                    }
-                                }
-                                else {
-                                    newBuilder = (ConfigurationBuilder)argType.newInstance(this.propertyResolver, propertyPath)
+                                } else {
+                                    newBuilder = (ConfigurationBuilder) argType.newInstance(this.propertyResolver, propertyPath)
                                 }
 
 
@@ -269,51 +270,6 @@ abstract class ConfigurationBuilder<B, C> {
                         }
                         continue
                     }
-
-                    def valueOfMethod = ReflectionUtils.findMethod(argType, 'valueOf')
-                    if (valueOfMethod != null && Modifier.isStatic(valueOfMethod.modifiers)) {
-                        try {
-                            def value = propertyResolver.getProperty(propertyPath, "")
-                            if(value) {
-                                def converted = valueOfMethod.invoke(argType, value)
-                                method.invoke(builder, converted)
-                            }
-                        } catch (Throwable e) {
-                            throw new ConfigurationException("Cannot read configuration for path $propertyPath: $e.message", e)
-                        }
-                    }
-                    else {
-                        Object fallBackValue = getFallBackValue(fallBackConfig, settingName)
-
-                        def value
-                        try {
-                            value = propertyResolver.getProperty(propertyPath, argType, fallBackValue)
-                        } catch (ConversionFailedException e) {
-                            if(argType.isEnum()) {
-                                value = propertyResolver.getProperty(propertyPath, String)
-                                if(value != null) {
-                                    try {
-                                        value = Enum.valueOf((Class)argType, value.toUpperCase())
-                                    } catch (Throwable e2) {
-                                        // ignore e2 and throw original
-                                        throw new ConfigurationException("Invalid value for setting [$propertyPath]: $e.message", e)
-                                    }
-                                }
-                                else {
-                                    throw new ConfigurationException("Invalid value for setting [$propertyPath]: $e.message", e)
-                                }
-                            }
-                            else {
-                                throw new ConfigurationException("Invalid value for setting [$propertyPath]: $e.message", e)
-                            }
-                        }
-                        if (value != null) {
-                            log.debug("Resolved value [{}] for setting [{}]", value, propertyPath)
-                            ReflectionUtils.makeAccessible(method)
-                            ReflectionUtils.invokeMethod(method, builder, value)
-                        }
-                    }
-
                 } else if (methodName.startsWith("get") && parameterTypes.length == 0) {
                     if (method.returnType.getAnnotation(Builder)) {
                         def childBuilder = method.invoke(builder)
@@ -326,10 +282,82 @@ abstract class ConfigurationBuilder<B, C> {
                                 }
                             }
 
-                            String propertyPath = startingPrefix ? "${startingPrefix}.${NameUtils.getPropertyNameForGetterOrSetter(methodName)}" : NameUtils.getPropertyNameForGetterOrSetter(methodName)
-                            buildRecurse(childBuilder, fallBackChildConfig, propertyPath)
+                            String getterPropertyPath = startingPrefix ? "${startingPrefix}.${NameUtils.getPropertyNameForGetterOrSetter(methodName)}" : NameUtils.getPropertyNameForGetterOrSetter(methodName)
+                            buildRecurse(childBuilder, fallBackChildConfig, getterPropertyPath)
+                            continue
                         }
                     }
+                } else if (parameterTypes.length == 0) {
+                    def value = propertyResolver.getProperty(propertyPath, Boolean, false)
+                    if (value) {
+                        try {
+                            method.invoke(builder)
+                        } catch (Throwable e) {
+                            throw new ConfigurationException("Error executing method for path $propertyPath: $e.message", e)
+                        }
+                    }
+                    continue
+                }
+
+                List<Object> args = []
+
+                boolean appendArgName = parameterTypes.length > 1
+                int argIndex = 0
+
+                for (Class argType: parameterTypes) {
+                    String propertyPathForArg = propertyPath
+                    if (appendArgName) {
+                        propertyPathForArg += ".arg${argIndex}"
+                    }
+                    argIndex++
+                    def valueOfMethod = ReflectionUtils.findMethod(argType, 'valueOf')
+                    if (valueOfMethod != null && Modifier.isStatic(valueOfMethod.modifiers)) {
+                        try {
+                            def value = propertyResolver.getProperty(propertyPathForArg, "")
+                            if (value) {
+                                def converted = valueOfMethod.invoke(argType, value)
+                                args.add(converted)
+                            }
+                        } catch (Throwable e) {
+                            throw new ConfigurationException("Cannot read configuration for path $propertyPathForArg: $e.message", e)
+                        }
+                    }
+                    else {
+                        Object fallBackValue = getFallBackValue(fallBackConfig, settingName)
+
+                        def value
+                        try {
+                            value = propertyResolver.getProperty(propertyPathForArg, argType, fallBackValue)
+                        } catch (ConversionFailedException e) {
+                            if(argType.isEnum()) {
+                                value = propertyResolver.getProperty(propertyPathForArg, String)
+                                if(value != null) {
+                                    try {
+                                        value = Enum.valueOf((Class)argType, value.toUpperCase())
+                                    } catch (Throwable e2) {
+                                        // ignore e2 and throw original
+                                        throw new ConfigurationException("Invalid value for setting [$propertyPathForArg]: $e.message", e)
+                                    }
+                                }
+                                else {
+                                    throw new ConfigurationException("Invalid value for setting [$propertyPathForArg]: $e.message", e)
+                                }
+                            }
+                            else {
+                                throw new ConfigurationException("Invalid value for setting [$propertyPathForArg]: $e.message", e)
+                            }
+                        }
+                        if (value != null) {
+                            log.debug("Resolved value [{}] for setting [{}]", value, propertyPathForArg)
+                            args.add(value)
+                        }
+
+                    }
+                }
+
+                if (args) {
+                    ReflectionUtils.makeAccessible(method)
+                    ReflectionUtils.invokeMethod(method, builder, args.toArray())
                 }
             }
 
