@@ -549,6 +549,41 @@ class Foo {
         org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
     }
 
+    void "test @Query update annotation using id attribute"() {
+        when:"The service transform is applied to an interface it can't implement"
+        Class service = new GroovyClassLoader().parseClass('''
+import grails.gorm.services.*
+import grails.gorm.annotation.Entity
+
+@Service(Foo)
+interface MyService {
+
+    @Query("update ${Foo foo} set ${foo.title} = $newTitle where $foo.id = $id") 
+    Number updateTitle(String newTitle, Long id)
+    
+    @Query("delete ${Foo foo} where $foo.title = $title")
+    void kill(String title)
+}
+@Entity
+class Foo {
+    String title
+}
+
+''')
+
+        then:
+        service.isInterface()
+        println service.classLoader.loadedClasses
+
+        when:"the impl is obtained"
+        Class impl = service.classLoader.loadClass("\$MyServiceImplementation")
+
+        then:"The impl is valid"
+        impl.getMethod("updateTitle", String, String).getAnnotation(Transactional)
+        org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
+    }
+
+
     void "test @Query update annotation with default transaction attributes at class level"() {
         when:"The service transform is applied to an interface it can't implement"
         Class service = new GroovyClassLoader().parseClass('''
