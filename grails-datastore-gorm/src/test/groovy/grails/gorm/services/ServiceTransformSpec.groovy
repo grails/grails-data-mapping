@@ -579,7 +579,7 @@ class Foo {
         Class impl = service.classLoader.loadClass("\$MyServiceImplementation")
 
         then:"The impl is valid"
-        impl.getMethod("updateTitle", String, String).getAnnotation(Transactional)
+        impl.getMethod("updateTitle", String, Long).getAnnotation(Transactional)
         org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
     }
 
