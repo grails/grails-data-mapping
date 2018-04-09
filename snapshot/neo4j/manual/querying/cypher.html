@@ -432,11 +432,19 @@ def clubs = Club.findAll("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenc
 </div>
 </div>
 <div class="paragraph">
-<p>Note that the first returned item should be the node itself. To execute cypher queries and work with the raw results use <code>cypherStatic</code>:</p>
+<p>Note that the first returned item should be the node itself. To execute cypher queries and work with the raw results use <code>executeCypher</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">StatementResult result = Club.cypherStatic("MATCH n where n.name = {1} RETURN n", ['FC Bayern Muenchen'])</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">StatementResult result = Club.executeCypher("MATCH n where n.name = {1} RETURN n", ['FC Bayern Muenchen'])</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or alternatively you can use <code>executeQuery</code> which will return a list of results:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">List&lt;Node&gt; nodes = Club.executeQuery("MATCH n where n.name = {1} RETURN n", ['FC Bayern Muenchen'])</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -447,6 +455,18 @@ def clubs = Club.findAll("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenc
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">Node myNode = ...
  Club club = myNode as Club</code></pre>
 </div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+This also works for <code>Relationship</code> and <code>Path</code> types
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>You can also convert any <a href="http://neo4j.com/docs/api/java-driver/1.0/org/neo4j/driver/v1/StatementResult.html">org.neo4j.driver.v1.StatementResult</a> instance to a list of domain classes:</p>
