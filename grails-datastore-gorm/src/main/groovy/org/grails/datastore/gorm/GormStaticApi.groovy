@@ -273,7 +273,20 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
      */
     void deleteAll(Object... objectsToDelete) {
         execute({ Session session ->
-           session.delete Arrays.asList(objectsToDelete)
+            session.delete Arrays.asList(objectsToDelete)
+        } as SessionCallback)
+    }
+
+    /**
+     * Deletes a list of objects in one go and flushes when param is set
+     * @param objectsToDelete The objects to delete
+     */
+    void deleteAll(Map params, Object... objectsToDelete) {
+        execute({ Session session ->
+            session.delete Arrays.asList(objectsToDelete)
+            if(params?.flush) {
+                session.flush()
+            }
         } as SessionCallback)
     }
 
@@ -284,6 +297,19 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
     void deleteAll(Iterable objectToDelete) {
         execute({ Session session ->
             session.delete objectToDelete
+        } as SessionCallback)
+    }
+
+    /**
+     * Deletes a list of objects in one go and flushes when param is set
+     * @param objectsToDelete Collection of objects to delete
+     */
+    void deleteAll(Map params, Iterable objectToDelete) {
+        execute({ Session session ->
+            session.delete objectToDelete
+            if(params?.flush) {
+                session.flush()
+            }
         } as SessionCallback)
     }
 

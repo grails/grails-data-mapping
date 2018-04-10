@@ -513,11 +513,27 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
     }
 
     /**
+     * Deletes a list of objects in one go and flushes when param is set
+     * @param objectsToDelete The objects to delete
+     */
+    static void deleteAll(Map params, Object... objectsToDelete) {
+        currentGormStaticApi().deleteAll params, objectsToDelete
+    }
+
+    /**
      * Deletes a list of objects in one go
      * @param objectsToDelete Collection of objects to delete
      */
     static void deleteAll(Iterable objectToDelete) {
         currentGormStaticApi().deleteAll objectToDelete
+    }
+
+    /**
+     * Deletes a list of objects in one go and flushes when param is set
+     * @param objectsToDelete Collection of objects to delete
+     */
+    static void deleteAll(Map params, Iterable objectToDelete) {
+        currentGormStaticApi().deleteAll params, objectToDelete
     }
 
     /**
