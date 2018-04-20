@@ -1578,7 +1578,8 @@ new Person(<span class="key">friends</span>:[<span class="string"><span class="d
     <span class="predefined-type">String</span> id
 }
 ...
-def p = <span class="keyword">new</span> Person(<span class="key">id</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>)
+Person p = <span class="keyword">new</span> Person()
+p.id = <span class="string"><span class="delimiter">&quot;</span><span class="content">Fred</span><span class="delimiter">&quot;</span></span>
 <span class="comment">// to insert</span>
 p.insert()
 <span class="comment">// to update</span>
@@ -2121,7 +2122,9 @@ class Restaurant {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">new</span> Restaurant(<span class="key">id</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">Dan's Burgers</span><span class="delimiter">&quot;</span></span>, <span class="key">location</span>: <span class="keyword">new</span> <span class="predefined-type">Point</span>(<span class="integer">50</span>, <span class="integer">50</span>)).save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)
+<pre class="CodeRay highlight"><code data-lang="groovy">Restaurant r = <span class="keyword">new</span> Restaurant(<span class="key">location</span>: <span class="keyword">new</span> <span class="predefined-type">Point</span>(<span class="integer">50</span>, <span class="integer">50</span>))
+r.id = <span class="string"><span class="delimiter">&quot;</span><span class="content">Dan's Burgers</span><span class="delimiter">&quot;</span></span>
+r.save(<span class="key">flush</span>:<span class="predefined-constant">true</span>)
 
 Restaurant.findByLocation(<span class="keyword">new</span> <span class="predefined-type">Point</span>(<span class="integer">50</span>,<span class="integer">50</span>))</code></pre>
 </div>
@@ -2929,7 +2932,8 @@ b.save(<span class="key">flush</span>:<span class="predefined-constant">true</sp
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> b = <span class="keyword">new</span> <span class="predefined-type">Book</span>(<span class="key">id</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">The Book</span><span class="delimiter">&quot;</span></span>)
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Book</span> b = <span class="keyword">new</span> <span class="predefined-type">Book</span>()
+b.id = <span class="string"><span class="delimiter">&quot;</span><span class="content">The Book</span><span class="delimiter">&quot;</span></span>
 b.insert()</code></pre>
 </div>
 </div>
