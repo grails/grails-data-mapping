@@ -17,7 +17,6 @@ package org.grails.orm.hibernate
 
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.validation.CascadingValidator
-import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.ClassUtils
 import org.grails.datastore.mapping.validation.ValidationErrors
 import org.grails.orm.hibernate.support.HibernateRuntimeUtils
@@ -81,10 +80,11 @@ abstract class AbstractHibernateGormValidationApi<D> extends GormValidationApi<D
             def previous = readPreviousFlushMode(session)
             applyManualFlush(session)
             try {
-                if (deepValidate && (validator instanceof CascadingValidator)) {
+                if (validator instanceof CascadingValidator) {
                     ((CascadingValidator)validator).validate instance, errors, deepValidate
-                }
-                else {
+                } else if (validator instanceof grails.gorm.validation.CascadingValidator) {
+                    ((grails.gorm.validation.CascadingValidator) validator).validate instance, errors, deepValidate
+                } else {
                     validator.validate instance, errors
                 }
             } finally {

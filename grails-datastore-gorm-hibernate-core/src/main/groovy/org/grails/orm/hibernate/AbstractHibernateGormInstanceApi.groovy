@@ -22,8 +22,9 @@ import org.grails.datastore.gorm.GormValidateable
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.model.types.Embedded
+import org.grails.datastore.mapping.model.types.EmbeddedCollection
+import org.grails.datastore.mapping.model.types.ToMany
 import org.grails.datastore.mapping.proxy.ProxyHandler
-import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.mapping.reflect.ClassUtils
 import org.grails.datastore.mapping.reflect.EntityReflector
 import org.grails.orm.hibernate.support.HibernateRuntimeUtils
@@ -106,6 +107,11 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
 
         HibernateRuntimeUtils.autoAssociateBidirectionalOneToOnes(domainClass, target)
 
+        boolean deepValidate = true
+        if (arguments?.containsKey(ARGUMENT_DEEP_VALIDATE)) {
+            deepValidate = ClassUtils.getBooleanFromMap(ARGUMENT_DEEP_VALIDATE, arguments)
+        }
+
         if (shouldValidate) {
             Validator validator = datastore.mappingContext.getEntityValidator(domainClass)
 
@@ -114,15 +120,11 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
             if (validator) {
                 datastore.applicationEventPublisher?.publishEvent new ValidationEvent(datastore, target)
 
-                boolean deepValidate = true
-                if (arguments?.containsKey(ARGUMENT_DEEP_VALIDATE)) {
-                    deepValidate = ClassUtils.getBooleanFromMap(ARGUMENT_DEEP_VALIDATE, arguments);
-                }
-
-                if (deepValidate && (validator instanceof CascadingValidator)) {
+                if (validator instanceof CascadingValidator) {
                     ((CascadingValidator)validator).validate target, errors, deepValidate
-                }
-                else {
+                } else if (validator instanceof org.grails.datastore.gorm.validation.CascadingValidator) {
+                    ((org.grails.datastore.gorm.validation.CascadingValidator) validator).validate target, errors, deepValidate
+                } else {
                     validator.validate target, errors
                 }
 
@@ -143,10 +145,14 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
         // relieving this burden off the developer
         autoRetrieveAssocations datastore, domainClass, target
 
+        skipChildValidation(domainClass, target, !deepValidate)
+
         // If validation is disabled, skip it or if a flush:true is passed then disable it too to avoid duplicate validation
         GormValidateable validateable = (GormValidateable) target
         boolean shouldSkipValidation = !shouldValidate || shouldFlush
         validateable.skipValidation(shouldSkipValidation)
+
+
 
         try {
             if (shouldInsert(arguments)) {
@@ -328,6 +334,30 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
                 }
             }
 
+        }
+    }
+
+    /**
+     * To skip the validation of child objects based on the value of deepValidate passed to parent.
+     *
+     * @param entity The domain class to retrieve associations for
+     * @param target The target object
+     * @param skipValidation Whether to skip validation
+     */
+    private void skipChildValidation(PersistentEntity entity, Object target, boolean skipValidation) {
+        for (PersistentProperty prop in entity.associations) {
+            PersistentEntity otherSide = ((Association) prop).associatedEntity
+            if (prop instanceof ToOne && !(prop instanceof Embedded)) {
+                skipChildValidation(otherSide, target[prop.name], skipValidation)
+                GormValidateable validateable = (GormValidateable) target[prop.name]
+                validateable.skipValidation(skipValidation)
+            } else if (prop instanceof ToMany && !(prop instanceof EmbeddedCollection)) {
+                for (value in target[prop.name]) {
+                    skipChildValidation(otherSide, value, skipValidation)
+                    GormValidateable validateable = (GormValidateable) value
+                    validateable.skipValidation(skipValidation)
+                }
+            }
         }
     }
 
