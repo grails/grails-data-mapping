@@ -88,7 +88,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
         Session currentSession = null
         boolean deepValidate = true
 
-        if (arguments.containsKey(ARGUMENT_DEEP_VALIDATE)) {
+        if (arguments?.containsKey(ARGUMENT_DEEP_VALIDATE)) {
             deepValidate = ClassUtils.getBooleanFromMap(ARGUMENT_DEEP_VALIDATE, arguments)
         }
 

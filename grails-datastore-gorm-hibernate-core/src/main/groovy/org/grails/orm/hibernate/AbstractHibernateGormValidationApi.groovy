@@ -66,7 +66,7 @@ abstract class AbstractHibernateGormValidationApi<D> extends GormValidationApi<D
             validatedFields = new HashSet(validatedFieldsList)
         }
 
-        if (arguments.containsKey(ARGUMENT_DEEP_VALIDATE)) {
+        if (arguments?.containsKey(ARGUMENT_DEEP_VALIDATE)) {
             deepValidate = ClassUtils.getBooleanFromMap(ARGUMENT_DEEP_VALIDATE, arguments)
         }
 
