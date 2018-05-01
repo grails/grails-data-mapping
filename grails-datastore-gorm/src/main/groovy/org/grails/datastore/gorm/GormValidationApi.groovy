@@ -23,6 +23,7 @@ import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.engine.event.ValidationEvent
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.config.GormProperties
+import org.grails.datastore.mapping.reflect.ClassUtils
 import org.grails.datastore.mapping.validation.ValidationErrors
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.validation.Errors
@@ -41,6 +42,8 @@ import javax.persistence.FlushModeType
  */
 @CompileStatic
 class GormValidationApi<D> extends AbstractGormApi<D> {
+
+    public static final String ARGUMENT_DEEP_VALIDATE = "deepValidate";
 
     private Validator internalValidator
     BeforeValidateHelper beforeValidateHelper
@@ -83,6 +86,11 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
     private boolean doValidate(D instance, Map arguments, List fields) {
         FlushModeType previousFlushMode = null
         Session currentSession = null
+        boolean deepValidate = true
+
+        if (arguments.containsKey(ARGUMENT_DEEP_VALIDATE)) {
+            deepValidate = ClassUtils.getBooleanFromMap(ARGUMENT_DEEP_VALIDATE, arguments)
+        }
 
         if(hasDatastore) {
             currentSession = datastore.currentSession
@@ -113,7 +121,9 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
             }
 
             if (validator instanceof CascadingValidator) {
-                ((CascadingValidator)validator).validate instance, localErrors, arguments?.deepValidate != false
+                ((CascadingValidator)validator).validate instance, localErrors, deepValidate
+            } else if (validator instanceof org.grails.datastore.gorm.validation.CascadingValidator) {
+                ((org.grails.datastore.gorm.validation.CascadingValidator) validator).validate instance, localErrors, deepValidate
             } else {
                 validator.validate instance, localErrors
             }
