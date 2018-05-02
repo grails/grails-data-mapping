@@ -145,8 +145,6 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
         // relieving this burden off the developer
         autoRetrieveAssocations datastore, domainClass, target
 
-        skipChildValidation(domainClass, target, !deepValidate)
-
         // If validation is disabled, skip it or if a flush:true is passed then disable it too to avoid duplicate validation
         GormValidateable validateable = (GormValidateable) target
         boolean shouldSkipValidation = !shouldValidate || shouldFlush
@@ -334,30 +332,6 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
                 }
             }
 
-        }
-    }
-
-    /**
-     * To skip the validation of child objects based on the value of deepValidate passed to parent.
-     *
-     * @param entity The domain class to retrieve associations for
-     * @param target The target object
-     * @param skipValidation Whether to skip validation
-     */
-    private void skipChildValidation(PersistentEntity entity, Object target, boolean skipValidation) {
-        for (PersistentProperty prop in entity.associations) {
-            PersistentEntity otherSide = ((Association) prop).associatedEntity
-            if (prop instanceof ToOne && !(prop instanceof Embedded)) {
-                skipChildValidation(otherSide, target[prop.name], skipValidation)
-                GormValidateable validateable = (GormValidateable) target[prop.name]
-                validateable.skipValidation(skipValidation)
-            } else if (prop instanceof ToMany && !(prop instanceof EmbeddedCollection)) {
-                for (value in target[prop.name]) {
-                    skipChildValidation(otherSide, value, skipValidation)
-                    GormValidateable validateable = (GormValidateable) value
-                    validateable.skipValidation(skipValidation)
-                }
-            }
         }
     }
 
