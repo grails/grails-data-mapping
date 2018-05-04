@@ -78,7 +78,6 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
     }
 
     public AbstractMappingContext(ConnectionSourceSettings settings) {
-        FieldEntityAccess.clearReflectors();
         initialize(settings);
     }
 
@@ -88,6 +87,7 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
     }
 
     protected void initialize(ConnectionSourceSettings settings) {
+        FieldEntityAccess.clearReflectors();
         this.multiTenancyMode = settings.getMultiTenancy().getMode();
 
         // initialize custom type marshallers

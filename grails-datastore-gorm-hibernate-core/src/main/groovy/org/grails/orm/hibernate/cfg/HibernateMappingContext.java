@@ -28,6 +28,7 @@ import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.model.config.JpaMappingConfigurationStrategy;
 import org.grails.datastore.mapping.reflect.ClassUtils;
+import org.grails.datastore.mapping.reflect.FieldEntityAccess;
 import org.grails.orm.hibernate.connections.HibernateConnectionSourceSettings;
 import org.grails.orm.hibernate.proxy.SimpleHibernateProxyHandler;
 import org.springframework.core.env.PropertyResolver;
@@ -55,8 +56,10 @@ public class HibernateMappingContext extends AbstractMappingContext {
      * @param persistentClasses The persistent classes
      */
     public HibernateMappingContext(HibernateConnectionSourceSettings settings, Object contextObject, Class...persistentClasses) {
-        super(settings);
         this.mappingFactory = new HibernateMappingFactory();
+
+        // The mapping factory needs to be configured before initialize can be safely called
+        initialize(settings);
 
         if(settings != null) {
             this.mappingFactory.setDefaultMapping(settings.getDefault().getMapping());
