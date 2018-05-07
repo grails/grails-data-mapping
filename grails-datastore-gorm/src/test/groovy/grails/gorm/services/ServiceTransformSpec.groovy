@@ -8,17 +8,132 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import org.grails.datastore.gorm.services.Implemented
 import org.grails.datastore.gorm.services.implementers.FindAllImplementer
 import org.grails.datastore.gorm.services.implementers.FindOneImplementer
+import org.grails.datastore.gorm.services.implementers.FindOneInterfaceProjectionImplementer
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.services.DefaultServiceRegistry
 import org.grails.datastore.mapping.services.ServiceRegistry
 import spock.lang.Specification
 
-import java.lang.reflect.Type
-
 /**
  * Created by graemerocher on 11/01/2017.
  */
 class ServiceTransformSpec extends Specification {
+
+    void "test interface projection with an entity that implements GormEntity"() {
+        when:
+        def klass = new GroovyClassLoader().parseClass("""
+            import grails.gorm.services.Service
+            import grails.gorm.annotation.Entity
+            import org.grails.datastore.gorm.GormEntity
+            
+            @Entity
+            class X implements GormEntity<X> {
+                String a
+                String b
+            }
+            
+            interface IX {
+                String getB()
+            }
+            
+            @Service(X)
+            interface XService {
+                IX getX(String a)
+            }
+        """.stripIndent())
+
+        then:
+        noExceptionThrown()
+
+        and:
+        def impl = klass.classLoader.loadClass("\$XServiceImplementation")
+        impl != null
+
+        and:
+        impl.getMethod("getX", String).getAnnotation(Implemented).by() == FindOneInterfaceProjectionImplementer
+    }
+
+    void "test interface projection with an entity that implements a marker interface"() {
+        when:
+        def klass = new GroovyClassLoader().parseClass("""
+            import grails.gorm.services.Service
+            import grails.gorm.annotation.Entity
+            
+            // an interface unrelated to projections
+            interface HasTitle {
+                String getTitle()
+            }
+            
+            @Entity
+            class Article implements HasTitle {
+                String title
+                String subtitle
+            }
+            
+            interface ArticleInfo {
+                String getSubtitle()
+            }
+            
+            @Service(Article)
+            interface ArticleService {
+                ArticleInfo getArticle(String title)
+            }
+        """.stripIndent())
+
+        then:
+        noExceptionThrown()
+
+        and:
+        klass != null
+
+        and:
+        def impl = klass.classLoader.loadClass("\$ArticleServiceImplementation")
+        impl != null
+
+        and:
+        impl.getMethod("getArticle", String).getAnnotation(Implemented).by() == FindOneInterfaceProjectionImplementer
+    }
+
+    void "test interface projection that intersects with an interface implemented by the entity"() {
+        when:
+        def klass = new GroovyClassLoader().parseClass("""
+            import grails.gorm.services.Service
+            import grails.gorm.annotation.Entity
+            
+            // an interface unrelated to projections
+            interface HasSubtitle {
+                String getSubtitle()
+            }
+            
+            @Entity
+            class BlogPost implements HasSubtitle {
+                String title
+                String subtitle
+            }
+            
+            interface BlogPostInfo {
+                String getSubtitle()
+            }
+            
+            @Service(BlogPost)
+            interface BlogPostService {
+                BlogPostInfo getBlogPost(String title)
+            }
+        """.stripIndent())
+
+        then:
+        noExceptionThrown()
+
+        and:
+        klass != null
+
+        and:
+        def impl = klass.classLoader.loadClass("\$BlogPostServiceImplementation")
+        impl != null
+
+        and:
+        impl.getMethod("getBlogPost", String).getAnnotation(Implemented).by() == FindOneInterfaceProjectionImplementer
+    }
 
     void "test service transformation with @CurrentTenant"() {
         when:
