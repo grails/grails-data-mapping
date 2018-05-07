@@ -53,6 +53,21 @@ class ClassPropertyFetcherTests  {
         assert descriptor != null
     }
 
+    @Test
+    void testClassPropertyFetcherWithMultipleSetter() {
+        def cpf = ClassPropertyFetcher.forClass(DomainWithMultipleSetter)
+
+        def metaProperties = cpf.getMetaProperties()
+
+        assert metaProperties.size() == 2
+
+        def prop = metaProperties.find { it.name == 'id' }
+
+        assert prop != null
+        assert prop.type == Long
+
+    }
+
     static class Foo {
         static String name = "foo"
 
@@ -94,4 +109,17 @@ class TransientSubChild extends TransientChild {
     String bar
 
     static transients = ["bar"]
+}
+
+class DomainWithMultipleSetter {
+    Long id
+    String name
+
+    void setId(String id) {
+        this.id = Long.parseLong(id)
+    }
+
+    void setId(Long id) {
+        this.id = id
+    }
 }
