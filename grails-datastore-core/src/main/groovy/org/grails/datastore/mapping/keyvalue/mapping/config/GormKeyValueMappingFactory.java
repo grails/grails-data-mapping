@@ -15,11 +15,11 @@
 package org.grails.datastore.mapping.keyvalue.mapping.config;
 
 import org.grails.datastore.mapping.config.AbstractGormMappingFactory;
-import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.IdentityMapping;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.PropertyMapping;
 
 /**
  * @author Graeme Rocher
@@ -56,6 +56,16 @@ public class GormKeyValueMappingFactory extends AbstractGormMappingFactory<Famil
     }
 
     @Override
+    protected PropertyMapping<KeyValue> createPropertyMapping(final PersistentProperty<KeyValue> property, final PersistentEntity owner) {
+        PropertyMapping<KeyValue> mapping = super.createPropertyMapping(property, owner);
+        if (mapping.getMappedForm().getFormula() != null) {
+            mapping.getMappedForm().setDerived(true);
+        }
+
+        return mapping;
+    }
+
+    @Override
     protected Class<KeyValue> getPropertyMappedFormType() {
         return KeyValue.class;
     }
@@ -69,8 +79,7 @@ public class GormKeyValueMappingFactory extends AbstractGormMappingFactory<Famil
     protected IdentityMapping getIdentityMappedForm(final ClassMapping classMapping, KeyValue property) {
         if (property != null) {
             return createDefaultIdentityMapping(classMapping, property);
-        }
-        else {
+        } else {
             return super.getIdentityMappedForm(classMapping, null);
         }
     }
