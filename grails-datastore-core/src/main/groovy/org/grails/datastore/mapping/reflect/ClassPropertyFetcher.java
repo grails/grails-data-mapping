@@ -92,7 +92,7 @@ public class ClassPropertyFetcher {
                             Method foundSetter = clazz.getDeclaredMethod(NameUtils.getSetterName(propertyName), getter.getReturnType());
                             if(foundSetter != null) {
                                 MetaMethod setter = new CachedMethod(cachedClass, foundSetter);
-                                this.metaProperties.add(new MetaBeanProperty(msp.getName(), clazz, getter, setter));
+                                this.metaProperties.add(new MetaBeanProperty(msp.getName(), getter.getReturnType(), getter, setter));
                             }
                         }
                     } catch (NoSuchMethodException e) {
