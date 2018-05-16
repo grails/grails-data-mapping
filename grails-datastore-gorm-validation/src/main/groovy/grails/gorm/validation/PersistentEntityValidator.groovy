@@ -2,6 +2,7 @@ package grails.gorm.validation
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.support.BeforeValidateHelper
 import org.grails.datastore.gorm.validation.constraints.eval.ConstraintsEvaluator
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -36,6 +37,7 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
     final MessageSource messageSource
     final Class targetClass
     final Map<String, ConstrainedProperty> constrainedProperties
+    final BeforeValidateHelper validateHelper = new BeforeValidateHelper()
 
     protected final ProxyHandler proxyHandler
 
@@ -222,6 +224,8 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
             associatedConstrainedProperties = Collections.<String, ConstrainedProperty>emptyMap()
         }
 
+        // Invoke any beforeValidate callbacks on the associated object before validating
+        validateHelper.invokeBeforeValidate(associatedObject, associatedConstrainedProperties.keySet() as List<String>)
 
         List<PersistentProperty> associatedPersistentProperties = associatedEntity.getPersistentProperties()
         String nestedPath = errors.getNestedPath()
