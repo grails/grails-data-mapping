@@ -7,6 +7,11 @@ import grails.persistence.Entity
  */
 class InheritanceSpec extends GormDatastoreSpec {
 
+    @Override
+    List getDomainClasses() {
+        return super.getDomainClasses() + [Practice]
+    }
+
     void "Test inheritance with dynamic finder"() {
 
         given:
@@ -67,9 +72,29 @@ class InheritanceSpec extends GormDatastoreSpec {
             10000000 == country.population
     }
 
+    void "Test hasMany with inheritance should return appropriate class"() {
+        given: "a practice with two locations"
+        Practice practice = new Practice(name: "Test practice")
+        practice.addToLocations(new City(name: "Austin", latitude: 30.2672, longitude: 97.7431))
+        practice.addToLocations(new Country(name: "United States"))
+        practice.save()
+        session.flush()
+
+        expect:
+        Location.findByName("Austin").class == City
+    }
+
     def clearSession() {
         City.withSession { session -> session.flush() }
     }
+}
+
+@Entity
+class Practice implements Serializable {
+    Long id
+    Long version
+    String name
+    static hasMany = [locations: Location]
 }
 
 @Entity
