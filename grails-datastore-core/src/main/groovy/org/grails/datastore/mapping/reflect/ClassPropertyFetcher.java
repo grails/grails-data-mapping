@@ -273,7 +273,9 @@ public class ClassPropertyFetcher {
                 return null;
             }
             else {
-                return metaProperty.getType();
+                // Avoid any proxy handling that might be wrapped around the getters and setters
+                Field field = getDeclaredField(name);
+                return field != null ? field.getType() : metaProperty.getType();
             }
         }
         return null;

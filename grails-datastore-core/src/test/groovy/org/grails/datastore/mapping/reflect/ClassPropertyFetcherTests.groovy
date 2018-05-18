@@ -68,6 +68,26 @@ class ClassPropertyFetcherTests  {
 
     }
 
+    @Test
+    void testGetObjectTypeForWrappedBeanProperty() {
+        GroovyObject mc = (GroovyObject)Foo.metaClass
+
+        // Wrap the getter and setter similar to how they'd be wrapped for hibernate proxy handling
+        mc.setProperty("getBar", {->
+            delegate.@bar
+        })
+        mc.setProperty("setBar", {
+            delegate.@bar = it
+        })
+
+        // The default meta property type is Object
+        assert Foo.metaClass.getMetaProperty('bar').getType() == Object
+
+        // The class property fetcher returns the real type via the Field
+        def cpf = ClassPropertyFetcher.forClass(Foo)
+        assert cpf.getPropertyType('bar') == String
+    }
+
     static class Foo {
         static String name = "foo"
 
