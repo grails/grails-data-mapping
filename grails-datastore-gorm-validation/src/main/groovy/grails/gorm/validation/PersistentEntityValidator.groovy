@@ -205,7 +205,7 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
         MappingContext mappingContext = associatedEntity.getMappingContext()
         EntityReflector associatedReflector = mappingContext.getEntityReflector(associatedEntity)
 
-        if (associatedEntity == null || (!association.isOwningSide() && !association.doesCascade(CascadeType.PERSIST, CascadeType.MERGE) )) {
+        if (associatedEntity == null || (!association.isOwningSide() && !association.doesCascade(CascadeType.ALL))) {
             return
         }
 
