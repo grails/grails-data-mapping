@@ -390,6 +390,38 @@ class FundProduct {
             !(book.class.name in book.listDirtyPropertyNames())
             book.listDirtyPropertyNames().size() == 1
     }
+
+    void "Test that dirty checking should not track changes to transients"() {
+        when:"An entity class is parsed"
+        def gcl = new GroovyClassLoader()
+        Class cls = gcl.parseClass('''
+package org.grails.datastore.gorm.dirty.checking
+
+import grails.gorm.annotation.*
+
+@Entity
+class Practice {
+    
+    String name
+    String message
+    
+    void setMessage(String message) { this.message = message}
+    
+    static transients = ['message']
+    
+}
+
+''')
+
+        def child = cls.newInstance()
+        child.name = "Test"
+        child.trackChanges()
+        child.message = "Test Message"
+
+        then:"The generic types are retained"
+        !child.hasChanged()
+        child.message == "Test Message"
+    }
 }
 
 @DirtyCheck
