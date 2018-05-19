@@ -9,6 +9,8 @@ import org.grails.datastore.gorm.validation.constraints.registry.ConstraintRegis
 import grails.gorm.validation.DefaultConstrainedProperty;
 import org.grails.datastore.gorm.validation.constraints.eval.DefaultConstraintEvaluator;
 import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.slf4j.Logger;
@@ -82,6 +84,25 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
 
     }
 
+    protected Class<?> determinePropertyType(String propertyName) {
+        Class<?> propertyType = null;
+
+        // First try to use the persistent entity mappings
+        PersistentEntity persistentEntity = mappingContext.getPersistentEntity(targetClass.getName());
+        if (persistentEntity != null) {
+            PersistentProperty persistentProperty = persistentEntity.getPropertyByName(propertyName);
+            if (persistentProperty != null) {
+                propertyType = persistentProperty.getType();
+            }
+        }
+        // Fall back to just using the meta properties
+        if (propertyType == null) {
+            propertyType = classPropertyFetcher.getPropertyType(propertyName);
+        }
+
+        return propertyType;
+    }
+
     @SuppressWarnings("rawtypes")
     @Override
     protected Object createNode(Object name, Map attributes) {
@@ -94,7 +115,7 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
                 cp = (DefaultConstrainedProperty)constrainedProperties.get(property);
             }
             else {
-                Class<?> propertyType = classPropertyFetcher.getPropertyType(property);
+                Class<?> propertyType = determinePropertyType(property);
                 if (propertyType == null) {
                     if(!allowDynamic) {
                         throw new MissingMethodException(property, targetClass, new Object[]{attributes}, true);
