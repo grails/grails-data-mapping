@@ -108,7 +108,7 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
     }
 
     @PreDestroy
-    public void destroy() throws Exception {
+    public void destroy() {
         FieldEntityAccess.clearReflectors();
         final MetaClassRegistry registry = GroovySystem.getMetaClassRegistry();
         for (PersistentEntity persistentEntity : getMappingContext().getPersistentEntities()) {
