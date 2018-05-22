@@ -144,19 +144,6 @@ class CircularCascadeSpec extends GormDatastoreSpec {
         activity.errors.hasFieldErrors('sports[0].arenas[0].name')
     }
 
-    @Issue('https://github.com/grails/grails-data-mapping/issues/1106')
-    void "test child associations are not validated unless owned or cascade-all"() {
-        given:
-        addValidator(ActivityValidate, SportValidate, CityValidate)
-        ActivityValidate activity = new ActivityValidate(name: "Game")
-        SportValidate sport = new SportValidate(name: 'Basketball')
-        sport.addToCities(new CityValidate())
-        activity.addToSports(sport)
-
-        expect:"valid since CityValidate should not be validated"
-        activity.validate()
-    }
-
     @Override
     List getDomainClasses() {
         [SchoolPerson, ActivityValidate, SportValidate, TeamValidate, ArenaValidate]
@@ -191,14 +178,7 @@ class ActivityValidate {
 class SportValidate {
     String name
 
-    static belongsTo = [activity: ActivityValidate]
-
-    static hasMany = [teams: TeamValidate, arenas: ArenaValidate, cities: CityValidate]
-
-    static mapping = {
-        teams(cascade: 'all')
-        arenas(cascade: 'all')
-    }
+    static hasMany = [teams: TeamValidate, arenas: ArenaValidate]
 }
 
 @Entity
@@ -208,10 +188,5 @@ class TeamValidate {
 
 @Entity
 class ArenaValidate {
-    String name
-}
-
-@Entity
-class CityValidate {
     String name
 }

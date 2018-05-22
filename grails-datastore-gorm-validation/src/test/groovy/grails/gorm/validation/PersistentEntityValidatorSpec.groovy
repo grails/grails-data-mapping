@@ -82,19 +82,12 @@ class Author  {
     static constraints = {
         publisher(nullable: true)
     }
-
-    static mapping = {
-        // Only owned relationships or cascade-all are cascaded by default
-        publisher(cascade: 'all')
-    }
 }
 
 @Entity
 class Book {
     String name
     Author author
-
-    static belongsTo = [author: Author]
 
     def beforeValidate() {
         name = "name"
