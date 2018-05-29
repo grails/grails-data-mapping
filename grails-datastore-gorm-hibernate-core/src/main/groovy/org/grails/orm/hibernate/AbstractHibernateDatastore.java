@@ -305,11 +305,15 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     }
 
     @Override
-    public void destroy() throws Exception {
-        if(!this.destroyed) {
+    public void destroy() {
+        if (!this.destroyed) {
             super.destroy();
             AbstractHibernateGormInstanceApi.resetInsertActive();
-            connectionSources.close();
+            try {
+                connectionSources.close();
+            } catch (IOException e) {
+                LOG.warn("There was an error shutting down GORM for an entity: " + e.getMessage(), e);
+            }
             destroyed = true;
         }
     }
