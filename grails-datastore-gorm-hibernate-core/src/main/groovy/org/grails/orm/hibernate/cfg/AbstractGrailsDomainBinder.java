@@ -2663,7 +2663,7 @@ public abstract class AbstractGrailsDomainBinder {
         setCascadeBehaviour(grailsProperty, prop);
 
         // lazy to true
-        final boolean isToOne = grailsProperty instanceof ToOne;
+        final boolean isToOne = grailsProperty instanceof ToOne && !(grailsProperty instanceof Embedded);
         boolean isLazyable = isToOne ||
                 !(grailsProperty instanceof Association) && !grailsProperty.equals(grailsProperty.getOwner().getIdentity());
 
