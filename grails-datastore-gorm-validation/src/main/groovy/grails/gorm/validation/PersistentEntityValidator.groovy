@@ -4,6 +4,7 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.support.BeforeValidateHelper
 import org.grails.datastore.gorm.validation.constraints.eval.ConstraintsEvaluator
+import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
@@ -198,15 +199,18 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
         }
 
         PersistentEntity associatedEntity = association.getAssociatedEntity()
-        if(associatedEntity == null) {
+        if (associatedEntity == null) {
             return
         }
 
         MappingContext mappingContext = associatedEntity.getMappingContext()
         EntityReflector associatedReflector = mappingContext.getEntityReflector(associatedEntity)
 
-        if (associatedEntity == null || (!association.isOwningSide() && !association.doesCascade(CascadeType.PERSIST, CascadeType.MERGE) )) {
-            return
+        // We always cascade validation for the owning side regardless of cascade options
+        if (!association.isOwningSide()) {
+            if (!association.doesCascade(CascadeType.PERSIST, CascadeType.MERGE) || !doesCascadeValidate(propertyName)) {
+                return
+            }
         }
 
         Association otherSide = null
@@ -269,6 +273,17 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
         finally {
             errors.setNestedPath(nestedPath)
         }
+    }
+
+    /**
+     * @return true if this property should cascade validation (or does not exist since its the default)
+     */
+    private boolean doesCascadeValidate(String propertyName) {
+        Property mappingConfig = entity.getPropertyByName(propertyName)?.getMapping()?.getMappedForm()
+        if (!mappingConfig) {
+            return true
+        }
+        return mappingConfig.cascadeValidate
     }
 
     private String buildNestedPath(String nestedPath, String componentName, Object indexOrKey) {
