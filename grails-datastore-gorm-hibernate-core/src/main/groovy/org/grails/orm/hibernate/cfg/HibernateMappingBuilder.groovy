@@ -460,6 +460,7 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
             property.updatable = namedArgs.updateable != null ? namedArgs.updateable : property.updatable
             property.updatable = namedArgs.updatable != null ? namedArgs.updatable : property.updatable
             property.cascade = namedArgs.cascade ?: property.cascade
+            property.cascadeValidate = namedArgs.cascadeValidate != null ? namedArgs.cascadeValidate : property.cascadeValidate
             property.sort = namedArgs.sort ?: property.sort
             property.order = namedArgs.order ?: property.order
             property.batchSize = namedArgs.batchSize instanceof Integer ? namedArgs.batchSize : property.batchSize
