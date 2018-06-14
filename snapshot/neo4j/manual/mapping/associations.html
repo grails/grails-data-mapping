@@ -438,11 +438,22 @@ class Pet {
 </div>
 </div>
 <div class="paragraph">
-<p>Will generate a Cypher relationship creation query as follows:</p>
+<p>When you save the relationship:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">MATCH (from:Owner {__id__:{start}}), (to:Pet) WHERE to.__id__ IN {end} CREATE (from)-[r:PETS]-&gt;(to)</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">new Owner(name:"Fred")
+    .addToPets(name: "Dino")
+    .save(flush:true)
+    .discard()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>save()</code> method will generate a Cypher relationship creation query as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cypher" data-lang="cypher">MATCH (from:Owner),(to:Pet) WHERE ID(from) = {start} AND ID(to) IN {end} MERGE (from)-[r:PETS]-&gt;(to)</code></pre>
 </div>
 </div>
 <div class="paragraph">

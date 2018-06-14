@@ -466,6 +466,30 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
             sessionLivenessCheckTimeout: 200</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>For builder methods with 0 arguments, setting the configuration value to true will cause the method to be executed. For example the following configuration will result in the <a href="http://neo4j.com/docs/api/java-driver/1.4/org/neo4j/driver/v1/Config.ConfigBuilder.html#withEncryption--">ConfigBuilder#withEncryption</a> method to be called.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grails:
+    neo4j:
+        options:
+            encryption: true</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For builder methods with more than 1 argument, it is possible to configure values for the method using <code>arg#</code> syntax. For example the following configuration will result in the <a href="http://neo4j.com/docs/api/java-driver/1.4/org/neo4j/driver/v1/Config.ConfigBuilder.html#withConnectionTimeout-long-java.util.concurrent.TimeUnit-">ConfigBuilder#withConnectionTimeout</a> method to be called.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grails:
+    neo4j:
+        options:
+            connectionTimeout:
+                arg0: 10
+                arg1: SECONDS</code></pre>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
