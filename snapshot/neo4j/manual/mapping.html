@@ -433,13 +433,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="paragraph">
-<p>Each domain class will implement the <a href="../api/grails/neo4j/Neo4jEntity.html">Neo4jEntity</a> trait. You can define this explicitly if you prefer (the <code>Node</code> trait is a subtrait of <code>Neo4jEntity</code>):</p>
+<p>Each domain class will implement the <a href="../api/grails/neo4j/Neo4jEntity.html">Neo4jEntity</a> trait. You can define this explicitly if you prefer:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.neo4j.Node
-
-class Pet implements Node&lt;Pet&gt; {
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Pet implements Neo4jEntity&lt;Pet&gt; {
     String name
 }</code></pre>
 </div>
