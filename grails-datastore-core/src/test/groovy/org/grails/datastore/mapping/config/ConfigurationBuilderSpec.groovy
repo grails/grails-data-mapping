@@ -113,7 +113,6 @@ class ConfigurationBuilderSpec extends Specification {
         }
     }
 
-
     static class WithBuilderConfigurationBuilder extends ConfigurationBuilder<Config.ConfigBuilder, Config> {
 
         WithBuilderConfigurationBuilder(PropertyResolver propertyResolver) {
@@ -149,7 +148,6 @@ class ConfigurationBuilderSpec extends Specification {
             return null
         }
     }
-
 
     static class Config {
 
