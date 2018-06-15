@@ -791,7 +791,26 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="upgradeNotes">1.2. Upgrade Notes</h3>
 <div class="sect3">
-<h4 id="_separation_of_gorm_async">1.2.1. Separation of GORM Async</h4>
+<h4 id="_gorm_6_1_9_and_grails_3_2_x">1.2.1. GORM 6.1.9 and Grails 3.2.x</h4>
+<div class="paragraph">
+<p>Due to several factors, the version of Spring that GORM 6.1.9 requires was updated to 4.3.14. This may impact Grails 3.2.x users that have an older version on their classpath. For Grails 3.2 users that would like to upgrade to GORM 6.1.9, add the following configuration to your <code>build.gradle</code> above the <code>dependencies</code> block.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">configurations.all {
+  resolutionStrategy {
+    eachDependency { DependencyResolveDetails details -&gt;
+        <span class="keyword">if</span> (details.requested.group == <span class="string"><span class="delimiter">'</span><span class="content">org.springframework</span><span class="delimiter">'</span></span>) {
+          details.useVersion <span class="string"><span class="delimiter">'</span><span class="content">4.3.14.RELEASE</span><span class="delimiter">'</span></span>
+        }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_separation_of_gorm_async">1.2.2. Separation of GORM Async</h4>
 <div class="paragraph">
 <p>GORM Async has been separated from GORM core and is no longer added by default to entities.</p>
 </div>
@@ -803,7 +822,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-async:6.1.9.RELEASE"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-async:6.1.10.RELEASE"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -820,7 +839,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_removal_of_grails_datastore_simple">1.2.2. Removal of grails-datastore-simple</h4>
+<h4 id="_removal_of_grails_datastore_simple">1.2.3. Removal of grails-datastore-simple</h4>
 <div class="paragraph">
 <p>The <code>grails-datastore-simple</code> and <code>grails-datastore-gorm-test</code> dependencies have been combined into a single <code>grails-datastore-gorm-test</code> dependency.</p>
 </div>
@@ -830,10 +849,10 @@ table.CodeRay td.code>pre{padding:0}
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">> Could not resolve all dependencies for configuration ':example:runtime'.
-   > Could not find org.grails:grails-datastore-simple:6.1.9.RELEASE.
+   > Could not find org.grails:grails-datastore-simple:6.1.10.RELEASE.
      Searched in the following locations:
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.9.RELEASE/grails-datastore-simple-6.1.9.RELEASE.pom
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.9.RELEASE/grails-datastore-simple-6.1.9.RELEASE.jar
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.10.RELEASE/grails-datastore-simple-6.1.10.RELEASE.pom
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.10.RELEASE/grails-datastore-simple-6.1.10.RELEASE.jar
      Required by:
          project :example > org.grails:grails-dependencies:3.2.4 >
             ...</code></pre>
@@ -852,7 +871,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_flush_mode_now_commit_by_default">1.2.3. Flush Mode Now COMMIT by Default</h4>
+<h4 id="_flush_mode_now_commit_by_default">1.2.4. Flush Mode Now COMMIT by Default</h4>
 <div class="paragraph">
 <p>In previous versions of GORM the flush mode defaulted to AUTO. With this setting the session would be flushed with or without the presence of a transaction and before every query.</p>
 </div>
@@ -871,7 +890,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_multiple_data_source_configuration_changes">1.2.4. Multiple Data Source Configuration Changes</h4>
+<h4 id="_multiple_data_source_configuration_changes">1.2.5. Multiple Data Source Configuration Changes</h4>
 <div class="paragraph">
 <p>Configuration of multiple data sources has changed such that the default data source should be configured at the top level and additional data sources should be configured below the <code>dataSources</code> block. In other words instead of:</p>
 </div>
@@ -916,7 +935,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_write_operations_without_a_transaction">1.2.5. Write Operations without a Transaction</h4>
+<h4 id="_write_operations_without_a_transaction">1.2.6. Write Operations without a Transaction</h4>
 <div class="paragraph">
 <p>With the aforementioned changes to the default flush mode, write operations that are not surrounded by a transaction may not propagate changes to the database unless <code>flush:true</code> is explicitly passed or the session explicitly flushed.</p>
 </div>
@@ -928,13 +947,13 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_changes_to_configuration_model">1.2.6. Changes to Configuration Model</h4>
+<h4 id="_changes_to_configuration_model">1.2.7. Changes to Configuration Model</h4>
 <div class="paragraph">
 <p>In preparation for Hibernate 5.2 support the previous "SessionFactoryBean" notion has been removed. Now if you wish to customize <code>SessionFactory</code> creation you should instead register a custom <code>org.grails.orm.hibernate.connections.HibernateConnectionSourceFactory</code> in Spring.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_identityenumtype_handling_changed">1.2.7. IdentityEnumType Handling Changed</h4>
+<h4 id="_identityenumtype_handling_changed">1.2.8. IdentityEnumType Handling Changed</h4>
 <div class="paragraph">
 <p>Previous versions of GORM shipped with a <code>org.grails.orm.hibernate.cfg.IdentityEnumType</code> class for altering the handling of enums. In order to support different versions of Hibernate 5.x which feature different signatures for the <code>org.hibernate.usertype.UserType</code> interface this class has been removed.</p>
 </div>
@@ -950,7 +969,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_changes_to_support_hibernate_5_2">1.2.8. Changes to Support Hibernate 5.2</h4>
+<h4 id="_changes_to_support_hibernate_5_2">1.2.9. Changes to Support Hibernate 5.2</h4>
 <div class="paragraph">
 <p>Hibernate 5.2 includes many breaking API changes, in order to support Hibernate 5.2 several classes have been removed or rewritten. Including:</p>
 </div>
@@ -975,7 +994,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_domain_autowiring_disabled_by_default">1.2.9. Domain Autowiring Disabled by Default</h4>
+<h4 id="_domain_autowiring_disabled_by_default">1.2.10. Domain Autowiring Disabled by Default</h4>
 <div class="paragraph">
 <p>Spring autowiring of domain instances has been disabled by default because it represents a performance bottleneck. If you are autowiring services into your domain instances you will need to re-enable using the <code>mapping</code> block:</p>
 </div>
@@ -991,7 +1010,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_field_accesstype_by_default">1.2.10. Field AccessType by Default</h4>
+<h4 id="_field_accesstype_by_default">1.2.11. Field AccessType by Default</h4>
 <div class="paragraph">
 <p>Previous versions of GORM used property access to read and write values to entities by default. In other words the respective getters and setters were used when reflecting on the instances. GORM 6.1 uses field access by default instead, which means the field is used when reading and writing data via reflection to instances.</p>
 </div>
@@ -1008,18 +1027,18 @@ grails.gorm.default.mapping = {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_fail_on_error_package_setting_renamed">1.2.11. Fail on Error Package Setting Renamed</h4>
+<h4 id="_fail_on_error_package_setting_renamed">1.2.12. Fail on Error Package Setting Renamed</h4>
 <div class="paragraph">
 <p>The <code>grails.gorm.failOnError</code> setting can no longer be used to configure the packages to enable fail on error. Instead <code>grails.gorm.failOnErrorPackages</code> should be used.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_new_dirty_checking_implementation">1.2.12. New Dirty Checking Implementation</h4>
+<h4 id="_new_dirty_checking_implementation">1.2.13. New Dirty Checking Implementation</h4>
 <div class="paragraph">
 <p>GORM now includes its own implementation of dirty checking in order to improve performance. This implementation uses the <code>DirtyCheckable</code> trait to store changes in the entity itself so that Hibernate does not have to do internal array comparison to verify whether an object has changed or not.</p>
 </div>
 <div class="paragraph">
-<p>There may however be some differences in behaviour, so if you wish to continue to use the Hibernate implementatino you can re-enable it with the following configuration:</p>
+<p>There may however be some differences in behaviour, so if you wish to continue to use the Hibernate implementation you can re-enable it with the following configuration:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1027,12 +1046,24 @@ grails.gorm.default.mapping = {
     <span class="key">hibernateDirtyChecking</span>: <span class="string"><span class="content">true</span></span></code></pre>
 </div>
 </div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+The implementation modifies all setters of your class so that dirty checking is tracked per field. However, there is one corner case where you do <code>name = "blah"</code> in a method internal to the class, the setter will not be called and property will not be marked as dirty. Hence, changing it to <code>setName("blah")</code> resolves the issue.
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>Some differences in behaviour and workarounds are covered below.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_dirty_checking_for_abstract_base_classes">1.2.13. Dirty Checking for Abstract Base Classes</h4>
+<h4 id="_dirty_checking_for_abstract_base_classes">1.2.14. Dirty Checking for Abstract Base Classes</h4>
 <div class="paragraph">
 <p>Domain objects can inherit from abstract base classes defined in the <code>src</code> directory. Previous versions of GORM performed dirty checking automatically on fields from any abstract base class. GORM 6.1 requires that the abstract base class be marked with the <code>@DirtyCheck</code> annotation to include the base class fields in domain object dirty checking:</p>
 </div>
@@ -1048,7 +1079,7 @@ grails.gorm.default.mapping = {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_dirty_checking_for_embedded_classes">1.2.14. Dirty Checking for Embedded Classes</h4>
+<h4 id="_dirty_checking_for_embedded_classes">1.2.15. Dirty Checking for Embedded Classes</h4>
 <div class="paragraph">
 <p>Domain objects embed classes defined in the <code>src</code> directory. Previous versions of GORM performed dirty checking automatically on fields an embedded entity. GORM 6.1 requires that the embedded class be marked with the <code>@DirtyCheck</code> annotation to include the embedded class fields in domain object dirty checking:</p>
 </div>
@@ -1070,12 +1101,12 @@ grails.gorm.default.mapping = {
 <h2 id="gettingStarted">2. Getting Started</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To use GORM 6.1.9 for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
+<p>To use GORM 6.1.10 for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile "org.grails.plugins:hibernate5:6.1.9"
+    compile "org.grails.plugins:hibernate5:6.1.10"
     compile "org.hibernate:hibernate-ehcache"
 }</code></pre>
 </div>
@@ -1085,7 +1116,7 @@ grails.gorm.default.mapping = {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=6.1.9.RELEASE</code></pre>
+<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=6.1.10.RELEASE</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1098,7 +1129,7 @@ grails.gorm.default.mapping = {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("6.1.9.RELEASE")
+            details.useVersion("6.1.10.RELEASE")
         }
     }
 }
@@ -1124,7 +1155,7 @@ dependencies {
 <div class="sect2">
 <h3 id="hibernateVersions">2.2. Configuring Different Hibernate Versions</h3>
 <div class="paragraph">
-<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.1.9.RELEASE.</p>
+<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.1.10.RELEASE.</p>
 </div>
 <div class="sect3">
 <h4 id="_grails_3_2_x_and_above_with_hibernate_4">2.2.1. Grails 3.2.x and above with Hibernate 4</h4>
@@ -1190,7 +1221,7 @@ configurations.all {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.1.9.RELEASE")
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.1.10.RELEASE")
 compile "org.hibernate:hibernate-core:5.1.0.Final"
 compile "org.hibernate:hibernate-ehcache:5.1.0.Final"
 runtime "com.h2database:h2:1.4.192"
@@ -1323,7 +1354,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:6.1.9.RELEASE"
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:6.1.10.RELEASE"
 runtime "com.h2database:h2:1.4.192"
 runtime "org.apache.tomcat:tomcat-jdbc:8.5.0"
 runtime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"
@@ -8008,7 +8039,7 @@ RxJava 2.x support is planned for a future release
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx:6.1.9.RELEASE"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx:6.1.10.RELEASE"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -8733,7 +8764,7 @@ sessionFactory.openSession()</code></pre>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:6.1.9.RELEASE"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:6.1.10.RELEASE"</code></pre>
 </div>
 </div>
 </div>

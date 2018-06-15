@@ -703,7 +703,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Applies sorting logic to the given query from the given map</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/query/AbstractHibernateCriterionAdapter.html#applySubCriteriaToJunction(org.grails.datastore.mapping.model.PersistentEntity, org.grails.orm.hibernate.query.AbstractHibernateQuery, List<Query.Criterion>, org.hibernate.criterion.Junction, java.lang.String)" title="Method in AbstractHibernateCriterionAdapter">applySubCriteriaToJunction(PersistentEntity, AbstractHibernateQuery, Criterion&gt;, Junction, String)</a></span> - Method in <a href="org/grails/orm/hibernate/query/AbstractHibernateCriterionAdapter.html">AbstractHibernateCriterionAdapter</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html#applyTransactionalAttributeSettings(org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.expr.VariableExpression, org.codehaus.groovy.ast.stmt.BlockStatement)" title="Method in TransactionalTransform">applyTransactionalAttributeSettings(AnnotationNode, VariableExpression, BlockStatement)</a></span> - Method in <a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html">TransactionalTransform</a>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html#applyTransactionalAttributeSettings(org.codehaus.groovy.ast.AnnotationNode, org.codehaus.groovy.ast.expr.VariableExpression, org.codehaus.groovy.ast.stmt.BlockStatement, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)" title="Method in TransactionalTransform">applyTransactionalAttributeSettings(AnnotationNode, VariableExpression, BlockStatement, ClassNode, MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html">TransactionalTransform</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingSupport.html#areAssociationsDirty(org.grails.datastore.mapping.model.PersistentEntity, java.lang.Object)" title="Method in DirtyCheckingSupport">areAssociationsDirty(PersistentEntity, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingSupport.html">DirtyCheckingSupport</a>
 </dt><dd> <div class="block">Checks whether associations are dirty</div></dd>
@@ -722,6 +722,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/orm/hibernate/query/HibernateQueryConstants.html#ARGUMENT_CACHE" title="Field in HibernateQueryConstants">ARGUMENT_CACHE</a></span> - Field in <a href="org/grails/orm/hibernate/query/HibernateQueryConstants.html">HibernateQueryConstants</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/AbstractHibernateGormValidationApi.html#ARGUMENT_DEEP_VALIDATE" title="Field in AbstractHibernateGormValidationApi">ARGUMENT_DEEP_VALIDATE</a></span> - Field in <a href="org/grails/orm/hibernate/AbstractHibernateGormValidationApi.html">AbstractHibernateGormValidationApi</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormValidationApi.html#ARGUMENT_DEEP_VALIDATE" title="Field in GormValidationApi">ARGUMENT_DEEP_VALIDATE</a></span> - Field in <a href="org/grails/datastore/gorm/GormValidationApi.html">GormValidationApi</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/finders/DynamicFinder.html#ARGUMENT_FETCH" title="Field in DynamicFinder">ARGUMENT_FETCH</a></span> - Field in <a href="org/grails/datastore/gorm/finders/DynamicFinder.html">DynamicFinder</a>
 </dt><dd> <div class="block"></div></dd>
@@ -795,8 +797,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/gorm/DetachedCriteria.html#asBoolean(groovy.lang.Closure)" title="Method in DetachedCriteria">asBoolean(Closure)</a></span> - Method in <a href="grails/gorm/DetachedCriteria.html">DetachedCriteria</a>
 </dt><dd> <div class="block">Counts the number of records returned by the query</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/support/EventTriggerCaller.html#asBoolean()" title="Method in EventTriggerCaller">asBoolean()</a></span> - Method in <a href="org/grails/datastore/gorm/support/EventTriggerCaller.html">EventTriggerCaller</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/Query.Order.html#asc(java.lang.String)" title="Method in Query.Order">asc(String)</a></span> - Method in <a href="org/grails/datastore/mapping/query/Query.Order.html">Query.Order</a>
 </dt><dd> <div class="block">Creates a new order for the given property in ascending order</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/javax/ConstraintViolationUtils.html#asErrors(java.lang.Object, Set<ConstraintViolation>)" title="Method in ConstraintViolationUtils">asErrors(Object, Set&lt;ConstraintViolation&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/validation/javax/ConstraintViolationUtils.html">ConstraintViolationUtils</a>
@@ -970,8 +970,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/support/ClosureEventTriggeringInterceptor.html#BEFORE_UPDATE_EVENT" title="Field in ClosureEventTriggeringInterceptor">BEFORE_UPDATE_EVENT</a></span> - Field in <a href="org/grails/orm/hibernate/support/ClosureEventTriggeringInterceptor.html">ClosureEventTriggeringInterceptor</a>
 </dt><dd> <div class="block">@deprecated Use <a href='../../../../../org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html#BEFORE_UPDATE_EVENT' title='AbstractPersistenceEvent.BEFORE_UPDATE_EVENT'>AbstractPersistenceEvent.BEFORE_UPDATE_EVENT</a> instead</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/support/BeforeValidateHelper.html#BEFORE_VALIDATE" title="Field in BeforeValidateHelper">BEFORE_VALIDATE</a></span> - Field in <a href="org/grails/datastore/gorm/support/BeforeValidateHelper.html">BeforeValidateHelper</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/transactions/support/SpringSessionSynchronization.html#beforeCommit(boolean)" title="Method in SpringSessionSynchronization">beforeCommit(boolean)</a></span> - Method in <a href="org/grails/datastore/mapping/transactions/support/SpringSessionSynchronization.html">SpringSessionSynchronization</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/transactions/support/SpringSessionSynchronization.html#beforeCompletion()" title="Method in SpringSessionSynchronization">beforeCompletion()</a></span> - Method in <a href="org/grails/datastore/mapping/transactions/support/SpringSessionSynchronization.html">SpringSessionSynchronization</a>
@@ -991,12 +989,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/gorm/events/DomainEventListener.html#beforeUpdate(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.engine.event.PreUpdateEvent)" title="Method in DomainEventListener">beforeUpdate(PersistentEntity, EntityAccess, PreUpdateEvent)</a></span> - Method in <a href="org/grails/datastore/gorm/events/DomainEventListener.html">DomainEventListener</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/validation/ValidatingEventListener.html#beforeUpdate(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess)" title="Method in ValidatingEventListener">beforeUpdate(PersistentEntity, EntityAccess)</a></span> - Method in <a href="org/grails/datastore/mapping/validation/ValidatingEventListener.html">ValidatingEventListener</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/support/BeforeValidateHelper.html" title="Class in org.grails.datastore.gorm.support">BeforeValidateHelper</a></span> - Class in <a href="./org/grails/datastore/gorm/support/package-summary.html">org.grails.datastore.gorm.support</a>
-</dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/support/BeforeValidateHelper.BeforeValidateEventTriggerCaller.html" title="Class in org.grails.datastore.gorm.support.BeforeValidateHelper">BeforeValidateHelper.BeforeValidateEventTriggerCaller</a></span> - Class in <a href="./org/grails/datastore/gorm/support/package-summary.html">org.grails.datastore.gorm.support</a>
-</dt><dd><div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/support/BeforeValidateHelper.BeforeValidateEventTriggerCaller.html#BeforeValidateHelper.BeforeValidateEventTriggerCaller(Class<?>, groovy.lang.MetaClass)" title="Constructor in BeforeValidateHelper.BeforeValidateEventTriggerCaller">BeforeValidateHelper.BeforeValidateEventTriggerCaller(Class&lt;?&gt;, MetaClass)</a></span> - Constructor in <a href="org/grails/datastore/gorm/support/BeforeValidateHelper.BeforeValidateEventTriggerCaller.html">BeforeValidateHelper.BeforeValidateEventTriggerCaller</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/transaction/HibernateJtaTransactionManagerAdapter.html#begin()" title="Method in HibernateJtaTransactionManagerAdapter">begin()</a></span> - Method in <a href="org/grails/orm/hibernate/transaction/HibernateJtaTransactionManagerAdapter.html">HibernateJtaTransactionManagerAdapter</a>
 </dt><dd> <div class="block"></div></dd>
@@ -1221,8 +1213,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html#build(groovy.lang.Closure)" title="Method in AbstractDetachedCriteria">build(Closure)</a></span> - Method in <a href="org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html">AbstractDetachedCriteria</a>
 </dt><dd> <div class="block">Enable the builder syntax for constructing Criteria</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/support/BeforeValidateHelper.BeforeValidateEventTriggerCaller.html#build(Class<?>, groovy.lang.MetaClass, Class<?>)" title="Method in BeforeValidateHelper.BeforeValidateEventTriggerCaller">build(Class&lt;?&gt;, MetaClass, Class&lt;?&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/support/BeforeValidateHelper.BeforeValidateEventTriggerCaller.html">BeforeValidateHelper.BeforeValidateEventTriggerCaller</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/ConfigurationBuilder.html#build()" title="Method in ConfigurationBuilder">build()</a></span> - Method in <a href="org/grails/datastore/mapping/config/ConfigurationBuilder.html">ConfigurationBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/jdbc/DataSourceBuilder.html#build()" title="Method in DataSourceBuilder">build()</a></span> - Method in <a href="org/grails/datastore/gorm/jdbc/DataSourceBuilder.html">DataSourceBuilder</a>
@@ -1238,8 +1228,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/query/api/BuildableCriteria.html" title="Interface in org.grails.datastore.mapping.query.api">BuildableCriteria</a></span> - Interface in <a href="./org/grails/datastore/mapping/query/api/package-summary.html">org.grails.datastore.mapping.query.api</a>
 </dt><dd><div class="block">@author Jeff Brown</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/FindAllByImplementer.html#buildArgs(org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.MethodNode, org.codehaus.groovy.ast.stmt.BlockStatement)" title="Method in FindAllByImplementer">buildArgs(Parameter, MethodNode, BlockStatement)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/FindAllByImplementer.html">FindAllByImplementer</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/support/EventTriggerCaller.html#buildCaller(java.lang.String, Class<?>, groovy.lang.MetaClass, Class<?>)" title="Method in EventTriggerCaller">buildCaller(String, Class&lt;?&gt;, MetaClass, Class&lt;?&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/support/EventTriggerCaller.html">EventTriggerCaller</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#buildCallToOriginalMethod(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)" title="Method in AbstractMethodDecoratingTransformation">buildCallToOriginalMethod(ClassNode, MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html">AbstractMethodDecoratingTransformation</a>
 </dt><dd> <div class="block"></div></dd>
@@ -1479,10 +1467,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="grails/orm/HibernateCriteriaBuilder.html#CALENDAR_DATE" title="Field in HibernateCriteriaBuilder">CALENDAR_DATE</a></span> - Field in <a href="grails/orm/HibernateCriteriaBuilder.html">HibernateCriteriaBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/orm/HibernateCriteriaBuilder.html#CALENDAR" title="Field in HibernateCriteriaBuilder">CALENDAR</a></span> - Field in <a href="grails/orm/HibernateCriteriaBuilder.html">HibernateCriteriaBuilder</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/support/BeforeValidateHelper.BeforeValidateEventTriggerCaller.html#call(java.lang.Object, List<?>)" title="Method in BeforeValidateHelper.BeforeValidateEventTriggerCaller">call(Object, List&lt;?&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/support/BeforeValidateHelper.BeforeValidateEventTriggerCaller.html">BeforeValidateHelper.BeforeValidateEventTriggerCaller</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/support/EventTriggerCaller.html#call(java.lang.Object, java.lang.Object)" title="Method in EventTriggerCaller">call(Object, Object)</a></span> - Method in <a href="org/grails/datastore/gorm/support/EventTriggerCaller.html">EventTriggerCaller</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/internal/InstanceMethodInvokingClosure.html#call(java.lang.Object)" title="Method in InstanceMethodInvokingClosure">call(Object)</a></span> - Method in <a href="org/grails/datastore/gorm/internal/InstanceMethodInvokingClosure.html">InstanceMethodInvokingClosure</a>
 </dt><dd> <div class="block"></div></dd>
@@ -2346,6 +2330,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Creates a PropertyDescriptor from a MetaBeanProperty</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#createPropertyDescriptor(java.lang.Class, groovy.lang.MetaProperty)" title="Method in MappingFactory">createPropertyDescriptor(Class, MetaProperty)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
 </dt><dd> <div class="block">Creates a PropertyDescriptor from a MetaBeanProperty</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/keyvalue/mapping/config/GormKeyValueMappingFactory.html#createPropertyMapping(PersistentProperty<KeyValue>, org.grails.datastore.mapping.model.PersistentEntity)" title="Method in GormKeyValueMappingFactory">createPropertyMapping(PersistentProperty&lt;KeyValue&gt;, PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/mapping/keyvalue/mapping/config/GormKeyValueMappingFactory.html">GormKeyValueMappingFactory</a>
+</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingFactory.html#createPropertyMapping(PersistentProperty<T>, org.grails.datastore.mapping.model.PersistentEntity)" title="Method in MappingFactory">createPropertyMapping(PersistentProperty&lt;T&gt;, PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingFactory.html">MappingFactory</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/DatastoreUtils.html#createPropertyResolver(Map<String, Object>)" title="Method in DatastoreUtils">createPropertyResolver(Map&lt;String, Object&gt;)</a></span> - Method in <a href="org/grails/datastore/mapping/core/DatastoreUtils.html">DatastoreUtils</a>
@@ -2742,12 +2728,12 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">This default implementation of the deleteAll method is unlikely to be optimal as it iterates and deletes each object.</div></dd>
 <dt><span class="strong"><a href="grails/gorm/DetachedCriteria.html#deleteAll()" title="Method in DetachedCriteria">deleteAll()</a></span> - Method in <a href="grails/gorm/DetachedCriteria.html">DetachedCriteria</a>
 </dt><dd> <div class="block">Deletes all entities matching this criteria</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#deleteAll(java.lang.Iterable)" title="Method in GormEntity">deleteAll(Iterable)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
-</dt><dd> <div class="block">Deletes a list of objects in one go</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#deleteAll(java.util.Map, java.lang.Iterable)" title="Method in GormEntity">deleteAll(Map, Iterable)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
+</dt><dd> <div class="block">Deletes a list of objects in one go and flushes when param is set</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/GormOperations.html#deleteAll()" title="Method in GormOperations">deleteAll()</a></span> - Method in <a href="org/grails/datastore/gorm/query/GormOperations.html">GormOperations</a>
 </dt><dd> <div class="block">Deletes all entities matching this criteria</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#deleteAll(java.lang.Iterable)" title="Method in GormStaticApi">deleteAll(Iterable)</a></span> - Method in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
-</dt><dd> <div class="block">Deletes a list of objects in one go</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#deleteAll(java.util.Map, java.lang.Iterable)" title="Method in GormStaticApi">deleteAll(Map, Iterable)</a></span> - Method in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
+</dt><dd> <div class="block">Deletes a list of objects in one go and flushes when param is set</div></dd>
 <dt><span class="strong"><a href="grails/gorm/api/GormStaticOperations.html#deleteAll(java.lang.Iterable)" title="Method in GormStaticOperations">deleteAll(Iterable)</a></span> - Method in <a href="grails/gorm/api/GormStaticOperations.html">GormStaticOperations</a>
 </dt><dd> <div class="block">Deletes a list of objects in one go</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/GrailsHibernateTemplate.html#deleteAll(Collection<?>)" title="Method in GrailsHibernateTemplate">deleteAll(Collection&lt;?&gt;)</a></span> - Method in <a href="org/grails/orm/hibernate/GrailsHibernateTemplate.html">GrailsHibernateTemplate</a>
@@ -3366,8 +3352,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/HibernateDatastore.html#eventPublisher" title="Field in HibernateDatastore">eventPublisher</a></span> - Field in <a href="org/grails/orm/hibernate/HibernateDatastore.html">HibernateDatastore</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/support/EventTriggerCaller.html" title="Class in org.grails.datastore.gorm.support">EventTriggerCaller</a></span> - Class in <a href="./org/grails/datastore/gorm/support/package-summary.html">org.grails.datastore.gorm.support</a>
-</dt><dd><div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/EventTriggeringInterceptor.html" title="Class in org.grails.orm.hibernate">EventTriggeringInterceptor</a></span> - Class in <a href="./org/grails/orm/hibernate/package-summary.html">org.grails.orm.hibernate</a>
 </dt><dd><div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/AbstractHibernateDatastore.html#eventTriggeringInterceptor" title="Field in AbstractHibernateDatastore">eventTriggeringInterceptor</a></span> - Field in <a href="org/grails/orm/hibernate/AbstractHibernateDatastore.html">AbstractHibernateDatastore</a>
@@ -6694,8 +6678,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/GroovyObjectMethodHandler.html#INVOKE_METHOD" title="Field in GroovyObjectMethodHandler">INVOKE_METHOD</a></span> - Field in <a href="org/grails/datastore/mapping/proxy/GroovyObjectMethodHandler.html">GroovyObjectMethodHandler</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/support/BeforeValidateHelper.html#invokeBeforeValidate(java.lang.Object, List<?>)" title="Method in BeforeValidateHelper">invokeBeforeValidate(Object, List&lt;?&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/support/BeforeValidateHelper.html">BeforeValidateHelper</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html#invokeClosureNode(java.lang.Object)" title="Method in AbstractCriteriaBuilder">invokeClosureNode(Object)</a></span> - Method in <a href="org/grails/datastore/gorm/query/criteria/AbstractCriteriaBuilder.html">AbstractCriteriaBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/EntityProxyMethodHandler.html#invokeEntityProxyMethods(java.lang.Object, java.lang.String, java.lang.Object)" title="Method in EntityProxyMethodHandler">invokeEntityProxyMethods(Object, String, Object)</a></span> - Method in <a href="org/grails/datastore/mapping/proxy/EntityProxyMethodHandler.html">EntityProxyMethodHandler</a>
@@ -7067,8 +7049,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/IterableInterfaceProjectionBuilder.html#isInterfaceProjection(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode, org.codehaus.groovy.ast.ClassNode)" title="Method in IterableInterfaceProjectionBuilder">isInterfaceProjection(ClassNode, MethodNode, ClassNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/IterableInterfaceProjectionBuilder.html">IterableInterfaceProjectionBuilder</a>
 </dt><dd> <div class="block">Is the method an interface projection</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/support/EventTriggerCaller.html#isInvertBooleanReturnValue()" title="Method in EventTriggerCaller">isInvertBooleanReturnValue()</a></span> - Method in <a href="org/grails/datastore/gorm/support/EventTriggerCaller.html">EventTriggerCaller</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/AstUtils.html#isIterableOrArrayOfDomainClasses(org.codehaus.groovy.ast.ClassNode)" title="Method in AstUtils">isIterableOrArrayOfDomainClasses(ClassNode)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/AstUtils.html">AstUtils</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/Property.html#isLazy()" title="Method in Property">isLazy()</a></span> - Method in <a href="org/grails/datastore/mapping/config/Property.html">Property</a>
@@ -7114,8 +7094,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/orm/hibernate/cfg/AbstractGrailsDomainBinder.html#isNonPropertyToken(java.lang.String)" title="Method in AbstractGrailsDomainBinder">isNonPropertyToken(String)</a></span> - Method in <a href="org/grails/orm/hibernate/cfg/AbstractGrailsDomainBinder.html">AbstractGrailsDomainBinder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/cfg/GrailsDomainBinder.html#isNonPropertyToken(java.lang.String)" title="Method in GrailsDomainBinder">isNonPropertyToken(String)</a></span> - Method in <a href="org/grails/orm/hibernate/cfg/GrailsDomainBinder.html">GrailsDomainBinder</a>
-</dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/support/EventTriggerCaller.html#isNoOperationCaller()" title="Method in EventTriggerCaller">isNoOperationCaller()</a></span> - Method in <a href="org/grails/datastore/gorm/support/EventTriggerCaller.html">EventTriggerCaller</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/NameUtils.html#isNotConfigurational(java.lang.String)" title="Method in NameUtils">isNotConfigurational(String)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/NameUtils.html">NameUtils</a>
 </dt><dd> <div class="block"></div></dd>
@@ -10308,8 +10286,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/ManyToMany.html#setInversePropertyName(java.lang.String)" title="Method in ManyToMany">setInversePropertyName(String)</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/ManyToMany.html">ManyToMany</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/support/EventTriggerCaller.html#setInvertBooleanReturnValue(boolean)" title="Method in EventTriggerCaller">setInvertBooleanReturnValue(boolean)</a></span> - Method in <a href="org/grails/datastore/gorm/support/EventTriggerCaller.html">EventTriggerCaller</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/keyvalue/mapping/config/KeyValue.html#setKey(java.lang.String)" title="Method in KeyValue">setKey(String)</a></span> - Method in <a href="org/grails/datastore/mapping/keyvalue/mapping/config/KeyValue.html">KeyValue</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/config/Property.html#setLazy(java.lang.Boolean)" title="Method in Property">setLazy(Boolean)</a></span> - Method in <a href="org/grails/datastore/mapping/config/Property.html">Property</a>
@@ -11553,7 +11529,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/AbstractHibernateDatastore.html#withFlushMode(org.grails.orm.hibernate.AbstractHibernateDatastore.FlushMode, Callable<Boolean>)" title="Method in AbstractHibernateDatastore">withFlushMode(AbstractHibernateDatastore.FlushMode, Callable&lt;Boolean&gt;)</a></span> - Method in <a href="org/grails/orm/hibernate/AbstractHibernateDatastore.html">AbstractHibernateDatastore</a>
 </dt><dd> <div class="block">Execute the given operation with the given flush mode</div></dd>
-<dt><span class="strong"><a href="org/grails/orm/hibernate/HibernateDatastore.html#withFlushMode(org.hibernate.FlushMode, Callable<Boolean>)" title="Method in HibernateDatastore">withFlushMode(FlushMode, Callable&lt;Boolean&gt;)</a></span> - Method in <a href="org/grails/orm/hibernate/HibernateDatastore.html">HibernateDatastore</a>
+<dt><span class="strong"><a href="org/grails/orm/hibernate/HibernateDatastore.html#withFlushMode(FlushMode, Callable<Boolean>)" title="Method in HibernateDatastore">withFlushMode(FlushMode, Callable&lt;Boolean&gt;)</a></span> - Method in <a href="org/grails/orm/hibernate/HibernateDatastore.html">HibernateDatastore</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/DefaultTenantService.html#withId(java.io.Serializable, Closure<T>)" title="Method in DefaultTenantService">withId(Serializable, Closure&lt;T&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/services/DefaultTenantService.html">DefaultTenantService</a>
 </dt><dd> <div class="block"></div></dd>
@@ -11665,8 +11641,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Executes the given callable within the context of a transaction with the given definition</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingSupport.html#wrap(java.util.Collection, org.grails.datastore.mapping.dirty.checking.DirtyCheckable, java.lang.String)" title="Method in DirtyCheckingSupport">wrap(Collection, DirtyCheckable, String)</a></span> - Method in <a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingSupport.html">DirtyCheckingSupport</a>
 </dt><dd> <div class="block">Wraps a collection in dirty checking capability</div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/gorm/support/EventTriggerCaller.html#wrapNullInNoopCaller(org.grails.datastore.gorm.support.EventTriggerCaller)" title="Method in EventTriggerCaller">wrapNullInNoopCaller(EventTriggerCaller)</a></span> - Method in <a href="org/grails/datastore/gorm/support/EventTriggerCaller.html">EventTriggerCaller</a>
-</dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="grails/orm/HibernateCriteriaBuilder.html#WRAPPER_BINARY" title="Field in HibernateCriteriaBuilder">WRAPPER_BINARY</a></span> - Field in <a href="grails/orm/HibernateCriteriaBuilder.html">HibernateCriteriaBuilder</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/types/AbstractMappingAwareCustomTypeMarshaller.html#write(org.grails.datastore.mapping.model.PersistentProperty, T, N)" title="Method in AbstractMappingAwareCustomTypeMarshaller">write(PersistentProperty, T, N)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/types/AbstractMappingAwareCustomTypeMarshaller.html">AbstractMappingAwareCustomTypeMarshaller</a>

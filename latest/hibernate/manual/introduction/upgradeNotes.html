@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Separation of GORM Async</title>
+<title>GORM 6.1.9 and Grails 3.2.x</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -423,6 +423,25 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="sect3">
+<h4 id="_gorm_6_1_9_and_grails_3_2_x">GORM 6.1.9 and Grails 3.2.x</h4>
+<div class="paragraph">
+<p>Due to several factors, the version of Spring that GORM 6.1.9 requires was updated to 4.3.14. This may impact Grails 3.2.x users that have an older version on their classpath. For Grails 3.2 users that would like to upgrade to GORM 6.1.9, add the following configuration to your <code>build.gradle</code> above the <code>dependencies</code> block.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">configurations.all {
+  resolutionStrategy {
+    eachDependency { DependencyResolveDetails details -&gt;
+        if (details.requested.group == 'org.springframework') {
+          details.useVersion '4.3.14.RELEASE'
+        }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_separation_of_gorm_async">Separation of GORM Async</h4>
 <div class="paragraph">
 <p>GORM Async has been separated from GORM core and is no longer added by default to entities.</p>
@@ -435,7 +454,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-gorm-async:6.1.9.RELEASE"</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-gorm-async:6.1.10.RELEASE"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -462,10 +481,10 @@ class Person implements AsyncEntity&lt;Person&gt; {
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">> Could not resolve all dependencies for configuration ':example:runtime'.
-   > Could not find org.grails:grails-datastore-simple:6.1.9.RELEASE.
+   > Could not find org.grails:grails-datastore-simple:6.1.10.RELEASE.
      Searched in the following locations:
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.9.RELEASE/grails-datastore-simple-6.1.9.RELEASE.pom
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.9.RELEASE/grails-datastore-simple-6.1.9.RELEASE.jar
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.10.RELEASE/grails-datastore-simple-6.1.10.RELEASE.pom
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.10.RELEASE/grails-datastore-simple-6.1.10.RELEASE.jar
      Required by:
          project :example > org.grails:grails-dependencies:3.2.4 >
             ...</code></pre>
@@ -651,13 +670,25 @@ grails.gorm.default.mapping = {
 <p>GORM now includes its own implementation of dirty checking in order to improve performance. This implementation uses the <code>DirtyCheckable</code> trait to store changes in the entity itself so that Hibernate does not have to do internal array comparison to verify whether an object has changed or not.</p>
 </div>
 <div class="paragraph">
-<p>There may however be some differences in behaviour, so if you wish to continue to use the Hibernate implementatino you can re-enable it with the following configuration:</p>
+<p>There may however be some differences in behaviour, so if you wish to continue to use the Hibernate implementation you can re-enable it with the following configuration:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-yaml" data-lang="yaml">hibernate:
     hibernateDirtyChecking: true</code></pre>
 </div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+The implementation modifies all setters of your class so that dirty checking is tracked per field. However, there is one corner case where you do <code>name = "blah"</code> in a method internal to the class, the setter will not be called and property will not be marked as dirty. Hence, changing it to <code>setName("blah")</code> resolves the issue.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>Some differences in behaviour and workarounds are covered below.</p>
