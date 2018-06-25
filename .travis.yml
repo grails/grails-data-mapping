@@ -1,10 +1,6 @@
-sudo: false
-cache:
-  directories:
-  - $HOME/.gradle
 language: groovy
 jdk:
-- oraclejdk7
+- oraclejdk8
 dist: precise
 env:
   global:
