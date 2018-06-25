@@ -4,8 +4,8 @@ cache:
   - "$HOME/.gradle"
 language: groovy
 jdk:
-- oraclejdk7
-dist: precise
+- openjdk7
+dist: trusty
 env:
   global:
   - TERM=dumb
@@ -27,10 +27,15 @@ env:
   - secure: V7Dwj9pqJWmjeYJYWHdNGlujNhFwvEc5YbTv5AO9Xn+iUgaaQEmrv43a5I+4m+EGVraD3Pg6ENPBEc7e0/cD7GoocQ0uXwGkfe+dJISvp3s18lDMm7EtdxmTkiKVH5sgsHnGbbEHV4Ku1c9k1u4DKEjmPzfpoNr/vI2yKU9I5EM=
   - secure: XXFQBgzpIYV8boZo/ZeEq300zDLrWzD09vSTh3A9BvPsTTJgGlPBF008zFP2WD2XacBHbCFMPd0hPrO25SSCwX4P8C/PhhRRkrhuYaM1OeYzi6Xxbtnc1gpdUdxm9Z/cZlvLTEKL3cq+9XqbKOkcumM9pxY1mWkoeLVuv/9dsXw=
 before_install:
-- "./openssl-setup.sh"
+
+before_install:
+  # Workaround for https://github.com/gradle/gradle/issues/2421:
+  # download all Gradle distributions with openjdk8
+  - JAVA_HOME=$(jdk_switcher home openjdk8) ./gradlew
+  - "./openssl-setup.sh"
 matrix:
   fast_finish: true
-script: "./travis-build.sh"
+script: JAVA_HOME=$(jdk_switcher home openjdk7) "./travis-build.sh"
 install: true
 notifications:
   slack:
