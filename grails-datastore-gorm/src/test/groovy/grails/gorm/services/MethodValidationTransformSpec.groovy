@@ -67,7 +67,7 @@ class Foo {
         then:
         def e = thrown( ConstraintViolationException)
         e.constraintViolations.size() == 1
-        e.constraintViolations.first().message == 'may not be null'
+        e.constraintViolations.first().getMessageTemplate() == '{javax.validation.constraints.NotNull.message}'
         e.constraintViolations.first().propertyPath.toString() == 'find.title'
 
         when:
