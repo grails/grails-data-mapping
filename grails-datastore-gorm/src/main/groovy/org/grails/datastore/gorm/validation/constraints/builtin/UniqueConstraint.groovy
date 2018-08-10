@@ -3,6 +3,7 @@ package org.grails.datastore.gorm.validation.constraints.builtin
 import grails.gorm.DetachedCriteria
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.validation.constraints.AbstractConstraint
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
@@ -62,6 +63,16 @@ class UniqueConstraint extends AbstractConstraint {
         EntityReflector reflector = targetEntity.reflector
         String constraintPropertyName = this.constraintPropertyName
         List group = this.group
+        
+        if(target instanceof DirtyCheckable) {
+            Boolean anyChanges = target.hasChanged(constraintPropertyName)
+            for(prop in group) {
+                anyChanges |= target.hasChanged(prop.toString())
+            }
+            if(!anyChanges) {
+                return
+            }
+        }
 
         PersistentProperty persistentProperty = targetEntity.getPropertyByName(constraintPropertyName)
         boolean isToOne = persistentProperty instanceof ToOne
