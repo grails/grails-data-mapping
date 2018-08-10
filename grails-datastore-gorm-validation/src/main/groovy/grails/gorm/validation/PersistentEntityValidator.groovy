@@ -66,6 +66,9 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
 
         Map<String, ConstrainedProperty> constrainedProperties = this.constrainedProperties
         Set<String> constrainedPropertyNames = new HashSet<>(constrainedProperties.keySet())
+        
+        def validatedObjects = new HashSet();
+        validatedObjects.add(obj);
 
         for(PersistentProperty pp in entity.persistentProperties) {
             def propertyName = pp.name
@@ -79,7 +82,7 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
             if(pp instanceof Association) {
                 Association association = (Association)pp
                 if(cascade) {
-                    cascadeToAssociativeProperty(obj, errors, entityReflector, association, new HashSet())
+                    cascadeToAssociativeProperty(obj, errors, entityReflector, association, validatedObjects)
                 }
             }
 
@@ -104,17 +107,14 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
      */
     protected void cascadeToAssociativeProperty(Object parent, Errors errors, EntityReflector reflector, Association association, Set validatedObjects ) {
         String propertyName = association.getName()
-        if (errors.hasFieldErrors(propertyName) || validatedObjects.contains(parent)) {
+        if (errors.hasFieldErrors(propertyName)) {
             return
         }
-        validatedObjects.add(parent)
 
         if (association instanceof ToOne) {
             Object associatedObject = reflector.getProperty(parent, propertyName)
 
-            // Prevent the cascade of validation in the event the associated object has already been validated
-            // This shouldn't happen, but it is possible and will cause an OOM error when adding errors
-            if(associatedObject != null && proxyHandler?.isInitialized(associatedObject) && !validatedObjects.contains(associatedObject)) {
+            if(associatedObject != null && proxyHandler?.isInitialized(associatedObject)) {
                 if(association.isOwningSide() || association.doesCascade(CascadeType.PERSIST, CascadeType.MERGE)) {
                     cascadeValidationToOne(parent, propertyName, (ToOne)association, errors, reflector, associatedObject, null, validatedObjects)
                 }
@@ -136,7 +136,6 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
             }
         }
 
-        validatedObjects.remove(parent)
     }
 
     @CompileDynamic
@@ -197,6 +196,11 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
         if (associatedObject == null) {
             return
         }
+        
+        if(validatedObjects.contains(associatedObject)) {
+            return
+        }
+        validatedObjects.add(associatedObject);       
 
         PersistentEntity associatedEntity = association.getAssociatedEntity()
         if (associatedEntity == null) {
@@ -256,7 +260,7 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
                     if(association.doesCascade(CascadeType.PERSIST, CascadeType.MERGE)) {
                         if(association.isBidirectional() && associatedPersistentProperty == association.inverseSide) {
                             // If this property is the inverse side of the currently processed association then
-                            // we don't want to process it because that would cause a potential infinite loop
+                            // we don't want to process it
                             continue
                         }
 
