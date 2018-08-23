@@ -222,13 +222,17 @@ public abstract class Association<T extends Property> extends AbstractPersistent
         return cascadeOperations;
     }
 
-    private void buildCascadeOperations() {
+    /**
+     * It is possible this method could be called multiple times in some threaded initialization scenarios.
+     * It needs to either remain idempotent or have the synchronization beefed up if that precondition ever changes.
+     */
+    private synchronized void buildCascadeOperations() {
         T mappedForm = this.getMapping().getMappedForm();
         this.orphanRemoval = mappedForm.isOrphanRemoval();
         final String cascade = mappedForm.getCascade();
         if (cascade != null) {
             final String[] specifiedOperations = cascade.toLowerCase().split(",");
-            cascadeOperations = new HashSet<>();
+            Set<CascadeType> cascadeOperations = new HashSet<>();
             for(final String operation: specifiedOperations) {
                 final String key = operation.trim();
                 if (cascadeTypeConversions.containsKey(key)) {
@@ -238,25 +242,24 @@ public abstract class Association<T extends Property> extends AbstractPersistent
                     this.orphanRemoval = true;
                 }
             }
-            cascadeOperations = Collections.unmodifiableSet(cascadeOperations);
+            this.cascadeOperations = Collections.unmodifiableSet(cascadeOperations);
         } else {
             List<CascadeType> cascades = mappedForm.getCascades();
             if(cascades != null) {
                 this.cascadeOperations = Collections.unmodifiableSet(new HashSet<>(cascades));
             }
             else if (isOwningSide()) {
-                cascadeOperations = DEFAULT_OWNER_CASCADE;
+                this.cascadeOperations = DEFAULT_OWNER_CASCADE;
             }
             else {
                 if((this instanceof ManyToOne) && isBidirectional()) {
                     // don't cascade by default to many-to-one that is not owned
-                    cascadeOperations = Collections.<CascadeType>emptySet();
+                    this.cascadeOperations = Collections.emptySet();
                 }
                 else {
-                    cascadeOperations = DEFAULT_CHILD_CASCADE;
+                    this.cascadeOperations = DEFAULT_CHILD_CASCADE;
                 }
             }
         }
     }
-
 }
