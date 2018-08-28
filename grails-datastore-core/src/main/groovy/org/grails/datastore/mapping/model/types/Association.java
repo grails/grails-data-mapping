@@ -21,7 +21,9 @@ import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
 
 import org.grails.datastore.mapping.config.Property;
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.model.*;
+import org.grails.datastore.mapping.validation.CascadeValidateType;
 
 /**
  * Models an association between one class and another
@@ -40,7 +42,9 @@ public abstract class Association<T extends Property> extends AbstractPersistent
     private String referencedPropertyName;
     private boolean owningSide;
     private boolean orphanRemoval = false;
+
     private Set<CascadeType> cascadeOperations;
+    private CascadeValidateType cascadeValidateType;
 
     private static final Map<String, CascadeType> cascadeTypeConversions = new LinkedHashMap<>();
 
@@ -111,7 +115,7 @@ public abstract class Association<T extends Property> extends AbstractPersistent
     }
 
     /**
-     * Returns true if the this association cascade for the given cascade operation
+     * Returns true if this association cascades for the given cascade operation
      *
      * @param cascadeOperations The cascadeOperations
      * @return True if it does
@@ -129,6 +133,36 @@ public abstract class Association<T extends Property> extends AbstractPersistent
             }
         }
         return false;
+    }
+
+    /**
+     * Returns true if this association should cascade validation to the given entity.
+     * Note that if the object state is persisted, it may still be validated as part of the object graph.
+     *
+     * @param associatedObject The associated object that may or may not be validated further
+     * @return True if validation should cascade
+     */
+    public boolean doesCascadeValidate(Object associatedObject) {
+        CascadeValidateType cascadeValidateType = getCascadeValidateOperation();
+
+        // Never cascade validation for this association
+        if (cascadeValidateType == CascadeValidateType.NONE) {
+            return false;
+        }
+
+        // Only owned associations are eligible
+        if (cascadeValidateType == CascadeValidateType.OWNED) {
+            return isOwningSide();
+        }
+
+        // Only cascade if the associated object is flagged as dirty. This presumes the object wasn't loaded
+        // from persistence in an invalid state, which is probably a reasonable assumption.
+        if (cascadeValidateType == CascadeValidateType.DIRTY && associatedObject instanceof DirtyCheckable) {
+            return ((DirtyCheckable)associatedObject).hasChanged();
+        }
+
+        // Default
+        return isOwningSide() || doesCascade(CascadeType.PERSIST, CascadeType.MERGE);
     }
 
     /**
@@ -222,6 +256,13 @@ public abstract class Association<T extends Property> extends AbstractPersistent
         return cascadeOperations;
     }
 
+    protected CascadeValidateType getCascadeValidateOperation() {
+        if (cascadeValidateType == null) {
+            buildCascadeValidateOperation();
+        }
+        return cascadeValidateType;
+    }
+
     /**
      * It is possible this method could be called multiple times in some threaded initialization scenarios.
      * It needs to either remain idempotent or have the synchronization beefed up if that precondition ever changes.
@@ -260,6 +301,21 @@ public abstract class Association<T extends Property> extends AbstractPersistent
                     this.cascadeOperations = DEFAULT_CHILD_CASCADE;
                 }
             }
+        }
+    }
+
+    /**
+     * It is possible this method could be called multiple times in some threaded initialization scenarios.
+     * It needs to either remain idempotent or have the synchronization beefed up if that precondition ever changes.
+     */
+    private synchronized void buildCascadeValidateOperation() {
+        T mappedForm = this.getMapping().getMappedForm();
+        final String cascade = mappedForm.getCascadeValidate();
+        if (cascade != null) {
+            this.cascadeValidateType = CascadeValidateType.fromMappedName(cascade);
+        }
+        else {
+            this.cascadeValidateType = CascadeValidateType.DEFAULT;
         }
     }
 }
