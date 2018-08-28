@@ -258,7 +258,7 @@ public abstract class Association<T extends Property> extends AbstractPersistent
 
     protected CascadeValidateType getCascadeValidateOperation() {
         if (cascadeValidateType == null) {
-            buildCascadeValidateOperation();
+            cascadeValidateType = initializeCascadeValidateType();
         }
         return cascadeValidateType;
     }
@@ -308,14 +308,9 @@ public abstract class Association<T extends Property> extends AbstractPersistent
      * It is possible this method could be called multiple times in some threaded initialization scenarios.
      * It needs to either remain idempotent or have the synchronization beefed up if that precondition ever changes.
      */
-    private synchronized void buildCascadeValidateOperation() {
+    private synchronized CascadeValidateType initializeCascadeValidateType() {
         T mappedForm = this.getMapping().getMappedForm();
         final String cascade = mappedForm.getCascadeValidate();
-        if (cascade != null) {
-            this.cascadeValidateType = CascadeValidateType.fromMappedName(cascade);
-        }
-        else {
-            this.cascadeValidateType = CascadeValidateType.DEFAULT;
-        }
+        return cascade != null ? CascadeValidateType.fromMappedName(cascade) : CascadeValidateType.DEFAULT;
     }
 }
