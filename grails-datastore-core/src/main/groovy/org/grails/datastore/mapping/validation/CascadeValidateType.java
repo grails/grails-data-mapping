@@ -18,7 +18,7 @@ package org.grails.datastore.mapping.validation;
  * Defines a set of cascade validation options that are propagated to the associated entity.
  */
 public enum CascadeValidateType {
-    /** Fall back to the CascadeType and ownership of the association to decide whether to cascade validation **/
+    /** Use the default GORM cascade behavior which uses the CascadeType and ownership of the association to decide **/
     DEFAULT,
 
     /** Don't cascade validations at all, only entities that are actually saved via cascade will be validated **/
