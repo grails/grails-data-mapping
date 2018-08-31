@@ -13,6 +13,7 @@ import org.grails.datastore.mapping.model.types.ToMany
 import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.proxy.ProxyHandler
 import org.grails.datastore.mapping.reflect.EntityReflector
+import org.grails.datastore.mapping.reflect.ReflectionUtils
 import org.springframework.context.MessageSource
 import org.springframework.validation.Errors
 import org.springframework.validation.FieldError
@@ -203,13 +204,13 @@ class PersistentEntityValidator implements CascadingValidator, ConstrainedEntity
             return
         }
 
-        MappingContext mappingContext = associatedEntity.getMappingContext()
-        EntityReflector associatedReflector = mappingContext.getEntityReflector(associatedEntity)
-
         // Make sure this object is eligible to cascade validation at all.
         if (!association.doesCascadeValidate(associatedObject)) {
             return
         }
+
+        MappingContext mappingContext = associatedEntity.getMappingContext()
+        EntityReflector associatedReflector = mappingContext.getEntityReflector(associatedEntity)
 
         Association otherSide = null
         if (association.isBidirectional()) {
