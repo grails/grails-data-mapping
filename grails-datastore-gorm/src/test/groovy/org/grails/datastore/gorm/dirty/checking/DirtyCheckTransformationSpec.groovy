@@ -1,5 +1,6 @@
 package org.grails.datastore.gorm.dirty.checking
 
+import grails.gorm.annotation.Entity
 import grails.gorm.dirty.checking.DirtyCheck
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import spock.lang.Ignore
@@ -392,7 +393,7 @@ class FundProduct {
     }
 
     void "Test that dirty checking should not track changes to transients"() {
-        when:"An entity class is parsed"
+        when: "An entity class is parsed"
         def gcl = new GroovyClassLoader()
         Class cls = gcl.parseClass('''
 package org.grails.datastore.gorm.dirty.checking
@@ -418,9 +419,34 @@ class Practice {
         child.trackChanges()
         child.message = "Test Message"
 
-        then:"The generic types are retained"
+        then: "The generic types are retained"
         !child.hasChanged()
         child.message == "Test Message"
+    }
+    
+    void "Test dirty check with belongsTo"() {
+        when:
+        Child child = new Child()
+        child.trackChanges()
+
+        then:
+        !child.hasChanged()
+        !child.hasChanged("parent")
+
+        when:
+        child.name = "test"
+
+        then:
+        child.hasChanged()
+        child.hasChanged("name")
+
+        when:
+        child.parent = new Parent()
+
+        then:
+        child.hasChanged()
+        child.hasChanged("name")
+        child.hasChanged("parent")
     }
 }
 
@@ -445,3 +471,13 @@ class KidsBook extends Book{
     int age
 }
 
+@Entity
+class Parent {
+    String name
+}
+
+@Entity
+class Child {
+    String name
+    static belongsTo = [parent:Parent]
+}
