@@ -20,6 +20,7 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormValidateable
 import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.model.types.Embedded
 import org.grails.datastore.mapping.model.types.EmbeddedCollection
@@ -93,6 +94,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
         this.proxyHandler = datastore.mappingContext.getProxyHandler()
         this.autoFlush = datastore.autoFlush
         this.failOnError = datastore.failOnError
+        this.markDirty = datastore.markDirty
     }
 
 
@@ -160,6 +162,9 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
                 return performMerge(target, shouldFlush)
             }
             else {
+                if (target instanceof DirtyCheckable && markDirty) {
+                    target.markDirty()
+                }
                 return performSave(target, shouldFlush)
             }
         } finally {

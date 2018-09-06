@@ -50,6 +50,11 @@ class ConnectionSourceSettings implements Settings {
     boolean failOnError = false
 
     /**
+     * Whether to mark instances dirty on explicit save()
+     */
+    Boolean markDirty
+
+    /**
      * Package names that should fail on error
      */
     List<String> failOnErrorPackages = Collections.emptyList()

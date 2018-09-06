@@ -75,6 +75,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     protected final boolean isCacheQueries;
     protected final int defaultFlushMode;
     protected final boolean failOnError;
+    protected final boolean markDirty;
     protected final String dataSourceName;
     protected final TenantResolver tenantResolver;
     private boolean destroyed;
@@ -91,6 +92,8 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         this.passReadOnlyToHibernate = hibernateSettings.isReadOnly();
         this.isCacheQueries = hibernateSettings.getCache().isQueries();
         this.failOnError = settings.isFailOnError();
+        Boolean markDirty = settings.getMarkDirty();
+        this.markDirty = markDirty == null ? false : markDirty;
         FlushMode flushMode = FlushMode.valueOf(hibernateSettings.getFlush().getMode().name());
         this.defaultFlushModeName = flushMode.name();
         this.defaultFlushMode = flushMode.getLevel();
@@ -131,6 +134,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
             defaultFlushMode = flushMode.level;
         }
         failOnError = config.getProperty(SETTING_FAIL_ON_ERROR, Boolean.class, false);
+        markDirty = config.getProperty(SETTING_MARK_DIRTY, Boolean.class, false);
         this.tenantResolver = new FixedTenantResolver();
         this.multiTenantMode = MultiTenancySettings.MultiTenancyMode.NONE;
         this.schemaHandler = new DefaultSchemaHandler();
