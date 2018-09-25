@@ -155,14 +155,16 @@ public abstract class Association<T extends Property> extends AbstractPersistent
             return isOwningSide();
         }
 
+        boolean defaultCascade = isOwningSide() || doesCascade(CascadeType.PERSIST, CascadeType.MERGE);
+
         // Only cascade if the associated object is flagged as dirty. This presumes the object wasn't loaded
         // from persistence in an invalid state, which is probably a reasonable assumption.
         if (cascadeValidateType == CascadeValidateType.DIRTY && associatedObject instanceof DirtyCheckable) {
-            return ((DirtyCheckable)associatedObject).hasChanged();
+            return defaultCascade && ((DirtyCheckable)associatedObject).hasChanged();
         }
 
         // Default
-        return isOwningSide() || doesCascade(CascadeType.PERSIST, CascadeType.MERGE);
+        return defaultCascade;
     }
 
     /**

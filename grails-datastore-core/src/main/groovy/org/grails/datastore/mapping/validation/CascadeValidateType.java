@@ -18,16 +18,16 @@ package org.grails.datastore.mapping.validation;
  * Defines a set of cascade validation options that are propagated to the associated entity.
  */
 public enum CascadeValidateType {
-    /** Use the default GORM cascade behavior which uses the CascadeType and ownership of the association to decide **/
+    /** By default, cascade for any owned association or with a JPA cascade of PERSIST or MERGE **/
     DEFAULT,
 
-    /** Don't cascade validations at all, only entities that are actually saved via cascade will be validated **/
+    /** Don't cascade validations at all, only entities that are actually flushed will be validated (similar to deepValidate: false) **/
     NONE,
 
-    /** Only cascade validation for associations which are owned by the parent entity **/
+    /** Only cascade validation for associations which are owned by the parent entity, regardless of the JPA cascade behavior **/
     OWNED,
 
-    /** Only cascade validation for entities which are dirty. If the object isn't DirtyCheckable, this will fall back to DEFAULT **/
+    /** In addition to the default cascade requirement, only cascade to entities that are DirtyCheckable and hasChanged **/
     DIRTY;
 
     public static CascadeValidateType fromMappedName(String name) {
