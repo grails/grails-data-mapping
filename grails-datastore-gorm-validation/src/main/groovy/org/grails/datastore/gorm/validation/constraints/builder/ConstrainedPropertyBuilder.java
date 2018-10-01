@@ -41,6 +41,7 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
     private final MappingContext mappingContext;
     private final Map<String, Object> defaultConstraints;
     private boolean allowDynamic = false;
+    private boolean defaultNullable = false;
 
 
     public ConstrainedPropertyBuilder(MappingContext mappingContext, ConstraintRegistry constraintRegistry, Class targetClass, Map<String, Object> defaultConstraints) {
@@ -184,7 +185,7 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
     private Object handleImportFrom(Map attributes, Class importFromClazz) {
 
         Map importFromConstrainedProperties = new DefaultConstraintEvaluator(constraintRegistry,mappingContext, defaultConstraints )
-                                                        .evaluate(importFromClazz);
+                                                        .evaluate(importFromClazz, defaultNullable);
 
         List<MetaProperty> metaProperties = classPropertyFetcher.getMetaProperties();
 
@@ -270,5 +271,9 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
 
     public void setAllowDynamic(boolean allowDynamic) {
         this.allowDynamic = allowDynamic;
+    }
+
+    public void setDefaultNullable(boolean defaultNullable) {
+        this.defaultNullable = defaultNullable;
     }
 }

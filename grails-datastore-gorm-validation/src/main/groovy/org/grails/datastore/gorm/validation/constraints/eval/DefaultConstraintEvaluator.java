@@ -87,6 +87,7 @@ public class DefaultConstraintEvaluator implements ConstraintsEvaluator {
             constraints.addAll( Arrays.asList(adHocConstraintsClosures) );
         }
         ConstrainedPropertyBuilder delegate = newConstrainedPropertyBuilder(theClass);
+        delegate.setDefaultNullable(defaultNullable);
         delegate.setAllowDynamic(useOnlyAdHocConstraints);
         // Evaluate all the constraints closures in the inheritance chain
         for (Closure c : constraints) {
