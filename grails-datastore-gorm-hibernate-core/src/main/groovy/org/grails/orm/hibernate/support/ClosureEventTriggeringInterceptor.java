@@ -16,33 +16,37 @@
 package org.grails.orm.hibernate.support;
 
 
-import grails.gorm.dirty.checking.DirtyCheck;
+import org.grails.datastore.gorm.events.AutoTimestampEventListener;
 import org.grails.datastore.gorm.events.ConfigurableApplicationContextEventPublisher;
 import org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
-import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
 import org.grails.datastore.mapping.engine.ModificationTrackingEntityAccess;
+import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.model.types.Embedded;
 import org.grails.datastore.mapping.proxy.ProxyHandler;
 import org.grails.orm.hibernate.AbstractHibernateDatastore;
 import org.grails.orm.hibernate.AbstractHibernateGormInstanceApi;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
-import org.hibernate.engine.internal.Nullability;
-import org.hibernate.event.service.spi.EventListenerRegistry;
-import org.hibernate.event.spi.*;
+import org.hibernate.event.spi.AbstractEvent;
+import org.hibernate.event.spi.PostDeleteEvent;
+import org.hibernate.event.spi.PostInsertEvent;
+import org.hibernate.event.spi.PostLoadEvent;
+import org.hibernate.event.spi.PostUpdateEvent;
+import org.hibernate.event.spi.PreDeleteEvent;
+import org.hibernate.event.spi.PreInsertEvent;
+import org.hibernate.event.spi.PreLoadEvent;
+import org.hibernate.event.spi.PreUpdateEvent;
+import org.hibernate.event.spi.SaveOrUpdateEvent;
 import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.tuple.entity.EntityMetamodel;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Listens for Hibernate events and publishes corresponding Datastore events.
@@ -182,12 +186,29 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     }
 
     private void synchronizeHibernateState(PreUpdateEvent hibernateEvent, ModificationTrackingEntityAccess entityAccess) {
-        Map<String, Object> modifiedProperties = entityAccess.getModifiedProperties();
-        if(!modifiedProperties.isEmpty()) {
+        Map<String, Object> modifiedProperties = getModifiedPropertiesWithAutotimestamp(hibernateEvent, entityAccess);
+
+        if (!modifiedProperties.isEmpty()) {
             Object[] state = hibernateEvent.getState();
             EntityPersister persister = hibernateEvent.getPersister();
             synchronizeHibernateState(persister, state, modifiedProperties);
         }
+    }
+
+    private Map<String, Object> getModifiedPropertiesWithAutotimestamp(PreUpdateEvent hibernateEvent, ModificationTrackingEntityAccess entityAccess) {
+        Map<String, Object> modifiedProperties = entityAccess.getModifiedProperties();
+
+        EntityMetamodel entityMetamodel = hibernateEvent.getPersister().getEntityMetamodel();
+        Integer dateCreatedIdx = entityMetamodel.getPropertyIndexOrNull(AutoTimestampEventListener.DATE_CREATED_PROPERTY);
+
+        Object[] oldState = hibernateEvent.getOldState();
+        Object[] state = hibernateEvent.getState();
+        // Only for "dateCreated" property, "lastUpdated" is handled correctly
+        if (dateCreatedIdx != null && oldState[dateCreatedIdx] != null && !oldState[dateCreatedIdx].equals(state[dateCreatedIdx])) {
+            modifiedProperties.put(AutoTimestampEventListener.DATE_CREATED_PROPERTY, oldState[dateCreatedIdx]);
+        }
+
+        return modifiedProperties;
     }
 
     private void synchronizeHibernateState(EntityPersister persister, Object[] state, Map<String, Object> modifiedProperties) {
