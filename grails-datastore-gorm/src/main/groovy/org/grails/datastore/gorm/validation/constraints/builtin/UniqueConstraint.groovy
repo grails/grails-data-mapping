@@ -91,6 +91,7 @@ class UniqueConstraint extends AbstractConstraint {
         }
 
         if (constraintParameter) {
+            boolean shouldValidate = true
             detachedCriteria = detachedCriteria.build {
                 eq(constraintPropertyName, propertyValue)
                 if (!group.isEmpty()) {
@@ -100,8 +101,13 @@ class UniqueConstraint extends AbstractConstraint {
                         if (value != null) {
                             PersistentProperty associated = targetEntity.getPropertyByName(propName)
                             if (associated instanceof ToOne) {
+                                // We are merely verifying that the object is not transient here
                                 def associationId = ((Association) associated).getAssociatedEntity().getReflector().getIdentifier(value)
                                 if (associationId == null) {
+                                    // no need to validate since this group association is unsaved
+                                    shouldValidate = false
+
+                                    // we aren't validating, so no point continuing
                                     continue
                                 }
                             }
@@ -111,12 +117,14 @@ class UniqueConstraint extends AbstractConstraint {
                 }
             }.id()
 
-            def existingId = detachedCriteria.get()
-            if (existingId != null) {
-                def targetId = reflector.getIdentifier(target)
-                if (targetId != existingId) {
-                    def args = [constraintPropertyName, constraintOwningClass, propertyValue] as Object[]
-                    rejectValue(target, errors, "unique", args, getDefaultMessage("default.not.unique.message"))
+            if (shouldValidate) {
+                def existingId = detachedCriteria.get()
+                if (existingId != null) {
+                    def targetId = reflector.getIdentifier(target)
+                    if (targetId != existingId) {
+                        def args = [constraintPropertyName, constraintOwningClass, propertyValue] as Object[]
+                        rejectValue(target, errors, "unique", args, getDefaultMessage("default.not.unique.message"))
+                    }
                 }
             }
         }

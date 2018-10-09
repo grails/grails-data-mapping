@@ -38,8 +38,10 @@ class UniqueConstraintSpec extends Specification {
 
     void 'unique constraint works with parent/child'() {
         given: 'an existing channel'
-        def testOrg = new Organization(name: 'Test 1').save(failOnError: true)
-        def defaultChannel1 = new DefaultChannel(name: 'General', organization: testOrg).save(failOnError: true, flush: true)
+        def testOrg = new Organization(name: 'Test 1')
+        testOrg.defaultChannel.organization = testOrg
+        testOrg.save(failOnError: true, flush: true)
+        def defaultChannel1 = testOrg.defaultChannel
 
         when: 'a new channel with the same name is created'
         def defaultChannel2 = new DefaultChannel(name: defaultChannel1.name, organization: testOrg)
@@ -53,23 +55,48 @@ class UniqueConstraintSpec extends Specification {
 
     void "unique constraint works in sibling classes"() {
         given: 'an existing channel'
-        def testOrg = new Organization(name: 'Test 1').save(failOnError: true)
-        def defaultChannel = new DefaultChannel(name: 'General', organization: testOrg).save(failOnError: true, flush: true)
+        def testOrg = new Organization(name: 'Test 1')
+        testOrg.defaultChannel.organization = testOrg
+        testOrg.save(failOnError: true, flush: true)
+
+        and: 'a channel is added'
+        def alphaChannel = new ListChannel(name: 'Alpha', organization: testOrg).save(failOnError: true, flush: true)
 
         when: 'a new channel with the same name is created'
-        def listChannel = new ListChannel(name: defaultChannel.name, organization: testOrg)
+        def alphaChannel2 = new ListChannel(name: alphaChannel.name, organization: testOrg)
 
         then:
-        !listChannel.validate()
-        listChannel.hasErrors()
-        listChannel.errors.getFieldError('name').code == 'unique'
+        !alphaChannel2.validate()
+        alphaChannel2.hasErrors()
+        alphaChannel2.errors.getFieldError('name').code == 'unique'
 
         when: 'the channel belongs to another org'
-        listChannel.clearErrors()
-        listChannel.organization = new Organization(name: 'Test 2').save(failOnError: true)
+        alphaChannel2.clearErrors()
+        def testOrg2 = new Organization(name: 'Test 2')
+        testOrg2.defaultChannel.organization = testOrg2
+        testOrg2.save(failOnError: true, flush: true)
+        alphaChannel2.organization = testOrg2
 
         then:
-        listChannel.validate()
+        alphaChannel2.validate()
+    }
+
+    void 'unique constraint works with hasOne'() {
+        given: 'an existing channel'
+        def testOrg = new Organization(
+                name: 'Test 1'
+        )
+        testOrg.defaultChannel.organization = testOrg
+        testOrg.save(failOnError: true, flush: true)
+
+        when: 'a new org is created'
+        def testOrg2 = new Organization(
+                name: 'Test 2'
+        )
+        testOrg2.defaultChannel.organization = testOrg2
+
+        then: 'that org is also valid'
+        testOrg2.save(failOnError: true, flush: true)
     }
 }
 
@@ -90,6 +117,12 @@ class DefaultChannel extends Channel {
 
     static constraints = {
     }
+
+    def beforeValidate() {
+        if (!name) {
+            name = 'Default'
+        }
+    }
 }
 
 @Entity
@@ -102,4 +135,8 @@ class ListChannel extends Channel {
 @Entity
 class Organization {
     String name
+
+    DefaultChannel defaultChannel = new DefaultChannel()
+
+    static hasOne = [defaultChannel: DefaultChannel]
 }
