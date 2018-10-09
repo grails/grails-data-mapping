@@ -127,7 +127,7 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<T> implements GormOpe
     }
 
     /**
-     * Returns a single result matching the criterion contained within this DetachedCriteria instance
+     * Lists all records matching the criterion contained within this DetachedCriteria instance
      *
      * @return A list of matching instances
      */
