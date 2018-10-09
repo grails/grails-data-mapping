@@ -55,6 +55,23 @@ class UniqueConstraint extends AbstractConstraint {
         MappingContext mappingContext = detachedCriteria.getPersistentEntity()
                                                         .getMappingContext()
         PersistentEntity targetEntity = mappingContext.getPersistentEntity(mappingContext.getProxyHandler().getProxiedClass(target).getName())
+
+        // Determine the GORM class that actually defines this field
+        Class<?> constraintClass = constraintOwningClass
+        if (!targetEntity.isRoot()) {
+            def property = targetEntity.getPropertyByName(constraintPropertyName)
+            while (property.isInherited() && targetEntity != null) {
+                targetEntity = mappingContext.getPersistentEntity(mappingContext.getProxyHandler().getProxiedClass(target).superclass.getName())
+                if (targetEntity != null) {
+                    property = targetEntity.getPropertyByName(constraintPropertyName)
+                }
+            }
+            constraintClass = targetEntity != null? targetEntity.javaClass: constraintClass
+        }
+
+        // Re-create the detached criteria based on the new constraint class
+        detachedCriteria = new DetachedCriteria(constraintClass)
+
         if(targetEntity == null) {
             throw new IllegalStateException("Cannot validate object [$target]. It is not a persistent entity")
         }
