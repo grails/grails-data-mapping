@@ -62,7 +62,7 @@ class UniqueConstraint extends AbstractConstraint {
         if (!targetEntity.isRoot()) {
             def property = targetEntity.getPropertyByName(constraintPropertyName)
             while (property.isInherited() && targetEntity != null) {
-                targetEntity = mappingContext.getPersistentEntity(mappingContext.getProxyHandler().getProxiedClass(target).superclass.getName())
+                targetEntity = mappingContext.getPersistentEntity(targetEntity.javaClass.superclass.name)
                 if (targetEntity != null) {
                     property = targetEntity.getPropertyByName(constraintPropertyName)
                 }

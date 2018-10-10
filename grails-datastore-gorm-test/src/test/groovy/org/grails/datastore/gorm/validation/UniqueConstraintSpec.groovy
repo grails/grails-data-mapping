@@ -19,6 +19,7 @@ class UniqueConstraintSpec extends Specification {
             Channel,
             DefaultChannel,
             ListChannel,
+            OtherListChannel,
             Organization
     )
 
@@ -45,6 +46,23 @@ class UniqueConstraintSpec extends Specification {
 
         when: 'a new channel with the same name is created'
         def defaultChannel2 = new DefaultChannel(name: defaultChannel1.name, organization: testOrg)
+
+        then:
+        !defaultChannel2.validate()
+        defaultChannel2.hasErrors()
+        defaultChannel2.errors.getFieldError('name').code == 'unique'
+
+    }
+
+    void 'unique constraint works with parent/child/child'() {
+        given: 'an existing channel'
+        def testOrg = new Organization(name: 'Test 1')
+        testOrg.defaultChannel.organization = testOrg
+        testOrg.save(failOnError: true, flush: true)
+        def defaultChannel1 = testOrg.defaultChannel
+
+        when: 'a new channel with the same name is created'
+        def defaultChannel2 = new OtherListChannel(name: defaultChannel1.name, organization: testOrg)
 
         then:
         !defaultChannel2.validate()
@@ -127,6 +145,14 @@ class DefaultChannel extends Channel {
 
 @Entity
 class ListChannel extends Channel {
+
+    static constraints = {
+    }
+}
+
+
+@Entity
+class OtherListChannel extends ListChannel {
 
     static constraints = {
     }
