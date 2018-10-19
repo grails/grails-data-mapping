@@ -70,6 +70,7 @@ public class DataSourceConnectionSourceFactory extends AbstractConnectionSourceF
             String password = settings.getPassword();
             Map properties = settings.getProperties();
             String url = settings.getUrl();
+            Class type = settings.getType();
 
             if(properties != null && !properties.isEmpty()) {
                 dataSourceBuilder.properties(settings.toProperties());
@@ -82,6 +83,10 @@ public class DataSourceConnectionSourceFactory extends AbstractConnectionSourceF
             if(username != null && password != null) {
                 dataSourceBuilder.username(username);
                 dataSourceBuilder.password(password);
+            }
+
+            if (type != null) {
+                dataSourceBuilder.type(type);
             }
 
             dataSource = dataSourceBuilder.build();
