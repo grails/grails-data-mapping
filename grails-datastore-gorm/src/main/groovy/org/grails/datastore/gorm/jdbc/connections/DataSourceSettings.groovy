@@ -8,6 +8,8 @@ import org.grails.datastore.gorm.jdbc.schema.DefaultSchemaHandler
 import org.grails.datastore.gorm.jdbc.schema.SchemaHandler
 import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
 
+import javax.sql.DataSource
+
 /**
  * DataSource settings
  *
@@ -87,6 +89,12 @@ class DataSourceSettings extends ConnectionSourceSettings {
      * The data source properties
      */
     Map properties = [:]
+
+    /**
+     * The connection pool to use
+     */
+    Class<? extends DataSource> type
+
     /**
      * Convert to Hibernate properties
      *
