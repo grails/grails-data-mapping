@@ -155,86 +155,91 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#cascadeValidate">cascadeValidate</a></code><br>Cascade validation for associations that are not owned by the parent entity. </td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.util.List&lt;javax.persistence.CascadeType&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#cascades">cascades</a></code><br>For specifying the cascade type using javax.persistence.CascadeType</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#derived">derived</a></code><br>@return Whether the property is derived or not</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>javax.persistence.FetchType</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#fetchStrategy">fetchStrategy</a></code><br>@return The strategy to use to fetch the property (lazy or eager)</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#formula">formula</a></code><br>The formula used to build the property</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#generator">generator</a></code><br>Set the id generator name or class.</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.util.List&lt;java.lang.String&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#inList">inList</a></code><br>@return List of valid values</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#index">index</a></code><br>@return Whether this property is index</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.Boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#lazy">lazy</a></code><br>Whether to use lazy proxies for each association. </td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.Comparable</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#max">max</a></code><br>@return The maximum value</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.Number</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#maxSize">maxSize</a></code><br>@return The maximum size</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.Comparable</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#min">min</a></code><br>@return The minimum value</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>java.lang.Number</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#minSize">minSize</a></code><br>@return The minimum size</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#nullable">nullable</a></code><br>@return Whether the property is nullable</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#orphanRemoval">orphanRemoval</a></code><br>Whether an entity of an orphaned association should be removed</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#reference">reference</a></code><br>@return Whether this property is a database reference such as a foreign key</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>int</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#scale">scale</a></code><br>@return The scale</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#targetName">targetName</a></code><br>The target to map to, could be a database column, document attribute, or hash key</td>
                         </tr>
@@ -491,6 +496,16 @@ extends java.lang.Object
                                 <h4>java.lang.String <strong>cascade</strong></h4>
                                 <p> Cascading strategy for this property. Only makes sense if the
  property is an association or collection.
+     </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="cascadeValidate"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>boolean <strong>cascadeValidate</strong></h4>
+                                <p> Cascade validation for associations that are not owned by the parent entity. Only makes sense
+ if the property is an association.
      </p>
                             </li>
                         </ul>
