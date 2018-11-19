@@ -29,6 +29,7 @@ env:
 matrix:
   fast_finish: true
 install: true
+script: ./travis-build.sh
 notifications:
   slack:
     secure: eSyvdf/vA0KGAyiITwe7ooD6BCX94PCy7o35HSkbfUbHB5XPJq/SkqRjjIeiwrgywVph+qGBPYmzIdep4BQwH+JFEfPu0gQoNWKeGAVmJ9LeFaP4vaXWvuRugunO9zUla4JT2cfmsxKVEoTfI1NIfT15hYBMHi+8CfgFlx2zOdk=
