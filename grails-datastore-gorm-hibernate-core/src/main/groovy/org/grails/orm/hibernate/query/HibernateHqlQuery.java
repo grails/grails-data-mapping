@@ -8,7 +8,6 @@ import org.grails.datastore.mapping.query.event.PostQueryEvent;
 import org.grails.datastore.mapping.query.event.PreQueryEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,9 +17,9 @@ import java.util.List;
  * @since 6.0
  */
 public class HibernateHqlQuery extends Query {
-    final org.hibernate.Query query;
+    private final org.hibernate.query.Query query;
 
-    public HibernateHqlQuery(Session session, PersistentEntity entity, org.hibernate.Query query) {
+    public HibernateHqlQuery(Session session, PersistentEntity entity, org.hibernate.query.Query query) {
         super(session, entity);
         this.query = query;
     }
