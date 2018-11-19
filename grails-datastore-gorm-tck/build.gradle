@@ -47,7 +47,9 @@ dependencies {
     compile project(":grails-datastore-gorm-async")
     compile project(":grails-datastore-gorm-support")
     compile "junit:junit:$junitVersion"
-    compile 'javax.servlet:javax.servlet-api:3.0.1'
+    compile("javax.servlet:javax.servlet-api:$servletApiVersion")
+
+    runtime "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
 }
 
 //compileGroovy.groovyOptions.fork = false

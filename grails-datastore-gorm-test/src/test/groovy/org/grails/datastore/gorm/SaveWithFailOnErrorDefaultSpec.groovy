@@ -1,9 +1,10 @@
 package org.grails.datastore.gorm
 
+import grails.gorm.annotation.Entity
 import grails.gorm.tests.GormDatastoreSpec
-import grails.validation.ConstrainedProperty
+import grails.gorm.validation.ConstrainedProperty
 import grails.validation.ValidationException
-import org.grails.validation.DefaultConstraintEvaluator
+import org.grails.datastore.gorm.validation.constraints.eval.DefaultConstraintEvaluator
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
 
@@ -64,7 +65,7 @@ class SaveWithFailOnErrorDefaultSpec extends GormDatastoreSpec {
     }
 }
 
-@grails.persistence.Entity
+@Entity
 class TestProduct {
     Long id
     String name

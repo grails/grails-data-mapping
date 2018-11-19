@@ -1,5 +1,5 @@
 dependencies {
-    compile "org.grails:grails-async:$grailsVersion", {
+    compile "org.grails:grails-async:3.3.2", {
         exclude group:'io.projectreactor',module:'reactor-core'
         exclude group:'io.projectreactor',module:'reactor-stream'
     }

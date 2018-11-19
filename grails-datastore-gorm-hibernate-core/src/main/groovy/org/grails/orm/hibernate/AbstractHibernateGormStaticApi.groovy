@@ -305,7 +305,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
                 sql = buildOrdinalParameterQueryFromGString((GString)sql, params)
             }
 
-            NativeQuery q = session.createNativeQuery(sql.toString())
+            NativeQuery q = (NativeQuery)session.createNativeQuery(sql.toString())
 
             template.applySettings(q)
 
@@ -346,7 +346,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
                 sql = buildOrdinalParameterQueryFromGString((GString)sql, params)
             }
 
-            NativeQuery q = session.createNativeQuery(sql.toString())
+            NativeQuery q = (NativeQuery)session.createNativeQuery(sql.toString())
 
             template.applySettings(q)
 

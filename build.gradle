@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
         classpath "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.0"
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.8.0"
@@ -16,18 +16,19 @@ buildscript {
 
 
 project.ext {
-    springVersion = "4.3.9.RELEASE"
-    grailsVersion = "3.2.11"
+    springVersion = "5.1.1.RELEASE"
+    caffeineVersion= "2.5.2"
+    grailsVersion = "3.3.8"
     grails2Version = '2.5.6'
     slf4jVersion = "1.7.22"
     junitVersion = "4.12"
     javassistVersion = "3.21.0-GA"
-    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.11'
+    groovyVersion = System.getProperty('groovyVersion') ?: '2.5.4'
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
-    projectMajorVersion = "6"
-    projectMinorVersion = "1"
-    projectPatchVersion = "8"
+    projectMajorVersion = "7"
+    projectMinorVersion = "0"
+    projectPatchVersion = "0"
 //    releaseType = "RELEASE"
 //    releaseType = "M2"
 //    releaseType = "RC2"
@@ -37,8 +38,9 @@ project.ext {
     projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
 
     // plugin versions
-    hibernateValidatorVersion = "5.0.3.Final"
-    hibernateVersion = "5.2.11"
+    hibernateValidatorVersion = "6.0.13.Final"
+    hibernateVersion = "5.3.6"
+    servletApiVersion = "4.0.1"
 
     def defaultPluginVersion = releaseType == 'RELEASE' ? projectVersion : "${projectVersion}.${releaseType}"
     hibernatePluginVersion = defaultPluginVersion
@@ -51,14 +53,14 @@ project.ext {
     isCiBuild = project.hasProperty("isCiBuild")
     isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
 
-    servletApiVersion = "3.0.1"
+
 
     nexusUsername = System.getenv("SONATYPE_USERNAME") ?: project.hasProperty("sonatypeOssUsername") ? project.sonatypeOssUsername : ''
     nexusPassword = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
 }
 
 def groovyMajorVersion = groovyVersion[0..2]
-def spockDependency = "org.spockframework:spock-core:1.0-groovy-2.4"
+def spockDependency = "org.spockframework:spock-core:1.2-groovy-2.5"
 
 def groovyProjects() {
     subprojects.findAll { project -> isGroovyProject(project) }
@@ -97,6 +99,7 @@ allprojects {
         all {
             resolutionStrategy {
                 force "org.codehaus.groovy:groovy:$groovyVersion"
+                force "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
                 force "org.codehaus.groovy:groovy-xml:$groovyVersion"
             }
         }
@@ -191,8 +194,8 @@ subprojects {
         apply plugin: 'idea'
         apply plugin: 'provided-base'
         apply plugin: 'optional-base'
-        sourceCompatibility = "1.7"
-        targetCompatibility = "1.7"
+        sourceCompatibility = "1.8"
+        targetCompatibility = "1.8"
     }
 
     def isGormDatasource = project.name.startsWith("grails-datastore-gorm-") &&

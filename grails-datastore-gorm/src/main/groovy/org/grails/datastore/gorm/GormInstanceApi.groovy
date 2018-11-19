@@ -325,8 +325,8 @@ class GormInstanceApi<D> extends AbstractGormApi<D> implements GormInstanceOpera
                     ConnectionSources connectionSources = ((ConnectionSourcesProvider) datastore).connectionSources
                     String connectionSourceName = connectionSources.defaultConnectionSource.name
                     if(connectionSourceName != ConnectionSource.DEFAULT) {
-                        GormValidationApi validationApi = GormEnhancer.findValidationApi(instance.getClass(), connectionSourceName)
-                        hasErrors = !validationApi.validate((Object)instance, params)
+                        GormValidationApi<D> validationApi = GormEnhancer.findValidationApi((Class<D>)instance.getClass(), connectionSourceName)
+                        hasErrors = !validationApi.validate((D)instance, params)
                     }
                     else {
                         hasErrors = !validateable.validate(params)

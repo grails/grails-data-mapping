@@ -146,7 +146,7 @@ class UniqueConstraintSpec extends GormDatastoreSpec {
             }] as Validator
 
         final MappingContext context = session.datastore.mappingContext
-        final PersistentEntity entity = context.getPersistentEntity(UniqueGroup.name)
+        PersistentEntity entity = context.getPersistentEntity(UniqueGroup.name)
         context.addEntityValidator(entity, groupValidator)
         entity = context.getPersistentEntity(GroupWithin.name)
         context.addEntityValidator(entity, groupWithinValidator)

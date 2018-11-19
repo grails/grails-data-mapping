@@ -16,6 +16,7 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.validation.beanvalidation.MessageSourceResourceBundleLocator
 import org.springframework.validation.beanvalidation.SpringConstraintValidatorFactory
 
+import javax.validation.ClockProvider
 import javax.validation.Configuration
 import javax.validation.ConstraintValidatorFactory
 import javax.validation.MessageInterpolator
@@ -66,7 +67,8 @@ class JavaxValidatorRegistry extends DefaultValidatorRegistry implements Validat
     static Configuration buildConfigurationFor(MappingContext context, MessageSource messageSource) {
         Configuration validatorConfiguration = Validation.byDefaultProvider()
                 .configure()
-        validatorConfiguration = validatorConfiguration.ignoreXmlConfiguration()
+        validatorConfiguration = validatorConfiguration
+                .ignoreXmlConfiguration()
                 .traversableResolver(new MappingContextTraversableResolver(context))
                 .messageInterpolator(new ResourceBundleMessageInterpolator(new MessageSourceResourceBundleLocator(messageSource)))
 
@@ -134,6 +136,11 @@ class JavaxValidatorRegistry extends DefaultValidatorRegistry implements Validat
     @Override
     ParameterNameProvider getParameterNameProvider() {
         return validatorFactory.getParameterNameProvider()
+    }
+
+    @Override
+    ClockProvider getClockProvider() {
+        return validatorFactory.getClockProvider()
     }
 
     @Override

@@ -14,13 +14,8 @@
  */
 package org.grails.datastore.mapping.core;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-import javax.persistence.FlushModeType;
-
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.RemovalListener;
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
 import org.grails.datastore.mapping.config.Entity;
 import org.grails.datastore.mapping.core.impl.*;
@@ -45,76 +40,83 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.Assert;
 
-import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap.Builder;
-import com.googlecode.concurrentlinkedhashmap.EvictionListener;
+import javax.persistence.FlushModeType;
+import java.io.Serializable;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 
 /**
  * Abstract implementation of the {@link org.grails.datastore.mapping.core.Session} interface that uses
  * a list of {@link org.grails.datastore.mapping.engine.Persister} instances
  * to save, update and delete instances
  *
+ * @param <N>
  * @author Graeme Rocher
  * @since 1.0
- * @param <N>
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractSession<N> extends AbstractAttributeStoringSession implements SessionImplementor {
 
     public static final String ENTITY_ACCESS = "org.grails.gorm.ENTITY_ACCESS";
 
-    private static final EvictionListener<PersistentEntity, Collection<PendingInsert>> EXCEPTION_THROWING_INSERT_LISTENER =
-            new EvictionListener<PersistentEntity, Collection<PendingInsert>>() {
-        public void onEviction(PersistentEntity key, Collection<PendingInsert> value) {
-            throw new DataAccessResourceFailureException("Maximum number (5000) of insert operations to flush() exceeded. Flush the session periodically to avoid this error for batch operations.");
-        }
-    };
+    private static final RemovalListener<PersistentEntity, Collection<PendingInsert>> EXCEPTION_THROWING_INSERT_LISTENER =
+            (key, value, cause) -> {
+                if (cause.wasEvicted()) {
+                    throw new DataAccessResourceFailureException("Maximum number (5000) of insert operations to flush() exceeded. Flush the session periodically to avoid this error for batch operations.");
+                }
+            };
 
-    private static final EvictionListener<PersistentEntity, Collection<PendingUpdate>> EXCEPTION_THROWING_UPDATE_LISTENER =
-            new EvictionListener<PersistentEntity, Collection<PendingUpdate>>() {
-        public void onEviction(PersistentEntity key, Collection<PendingUpdate> value) {
-            throw new DataAccessResourceFailureException("Maximum number (5000) of update operations to flush() exceeded. Flush the session periodically to avoid this error for batch operations.");
-        }
-    };
+    private static final RemovalListener<PersistentEntity, Collection<PendingUpdate>> EXCEPTION_THROWING_UPDATE_LISTENER =
+            (key, value, cause) -> {
+                if (cause.wasEvicted()) {
+                    throw new DataAccessResourceFailureException("Maximum number (5000) of update operations to flush() exceeded. Flush the session periodically to avoid this error for batch operations.");
+                }
+            };
 
-    private static final EvictionListener<PersistentEntity, Collection<PendingDelete>> EXCEPTION_THROWING_DELETE_LISTENER =
-            new EvictionListener<PersistentEntity, Collection<PendingDelete>>() {
-                public void onEviction(PersistentEntity key, Collection<PendingDelete> value) {
+    private static final RemovalListener<PersistentEntity, Collection<PendingDelete>> EXCEPTION_THROWING_DELETE_LISTENER =
+            (key, value, cause) -> {
+                if (cause.wasEvicted()) {
                     throw new DataAccessResourceFailureException("Maximum number (5000) of delete operations to flush() exceeded. Flush the session periodically to avoid this error for batch operations.");
                 }
             };
     private static final String NULL = "null";
 
-    protected Map<Class, Persister> persisters = new ConcurrentHashMap<Class,Persister>();
+    protected Map<Class, Persister> persisters = new ConcurrentHashMap<>();
     protected boolean isSynchronizedWithTransaction = false;
     private MappingContext mappingContext;
     protected ConcurrentLinkedQueue lockedObjects = new ConcurrentLinkedQueue();
     protected Transaction transaction;
     private Datastore datastore;
     private FlushModeType flushMode = FlushModeType.AUTO;
-    protected Map<Class, Map<Serializable, Object>> firstLevelCache = new ConcurrentHashMap<Class, Map<Serializable, Object>>();
-    protected Map<Class, Map<Serializable, Object>> firstLevelEntryCache = new ConcurrentHashMap<Class, Map<Serializable, Object>>();
-    protected Map<Class, Map<Serializable, Object>> firstLevelEntryCacheDirtyCheck = new ConcurrentHashMap<Class, Map<Serializable, Object>>();
-    protected Map<CollectionKey, Collection> firstLevelCollectionCache = new ConcurrentHashMap<CollectionKey, Collection>();
+    protected Map<Class, Map<Serializable, Object>> firstLevelCache = new ConcurrentHashMap<>();
+    protected Map<Class, Map<Serializable, Object>> firstLevelEntryCache = new ConcurrentHashMap<>();
+    protected Map<Class, Map<Serializable, Object>> firstLevelEntryCacheDirtyCheck = new ConcurrentHashMap<>();
+    protected Map<CollectionKey, Collection> firstLevelCollectionCache = new ConcurrentHashMap<>();
 
     protected TPCacheAdapterRepository cacheAdapterRepository;
 
     private Collection<Serializable> objectsPendingOperations = new ConcurrentLinkedQueue<>();
     private Map<PersistentEntity, Collection<PendingInsert>> pendingInserts =
-        new Builder<PersistentEntity, Collection<PendingInsert>>()
-           .listener(EXCEPTION_THROWING_INSERT_LISTENER)
-           .maximumWeightedCapacity(5000).build();
+            Caffeine.newBuilder()
+                    .removalListener(EXCEPTION_THROWING_INSERT_LISTENER)
+                    .executor(Runnable::run)
+                    .maximumSize(5000).build().asMap();
 
     private Map<PersistentEntity, Collection<PendingUpdate>> pendingUpdates =
-        new Builder<PersistentEntity, Collection<PendingUpdate>>()
-           .listener(EXCEPTION_THROWING_UPDATE_LISTENER)
-           .maximumWeightedCapacity(5000).build();
+            Caffeine.newBuilder()
+                    .removalListener(EXCEPTION_THROWING_UPDATE_LISTENER)
+                    .executor(Runnable::run)
+                    .maximumSize(5000).build().asMap();
 
     private Map<PersistentEntity, Collection<PendingDelete>> pendingDeletes =
-            new Builder<PersistentEntity, Collection<PendingDelete>>()
-                    .listener(EXCEPTION_THROWING_DELETE_LISTENER)
-                    .maximumWeightedCapacity(5000).build();
+            Caffeine.newBuilder()
+                    .removalListener(EXCEPTION_THROWING_DELETE_LISTENER)
+                    .executor(Runnable::run)
+                    .maximumSize(5000).build().asMap();
 
-    protected Collection<Runnable> postFlushOperations = new ConcurrentLinkedQueue<Runnable>();
+    protected Collection<Runnable> postFlushOperations = new ConcurrentLinkedQueue<>();
     private boolean exceptionOccurred;
     protected ApplicationEventPublisher publisher;
 
@@ -123,7 +125,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
 
     public AbstractSession(Datastore datastore, MappingContext mappingContext,
-               ApplicationEventPublisher publisher) {
+                           ApplicationEventPublisher publisher) {
         this(datastore, mappingContext, publisher, false);
     }
 
@@ -136,7 +138,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public AbstractSession(Datastore datastore, MappingContext mappingContext,
-               ApplicationEventPublisher publisher, TPCacheAdapterRepository cacheAdapterRepository) {
+                           ApplicationEventPublisher publisher, TPCacheAdapterRepository cacheAdapterRepository) {
         this(datastore, mappingContext, publisher, false);
         this.cacheAdapterRepository = cacheAdapterRepository;
     }
@@ -165,12 +167,12 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
     public void addPendingInsert(PendingInsert insert) {
         final Object o = insert.getObject();
-        if(o != null) {
+        if (o != null) {
             registerPending(o);
         }
         Collection<PendingInsert> inserts = pendingInserts.get(insert.getEntity());
         if (inserts == null) {
-            inserts = new ConcurrentLinkedQueue<PendingInsert>();
+            inserts = new ConcurrentLinkedQueue<>();
             pendingInserts.put(insert.getEntity(), inserts);
         }
 
@@ -180,27 +182,25 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     @Override
     public boolean isPendingAlready(Object obj) {
         Serializable id = getPersister(obj).getObjectIdentifier(obj);
-        if(id != null) {
+        if (id != null) {
             return objectsPendingOperations.contains(id);
-        }
-        else {
+        } else {
             return objectsPendingOperations.contains(System.identityHashCode(obj));
         }
     }
 
     @Override
     public void registerPending(Object obj) {
-        if(obj != null) {
+        if (obj != null) {
             Serializable id = getPersister(obj).getObjectIdentifier(obj);
-            if(id != null) {
-                if(!objectsPendingOperations.contains(id)) {
+            if (id != null) {
+                if (!objectsPendingOperations.contains(id)) {
                     objectsPendingOperations.add(id);
                 }
-            }
-            else {
+            } else {
 
                 final int identityHashCode = System.identityHashCode(obj);
-                if(!objectsPendingOperations.contains(identityHashCode)) {
+                if (!objectsPendingOperations.contains(identityHashCode)) {
                     objectsPendingOperations.add(identityHashCode);
                 }
             }
@@ -209,13 +209,13 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
     public void addPendingUpdate(PendingUpdate update) {
         final Object o = update.getObject();
-        if(o != null) {
+        if (o != null) {
             registerPending(o);
         }
 
         Collection<PendingUpdate> inserts = pendingUpdates.get(update.getEntity());
         if (inserts == null) {
-            inserts = new ConcurrentLinkedQueue<PendingUpdate>();
+            inserts = new ConcurrentLinkedQueue<>();
             pendingUpdates.put(update.getEntity(), inserts);
         }
 
@@ -224,13 +224,13 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
     public void addPendingDelete(PendingDelete delete) {
         final Object o = delete.getObject();
-        if(o != null) {
+        if (o != null) {
             registerPending(o);
         }
 
         Collection<PendingDelete> deletes = pendingDeletes.get(delete.getEntity());
         if (deletes == null) {
-            deletes = new ConcurrentLinkedQueue<PendingDelete>();
+            deletes = new ConcurrentLinkedQueue<>();
             pendingDeletes.put(delete.getEntity(), deletes);
         }
 
@@ -238,21 +238,21 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public Object getCachedEntry(PersistentEntity entity, Serializable key) {
-        if(isStateless(entity)) return null;
+        if (isStateless(entity)) return null;
         return getCachedEntry(entity, key, false);
     }
 
     public Object getCachedEntry(PersistentEntity entity, Serializable key, boolean forDirtyCheck) {
-       if(isStateless(entity)) return null;
-       if (key == null) {
-           return null;
-       }
+        if (isStateless(entity)) return null;
+        if (key == null) {
+            return null;
+        }
 
-       return getEntryCache(entity.getJavaClass(), forDirtyCheck).get(key);
-   }
+        return getEntryCache(entity.getJavaClass(), forDirtyCheck).get(key);
+    }
 
     public void cacheEntry(PersistentEntity entity, Serializable key, Object entry) {
-        if(isStateless(entity)) return;
+        if (isStateless(entity)) return;
         if (key == null || entry == null) {
             return;
         }
@@ -267,12 +267,12 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     protected void cacheEntry(Serializable key, Object entry, Map<Serializable, Object> entryCache, boolean forDirtyCheck) {
-        if(isStateless()) return;
+        if (isStateless()) return;
         entryCache.put(key, entry);
     }
 
     public Collection getCachedCollection(PersistentEntity entity, Serializable key, String name) {
-        if(isStateless(entity)) return null;
+        if (isStateless(entity)) return null;
         if (key == null || name == null) {
             return null;
         }
@@ -282,7 +282,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public void cacheCollection(PersistentEntity entity, Serializable key, Collection collection, String name) {
-        if(isStateless(entity)) return;
+        if (isStateless(entity)) return;
         if (key == null || collection == null || name == null) {
             return;
         }
@@ -321,13 +321,13 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public void flush() {
-        if(flushActive) return;
+        if (flushActive) return;
 
         boolean hasInserts;
         try {
             if (exceptionOccurred) {
                 throw new InvalidDataAccessResourceUsageException(
-                     "Do not flush() the Session after an exception occurs");
+                        "Do not flush() the Session after an exception occurs");
             }
 
             flushActive = true;
@@ -365,12 +365,12 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
 
         EntityPersister persister = (EntityPersister) getPersister(instance);
-        if(persister == null) {
+        if (persister == null) {
             return false;
         }
 
-        if(instance instanceof DirtyCheckable) {
-            return ((DirtyCheckable)instance).hasChanged() || DirtyCheckingSupport.areAssociationsDirty(this, persister.getPersistentEntity(), instance);
+        if (instance instanceof DirtyCheckable) {
+            return ((DirtyCheckable) instance).hasChanged() || DirtyCheckingSupport.areAssociationsDirty(this, persister.getPersistentEntity(), instance);
         }
 
         if (!(persister instanceof NativeEntryEntityPersister)) {
@@ -391,7 +391,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     @Override
     public Serializable getObjectIdentifier(Object instance) {
         Persister persister = getPersister(instance);
-        if(persister != null) {
+        if (persister != null) {
             return persister.getObjectIdentifier(instance);
         }
         return null;
@@ -486,18 +486,16 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         Class cls;
         if (o instanceof Class) {
             cls = (Class) o;
-        }
-        else if (o instanceof PersistentEntity) {
-            cls = ((PersistentEntity)o).getJavaClass();
-        }
-        else {
+        } else if (o instanceof PersistentEntity) {
+            cls = ((PersistentEntity) o).getJavaClass();
+        } else {
             cls = o.getClass();
         }
         Persister p = persisters.get(cls);
         if (p == null) {
             p = createPersister(cls, getMappingContext());
             if (p != null) {
-                if(!isStateless(((EntityPersister)p).getPersistentEntity())) {
+                if (!isStateless(((EntityPersister) p).getPersistentEntity())) {
                     firstLevelCache.put(cls, new ConcurrentHashMap<Serializable, Object>());
                 }
                 persisters.put(cls, p);
@@ -514,10 +512,9 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         }
 
         final Serializable identifier = getObjectIdentifier(o);
-        if(identifier != null) {
+        if (identifier != null) {
             return getInstanceCache(o.getClass()).containsKey(identifier);
-        }
-        else {
+        } else {
             return getInstanceCache(o.getClass()).containsValue(o);
         }
     }
@@ -535,16 +532,16 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         if (type == null || key == null || instance == null) {
             return;
         }
-        if(isStateless(getMappingContext().getPersistentEntity(type.getName()))) return;
+        if (isStateless(getMappingContext().getPersistentEntity(type.getName()))) return;
         getInstanceCache(type).put(key, instance);
     }
 
     public Object getCachedInstance(Class type, Serializable key) {
-        if(isStateless()) return null;
+        if (isStateless()) return null;
         if (type == null || key == null) {
             return null;
         }
-        if(isStateless(getMappingContext().getPersistentEntity(type.getName()))) return null;
+        if (isStateless(getMappingContext().getPersistentEntity(type.getName()))) return null;
         return getInstanceCache(type).get(key);
     }
 
@@ -637,10 +634,10 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
                     "]. The class [" + type.getName() + "] is not a known persistent type.");
         }
 
-        final PersistentEntity entity = ((EntityPersister)persister).getPersistentEntity();
+        final PersistentEntity entity = ((EntityPersister) persister).getPersistentEntity();
         if (entity != null) {
             final PersistentProperty identity = entity.getIdentity();
-            if(!identity.getType().isAssignableFrom(key.getClass())) {
+            if (!identity.getType().isAssignableFrom(key.getClass())) {
                 key = convertIdentityIfNecessasry(identity, key);
             }
         }
@@ -661,10 +658,10 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
     protected Serializable convertIdentityIfNecessasry(PersistentProperty identity, Serializable key) {
         ConversionService conversionService = getMappingContext().getConversionService();
-        if(conversionService.canConvert(key.getClass(), identity.getType())) {
+        if (conversionService.canConvert(key.getClass(), identity.getType())) {
             try {
-                key = (Serializable)conversionService.convert(key, identity.getType());
-            } catch (ConversionFailedException conversionFailedException){
+                key = (Serializable) conversionService.convert(key, identity.getType());
+            } catch (ConversionFailedException conversionFailedException) {
                 // ignore
             }
         }
@@ -692,11 +689,11 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public void lock(Object o) {
-        throw new UnsupportedOperationException("Datastore ["+getClass().getName()+"] does not support locking.");
+        throw new UnsupportedOperationException("Datastore [" + getClass().getName() + "] does not support locking.");
     }
 
     public Object lock(Class type, Serializable key) {
-        throw new UnsupportedOperationException("Datastore ["+getClass().getName()+"] does not support locking.");
+        throw new UnsupportedOperationException("Datastore [" + getClass().getName() + "] does not support locking.");
     }
 
     public void unlock(Object o) {
@@ -707,7 +704,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
     /**
      * This default implementation of the deleteAll method is unlikely to be optimal as it iterates and deletes each object.
-     *
+     * <p>
      * Subclasses should override to optimize for the batch operation capability of the underlying datastore
      *
      * @param criteria The criteria
@@ -720,10 +717,10 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
     /**
      * This default implementation of updateAll is unlikely to be optimal as it iterates and updates each object one by one.
-     *
+     * <p>
      * Subclasses should override to optimize for the batch operation capability of the underlying datastore
      *
-     * @param criteria The criteria
+     * @param criteria   The criteria
      * @param properties The properties
      */
     public long updateAll(QueryableCriteria criteria, Map<String, Object> properties) {
@@ -743,7 +740,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
             return;
         }
 
-        final EntityPersister p = (EntityPersister)getPersister(obj);
+        final EntityPersister p = (EntityPersister) getPersister(obj);
         if (p == null) {
             return;
         }
@@ -796,7 +793,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         final Persister p = getPersister(obj);
         if (p == null) {
             throw new NonPersistentTypeException("Cannot persist objects. The class [" +
-                     obj.getClass().getName() + "] is not a known persistent type.");
+                    obj.getClass().getName() + "] is not a known persistent type.");
         }
 
         return p.persist(objects);
@@ -825,7 +822,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         Map<Serializable, Object> retrievedMap = new HashMap<Serializable, Object>();
         for (Object o : retrieved) {
             final Serializable identifier = p.getObjectIdentifier(o);
-            if(identifier != null) {
+            if (identifier != null) {
                 retrievedMap.put(identifier, o);
             }
         }
@@ -833,9 +830,9 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         for (int i = 0; i < list.size(); i++) {
             Object o = list.get(i);
             if (o == null) {
-                if(keyIterator.hasNext()) {
+                if (keyIterator.hasNext()) {
                     Serializable key = keyIterator.next();
-                    key = (Serializable) mappingContext.getConversionService().convert( key, p.getPersistentEntity().getIdentity().getType() );
+                    key = (Serializable) mappingContext.getConversionService().convert(key, p.getPersistentEntity().getIdentity().getType());
                     final Object next = retrievedMap.get(key);
                     list.set(i, next);
                     cacheInstance(type, key, next);
@@ -891,7 +888,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     private Map<Serializable, Object> getInstanceCache(Class c) {
         Map<Serializable, Object> cache = firstLevelCache.get(c);
         if (cache == null) {
-            cache = new ConcurrentHashMap<Serializable, Object>();
+            cache = new ConcurrentHashMap<>();
             firstLevelCache.put(c, cache);
         }
         return cache;
@@ -901,7 +898,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         Map<Class, Map<Serializable, Object>> caches = forDirtyCheck ? firstLevelEntryCacheDirtyCheck : firstLevelEntryCache;
         Map<Serializable, Object> cache = caches.get(c);
         if (cache == null) {
-            cache = new ConcurrentHashMap<Serializable, Object>();
+            cache = new ConcurrentHashMap<>();
             caches.put(c, cache);
         }
         return cache;
@@ -943,10 +940,10 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
         @Override
         public boolean equals(Object obj) {
-            CollectionKey other = (CollectionKey)obj;
+            CollectionKey other = (CollectionKey) obj;
             return other.clazz.getName() == clazz.getName() &&
-                other.key.equals(key) &&
-                other.collectionName.equals(collectionName);
+                    other.key.equals(key) &&
+                    other.collectionName.equals(collectionName);
         }
 
         @Override

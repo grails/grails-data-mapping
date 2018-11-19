@@ -128,6 +128,16 @@ class MyEntity {
                 Object writeObject(Object obj, String name, Object oldValue, Object newValue) {
                     return "changed"
                 }
+
+                @Override
+                Set<String> getInitializedLazyAttributeNames() {
+                    return Collections.emptySet()
+                }
+
+                @Override
+                void attributeInitialized(String name) {
+
+                }
             }
         )
 

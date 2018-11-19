@@ -16,7 +16,7 @@ class Snapshot implements Comparable<Snapshot> {
     private static final String RC = "RC"
     private static final String MILESTONE = "M"
 
-    private String text
+    final String text
 
     @Override
     String toString() {

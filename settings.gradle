@@ -1,6 +1,5 @@
 include ("grails-datastore-core",
         "grails-datastore-web",
-        'grails-datastore-rest-client',
 
         // Core GORM Implementation projects
         'grails-datastore-gorm',
@@ -17,7 +16,6 @@ include ("grails-datastore-core",
 
         // RX projects
         'grails-datastore-gorm-rx',
-        'grails-datastore-gorm-rx-plugin-support',
 
         // GORM Implementations
         'grails-datastore-gorm-hibernate-core'

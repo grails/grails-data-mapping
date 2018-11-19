@@ -31,7 +31,7 @@ trait MultiTenant<D> extends Entity {
      * @param callable The closure
      * @return The result of the closure
      */
-    static GormAllOperations<D> eachTenant(Closure callable) {
+    static <D> GormAllOperations eachTenant(Closure callable) {
         GormEnhancer.findStaticApi(this, ConnectionSource.DEFAULT).eachTenant callable
     }
 
@@ -41,7 +41,7 @@ trait MultiTenant<D> extends Entity {
      * @param tenantId The tenant id
      * @return The operations
      */
-    static GormAllOperations<D> withTenant(Serializable tenantId) {
+    static <D> GormAllOperations<D> withTenant(Serializable tenantId) {
         (GormAllOperations<D>)GormEnhancer.findStaticApi(this).withTenant(tenantId)
     }
 }

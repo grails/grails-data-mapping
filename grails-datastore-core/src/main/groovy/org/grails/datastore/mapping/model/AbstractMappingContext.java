@@ -157,7 +157,7 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
             }
             else if (ClassUtils.isPresent(GROOVY_PROXY_FACTORY_NAME, classLoader)) {
                 try {
-                    proxyFactory = (ProxyFactory) BeanUtils.instantiate(ClassUtils.forName(GROOVY_PROXY_FACTORY_NAME, classLoader));
+                    proxyFactory = (ProxyFactory) BeanUtils.instantiateClass(ClassUtils.forName(GROOVY_PROXY_FACTORY_NAME, classLoader));
                 } catch (ClassNotFoundException e) {
                     proxyFactory = DefaultProxyFactoryCreator.create();
                 }
@@ -288,7 +288,6 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
                 eventListener.persistentEntityAdded(entity);
             }
         }
-        ClassPropertyFetcher.clearCache();
         return entities;
     }
 
@@ -326,7 +325,6 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
         for (Listener eventListener : eventListeners) {
             eventListener.persistentEntityAdded(entity);
         }
-        ClassPropertyFetcher.clearCache();
         return entity;
     }
 

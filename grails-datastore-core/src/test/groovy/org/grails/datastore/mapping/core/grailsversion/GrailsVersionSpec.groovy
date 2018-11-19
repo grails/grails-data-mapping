@@ -19,8 +19,8 @@ class GrailsVersionSpec extends Specification {
         GrailsVersion.isAtLeast("3.3.0", "3.3.0.M1")
         !GrailsVersion.isAtLeast("3.3.0.BUILD-SNAPSHOT","3.3.0")
         GrailsVersion.isAtLeast("3.3.0","3.3.0")
-        !GrailsVersion.isAtLeast("3.3.0")
-        GrailsVersion.isAtLeast("3.2.0")
+        GrailsVersion.isAtLeast("3.3.0")
+        !GrailsVersion.isAtLeast("4.0.0")
 
     }
 

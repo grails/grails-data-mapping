@@ -40,11 +40,10 @@ import static org.grails.datastore.gorm.finders.DynamicFinder.populateArgumentsF
  * @since 1.0
  */
 @SuppressWarnings("rawtypes")
-public class CriteriaBuilder extends AbstractCriteriaBuilder implements BuildableCriteria, ProjectionList {
+public class CriteriaBuilder<T> extends AbstractCriteriaBuilder implements BuildableCriteria, ProjectionList {
 
     public static final String ORDER_DESCENDING = "desc";
     public static final String ORDER_ASCENDING = "asc";
-
 
     protected final Session session;
 

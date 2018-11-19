@@ -16,6 +16,7 @@
 package org.grails.datastore.gorm
 
 import grails.gorm.DetachedCriteria
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.query.GormQueryOperations
@@ -53,6 +54,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
      * @param name The property name
      * @return The property value
      */
+    @CompileDynamic
     def propertyMissing(String name) {
         GormEnhancer.findInstanceApi(getClass()).propertyMissing(this, name)
     }
@@ -289,7 +291,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
 
         if(prop instanceof Association) {
             Association association = (Association)prop
-            final javaClass = association.associatedEntity?.javaClass
+            Class javaClass = association.associatedEntity?.javaClass
             final boolean isBasic = association instanceof Basic
             if(isBasic) {
                 javaClass = ((Basic)association).componentType
@@ -349,7 +351,7 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
                 reflector.setProperty(targetObject, propertyName, currentValue)
             }
 
-            final javaClass = association.associatedEntity?.javaClass
+            Class javaClass = association.associatedEntity?.javaClass
             final boolean isBasic = association instanceof Basic
             if(isBasic) {
                 javaClass = ((Basic)association).componentType

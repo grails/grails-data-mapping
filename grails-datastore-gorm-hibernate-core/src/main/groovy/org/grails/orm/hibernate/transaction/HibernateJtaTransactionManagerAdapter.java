@@ -3,7 +3,6 @@ package org.grails.orm.hibernate.transaction;
 import javax.transaction.*;
 import javax.transaction.xa.XAResource;
 
-import org.hibernate.id.TableHiLoGenerator;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -22,37 +21,37 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * Without this solution, using Hibernate's TableGenerator identity strategies will fail to support transactions.
  * The id generator will commit the current transaction and break transactional behaviour.
  * 
- * The javadoc of Hibernate's {@link TableHiLoGenerator} states this. However this isn't mentioned in the javadocs of other TableGenerators.
+ * The javadoc of Hibernate's {@code TableHiLoGenerator} states this. However this isn't mentioned in the javadocs of other TableGenerators.
  * 
  * @author Lari Hotari
  */
 public class HibernateJtaTransactionManagerAdapter implements TransactionManager {
     PlatformTransactionManager springTransactionManager;
-    ThreadLocal<TransactionStatus> currentTransactionHolder=new ThreadLocal<TransactionStatus>();
+    ThreadLocal<TransactionStatus> currentTransactionHolder= new ThreadLocal<>();
     
     public HibernateJtaTransactionManagerAdapter(PlatformTransactionManager springTransactionManager) {
         this.springTransactionManager = springTransactionManager;
     }
     
     @Override
-    public void begin() throws NotSupportedException, SystemException {
+    public void begin() {
         TransactionDefinition definition=new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         currentTransactionHolder.set(springTransactionManager.getTransaction(definition));
     }
 
     @Override
-    public void commit() throws RollbackException, HeuristicMixedException, HeuristicRollbackException,
-            SecurityException, IllegalStateException, SystemException {
+    public void commit() throws
+            SecurityException, IllegalStateException {
         springTransactionManager.commit(getAndRemoveStatus());
     }
 
     @Override
-    public void rollback() throws IllegalStateException, SecurityException, SystemException {
+    public void rollback() throws IllegalStateException, SecurityException {
         springTransactionManager.rollback(getAndRemoveStatus());
     }
     
     @Override
-    public void setRollbackOnly() throws IllegalStateException, SystemException {
+    public void setRollbackOnly() throws IllegalStateException {
         currentTransactionHolder.get().setRollbackOnly();
     }
     
@@ -63,7 +62,7 @@ public class HibernateJtaTransactionManagerAdapter implements TransactionManager
     }
 
     @Override
-    public int getStatus() throws SystemException {
+    public int getStatus() {
         TransactionStatus status=currentTransactionHolder.get();
         return convertToJtaStatus(status);
     }
@@ -83,25 +82,25 @@ public class HibernateJtaTransactionManagerAdapter implements TransactionManager
     }
 
     @Override
-    public Transaction getTransaction() throws SystemException {
+    public Transaction getTransaction() {
         return new TransactionAdapter(springTransactionManager, currentTransactionHolder);
     }
 
     @Override
-    public void resume(Transaction tobj) throws InvalidTransactionException, IllegalStateException, SystemException {
+    public void resume(Transaction tobj) throws IllegalStateException {
         TransactionAdapter transaction = (TransactionAdapter)tobj;
         // commit the PROPAGATION_NOT_SUPPORTED transaction returned in suspend
         springTransactionManager.commit(transaction.transactionStatus);
     }
 
     @Override
-    public Transaction suspend() throws SystemException {
+    public Transaction suspend() {
         currentTransactionHolder.set(springTransactionManager.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_NOT_SUPPORTED)));
         return new TransactionAdapter(springTransactionManager, currentTransactionHolder);
     }
     
     @Override
-    public void setTransactionTimeout(int seconds) throws SystemException {
+    public void setTransactionTimeout(int seconds) {
         
     }
 
@@ -117,8 +116,8 @@ public class HibernateJtaTransactionManagerAdapter implements TransactionManager
         }
         
         @Override
-        public void commit() throws RollbackException, HeuristicMixedException, HeuristicRollbackException,
-                SecurityException, IllegalStateException, SystemException {
+        public void commit() throws
+                SecurityException, IllegalStateException {
             springTransactionManager.commit(transactionStatus);
             currentTransactionHolder.remove();
         }

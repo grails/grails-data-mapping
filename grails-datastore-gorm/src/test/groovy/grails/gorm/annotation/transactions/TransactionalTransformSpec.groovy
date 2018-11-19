@@ -2,6 +2,7 @@ package grails.gorm.annotation.transactions
 
 
 import grails.core.DefaultGrailsApplication
+import grails.gorm.transactions.NotTransactional
 import grails.gorm.transactions.Transactional
 import grails.spring.BeanBuilder
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
@@ -817,7 +818,7 @@ new BookService()
             }
         }
         def applicationContext = bb.createApplicationContext()
-        def bean = applicationContext.getBean('testService')
+        TransactionalTransformSpecService bean = applicationContext.getBean('testService')
         bean.name = 'Grails'
 
         then:
@@ -826,7 +827,7 @@ new BookService()
         bean.process() != null
         bean.isActualTransactionActive() == false
         bean.name == 'Grails'
-        bean.isActive() == false
+        bean.isActive() == true
     }
 
     @Issue(['GRAILS-11145', 'GRAILS-11134'])
@@ -987,7 +988,7 @@ new SomeClass()
         someClass.getPhone()
     }
 }
-@grails.transaction.Transactional
+@Transactional
 class TransactionalTransformSpecService implements InitializingBean {
     String name
 
@@ -995,7 +996,7 @@ class TransactionalTransformSpecService implements InitializingBean {
         return transactionStatus
     }
 
-    @grails.transaction.NotTransactional
+    @NotTransactional
     public boolean isActualTransactionActive() {
         return TransactionSynchronizationManager.isActualTransactionActive()
     }

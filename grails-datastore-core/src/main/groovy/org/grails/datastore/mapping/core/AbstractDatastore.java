@@ -119,7 +119,6 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
                 LOG.warn("There was an error shutting down GORM for entity ["+cls.getName()+"]: " + e.getMessage(), e);
             }
         }
-        ClassPropertyFetcher.clearCache();
     }
 
     public void setApplicationContext(ApplicationContext ctx) {
