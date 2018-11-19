@@ -19,6 +19,7 @@ project.ext {
     springVersion = "5.1.1.RELEASE"
     caffeineVersion= "2.5.2"
     grailsVersion = "3.3.8"
+    grailsAsyncVersion = "3.3.2"
     grails2Version = '2.5.6'
     slf4jVersion = "1.7.22"
     junitVersion = "4.12"
@@ -101,6 +102,7 @@ allprojects {
                 force "org.codehaus.groovy:groovy:$groovyVersion"
                 force "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
                 force "org.codehaus.groovy:groovy-xml:$groovyVersion"
+                force "org.codehaus.groovy:groovy-templates:$groovyVersion"
             }
         }
     }
@@ -210,6 +212,7 @@ subprojects {
     dependencies {
         if (isStandardGroovyMavenProject) {
             documentation "org.fusesource.jansi:jansi:1.11"
+            documentation "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
             compile group: 'org.codehaus.groovy', name: 'groovy', version: groovyVersion
 
             testCompile group: 'org.codehaus.groovy', name: 'groovy-test', version: groovyVersion
