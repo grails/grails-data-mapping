@@ -36,27 +36,8 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
 
         echo "Triggering Hibernate 5 build"
-        git clone -b 6.1.x https://${GH_TOKEN}@github.com/grails/gorm-hibernate5.git gorm-hibernate5
+        git clone -b master https://${GH_TOKEN}@github.com/grails/gorm-hibernate5.git gorm-hibernate5
         cd gorm-hibernate5
-        echo "$(date)" > .snapshot
-        git add .snapshot
-        git commit -m "New Core Snapshot: $(date)"
-        git push
-        cd ..
-
-        echo "Triggering Hibernate 4 build"
-        git clone https://${GH_TOKEN}@github.com/grails/gorm-hibernate4.git gorm-hibernate4
-        cd gorm-hibernate4
-        echo "$(date)" > .snapshot
-        git add .snapshot
-        git commit -m "New Core Snapshot: $(date)"
-        git push
-        cd ..
-
-
-        echo "Triggering REST Client build"
-        git clone https://${GH_TOKEN}@github.com/grails/gorm-rest-client.git gorm-rest-client
-        cd gorm-rest-client
         echo "$(date)" > .snapshot
         git add .snapshot
         git commit -m "New Core Snapshot: $(date)"
