@@ -5,7 +5,7 @@ import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
-import org.grails.datastore.mapping.proxy.EntityProxy;
+import org.grails.datastore.mapping.proxy.ProxyHandler;
 import org.springframework.cglib.reflect.FastClass;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
@@ -67,7 +67,7 @@ public class FieldEntityAccess implements EntityAccess {
 
     @Override
     public Object getProperty(String name) {
-        Object object = unwrapIfProxy(entity);
+        Object object = unwrapIfProxy(persistentEntity, entity);
         return reflector.getProperty(object, name);
     }
 
@@ -282,7 +282,7 @@ public class FieldEntityAccess implements EntityAccess {
 
         @Override
         public Object getProperty(Object object, String name) {
-            object = unwrapIfProxy(object);
+            object = unwrapIfProxy(getPersitentEntity(), object);
             return getPropertyReader(name).read(object);
         }
 
@@ -421,7 +421,7 @@ public class FieldEntityAccess implements EntityAccess {
             @Override
             public Object read(Object object) {
                 try {
-                    object = unwrapIfProxy(object);
+                    object = unwrapIfProxy(null, object);
                     return field.get(object);
                 } catch (Throwable e) {
                     throw new IllegalArgumentException("Cannot read field ["+field+"] from object ["+object+"] of type ["+object.getClass()+"]", e);
@@ -537,13 +537,12 @@ public class FieldEntityAccess implements EntityAccess {
     }
 
 
-    protected static Object unwrapIfProxy(Object object) {
-        if(object instanceof EntityProxy) {
-            Object target = ((EntityProxy) object).getTarget();
-            if(target != null) {
-                object = target;
-            }
+    private static Object unwrapIfProxy(PersistentEntity entity, Object object) {
+        if (entity != null) {
+            final ProxyHandler proxyHandler = entity.getMappingContext().getProxyHandler();
+            return proxyHandler.unwrap(object);
+        } else {
+            return object;
         }
-        return object;
     }
 }
