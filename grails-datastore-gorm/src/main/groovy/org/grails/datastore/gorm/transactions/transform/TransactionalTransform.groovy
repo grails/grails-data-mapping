@@ -327,7 +327,7 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
         )
 
         // apply @Transaction attributes to properties of $transactionAttribute
-        applyTransactionalAttributeSettings(annotationNode, transactionAttributeVar, newMethodBody)
+        applyTransactionalAttributeSettings(annotationNode, transactionAttributeVar, newMethodBody, classNode, methodNode)
 
         boolean isMultiTenant = TenantTransform.hasTenantAnnotation(methodNode)
 
@@ -387,7 +387,7 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
         return "execute"
     }
 
-    protected applyTransactionalAttributeSettings(AnnotationNode annotationNode, VariableExpression transactionAttributeVar, BlockStatement methodBody) {
+    protected applyTransactionalAttributeSettings(AnnotationNode annotationNode, VariableExpression transactionAttributeVar, BlockStatement methodBody, ClassNode classNode, MethodNode methodNode) {
         final ClassNode rollbackRuleAttributeClassNode = make(RollbackRuleAttribute)
         final ClassNode noRollbackRuleAttributeClassNode = make(NoRollbackRuleAttribute)
         final Map<String, Expression> members = annotationNode.getMembers()
@@ -424,6 +424,11 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
                 }
             }
         }
+
+        final transactionName = classNode.name + '.' + methodNode.name
+        methodBody.addStatement(
+            assignS(propX(transactionAttributeVar, 'name'), new ConstantExpression(transactionName))
+        )
     }
 
     private void appendRuleElement(BlockStatement methodBody, VariableExpression transactionAttributeVar, String name, Expression expr) {

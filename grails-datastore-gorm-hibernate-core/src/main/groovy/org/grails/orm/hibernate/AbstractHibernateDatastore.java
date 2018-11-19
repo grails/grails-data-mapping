@@ -75,6 +75,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     protected final boolean isCacheQueries;
     protected final int defaultFlushMode;
     protected final boolean failOnError;
+    protected final boolean markDirty;
     protected final String dataSourceName;
     protected final TenantResolver tenantResolver;
     private boolean destroyed;
@@ -91,6 +92,8 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         this.passReadOnlyToHibernate = hibernateSettings.isReadOnly();
         this.isCacheQueries = hibernateSettings.getCache().isQueries();
         this.failOnError = settings.isFailOnError();
+        Boolean markDirty = settings.getMarkDirty();
+        this.markDirty = markDirty == null ? false : markDirty;
         FlushMode flushMode = FlushMode.valueOf(hibernateSettings.getFlush().getMode().name());
         this.defaultFlushModeName = flushMode.name();
         this.defaultFlushMode = flushMode.getLevel();
@@ -98,8 +101,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
         MultiTenancySettings multiTenancySettings = settings.getMultiTenancy();
         final TenantResolver multiTenantResolver = multiTenancySettings.getTenantResolver();
 
-        MultiTenancySettings.MultiTenancyMode multiTenancySettingsMode = multiTenancySettings.getMode();
-        this.multiTenantMode = multiTenancySettingsMode;
+        this.multiTenantMode = multiTenancySettings.getMode();
         Class<? extends SchemaHandler> schemaHandlerClass = settings.getDataSource().getSchemaHandler();
         this.schemaHandler = BeanUtils.instantiate(schemaHandlerClass);
         this.tenantResolver = multiTenantResolver;
@@ -132,6 +134,7 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
             defaultFlushMode = flushMode.level;
         }
         failOnError = config.getProperty(SETTING_FAIL_ON_ERROR, Boolean.class, false);
+        markDirty = config.getProperty(SETTING_MARK_DIRTY, Boolean.class, false);
         this.tenantResolver = new FixedTenantResolver();
         this.multiTenantMode = MultiTenancySettings.MultiTenancyMode.NONE;
         this.schemaHandler = new DefaultSchemaHandler();
@@ -306,22 +309,26 @@ public abstract class AbstractHibernateDatastore extends AbstractDatastore imple
     }
 
     @Override
-    public void destroy() throws Exception {
-        if(!this.destroyed) {
+    public void destroy() {
+        if (!this.destroyed) {
             super.destroy();
             AbstractHibernateGormInstanceApi.resetInsertActive();
-            connectionSources.close();
+            try {
+                connectionSources.close();
+            } catch (IOException e) {
+                LOG.error("There was an error shutting down GORM for an entity: " + e.getMessage(), e);
+            }
             destroyed = true;
         }
     }
 
     @Override
     @PreDestroy
-    public void close() throws IOException {
+    public void close() {
         try {
             destroy();
         } catch (Exception e) {
-            throw new IOException("Error closing hibernate datastore: " + e.getMessage(), e);
+            LOG.error("Error closing hibernate datastore: " + e.getMessage(), e);
         }
     }
 

@@ -30,6 +30,7 @@ import java.util.Map;
 public abstract class AbstractGrailsDomainBinder {
     protected static final Map<Class<?>, Mapping> MAPPING_CACHE = new HashMap<>();
 
+
     /**
      * Obtains a mapping object for the given domain class nam
      *

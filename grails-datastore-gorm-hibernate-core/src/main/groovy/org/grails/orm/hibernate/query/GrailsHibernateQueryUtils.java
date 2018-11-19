@@ -195,10 +195,20 @@ public class GrailsHibernateQueryUtils {
     }
 
     static class FlushModeConverter {
+        static Method conversionMethod;
+        static {
+            try {
+                conversionMethod = ReflectionUtils.findMethod(FlushMode.class, "parse", String.class);
+            } catch(Throwable t) {
+                conversionMethod = ReflectionUtils.findMethod(FlushMode.class, "valueOf", String.class);
+            }
+
+            ReflectionUtils.makeAccessible(conversionMethod);
+        }
 
         static FlushMode valueOf(String str) {
             try {
-                return FlushMode.valueOf(str);
+                return (FlushMode)conversionMethod.invoke(FlushMode.class, str);
             } catch (Throwable t) {
                 return FlushMode.COMMIT;
             }

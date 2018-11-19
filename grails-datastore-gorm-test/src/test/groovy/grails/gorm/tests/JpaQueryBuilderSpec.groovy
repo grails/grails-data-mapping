@@ -177,4 +177,47 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
             queryInfo.parameters == ['Bob', 'Fred']
 
     }
+
+    void "Test build DELETE with an empty criteria or build {}"() {
+        given:
+        DetachedCriteria criteria = new DetachedCriteria(Person).build {}
+
+        when: "A jpa query is built"
+        def builder = new JpaQueryBuilder(session.mappingContext.getPersistentEntity(Person.name), criteria.criteria)
+        final queryInfo = builder.buildDelete()
+
+        then: "The query is valid"
+        queryInfo.query!=null
+        queryInfo.query == 'DELETE grails.gorm.tests.Person person'
+        queryInfo.parameters == []
+    }
+
+
+    void "Test build SELECT with an empty criteria or build {}"() {
+        given:
+        DetachedCriteria criteria = new DetachedCriteria(Person).build {}
+
+        when: "A jpa query is built"
+        def builder = new JpaQueryBuilder(session.mappingContext.getPersistentEntity(Person.name), criteria.criteria)
+        final queryInfo = builder.buildSelect()
+
+        then: "The query is valid"
+        queryInfo.query!=null
+        queryInfo.query == 'SELECT DISTINCT person FROM grails.gorm.tests.Person AS person'
+        queryInfo.parameters == null
+    }
+
+    void "Test build UPDATE with an empty criteria or build {}"() {
+        given:
+        DetachedCriteria criteria = new DetachedCriteria(Person).build {}
+
+        when: "A jpa query is built"
+        def builder = new JpaQueryBuilder(session.mappingContext.getPersistentEntity(Person.name), criteria.criteria)
+        final queryInfo = builder.buildUpdate(firstName:"Fred")
+
+        then: "The query is valid"
+        queryInfo.query!=null
+        queryInfo.query == 'UPDATE grails.gorm.tests.Person person SET person.firstName=:p1'
+        queryInfo.parameters == ["Fred"]
+    }
 }

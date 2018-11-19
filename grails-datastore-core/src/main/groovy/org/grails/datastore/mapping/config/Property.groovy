@@ -112,7 +112,11 @@ class Property implements Cloneable {
      * property is an association or collection.
      */
     String cascade
-
+    /**
+     * Cascade validation for associations that are not owned by the parent entity. Only makes sense
+     * if the property is an association.
+     */
+    boolean cascadeValidate = true
     /**
      * For specifying the cascade type using {@link CascadeType}
      */

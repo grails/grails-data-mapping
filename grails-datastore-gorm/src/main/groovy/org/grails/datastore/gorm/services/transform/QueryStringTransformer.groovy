@@ -249,7 +249,7 @@ class QueryStringTransformer extends ClassCodeExpressionTransformer {
                 ClassNode domainType = declaredQueryTargets.get(var.name)
                 if(domainType != null) {
                     String propertyName = pe.propertyAsString
-                    if( AstUtils.hasProperty(domainType, propertyName) ) {
+                    if(( AstUtils.isDomainClass(domainType) && propertyName == "id" )|| AstUtils.hasOrInheritsProperty(domainType, propertyName) ) {
                         return constX("${var.name}.$propertyName".toString())
                     }
                     else {

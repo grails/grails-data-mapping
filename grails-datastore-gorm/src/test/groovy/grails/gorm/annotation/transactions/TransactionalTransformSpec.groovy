@@ -17,6 +17,7 @@ import org.springframework.context.annotation.CommonAnnotationBeanPostProcessor
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.TransactionStatus
 import org.springframework.transaction.UnexpectedRollbackException
 import org.springframework.transaction.support.DefaultTransactionStatus
@@ -928,6 +929,60 @@ new BookService()
         status.isRollbackOnly()
     }
 
+    void "Test that a @Transactional annotation on a method sets name of transaction"() {
+        given:"A new instance of a class with a @Transactional method is created"
+        def bookService = new GroovyShell().evaluate('''
+package foo
+import grails.gorm.transactions.*
+class BookService {
+    @Transactional
+    void updateBook() {
+    }
+}
+new BookService()
+''')
+
+        when:"A transactionManager is set"
+        final transactionManager = getPlatformTransactionManager()
+        bookService.transactionManager = transactionManager
+
+        then:"It is not null"
+        bookService.transactionManager != null
+
+        when:"When a transactional method is called"
+        bookService.updateBook()
+
+        then:"transaction name is foo.BookService.updateBook"
+        transactionManager.definition.name == 'foo.BookService.updateBook'
+    }
+
+    void "Test that a @Transactional annotation on a class sets name of transaction"() {
+        given:"A new instance of a class with a @Transactional method is created"
+        def bookService = new GroovyShell().evaluate('''
+package foo
+import grails.gorm.transactions.*
+@Transactional
+class BookService {
+    void updateBook() {
+    }
+}
+new BookService()
+''')
+
+        when:"A transactionManager is set"
+        final transactionManager = getPlatformTransactionManager()
+        bookService.transactionManager = transactionManager
+
+        then:"It is not null"
+        bookService.transactionManager != null
+
+        when:"When a method on a transactional class is called"
+        bookService.updateBook()
+
+        then:"transaction name is foo.BookService.updateBook"
+        transactionManager.definition.name == 'foo.BookService.updateBook'
+    }
+
     void 'test CompileStatic on a method in a class marked with Transactional'() {
         given:
         def gcl = new GroovyClassLoader()
@@ -987,8 +1042,37 @@ new SomeClass()
         someClass.getAge()
         someClass.getPhone()
     }
-}
+
+    void "test transactional behavior is applied to methods that aren't setters but start with set"() {
+        when:
+        def someClass = new GroovyShell().evaluate('''
+package demo
+
+    import grails.gorm.transactions.*
+    import org.springframework.transaction.support.*
+    
 @Transactional
+class SomeClass {
+
+    public void setupSessionAfterLogin(String username) {
+        assert TransactionSynchronizationManager.isActualTransactionActive()
+    }
+
+}
+new SomeClass()
+''')
+
+        final transactionManager = getPlatformTransactionManager()
+        someClass.transactionManager = transactionManager
+        someClass.setupSessionAfterLogin('x')
+
+        then:
+        noExceptionThrown()
+    }
+}
+
+
+@grails.gorm.transactions.Transactional
 class TransactionalTransformSpecService implements InitializingBean {
     String name
 
@@ -1030,6 +1114,7 @@ class TransactionalTransformSpecService implements InitializingBean {
 class TestTransactionManager extends DataSourceTransactionManager {
     boolean transactionStarted = false
     boolean transactionRolledBack = false
+    TransactionDefinition definition = null
 
     TestTransactionManager(DataSource dataSource) {
         super(dataSource)
@@ -1045,6 +1130,12 @@ class TestTransactionManager extends DataSourceTransactionManager {
     protected void doRollback(DefaultTransactionStatus status) {
         transactionRolledBack = true
         super.doRollback(status)
+    }
+
+    @Override
+    protected void doBegin(Object transaction, TransactionDefinition definition) {
+        this.definition = definition
+        super.doBegin(transaction, definition)
     }
 }
 

@@ -98,7 +98,7 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
     }
 
     @Override
-    public <T extends Service> T getService(Class<T> interfaceType) throws ServiceNotFoundException {
+    public <T> T getService(Class<T> interfaceType) throws ServiceNotFoundException {
         return serviceRegistry.getService(interfaceType);
     }
 
@@ -108,7 +108,7 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
     }
 
     @PreDestroy
-    public void destroy() throws Exception {
+    public void destroy() {
         FieldEntityAccess.clearReflectors();
         final MetaClassRegistry registry = GroovySystem.getMetaClassRegistry();
         for (PersistentEntity persistentEntity : getMappingContext().getPersistentEntities()) {
@@ -116,7 +116,7 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
             try {
                 registry.removeMetaClass(cls);
             } catch (Exception e) {
-                LOG.warn("There was an error shutting down GORM for entity ["+cls.getName()+"]: " + e.getMessage(), e);
+                LOG.error("There was an error shutting down GORM for entity ["+cls.getName()+"]: " + e.getMessage(), e);
             }
         }
     }

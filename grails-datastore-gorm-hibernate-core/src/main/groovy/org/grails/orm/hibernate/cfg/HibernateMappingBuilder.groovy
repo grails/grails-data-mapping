@@ -460,6 +460,7 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
             property.updatable = namedArgs.updateable != null ? namedArgs.updateable : property.updatable
             property.updatable = namedArgs.updatable != null ? namedArgs.updatable : property.updatable
             property.cascade = namedArgs.cascade ?: property.cascade
+            property.cascadeValidate = namedArgs.cascadeValidate != null ? namedArgs.cascadeValidate : property.cascadeValidate
             property.sort = namedArgs.sort ?: property.sort
             property.order = namedArgs.order ?: property.order
             property.batchSize = namedArgs.batchSize instanceof Integer ? namedArgs.batchSize : property.batchSize
@@ -475,8 +476,12 @@ class HibernateMappingBuilder implements MappingConfigurationBuilder<Mapping, Pr
             property.max = namedArgs.max instanceof Comparable ? namedArgs.max : property.max
             property.min = namedArgs.min instanceof Comparable ? namedArgs.min : property.min
             property.range = namedArgs.range instanceof ObjectRange ? namedArgs.range : null
-            property.scale = namedArgs.scale instanceof Integer ? namedArgs.scale : property.scale
             property.inList = namedArgs.inList instanceof List ? namedArgs.inList : property.inList
+
+            // Need to guard around calling getScale() for multi-column properties (issue #1048)
+            if (namedArgs.scale instanceof Integer) {
+                property.scale = (Integer)namedArgs.scale
+            }
 
             if (namedArgs.fetch) {
                 switch(namedArgs.fetch) {

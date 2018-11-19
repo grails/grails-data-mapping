@@ -113,9 +113,8 @@ class Tenants {
         Datastore datastore = GormEnhancer.findSingleDatastore()
         if(datastore instanceof MultiTenantCapableDatastore) {
             MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore)datastore
-            return withId(multiTenantCapableDatastore, ConnectionSource.DEFAULT, callable)
-        }
-        else {
+            return withoutId(multiTenantCapableDatastore, callable)
+        } else {
             throw new UnsupportedOperationException("Datastore implementation does not support multi-tenancy")
         }
     }
@@ -188,6 +187,43 @@ class Tenants {
         else {
             throw new UnsupportedOperationException("Datastore implementation does not support multi-tenancy")
         }
+    }
+
+    /**
+     * Execute the given closure without tenant id for the given datastore. This method will create a new datastore session for the scope of the call and hence is designed to be used to manage the connection life cycle
+     * @param callable The closure
+     * @return The result of the closure
+     */
+    static <T> T withoutId(MultiTenantCapableDatastore multiTenantCapableDatastore, Closure<T> callable) {
+        return CurrentTenant.withoutTenant {
+            if (multiTenantCapableDatastore.getMultiTenancyMode().isSharedConnection()) {
+                def i = callable.parameterTypes.length
+                if(i == 0 ) {
+                    throw new IllegalArgumentException("Provided closure accepts too many arguments")
+                } else {
+                    return multiTenantCapableDatastore.withSession { session ->
+                        return callable.call(session)
+                    }
+                }
+            } else {
+                return multiTenantCapableDatastore.withNewSession(ConnectionSource.DEFAULT) { session ->
+                    def i = callable.parameterTypes.length
+                    switch (i) {
+                        case 0:
+                            return callable.call()
+                            break
+                        case 1:
+                            return callable.call(ConnectionSource.DEFAULT)
+                            break
+                        case 2:
+                            return callable.call(ConnectionSource.DEFAULT, session)
+                        default:
+                            throw new IllegalArgumentException("Provided closure accepts too many arguments")
+                    }
+
+                }
+            }
+        } as T
     }
 
     /**
@@ -325,6 +361,27 @@ class Tenants {
                     remove()
                 }
                 else {
+                    set(previous)
+                }
+            }
+        }
+
+
+        /**
+         * Execute without current tenant
+         *
+         * @param callable The closure
+         * @return The result of the closure
+         */
+        static <T> T withoutTenant(Closure<T> callable) {
+            def previous = get()
+            try {
+                set(ConnectionSource.DEFAULT)
+                callable.call()
+            } finally {
+                if (previous == null) {
+                    remove()
+                } else {
                     set(previous)
                 }
             }

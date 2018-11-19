@@ -107,7 +107,15 @@ public class AnnotationMetadataReader implements MetadataReader {
     private static class EmptyAnnotationVisitor extends AnnotationVisitor {
 
         EmptyAnnotationVisitor() {
-            super(SpringAsmInfo.ASM_VERSION);
+            super(loadAsmVersion());
+        }
+
+        private static int loadAsmVersion()  {
+            try {
+                return (int)SpringAsmInfo.class.getField("ASM_VERSION").get(null);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 
         @Override

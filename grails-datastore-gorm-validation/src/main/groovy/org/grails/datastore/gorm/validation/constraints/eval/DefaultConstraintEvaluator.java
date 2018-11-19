@@ -87,6 +87,7 @@ public class DefaultConstraintEvaluator implements ConstraintsEvaluator {
             constraints.addAll( Arrays.asList(adHocConstraintsClosures) );
         }
         ConstrainedPropertyBuilder delegate = newConstrainedPropertyBuilder(theClass);
+        delegate.setDefaultNullable(defaultNullable);
         delegate.setAllowDynamic(useOnlyAdHocConstraints);
         // Evaluate all the constraints closures in the inheritance chain
         for (Closure c : constraints) {
@@ -163,8 +164,10 @@ public class DefaultConstraintEvaluator implements ConstraintsEvaluator {
                         DefaultConstrainedProperty constrainedProperty = new DefaultConstrainedProperty(theClass, propertyName, propertyType, constraintRegistry);
                         constrainedProperty.setOrder(constrainedProperties.size() + 1);
                         constrainedProperties.put(propertyName, constrainedProperty);
-                        applyDefaultNullableConstraint(constrainedProperty, defaultNullable);
                         applyDefaultConstraints(propertyName, null, constrainedProperty, defaultConstraints);
+                        if (!constrainedProperty.hasAppliedConstraint(ConstrainedProperty.NULLABLE_CONSTRAINT)) {
+                            applyDefaultNullableConstraint(constrainedProperty, defaultNullable);
+                        }
                     }
                 }
             }

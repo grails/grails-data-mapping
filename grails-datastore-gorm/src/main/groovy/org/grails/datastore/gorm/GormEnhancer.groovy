@@ -82,6 +82,7 @@ class GormEnhancer implements Closeable {
     PlatformTransactionManager transactionManager
     List<FinderMethod> finders
     boolean failOnError
+    boolean markDirty
 
     /**
      * Whether to include external entities
@@ -97,8 +98,8 @@ class GormEnhancer implements Closeable {
         this(datastore, null)
     }
 
-    GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager, boolean failOnError = false, boolean dynamicEnhance = false) {
-        this(datastore, transactionManager, new ConnectionSourceSettings().failOnError(failOnError))
+    GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager, boolean failOnError = false, boolean dynamicEnhance = false, boolean markDirty = true) {
+        this(datastore, transactionManager, new ConnectionSourceSettings().failOnError(failOnError).markDirty(markDirty))
     }
 
     /**
@@ -111,6 +112,8 @@ class GormEnhancer implements Closeable {
     GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager, ConnectionSourceSettings settings) {
         this.datastore = datastore
         this.failOnError = settings.isFailOnError()
+        Boolean markDirty = settings.getMarkDirty()
+        this.markDirty = markDirty == null ? true : markDirty
         this.transactionManager = transactionManager
         this.dynamicEnhance = false
         if(datastore != null) {
@@ -632,6 +635,7 @@ class GormEnhancer implements Closeable {
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls, String qualifier = ConnectionSource.DEFAULT) {
         def instanceApi = new GormInstanceApi<D>(cls, datastore)
         instanceApi.failOnError = failOnError
+        instanceApi.markDirty = markDirty
         return instanceApi
     }
 

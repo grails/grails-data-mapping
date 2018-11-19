@@ -60,7 +60,7 @@ public class ListOrderByFinder extends AbstractFinder {
         match.find();
 
         String nameInSignature = match.group(2);
-        final String propertyName = NameUtils.decapitalize(nameInSignature);
+        final String propertyName = NameUtils.decapitalizeFirstChar(nameInSignature);
 
         return execute(new SessionCallback<Object>() {
             public Object doInSession(final Session session) {

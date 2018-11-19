@@ -112,6 +112,7 @@ class GrailsEntityDirtinessStrategy implements CustomEntityDirtinessStrategy {
         }
     }
 
+    @CompileDynamic
     Status getStatus(Session session, Object entity) {
         SessionImplementor si = (SessionImplementor) session
         return si.getPersistenceContext().getEntry(entity)?.getStatus()

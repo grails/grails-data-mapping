@@ -195,9 +195,7 @@ class GormEntityTransformation extends AbstractASTTransformation implements Comp
             }
         }
 
-        // first apply dirty checking behavior
-        def dirtyCheckTransformer = new DirtyCheckingTransformer()
-        dirtyCheckTransformer.performInjectionOnAnnotatedClass(sourceUnit, classNode)
+
 
         def rxEntityClassNode = AstUtils.findInterface(classNode, "grails.gorm.rx.RxEntity")
         boolean isRxEntity = rxEntityClassNode != null
@@ -216,7 +214,6 @@ class GormEntityTransformation extends AbstractASTTransformation implements Comp
         if(!isJpaEntity) {
             injectToStringMethod(classNode)
         }
-
 
         // inject the GORM entity trait unless it is an RX entity
         MethodNode addToMethodNode = ADD_TO_METHOD_NODE
@@ -240,6 +237,11 @@ class GormEntityTransformation extends AbstractASTTransformation implements Comp
         else {
             injectAssociations(classNode, addToMethodNode, removeFromMethodNode, getAssociationMethodNode)
         }
+
+        // now apply dirty checking behavior
+        def dirtyCheckTransformer = new DirtyCheckingTransformer()
+        dirtyCheckTransformer.performInjectionOnAnnotatedClass(sourceUnit, classNode)
+
 
         // convert the methodMissing and propertyMissing implementations to $static_methodMissing and $static_propertyMissing for the static versions
         def methodMissingBody = new BlockStatement()

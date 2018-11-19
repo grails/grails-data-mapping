@@ -20,10 +20,12 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormValidateable
 import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.model.types.Embedded
+import org.grails.datastore.mapping.model.types.EmbeddedCollection
+import org.grails.datastore.mapping.model.types.ToMany
 import org.grails.datastore.mapping.proxy.ProxyHandler
-import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.mapping.reflect.ClassUtils
 import org.grails.datastore.mapping.reflect.EntityReflector
 import org.grails.orm.hibernate.support.HibernateRuntimeUtils
@@ -92,6 +94,7 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
         this.proxyHandler = datastore.mappingContext.getProxyHandler()
         this.autoFlush = datastore.autoFlush
         this.failOnError = datastore.failOnError
+        this.markDirty = datastore.markDirty
     }
 
 
@@ -106,6 +109,11 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
 
         HibernateRuntimeUtils.autoAssociateBidirectionalOneToOnes(domainClass, target)
 
+        boolean deepValidate = true
+        if (arguments?.containsKey(ARGUMENT_DEEP_VALIDATE)) {
+            deepValidate = ClassUtils.getBooleanFromMap(ARGUMENT_DEEP_VALIDATE, arguments)
+        }
+
         if (shouldValidate) {
             Validator validator = datastore.mappingContext.getEntityValidator(domainClass)
 
@@ -114,15 +122,11 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
             if (validator) {
                 datastore.applicationEventPublisher?.publishEvent new ValidationEvent(datastore, target)
 
-                boolean deepValidate = true
-                if (arguments?.containsKey(ARGUMENT_DEEP_VALIDATE)) {
-                    deepValidate = ClassUtils.getBooleanFromMap(ARGUMENT_DEEP_VALIDATE, arguments);
-                }
-
-                if (deepValidate && (validator instanceof CascadingValidator)) {
+                if (validator instanceof CascadingValidator) {
                     ((CascadingValidator)validator).validate target, errors, deepValidate
-                }
-                else {
+                } else if (validator instanceof org.grails.datastore.gorm.validation.CascadingValidator) {
+                    ((org.grails.datastore.gorm.validation.CascadingValidator) validator).validate target, errors, deepValidate
+                } else {
                     validator.validate target, errors
                 }
 
@@ -148,6 +152,8 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
         boolean shouldSkipValidation = !shouldValidate || shouldFlush
         validateable.skipValidation(shouldSkipValidation)
 
+
+
         try {
             if (shouldInsert(arguments)) {
                 return performInsert(target, shouldFlush)
@@ -156,6 +162,9 @@ abstract class AbstractHibernateGormInstanceApi<D> extends GormInstanceApi<D> {
                 return performMerge(target, shouldFlush)
             }
             else {
+                if (target instanceof DirtyCheckable && markDirty) {
+                    target.markDirty()
+                }
                 return performSave(target, shouldFlush)
             }
         } finally {

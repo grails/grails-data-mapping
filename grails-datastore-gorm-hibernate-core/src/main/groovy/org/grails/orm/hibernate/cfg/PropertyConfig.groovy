@@ -210,7 +210,7 @@ class PropertyConfig extends Property {
      * The join table configuration
      */
     PropertyConfig joinTable(String tableName) {
-        joinTable.name == tableName
+        joinTable.name = tableName
         return this
     }
 

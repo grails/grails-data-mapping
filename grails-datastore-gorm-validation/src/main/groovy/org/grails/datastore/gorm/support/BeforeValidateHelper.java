@@ -16,6 +16,8 @@ package org.grails.datastore.gorm.support;
 
 import groovy.lang.MetaClass;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class BeforeValidateHelper implements Serializable {
     public static final String BEFORE_VALIDATE = "beforeValidate";
-    private Map<Class<?>, BeforeValidateEventTriggerCaller> eventTriggerCallerCache = new ConcurrentHashMap<Class<?>, BeforeValidateEventTriggerCaller>();
+    private transient Map<Class<?>, BeforeValidateEventTriggerCaller> eventTriggerCallerCache = new ConcurrentHashMap<Class<?>, BeforeValidateEventTriggerCaller>();
     
     public static final class BeforeValidateEventTriggerCaller {
         EventTriggerCaller eventTriggerCaller;
@@ -55,5 +57,11 @@ public class BeforeValidateHelper implements Serializable {
             eventTriggerCallerCache.put(domainClass, eventTriggerCaller);
         }
         eventTriggerCaller.call(target, validatedFieldsList);
-   }
+    }
+
+    // Ensure that the cache is re-initalized empty when deserialized
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        eventTriggerCallerCache = new ConcurrentHashMap<Class<?>, BeforeValidateEventTriggerCaller>();
+    }
 }

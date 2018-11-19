@@ -7,6 +7,43 @@ import grails.gorm.tests.TestEntity
 
 class QueryAssociationSpec extends GormDatastoreSpec {
 
+    void "Test query one-to-one association with disjunction"() {
+        given:
+            new TestEntity(name:"Bob", age: 44, child:new ChildEntity(name:"Nick")).save(flush:true)
+
+        when: "A query on the child association wrapped in a disjunction"
+            def results = TestEntity.withCriteria {
+                or {
+                    child {
+                        eq 'name', 'Nick'
+                    }
+                    eq 'name', 'James'
+                }
+            }
+        then: "Check that the entity named Bob is returned"
+            TestEntity.count() == 1
+            results.size() == 1
+            results[0].name == "Bob"
+    }
+
+    void "Test query one-to-one association with conjunction"() {
+        given:
+            new TestEntity(name:"Bob", age: 44, child:new ChildEntity(name:"Nick")).save(flush:true)
+
+        when: "A query on the child association wrapped in a conjunction"
+            def results = TestEntity.withCriteria {
+                and {
+                    child {
+                        eq 'name', 'Bob'
+                    }
+                    eq 'name', 'Bob'
+                }
+            }
+        then: "Check that no entities are returned"
+            TestEntity.count() == 1
+            results.size() == 0
+    }
+
     void "Test query one-to-one association"() {
         given:
             new TestEntity(name:"Bob", age: 44, child:new ChildEntity(name:"Nick")).save(flush:true)

@@ -75,7 +75,7 @@ class DefaultServiceRegistry implements ServiceRegistry, Initializable {
     }
 
     @Override
-    def <T extends Service> T getService(Class<T> interfaceType) throws ServiceNotFoundException {
+    def <T> T getService(Class<T> interfaceType) throws ServiceNotFoundException {
         Service s = servicesByInterface.get(interfaceType)
         if(s == null) {
             throw new ServiceNotFoundException("No service found for type $interfaceType")

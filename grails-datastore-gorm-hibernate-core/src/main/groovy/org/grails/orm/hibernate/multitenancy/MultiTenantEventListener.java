@@ -71,6 +71,9 @@ public class MultiTenantEventListener implements PersistenceEventListener {
                         }
                         if(currentId != null) {
                             try {
+                                if(currentId == ConnectionSource.DEFAULT) {
+                                    currentId = (Serializable) preInsertEvent.getEntityAccess().getProperty(tenantId.getName());
+                                }
                                 preInsertEvent.getEntityAccess().setProperty(tenantId.getName(), currentId);
                             } catch (Exception e) {
                                 throw new TenantException("Could not assigned tenant id ["+currentId+"] to property ["+tenantId+"], probably due to a type mismatch. You should return a type from the tenant resolver that matches the property type of the tenant id!: " + e.getMessage(), e);

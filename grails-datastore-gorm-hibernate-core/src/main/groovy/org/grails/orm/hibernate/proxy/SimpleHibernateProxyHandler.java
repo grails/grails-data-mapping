@@ -25,6 +25,7 @@ import org.grails.datastore.mapping.proxy.ProxyFactory;
 import org.grails.datastore.mapping.proxy.ProxyHandler;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.hibernate.Hibernate;
+import org.hibernate.collection.spi.PersistentCollection;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.HibernateProxyHelper;
 import org.hibernate.proxy.LazyInitializer;
@@ -41,20 +42,20 @@ public class SimpleHibernateProxyHandler extends JavassistProxyFactory implement
 
     public boolean isInitialized(Object o) {
         if (o instanceof HibernateProxy) {
-            return !((HibernateProxy)o).getHibernateLazyInitializer().isUninitialized();
+            return !((HibernateProxy) o).getHibernateLazyInitializer().isUninitialized();
         }
-        return super.isInitialized(o);
+        else if (o instanceof PersistentCollection) {
+            return ((PersistentCollection) o).wasInitialized();
+        }
+        else {
+            return super.isInitialized(o);
+        }
     }
 
     public boolean isInitialized(Object obj, String associationName) {
         try {
             Object proxy = ClassPropertyFetcher.getInstancePropertyValue(obj, associationName);
-            if(proxy instanceof HibernateProxy) {
-                return Hibernate.isInitialized(proxy) ;
-            }
-            else {
-                return super.isInitialized(proxy);
-            }
+            return isInitialized(proxy);
         }
         catch (RuntimeException e) {
             return false;

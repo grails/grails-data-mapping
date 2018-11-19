@@ -18,6 +18,7 @@ package grails.gorm
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import org.grails.datastore.gorm.GormEnhancer
+import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.query.GormOperations
 import org.grails.datastore.gorm.query.criteria.AbstractDetachedCriteria
@@ -126,7 +127,7 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<T> implements GormOpe
     }
 
     /**
-     * Returns a single result matching the criterion contained within this DetachedCriteria instance
+     * Lists all records matching the criterion contained within this DetachedCriteria instance
      *
      * @return A list of matching instances
      */
@@ -734,7 +735,9 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<T> implements GormOpe
     }
 
     private withPopulatedQuery(Map args, Closure additionalCriteria, Closure callable)  {
-        GormEnhancer.findStaticApi(targetClass, connectionName).withDatastoreSession { Session session ->
+
+        GormStaticApi staticApi = persistentEntity.isMultiTenant() ? GormEnhancer.findStaticApi(targetClass) : GormEnhancer.findStaticApi(targetClass, connectionName)
+        staticApi.withDatastoreSession { Session session ->
             applyLazyCriteria()
             Query query
             if(alias && (session instanceof QueryAliasAwareSession)) {
