@@ -29,66 +29,42 @@ import org.hibernate.criterion.Projections;
  */
 public class HibernateProjectionAdapter {
     private Query.Projection projection;
-    private static Map<Class<?>, ProjectionAdapter> adapterMap = new HashMap<Class<?>, ProjectionAdapter>();
+    private static Map<Class<?>, ProjectionAdapter> adapterMap = new HashMap<>();
 
     static {
-        adapterMap.put(Query.AvgProjection.class, new ProjectionAdapter() {
-            public Projection toHibernateProjection(Query.Projection gormProjection) {
-                Query.AvgProjection avg = (Query.AvgProjection) gormProjection;
-                return Projections.avg(avg.getPropertyName());
-            }
+        adapterMap.put(Query.AvgProjection.class, gormProjection -> {
+            Query.AvgProjection avg = (Query.AvgProjection) gormProjection;
+            return Projections.avg(avg.getPropertyName());
         });
-        adapterMap.put(Query.IdProjection.class, new ProjectionAdapter() {
-            public Projection toHibernateProjection(Query.Projection gormProjection) {
-                return Projections.id();
-            }
+        adapterMap.put(Query.IdProjection.class, gormProjection -> Projections.id());
+        adapterMap.put(Query.SumProjection.class, gormProjection -> {
+            Query.SumProjection avg = (Query.SumProjection) gormProjection;
+            return Projections.sum(avg.getPropertyName());
         });
-        adapterMap.put(Query.SumProjection.class, new ProjectionAdapter() {
-            public Projection toHibernateProjection(Query.Projection gormProjection) {
-                Query.SumProjection avg = (Query.SumProjection) gormProjection;
-                return Projections.sum(avg.getPropertyName());
-            }
+        adapterMap.put(Query.DistinctPropertyProjection.class, gormProjection -> {
+            Query.DistinctPropertyProjection avg = (Query.DistinctPropertyProjection) gormProjection;
+            return Projections.distinct(Projections.property(avg.getPropertyName()));
         });
-        adapterMap.put(Query.DistinctPropertyProjection.class, new ProjectionAdapter() {
-            public Projection toHibernateProjection(Query.Projection gormProjection) {
-                Query.DistinctPropertyProjection avg = (Query.DistinctPropertyProjection) gormProjection;
-                return Projections.distinct(Projections.property(avg.getPropertyName()));
-            }
+        adapterMap.put(Query.PropertyProjection.class, gormProjection -> {
+            Query.PropertyProjection avg = (Query.PropertyProjection) gormProjection;
+            return Projections.property(avg.getPropertyName());
         });
-        adapterMap.put(Query.PropertyProjection.class, new ProjectionAdapter() {
-            public Projection toHibernateProjection(Query.Projection gormProjection) {
-                Query.PropertyProjection avg = (Query.PropertyProjection) gormProjection;
-                return Projections.property(avg.getPropertyName());
-            }
+        adapterMap.put(Query.CountProjection.class, gormProjection -> Projections.rowCount());
+        adapterMap.put(Query.CountDistinctProjection.class, gormProjection -> {
+            Query.CountDistinctProjection cd = (Query.CountDistinctProjection) gormProjection;
+            return Projections.countDistinct(cd.getPropertyName());
         });
-        adapterMap.put(Query.CountProjection.class, new ProjectionAdapter() {
-            public Projection toHibernateProjection(Query.Projection gormProjection) {
-                return Projections.rowCount();
-            }
+        adapterMap.put(Query.GroupPropertyProjection.class, gormProjection -> {
+            Query.GroupPropertyProjection cd = (Query.GroupPropertyProjection) gormProjection;
+            return Projections.groupProperty(cd.getPropertyName());
         });
-        adapterMap.put(Query.CountDistinctProjection.class, new ProjectionAdapter() {
-            public Projection toHibernateProjection(Query.Projection gormProjection) {
-                Query.CountDistinctProjection cd = (Query.CountDistinctProjection) gormProjection;
-                return Projections.countDistinct(cd.getPropertyName());
-            }
+        adapterMap.put(Query.MaxProjection.class, gormProjection -> {
+            Query.MaxProjection cd = (Query.MaxProjection) gormProjection;
+            return Projections.max(cd.getPropertyName());
         });
-        adapterMap.put(Query.GroupPropertyProjection.class, new ProjectionAdapter() {
-            public Projection toHibernateProjection(Query.Projection gormProjection) {
-                Query.GroupPropertyProjection cd = (Query.GroupPropertyProjection) gormProjection;
-                return Projections.groupProperty(cd.getPropertyName());
-            }
-        });
-        adapterMap.put(Query.MaxProjection.class, new ProjectionAdapter() {
-            public Projection toHibernateProjection(Query.Projection gormProjection) {
-                Query.MaxProjection cd = (Query.MaxProjection) gormProjection;
-                return Projections.max(cd.getPropertyName());
-            }
-        });
-        adapterMap.put(Query.MinProjection.class, new ProjectionAdapter() {
-            public Projection toHibernateProjection(Query.Projection gormProjection) {
-                Query.MinProjection cd = (Query.MinProjection) gormProjection;
-                return Projections.min(cd.getPropertyName());
-            }
+        adapterMap.put(Query.MinProjection.class, gormProjection -> {
+            Query.MinProjection cd = (Query.MinProjection) gormProjection;
+            return Projections.min(cd.getPropertyName());
         });
     }
 

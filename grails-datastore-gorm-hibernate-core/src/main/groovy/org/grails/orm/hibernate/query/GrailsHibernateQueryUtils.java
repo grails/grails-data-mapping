@@ -163,7 +163,11 @@ public class GrailsHibernateQueryUtils {
         if (object instanceof FlushMode) {
             return (FlushMode)object;
         }
-        return FlushModeConverter.valueOf(object.toString());
+        try {
+            return FlushMode.valueOf(object.toString());
+        } catch (IllegalArgumentException e) {
+            return FlushMode.COMMIT;
+        }
     }
     /**
      * Add order directly to criteria.
@@ -194,24 +198,4 @@ public class GrailsHibernateQueryUtils {
         return FetchMode.DEFAULT;
     }
 
-    static class FlushModeConverter {
-        static Method conversionMethod;
-        static {
-            try {
-                conversionMethod = ReflectionUtils.findMethod(FlushMode.class, "parse", String.class);
-            } catch(Throwable t) {
-                conversionMethod = ReflectionUtils.findMethod(FlushMode.class, "valueOf", String.class);
-            }
-
-            ReflectionUtils.makeAccessible(conversionMethod);
-        }
-
-        static FlushMode valueOf(String str) {
-            try {
-                return (FlushMode)conversionMethod.invoke(FlushMode.class, str);
-            } catch (Throwable t) {
-                return FlushMode.COMMIT;
-            }
-        }
-    }
 }

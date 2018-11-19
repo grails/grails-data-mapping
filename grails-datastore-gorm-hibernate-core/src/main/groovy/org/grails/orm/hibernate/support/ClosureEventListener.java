@@ -45,7 +45,6 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.Errors;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,21 +71,21 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
     private static final long serialVersionUID = 1;
     protected static final Logger LOG = LoggerFactory.getLogger(ClosureEventListener.class);
 
-    final EventTriggerCaller saveOrUpdateCaller;
-    final EventTriggerCaller beforeInsertCaller;
-    final EventTriggerCaller preLoadEventCaller;
-    final EventTriggerCaller postLoadEventListener;
-    final EventTriggerCaller postInsertEventListener;
-    final EventTriggerCaller postUpdateEventListener;
-    final EventTriggerCaller postDeleteEventListener;
-    final EventTriggerCaller preDeleteEventListener;
-    final EventTriggerCaller preUpdateEventListener;
-    final BeforeValidateEventTriggerCaller beforeValidateEventListener;
-    final PersistentEntity persistentEntity;
-    final MetaClass domainMetaClass;
-    final boolean isMultiTenant;
-    final boolean failOnErrorEnabled;
-    final Map validateParams;
+    private final EventTriggerCaller saveOrUpdateCaller;
+    private final EventTriggerCaller beforeInsertCaller;
+    private final EventTriggerCaller preLoadEventCaller;
+    private final EventTriggerCaller postLoadEventListener;
+    private final EventTriggerCaller postInsertEventListener;
+    private final EventTriggerCaller postUpdateEventListener;
+    private final EventTriggerCaller postDeleteEventListener;
+    private final EventTriggerCaller preDeleteEventListener;
+    private final EventTriggerCaller preUpdateEventListener;
+    private final BeforeValidateEventTriggerCaller beforeValidateEventListener;
+    private final PersistentEntity persistentEntity;
+    private final MetaClass domainMetaClass;
+    private final boolean isMultiTenant;
+    private final boolean failOnErrorEnabled;
+    private final Map validateParams;
 
     private Field actionQueueUpdatesField;
     private Field entityUpdateActionStateField;
