@@ -16,12 +16,8 @@
 package org.grails.orm.hibernate5.support;
 
 import org.grails.orm.hibernate.AbstractHibernateDatastore;
-import org.grails.orm.hibernate.support.HibernateRuntimeUtils;
-import org.grails.orm.hibernate.support.HibernateVersionSupport;
-import org.grails.web.servlet.mvc.GrailsWebRequest;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.orm.hibernate5.SessionHolder;
@@ -50,7 +46,7 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
     }
 
     protected void applyFlushMode(Session session) {
-        session.setFlushMode(hibernateFlushMode);
+        session.setHibernateFlushMode(hibernateFlushMode);
     }
 
     @Override
@@ -59,7 +55,7 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
         Session session = sessionHolder != null ? sessionHolder.getSession() : null;
         try {
             super.postHandle(request, model);
-            FlushMode flushMode = HibernateVersionSupport.getFlushMode(session);
+            FlushMode flushMode = session != null ? session.getHibernateFlushMode() : null;
             boolean isNotManual = flushMode != FlushMode.MANUAL && flushMode != FlushMode.COMMIT;
             if (session != null && isNotManual) {
                 if(logger.isDebugEnabled()) {
@@ -70,7 +66,7 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
         }
         finally {
             if (session != null) {
-                HibernateVersionSupport.setFlushMode(session, FlushMode.MANUAL);
+                session.setHibernateFlushMode(FlushMode.MANUAL);
             }
         }
     }

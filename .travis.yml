@@ -4,7 +4,7 @@ cache:
   - "$HOME/.gradle"
 language: groovy
 jdk:
-- openjdk8
+- oraclejdk8
 dist: trusty
 env:
   global:

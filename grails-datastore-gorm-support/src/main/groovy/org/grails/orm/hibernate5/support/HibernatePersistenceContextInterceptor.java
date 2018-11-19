@@ -6,7 +6,6 @@ import org.grails.core.lifecycle.ShutdownOperations;
 import org.grails.datastore.mapping.core.connections.ConnectionSource;
 import org.grails.orm.hibernate.AbstractHibernateDatastore;
 import org.grails.orm.hibernate.support.HibernateRuntimeUtils;
-import org.grails.orm.hibernate.support.HibernateVersionSupport;
 import org.grails.orm.hibernate.support.SessionFactoryAwarePersistenceContextInterceptor;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
@@ -33,29 +32,17 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
     private AbstractHibernateDatastore hibernateDatastore;
 
 
-    private static ThreadLocal<Map<String, Boolean>> participate = new ThreadLocal<Map<String, Boolean>>() {
-        @Override
-        protected Map<String, Boolean> initialValue() {
-            return new HashMap<>();
-        }
-    };
+    private static ThreadLocal<Map<String, Boolean>> participate = ThreadLocal.withInitial(HashMap::new);
 
-    private static ThreadLocal<Map<String, Integer>> nestingCount = new ThreadLocal<Map<String, Integer>>() {
-        @Override
-        protected Map<String, Integer> initialValue() {
-            return new HashMap<>();
-        }
-    };
+    private static ThreadLocal<Map<String, Integer>> nestingCount = ThreadLocal.withInitial(HashMap::new);
 
 
     private String dataSourceName;
 
     static {
-        ShutdownOperations.addOperation(new Runnable() {
-            public void run() {
-                participate.remove();
-                nestingCount.remove();
-            }
+        ShutdownOperations.addOperation(() -> {
+            participate.remove();
+            nestingCount.remove();
         });
     }
 
@@ -71,7 +58,7 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
      */
     public HibernatePersistenceContextInterceptor(String dataSourceName) {
         this.dataSourceName = dataSourceName;
-        this.transactionRequired = HibernateVersionSupport.isAtLeastVersion("5.2.0.Final");
+        this.transactionRequired = true;
     }
 
     /* (non-Javadoc)
@@ -144,12 +131,12 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
 
     public void setReadOnly() {
         if (getSessionFactory() == null) return;
-        getSession().setFlushMode(FlushMode.MANUAL);
+        getSession().setHibernateFlushMode(FlushMode.MANUAL);
     }
 
     public void setReadWrite() {
         if (getSessionFactory() == null) return;
-        getSession().setFlushMode(FlushMode.AUTO);
+        getSession().setHibernateFlushMode(FlushMode.AUTO);
     }
 
     public boolean isOpen() {

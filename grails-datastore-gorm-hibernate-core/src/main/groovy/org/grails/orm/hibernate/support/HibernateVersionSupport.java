@@ -35,63 +35,17 @@ import java.lang.reflect.Method;
  */
 public class HibernateVersionSupport {
 
-    private static Method getFlushMode;
-    private static Method setFlushMode;
-    private static Method createQuery;
-
-    static {
-        try {
-            // Hibernate 5.2+ getHibernateFlushMode()
-
-            getFlushMode = Session.class.getMethod("getHibernateFlushMode");
-            setFlushMode = Session.class.getMethod("setHibernateFlushMode", FlushMode.class);
-
-            getFlushMode.setAccessible(true);
-            setFlushMode.setAccessible(true);
-        }
-        catch (NoSuchMethodException ex) {
-            try {
-                // Hibernate 5.0/5.1 getFlushMode() with FlushMode return type
-                getFlushMode = Session.class.getMethod("getFlushMode");
-                setFlushMode = Session.class.getMethod("setFlushMode", FlushMode.class);
-                getFlushMode.setAccessible(true);
-                setFlushMode.setAccessible(true);
-            }
-            catch (NoSuchMethodException ex2) {
-                throw new IllegalStateException("No compatible Hibernate getFlushMode signature found", ex2);
-            }
-        }
-
-        try {
-            // Hibernate 5.2+ createQuery
-            ClassLoader classLoader = HibernateVersionSupport.class.getClassLoader();
-            Class queryProducerClass = org.springframework.util.ClassUtils.forName("org.hibernate.query.QueryProducer", classLoader);
-            createQuery = queryProducerClass.getMethod("createQuery", String.class);
-            createQuery.setAccessible(true);
-        } catch (Throwable e) {
-            try {
-                // Hibernate 5.1+ createQuery
-                createQuery = SharedSessionContract.class.getMethod("createQuery", String.class);
-                createQuery.setAccessible(true);
-            } catch (Throwable e1) {
-                throw new IllegalStateException("Incompatible version of Hibernate on classpath", e1);
-            }
-        }
-        // Check that it is the Hibernate FlushMode type, not JPA's...
-        Assert.state(FlushMode.class == getFlushMode.getReturnType(), "Incompatible version of Hibernate on classpath");
-    }
 
     /**
      * Get the native Hibernate FlushMode, adapting between Hibernate 5.0/5.1 and 5.2+.
      * @param session the Hibernate Session to get the flush mode from
      * @return the FlushMode (never {@code null})
      * @since 4.3
+     * @deprecated Previously used for Hibernate backwards, will be removed in a future release.
      */
+    @Deprecated
     public static FlushMode getFlushMode(Session session) {
-        if(session != null) {
-            return (FlushMode) ReflectionUtils.invokeMethod(getFlushMode, session);
-        }
-        return FlushMode.MANUAL;
+        return session.getHibernateFlushMode();
     }
 
     /**
@@ -99,9 +53,11 @@ public class HibernateVersionSupport {
      * @param session the Hibernate Session to get the flush mode from
      * @return the FlushMode (never {@code null})
      * @since 4.3
+     * @deprecated Previously used for Hibernate backwards, will be removed in a future release.
      */
+    @Deprecated
     public static void setFlushMode(Session session, FlushMode flushMode) {
-        ReflectionUtils.invokeMethod(setFlushMode, session, flushMode);
+        session.setHibernateFlushMode(flushMode);
     }
 
     /**
@@ -124,8 +80,10 @@ public class HibernateVersionSupport {
      * @param session The session
      * @param query The query
      * @return The created query
+     * @deprecated Previously used for Hibernate backwards, will be removed in a future release.
      */
+    @Deprecated
     public static Query createQuery(Session session, String query) {
-        return (Query) ReflectionUtils.invokeMethod(createQuery, session, query);
+        return session.createQuery(query);
     }
 }
