@@ -12,8 +12,5 @@ include ("grails-datastore-core",
 
 
         // RX projects
-        'grails-datastore-gorm-rx',
-
-        // GORM Implementations
-        'grails-datastore-gorm-hibernate-core'
+        'grails-datastore-gorm-rx'
 )
