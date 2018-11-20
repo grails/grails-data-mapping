@@ -313,6 +313,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
             template.applySettings(q)
 
             params.eachWithIndex { val, int i ->
+                i++
                 if (val instanceof CharSequence) {
                     q.setParameter i, val.toString()
                 }
@@ -355,6 +356,7 @@ abstract class AbstractHibernateGormStaticApi<D> extends GormStaticApi<D> {
             template.applySettings(q)
 
             params.eachWithIndex { val, int i ->
+                i++
                 if (val instanceof CharSequence) {
                     q.setParameter i, val.toString()
                 }
