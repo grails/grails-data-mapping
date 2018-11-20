@@ -7,10 +7,8 @@ include ("grails-datastore-core",
         'grails-datastore-gorm-async',
         'grails-datastore-gorm-validation',
         'grails-datastore-gorm-support',
-        'grails-datastore-gorm-grails2-support',
         'grails-datastore-gorm-tck',
         'grails-datastore-gorm-test',
-        'grails-datastore-gorm-grails2-test',
         'grails-datastore-gorm-plugin-support',
 
 
