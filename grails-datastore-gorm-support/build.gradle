@@ -55,10 +55,6 @@ dependencies {
     }
 
 
-    compileOnly "org.grails:grails-validation:$grailsVersion", {
-        transitive = false
-    }
-
     compileOnly("org.hibernate:hibernate-core:${hibernateVersion}.Final") {
         exclude group:'commons-logging', module:'commons-logging'
         exclude group:'commons-collections', module:'commons-collections'

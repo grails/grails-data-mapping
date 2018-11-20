@@ -24,7 +24,6 @@ dependencies {
 
     compile "org.grails:grails-test:$grailsVersion",excludes
     compile "org.grails:grails-core:$grailsVersion",excludes
-    compile "org.grails:grails-validation:$grailsVersion",excludes
     compile("org.grails:grails-bootstrap:$grailsVersion",excludes)
 
     testCompile project(":grails-datastore-gorm-rx")
