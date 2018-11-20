@@ -20,7 +20,6 @@ project.ext {
     caffeineVersion= "2.5.2"
     grailsVersion = "3.3.8"
     grailsAsyncVersion = "3.3.2"
-    grails2Version = '2.5.6'
     slf4jVersion = "1.7.22"
     junitVersion = "4.12"
     javassistVersion = "3.21.0-GA"
@@ -117,7 +116,7 @@ subprojects {
    version = "${projectVersion}.${releaseType}"
    group = "org.grails"
 
-    if(project.name.contains('grails-plugins') || project.name.contains('grails2-plugins')) {
+    if(project.name.contains('grails-plugins')) {
         project.tasks.all { Task t ->
             t.onlyIf {
                 !Boolean.getBoolean('skipPlugins')
@@ -133,7 +132,6 @@ subprojects {
     }
 
     if(project.name.endsWith("spring-boot")) return
-    if(project.name.contains("grails2-plugins")) return
 
    afterEvaluate { project ->
         if (isGroovyProject(project)) {
