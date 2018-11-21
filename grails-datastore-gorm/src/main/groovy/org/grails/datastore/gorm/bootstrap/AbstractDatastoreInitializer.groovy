@@ -244,37 +244,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
 
     @CompileDynamic
     Closure getCommonConfiguration(BeanDefinitionRegistry registry, String type) {
-        return {
-            if(!isGrailsPresent() || GrailsVersion.isAtLeastMajorMinor(3,3)) {
-                return
-            }
-
-            if(!registry.containsBeanDefinition("grailsApplication") && registerApplicationIfNotPresent) {
-                grailsApplication(getGrailsApplicationClass(), persistentClasses as Class[], Thread.currentThread().contextClassLoader) { bean ->
-                    bean.initMethod = 'initialise'
-                }
-            }
-
-            Collection<Class> classes = collectMappedClasses(type)
-            for(cls in classes) {
-                "${cls.name}"(cls) { bean ->
-                    bean.singleton = false
-                    bean.autowire = "byName"
-                }
-                "${cls.name}DomainClass"(MethodInvokingFactoryBean) { bean ->
-                    targetObject = ref("grailsApplication")
-                    targetMethod = "getArtefact"
-                    bean.lazyInit = true
-                    arguments = [AstUtils.DOMAIN_TYPE, cls.name]
-                }
-                "${cls.name}Validator"(getGrailsValidatorClass()) {
-                    grailsApplication = ref("grailsApplication")
-                    datastoreName = "${type}Datastore"
-                    messageSource = ref("messageSource")
-                    domainClass = ref("${cls.name}DomainClass")
-                }
-            }
-        }
+        return {}
     }
 
 
@@ -345,19 +315,13 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
         if(ClassUtils.isPresent("grails.core.DefaultGrailsApplication", cl)) {
             return ClassUtils.forName("grails.core.DefaultGrailsApplication", cl)
         }
-        if(ClassUtils.isPresent("org.codehaus.groovy.grails.commons.DefaultGrailsApplication", cl)) {
-            return ClassUtils.forName("org.codehaus.groovy.grails.commons.DefaultGrailsApplication", cl)
-        }
         throw new IllegalStateException("No version of Grails found on classpath")
 
     }
 
     protected boolean isGrailsPresent() {
         ClassLoader cl = getClass().getClassLoader()
-        if(ClassUtils.isPresent("grails.core.DefaultGrailsApplication", cl) && ClassUtils.isPresent("grails.validation.CascadingValidator", cl)) {
-            return true
-        }
-        else if(ClassUtils.isPresent("org.codehaus.groovy.grails.commons.DefaultGrailsApplication", cl) && ClassUtils.isPresent("org.codehaus.groovy.grails.validation.CascadingValidator", cl)) {
+        if(ClassUtils.isPresent("grails.core.DefaultGrailsApplication", cl)) {
             return true
         }
         return false
@@ -365,11 +329,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
 
     @CompileStatic
     protected Class getGrailsValidatorClass() {
-        ClassLoader cl = getClass().getClassLoader()
-        if(ClassUtils.isPresent("org.grails.datastore.gorm.validation.DefaultDomainClassValidator", cl)) {
-            return ClassUtils.forName("org.grails.datastore.gorm.validation.DefaultDomainClassValidator", cl)
-        }
-        throw new IllegalStateException("No version of Grails found on classpath")
+        throw new UnsupportedOperationException("Method getGrailsValidatorClass no longer supported")
     }
 
     @CompileDynamic
