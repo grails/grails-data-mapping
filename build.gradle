@@ -362,11 +362,9 @@ subprojects {
                 maven(MavenPublication) {
                     from components.java
 
-                    artifact sourcesJar {
-                        classifier "sources"
-                    }
-                    artifact javadocJar {
-                        classifier "javadoc"
+                    afterEvaluate {
+                        artifact source: sourcesJar, classifier: "sources"
+                        artifact source: javadocJar, classifier: "javadoc"
                     }
 
                     pom.withXml {
