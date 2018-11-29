@@ -394,32 +394,33 @@ dependencies {
 task install(dependsOn: subprojects*.tasks*.withType(PublishToMavenLocal))
 
 
-task test(dependsOn: getTasksByName("test", true)) << {
-    def reportsDir = "${buildDir}/reports"
+task test(dependsOn: getTasksByName("test", true)) {
+     doLast {
+         def reportsDir = "${buildDir}/reports"
 
-    // Aggregate the test results
-    ant.taskdef(
-        name: 'junitreport2',
-        classname: "org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator",
-        classpath: configurations.build.asPath
-    )
+         // Aggregate the test results
+         ant.taskdef(
+             name: 'junitreport2',
+             classname: "org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator",
+             classpath: configurations.build.asPath
+         )
 
-    def testReportsDir = new File("${reportsDir}/tests")
-    if (testReportsDir.exists()) {
-        testReportsDir.deleteDir()
-    }
-    testReportsDir.mkdirs()
+         def testReportsDir = new File("${reportsDir}/tests")
+         if (testReportsDir.exists()) {
+             testReportsDir.deleteDir()
+         }
+         testReportsDir.mkdirs()
 
-    ant.junitreport2(todir: testReportsDir) {
-        subprojects.each {
-            def testResultsDir = "${it.buildDir}/test-results"
-            if (new File(testResultsDir).exists()) {
-                fileset(dir: testResultsDir) {
-                    include(name: "TEST-*.xml")
-                }
-            }
-        }
-        report(todir: testReportsDir)
-    }
-
+         ant.junitreport2(todir: testReportsDir) {
+             subprojects.each {
+                 def testResultsDir = "${it.buildDir}/test-results"
+                 if (new File(testResultsDir).exists()) {
+                     fileset(dir: testResultsDir) {
+                         include(name: "TEST-*.xml")
+                     }
+                 }
+             }
+             report(todir: testReportsDir)
+         }
+     }
 }
