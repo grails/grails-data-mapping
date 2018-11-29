@@ -208,6 +208,8 @@ subprojects {
 
 
     dependencies {
+        compile 'javax.annotation:javax.annotation-api:1.3.2'
+
         if (isStandardGroovyMavenProject) {
             documentation "org.fusesource.jansi:jansi:1.11"
             documentation "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
