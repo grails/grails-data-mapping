@@ -289,11 +289,11 @@ subprojects {
             }
         }
         test.doFirst {
-            def tckClassesDir = project(":grails-datastore-gorm-tck").sourceSets.main.output.classesDirs
+            File tckClassesDir = project(":grails-datastore-gorm-tck").sourceSets.main.output.classesDirs.files.first()
             def thisProjectsTests = // surely there is a less hardcoded way to do this
             copy {
                 from tckClassesDir
-                into sourceSets.test.output.classesDirs
+                into sourceSets.test.output.classesDirs.files.first()
                 include "**/*.class"
                 exclude { details ->
                     // Do not copy across any TCK class (or nested classes of that class)
