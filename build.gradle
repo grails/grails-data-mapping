@@ -213,6 +213,7 @@ subprojects {
         if (isStandardGroovyMavenProject) {
             documentation "org.fusesource.jansi:jansi:1.11"
             documentation "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
+            documentation 'info.picocli:picocli:3.8.0'
             compile group: 'org.codehaus.groovy', name: 'groovy', version: groovyVersion
 
             testCompile group: 'org.codehaus.groovy', name: 'groovy-test', version: groovyVersion
