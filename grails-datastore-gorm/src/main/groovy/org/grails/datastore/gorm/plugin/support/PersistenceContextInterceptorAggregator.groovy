@@ -42,7 +42,7 @@ import java.util.regex.Pattern
 class PersistenceContextInterceptorAggregator implements BeanDefinitionRegistryPostProcessor, Ordered {
     Pattern persistenceInterceptorBeanNamePattern = ~/^.*[pP]ersistenceInterceptor$/
     String aggregatorBeanName = 'persistenceInterceptor'
-    Class aggregatorBeanClass = ClassUtils.forName("org.grails.datastore.gorm.plugin.support.AggregatePersistenceContextInterceptor", Thread.currentThread().contextClassLoader)
+    Class aggregatorBeanClass = ClassUtils.forName("org.grails.datastore.gorm.support.AggregatePersistenceContextInterceptor", Thread.currentThread().contextClassLoader)
     int order = 500
 
     void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
