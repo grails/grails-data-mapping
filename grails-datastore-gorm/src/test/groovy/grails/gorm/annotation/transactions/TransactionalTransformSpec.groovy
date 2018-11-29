@@ -1,17 +1,14 @@
 package grails.gorm.annotation.transactions
 
-
 import grails.core.DefaultGrailsApplication
 import grails.gorm.transactions.NotTransactional
 import grails.gorm.transactions.Transactional
 import grails.spring.BeanBuilder
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
-import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.connections.MultipleConnectionSourceCapableDatastore
 import org.grails.datastore.mapping.transactions.TransactionCapableDatastore
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 import org.springframework.context.annotation.CommonAnnotationBeanPostProcessor
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
@@ -28,8 +25,6 @@ import spock.lang.Specification
 
 import javax.annotation.PostConstruct
 import javax.sql.DataSource
-import java.lang.reflect.Field
-
 /**
  */
 class TransactionalTransformSpec extends Specification {
@@ -991,7 +986,7 @@ new BookService()
         gcl.parseClass('''
 package demo
 
-@grails.transaction.Transactional
+@grails.gorm.transactions.Transactional
 class SomeClass {
     @groovy.transform.CompileStatic
     def someMethod() {
