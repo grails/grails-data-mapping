@@ -256,7 +256,7 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>protected&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/HibernateMappingContext.html'>HibernateMappingContext</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>protected&nbsp;org.grails.orm.hibernate.cfg.HibernateMappingContext</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#hibernateMappingContext">hibernateMappingContext</a></code></td>
                             <td class="colLast"></code></td>
                         </tr>
@@ -268,7 +268,7 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>protected&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/PersistentEntityNamingStrategy.html'>PersistentEntityNamingStrategy</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>protected&nbsp;org.grails.orm.hibernate.cfg.PersistentEntityNamingStrategy</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#namingStrategy">namingStrategy</a></code></td>
                             <td class="colLast"></code></td>
                         </tr>
@@ -307,7 +307,7 @@ extends java.lang.Object
                         <tr class="altColor">
                             <td class="colFirst">
                                 <code><a href="#GrailsDomainBinder(java.lang.String, java.lang.String, org.grails.orm.hibernate.cfg.HibernateMappingContext)">GrailsDomainBinder</a></strong>
-                                (java.lang.String dataSourceName, java.lang.String sessionFactoryName, <a href='../../../../../org/grails/orm/hibernate/cfg/HibernateMappingContext.html'>HibernateMappingContext</a> hibernateMappingContext)</code><br></td>
+                                (java.lang.String dataSourceName, java.lang.String sessionFactoryName, org.grails.orm.hibernate.cfg.HibernateMappingContext hibernateMappingContext)</code><br></td>
                         </tr>
                         
                     </table>
@@ -332,7 +332,7 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#addMultiTenantFilterIfNecessary(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.PersistentClass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">addMultiTenantFilterIfNecessary</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> entity, org.hibernate.mapping.PersistentClass persistentClass, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br>Add a Hibernate filter for multitenancy if the persistent class is multitenant</td>
+                            <td class="colLast"><code><strong><a href="#addMultiTenantFilterIfNecessary(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.PersistentClass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">addMultiTenantFilterIfNecessary</a></strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity entity, org.hibernate.mapping.PersistentClass persistentClass, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br>Add a Hibernate filter for multitenancy if the persistent class is multitenant</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -358,7 +358,7 @@ extends java.lang.Object
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindCollectionForPropertyConfig(org.hibernate.mapping.Collection, org.grails.orm.hibernate.cfg.PropertyConfig)">bindCollectionForPropertyConfig</a></strong>(org.hibernate.mapping.Collection collection, <a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> config)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#bindCollectionForPropertyConfig(org.hibernate.mapping.Collection, org.grails.orm.hibernate.cfg.PropertyConfig)">bindCollectionForPropertyConfig</a></strong>(org.hibernate.mapping.Collection collection, org.grails.orm.hibernate.cfg.PropertyConfig config)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -368,22 +368,22 @@ extends java.lang.Object
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindCollectionTable(org.grails.datastore.mapping.model.types.ToMany, org.hibernate.boot.spi.InFlightMetadataCollector, org.hibernate.mapping.Collection, org.grails.orm.hibernate.cfg.Table, java.lang.String)">bindCollectionTable</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/types/ToMany.html'>ToMany</a> property, org.hibernate.boot.spi.InFlightMetadataCollector mappings, org.hibernate.mapping.Collection collection, <a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> ownerTable, java.lang.String sessionFactoryBeanName)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#bindCollectionTable(org.grails.datastore.mapping.model.types.ToMany, org.hibernate.boot.spi.InFlightMetadataCollector, org.hibernate.mapping.Collection, org.grails.orm.hibernate.cfg.Table, java.lang.String)">bindCollectionTable</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/types/ToMany.html'>ToMany</a> property, org.hibernate.boot.spi.InFlightMetadataCollector mappings, org.hibernate.mapping.Collection collection, org.grails.orm.hibernate.cfg.Table ownerTable, java.lang.String sessionFactoryBeanName)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindCollectionWithJoinTable(org.grails.datastore.mapping.model.types.ToMany, org.hibernate.boot.spi.InFlightMetadataCollector, org.hibernate.mapping.Collection, org.grails.orm.hibernate.cfg.PropertyConfig, java.lang.String)">bindCollectionWithJoinTable</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/types/ToMany.html'>ToMany</a> property, org.hibernate.boot.spi.InFlightMetadataCollector mappings, org.hibernate.mapping.Collection collection, <a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> config, java.lang.String sessionFactoryBeanName)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#bindCollectionWithJoinTable(org.grails.datastore.mapping.model.types.ToMany, org.hibernate.boot.spi.InFlightMetadataCollector, org.hibernate.mapping.Collection, org.grails.orm.hibernate.cfg.PropertyConfig, java.lang.String)">bindCollectionWithJoinTable</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/types/ToMany.html'>ToMany</a> property, org.hibernate.boot.spi.InFlightMetadataCollector mappings, org.hibernate.mapping.Collection collection, org.grails.orm.hibernate.cfg.PropertyConfig config, java.lang.String sessionFactoryBeanName)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindColumn(org.grails.datastore.mapping.model.PersistentProperty, org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.Column, org.grails.orm.hibernate.cfg.ColumnConfig, java.lang.String, org.grails.orm.hibernate.cfg.Table, java.lang.String)">bindColumn</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> parentProperty, org.hibernate.mapping.Column column, <a href='../../../../../org/grails/orm/hibernate/cfg/ColumnConfig.html'>ColumnConfig</a> cc, java.lang.String path, <a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> table, java.lang.String sessionFactoryBeanName)</code><br>Binds a Column instance to the Hibernate meta model</td>
+                            <td class="colLast"><code><strong><a href="#bindColumn(org.grails.datastore.mapping.model.PersistentProperty, org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.Column, org.grails.orm.hibernate.cfg.ColumnConfig, java.lang.String, org.grails.orm.hibernate.cfg.Table, java.lang.String)">bindColumn</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> parentProperty, org.hibernate.mapping.Column column, org.grails.orm.hibernate.cfg.ColumnConfig cc, java.lang.String path, org.grails.orm.hibernate.cfg.Table table, java.lang.String sessionFactoryBeanName)</code><br>Binds a Column instance to the Hibernate meta model</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindColumnConfigToColumn(org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.Column, org.grails.orm.hibernate.cfg.ColumnConfig)">bindColumnConfigToColumn</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, org.hibernate.mapping.Column column, <a href='../../../../../org/grails/orm/hibernate/cfg/ColumnConfig.html'>ColumnConfig</a> columnConfig)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#bindColumnConfigToColumn(org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.Column, org.grails.orm.hibernate.cfg.ColumnConfig)">bindColumnConfigToColumn</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, org.hibernate.mapping.Column column, org.grails.orm.hibernate.cfg.ColumnConfig columnConfig)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -393,17 +393,17 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindComponentProperty(org.hibernate.mapping.Component, org.grails.datastore.mapping.model.PersistentProperty, org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.PersistentClass, java.lang.String, org.grails.orm.hibernate.cfg.Table, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">bindComponentProperty</a></strong>(org.hibernate.mapping.Component component, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> componentProperty, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> currentGrailsProp, org.hibernate.mapping.PersistentClass persistentClass, java.lang.String path, <a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> table, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#bindComponentProperty(org.hibernate.mapping.Component, org.grails.datastore.mapping.model.PersistentProperty, org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.PersistentClass, java.lang.String, org.grails.orm.hibernate.cfg.Table, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">bindComponentProperty</a></strong>(org.hibernate.mapping.Component component, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> componentProperty, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> currentGrailsProp, org.hibernate.mapping.PersistentClass persistentClass, java.lang.String path, org.grails.orm.hibernate.cfg.Table table, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindCompositeId(org.grails.datastore.mapping.model.PersistentEntity, org.hibernate.mapping.RootClass, org.grails.orm.hibernate.cfg.CompositeIdentity, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">bindCompositeId</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass, org.hibernate.mapping.RootClass root, <a href='../../../../../org/grails/orm/hibernate/cfg/CompositeIdentity.html'>CompositeIdentity</a> compositeIdentity, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#bindCompositeId(org.grails.datastore.mapping.model.PersistentEntity, org.hibernate.mapping.RootClass, org.grails.orm.hibernate.cfg.CompositeIdentity, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">bindCompositeId</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass, org.hibernate.mapping.RootClass root, org.grails.orm.hibernate.cfg.CompositeIdentity compositeIdentity, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindCompositeIdentifierToManyToOne(org.grails.datastore.mapping.model.types.Association, org.hibernate.mapping.SimpleValue, org.grails.orm.hibernate.cfg.CompositeIdentity, org.grails.datastore.mapping.model.PersistentEntity, java.lang.String, java.lang.String)">bindCompositeIdentifierToManyToOne</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> property, org.hibernate.mapping.SimpleValue value, <a href='../../../../../org/grails/orm/hibernate/cfg/CompositeIdentity.html'>CompositeIdentity</a> compositeId, <a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> refDomainClass, java.lang.String path, java.lang.String sessionFactoryBeanName)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#bindCompositeIdentifierToManyToOne(org.grails.datastore.mapping.model.types.Association, org.hibernate.mapping.SimpleValue, org.grails.orm.hibernate.cfg.CompositeIdentity, org.grails.datastore.mapping.model.PersistentEntity, java.lang.String, java.lang.String)">bindCompositeIdentifierToManyToOne</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> property, org.hibernate.mapping.SimpleValue value, org.grails.orm.hibernate.cfg.CompositeIdentity compositeId, <a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> refDomainClass, java.lang.String path, java.lang.String sessionFactoryBeanName)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -413,7 +413,7 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindDiscriminatorProperty(org.grails.orm.hibernate.cfg.Table, org.hibernate.mapping.RootClass, org.hibernate.boot.spi.InFlightMetadataCollector)">bindDiscriminatorProperty</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> table, org.hibernate.mapping.RootClass entity, org.hibernate.boot.spi.InFlightMetadataCollector mappings)</code><br>Creates and binds the discriminator property used in table-per-hierarchy inheritance to
+                            <td class="colLast"><code><strong><a href="#bindDiscriminatorProperty(org.grails.orm.hibernate.cfg.Table, org.hibernate.mapping.RootClass, org.hibernate.boot.spi.InFlightMetadataCollector)">bindDiscriminatorProperty</a></strong>(org.grails.orm.hibernate.cfg.Table table, org.hibernate.mapping.RootClass entity, org.hibernate.boot.spi.InFlightMetadataCollector mappings)</code><br>Creates and binds the discriminator property used in table-per-hierarchy inheritance to
  discriminate between sub class instances</td>
                         </tr>
                         
@@ -429,17 +429,17 @@ extends java.lang.Object
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindIdentity(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.RootClass, org.hibernate.boot.spi.InFlightMetadataCollector, org.grails.orm.hibernate.cfg.Mapping, java.lang.String)">bindIdentity</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> domainClass, org.hibernate.mapping.RootClass root, org.hibernate.boot.spi.InFlightMetadataCollector mappings, <a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> gormMapping, java.lang.String sessionFactoryBeanName)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#bindIdentity(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.RootClass, org.hibernate.boot.spi.InFlightMetadataCollector, org.grails.orm.hibernate.cfg.Mapping, java.lang.String)">bindIdentity</a></strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity domainClass, org.hibernate.mapping.RootClass root, org.hibernate.boot.spi.InFlightMetadataCollector mappings, org.grails.orm.hibernate.cfg.Mapping gormMapping, java.lang.String sessionFactoryBeanName)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindIndex(java.lang.String, org.hibernate.mapping.Column, org.grails.orm.hibernate.cfg.ColumnConfig, org.grails.orm.hibernate.cfg.Table)">bindIndex</a></strong>(java.lang.String columnName, org.hibernate.mapping.Column column, <a href='../../../../../org/grails/orm/hibernate/cfg/ColumnConfig.html'>ColumnConfig</a> cc, <a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> table)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#bindIndex(java.lang.String, org.hibernate.mapping.Column, org.grails.orm.hibernate.cfg.ColumnConfig, org.grails.orm.hibernate.cfg.Table)">bindIndex</a></strong>(java.lang.String columnName, org.hibernate.mapping.Column column, org.grails.orm.hibernate.cfg.ColumnConfig cc, org.grails.orm.hibernate.cfg.Table table)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindJoinedSubClass(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.JoinedSubclass, org.hibernate.boot.spi.InFlightMetadataCollector, org.grails.orm.hibernate.cfg.Mapping, java.lang.String)">bindJoinedSubClass</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> sub, org.hibernate.mapping.JoinedSubclass joinedSubclass, org.hibernate.boot.spi.InFlightMetadataCollector mappings, <a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> gormMapping, java.lang.String sessionFactoryBeanName)</code><br>Binds a joined sub-class mapping using table-per-subclass</td>
+                            <td class="colLast"><code><strong><a href="#bindJoinedSubClass(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.JoinedSubclass, org.hibernate.boot.spi.InFlightMetadataCollector, org.grails.orm.hibernate.cfg.Mapping, java.lang.String)">bindJoinedSubClass</a></strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity sub, org.hibernate.mapping.JoinedSubclass joinedSubclass, org.hibernate.boot.spi.InFlightMetadataCollector mappings, org.grails.orm.hibernate.cfg.Mapping gormMapping, java.lang.String sessionFactoryBeanName)</code><br>Binds a joined sub-class mapping using table-per-subclass</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -469,7 +469,7 @@ extends java.lang.Object
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindNaturalIdentifier(org.grails.orm.hibernate.cfg.Table, org.grails.orm.hibernate.cfg.Mapping, org.hibernate.mapping.PersistentClass)">bindNaturalIdentifier</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> table, <a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> mapping, org.hibernate.mapping.PersistentClass persistentClass)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#bindNaturalIdentifier(org.grails.orm.hibernate.cfg.Table, org.grails.orm.hibernate.cfg.Mapping, org.hibernate.mapping.PersistentClass)">bindNaturalIdentifier</a></strong>(org.grails.orm.hibernate.cfg.Table table, org.grails.orm.hibernate.cfg.Mapping mapping, org.hibernate.mapping.PersistentClass persistentClass)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -479,7 +479,7 @@ extends java.lang.Object
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindNumericColumnConstraints(org.hibernate.mapping.Column, org.grails.datastore.mapping.model.PersistentProperty, org.grails.orm.hibernate.cfg.ColumnConfig)">bindNumericColumnConstraints</a></strong>(org.hibernate.mapping.Column column, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, <a href='../../../../../org/grails/orm/hibernate/cfg/ColumnConfig.html'>ColumnConfig</a> cc)</code><br>Interrogates the specified constraints looking for any constraints that would limit the
+                            <td class="colLast"><code><strong><a href="#bindNumericColumnConstraints(org.hibernate.mapping.Column, org.grails.datastore.mapping.model.PersistentProperty, org.grails.orm.hibernate.cfg.ColumnConfig)">bindNumericColumnConstraints</a></strong>(org.hibernate.mapping.Column column, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, org.grails.orm.hibernate.cfg.ColumnConfig cc)</code><br>Interrogates the specified constraints looking for any constraints that would limit the
  precision and/or scale of the property's value.  </td>
                         </tr>
                         
@@ -505,18 +505,18 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindRoot(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">bindRoot</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> entity, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br>Binds a root class (one with no super classes) to the runtime meta model
+                            <td class="colLast"><code><strong><a href="#bindRoot(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">bindRoot</a></strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity entity, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br>Binds a root class (one with no super classes) to the runtime meta model
  based on the supplied Grails domain class</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindRootPersistentClassCommonValues(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.RootClass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">bindRootPersistentClassCommonValues</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> domainClass, org.hibernate.mapping.RootClass root, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#bindRootPersistentClassCommonValues(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.RootClass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">bindRootPersistentClassCommonValues</a></strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity domainClass, org.hibernate.mapping.RootClass root, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindSimpleId(org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.RootClass, org.hibernate.boot.spi.InFlightMetadataCollector, org.grails.orm.hibernate.cfg.Identity, java.lang.String)">bindSimpleId</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> identifier, org.hibernate.mapping.RootClass entity, org.hibernate.boot.spi.InFlightMetadataCollector mappings, <a href='../../../../../org/grails/orm/hibernate/cfg/Identity.html'>Identity</a> mappedId, java.lang.String sessionFactoryBeanName)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#bindSimpleId(org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.RootClass, org.hibernate.boot.spi.InFlightMetadataCollector, org.grails.datastore.mapping.model.types.Identity, java.lang.String)">bindSimpleId</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> identifier, org.hibernate.mapping.RootClass entity, org.hibernate.boot.spi.InFlightMetadataCollector mappings, <a href='../../../../../org/grails/datastore/mapping/model/types/Identity.html'>Identity</a> mappedId, java.lang.String sessionFactoryBeanName)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -526,12 +526,12 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindSimpleValue(org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.SimpleValue, java.lang.String, org.grails.orm.hibernate.cfg.PropertyConfig, java.lang.String)">bindSimpleValue</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> grailsProp, org.hibernate.mapping.SimpleValue simpleValue, java.lang.String path, <a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> propertyConfig, java.lang.String sessionFactoryBeanName)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#bindSimpleValue(org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.SimpleValue, java.lang.String, org.grails.orm.hibernate.cfg.PropertyConfig, java.lang.String)">bindSimpleValue</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> grailsProp, org.hibernate.mapping.SimpleValue simpleValue, java.lang.String path, org.grails.orm.hibernate.cfg.PropertyConfig propertyConfig, java.lang.String sessionFactoryBeanName)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindSimpleValue(org.grails.datastore.mapping.model.PersistentProperty, org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.SimpleValue, java.lang.String, org.grails.orm.hibernate.cfg.PropertyConfig, java.lang.String)">bindSimpleValue</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> grailsProp, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> parentProperty, org.hibernate.mapping.SimpleValue simpleValue, java.lang.String path, <a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> propertyConfig, java.lang.String sessionFactoryBeanName)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#bindSimpleValue(org.grails.datastore.mapping.model.PersistentProperty, org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.SimpleValue, java.lang.String, org.grails.orm.hibernate.cfg.PropertyConfig, java.lang.String)">bindSimpleValue</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> grailsProp, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> parentProperty, org.hibernate.mapping.SimpleValue simpleValue, java.lang.String path, org.grails.orm.hibernate.cfg.PropertyConfig propertyConfig, java.lang.String sessionFactoryBeanName)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -547,17 +547,17 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindSubClass(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.PersistentClass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">bindSubClass</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> sub, org.hibernate.mapping.PersistentClass parent, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br>Binds a sub class.</td>
+                            <td class="colLast"><code><strong><a href="#bindSubClass(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.PersistentClass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">bindSubClass</a></strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity sub, org.hibernate.mapping.PersistentClass parent, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br>Binds a sub class.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindSubClass(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.Subclass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">bindSubClass</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> sub, org.hibernate.mapping.Subclass subClass, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br>Binds a sub-class using table-per-hierarchy inheritance mapping</td>
+                            <td class="colLast"><code><strong><a href="#bindSubClass(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.Subclass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">bindSubClass</a></strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity sub, org.hibernate.mapping.Subclass subClass, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br>Binds a sub-class using table-per-hierarchy inheritance mapping</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindSubClasses(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.PersistentClass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">bindSubClasses</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> domainClass, org.hibernate.mapping.PersistentClass parent, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br>Binds the sub classes of a root class using table-per-heirarchy inheritance mapping</td>
+                            <td class="colLast"><code><strong><a href="#bindSubClasses(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.PersistentClass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">bindSubClasses</a></strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity domainClass, org.hibernate.mapping.PersistentClass parent, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br>Binds the sub classes of a root class using table-per-heirarchy inheritance mapping</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -572,7 +572,7 @@ extends java.lang.Object
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#bindUnionSubclass(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.UnionSubclass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">bindUnionSubclass</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> subClass, org.hibernate.mapping.UnionSubclass unionSubclass, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#bindUnionSubclass(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.UnionSubclass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">bindUnionSubclass</a></strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity subClass, org.hibernate.mapping.UnionSubclass unionSubclass, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -582,7 +582,7 @@ extends java.lang.Object
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;org.hibernate.mapping.Set&lt;java.lang.String&gt;</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#buildDiscriminatorSet(org.grails.orm.hibernate.cfg.HibernatePersistentEntity)">buildDiscriminatorSet</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> domainClass)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#buildDiscriminatorSet(org.grails.orm.hibernate.cfg.HibernatePersistentEntity)">buildDiscriminatorSet</a></strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity domainClass)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -612,7 +612,7 @@ extends java.lang.Object
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#configureDerivedProperties(org.grails.datastore.mapping.model.PersistentEntity, org.grails.orm.hibernate.cfg.Mapping)">configureDerivedProperties</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass, <a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> m)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#configureDerivedProperties(org.grails.datastore.mapping.model.PersistentEntity, org.grails.orm.hibernate.cfg.Mapping)">configureDerivedProperties</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass, org.grails.orm.hibernate.cfg.Mapping m)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -638,13 +638,13 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#createClassProperties(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.PersistentClass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">createClassProperties</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> domainClass, org.hibernate.mapping.PersistentClass persistentClass, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br>Creates and binds the properties for the specified Grails domain class and PersistentClass
+                            <td class="colLast"><code><strong><a href="#createClassProperties(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.PersistentClass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">createClassProperties</a></strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity domainClass, org.hibernate.mapping.PersistentClass persistentClass, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br>Creates and binds the properties for the specified Grails domain class and PersistentClass
  and binds them to the Hibernate runtime meta model</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#createKeyForProps(org.grails.datastore.mapping.model.PersistentProperty, java.lang.String, org.grails.orm.hibernate.cfg.Table, java.lang.String, List<?>, java.lang.String)">createKeyForProps</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> grailsProp, java.lang.String path, <a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> table, java.lang.String columnName, org.hibernate.mapping.List&lt;?&gt; propertyNames, java.lang.String sessionFactoryBeanName)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#createKeyForProps(org.grails.datastore.mapping.model.PersistentProperty, java.lang.String, org.grails.orm.hibernate.cfg.Table, java.lang.String, List<?>, java.lang.String)">createKeyForProps</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> grailsProp, java.lang.String path, org.grails.orm.hibernate.cfg.Table table, java.lang.String columnName, org.hibernate.mapping.List&lt;?&gt; propertyNames, java.lang.String sessionFactoryBeanName)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -659,21 +659,21 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#createUniqueKeyForColumns(org.grails.orm.hibernate.cfg.Table, java.lang.String, List<Column>)">createUniqueKeyForColumns</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> table, java.lang.String columnName, org.hibernate.mapping.List&lt;org.hibernate.mapping.Column&gt; columns)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#createUniqueKeyForColumns(org.grails.orm.hibernate.cfg.Table, java.lang.String, List<Column>)">createUniqueKeyForColumns</a></strong>(org.grails.orm.hibernate.cfg.Table table, java.lang.String columnName, org.hibernate.mapping.List&lt;org.hibernate.mapping.Column&gt; columns)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></strong></code></td>
+                            <td class="colFirst"><code>org.grails.orm.hibernate.cfg.Mapping</strong></code></td>
                             <td class="colLast"><code><strong><a href="#evaluateMapping(org.grails.datastore.mapping.model.PersistentEntity)">evaluateMapping</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass)</code><br>Evaluates a Mapping object from the domain class if it has a mapping closure</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></strong></code></td>
+                            <td class="colFirst"><code>org.grails.orm.hibernate.cfg.Mapping</strong></code></td>
                             <td class="colLast"><code><strong><a href="#evaluateMapping(org.grails.datastore.mapping.model.PersistentEntity, Closure<?>)">evaluateMapping</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass, groovy.lang.Closure&lt;?&gt; defaultMapping)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></strong></code></td>
+                            <td class="colFirst"><code>org.grails.orm.hibernate.cfg.Mapping</strong></code></td>
                             <td class="colLast"><code><strong><a href="#evaluateMapping(org.grails.datastore.mapping.model.PersistentEntity, Closure<?>, boolean)">evaluateMapping</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass, groovy.lang.Closure&lt;?&gt; defaultMapping, boolean cache)</code><br></td>
                         </tr>
                         
@@ -689,7 +689,7 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;java.lang.String</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#getColumnNameForPropertyAndPath(org.grails.datastore.mapping.model.PersistentProperty, java.lang.String, org.grails.orm.hibernate.cfg.ColumnConfig, java.lang.String)">getColumnNameForPropertyAndPath</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> grailsProp, java.lang.String path, <a href='../../../../../org/grails/orm/hibernate/cfg/ColumnConfig.html'>ColumnConfig</a> cc, java.lang.String sessionFactoryBeanName)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getColumnNameForPropertyAndPath(org.grails.datastore.mapping.model.PersistentProperty, java.lang.String, org.grails.orm.hibernate.cfg.ColumnConfig, java.lang.String)">getColumnNameForPropertyAndPath</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> grailsProp, java.lang.String path, org.grails.orm.hibernate.cfg.ColumnConfig cc, java.lang.String sessionFactoryBeanName)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -719,7 +719,7 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;java.lang.String</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#getJoinedSubClassTableName(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.PersistentClass, org.grails.orm.hibernate.cfg.Table, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">getJoinedSubClassTableName</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> sub, org.hibernate.mapping.PersistentClass model, <a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> denormalizedSuperTable, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getJoinedSubClassTableName(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.PersistentClass, org.grails.orm.hibernate.cfg.Table, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)">getJoinedSubClassTableName</a></strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity sub, org.hibernate.mapping.PersistentClass model, org.grails.orm.hibernate.cfg.Table denormalizedSuperTable, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -733,12 +733,12 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>static&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></strong></code></td>
+                            <td class="colFirst"><code>static&nbsp;org.grails.orm.hibernate.cfg.Mapping</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getMapping(Class<?>)">getMapping</a></strong>(java.lang.Class&lt;?&gt; theClass)</code><br>Obtains a mapping object for the given domain class nam</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>static&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></strong></code></td>
+                            <td class="colFirst"><code>static&nbsp;org.grails.orm.hibernate.cfg.Mapping</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getMapping(org.grails.datastore.mapping.model.PersistentEntity)">getMapping</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass)</code><br>Obtains a mapping object for the given domain class nam</td>
                         </tr>
                         
@@ -768,18 +768,18 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a></strong></code></td>
+                            <td class="colFirst"><code>org.grails.orm.hibernate.cfg.PropertyConfig</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getPropertyConfig(org.grails.datastore.mapping.model.PersistentProperty)">getPropertyConfig</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code>protected&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></strong></code></td>
+                            <td class="colFirst"><code>protected&nbsp;org.grails.orm.hibernate.cfg.Mapping</strong></code></td>
                             <td class="colLast"><code><strong><a href="#getRootMapping(org.grails.datastore.mapping.model.PersistentEntity)">getRootMapping</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> referenced)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code>protected&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/ColumnConfig.html'>ColumnConfig</a></strong></code></td>
-                            <td class="colLast"><code><strong><a href="#getSingleColumnConfig(org.grails.orm.hibernate.cfg.PropertyConfig)">getSingleColumnConfig</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> propertyConfig)</code><br></td>
+                            <td class="colFirst"><code>protected&nbsp;org.grails.orm.hibernate.cfg.ColumnConfig</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#getSingleColumnConfig(org.grails.orm.hibernate.cfg.PropertyConfig)">getSingleColumnConfig</a></strong>(org.grails.orm.hibernate.cfg.PropertyConfig propertyConfig)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -789,7 +789,7 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;java.lang.String</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#getTypeName(org.grails.datastore.mapping.model.PersistentProperty, org.grails.orm.hibernate.cfg.PropertyConfig, org.grails.orm.hibernate.cfg.Mapping)">getTypeName</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, <a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> config, <a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> mapping)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getTypeName(org.grails.datastore.mapping.model.PersistentProperty, org.grails.orm.hibernate.cfg.PropertyConfig, org.grails.orm.hibernate.cfg.Mapping)">getTypeName</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, org.grails.orm.hibernate.cfg.PropertyConfig config, org.grails.orm.hibernate.cfg.Mapping mapping)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -809,27 +809,27 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#handleUniqueConstraint(org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.Column, java.lang.String, org.grails.orm.hibernate.cfg.Table, java.lang.String, java.lang.String)">handleUniqueConstraint</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, org.hibernate.mapping.Column column, java.lang.String path, <a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> table, java.lang.String columnName, java.lang.String sessionFactoryBeanName)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#handleUniqueConstraint(org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.Column, java.lang.String, org.grails.orm.hibernate.cfg.Table, java.lang.String, java.lang.String)">handleUniqueConstraint</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, org.hibernate.mapping.Column column, java.lang.String path, org.grails.orm.hibernate.cfg.Table table, java.lang.String columnName, java.lang.String sessionFactoryBeanName)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;boolean</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#hasCompositeIdentifier(org.grails.orm.hibernate.cfg.Mapping)">hasCompositeIdentifier</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> mapping)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#hasCompositeIdentifier(org.grails.orm.hibernate.cfg.Mapping)">hasCompositeIdentifier</a></strong>(org.grails.orm.hibernate.cfg.Mapping mapping)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;boolean</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#hasJoinColumnMapping(org.grails.orm.hibernate.cfg.PropertyConfig)">hasJoinColumnMapping</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> config)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#hasJoinColumnMapping(org.grails.orm.hibernate.cfg.PropertyConfig)">hasJoinColumnMapping</a></strong>(org.grails.orm.hibernate.cfg.PropertyConfig config)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;boolean</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#hasJoinKeyMapping(org.grails.orm.hibernate.cfg.PropertyConfig)">hasJoinKeyMapping</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> c)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#hasJoinKeyMapping(org.grails.orm.hibernate.cfg.PropertyConfig)">hasJoinKeyMapping</a></strong>(org.grails.orm.hibernate.cfg.PropertyConfig c)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;boolean</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#hasJoinTableColumnNameMapping(org.grails.orm.hibernate.cfg.PropertyConfig)">hasJoinTableColumnNameMapping</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> pc)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#hasJoinTableColumnNameMapping(org.grails.orm.hibernate.cfg.PropertyConfig)">hasJoinTableColumnNameMapping</a></strong>(org.grails.orm.hibernate.cfg.PropertyConfig pc)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -859,12 +859,12 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;boolean</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#isCompositeIdProperty(org.grails.orm.hibernate.cfg.Mapping, org.grails.datastore.mapping.model.PersistentProperty)">isCompositeIdProperty</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> gormMapping, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> currentGrailsProp)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#isCompositeIdProperty(org.grails.orm.hibernate.cfg.Mapping, org.grails.datastore.mapping.model.PersistentProperty)">isCompositeIdProperty</a></strong>(org.grails.orm.hibernate.cfg.Mapping gormMapping, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> currentGrailsProp)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>protected&nbsp;boolean</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#isIdentityProperty(org.grails.orm.hibernate.cfg.Mapping, org.grails.datastore.mapping.model.PersistentProperty)">isIdentityProperty</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> gormMapping, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> currentGrailsProp)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#isIdentityProperty(org.grails.orm.hibernate.cfg.Mapping, org.grails.datastore.mapping.model.PersistentProperty)">isIdentityProperty</a></strong>(org.grails.orm.hibernate.cfg.Mapping gormMapping, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> currentGrailsProp)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -934,12 +934,12 @@ extends java.lang.Object
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#setNamingStrategy(org.grails.orm.hibernate.cfg.PersistentEntityNamingStrategy)">setNamingStrategy</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/PersistentEntityNamingStrategy.html'>PersistentEntityNamingStrategy</a> namingStrategy)</code><br>@param namingStrategy Custom naming strategy to plugin into table naming</td>
+                            <td class="colLast"><code><strong><a href="#setNamingStrategy(org.grails.orm.hibernate.cfg.PersistentEntityNamingStrategy)">setNamingStrategy</a></strong>(org.grails.orm.hibernate.cfg.PersistentEntityNamingStrategy namingStrategy)</code><br>@param namingStrategy Custom naming strategy to plugin into table naming</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#setTypeForPropertyConfig(org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.SimpleValue, org.grails.orm.hibernate.cfg.PropertyConfig)">setTypeForPropertyConfig</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> grailsProp, org.hibernate.mapping.SimpleValue simpleValue, <a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> config)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#setTypeForPropertyConfig(org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.SimpleValue, org.grails.orm.hibernate.cfg.PropertyConfig)">setTypeForPropertyConfig</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> grailsProp, org.hibernate.mapping.SimpleValue simpleValue, org.grails.orm.hibernate.cfg.PropertyConfig config)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -959,7 +959,7 @@ extends java.lang.Object
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>protected&nbsp;void</strong></code></td>
-                            <td class="colLast"><code><strong><a href="#trackCustomCascadingSaves(org.grails.orm.hibernate.cfg.Mapping, Iterable<PersistentProperty>)">trackCustomCascadingSaves</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> mapping, java.lang.Iterable&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html' title='PersistentProperty'>PersistentProperty</a>&gt; persistentProperties)</code><br>Checks for any custom cascading saves set up via the mapping DSL and records them within the persistent property.</td>
+                            <td class="colLast"><code><strong><a href="#trackCustomCascadingSaves(org.grails.orm.hibernate.cfg.Mapping, Iterable<PersistentProperty>)">trackCustomCascadingSaves</a></strong>(org.grails.orm.hibernate.cfg.Mapping mapping, java.lang.Iterable&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html' title='PersistentProperty'>PersistentProperty</a>&gt; persistentProperties)</code><br>Checks for any custom cascading saves set up via the mapping DSL and records them within the persistent property.</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -1170,7 +1170,7 @@ extends java.lang.Object
                         <a name="hibernateMappingContext"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;final&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/HibernateMappingContext.html'>HibernateMappingContext</a> <strong>hibernateMappingContext</strong></h4>
+                                <h4>protected&nbsp;final&nbsp;org.grails.orm.hibernate.cfg.HibernateMappingContext <strong>hibernateMappingContext</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1186,7 +1186,7 @@ extends java.lang.Object
                         <a name="namingStrategy"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/PersistentEntityNamingStrategy.html'>PersistentEntityNamingStrategy</a> <strong>namingStrategy</strong></h4>
+                                <h4>protected&nbsp;org.grails.orm.hibernate.cfg.PersistentEntityNamingStrategy <strong>namingStrategy</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1218,7 +1218,7 @@ extends java.lang.Object
                         <a name="GrailsDomainBinder(java.lang.String, java.lang.String, org.grails.orm.hibernate.cfg.HibernateMappingContext)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<strong>GrailsDomainBinder</strong>(java.lang.String dataSourceName, java.lang.String sessionFactoryName, <a href='../../../../../org/grails/orm/hibernate/cfg/HibernateMappingContext.html'>HibernateMappingContext</a> hibernateMappingContext)</h4>
+                                <h4>public&nbsp;<strong>GrailsDomainBinder</strong>(java.lang.String dataSourceName, java.lang.String sessionFactoryName, org.grails.orm.hibernate.cfg.HibernateMappingContext hibernateMappingContext)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1239,7 +1239,7 @@ extends java.lang.Object
                         <a name="addMultiTenantFilterIfNecessary(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.PersistentClass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>addMultiTenantFilterIfNecessary</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> entity, org.hibernate.mapping.PersistentClass persistentClass, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>protected&nbsp;void <strong>addMultiTenantFilterIfNecessary</strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity entity, org.hibernate.mapping.PersistentClass persistentClass, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
                                 <p> Add a Hibernate filter for multitenancy if the persistent class is multitenant
      <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  target persistent entity for get tenant information</DD><DD><code>persistentClass</code> -  persistent class for add the filter and get tenant property info</DD><DD><code>mappings</code> -  mappings to add the filter</DD><DD><code>sessionFactoryBeanName</code> -  the session factory bean name</DD></DL></p>
                             </li>
@@ -1284,7 +1284,7 @@ extends java.lang.Object
                         <a name="bindCollectionForPropertyConfig(org.hibernate.mapping.Collection, org.grails.orm.hibernate.cfg.PropertyConfig)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>bindCollectionForPropertyConfig</strong>(org.hibernate.mapping.Collection collection, <a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> config)</h4>
+                                <h4>protected&nbsp;void <strong>bindCollectionForPropertyConfig</strong>(org.hibernate.mapping.Collection collection, org.grails.orm.hibernate.cfg.PropertyConfig config)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1300,7 +1300,7 @@ extends java.lang.Object
                         <a name="bindCollectionTable(org.grails.datastore.mapping.model.types.ToMany, org.hibernate.boot.spi.InFlightMetadataCollector, org.hibernate.mapping.Collection, org.grails.orm.hibernate.cfg.Table, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>bindCollectionTable</strong>(<a href='../../../../../org/grails/datastore/mapping/model/types/ToMany.html'>ToMany</a> property, org.hibernate.boot.spi.InFlightMetadataCollector mappings, org.hibernate.mapping.Collection collection, <a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> ownerTable, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>protected&nbsp;void <strong>bindCollectionTable</strong>(<a href='../../../../../org/grails/datastore/mapping/model/types/ToMany.html'>ToMany</a> property, org.hibernate.boot.spi.InFlightMetadataCollector mappings, org.hibernate.mapping.Collection collection, org.grails.orm.hibernate.cfg.Table ownerTable, java.lang.String sessionFactoryBeanName)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1308,7 +1308,7 @@ extends java.lang.Object
                         <a name="bindCollectionWithJoinTable(org.grails.datastore.mapping.model.types.ToMany, org.hibernate.boot.spi.InFlightMetadataCollector, org.hibernate.mapping.Collection, org.grails.orm.hibernate.cfg.PropertyConfig, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>bindCollectionWithJoinTable</strong>(<a href='../../../../../org/grails/datastore/mapping/model/types/ToMany.html'>ToMany</a> property, org.hibernate.boot.spi.InFlightMetadataCollector mappings, org.hibernate.mapping.Collection collection, <a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> config, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>protected&nbsp;void <strong>bindCollectionWithJoinTable</strong>(<a href='../../../../../org/grails/datastore/mapping/model/types/ToMany.html'>ToMany</a> property, org.hibernate.boot.spi.InFlightMetadataCollector mappings, org.hibernate.mapping.Collection collection, org.grails.orm.hibernate.cfg.PropertyConfig config, java.lang.String sessionFactoryBeanName)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1316,7 +1316,7 @@ extends java.lang.Object
                         <a name="bindColumn(org.grails.datastore.mapping.model.PersistentProperty, org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.Column, org.grails.orm.hibernate.cfg.ColumnConfig, java.lang.String, org.grails.orm.hibernate.cfg.Table, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>bindColumn</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> parentProperty, org.hibernate.mapping.Column column, <a href='../../../../../org/grails/orm/hibernate/cfg/ColumnConfig.html'>ColumnConfig</a> cc, java.lang.String path, <a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> table, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>protected&nbsp;void <strong>bindColumn</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> parentProperty, org.hibernate.mapping.Column column, org.grails.orm.hibernate.cfg.ColumnConfig cc, java.lang.String path, org.grails.orm.hibernate.cfg.Table table, java.lang.String sessionFactoryBeanName)</h4>
                                 <p> Binds a Column instance to the Hibernate meta model
      <DL><DT><B>Parameters:</B></DT><DD><code>property</code> -  The Grails domain class property</DD><DD>parentProperty</DD><DD><code>column</code> -      The column to bind</DD><DD>path</DD><DD><code>table</code> -       The table name</DD><DD><code>sessionFactoryBeanName</code> -   the session factory bean name</DD></DL></p>
                             </li>
@@ -1325,7 +1325,7 @@ extends java.lang.Object
                         <a name="bindColumnConfigToColumn(org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.Column, org.grails.orm.hibernate.cfg.ColumnConfig)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>bindColumnConfigToColumn</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, org.hibernate.mapping.Column column, <a href='../../../../../org/grails/orm/hibernate/cfg/ColumnConfig.html'>ColumnConfig</a> columnConfig)</h4>
+                                <h4>protected&nbsp;void <strong>bindColumnConfigToColumn</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, org.hibernate.mapping.Column column, org.grails.orm.hibernate.cfg.ColumnConfig columnConfig)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1342,7 +1342,7 @@ extends java.lang.Object
                         <a name="bindComponentProperty(org.hibernate.mapping.Component, org.grails.datastore.mapping.model.PersistentProperty, org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.PersistentClass, java.lang.String, org.grails.orm.hibernate.cfg.Table, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>bindComponentProperty</strong>(org.hibernate.mapping.Component component, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> componentProperty, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> currentGrailsProp, org.hibernate.mapping.PersistentClass persistentClass, java.lang.String path, <a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> table, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>protected&nbsp;void <strong>bindComponentProperty</strong>(org.hibernate.mapping.Component component, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> componentProperty, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> currentGrailsProp, org.hibernate.mapping.PersistentClass persistentClass, java.lang.String path, org.grails.orm.hibernate.cfg.Table table, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1350,7 +1350,7 @@ extends java.lang.Object
                         <a name="bindCompositeId(org.grails.datastore.mapping.model.PersistentEntity, org.hibernate.mapping.RootClass, org.grails.orm.hibernate.cfg.CompositeIdentity, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>bindCompositeId</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass, org.hibernate.mapping.RootClass root, <a href='../../../../../org/grails/orm/hibernate/cfg/CompositeIdentity.html'>CompositeIdentity</a> compositeIdentity, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>protected&nbsp;void <strong>bindCompositeId</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass, org.hibernate.mapping.RootClass root, org.grails.orm.hibernate.cfg.CompositeIdentity compositeIdentity, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1358,7 +1358,7 @@ extends java.lang.Object
                         <a name="bindCompositeIdentifierToManyToOne(org.grails.datastore.mapping.model.types.Association, org.hibernate.mapping.SimpleValue, org.grails.orm.hibernate.cfg.CompositeIdentity, org.grails.datastore.mapping.model.PersistentEntity, java.lang.String, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>bindCompositeIdentifierToManyToOne</strong>(<a href='../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> property, org.hibernate.mapping.SimpleValue value, <a href='../../../../../org/grails/orm/hibernate/cfg/CompositeIdentity.html'>CompositeIdentity</a> compositeId, <a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> refDomainClass, java.lang.String path, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>protected&nbsp;void <strong>bindCompositeIdentifierToManyToOne</strong>(<a href='../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> property, org.hibernate.mapping.SimpleValue value, org.grails.orm.hibernate.cfg.CompositeIdentity compositeId, <a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> refDomainClass, java.lang.String path, java.lang.String sessionFactoryBeanName)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1375,7 +1375,7 @@ extends java.lang.Object
                         <a name="bindDiscriminatorProperty(org.grails.orm.hibernate.cfg.Table, org.hibernate.mapping.RootClass, org.hibernate.boot.spi.InFlightMetadataCollector)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>bindDiscriminatorProperty</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> table, org.hibernate.mapping.RootClass entity, org.hibernate.boot.spi.InFlightMetadataCollector mappings)</h4>
+                                <h4>protected&nbsp;void <strong>bindDiscriminatorProperty</strong>(org.grails.orm.hibernate.cfg.Table table, org.hibernate.mapping.RootClass entity, org.hibernate.boot.spi.InFlightMetadataCollector mappings)</h4>
                                 <p> Creates and binds the discriminator property used in table-per-hierarchy inheritance to
  discriminate between sub class instances
      <DL><DT><B>Parameters:</B></DT><DD><code>table</code> -     The table to bind onto</DD><DD><code>entity</code> -    The root class entity</DD><DD><code>mappings</code> -  The mappings instance</DD></DL></p>
@@ -1401,7 +1401,7 @@ extends java.lang.Object
                         <a name="bindIdentity(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.RootClass, org.hibernate.boot.spi.InFlightMetadataCollector, org.grails.orm.hibernate.cfg.Mapping, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>bindIdentity</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> domainClass, org.hibernate.mapping.RootClass root, org.hibernate.boot.spi.InFlightMetadataCollector mappings, <a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> gormMapping, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>protected&nbsp;void <strong>bindIdentity</strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity domainClass, org.hibernate.mapping.RootClass root, org.hibernate.boot.spi.InFlightMetadataCollector mappings, org.grails.orm.hibernate.cfg.Mapping gormMapping, java.lang.String sessionFactoryBeanName)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1409,7 +1409,7 @@ extends java.lang.Object
                         <a name="bindIndex(java.lang.String, org.hibernate.mapping.Column, org.grails.orm.hibernate.cfg.ColumnConfig, org.grails.orm.hibernate.cfg.Table)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>bindIndex</strong>(java.lang.String columnName, org.hibernate.mapping.Column column, <a href='../../../../../org/grails/orm/hibernate/cfg/ColumnConfig.html'>ColumnConfig</a> cc, <a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> table)</h4>
+                                <h4>protected&nbsp;void <strong>bindIndex</strong>(java.lang.String columnName, org.hibernate.mapping.Column column, org.grails.orm.hibernate.cfg.ColumnConfig cc, org.grails.orm.hibernate.cfg.Table table)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1417,7 +1417,7 @@ extends java.lang.Object
                         <a name="bindJoinedSubClass(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.JoinedSubclass, org.hibernate.boot.spi.InFlightMetadataCollector, org.grails.orm.hibernate.cfg.Mapping, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>bindJoinedSubClass</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> sub, org.hibernate.mapping.JoinedSubclass joinedSubclass, org.hibernate.boot.spi.InFlightMetadataCollector mappings, <a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> gormMapping, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>protected&nbsp;void <strong>bindJoinedSubClass</strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity sub, org.hibernate.mapping.JoinedSubclass joinedSubclass, org.hibernate.boot.spi.InFlightMetadataCollector mappings, org.grails.orm.hibernate.cfg.Mapping gormMapping, java.lang.String sessionFactoryBeanName)</h4>
                                 <p> Binds a joined sub-class mapping using table-per-subclass
      <DL><DT><B>Parameters:</B></DT><DD><code>sub</code> -             The Grails sub class</DD><DD><code>joinedSubclass</code> -  The Hibernate Subclass object</DD><DD><code>mappings</code> -        The mappings Object</DD><DD><code>gormMapping</code> -     The GORM mapping object</DD><DD><code>sessionFactoryBeanName</code> -   the session factory bean name</DD></DL></p>
                             </li>
@@ -1475,7 +1475,7 @@ protected&nbsp;void <strong>bindManyToOne</strong>(<a href='../../../../../org/g
                         <a name="bindNaturalIdentifier(org.grails.orm.hibernate.cfg.Table, org.grails.orm.hibernate.cfg.Mapping, org.hibernate.mapping.PersistentClass)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>bindNaturalIdentifier</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> table, <a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> mapping, org.hibernate.mapping.PersistentClass persistentClass)</h4>
+                                <h4>protected&nbsp;void <strong>bindNaturalIdentifier</strong>(org.grails.orm.hibernate.cfg.Table table, org.grails.orm.hibernate.cfg.Mapping mapping, org.hibernate.mapping.PersistentClass persistentClass)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1491,7 +1491,7 @@ protected&nbsp;void <strong>bindManyToOne</strong>(<a href='../../../../../org/g
                         <a name="bindNumericColumnConstraints(org.hibernate.mapping.Column, org.grails.datastore.mapping.model.PersistentProperty, org.grails.orm.hibernate.cfg.ColumnConfig)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>bindNumericColumnConstraints</strong>(org.hibernate.mapping.Column column, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, <a href='../../../../../org/grails/orm/hibernate/cfg/ColumnConfig.html'>ColumnConfig</a> cc)</h4>
+                                <h4>protected&nbsp;void <strong>bindNumericColumnConstraints</strong>(org.hibernate.mapping.Column column, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, org.grails.orm.hibernate.cfg.ColumnConfig cc)</h4>
                                 <p> Interrogates the specified constraints looking for any constraints that would limit the
  precision and/or scale of the property's value.  If such constraints exist, this method adjusts
  the precision and/or scale of the column accordingly.
@@ -1535,7 +1535,7 @@ protected&nbsp;void <strong>bindManyToOne</strong>(<a href='../../../../../org/g
                         <a name="bindRoot(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>bindRoot</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> entity, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>public&nbsp;void <strong>bindRoot</strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity entity, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
                                 <p> Binds a root class (one with no super classes) to the runtime meta model
  based on the supplied Grails domain class
      <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The Grails domain class</DD><DD><code>mappings</code> -     The Hibernate Mappings object</DD><DD><code>sessionFactoryBeanName</code> -   the session factory bean name</DD></DL></p>
@@ -1545,16 +1545,16 @@ protected&nbsp;void <strong>bindManyToOne</strong>(<a href='../../../../../org/g
                         <a name="bindRootPersistentClassCommonValues(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.RootClass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>bindRootPersistentClassCommonValues</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> domainClass, org.hibernate.mapping.RootClass root, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>protected&nbsp;void <strong>bindRootPersistentClassCommonValues</strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity domainClass, org.hibernate.mapping.RootClass root, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="bindSimpleId(org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.RootClass, org.hibernate.boot.spi.InFlightMetadataCollector, org.grails.orm.hibernate.cfg.Identity, java.lang.String)"><!-- --></a>
+                        <a name="bindSimpleId(org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.RootClass, org.hibernate.boot.spi.InFlightMetadataCollector, org.grails.datastore.mapping.model.types.Identity, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.SuppressWarnings("unchecked")
-protected&nbsp;void <strong>bindSimpleId</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> identifier, org.hibernate.mapping.RootClass entity, org.hibernate.boot.spi.InFlightMetadataCollector mappings, <a href='../../../../../org/grails/orm/hibernate/cfg/Identity.html'>Identity</a> mappedId, java.lang.String sessionFactoryBeanName)</h4>
+protected&nbsp;void <strong>bindSimpleId</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> identifier, org.hibernate.mapping.RootClass entity, org.hibernate.boot.spi.InFlightMetadataCollector mappings, <a href='../../../../../org/grails/datastore/mapping/model/types/Identity.html'>Identity</a> mappedId, java.lang.String sessionFactoryBeanName)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1572,7 +1572,7 @@ protected&nbsp;void <strong>bindSimpleId</strong>(<a href='../../../../../org/gr
                         <a name="bindSimpleValue(org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.SimpleValue, java.lang.String, org.grails.orm.hibernate.cfg.PropertyConfig, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>bindSimpleValue</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> grailsProp, org.hibernate.mapping.SimpleValue simpleValue, java.lang.String path, <a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> propertyConfig, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>protected&nbsp;void <strong>bindSimpleValue</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> grailsProp, org.hibernate.mapping.SimpleValue simpleValue, java.lang.String path, org.grails.orm.hibernate.cfg.PropertyConfig propertyConfig, java.lang.String sessionFactoryBeanName)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1580,7 +1580,7 @@ protected&nbsp;void <strong>bindSimpleId</strong>(<a href='../../../../../org/gr
                         <a name="bindSimpleValue(org.grails.datastore.mapping.model.PersistentProperty, org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.SimpleValue, java.lang.String, org.grails.orm.hibernate.cfg.PropertyConfig, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>bindSimpleValue</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> grailsProp, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> parentProperty, org.hibernate.mapping.SimpleValue simpleValue, java.lang.String path, <a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> propertyConfig, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>protected&nbsp;void <strong>bindSimpleValue</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> grailsProp, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> parentProperty, org.hibernate.mapping.SimpleValue simpleValue, java.lang.String path, org.grails.orm.hibernate.cfg.PropertyConfig propertyConfig, java.lang.String sessionFactoryBeanName)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1608,7 +1608,7 @@ protected&nbsp;void <strong>bindSimpleId</strong>(<a href='../../../../../org/gr
                         <a name="bindSubClass(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.PersistentClass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>bindSubClass</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> sub, org.hibernate.mapping.PersistentClass parent, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>protected&nbsp;void <strong>bindSubClass</strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity sub, org.hibernate.mapping.PersistentClass parent, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
                                 <p> Binds a sub class.
      <DL><DT><B>Parameters:</B></DT><DD><code>sub</code> -       The sub domain class instance</DD><DD><code>parent</code> -    The parent persistent class instance</DD><DD><code>mappings</code> -  The mappings instance</DD><DD><code>sessionFactoryBeanName</code> -   the session factory bean name</DD></DL></p>
                             </li>
@@ -1617,7 +1617,7 @@ protected&nbsp;void <strong>bindSimpleId</strong>(<a href='../../../../../org/gr
                         <a name="bindSubClass(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.Subclass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>bindSubClass</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> sub, org.hibernate.mapping.Subclass subClass, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>protected&nbsp;void <strong>bindSubClass</strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity sub, org.hibernate.mapping.Subclass subClass, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
                                 <p> Binds a sub-class using table-per-hierarchy inheritance mapping
      <DL><DT><B>Parameters:</B></DT><DD><code>sub</code> -       The Grails domain class instance representing the sub-class</DD><DD><code>subClass</code> -  The Hibernate SubClass instance</DD><DD><code>mappings</code> -  The mappings instance</DD></DL></p>
                             </li>
@@ -1626,7 +1626,7 @@ protected&nbsp;void <strong>bindSimpleId</strong>(<a href='../../../../../org/gr
                         <a name="bindSubClasses(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.PersistentClass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>bindSubClasses</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> domainClass, org.hibernate.mapping.PersistentClass parent, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>protected&nbsp;void <strong>bindSubClasses</strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity domainClass, org.hibernate.mapping.PersistentClass parent, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
                                 <p> Binds the sub classes of a root class using table-per-heirarchy inheritance mapping
      <DL><DT><B>Parameters:</B></DT><DD><code>domainClass</code> -  The root domain class to bind</DD><DD><code>parent</code> -       The parent class instance</DD><DD><code>mappings</code> -     The mappings instance</DD><DD><code>sessionFactoryBeanName</code> -   the session factory bean name</DD></DL></p>
                             </li>
@@ -1653,7 +1653,7 @@ protected&nbsp;void <strong>bindSimpleId</strong>(<a href='../../../../../org/gr
                         <a name="bindUnionSubclass(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.UnionSubclass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>bindUnionSubclass</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> subClass, org.hibernate.mapping.UnionSubclass unionSubclass, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>public&nbsp;void <strong>bindUnionSubclass</strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity subClass, org.hibernate.mapping.UnionSubclass unionSubclass, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1669,7 +1669,7 @@ protected&nbsp;void <strong>bindSimpleId</strong>(<a href='../../../../../org/gr
                         <a name="buildDiscriminatorSet(org.grails.orm.hibernate.cfg.HibernatePersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;org.hibernate.mapping.Set&lt;java.lang.String&gt; <strong>buildDiscriminatorSet</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> domainClass)</h4>
+                                <h4>protected&nbsp;org.hibernate.mapping.Set&lt;java.lang.String&gt; <strong>buildDiscriminatorSet</strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity domainClass)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1721,7 +1721,7 @@ protected&nbsp;java.lang.String <strong>buildOrderByClause</strong>(java.lang.St
                         <a name="configureDerivedProperties(org.grails.datastore.mapping.model.PersistentEntity, org.grails.orm.hibernate.cfg.Mapping)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>configureDerivedProperties</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass, <a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> m)</h4>
+                                <h4>protected&nbsp;void <strong>configureDerivedProperties</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass, org.grails.orm.hibernate.cfg.Mapping m)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1766,7 +1766,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="createClassProperties(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.PersistentClass, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>createClassProperties</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> domainClass, org.hibernate.mapping.PersistentClass persistentClass, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>protected&nbsp;void <strong>createClassProperties</strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity domainClass, org.hibernate.mapping.PersistentClass persistentClass, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
                                 <p> Creates and binds the properties for the specified Grails domain class and PersistentClass
  and binds them to the Hibernate runtime meta model
      <DL><DT><B>Parameters:</B></DT><DD><code>domainClass</code> -      The Grails domain class</DD><DD><code>persistentClass</code> -  The Hibernate PersistentClass instance</DD><DD><code>mappings</code> -         The Hibernate Mappings instance</DD><DD><code>sessionFactoryBeanName</code> -   the session factory bean name</DD></DL></p>
@@ -1776,7 +1776,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="createKeyForProps(org.grails.datastore.mapping.model.PersistentProperty, java.lang.String, org.grails.orm.hibernate.cfg.Table, java.lang.String, List<?>, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>createKeyForProps</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> grailsProp, java.lang.String path, <a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> table, java.lang.String columnName, org.hibernate.mapping.List&lt;?&gt; propertyNames, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>protected&nbsp;void <strong>createKeyForProps</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> grailsProp, java.lang.String path, org.grails.orm.hibernate.cfg.Table table, java.lang.String columnName, org.hibernate.mapping.List&lt;?&gt; propertyNames, java.lang.String sessionFactoryBeanName)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1801,7 +1801,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="createUniqueKeyForColumns(org.grails.orm.hibernate.cfg.Table, java.lang.String, List<Column>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>createUniqueKeyForColumns</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> table, java.lang.String columnName, org.hibernate.mapping.List&lt;org.hibernate.mapping.Column&gt; columns)</h4>
+                                <h4>protected&nbsp;void <strong>createUniqueKeyForColumns</strong>(org.grails.orm.hibernate.cfg.Table table, java.lang.String columnName, org.hibernate.mapping.List&lt;org.hibernate.mapping.Column&gt; columns)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1809,7 +1809,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="evaluateMapping(org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>evaluateMapping</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass)</h4>
+                                <h4>public&nbsp;org.grails.orm.hibernate.cfg.Mapping <strong>evaluateMapping</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass)</h4>
                                 <p> Evaluates a Mapping object from the domain class if it has a mapping closure
      <DL><DT><B>Returns:</B></DT><DD>the mapping</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>domainClass</code> -  The domain class</DD></DL></p>
                             </li>
@@ -1818,7 +1818,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="evaluateMapping(org.grails.datastore.mapping.model.PersistentEntity, Closure<?>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>evaluateMapping</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass, groovy.lang.Closure&lt;?&gt; defaultMapping)</h4>
+                                <h4>public&nbsp;org.grails.orm.hibernate.cfg.Mapping <strong>evaluateMapping</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass, groovy.lang.Closure&lt;?&gt; defaultMapping)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1826,7 +1826,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="evaluateMapping(org.grails.datastore.mapping.model.PersistentEntity, Closure<?>, boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>evaluateMapping</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass, groovy.lang.Closure&lt;?&gt; defaultMapping, boolean cache)</h4>
+                                <h4>public&nbsp;org.grails.orm.hibernate.cfg.Mapping <strong>evaluateMapping</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass, groovy.lang.Closure&lt;?&gt; defaultMapping, boolean cache)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1850,7 +1850,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="getColumnNameForPropertyAndPath(org.grails.datastore.mapping.model.PersistentProperty, java.lang.String, org.grails.orm.hibernate.cfg.ColumnConfig, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;java.lang.String <strong>getColumnNameForPropertyAndPath</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> grailsProp, java.lang.String path, <a href='../../../../../org/grails/orm/hibernate/cfg/ColumnConfig.html'>ColumnConfig</a> cc, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>protected&nbsp;java.lang.String <strong>getColumnNameForPropertyAndPath</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> grailsProp, java.lang.String path, org.grails.orm.hibernate.cfg.ColumnConfig cc, java.lang.String sessionFactoryBeanName)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1898,7 +1898,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="getJoinedSubClassTableName(org.grails.orm.hibernate.cfg.HibernatePersistentEntity, org.hibernate.mapping.PersistentClass, org.grails.orm.hibernate.cfg.Table, org.hibernate.boot.spi.InFlightMetadataCollector, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;java.lang.String <strong>getJoinedSubClassTableName</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/HibernatePersistentEntity.html'>HibernatePersistentEntity</a> sub, org.hibernate.mapping.PersistentClass model, <a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> denormalizedSuperTable, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>protected&nbsp;java.lang.String <strong>getJoinedSubClassTableName</strong>(org.grails.orm.hibernate.cfg.HibernatePersistentEntity sub, org.hibernate.mapping.PersistentClass model, org.grails.orm.hibernate.cfg.Table denormalizedSuperTable, org.hibernate.boot.spi.InFlightMetadataCollector mappings, java.lang.String sessionFactoryBeanName)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1922,7 +1922,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="getMapping(Class<?>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;static&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>getMapping</strong>(java.lang.Class&lt;?&gt; theClass)</h4>
+                                <h4>public&nbsp;static&nbsp;org.grails.orm.hibernate.cfg.Mapping <strong>getMapping</strong>(java.lang.Class&lt;?&gt; theClass)</h4>
                                 <p> Obtains a mapping object for the given domain class nam
      <DL><DT><B>Returns:</B></DT><DD>A Mapping object or null</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>theClass</code> -  The domain class in question</DD></DL></p>
                             </li>
@@ -1931,7 +1931,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="getMapping(org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;static&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>getMapping</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass)</h4>
+                                <h4>public&nbsp;static&nbsp;org.grails.orm.hibernate.cfg.Mapping <strong>getMapping</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> domainClass)</h4>
                                 <p> Obtains a mapping object for the given domain class nam
      <DL><DT><B>Returns:</B></DT><DD>A Mapping object or null</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>domainClass</code> -  The domain class in question</DD></DL></p>
                             </li>
@@ -1981,7 +1981,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="getPropertyConfig(org.grails.datastore.mapping.model.PersistentProperty)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> <strong>getPropertyConfig</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property)</h4>
+                                <h4>public&nbsp;org.grails.orm.hibernate.cfg.PropertyConfig <strong>getPropertyConfig</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1989,7 +1989,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="getRootMapping(org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>getRootMapping</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> referenced)</h4>
+                                <h4>protected&nbsp;org.grails.orm.hibernate.cfg.Mapping <strong>getRootMapping</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> referenced)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1997,7 +1997,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="getSingleColumnConfig(org.grails.orm.hibernate.cfg.PropertyConfig)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/ColumnConfig.html'>ColumnConfig</a> <strong>getSingleColumnConfig</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> propertyConfig)</h4>
+                                <h4>protected&nbsp;org.grails.orm.hibernate.cfg.ColumnConfig <strong>getSingleColumnConfig</strong>(org.grails.orm.hibernate.cfg.PropertyConfig propertyConfig)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -2014,7 +2014,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="getTypeName(org.grails.datastore.mapping.model.PersistentProperty, org.grails.orm.hibernate.cfg.PropertyConfig, org.grails.orm.hibernate.cfg.Mapping)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;java.lang.String <strong>getTypeName</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, <a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> config, <a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> mapping)</h4>
+                                <h4>protected&nbsp;java.lang.String <strong>getTypeName</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, org.grails.orm.hibernate.cfg.PropertyConfig config, org.grails.orm.hibernate.cfg.Mapping mapping)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -2046,7 +2046,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="handleUniqueConstraint(org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.Column, java.lang.String, org.grails.orm.hibernate.cfg.Table, java.lang.String, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>handleUniqueConstraint</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, org.hibernate.mapping.Column column, java.lang.String path, <a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> table, java.lang.String columnName, java.lang.String sessionFactoryBeanName)</h4>
+                                <h4>protected&nbsp;void <strong>handleUniqueConstraint</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, org.hibernate.mapping.Column column, java.lang.String path, org.grails.orm.hibernate.cfg.Table table, java.lang.String columnName, java.lang.String sessionFactoryBeanName)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -2054,7 +2054,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="hasCompositeIdentifier(org.grails.orm.hibernate.cfg.Mapping)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;boolean <strong>hasCompositeIdentifier</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> mapping)</h4>
+                                <h4>protected&nbsp;boolean <strong>hasCompositeIdentifier</strong>(org.grails.orm.hibernate.cfg.Mapping mapping)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -2062,7 +2062,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="hasJoinColumnMapping(org.grails.orm.hibernate.cfg.PropertyConfig)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;boolean <strong>hasJoinColumnMapping</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> config)</h4>
+                                <h4>protected&nbsp;boolean <strong>hasJoinColumnMapping</strong>(org.grails.orm.hibernate.cfg.PropertyConfig config)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -2070,7 +2070,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="hasJoinKeyMapping(org.grails.orm.hibernate.cfg.PropertyConfig)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;boolean <strong>hasJoinKeyMapping</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> c)</h4>
+                                <h4>protected&nbsp;boolean <strong>hasJoinKeyMapping</strong>(org.grails.orm.hibernate.cfg.PropertyConfig c)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -2078,7 +2078,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="hasJoinTableColumnNameMapping(org.grails.orm.hibernate.cfg.PropertyConfig)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;boolean <strong>hasJoinTableColumnNameMapping</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> pc)</h4>
+                                <h4>protected&nbsp;boolean <strong>hasJoinTableColumnNameMapping</strong>(org.grails.orm.hibernate.cfg.PropertyConfig pc)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -2126,7 +2126,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="isCompositeIdProperty(org.grails.orm.hibernate.cfg.Mapping, org.grails.datastore.mapping.model.PersistentProperty)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;boolean <strong>isCompositeIdProperty</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> gormMapping, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> currentGrailsProp)</h4>
+                                <h4>protected&nbsp;boolean <strong>isCompositeIdProperty</strong>(org.grails.orm.hibernate.cfg.Mapping gormMapping, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> currentGrailsProp)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -2134,7 +2134,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="isIdentityProperty(org.grails.orm.hibernate.cfg.Mapping, org.grails.datastore.mapping.model.PersistentProperty)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;boolean <strong>isIdentityProperty</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> gormMapping, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> currentGrailsProp)</h4>
+                                <h4>protected&nbsp;boolean <strong>isIdentityProperty</strong>(org.grails.orm.hibernate.cfg.Mapping gormMapping, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> currentGrailsProp)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -2251,7 +2251,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="setNamingStrategy(org.grails.orm.hibernate.cfg.PersistentEntityNamingStrategy)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>setNamingStrategy</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/PersistentEntityNamingStrategy.html'>PersistentEntityNamingStrategy</a> namingStrategy)</h4>
+                                <h4>public&nbsp;void <strong>setNamingStrategy</strong>(org.grails.orm.hibernate.cfg.PersistentEntityNamingStrategy namingStrategy)</h4>
                                 <p>
      <DL><DT><B>Parameters:</B></DT><DD><code>namingStrategy</code> -  Custom naming strategy to plugin into table naming</DD></DL></p>
                             </li>
@@ -2260,7 +2260,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="setTypeForPropertyConfig(org.grails.datastore.mapping.model.PersistentProperty, org.hibernate.mapping.SimpleValue, org.grails.orm.hibernate.cfg.PropertyConfig)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>setTypeForPropertyConfig</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> grailsProp, org.hibernate.mapping.SimpleValue simpleValue, <a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> config)</h4>
+                                <h4>protected&nbsp;void <strong>setTypeForPropertyConfig</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> grailsProp, org.hibernate.mapping.SimpleValue simpleValue, org.grails.orm.hibernate.cfg.PropertyConfig config)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -2292,7 +2292,7 @@ public&nbsp;void <strong>contribute</strong>(org.hibernate.boot.spi.InFlightMeta
                         <a name="trackCustomCascadingSaves(org.grails.orm.hibernate.cfg.Mapping, Iterable<PersistentProperty>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>trackCustomCascadingSaves</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> mapping, java.lang.Iterable&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html' title='PersistentProperty'>PersistentProperty</a>&gt; persistentProperties)</h4>
+                                <h4>protected&nbsp;void <strong>trackCustomCascadingSaves</strong>(org.grails.orm.hibernate.cfg.Mapping mapping, java.lang.Iterable&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html' title='PersistentProperty'>PersistentProperty</a>&gt; persistentProperties)</h4>
                                 <p> Checks for any custom cascading saves set up via the mapping DSL and records them within the persistent property.
      <DL><DT><B>Parameters:</B></DT><DD><code>mapping</code> -  The Mapping.</DD><DD><code>persistentProperties</code> -  The persistent properties of the domain class.</DD></DL></p>
                             </li>

@@ -222,6 +222,11 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <td class="colLast"><code><strong><a href="#withoutId(Closure<T>)">withoutId</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br>Execute the given closure without any tenant id. </td>
                         </tr>
                         
+                        <tr class="altColor">
+                            <td class="colFirst"><code>static&nbsp;T</strong></code></td>
+                            <td class="colLast"><code><strong><a href="#withoutId(org.grails.datastore.mapping.multitenancy.MultiTenantCapableDatastore, Closure<T>)">withoutId</a></strong>(<a href='../../../org/grails/datastore/mapping/multitenancy/MultiTenantCapableDatastore.html'>MultiTenantCapableDatastore</a> multiTenantCapableDatastore, groovy.lang.Closure&lt;T&gt; callable)</code><br>Execute the given closure without tenant id for the given datastore. </td>
+                        </tr>
+                        
                     </table>
                    </ul>
               </li>
@@ -377,6 +382,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <h4>static&nbsp;T <strong>withoutId</strong>(groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Execute the given closure without any tenant id. In Multi tenancy mode SINGLE this will execute against the default data source. If multi tenancy mode
  MULTI this will execute without including the "tenantId" on any query. Use with caution.
+     <DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="withoutId(org.grails.datastore.mapping.multitenancy.MultiTenantCapableDatastore, Closure<T>)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;T <strong>withoutId</strong>(<a href='../../../org/grails/datastore/mapping/multitenancy/MultiTenantCapableDatastore.html'>MultiTenantCapableDatastore</a> multiTenantCapableDatastore, groovy.lang.Closure&lt;T&gt; callable)</h4>
+                                <p> Execute the given closure without tenant id for the given datastore. This method will create a new datastore session for the scope of the call and hence is designed to be used to manage the connection life cycle
      <DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure</DD></DL></p>
                             </li>
                         </ul>

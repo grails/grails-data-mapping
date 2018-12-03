@@ -2,9 +2,6 @@ grails.gorm
 grails.gorm.annotation
 grails.gorm.api
 grails.gorm.dirty.checking
-grails.gorm.hibernate
-grails.gorm.hibernate.annotation
-grails.gorm.hibernate.mapping
 grails.gorm.multitenancy
 grails.gorm.services
 grails.gorm.transactions
@@ -100,14 +97,7 @@ org.grails.datastore.mapping.validation
 org.grails.orm.hibernate
 org.grails.orm.hibernate.access
 org.grails.orm.hibernate.cfg
-org.grails.orm.hibernate.compiler
 org.grails.orm.hibernate.connections
-org.grails.orm.hibernate.datasource
-org.grails.orm.hibernate.dirty
-org.grails.orm.hibernate.event.listener
-org.grails.orm.hibernate.exceptions
-org.grails.orm.hibernate.multitenancy
 org.grails.orm.hibernate.proxy
 org.grails.orm.hibernate.query
 org.grails.orm.hibernate.support
-org.grails.orm.hibernate.transaction
