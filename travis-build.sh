@@ -5,11 +5,6 @@ EXIT_STATUS=0
 
 if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
 
-    # Only JDK8 execution will publish the release
-    if [ "${TRAVIS_JDK_VERSION}" == "openjdk11" ] ; then
-        exit $EXIT_STATUS
-    fi
-
     echo "Tagged Release Skipping Tests for Publish"
     ./travis-publish.sh || EXIT_STATUS=$?
 else
