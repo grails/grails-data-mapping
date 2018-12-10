@@ -154,7 +154,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong><a href='../../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html'>MultiTenancySettings.MultiTenancyMode</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong><a href='../../../../../MultiTenancyMode.html'>MultiTenancyMode</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#mode">mode</a></code><br>The default multi tenancy mode</td>
                         </tr>
                         
@@ -164,6 +164,11 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong><a href='../../../../../org/grails/datastore/mapping/multitenancy/TenantResolver.html'>TenantResolver</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#tenantResolver">tenantResolver</a></code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>java.lang.Class&lt;? extends <a href='../../../../../org/grails/datastore/mapping/multitenancy/TenantResolver.html' title='TenantResolver'>TenantResolver</a>&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#tenantResolverClass">tenantResolverClass</a></code><br>The tenant resolver class</td>
                         </tr>
@@ -203,7 +208,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;java.lang.String</code></td>
-                            <td class="colLast"><code><strong><a href="#resolveConnectionForTenantId(org.grails.datastore.mapping.multitenancy.MultiTenancySettings.MultiTenancyMode, java.io.Serializable)">resolveConnectionForTenantId</a></strong>(<a href='../../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html'>MultiTenancySettings.MultiTenancyMode</a> mode, java.io.Serializable tenantId)</code><br>Resolves the connection to use for the given tenant id based on the current mode</td>
+                            <td class="colLast"><code><strong><a href="#resolveConnectionForTenantId(MultiTenancyMode, java.io.Serializable)">resolveConnectionForTenantId</a></strong>(<a href='../../../../../MultiTenancyMode.html'>MultiTenancyMode</a> mode, java.io.Serializable tenantId)</code><br>Resolves the connection to use for the given tenant id based on the current mode</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -258,9 +263,17 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="mode"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html'>MultiTenancySettings.MultiTenancyMode</a> <strong>mode</strong></h4>
+                                <h4><a href='../../../../../MultiTenancyMode.html'>MultiTenancyMode</a> <strong>mode</strong></h4>
                                 <p> The default multi tenancy mode
      </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="tenantResolver"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><a href='../../../../../org/grails/datastore/mapping/multitenancy/TenantResolver.html'>TenantResolver</a> <strong>tenantResolver</strong></h4>
+                                <p></p>
                             </li>
                         </ul>
                     
@@ -307,10 +320,10 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="resolveConnectionForTenantId(org.grails.datastore.mapping.multitenancy.MultiTenancySettings.MultiTenancyMode, java.io.Serializable)"><!-- --></a>
+                        <a name="resolveConnectionForTenantId(MultiTenancyMode, java.io.Serializable)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.lang.String <strong>resolveConnectionForTenantId</strong>(<a href='../../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html'>MultiTenancySettings.MultiTenancyMode</a> mode, java.io.Serializable tenantId)</h4>
+                                <h4>static&nbsp;java.lang.String <strong>resolveConnectionForTenantId</strong>(<a href='../../../../../MultiTenancyMode.html'>MultiTenancyMode</a> mode, java.io.Serializable tenantId)</h4>
                                 <p> Resolves the connection to use for the given tenant id based on the current mode <DL><DT><B>Parameters:</B></DT><DD><code>mode</code> -  The datastore</DD><DD><code>tenantId</code> -  The tenant id</DD></DL><DL><DT><B>Returns:</B></DT><DD></DD></DL></p>
                             </li>
                         </ul>
