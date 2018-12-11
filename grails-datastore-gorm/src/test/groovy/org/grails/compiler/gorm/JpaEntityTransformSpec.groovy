@@ -46,7 +46,6 @@ class Customer {
         customerClass.getDeclaredMethod("getId").returnType == Long
         customerClass.getDeclaredMethod("getId").getAnnotation(Transient)
         cpf.getPropertyDescriptor(GormProperties.IDENTITY)
-        cpf.getPropertyDescriptor(GormProperties.VERSION)
         customerClass.getDeclaredMethod('addToRelated', Object)
         customerClass.getDeclaredMethod('removeFromRelated', Object)
     }

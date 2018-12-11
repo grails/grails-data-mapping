@@ -1,11 +1,15 @@
-sudo: false
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-  - $HOME/.gradle
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
 language: groovy
 jdk:
-- oraclejdk7
-dist: precise
+- oraclejdk8
+- openjdk11
+dist: trusty
 env:
   global:
   - TERM=dumb
@@ -13,25 +17,23 @@ env:
   - GRADLE_OPTS="-Xmx768m -Xms256m -XX:MaxPermSize=256m -XX:+CMSClassUnloadingEnabled"
   - GIT_NAME="Graeme Rocher"
   - GIT_EMAIL="graeme.rocher@gmail.com"
-  - secure: J+KWbE5RaZvcEibGWp2X4yR7bDKyRR0Yi+fm7Fyzs8PDpI3qJj/OqYiffgjGWPMFvGsYcH7pyhaYeFz1Z/8qcNGU6pw3/QV412WqWLO1pbWQZdrGbEgES0kpZzy/rliLBYwtuIS5DyjY3L3t4D2S2vcwZpvTWU9eqVikCC+R2eg=
-  - secure: YM7rkQX1UzKuvMdjw8qCAQ0kWHJFpHZBvOoPaF3kuUUEbfFj/LgEh0xERnKyKz5QduRQipEFgpy492yJT1cb1wrH2YPt1cP+oDq9KOQr6vJB6Z/Xz0WsrgrU80rUBm4KrKXPRe/DMq/Lv3twnnB3Deub3nKSERidDW40JSnMLIE=
-  - secure: X1ffz/ywsPMxaN73nH86Pr4RD7q0p0IaKI7v+5yPvX2g59LY4aJFYEl9Jt65e8+c0mkESNXxocQ1dnL4lehXBFrC4rTWhJvly4URa81clbY8l5EOTZQha/tyGXUOYyaGK409LrEcmLOGSvBTV3YsV83xhMTLhrOZ1VwI5zL6MjE=
-  - secure: IuhdxpD1Q1of9F7zACAgzAukE3eqSZTVYr7WgH+YMKPwHBHQVpn9tBFdSGs2zYu2GSE5kVJI8uJdxe5nH6Qz+RR1xtGueqgxiXTtfz/bYT52YoFdzb4lmtrKDqFjJHiAkhCDRRCDne/4Jeijo0eXnZaHutJimNQhQMBkxyl00Qg=
-  - secure: UAhcoZ20NWTdGAUP830TD2jFVAsr3FAeuqEL7vwI43xbX0+KNG4RVn3oNEppl9LIdaKN8tjJ9753Falb7WeeTSWbHn4LLUbz0QkCABACiXIctJSg4IrnNixCH3rGHR01ds5qElOOLtqRMWFLO4cXaav9pgUtmsCBmVo+xXXw2No=
-  - secure: Q/1Dc356V+upCQZn5SZAdedEs7WdLeoCE/CKySIlicq1bC9AIGK1vwUXiwmcTJpIVvusEAdTMuZX4Zz7fVy3xzDq95D6j6HpfZach/O6XHoKQLon5+w7AHh0uv1CRSdYqKLXGW18YRDGQrK5fCovdNT0+ynGX5YAZBMnu9t2Qmk=
-  - secure: HvROZ9kWW9GvKw4MZKEhsgUHQh/xSVrbOr/enq9fFX4+Cf7MGXc1ySlNHhDTV1mGdP6QTIl7CI3Xz3u9yCgXy4m3eyTgVUzeQOUAv1roiR8ajv1PleVGUOqMreejUUsFDHR1gmNR9S17hJoNZPBanB43R9tJDQVvrEUnV38Wr48=
-  - secure: FYgiX7uSiQFql2bQsOfHsTypik4/hArAFMaMcm05MoXBHyb5tl3VXwo3jEBp0MYsH9iIIJ8crlLy4ylm+8XMKOq300zZk2feqQME4x2DXxlUgmfZkbnvY+iUpmLa7OoMAqUV8ardbBrXVn/gQjDH9jvVcX+Gv7KnKE2xyzI0lQY=
-  - secure: SbEE24W2zMdao0ArFBHTDP7ntDJn3wmaVl/T42ahkzQUSjQiND+TXwJLhaNADJDIyLg0zmFEIKUk7g7HUMOdw5a2foZbz7BESkz4Nnuhw5O7CgJdIYL6lfLNPkOA6pc7H7D0D5J39vLk4PDqpOJxUw+sgaH2gg2F13kWFk8YZVY=
-  - secure: D604qHBpW7UuFuxkhu/cqVzpEESkkipWTKyz3j75i2k+ocQXcYXSj3zDMk4Hmo/iTHszwCgXk1w/5aj+mxRVecewmXmpFk3Q63qPvJprAjcvatmxp82aBmmpPd9GHjKbyLmu6Gn3R8QtX6yAT75T9lf4Y1FMi9mVwFPOtLiSEs0=
-  - secure: TNZ8oWsN+E1gkvxhyTHjguyakIWm+T9KxoZVNq+OoHv2kuyWTIbTJUtP3JVyXX+P+B9F9o+8Kkxp5jomgW0cRdjWxQebceeGlrNAzTVvvOm7tVFFxLjzjRnUPsWKfGXkIzSagvFdSgHIpinDqrtERD10pbym2ZDwqRCejCMjz0U=
-  - secure: io7oNZbf/aYRn+a73x6B/8yjg27CYVVdwRobQ+vZBNwBzS31bBcC/8pMtIpsBFqSEtE8GrSM4dYtMSFSj5PasiMg6PgYG/frsbtgGmRqTBkmENfv2EIO+Ex0pgycL+hCUVtPqD9j3mwhfPWkim9vPdmpYe2BbQuTYs0spJuu6PQ=
-  - secure: QAOp5FWfiedjxQV2qGUlfZqvvsaBIAL9RyE1JnrcRsnNU6YIxeNCoJlafTYrn241IPU8q+E1M4yjIZOCDnl+CRTuukbo0sNIY+Sb92jA4nb+DRVnxphc0SOrFV1R90QekSnAX+C4+PAsgRasvjNJeNJVPV3P0HzJfzV3bLSPtb4=
-before_install:
-- ./openssl-setup.sh
+  - secure: RB91TbokXRArer1GQD3AGfEWK/asNS0L/+d5NtQImik5dxQyj6purtg69Gi5MXOMgVJDlrv8IgxAQQyGKI96hvDZ5UpYPPYrod4lKcStLSwjihSualK8dNZ/4PAbNoGrszvWFJs5gzRYfkctpZ275CD/60F+IBOdYf0rgMQdnU0=
+  - secure: T4Fs4Yp9r90nml1MAIncLtSDXwBng7V8XIhayDAiGrRAtP9bYsRUqb22V1vFvUQi9tPbpJy/d1LwDGqvEpfnWOOj6ScrtzhuhYbEbkK7kxZiYgRxkOtaI5gOhy88FvhSf7MPv/6ZLz3gnoNF8/y3JaZgSMdOOZZIh7rCuq0SCzE=
+  - secure: b3nwej9yLrLlXlnQ4hnnJNJ9cyBhx88EvcUGyTIzBGFYKG5NtOEDlknHVsiYqjNEBmjPSJyPxfZI897QuKm4T8lV0ZCrT3EG2TvIKZsn77ovdiIjwSWxxrJ6XrYCIKsf1Giezdxyb5wMAKoOZQ5kQzd0EnO0n0qG1gTF4wcx6Eg=
+  - secure: E/VSNK3SwUJUORlDi7akJo4FjBajaxgg4DhuXokaKaJD6jdqJ4S2CPKk0AY957oqbox1i9l8I7Wx+NUKjADmVIppwcbY/h90bhZJRgOPdmtLd+iab8SM8YRYNjTpFKMh3qKa8WG5yP5oKiqCoL4j8XPopsfnLRbpO6D5sT7PIa8=
+  - secure: Dz/hkrMTZF5qeyk03JrJqTvZKYcqrRL8B2WzMigTUWvKTJdIDHPWXzidimpUQIQ3AaLxUwktihfQQ3CrBMJg3DqLjnjMCCNBfTRj7pfxfL8UptHW+bjcKN5A5ZgaW/2CkNmiFWtMbpTCwz4oWhXblgV1Fjaq6vwPT7MBS0O32fw=
+  - secure: O+F/mFI/rgteiNyxvNYeg+0eJhjHt3WaWabFty60slElvbyjq48GGsAG+PsgQftHbQiaRJBlGeqQZciDjLcKl/BIdptonGg7PAyfy4EI7ugF37YTgvskricU6ob/41Lxf/2gfhFPEQaTdKNuoc1YgNSpfVZfzhxVW70rNgGxZTk=
+  - secure: R3YoirPJfFK/SfMx0/hOS4N2u57pfdcE0XTKqo/5LkCXuHHsJqQbHSsYlpRIlJqVOX6rCuX9XXsO3Yu0fX/KqsylnbSLNp5OS6jTedwmJ5rGzLhaPl4NZh5IB1EK0dBkarwihAGbHFGhYNy3SUSHc3/A553C7Hfnakj4hnYIB+I=
+  - secure: HtCFGVFnw9c9KOUkg0HVWco3pEANiYmy3UfaQQ0CJonT/VjNn0b32MLXk8dYYvhcmekmRUac2/rRNvHob5Fled4doME+DEAk1RL39Eqr6nxW8XfDwxGNlcaXwlAY1UHgDIe0z27KWtoynzw9zVhjUo0g+FM53kvb+Yuuz7sXZZ8=
+  - secure: QKyZ5iXhZkqoE+zqhiKKqnCVbmr2mBkaAPkHmfDsv9OY+s5fcKhEWr8Ytht8Gm7TGap3A1CAIYCn1tcKgzAgbxkgdG4mYWXks5Ivhp3fQBi3x7gKQAF80/9pe4Y7VFj+5KnY0V3RRC6J+LytjndC2yV/OTy/9PwzP5y3yrM8MZo=
+  - secure: WEi+MAUwjQkKch64EC/5AprneOxlcOzptX4muF3o3DQ/uQ9wY3gKaOlctdD1vXkzqqJC2FtgJUF2xj04bH+0geKMkvRsIW6OFyEE5JInT/ZsrD6B12ScnzHF8DTXZKSpFtLOW8yEOO09Raykt3g+RXYwkSdOnRcMTWEYJ/huCFM=
+  - secure: U5U+rh3TugxMuTkpetfBj28f6uACKjD88jsQR5cd0B7gV5j0RAkq3skFpHu1F43y/RmofRcAqeSsYVT8+qRCEBDZjYBwTnT5+N+ItBzGNpv486oEyIhMUCr9bpfibfHz+1uqlPBFF9E+5X2lT5hSIXyIiBa+l/LpwhHsb0wSzH0=
+  - secure: V7Dwj9pqJWmjeYJYWHdNGlujNhFwvEc5YbTv5AO9Xn+iUgaaQEmrv43a5I+4m+EGVraD3Pg6ENPBEc7e0/cD7GoocQ0uXwGkfe+dJISvp3s18lDMm7EtdxmTkiKVH5sgsHnGbbEHV4Ku1c9k1u4DKEjmPzfpoNr/vI2yKU9I5EM=
+  - secure: XXFQBgzpIYV8boZo/ZeEq300zDLrWzD09vSTh3A9BvPsTTJgGlPBF008zFP2WD2XacBHbCFMPd0hPrO25SSCwX4P8C/PhhRRkrhuYaM1OeYzi6Xxbtnc1gpdUdxm9Z/cZlvLTEKL3cq+9XqbKOkcumM9pxY1mWkoeLVuv/9dsXw=
 matrix:
   fast_finish: true
-script: ./travis-build.sh
 install: true
+script: ./travis-build.sh
 notifications:
   slack:
     secure: eSyvdf/vA0KGAyiITwe7ooD6BCX94PCy7o35HSkbfUbHB5XPJq/SkqRjjIeiwrgywVph+qGBPYmzIdep4BQwH+JFEfPu0gQoNWKeGAVmJ9LeFaP4vaXWvuRugunO9zUla4JT2cfmsxKVEoTfI1NIfT15hYBMHi+8CfgFlx2zOdk=

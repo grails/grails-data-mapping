@@ -1,5 +1,6 @@
 package org.grails.datastore.mapping.model
 
+import grails.gorm.annotation.Entity
 import org.junit.Test
 import org.grails.datastore.mapping.model.types.*
 
@@ -100,14 +101,14 @@ class GormMappingInheritanceTests {
     }
 }
 
-@grails.persistence.Entity
+@Entity
 class DerivedEntity extends SecondEntity {
     String baz
 
     static transients = ['baz']
 }
 
-@grails.persistence.Entity
+@Entity
 class SpecialUser extends User {
     Set specialFriends
 
@@ -117,7 +118,7 @@ class SpecialUser extends User {
     static mappedBy = [specialFriends: null]
 }
 
-@grails.persistence.Entity
+@Entity
 class Parent {
     Long id
     Set children
@@ -125,7 +126,7 @@ class Parent {
     static hasMany = [children: BaseChild]
 }
 
-@grails.persistence.Entity
+@Entity
 class BaseChild {
     Long id
 
@@ -134,12 +135,12 @@ class BaseChild {
     static belongsTo = [parent: Parent]
 }
 
-@grails.persistence.Entity
+@Entity
 class DerivedChild extends BaseChild {
     String prop
 }
 
-@grails.persistence.Entity
+@Entity
 class EmbeddedTest {
     Long id
 
@@ -148,13 +149,13 @@ class EmbeddedTest {
     static embedded = ['testEntity']
 }
 
-@grails.persistence.Entity
+@Entity
 class DerivedEmbeddedTest extends EmbeddedTest {
     TestEntity testEntity2
     static embedded = ['testEntity2']
 }
 
-@grails.persistence.Entity
+@Entity
 class MappingTest {
     Long id
 
@@ -165,7 +166,7 @@ class MappingTest {
     }
 }
 
-@grails.persistence.Entity
+@Entity
 class MappingTest2 extends MappingTest {
 
     String toIndex2
@@ -177,14 +178,14 @@ class MappingTest2 extends MappingTest {
     }
 }
 
-@grails.persistence.Entity
+@Entity
 class DerivedEntityChildA extends DerivedEntity {
 }
 
-@grails.persistence.Entity
+@Entity
 class DerivedEntityChildB extends DerivedEntity {
 }
 
-@grails.persistence.Entity
+@Entity
 class DerivedEntityChildC extends DerivedEntity {
 }

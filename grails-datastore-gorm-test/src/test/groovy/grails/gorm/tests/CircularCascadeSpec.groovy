@@ -15,80 +15,20 @@
  */
 package grails.gorm.tests
 
-import grails.core.DefaultGrailsApplication
-import grails.core.GrailsApplication
+
 import grails.gorm.annotation.Entity
-import grails.gorm.validation.CascadingValidator
 import grails.gorm.validation.PersistentEntityValidator
-import groovy.transform.NotYetImplemented
-import org.grails.core.DefaultGrailsDomainClass
-import org.grails.core.artefact.DomainClassArtefactHandler
 import org.grails.datastore.gorm.validation.constraints.eval.DefaultConstraintEvaluator
 import org.grails.datastore.gorm.validation.constraints.registry.DefaultConstraintRegistry
 import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.validation.GrailsDomainClassValidator
 import org.springframework.context.MessageSource
-import org.springframework.validation.Errors
 import spock.lang.Issue
-import spock.lang.Specification
 
 /**
  * @author Graeme Rocher
  * @since 1.0
  */
 class CircularCascadeSpec extends GormDatastoreSpec {
-
-    @Issue('https://github.com/grails/grails-data-mapping/issues/967')
-    @NotYetImplemented
-    void "test circular cascade does not stackoverflow"() {
-        given:
-        SchoolPerson splinter = new SchoolPerson(name: 'Master Splinter')
-        PersistentEntity entity = session.datastore.getMappingContext().getPersistentEntity(SchoolPerson.name)
-        def validator = new GrailsDomainClassValidator()
-        GrailsApplication grailsApplication = new DefaultGrailsApplication(SchoolPerson)
-        grailsApplication.initialise()
-        validator.setDomainClass(grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, SchoolPerson.name))
-        validator.setGrailsApplication(grailsApplication)
-        validator.setMessageSource(Mock(MessageSource))
-
-        session.datastore.mappingContext.addEntityValidator(
-                entity,
-                new CascadingValidator() {
-                    @Override
-                    void validate(Object obj, Errors errors, boolean cascade) {
-                        validator.validate(obj, errors, cascade)
-                    }
-
-                    @Override
-                    boolean supports(Class<?> clazz) {
-                        return validator.supports(clazz)
-                    }
-
-                    @Override
-                    void validate(Object target, Errors errors) {
-                        validator.validate(target, errors)
-                    }
-                }
-        )
-
-        SchoolPerson leo = new SchoolPerson(name: 'Leonardo')
-        SchoolPerson donnie = new SchoolPerson(name: 'Donatello')
-        SchoolPerson mikey = new SchoolPerson(name: 'Michelangelo')
-        SchoolPerson raph = new SchoolPerson(name: 'Raphael')
-
-        splinter.addToStudents(leo)
-        splinter.addToStudents(donnie)
-        splinter.addToStudents(mikey)
-        splinter.addToStudents(raph)
-
-        leo.peers = [donnie, mikey, raph]
-        donnie.peers = [leo, mikey, raph]
-        mikey.peers = [leo, donnie, raph]
-        raph.peers = [leo, donnie, mikey]
-
-        expect:
-        splinter.save(failOnError: true)
-    }
 
     @Issue('https://github.com/grails/grails-data-mapping/issues/967')
     void "test circular cascade does not stackoverflow with persistent entity validator"() {

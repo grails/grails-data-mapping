@@ -1,5 +1,7 @@
 dependencies {
-    compile "com.googlecode.concurrentlinkedhashmap:concurrentlinkedhashmap-lru:1.4.2"
+    compile 'javax.persistence:javax.persistence-api:2.2'
+    compile "com.github.ben-manes.caffeine:caffeine:$caffeineVersion"
+
     compile "org.springframework:spring-core:$springVersion" , {
         exclude group:'commons-logging',module:'commons-logging'
     }
@@ -22,19 +24,14 @@ dependencies {
         exclude group:'org.springframework', module:'spring-beans'
         exclude group:'org.springframework', module:'spring-asm'
     }
-    compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
     compile "org.javassist:javassist:$javassistVersion"
     compile 'javax.transaction:jta:1.1'
 
     compile "org.slf4j:slf4j-api:$slf4jVersion"
     compile "org.slf4j:jcl-over-slf4j:$slf4jVersion"
 
+    testCompile project(":grails-datastore-gorm")
     // we need the Grails @Entity annotation to test GORM syntax mapping
-    testCompile("commons-lang:commons-lang:2.4")
     testCompile("org.springframework:spring-context:$springVersion")
     testCompile("org.springframework:spring-web:$springVersion")
-    testCompile("org.grails:grails-bootstrap:$grailsVersion") {
-        exclude module:'gpars'
-    }
-    testCompile "org.grails:grails-core:$grailsVersion"
 }

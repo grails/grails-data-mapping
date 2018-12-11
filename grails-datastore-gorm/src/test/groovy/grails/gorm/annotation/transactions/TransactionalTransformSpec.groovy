@@ -1,21 +1,16 @@
 package grails.gorm.annotation.transactions
 
-
-import grails.core.DefaultGrailsApplication
+import grails.gorm.transactions.NotTransactional
 import grails.gorm.transactions.Transactional
-import grails.spring.BeanBuilder
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
-import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.connections.MultipleConnectionSourceCapableDatastore
 import org.grails.datastore.mapping.transactions.TransactionCapableDatastore
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.beans.factory.config.MethodInvokingFactoryBean
-import org.springframework.context.annotation.CommonAnnotationBeanPostProcessor
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.TransactionStatus
 import org.springframework.transaction.UnexpectedRollbackException
 import org.springframework.transaction.support.DefaultTransactionStatus
@@ -26,8 +21,6 @@ import spock.lang.Specification
 
 import javax.annotation.PostConstruct
 import javax.sql.DataSource
-import java.lang.reflect.Field
-
 /**
  */
 class TransactionalTransformSpec extends Specification {
@@ -800,35 +793,6 @@ new BookService()
         return new TestTransactionManager(dataSource) {}
     }
 
-    @Issue("GRAILS-10748")
-    void "transactional shouldn't be applied to bean initialization methods"() {
-        when:
-        def application = new DefaultGrailsApplication()
-        def bb = new BeanBuilder()
-        bb.beans {
-            commonAnnotationBeanPostProcessor(CommonAnnotationBeanPostProcessor)
-            testService(TransactionalTransformSpecService) { bean ->
-                bean.autowire = true
-                bean.lazyInit = false
-            }
-            transactionManager(MethodInvokingFactoryBean) {
-                targetObject = this
-                targetMethod = 'getPlatformTransactionManager'
-            }
-        }
-        def applicationContext = bb.createApplicationContext()
-        def bean = applicationContext.getBean('testService')
-        bean.name = 'Grails'
-
-        then:
-        applicationContext.transactionManager != null
-        bean.transactionManager != null
-        bean.process() != null
-        bean.isActualTransactionActive() == false
-        bean.name == 'Grails'
-        bean.isActive() == true
-    }
-
     @Issue(['GRAILS-11145', 'GRAILS-11134'])
     void "Test inheritRollbackOnly attribute"() {
         given:
@@ -927,6 +891,60 @@ new BookService()
         status.isRollbackOnly()
     }
 
+    void "Test that a @Transactional annotation on a method sets name of transaction"() {
+        given:"A new instance of a class with a @Transactional method is created"
+        def bookService = new GroovyShell().evaluate('''
+package foo
+import grails.gorm.transactions.*
+class BookService {
+    @Transactional
+    void updateBook() {
+    }
+}
+new BookService()
+''')
+
+        when:"A transactionManager is set"
+        final transactionManager = getPlatformTransactionManager()
+        bookService.transactionManager = transactionManager
+
+        then:"It is not null"
+        bookService.transactionManager != null
+
+        when:"When a transactional method is called"
+        bookService.updateBook()
+
+        then:"transaction name is foo.BookService.updateBook"
+        transactionManager.definition.name == 'foo.BookService.updateBook'
+    }
+
+    void "Test that a @Transactional annotation on a class sets name of transaction"() {
+        given:"A new instance of a class with a @Transactional method is created"
+        def bookService = new GroovyShell().evaluate('''
+package foo
+import grails.gorm.transactions.*
+@Transactional
+class BookService {
+    void updateBook() {
+    }
+}
+new BookService()
+''')
+
+        when:"A transactionManager is set"
+        final transactionManager = getPlatformTransactionManager()
+        bookService.transactionManager = transactionManager
+
+        then:"It is not null"
+        bookService.transactionManager != null
+
+        when:"When a method on a transactional class is called"
+        bookService.updateBook()
+
+        then:"transaction name is foo.BookService.updateBook"
+        transactionManager.definition.name == 'foo.BookService.updateBook'
+    }
+
     void 'test CompileStatic on a method in a class marked with Transactional'() {
         given:
         def gcl = new GroovyClassLoader()
@@ -935,7 +953,7 @@ new BookService()
         gcl.parseClass('''
 package demo
 
-@grails.transaction.Transactional
+@grails.gorm.transactions.Transactional
 class SomeClass {
     @groovy.transform.CompileStatic
     def someMethod() {
@@ -1003,7 +1021,6 @@ class SomeClass {
     }
 
 }
-
 new SomeClass()
 ''')
 
@@ -1025,7 +1042,7 @@ class TransactionalTransformSpecService implements InitializingBean {
         return transactionStatus
     }
 
-    @grails.gorm.transactions.NotTransactional
+    @NotTransactional
     public boolean isActualTransactionActive() {
         return TransactionSynchronizationManager.isActualTransactionActive()
     }
@@ -1059,6 +1076,7 @@ class TransactionalTransformSpecService implements InitializingBean {
 class TestTransactionManager extends DataSourceTransactionManager {
     boolean transactionStarted = false
     boolean transactionRolledBack = false
+    TransactionDefinition definition = null
 
     TestTransactionManager(DataSource dataSource) {
         super(dataSource)
@@ -1074,6 +1092,12 @@ class TestTransactionManager extends DataSourceTransactionManager {
     protected void doRollback(DefaultTransactionStatus status) {
         transactionRolledBack = true
         super.doRollback(status)
+    }
+
+    @Override
+    protected void doBegin(Object transaction, TransactionDefinition definition) {
+        this.definition = definition
+        super.doBegin(transaction, definition)
     }
 }
 

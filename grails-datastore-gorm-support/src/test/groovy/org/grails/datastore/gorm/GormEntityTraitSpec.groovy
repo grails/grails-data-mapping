@@ -8,6 +8,7 @@ import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import spock.lang.Specification
 
+import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 /*
@@ -76,6 +77,15 @@ class Publisher {
         DirtyCheckable.isAssignableFrom(cls)
         cls.getAnnotation(grails.gorm.annotation.Entity)
         instance.hasProperty('authorId')
+
+        when:
+        Method  m = cls.methods.find { method ->
+            def rt = method.getParameterTypes()
+            rt && rt[0] == Closure && method.name == 'find'
+        }
+
+        then:
+        m.returnType.name.contains("Book")
     }
 
     void "Test dynamic parse 2"(){

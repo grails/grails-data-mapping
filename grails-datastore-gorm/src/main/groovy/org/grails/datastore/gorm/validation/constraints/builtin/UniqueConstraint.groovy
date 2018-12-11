@@ -3,6 +3,7 @@ package org.grails.datastore.gorm.validation.constraints.builtin
 import grails.gorm.DetachedCriteria
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.validation.constraints.AbstractConstraint
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
@@ -55,6 +56,23 @@ class UniqueConstraint extends AbstractConstraint {
         MappingContext mappingContext = detachedCriteria.getPersistentEntity()
                                                         .getMappingContext()
         PersistentEntity targetEntity = mappingContext.getPersistentEntity(mappingContext.getProxyHandler().getProxiedClass(target).getName())
+
+        // Determine the GORM class that actually defines this field
+        Class<?> constraintClass = constraintOwningClass
+        if (!targetEntity.isRoot()) {
+            def property = targetEntity.getPropertyByName(constraintPropertyName)
+            while (property.isInherited() && targetEntity != null) {
+                targetEntity = mappingContext.getPersistentEntity(targetEntity.javaClass.superclass.name)
+                if (targetEntity != null) {
+                    property = targetEntity.getPropertyByName(constraintPropertyName)
+                }
+            }
+            constraintClass = targetEntity != null? targetEntity.javaClass: constraintClass
+        }
+
+        // Re-create the detached criteria based on the new constraint class
+        detachedCriteria = new DetachedCriteria(constraintClass)
+
         if(targetEntity == null) {
             throw new IllegalStateException("Cannot validate object [$target]. It is not a persistent entity")
         }
@@ -62,6 +80,16 @@ class UniqueConstraint extends AbstractConstraint {
         EntityReflector reflector = targetEntity.reflector
         String constraintPropertyName = this.constraintPropertyName
         List group = this.group
+        
+        if(target instanceof DirtyCheckable) {
+            Boolean anyChanges = target.hasChanged(constraintPropertyName)
+            for(prop in group) {
+                anyChanges |= target.hasChanged(prop.toString())
+            }
+            if(!anyChanges) {
+                return
+            }
+        }
 
         PersistentProperty persistentProperty = targetEntity.getPropertyByName(constraintPropertyName)
         boolean isToOne = persistentProperty instanceof ToOne
@@ -74,6 +102,7 @@ class UniqueConstraint extends AbstractConstraint {
         }
 
         if (constraintParameter) {
+            boolean shouldValidate = true
             detachedCriteria = detachedCriteria.build {
                 eq(constraintPropertyName, propertyValue)
                 if (!group.isEmpty()) {
@@ -83,8 +112,13 @@ class UniqueConstraint extends AbstractConstraint {
                         if (value != null) {
                             PersistentProperty associated = targetEntity.getPropertyByName(propName)
                             if (associated instanceof ToOne) {
+                                // We are merely verifying that the object is not transient here
                                 def associationId = ((Association) associated).getAssociatedEntity().getReflector().getIdentifier(value)
                                 if (associationId == null) {
+                                    // no need to validate since this group association is unsaved
+                                    shouldValidate = false
+
+                                    // we aren't validating, so no point continuing
                                     continue
                                 }
                             }
@@ -94,12 +128,14 @@ class UniqueConstraint extends AbstractConstraint {
                 }
             }.id()
 
-            def existingId = detachedCriteria.get()
-            if (existingId != null) {
-                def targetId = reflector.getIdentifier(target)
-                if (targetId != existingId) {
-                    def args = [constraintPropertyName, constraintOwningClass, propertyValue] as Object[]
-                    rejectValue(target, errors, "unique", args, getDefaultMessage("default.not.unique.message"))
+            if (shouldValidate) {
+                def existingId = detachedCriteria.get()
+                if (existingId != null) {
+                    def targetId = reflector.getIdentifier(target)
+                    if (targetId != existingId) {
+                        def args = [constraintPropertyName, constraintOwningClass, propertyValue] as Object[]
+                        rejectValue(target, errors, "unique", args, getDefaultMessage("default.not.unique.message"))
+                    }
                 }
             }
         }

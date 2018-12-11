@@ -2,6 +2,7 @@ package org.grails.datastore.gorm.validation.javax
 
 import groovy.transform.CompileStatic
 
+import javax.validation.ClockProvider
 import javax.validation.ConstraintValidatorFactory
 import javax.validation.MessageInterpolator
 import javax.validation.ParameterNameProvider
@@ -9,6 +10,7 @@ import javax.validation.TraversableResolver
 import javax.validation.Validator
 import javax.validation.ValidatorContext
 import javax.validation.ValidatorFactory
+import javax.validation.valueextraction.ValueExtractor
 
 /**
  * A ValidatorFactory that creates adapted validators
@@ -23,6 +25,11 @@ class GormValidatorFactoryAdapter implements ValidatorFactory  {
 
     GormValidatorFactoryAdapter(ValidatorFactory factory) {
         this.factory = factory
+    }
+
+    @Override
+    ClockProvider getClockProvider() {
+        return factory.getClockProvider()
     }
 
     @Override
@@ -65,6 +72,7 @@ class GormValidatorFactoryAdapter implements ValidatorFactory  {
         return factory.unwrap(type)
     }
 
+    @CompileStatic
     static class GormValidatorContext implements ValidatorContext {
         final ValidatorContext delegate
 
@@ -93,6 +101,18 @@ class GormValidatorFactoryAdapter implements ValidatorFactory  {
         @Override
         ValidatorContext parameterNameProvider(ParameterNameProvider parameterNameProvider) {
             delegate.parameterNameProvider(parameterNameProvider)
+            return this
+        }
+
+        @Override
+        ValidatorContext clockProvider(ClockProvider clockProvider) {
+            delegate.clockProvider(clockProvider)
+            return this
+        }
+
+        @Override
+        ValidatorContext addValueExtractor(ValueExtractor<?> valueExtractor) {
+            delegate.addValueExtractor(valueExtractor)
             return this
         }
 

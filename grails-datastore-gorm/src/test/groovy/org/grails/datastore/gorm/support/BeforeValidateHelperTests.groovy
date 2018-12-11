@@ -48,6 +48,30 @@ class BeforeValidateHelperTests extends GroovyTestCase {
         assertEquals 'wrong list arg counter value', 2, obj.listArgCounter
         assertEquals 'wrong no arg counter value', 1, obj.noArgCounter
     }
+
+    void testSerialization() {
+        // Make sure something is in the cache
+        def obj = new ClassWithNoArgBeforeValidate()
+        beforeValidateHelper.invokeBeforeValidate(obj, null)
+        assertEquals 'wrong counter value', 1, obj.noArgCounter
+
+        // Serialize
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
+        ObjectOutputStream oos = new ObjectOutputStream(byteArrayOutputStream)
+        oos.writeObject(beforeValidateHelper)
+        oos.close()
+        assertTrue 'class is serialized', byteArrayOutputStream.toByteArray().length > 0
+
+        // Deserialize
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray())
+        ObjectInputStream ois = new ObjectInputStream(byteArrayInputStream)
+        beforeValidateHelper = ois.readObject() as BeforeValidateHelper
+        assertNotNull 'class is deserialized', beforeValidateHelper
+
+        // Ensure it still works
+        beforeValidateHelper.invokeBeforeValidate(obj, null)
+        assertEquals 'wrong counter value', 2, obj.noArgCounter
+    }
 }
 
 class ClassWithNoArgBeforeValidate {

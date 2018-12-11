@@ -33,17 +33,17 @@ class JpaMappingSyntaxTests extends Specification {
         id.name == 'customId'
     }
 
-    void "test get composite identity"() {
-        given:
-        def context = new TestMappingContext()
-        PersistentEntity entity = context.addPersistentEntity(JpaCompositeIdEntity)
-
-        expect:
-        entity.identity == null
-        entity.compositeIdentity != null
-        entity.compositeIdentity.size() == 2
-        entity.persistentProperties.size() == 1
-    }
+//    void "test get composite identity"() {
+//        given:
+//        def context = new TestMappingContext()
+//        PersistentEntity entity = context.addPersistentEntity(JpaCompositeIdEntity)
+//
+//        expect:
+//        entity.identity == null
+//        entity.compositeIdentity != null
+//        entity.compositeIdentity.size() == 2
+//        entity.persistentProperties.size() == 1
+//    }
 
     
     void "test get simple persistent properties"() {
@@ -356,7 +356,7 @@ class JpaSecondEntity {
     JpaTestEntity testEntity
 }
 
-@javax.persistence.Entity
+@Entity
 class JpaEntityWithIndexedProperty {
     @Id
     Long id
@@ -368,7 +368,7 @@ class JpaEntityWithIndexedProperty {
     void setSectionContent(int section, String content) {}
 }
 
-@javax.persistence.Entity
+@Entity
 class JpaUser {
     @Id
     Long id
@@ -383,14 +383,14 @@ class JpaUser {
 }
 
 
-@Entity
-class JpaCompositeIdEntity {
-    @Id
-    Long first
-    @Id
-    Long second
-    String name
-}
+//@Entity
+//class JpaCompositeIdEntity {
+//    @Id
+//    Long first
+//    @Id
+//    Long second
+//    String name
+//}
 
 @Entity
 class JpaSimpleEntity {

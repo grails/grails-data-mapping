@@ -71,7 +71,7 @@ public abstract class AbstractGormMappingFactory<R extends Entity, T extends Pro
             return entityToMapping.get(entity);
         }
         else {
-            R family = BeanUtils.instantiate(getEntityMappedFormType());
+            R family = BeanUtils.instantiateClass(getEntityMappedFormType());
             entityToMapping.put(entity, family);
             MappingConfigurationBuilder builder = createConfigurationBuilder(entity, family);
 
@@ -183,11 +183,11 @@ public abstract class AbstractGormMappingFactory<R extends Entity, T extends Pro
             try {
                 return (T) defaultMapping.clone();
             } catch (CloneNotSupportedException e) {
-                return BeanUtils.instantiate(getPropertyMappedFormType());
+                return BeanUtils.instantiateClass(getPropertyMappedFormType());
             }
         }
         else {
-            return BeanUtils.instantiate(getPropertyMappedFormType());
+            return BeanUtils.instantiateClass(getPropertyMappedFormType());
         }
     }
 }

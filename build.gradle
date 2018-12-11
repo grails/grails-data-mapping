@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
         classpath "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.0"
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.8.0"
@@ -16,20 +16,20 @@ buildscript {
 
 
 project.ext {
-    springVersion = "4.3.14.RELEASE"
-    springBootVersion = "1.5.10.RELEASE"
-    grailsVersion = "3.2.11"
-    grails2Version = '2.5.6'
+    springVersion = "5.1.2.RELEASE"
+    caffeineVersion= "2.5.2"
+    grailsVersion = "3.3.8"
+    grailsAsyncVersion = "3.3.2"
     slf4jVersion = "1.7.22"
     junitVersion = "4.12"
     javassistVersion = "3.21.0-GA"
-    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.11'
+    groovyVersion = System.getProperty('groovyVersion') ?: '2.5.4'
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
-    projectMajorVersion = "6"
-    projectMinorVersion = "1"
-    projectPatchVersion = "10"
-    //releaseType = "RELEASE"
+    projectMajorVersion = "7"
+    projectMinorVersion = "0"
+    projectPatchVersion = "0"
+//    releaseType = "RELEASE"
 //    releaseType = "M2"
 //    releaseType = "RC2"
     releaseType = "BUILD-SNAPSHOT"
@@ -38,9 +38,9 @@ project.ext {
     projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
 
     // plugin versions
-    hibernateValidatorVersion = "5.0.3.Final"
-    hibernateVersion = "4.3.11"
-    hibernate5Version = "5.1.3"
+    hibernateValidatorVersion = "6.0.13.Final"
+    hibernateVersion = "5.3.6"
+    servletApiVersion = "4.0.1"
 
     def defaultPluginVersion = releaseType == 'RELEASE' ? projectVersion : "${projectVersion}.${releaseType}"
     hibernatePluginVersion = defaultPluginVersion
@@ -53,14 +53,14 @@ project.ext {
     isCiBuild = project.hasProperty("isCiBuild")
     isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
 
-    servletApiVersion = "3.0.1"
+
 
     nexusUsername = System.getenv("SONATYPE_USERNAME") ?: project.hasProperty("sonatypeOssUsername") ? project.sonatypeOssUsername : ''
     nexusPassword = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
 }
 
 def groovyMajorVersion = groovyVersion[0..2]
-def spockDependency = "org.spockframework:spock-core:1.0-groovy-2.4"
+def spockDependency = "org.spockframework:spock-core:1.2-groovy-2.5"
 
 def groovyProjects() {
     subprojects.findAll { project -> isGroovyProject(project) }
@@ -99,7 +99,9 @@ allprojects {
         all {
             resolutionStrategy {
                 force "org.codehaus.groovy:groovy:$groovyVersion"
+                force "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
                 force "org.codehaus.groovy:groovy-xml:$groovyVersion"
+                force "org.codehaus.groovy:groovy-templates:$groovyVersion"
             }
         }
     }
@@ -114,7 +116,7 @@ subprojects {
    version = "${projectVersion}.${releaseType}"
    group = "org.grails"
 
-    if(project.name.contains('grails-plugins') || project.name.contains('grails2-plugins')) {
+    if(project.name.contains('grails-plugins')) {
         project.tasks.all { Task t ->
             t.onlyIf {
                 !Boolean.getBoolean('skipPlugins')
@@ -130,7 +132,6 @@ subprojects {
     }
 
     if(project.name.endsWith("spring-boot")) return
-    if(project.name.contains("grails2-plugins")) return
 
    afterEvaluate { project ->
         if (isGroovyProject(project)) {
@@ -193,8 +194,8 @@ subprojects {
         apply plugin: 'idea'
         apply plugin: 'provided-base'
         apply plugin: 'optional-base'
-        sourceCompatibility = "1.7"
-        targetCompatibility = "1.7"
+        sourceCompatibility = "1.8"
+        targetCompatibility = "1.8"
     }
 
     def isGormDatasource = project.name.startsWith("grails-datastore-gorm-") &&
@@ -207,8 +208,12 @@ subprojects {
 
 
     dependencies {
+        compile 'javax.annotation:javax.annotation-api:1.3.2'
+
         if (isStandardGroovyMavenProject) {
             documentation "org.fusesource.jansi:jansi:1.11"
+            documentation "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
+            documentation 'info.picocli:picocli:3.8.0'
             compile group: 'org.codehaus.groovy', name: 'groovy', version: groovyVersion
 
             testCompile group: 'org.codehaus.groovy', name: 'groovy-test', version: groovyVersion
@@ -285,11 +290,11 @@ subprojects {
             }
         }
         test.doFirst {
-            def tckClassesDir = project(":grails-datastore-gorm-tck").sourceSets.main.output.classesDir
+            File tckClassesDir = project(":grails-datastore-gorm-tck").sourceSets.main.output.classesDirs.files.first()
             def thisProjectsTests = // surely there is a less hardcoded way to do this
             copy {
                 from tckClassesDir
-                into sourceSets.test.output.classesDir
+                into sourceSets.test.output.classesDirs.files.first()
                 include "**/*.class"
                 exclude { details ->
                     // Do not copy across any TCK class (or nested classes of that class)
@@ -358,11 +363,9 @@ subprojects {
                 maven(MavenPublication) {
                     from components.java
 
-                    artifact sourcesJar {
-                        classifier "sources"
-                    }
-                    artifact javadocJar {
-                        classifier "javadoc"
+                    afterEvaluate {
+                        artifact source: sourcesJar, classifier: "sources"
+                        artifact source: javadocJar, classifier: "javadoc"
                     }
 
                     pom.withXml {
@@ -392,32 +395,33 @@ dependencies {
 task install(dependsOn: subprojects*.tasks*.withType(PublishToMavenLocal))
 
 
-task test(dependsOn: getTasksByName("test", true)) << {
-    def reportsDir = "${buildDir}/reports"
+task test(dependsOn: getTasksByName("test", true)) {
+     doLast {
+         def reportsDir = "${buildDir}/reports"
 
-    // Aggregate the test results
-    ant.taskdef(
-        name: 'junitreport2',
-        classname: "org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator",
-        classpath: configurations.build.asPath
-    )
+         // Aggregate the test results
+         ant.taskdef(
+             name: 'junitreport2',
+             classname: "org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator",
+             classpath: configurations.build.asPath
+         )
 
-    def testReportsDir = new File("${reportsDir}/tests")
-    if (testReportsDir.exists()) {
-        testReportsDir.deleteDir()
-    }
-    testReportsDir.mkdirs()
+         def testReportsDir = new File("${reportsDir}/tests")
+         if (testReportsDir.exists()) {
+             testReportsDir.deleteDir()
+         }
+         testReportsDir.mkdirs()
 
-    ant.junitreport2(todir: testReportsDir) {
-        subprojects.each {
-            def testResultsDir = "${it.buildDir}/test-results"
-            if (new File(testResultsDir).exists()) {
-                fileset(dir: testResultsDir) {
-                    include(name: "TEST-*.xml")
-                }
-            }
-        }
-        report(todir: testReportsDir)
-    }
-
+         ant.junitreport2(todir: testReportsDir) {
+             subprojects.each {
+                 def testResultsDir = "${it.buildDir}/test-results"
+                 if (new File(testResultsDir).exists()) {
+                     fileset(dir: testResultsDir) {
+                         include(name: "TEST-*.xml")
+                     }
+                 }
+             }
+             report(todir: testReportsDir)
+         }
+     }
 }

@@ -139,7 +139,7 @@ abstract class ConfigurationBuilder<B, C> {
                 if (!Modifier.isPublic(method.modifiers) || method.isSynthetic() || IGNORE_METHODS.contains(methodName)) {
                     continue
                 }
-                if(method.declaringClass != builderClass) {
+                if (method.declaringClass != builderClass) {
                     continue
                 }
                 def parameterTypes = method.parameterTypes
@@ -151,12 +151,12 @@ abstract class ConfigurationBuilder<B, C> {
                 if (hasBuilderPrefix && methodName.startsWith(builderMethodPrefix)) {
                     settingName = methodName.substring(builderMethodPrefix.size()).uncapitalize()
                 }
-                else if(hasBuilderPrefix) {
+                else if (hasBuilderPrefix) {
                     continue
                 }
-                else if(!hasBuilderPrefix &&
+                else if (!hasBuilderPrefix &&
                         ((org.grails.datastore.mapping.reflect.ReflectionUtils.isGetter(methodName, parameterTypes) && method.returnType.getAnnotation(Builder) == null) ||
-                        org.grails.datastore.mapping.reflect.ReflectionUtils.isSetter(methodName, parameterTypes))) {
+                                org.grails.datastore.mapping.reflect.ReflectionUtils.isSetter(methodName, parameterTypes))) {
                     // don't process getters or setters, unless the getter returns a builder
                     continue
                 }
@@ -273,7 +273,7 @@ abstract class ConfigurationBuilder<B, C> {
                 } else if (methodName.startsWith("get") && parameterTypes.length == 0) {
                     if (method.returnType.getAnnotation(Builder)) {
                         def childBuilder = method.invoke(builder)
-                        if(childBuilder != null) {
+                        if (childBuilder != null) {
                             Object fallBackChildConfig = null
                             if (fallBackConfig != null) {
                                 Method fallbackGetter = ReflectionUtils.findMethod(fallBackConfig.getClass(), methodName)
@@ -331,7 +331,7 @@ abstract class ConfigurationBuilder<B, C> {
                         } catch (ConversionFailedException e) {
                             if(argType.isEnum()) {
                                 value = propertyResolver.getProperty(propertyPathForArg, String)
-                                if(value != null) {
+                                if (value != null) {
                                     try {
                                         value = Enum.valueOf((Class)argType, value.toUpperCase())
                                     } catch (Throwable e2) {

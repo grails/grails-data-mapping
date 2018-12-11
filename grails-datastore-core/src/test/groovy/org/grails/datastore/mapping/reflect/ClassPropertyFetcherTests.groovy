@@ -53,6 +53,41 @@ class ClassPropertyFetcherTests  {
         assert descriptor != null
     }
 
+    @Test
+    void testClassPropertyFetcherWithMultipleSetter() {
+        def cpf = ClassPropertyFetcher.forClass(DomainWithMultipleSetter)
+
+        def metaProperties = cpf.getMetaProperties()
+
+        assert metaProperties.size() == 2
+
+        def prop = metaProperties.find { it.name == 'id' }
+
+        assert prop != null
+        assert prop.type == Long
+
+    }
+
+    @Test
+    void testGetObjectTypeForWrappedBeanProperty() {
+        GroovyObject mc = (GroovyObject)Foo.metaClass
+
+        // Wrap the getter and setter similar to how they'd be wrapped for hibernate proxy handling
+        mc.setProperty("getBar", {->
+            delegate.@bar
+        })
+        mc.setProperty("setBar", {
+            delegate.@bar = it
+        })
+
+        // The default meta property type is Object
+        assert Foo.metaClass.getMetaProperty('bar').getType() == Object
+
+        // The class property fetcher returns the real type via the Field
+        def cpf = ClassPropertyFetcher.forClass(Foo)
+        assert cpf.getPropertyType('bar') == String
+    }
+
     static class Foo {
         static String name = "foo"
 
@@ -94,4 +129,17 @@ class TransientSubChild extends TransientChild {
     String bar
 
     static transients = ["bar"]
+}
+
+class DomainWithMultipleSetter {
+    Long id
+    String name
+
+    void setId(String id) {
+        this.id = Long.parseLong(id)
+    }
+
+    void setId(Long id) {
+        this.id = id
+    }
 }

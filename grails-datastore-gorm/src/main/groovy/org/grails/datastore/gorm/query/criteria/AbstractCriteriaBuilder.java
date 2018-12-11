@@ -282,7 +282,7 @@ public abstract class AbstractCriteriaBuilder extends GroovyObjectSupport implem
                 try {
                     associationQuery = query.createQuery(property.getName());
                     if (associationQuery instanceof AssociationQuery) {
-                        previousQuery.add((Query.Criterion) associationQuery);
+                        addToCriteria((Query.Criterion) associationQuery);
                     }
                     query = associationQuery;
                     persistentEntity = association.getAssociatedEntity();

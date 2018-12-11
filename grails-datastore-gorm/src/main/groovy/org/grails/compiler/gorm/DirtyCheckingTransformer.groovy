@@ -5,8 +5,10 @@ import grails.gorm.dirty.checking.DirtyCheckedProperty
 import groovy.transform.CompilationUnitAware
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.*
-import org.codehaus.groovy.ast.expr.*
-import org.codehaus.groovy.ast.stmt.*
+import org.codehaus.groovy.ast.expr.ConstantExpression
+import org.codehaus.groovy.ast.expr.ListExpression
+import org.codehaus.groovy.ast.expr.MethodCallExpression
+import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.tools.GeneralUtils
 import org.codehaus.groovy.classgen.GeneratorContext
 import org.codehaus.groovy.control.CompilationUnit
@@ -23,8 +25,8 @@ import org.springframework.validation.annotation.Validated
 import java.lang.reflect.Modifier
 
 import static java.lang.reflect.Modifier.*
-import static org.grails.datastore.mapping.reflect.AstUtils.*
 import static org.codehaus.groovy.ast.tools.GeneralUtils.*
+import static org.grails.datastore.mapping.reflect.AstUtils.*
 
 /**
  *
@@ -99,6 +101,8 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
 
         }
 
+        PropertyNode transientPropertyNode = classNode.getProperty("transients")
+
         // Now we go through all the properties, if the property is a persistent property and change tracking has been initiated then we add to the setter of the property
         // code that will mark the property as dirty. Note that if the property has no getter we have to add one, since only adding the setter results in a read-only property
         final propertyNodes = classNode.getProperties()
@@ -133,7 +137,7 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
         for (PropertyNode pn in propertyNodes) {
             final propertyName = pn.name
             if (!pn.isStatic() && pn.isPublic() && !NameUtils.isConfigurational(propertyName)) {
-                if(isTransient(pn.modifiers) || isFinal(pn.modifiers)) continue
+                if(isTransient(pn.modifiers) || isDefinedInTransientsNode(propertyName, transientPropertyNode) || isFinal(pn.modifiers)) continue
 
                 // don't dirty check id or version
                 if(propertyName == GormProperties.IDENTITY) {
@@ -266,6 +270,21 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
             if(!NameUtils.isConfigurational(propertyName) && getterAndSetter.hasBoth()) {
                 weaveIntoExistingSetter(propertyName, getterAndSetter, markDirtyMethodNode)
             }
+        }
+    }
+
+    /**
+     * Check if the property is defined in static transients block.
+     *
+     * @param propertyName The given name of property
+     * @param transientPropertyNode The property node representing static transients
+     * @return If the property is transient
+     */
+    private boolean isDefinedInTransientsNode(String propertyName, PropertyNode transientPropertyNode) {
+        if (transientPropertyNode) {
+            transientPropertyNode.isStatic() &&
+                    transientPropertyNode.initialExpression instanceof ListExpression &&
+                    ((ListExpression) transientPropertyNode.initialExpression).expressions.find { it instanceof ConstantExpression && it.value == propertyName }
         }
     }
 

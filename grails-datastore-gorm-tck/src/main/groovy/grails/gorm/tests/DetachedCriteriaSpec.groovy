@@ -264,6 +264,48 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
             results[1].lastName == 'Simpson'
     }
 
+    void "Test select method on detached criteria with empty criteria"() {
+        given: "a bunch of people"
+        createPeople()
+
+        when: "A detached criteria instance is created with empty criteria"
+        DetachedCriteria criteria = new DetachedCriteria(Person).build {}
+        final def results = criteria.list()
+
+        then: "The list method returns all"
+        results.size() == 6
+    }
+
+
+    void "Test update method on detached criteria with empty criteria"() {
+        given: "a bunch of people"
+        createPeople()
+
+        when: "A detached criteria instance is created with empty criteria"
+        DetachedCriteria criteria = new DetachedCriteria(Person).build {}
+        final int total = criteria.updateAll(lastName:"Bloggs")
+
+        then: "The number of updates are correct"
+        total == 6
+        Person.countByLastName("Bloggs") == 6
+        Person.countByLastName("Simpson") == 0
+    }
+
+
+    void "Test deleteAll method on detached criteria with empty criteria"() {
+        given: "a bunch of people"
+        createPeople()
+
+        when: "A detached criteria instance is created with empty criteria"
+        DetachedCriteria criteria = new DetachedCriteria(Person).build {}
+        final int total = criteria.deleteAll()
+
+        then: "The number of deletion is correct"
+        total == 6
+        Person.count() == 0
+    }
+
+
     protected void createPeople() {
         new Person(firstName: "Homer", lastName: "Simpson").save()
         new Person(firstName: "Marge", lastName: "Simpson").save()

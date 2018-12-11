@@ -1,6 +1,5 @@
 include ("grails-datastore-core",
         "grails-datastore-web",
-        'grails-datastore-rest-client',
 
         // Core GORM Implementation projects
         'grails-datastore-gorm',
@@ -8,17 +7,10 @@ include ("grails-datastore-core",
         'grails-datastore-gorm-async',
         'grails-datastore-gorm-validation',
         'grails-datastore-gorm-support',
-        'grails-datastore-gorm-grails2-support',
         'grails-datastore-gorm-tck',
         'grails-datastore-gorm-test',
-        'grails-datastore-gorm-grails2-test',
-        'grails-datastore-gorm-plugin-support',
 
 
         // RX projects
-        'grails-datastore-gorm-rx',
-        'grails-datastore-gorm-rx-plugin-support',
-
-        // GORM Implementations
-        'grails-datastore-gorm-hibernate-core'
+        'grails-datastore-gorm-rx'
 )

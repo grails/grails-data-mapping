@@ -43,9 +43,8 @@ dependencies {
         exclude group:'net.java.dev.jna',module:'jna'
     }
 
-    compileOnly project(':grails-datastore-gorm-hibernate-core')
-    compileOnly 'org.springframework:spring-orm:4.2.3.RELEASE'
-    compileOnly 'org.springframework:spring-webmvc:4.2.3.RELEASE'
+    compileOnly "org.springframework:spring-orm:$springVersion"
+    compileOnly "org.springframework:spring-webmvc:$springVersion"
 
     compileOnly "org.grails:grails-web-url-mappings:$grailsVersion", {
         transitive = false
@@ -55,10 +54,6 @@ dependencies {
         transitive = false
     }
 
-
-    compileOnly "org.grails:grails-validation:$grailsVersion", {
-        transitive = false
-    }
 
     compileOnly("org.hibernate:hibernate-core:${hibernateVersion}.Final") {
         exclude group:'commons-logging', module:'commons-logging'

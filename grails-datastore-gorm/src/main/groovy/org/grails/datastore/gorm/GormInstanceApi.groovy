@@ -42,6 +42,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> implements GormInstanceOpera
 
     Class<? extends Exception> validationException = ValidationException
     boolean failOnError = false
+    boolean markDirty = true
 
     GormInstanceApi(Class<D> persistentClass, Datastore datastore) {
         super(persistentClass, datastore)
@@ -325,8 +326,8 @@ class GormInstanceApi<D> extends AbstractGormApi<D> implements GormInstanceOpera
                     ConnectionSources connectionSources = ((ConnectionSourcesProvider) datastore).connectionSources
                     String connectionSourceName = connectionSources.defaultConnectionSource.name
                     if(connectionSourceName != ConnectionSource.DEFAULT) {
-                        GormValidationApi validationApi = GormEnhancer.findValidationApi(instance.getClass(), connectionSourceName)
-                        hasErrors = !validationApi.validate((Object)instance, params)
+                        GormValidationApi<D> validationApi = GormEnhancer.findValidationApi((Class<D>)instance.getClass(), connectionSourceName)
+                        hasErrors = !validationApi.validate((D)instance, params)
                     }
                     else {
                         hasErrors = !validateable.validate(params)
@@ -357,7 +358,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> implements GormInstanceOpera
             session.insert(instance)
         }
         else {
-            if(instance instanceof DirtyCheckable) {
+            if(instance instanceof DirtyCheckable && markDirty) {
                 // since this is an explicit call to save() we mark the instance as dirty to ensure it happens
                 instance.markDirty()
             }

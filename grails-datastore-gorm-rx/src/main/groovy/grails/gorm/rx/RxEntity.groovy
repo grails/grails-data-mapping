@@ -151,7 +151,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
 
         if(prop instanceof Association) {
             Association association = (Association)prop
-            final javaClass = association.associatedEntity?.javaClass
+            Class javaClass = association.associatedEntity?.javaClass
             final boolean isBasic = association instanceof Basic
             if(isBasic) {
                 javaClass = ((Basic)association).componentType
@@ -178,7 +178,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
                 }
             }
             else {
-                throw new IllegalArgumentException("")
+                throw new IllegalArgumentException("Argument is not an instance of $javaClass")
             }
 
         }
@@ -237,7 +237,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
                 reflector.setProperty(targetObject, propertyName, currentValue)
             }
 
-            final javaClass = association.associatedEntity?.javaClass
+            Class javaClass = association.associatedEntity?.javaClass
             final boolean isBasic = association instanceof Basic
             if(isBasic) {
                 javaClass = ((Basic)association).componentType

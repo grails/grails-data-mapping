@@ -9,6 +9,8 @@ import org.grails.datastore.gorm.validation.constraints.registry.ConstraintRegis
 import grails.gorm.validation.DefaultConstrainedProperty;
 import org.grails.datastore.gorm.validation.constraints.eval.DefaultConstraintEvaluator;
 import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.slf4j.Logger;
@@ -39,6 +41,7 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
     private final MappingContext mappingContext;
     private final Map<String, Object> defaultConstraints;
     private boolean allowDynamic = false;
+    private boolean defaultNullable = false;
 
 
     public ConstrainedPropertyBuilder(MappingContext mappingContext, ConstraintRegistry constraintRegistry, Class targetClass, Map<String, Object> defaultConstraints) {
@@ -82,6 +85,25 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
 
     }
 
+    protected Class<?> determinePropertyType(String propertyName) {
+        Class<?> propertyType = null;
+
+        // First try to use the persistent entity mappings
+        PersistentEntity persistentEntity = mappingContext.getPersistentEntity(targetClass.getName());
+        if (persistentEntity != null) {
+            PersistentProperty persistentProperty = persistentEntity.getPropertyByName(propertyName);
+            if (persistentProperty != null) {
+                propertyType = persistentProperty.getType();
+            }
+        }
+        // Fall back to just using the meta properties
+        if (propertyType == null) {
+            propertyType = classPropertyFetcher.getPropertyType(propertyName);
+        }
+
+        return propertyType;
+    }
+
     @SuppressWarnings("rawtypes")
     @Override
     protected Object createNode(Object name, Map attributes) {
@@ -94,7 +116,7 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
                 cp = (DefaultConstrainedProperty)constrainedProperties.get(property);
             }
             else {
-                Class<?> propertyType = classPropertyFetcher.getPropertyType(property);
+                Class<?> propertyType = determinePropertyType(property);
                 if (propertyType == null) {
                     if(!allowDynamic) {
                         throw new MissingMethodException(property, targetClass, new Object[]{attributes}, true);
@@ -163,7 +185,7 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
     private Object handleImportFrom(Map attributes, Class importFromClazz) {
 
         Map importFromConstrainedProperties = new DefaultConstraintEvaluator(constraintRegistry,mappingContext, defaultConstraints )
-                                                        .evaluate(importFromClazz);
+                                                        .evaluate(importFromClazz, defaultNullable);
 
         List<MetaProperty> metaProperties = classPropertyFetcher.getMetaProperties();
 
@@ -249,5 +271,9 @@ public class ConstrainedPropertyBuilder extends BuilderSupport {
 
     public void setAllowDynamic(boolean allowDynamic) {
         this.allowDynamic = allowDynamic;
+    }
+
+    public void setDefaultNullable(boolean defaultNullable) {
+        this.defaultNullable = defaultNullable;
     }
 }

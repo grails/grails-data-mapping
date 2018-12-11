@@ -848,18 +848,20 @@ public class JpaQueryBuilder {
     }
 
     private List buildWhereClause(PersistentEntity entity, Query.Junction criteria, StringBuilder q, StringBuilder whereClause, String logicalName, boolean allowJoins, List parameters) {
-        int position = parameters.size();
-        final List<Query.Criterion> criterionList = criteria.getCriteria();
-        whereClause.append(WHERE_CLAUSE);
-        if (criteria instanceof Query.Negation) {
-            whereClause.append(NOT_CLAUSE);
+        if (!criteria.isEmpty()) {
+            int position = parameters.size();
+            final List<Query.Criterion> criterionList = criteria.getCriteria();
+            whereClause.append(WHERE_CLAUSE);
+            if (criteria instanceof Query.Negation) {
+                whereClause.append(NOT_CLAUSE);
+            }
+            whereClause.append(OPEN_BRACKET);
+            position = buildWhereClauseForCriterion(entity, criteria, q, whereClause, logicalName,
+                    criterionList, position, parameters,
+                    conversionService, allowJoins, this.hibernateCompatible);
+            q.append(whereClause.toString());
+            q.append(CLOSE_BRACKET);
         }
-        whereClause.append(OPEN_BRACKET);
-        position = buildWhereClauseForCriterion(entity, criteria, q, whereClause, logicalName,
-                criterionList, position, parameters,
-                conversionService, allowJoins, this.hibernateCompatible);
-        q.append(whereClause.toString());
-        q.append(CLOSE_BRACKET);
         return parameters;
     }
 

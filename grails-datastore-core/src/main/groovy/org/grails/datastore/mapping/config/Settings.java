@@ -24,6 +24,10 @@ public interface Settings {
      */
     String SETTING_FAIL_ON_ERROR = PREFIX + '.' + "failOnError";
     /**
+     * Whether to mark the instance as dirty on an explicit save()
+     */
+    String SETTING_MARK_DIRTY = PREFIX + '.' + "markDirty";
+    /**
      * The default mapping
      */
     String SETTING_DEFAULT_MAPPING = PREFIX + '.' + "default.mapping";

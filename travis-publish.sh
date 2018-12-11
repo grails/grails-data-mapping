@@ -1,8 +1,13 @@
 #!/bin/bash
 
-echo "Publishing..."
+echo "Publishing for branch $TRAVIS_BRANCH JDK: $TRAVIS_JDK_VERSION"
 
 EXIT_STATUS=0
+
+# Only JDK8 execution will publish the release
+if [ "${TRAVIS_JDK_VERSION}" == "openjdk11" ] ; then
+  exit $EXIT_STATUS
+fi
 
 if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST == 'false' && $EXIT_STATUS -eq 0 ]]; then
 
@@ -17,16 +22,16 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
   if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
     # for releases we upload to Bintray and Sonatype OSS
     ./gradlew --stop
-    ./gradlew -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" uploadArchives || EXIT_STATUS=$?
+    ./gradlew --no-daemon -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" uploadArchives || EXIT_STATUS=$?
 
     if [[ $EXIT_STATUS -eq 0 ]]; then
         ./gradlew --stop
-        ./gradlew -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" publish || EXIT_STATUS=$?
+        ./gradlew --no-daemon -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" publish || EXIT_STATUS=$?
     fi
   else
     # for snapshots only to repo.grails.org
     ./gradlew --stop
-    ./gradlew -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" publish  || EXIT_STATUS=$?
+    ./gradlew --no-daemon -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" publish  || EXIT_STATUS=$?
   fi
 
   if [[ $EXIT_STATUS -eq 0 ]]; then
@@ -36,27 +41,8 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
 
         echo "Triggering Hibernate 5 build"
-        git clone -b 6.1.x https://${GH_TOKEN}@github.com/grails/gorm-hibernate5.git gorm-hibernate5
+        git clone -b master https://${GH_TOKEN}@github.com/grails/gorm-hibernate5.git gorm-hibernate5
         cd gorm-hibernate5
-        echo "$(date)" > .snapshot
-        git add .snapshot
-        git commit -m "New Core Snapshot: $(date)"
-        git push
-        cd ..
-
-        echo "Triggering Hibernate 4 build"
-        git clone https://${GH_TOKEN}@github.com/grails/gorm-hibernate4.git gorm-hibernate4
-        cd gorm-hibernate4
-        echo "$(date)" > .snapshot
-        git add .snapshot
-        git commit -m "New Core Snapshot: $(date)"
-        git push
-        cd ..
-
-
-        echo "Triggering REST Client build"
-        git clone https://${GH_TOKEN}@github.com/grails/gorm-rest-client.git gorm-rest-client
-        cd gorm-rest-client
         echo "$(date)" > .snapshot
         git add .snapshot
         git commit -m "New Core Snapshot: $(date)"

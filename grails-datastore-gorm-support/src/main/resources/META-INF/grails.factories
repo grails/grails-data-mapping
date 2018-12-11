@@ -1,1 +1,1 @@
-grails.compiler.traits.TraitInjector=org.grails.datastore.gorm.EntityTraitInjector
+grails.compiler.traits.TraitInjector=org.grails.compiler.gorm.EntityTraitInjector

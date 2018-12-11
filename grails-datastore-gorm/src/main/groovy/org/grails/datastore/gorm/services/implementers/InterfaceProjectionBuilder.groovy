@@ -75,6 +75,7 @@ trait InterfaceProjectionBuilder {
             ))
             AnnotationNode delegateAnn = new AnnotationNode(new ClassNode(Delegate))
             delegateAnn.setMember("includes", new ListExpression(getterNames))
+            delegateAnn.setMember("interfaces", new ConstantExpression(false))
             ModuleNode module = abstractMethodNode.declaringClass.module
             new DelegateASTTransformation().visit(
                     [delegateAnn, field] as ASTNode[],
