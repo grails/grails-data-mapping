@@ -19,7 +19,7 @@ project.ext {
     springVersion = "5.1.2.RELEASE"
     caffeineVersion= "2.5.2"
     grailsVersion = "4.0.0.BUILD-SNAPSHOT"
-    grailsAsyncVersion = "3.3.2"
+    grailsAsyncVersion = "4.0.0.BUILD-SNAPSHOT"
     slf4jVersion = "1.7.22"
     junitVersion = "4.12"
     javassistVersion = "3.21.0-GA"
