@@ -1,6 +1,6 @@
 package org.grails.datastore.mapping.proxy
 
-import grails.persistence.Entity
+
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValuePersistentEntity
@@ -31,12 +31,12 @@ class JavassistProxyFactorySpec extends Specification {
         !proxyFactory.isInitialized(a, "book")
     }
 }
-@Entity
+@grails.gorm.annotation.Entity
 class Book {
     Long id
     String title
 }
-@Entity
+@grails.gorm.annotation.Entity
 class Author {
     String name
     Book book

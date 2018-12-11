@@ -18,7 +18,7 @@ buildscript {
 project.ext {
     springVersion = "5.1.2.RELEASE"
     caffeineVersion= "2.5.2"
-    grailsVersion = "4.0.0.BUILD-SNAPSHOT"
+    grailsVersion = "3.3.8"
     grailsAsyncVersion = "3.3.2"
     slf4jVersion = "1.7.22"
     junitVersion = "4.12"

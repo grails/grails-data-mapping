@@ -30,12 +30,8 @@ dependencies {
     compile "org.slf4j:slf4j-api:$slf4jVersion"
     compile "org.slf4j:jcl-over-slf4j:$slf4jVersion"
 
+    testCompile project(":grails-datastore-gorm")
     // we need the Grails @Entity annotation to test GORM syntax mapping
-    testCompile("commons-lang:commons-lang:2.4")
     testCompile("org.springframework:spring-context:$springVersion")
     testCompile("org.springframework:spring-web:$springVersion")
-    testCompile("org.grails:grails-bootstrap:$grailsVersion") {
-        exclude module:'gpars'
-    }
-    testCompile "org.grails:grails-core:$grailsVersion"
 }

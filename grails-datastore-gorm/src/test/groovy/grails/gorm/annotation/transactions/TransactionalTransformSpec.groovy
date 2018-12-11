@@ -1,16 +1,12 @@
 package grails.gorm.annotation.transactions
 
-import grails.core.DefaultGrailsApplication
 import grails.gorm.transactions.NotTransactional
 import grails.gorm.transactions.Transactional
-import grails.spring.BeanBuilder
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import org.grails.datastore.mapping.core.connections.MultipleConnectionSourceCapableDatastore
 import org.grails.datastore.mapping.transactions.TransactionCapableDatastore
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.config.MethodInvokingFactoryBean
-import org.springframework.context.annotation.CommonAnnotationBeanPostProcessor
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.transaction.PlatformTransactionManager
@@ -795,35 +791,6 @@ new BookService()
         dataSource.driverClassName = "org.h2.Driver"
 
         return new TestTransactionManager(dataSource) {}
-    }
-
-    @Issue("GRAILS-10748")
-    void "transactional shouldn't be applied to bean initialization methods"() {
-        when:
-        def application = new DefaultGrailsApplication()
-        def bb = new BeanBuilder()
-        bb.beans {
-            commonAnnotationBeanPostProcessor(CommonAnnotationBeanPostProcessor)
-            testService(TransactionalTransformSpecService) { bean ->
-                bean.autowire = true
-                bean.lazyInit = false
-            }
-            transactionManager(MethodInvokingFactoryBean) {
-                targetObject = this
-                targetMethod = 'getPlatformTransactionManager'
-            }
-        }
-        def applicationContext = bb.createApplicationContext()
-        TransactionalTransformSpecService bean = applicationContext.getBean('testService')
-        bean.name = 'Grails'
-
-        then:
-        applicationContext.transactionManager != null
-        bean.transactionManager != null
-        bean.process() != null
-        bean.isActualTransactionActive() == false
-        bean.name == 'Grails'
-        bean.isActive() == true
     }
 
     @Issue(['GRAILS-11145', 'GRAILS-11134'])

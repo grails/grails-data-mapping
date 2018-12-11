@@ -1,14 +1,11 @@
 package grails.gorm.services
 
-import grails.gorm.annotation.Entity
-import grails.validation.ValidationException
 import org.grails.datastore.gorm.validation.javax.services.ValidatedService
-import org.springframework.transaction.PlatformTransactionManager
+import org.grails.datastore.mapping.validation.ValidationException
 import spock.lang.Specification
 
 import javax.validation.ConstraintViolationException
 import javax.validation.ParameterNameProvider
-import javax.validation.constraints.NotNull
 
 /**
  * Created by graemerocher on 14/02/2017.

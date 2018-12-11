@@ -1,36 +1,11 @@
 dependencies {
-    def excludes = {
-        exclude group:"org.grails",module: "grails-plugin-url-mappings"
-        exclude group:"org.grails",module: "grails-plugin-servlets"
-        exclude group:"org.grails",module: "grails-plugin-controllers"
-        exclude group:"org.grails",module: "grails-plugin-domain-class"
-        exclude group:"org.grails",module: "grails-plugin-gsp"
-        exclude group:"org.grails",module: "grails-plugin-filters"
-        exclude group:"org.grails",module: "grails-plugin-interceptors"
-        exclude group:"org.grails",module: "grails-plugin-mimetypes"
-        exclude group:"org.grails",module: "grails-plugin-converters"
-        exclude group:"org.grails",module: "grails-logging"
-        exclude group:"org.grails",module: "grails-test"
-        exclude group:"org.grails",module: "grails-datastore-gorm"
-        exclude group:"org.grails",module: "grails-datastore-core"
-        exclude group:"org.grails",module: "grails-datastore-simple"
-        exclude group:"org.grails",module: "grails-datastore-gorm"
-    }
-
-    compile "org.grails:grails-test:$grailsVersion", excludes
-
     compile project(":grails-datastore-gorm"),
             project(":grails-datastore-core")
-
-    compile "org.grails:grails-test:$grailsVersion",excludes
-    compile "org.grails:grails-core:$grailsVersion",excludes
-    compile("org.grails:grails-bootstrap:$grailsVersion",excludes)
 
     testCompile project(":grails-datastore-gorm-rx")
     testCompile project(":grails-datastore-gorm-tck")
     testCompile "org.codehaus.groovy:groovy-json:$groovyVersion"
-    testRuntime "javax.servlet:javax.servlet-api:$servletApiVersion"
-    testRuntime "org.grails:grails-web:$grailsVersion",excludes
+    testRuntime "org.springframework:spring-aop:$springVersion"
     testRuntime "log4j:log4j:1.2.16"
 }
 
