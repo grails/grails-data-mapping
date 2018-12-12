@@ -692,6 +692,22 @@ table.CodeRay td.code>pre{padding:0}
 <p>Below are the details of the changes across releases:</p>
 </div>
 <div class="sect3">
+<h4 id="_7_0">7.0</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Support for MongoDB Driver 3.9.1</p>
+</li>
+<li>
+<p>Support for Java 11</p>
+</li>
+<li>
+<p>Removal of RxJava 1.x Module</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_6_1">6.1</h4>
 <div class="ulist">
 <ul>
@@ -860,136 +876,12 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
 <div class="sect2">
 <h3 id="upgradeNotes">Upgrade Notes</h3>
 <div class="sect3">
-<h4 id="_removal_of_grails_datastore_simple">Removal of grails-datastore-simple</h4>
+<h4 id="_removal_of_the_rxgorm_module">Removal of the RxGORM Module</h4>
 <div class="paragraph">
-<p>The <code>grails-datastore-simple</code> and <code>grails-datastore-gorm-test</code> dependencies have been combined into a single <code>grails-datastore-gorm-test</code> dependency.</p>
-</div>
-<div class="paragraph">
-<p>Unfortunately existing versions of Grails still depend on the old <code>grails-datastore-simple</code> dependency. And you may receive an error such as:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">> Could not resolve all dependencies for configuration ':example:runtime'.
-   > Could not find org.grails:grails-datastore-simple:7.0.0.BUILD-SNAPSHOT.
-     Searched in the following locations:
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/7.0.0.BUILD-SNAPSHOT/grails-datastore-simple-7.0.0.BUILD-SNAPSHOT.pom
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/7.0.0.BUILD-SNAPSHOT/grails-datastore-simple-7.0.0.BUILD-SNAPSHOT.jar
-     Required by:
-         project :example > org.grails:grails-dependencies:3.2.4 >
-            ...</code></pre>
-</div>
+<p>Due to lack of interest and usage from the community, the RxGORM module for MongoDB has been removed.</p>
 </div>
 <div class="paragraph">
-<p>If you are upgrading you will need to exclude this dependency using the following Gradle syntax directly before the <code>dependencies</code> block:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">configurations.all { <span class="predefined-type">Configuration</span> c -&gt;
-    c.exclude(<span class="key">group</span>:<span class="string"><span class="delimiter">'</span><span class="content">org.grails</span><span class="delimiter">'</span></span>,<span class="key">module</span>:<span class="string"><span class="delimiter">'</span><span class="content">grails-datastore-simple</span><span class="delimiter">'</span></span>)
-}
-dependencies {
-    ....
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_configuration_properties">Configuration Properties</h4>
-<div class="paragraph">
-<p>In previous versions of the plugin configuration was specified using the <code>grails.mongo</code> prefix. This is now <code>grails.mongodb</code> instead. For example, the following configuration in <code>application.groovy</code> or <code>Config.groovy</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">grails {
-    mongo {
-        databaseName = <span class="string"><span class="delimiter">'</span><span class="content">foo</span><span class="delimiter">'</span></span>
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Should now be expressed as:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">grails {
-    mongodb {
-        databaseName = <span class="string"><span class="delimiter">'</span><span class="content">foo</span><span class="delimiter">'</span></span>
-    }
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_persistence_engine">Persistence Engine</h4>
-<div class="paragraph">
-<p>Since GORM for MongoDB 5.0 there is now a choice of persistence engine. The original GORM for MongoDB converted MongoDB documents to and from Groovy objects. This engine is still present and can be activated with the following configuration in <code>grails-app/conf/application.yml</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">grails</span>:
-    <span class="key">mongodb</span>:
-        <span class="key">engine</span>: mapping</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>However, 5.0 and above uses a new engine based on MongoDB 3.x driver codecs which means objects are no longer converted first to MongoDB Document objects and then to Groovy objects, instead the driver reads Groovy objects directly from the JSON stream at the driver level, which is far more efficient, however may not exhibit exactly the same behaviour as the previous version. To active this new engine use the following codec (or leave it blank as the codec engine is now the default):</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="key">grails</span>:
-    <span class="key">mongodb</span>:
-        <span class="key">engine</span>: codec</code></pre>
-</div>
-</div>
-<div class="admonitionblock warning">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-warning" title="Warning"></i>
-</td>
-<td class="content">
-When switching from mapping to codec with an existing database, there are several conditions that may require manual changes.
-</td>
-</tr>
-</table>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>The version property of all documents, including embedded, may need to have it&#8217;s type changed.</p>
-</li>
-<li>
-<p>The codec engine is more strict about data types than the mapping engine. For example, data stored in mongo as an <code>INT32</code> could be converted to a <code>BigDecimal</code>. This is no longer possible and the data will need to be changed. Other examples include strings like "1470924116786" could be converted to <code>Date</code> objects in the mapping engine, but will not work in the codec engine. While testing your application, you can identify these types of issues by the error message that will occur. The error will occur at <code>AbstractBsonReader.verifyBSONType</code>. The easiest way to determine which property is the culprit, is to debug your application and put a breakpoint on that method. The variable <code>currentName</code> will contain the property causing the error.</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>An example script to update the version property of top level documents is:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="javascript">db.getCollectionNames().forEach(<span class="keyword">function</span> (c) {
-    <span class="keyword">var</span> collection = db.getCollection(c);
-    collection.find({<span class="key">version</span>: {<span class="predefined">$type</span>: <span class="integer">16</span>}}).forEach(<span class="keyword">function</span>(domain) {
-        domain.version = <span class="keyword">new</span> NumberLong(domain.version);
-        collection.save(domain);
-    });
-});</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Embedded documents may also require updating.
-</td>
-</tr>
-</table>
+<p>If you use this module you should stick to the 6.1.x line of GORM.</p>
 </div>
 </div>
 </div>
