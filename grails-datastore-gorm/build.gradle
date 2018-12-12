@@ -1,10 +1,9 @@
 dependencies {
-
     compile project(":grails-datastore-core")
     compile project(":grails-datastore-gorm-validation")
-
+    
     compile "org.slf4j:slf4j-api:$slf4jVersion"
-    compile ('javax.el:javax.el-api:3.0.0')
+    compile ("javax.el:javax.el-api:$elVersion")
     runtime('org.glassfish:javax.el:3.0.1-b09')
 
     compileOnly("org.hibernate:hibernate-validator:$hibernateValidatorVersion")

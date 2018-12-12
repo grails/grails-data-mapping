@@ -16,14 +16,6 @@ buildscript {
 
 
 project.ext {
-    springVersion = "5.1.2.RELEASE"
-    caffeineVersion= "2.5.2"
-    grailsVersion = "3.3.8"
-    grailsAsyncVersion = "3.3.2"
-    slf4jVersion = "1.7.22"
-    junitVersion = "4.12"
-    javassistVersion = "3.21.0-GA"
-    groovyVersion = System.getProperty('groovyVersion') ?: '2.5.4'
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
     projectMajorVersion = "7"
@@ -36,35 +28,14 @@ project.ext {
 
     // overall project version
     projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
-
-    // plugin versions
-    hibernateValidatorVersion = "6.0.13.Final"
-    hibernateVersion = "5.3.6"
-    servletApiVersion = "4.0.1"
-
-    def defaultPluginVersion = releaseType == 'RELEASE' ? projectVersion : "${projectVersion}.${releaseType}"
-    hibernatePluginVersion = defaultPluginVersion
-    mongodbPluginVersion = defaultPluginVersion
-    neo4jPluginVersion = defaultPluginVersion
-    cassandraPluginVersion = defaultPluginVersion
-    redisPluginVersion = defaultPluginVersion
-
-
     isCiBuild = project.hasProperty("isCiBuild")
     isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
-
-
 
     nexusUsername = System.getenv("SONATYPE_USERNAME") ?: project.hasProperty("sonatypeOssUsername") ? project.sonatypeOssUsername : ''
     nexusPassword = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
 }
 
-def groovyMajorVersion = groovyVersion[0..2]
 def spockDependency = "org.spockframework:spock-core:1.2-groovy-2.5"
-
-def groovyProjects() {
-    subprojects.findAll { project -> isGroovyProject(project) }
-}
 
 def isGroovyProject(project) {
     !project.name.contains("grails-plugins")
@@ -76,7 +47,6 @@ configurations {
 
 version = "${projectVersion}.${releaseType}"
 group = "org.grails"
-
 
 apply plugin: 'idea'
 apply plugin: 'project-report'
@@ -208,7 +178,7 @@ subprojects {
 
 
     dependencies {
-        compile 'javax.annotation:javax.annotation-api:1.3.2'
+        compile "javax.annotation:javax.annotation-api:$javaAnnotationApiVersion"
 
         if (isStandardGroovyMavenProject) {
             documentation "org.fusesource.jansi:jansi:1.11"
