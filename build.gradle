@@ -13,8 +13,6 @@ buildscript {
     }
 }
 
-
-
 project.ext {
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
@@ -86,23 +84,6 @@ subprojects {
    version = "${projectVersion}.${releaseType}"
    group = "org.grails"
 
-    if(project.name.contains('grails-plugins')) {
-        project.tasks.all { Task t ->
-            t.onlyIf {
-                !Boolean.getBoolean('skipPlugins')
-            }
-        }
-    }
-    else {
-        project.tasks.all { Task t ->
-            t.onlyIf {
-                !Boolean.getBoolean('onlyPlugins')
-            }
-        }
-    }
-
-    if(project.name.endsWith("spring-boot")) return
-
    afterEvaluate { project ->
         if (isGroovyProject(project)) {
             def hasSnapshotVersion = project.version.endsWith("-SNAPSHOT")
@@ -113,54 +94,13 @@ subprojects {
     }
 
 
-    ext {
-        pomInfo = {
-            delegate.name 'Grails GORM'
-            delegate.description 'GORM - Grails Data Access Framework'
-            delegate.url 'http://grails.org/'
-
-            delegate.licenses {
-                delegate.license {
-                    delegate.name 'The Apache Software License, Version 2.0'
-                    delegate.url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    delegate.distribution 'repo'
-                }
-            }
-
-            delegate.scm {
-                delegate.url 'scm:git@github.com:grails/grails-data-mapping.git'
-                delegate.connection 'scm:git@github.com:grails/grails-data-mapping.git'
-                delegate.developerConnection 'scm:git@github.com:grails/grails-data-mapping.git'
-            }
-
-
-            delegate.developers {
-                delegate.developer {
-                    delegate.id 'graemerocher'
-                    delegate.name 'Graeme Rocher'
-                }
-                delegate.developer {
-                    delegate.id 'jeffscottbrown'
-                    delegate.name 'Jeff Brown'
-                }
-                delegate.developer {
-                    delegate.id 'burtbeckwith'
-                    delegate.name 'Burt Beckwith'
-                }
-            }
-
-        }
-    }
-
-
     def isStandardGroovyMavenProject = isGroovyProject(project)
 
     if (isStandardGroovyMavenProject) {
         apply plugin: 'groovy'
         apply plugin: "io.github.groovylang.groovydoc"
         apply plugin: 'eclipse'
-        apply plugin: 'com.bmuschko.nexus'
-        apply plugin: 'maven-publish'
+        apply from:"${rootProject.rootDir}/gradle/publishing.gradle"
         apply plugin: 'idea'
         apply plugin: 'provided-base'
         apply plugin: 'optional-base'
@@ -300,55 +240,6 @@ subprojects {
             classpath += configurations.documentation
             jvmArgs "-Xmx512M"
         }
-
-        modifyPom {
-            delegate.project {
-                def updatePom = pomInfo.clone()
-                updatePom.delegate = delegate
-                updatePom()
-            }
-        }
-
-        publishing {
-
-            repositories {
-                maven {
-                    credentials {
-                        def u = System.getenv("ARTIFACTORY_USERNAME") ?: project.hasProperty("artifactoryPublishUsername") ? project.artifactoryPublishUsername : ''
-                        def p = System.getenv("ARTIFACTORY_PASSWORD") ?: project.hasProperty("artifactoryPublishPassword") ? project.artifactoryPublishPassword : ''
-                        username = u
-                        password = p
-                    }
-                    if(isBuildSnapshot) {
-                        url  "https://repo.grails.org/grails/libs-snapshots-local"
-                    }
-                    else {
-                        url  "https://repo.grails.org/grails/libs-releases-local"
-                    }
-
-                }
-            }
-
-            publications {
-                maven(MavenPublication) {
-                    from components.java
-
-                    afterEvaluate {
-                        artifact source: sourcesJar, classifier: "sources"
-                        artifact source: javadocJar, classifier: "javadoc"
-                    }
-
-                    pom.withXml {
-                        def xml = asNode()
-                        def dependency = xml.dependencies.find { dep -> dep.artifactId == 'slf4j-simple' }
-                        dependency?.optional = true
-                        xml.children().last() + pomInfo
-                    }
-
-                }
-            }
-        }
-
     }
 }
 

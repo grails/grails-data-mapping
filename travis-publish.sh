@@ -18,20 +18,10 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
 
   export GRADLE_OPTS="-XX:MaxPermSize=1024m -Xmx1500m -Dfile.encoding=UTF-8"
 
-  gpg --keyserver keyserver.ubuntu.com --recv-key $SIGNING_KEY
-  if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
-    # for releases we upload to Bintray and Sonatype OSS
-    ./gradlew --stop
-    ./gradlew --no-daemon -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" uploadArchives || EXIT_STATUS=$?
-
-    if [[ $EXIT_STATUS -eq 0 ]]; then
-        ./gradlew --stop
-        ./gradlew --no-daemon -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" publish || EXIT_STATUS=$?
-    fi
+  if [[ -n $TRAVIS_TAG ]]; then
+      ./gradlew bintrayUpload --no-daemon --stacktrace || EXIT_STATUS=$?
   else
-    # for snapshots only to repo.grails.org
-    ./gradlew --stop
-    ./gradlew --no-daemon -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="${TRAVIS_BUILD_DIR}/secring.gpg" publish  || EXIT_STATUS=$?
+      ./gradlew publish --no-daemon --stacktrace || EXIT_STATUS=$?
   fi
 
   if [[ $EXIT_STATUS -eq 0 ]]; then
@@ -69,24 +59,24 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         cd ..
 
         # If there is a tag present then this becomes the latest
-        if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
-            echo "Triggering documentation build"
-            git clone https://${GH_TOKEN}@github.com/grails/gorm-docs.git gorm-docs
-            cd gorm-docs
-
-            if [[ $TRAVIS_TAG =~ [M\d|RC\d] ]]; then            
-               echo "gormVersion=${TRAVIS_TAG:1}" > gradle.properties  
-            else 
-               echo "gormVersion=${TRAVIS_TAG:1}.RELEASE" > gradle.properties
-            fi            
-
-            git add gradle.properties
-            git commit -m "Release $TRAVIS_TAG docs"
-            git tag $TRAVIS_TAG
-            git push --tags
-            git push
-            cd ..
-        fi
+#        if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
+#            echo "Triggering documentation build"
+#            git clone https://${GH_TOKEN}@github.com/grails/gorm-docs.git gorm-docs
+#            cd gorm-docs
+#
+#            if [[ $TRAVIS_TAG =~ [M\d|RC\d] ]]; then
+#               echo "gormVersion=${TRAVIS_TAG:1}" > gradle.properties
+#            else
+#               echo "gormVersion=${TRAVIS_TAG:1}.RELEASE" > gradle.properties
+#            fi
+#
+#            git add gradle.properties
+#            git commit -m "Release $TRAVIS_TAG docs"
+#            git tag $TRAVIS_TAG
+#            git push --tags
+#            git push
+#            cd ..
+#        fi
 
   else
       echo "Error occured during publishing, skipping docs"
