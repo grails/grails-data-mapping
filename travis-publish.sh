@@ -20,6 +20,9 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
 
   if [[ -n $TRAVIS_TAG ]]; then
       ./gradlew bintrayUpload --no-daemon --stacktrace || EXIT_STATUS=$?
+#     if [[ $EXIT_STATUS -eq 0 ]]; then
+#       ./gradlew synchronizeWithMavenCentral --no-daemon
+#     fi
   else
       ./gradlew publish --no-daemon --stacktrace || EXIT_STATUS=$?
   fi
