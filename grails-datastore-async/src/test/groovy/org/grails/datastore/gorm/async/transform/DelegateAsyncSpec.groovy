@@ -1,4 +1,4 @@
-
+package org.grails.datastore.gorm.async.transform
 
 import grails.async.Promise
 import org.codehaus.groovy.ast.ClassNode
