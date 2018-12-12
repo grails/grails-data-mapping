@@ -19,7 +19,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
   export GRADLE_OPTS="-XX:MaxPermSize=1024m -Xmx1500m -Dfile.encoding=UTF-8"
 
   if [[ -n $TRAVIS_TAG ]]; then
-      ./gradlew bintrayUpload --no-daemon --stacktrace || EXIT_STATUS=$?
+      ./gradlew publish bintrayUpload --no-daemon --stacktrace || EXIT_STATUS=$?
 #     if [[ $EXIT_STATUS -eq 0 ]]; then
 #       ./gradlew synchronizeWithMavenCentral --no-daemon
 #     fi

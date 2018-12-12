@@ -82,6 +82,8 @@ publishing {
             }
             if(isBuildSnapshot) {
                 url  "https://repo.grails.org/grails/libs-snapshots-local"
+            } else {
+                url  "https://repo.grails.org/grails/libs-releases-local"
             }
         }
     }
