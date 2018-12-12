@@ -74,8 +74,8 @@ publishing {
     repositories {
         maven {
             credentials {
-                def ossUser = System.getenv("SONATYPE_USERNAME") ?: project.hasProperty("sonatypeOssUsername") ? project.sonatypeOssUsername : ''
-                def ossPass = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
+                def ossUser = System.getenv("GRAILS_CENTRAL_USERNAME") ?: project.hasProperty("grailsCentralUsername") ? project.sonatypeOssUsername : ''
+                def ossPass = System.getenv("GRAILS_CENTRAL_PASSWORD") ?: project.hasProperty("grailsCentralPassword") ? project.sonatypeOssPassword : ''
 
                 username = ossUser
                 password = ossPass
