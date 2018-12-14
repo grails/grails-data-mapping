@@ -1,26 +1,52 @@
 package org.grails.datastore.mapping.core.grailsversion
 
 import spock.lang.Specification
+import spock.lang.Unroll
 
 /**
  * Created by jameskleeh on 1/17/17.
  */
 class GrailsVersionSpec extends Specification {
 
-    void "test isAtLeast"() {
+    @Unroll
+    void "isAtLeast(#requiredVersion) => #expected"(String requiredVersion, boolean expected) {
         expect:
-        GrailsVersion.isAtLeastMajorMinor("4.0.0.BUILD-SNAPSHOT", 4, 0)
-        GrailsVersion.isAtLeast("3.2.0")
-        GrailsVersion.isAtLeast("3.1.0")
-        GrailsVersion.isAtLeastMajorMinor("3.3.0.BUILD-SNAPSHOT", 3, 3)
-        !GrailsVersion.isAtLeastMajorMinor("3.3.0.BUILD-SNAPSHOT", 3, 4)
-        GrailsVersion.isAtLeastMajorMinor("3.3.0.BUILD-SNAPSHOT", 3, 2)
-        GrailsVersion.isAtLeast("3.3.0", "3.3.0.BUILD-SNAPSHOT")
-        GrailsVersion.isAtLeast("3.3.0", "3.3.0.M1")
-        !GrailsVersion.isAtLeast("3.3.0.BUILD-SNAPSHOT","3.3.0")
-        GrailsVersion.isAtLeast("3.3.0","3.3.0")
-        GrailsVersion.isAtLeast("3.3.0")
-        !GrailsVersion.isAtLeast("4.0.0")
+        expected == GrailsVersion.isAtLeast(requiredVersion)
+
+        where:
+        requiredVersion | expected
+        "3.2.0" | true
+        "3.1.0" | true
+        "3.3.0" | true
+        "4.0.0" | false
+    }
+
+    @Unroll
+    void "isAtLeastMajorMinor(#version, #majorVersion, #minorVersion) => #expected"(String version, int majorVersion, int minorVersion, boolean expected) {
+        expect:
+        expected == GrailsVersion.isAtLeastMajorMinor(version, majorVersion, minorVersion)
+
+        where:
+        version                | majorVersion | minorVersion | expected
+        "4.0.0.BUILD-SNAPSHOT" | 4            | 0            | true
+        "3.3.0.BUILD-SNAPSHOT" | 3            | 3            | true
+        "3.3.0.BUILD-SNAPSHOT" | 3            | 4            | false
+        "3.3.0.BUILD-SNAPSHOT" | 3            | 2            | true
+    }
+
+    @Unroll
+    void "test isAtLeast(#version, #requiredVersion) => expected"(String version,
+                                                                  String requiredVersion,
+                                                                  boolean expected) {
+        expect:
+        expected == GrailsVersion.isAtLeast(version, requiredVersion)
+
+        where:
+        version                | requiredVersion        | expected
+        "3.3.0"                | "3.3.0.BUILD-SNAPSHOT" | true
+        "3.3.0"                | "3.3.0.M1"             | true
+        "3.3.0.BUILD-SNAPSHOT" | "3.3.0"                | false
+        "3.3.0"                | "3.3.0"                | true
     }
 
     void "test compareTo"() {
