@@ -86,7 +86,10 @@ class GrailsVersion implements Comparable<GrailsVersion> {
 
     private static boolean isAtLeastMajorMinorImpl(GrailsVersion version, int majorVersion, int minorVersion) {
         if (version != null) {
-            return version.major >= majorVersion && version.minor >= minorVersion
+            if (version.major > majorVersion) {
+                return true
+            }
+            return version.major == majorVersion && version.minor >= minorVersion
         }
         return false
     }

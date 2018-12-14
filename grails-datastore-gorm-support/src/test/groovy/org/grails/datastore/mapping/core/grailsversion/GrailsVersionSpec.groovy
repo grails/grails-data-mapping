@@ -28,6 +28,7 @@ class GrailsVersionSpec extends Specification {
 
         where:
         version                | majorVersion | minorVersion | expected
+        "4.0.0.BUILD-SNAPSHOT" | 3            | 3            | true
         "4.0.0.BUILD-SNAPSHOT" | 4            | 0            | true
         "3.3.0.BUILD-SNAPSHOT" | 3            | 3            | true
         "3.3.0.BUILD-SNAPSHOT" | 3            | 4            | false
