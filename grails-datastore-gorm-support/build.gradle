@@ -2,6 +2,7 @@ dependencies {
     compile project(':grails-datastore-gorm')
 
     compile("org.grails:grails-core:$grailsVersion") {
+        exclude group:'org.hibernate.javax.persistence', module:'hibernate-jpa-2.1-api'
         exclude group:'aopalliance',module:'aopalliance'
         exclude group:'commons-logging',module:'commons-logging'
         exclude group:'commons-lang',module:'commons-lang'
