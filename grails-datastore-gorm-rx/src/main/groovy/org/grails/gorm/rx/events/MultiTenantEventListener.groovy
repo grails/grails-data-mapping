@@ -24,56 +24,56 @@ import org.springframework.util.Assert
  */
 @CompileStatic
 class MultiTenantEventListener implements PersistenceEventListener {
-    protected final RxDatastoreClient datastoreClient;
+    protected final RxDatastoreClient datastoreClient
 
     public MultiTenantEventListener(RxDatastoreClient datastoreClient) {
-        this.datastoreClient = datastoreClient;
+        this.datastoreClient = datastoreClient
     }
 
     @Override
     public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
-        return PreQueryEvent.class.isAssignableFrom(eventType) || PostQueryEvent.class.isAssignableFrom(eventType) || PreInsertEvent.class.isAssignableFrom(eventType);
+        return PreQueryEvent.class.isAssignableFrom(eventType) || PostQueryEvent.class.isAssignableFrom(eventType) || PreInsertEvent.class.isAssignableFrom(eventType)
     }
 
     @Override
     public boolean supportsSourceType(Class<?> sourceType) {
-        return RxDatastoreClient.class.isAssignableFrom(sourceType);
+        return RxDatastoreClient.class.isAssignableFrom(sourceType)
     }
 
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if(supportsEventType(event.getClass())) {
-            RxDatastoreClient datastoreClient = (RxDatastoreClient) event.getSource();
+            RxDatastoreClient datastoreClient = (RxDatastoreClient) event.getSource()
             Assert.notNull(datastoreClient, "Datastore client should never be null from source event")
             if(event instanceof PreQueryEvent) {
-                PreQueryEvent preQueryEvent = (PreQueryEvent) event;
-                Query query = preQueryEvent.getQuery();
+                PreQueryEvent preQueryEvent = (PreQueryEvent) event
+                Query query = preQueryEvent.getQuery()
 
-                PersistentEntity entity = query.getEntity();
+                PersistentEntity entity = query.getEntity()
                 if(entity.isMultiTenant()) {
                     if(supportsSourceType(datastoreClient.getClass()) && this.datastoreClient.equals(datastoreClient)) {
-                        TenantId tenantId = entity.getTenantId();
+                        TenantId tenantId = entity.getTenantId()
                         if(tenantId != null) {
-                            Serializable currentId = Tenants.currentId(datastoreClient.getClass());
-                            query.eq(tenantId.getName(), currentId );
+                            Serializable currentId = Tenants.currentId(datastoreClient.getClass())
+                            query.eq(tenantId.getName(), currentId )
                         }
                     }
                 }
             }
             else if(event instanceof PreInsertEvent) {
-                PreInsertEvent preInsertEvent = (PreInsertEvent) event;
-                PersistentEntity entity = preInsertEvent.getEntity();
+                PreInsertEvent preInsertEvent = (PreInsertEvent) event
+                PersistentEntity entity = preInsertEvent.getEntity()
                 if(entity.isMultiTenant()) {
-                    TenantId tenantId = entity.getTenantId();
-                    EntityReflector reflector = entity.getReflector();
+                    TenantId tenantId = entity.getTenantId()
+                    EntityReflector reflector = entity.getReflector()
                     if(supportsSourceType(datastoreClient.getClass()) && this.datastoreClient.equals(datastoreClient)) {
-                        Serializable currentId = Tenants.currentId(datastoreClient.getClass());
+                        Serializable currentId = Tenants.currentId(datastoreClient.getClass())
                         if(currentId != null) {
                             try {
                                 if(currentId == ConnectionSource.DEFAULT) {
-                                    currentId = (Serializable) preInsertEvent.getEntityAccess().getProperty(tenantId.getName());
+                                    currentId = (Serializable) preInsertEvent.getEntityAccess().getProperty(tenantId.getName())
                                 }
-                                reflector.setProperty(preInsertEvent.getEntityObject(), tenantId.getName(), currentId);
+                                reflector.setProperty(preInsertEvent.getEntityObject(), tenantId.getName(), currentId)
                             } catch (Exception e) {
                                 throw new TenantException("Could not assigned tenant id ["+currentId+"] to property ["+tenantId+"], probably due to a type mismatch. You should return a type from the tenant resolver that matches the property type of the tenant id!: " + e.getMessage(), e);
                             }
@@ -86,7 +86,7 @@ class MultiTenantEventListener implements PersistenceEventListener {
 
     @Override
     public int getOrder() {
-        return DEFAULT_ORDER;
+        return DEFAULT_ORDER
     }
 }
 

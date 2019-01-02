@@ -50,6 +50,6 @@ class OrderedComparator<T> implements Comparator<T> {
      * @return the order value, or {@code null} if none found
      */
     protected Integer findOrder(Object obj) {
-        return (obj instanceof Ordered ? ((Ordered) obj).getOrder() : null);
+        return (obj instanceof Ordered ? ((Ordered) obj).getOrder() : null)
     }
 }
