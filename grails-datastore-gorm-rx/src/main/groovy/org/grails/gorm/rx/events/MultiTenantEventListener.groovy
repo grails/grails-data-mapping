@@ -26,22 +26,22 @@ import org.springframework.util.Assert
 class MultiTenantEventListener implements PersistenceEventListener {
     protected final RxDatastoreClient datastoreClient
 
-    public MultiTenantEventListener(RxDatastoreClient datastoreClient) {
+    MultiTenantEventListener(RxDatastoreClient datastoreClient) {
         this.datastoreClient = datastoreClient
     }
 
     @Override
-    public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
+    boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
         return PreQueryEvent.class.isAssignableFrom(eventType) || PostQueryEvent.class.isAssignableFrom(eventType) || PreInsertEvent.class.isAssignableFrom(eventType)
     }
 
     @Override
-    public boolean supportsSourceType(Class<?> sourceType) {
+    boolean supportsSourceType(Class<?> sourceType) {
         return RxDatastoreClient.class.isAssignableFrom(sourceType)
     }
 
     @Override
-    public void onApplicationEvent(ApplicationEvent event) {
+    void onApplicationEvent(ApplicationEvent event) {
         if(supportsEventType(event.getClass())) {
             RxDatastoreClient datastoreClient = (RxDatastoreClient) event.getSource()
             Assert.notNull(datastoreClient, "Datastore client should never be null from source event")
@@ -85,7 +85,7 @@ class MultiTenantEventListener implements PersistenceEventListener {
     }
 
     @Override
-    public int getOrder() {
+    int getOrder() {
         return DEFAULT_ORDER
     }
 }
