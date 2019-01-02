@@ -462,8 +462,6 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
         return false
     }
 
-
-
     @Override
     protected String getRenamedMethodPrefix() {
         return RENAMED_METHOD_PREFIX
