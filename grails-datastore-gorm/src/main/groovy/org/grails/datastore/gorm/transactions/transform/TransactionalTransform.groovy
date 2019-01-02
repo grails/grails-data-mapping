@@ -96,12 +96,12 @@ import static org.grails.datastore.mapping.reflect.AstUtils.*
 @CompileStatic
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
 class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransformation implements Ordered {
-    private static final Set<String> ANNOTATION_NAME_EXCLUDES = new HashSet<String>([Transactional.class.getName(), "grails.transaction.Rollback", Rollback.class.getName(), NotTransactional.class.getName(), "grails.transaction.NotTransactional", "grails.gorm.transactions.ReadOnly"]);
+    private static final Set<String> ANNOTATION_NAME_EXCLUDES = new HashSet<String>([Transactional.class.getName(), "grails.transaction.Rollback", Rollback.class.getName(), NotTransactional.class.getName(), "grails.transaction.NotTransactional", "grails.gorm.transactions.ReadOnly"])
     public static final ClassNode MY_TYPE = new ClassNode(Transactional)
     public static final ClassNode READ_ONLY_TYPE = new ClassNode(ReadOnly)
     private static final String PROPERTY_TRANSACTION_MANAGER = "transactionManager"
     private static final String METHOD_EXECUTE = "execute"
-    private static final Object APPLIED_MARKER = new Object();
+    private static final Object APPLIED_MARKER = new Object()
     private static final String SET_TRANSACTION_MANAGER = "setTransactionManager"
     private static final Set<String> VALID_ANNOTATION_NAMES = Collections.unmodifiableSet(
         new HashSet<String>([Transactional.simpleName, Rollback.simpleName, ReadOnly.simpleName])
