@@ -1,20 +1,19 @@
-package org.grails.datastore.mapping.core
-
-import groovy.transform.CompileStatic
+package org.grails.datastore.mapping.core;
 
 /**
- * A trait that adds an order property to any class that implements it.
+ * Adds a getOrder() method to any class that implements it.
  *
  * Can be used in combination with {@link org.grails.datastore.mapping.core.order.OrderedComparator} to sort objects
  *
  * @author Graeme Rocher
  * @since 6.1
  */
-@CompileStatic
-trait Ordered {
+public interface Ordered {
 
     /**
      * The order of this object
      */
-    int order = 0
+    default int getOrder() {
+        return 0;
+    }
 }
