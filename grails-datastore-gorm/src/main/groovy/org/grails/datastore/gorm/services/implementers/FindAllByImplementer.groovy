@@ -25,7 +25,6 @@ import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.expr.ArgumentListExpression
 import org.codehaus.groovy.ast.expr.Expression
-import org.codehaus.groovy.ast.expr.MapExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.Statement
 import org.grails.datastore.gorm.GormEntity
@@ -35,9 +34,19 @@ import org.grails.datastore.gorm.services.transform.ServiceTransformation
 import org.grails.datastore.mapping.core.Ordered
 import org.grails.datastore.mapping.reflect.AstUtils
 
-import static org.codehaus.groovy.ast.tools.GeneralUtils.*
-import static org.codehaus.groovy.ast.ClassHelper.*
-import static org.grails.datastore.mapping.reflect.AstUtils.*
+import static org.codehaus.groovy.ast.tools.GeneralUtils.varX
+import static org.codehaus.groovy.ast.tools.GeneralUtils.callX
+import static org.codehaus.groovy.ast.tools.GeneralUtils.constX
+import static org.codehaus.groovy.ast.tools.GeneralUtils.stmt
+import static org.codehaus.groovy.ast.tools.GeneralUtils.returnS
+import static org.codehaus.groovy.ast.tools.GeneralUtils.args
+import static org.codehaus.groovy.ast.tools.GeneralUtils.castX
+import static org.codehaus.groovy.ast.ClassHelper.MAP_TYPE
+import static org.grails.datastore.mapping.reflect.AstUtils.hasProperty
+import static org.grails.datastore.mapping.reflect.AstUtils.error
+import static org.grails.datastore.mapping.reflect.AstUtils.mapX
+import static org.grails.datastore.mapping.reflect.AstUtils.findAnnotation
+
 /**
  * Automatically implement services that find objects based an arguments
  *

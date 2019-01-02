@@ -3,7 +3,6 @@ package org.grails.datastore.mapping.core.connections
 import groovy.transform.CompileStatic;
 import org.springframework.core.env.PropertyResolver;
 
-import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**

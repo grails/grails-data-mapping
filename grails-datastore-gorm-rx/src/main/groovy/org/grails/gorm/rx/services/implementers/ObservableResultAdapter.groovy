@@ -8,7 +8,12 @@ import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.tools.GenericsUtils
 import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.gorm.services.ServiceImplementer
-import org.grails.datastore.gorm.services.implementers.*
+import org.grails.datastore.gorm.services.implementers.AdaptedImplementer
+import org.grails.datastore.gorm.services.implementers.AnnotatedServiceImplementer
+import org.grails.datastore.gorm.services.implementers.IterableInterfaceProjectionBuilder
+import org.grails.datastore.gorm.services.implementers.IterableProjectionServiceImplementer
+import org.grails.datastore.gorm.services.implementers.IterableServiceImplementer
+import org.grails.datastore.gorm.services.implementers.PrefixedServiceImplementer
 import org.grails.datastore.mapping.core.Ordered
 import org.grails.gorm.rx.transform.RxAstUtils
 import org.grails.gorm.rx.transform.RxScheduleIOTransformation

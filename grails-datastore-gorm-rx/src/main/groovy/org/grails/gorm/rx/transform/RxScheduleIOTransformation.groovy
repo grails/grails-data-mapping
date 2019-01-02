@@ -30,7 +30,10 @@ import org.grails.gorm.rx.services.support.RxServiceSupport
 import rx.Scheduler
 
 import static org.grails.datastore.mapping.reflect.AstUtils.ZERO_PARAMETERS
-import static org.codehaus.groovy.ast.tools.GeneralUtils.*
+import static org.codehaus.groovy.ast.tools.GeneralUtils.castX
+import static org.codehaus.groovy.ast.tools.GeneralUtils.classX
+import static org.codehaus.groovy.ast.tools.GeneralUtils.callX
+
 /**
  * A transformation that will convert a blocking GORM operation into an Observable that runs on the RxJava {@link rx.schedulers.Schedulers#io()} scheduler
  *
