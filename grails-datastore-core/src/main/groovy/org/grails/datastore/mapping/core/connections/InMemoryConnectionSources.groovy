@@ -12,11 +12,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 6.0
  */
 @CompileStatic
-public class InMemoryConnectionSources<T, S extends ConnectionSourceSettings> extends AbstractConnectionSources<T, S> {
+class InMemoryConnectionSources<T, S extends ConnectionSourceSettings> extends AbstractConnectionSources<T, S> {
 
     protected final Map<String, ConnectionSource<T, S>> connectionSourceMap = new ConcurrentHashMap<>();
 
-    public InMemoryConnectionSources(ConnectionSource<T, S> defaultConnectionSource, ConnectionSourceFactory<T, S> connectionSourceFactory, PropertyResolver configuration) {
+    InMemoryConnectionSources(ConnectionSource<T, S> defaultConnectionSource, ConnectionSourceFactory<T, S> connectionSourceFactory, PropertyResolver configuration) {
         super(defaultConnectionSource, connectionSourceFactory, configuration);
         this.connectionSourceMap.put(ConnectionSource.DEFAULT, defaultConnectionSource);
 
@@ -30,17 +30,17 @@ public class InMemoryConnectionSources<T, S extends ConnectionSourceSettings> ex
     }
 
     @Override
-    public Iterable<ConnectionSource<T, S>> getAllConnectionSources() {
+    Iterable<ConnectionSource<T, S>> getAllConnectionSources() {
         return Collections.unmodifiableCollection(this.connectionSourceMap.values());
     }
 
     @Override
-    public ConnectionSource<T, S> getConnectionSource(String name) {
+    ConnectionSource<T, S> getConnectionSource(String name) {
         return this.connectionSourceMap.get(name);
     }
 
     @Override
-    public ConnectionSource<T, S> addConnectionSource(String name, PropertyResolver configuration) {
+    ConnectionSource<T, S> addConnectionSource(String name, PropertyResolver configuration) {
         if(name == null) {
             throw new IllegalArgumentException("Argument [name] cannot be null");
         }
