@@ -228,7 +228,7 @@ public abstract class AbstractHibernateCriterionAdapter {
             @Override
             public Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery, Query.Criterion criterion, String alias) {
                 Query.Between btwCriterion = (Query.Between) criterion;
-                return Restrictions.between(calculatePropertyName(calculatePropertyName(btwCriterion.getProperty(), alias), alias), btwCriterion.getFrom(), btwCriterion.getTo());
+                return Restrictions.between(calculatePropertyName(btwCriterion.getProperty(), alias), btwCriterion.getFrom(), btwCriterion.getTo());
             }
         });
 
