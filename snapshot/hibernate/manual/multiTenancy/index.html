@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 1.5.4">
+<meta name="generator" content="Asciidoctor 1.5.5">
 <title>Multi-Tenancy Modes</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -17,7 +17,6 @@ audio:not([controls]){display:none;height:0}
 [hidden],template{display:none}
 script{display:none!important}
 html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}
-body{margin:0}
 a{background:transparent}
 a:focus{outline:thin dotted}
 a:active,a:hover{outline:0}
@@ -52,7 +51,7 @@ textarea{overflow:auto;vertical-align:top}
 table{border-collapse:collapse;border-spacing:0}
 *,*:before,*:after{-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box}
 html,body{font-size:100%}
-body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto;tab-size:4;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
 a:hover{cursor:pointer}
 img,object,embed{max-width:100%;height:auto}
 object,embed{height:100%}
@@ -64,7 +63,6 @@ img{-ms-interpolation-mode:bicubic}
 .text-center{text-align:center!important}
 .text-justify{text-align:justify!important}
 .hide{display:none}
-body{-webkit-font-smoothing:antialiased}
 img,object,svg{display:inline-block;vertical-align:middle}
 textarea{height:auto;min-height:50px}
 select{width:100%}
@@ -119,13 +117,16 @@ table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:
 table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
 table tr.even,table tr.alt,table tr:nth-of-type(even){background:#f8f8f7}
 table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{display:table-cell;line-height:1.6}
-body{tab-size:4}
 h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
 h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
 .clearfix:before,.clearfix:after,.float-group:before,.float-group:after{content:" ";display:table}
 .clearfix:after,.float-group:after{clear:both}
-*:not(pre)>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background-color:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
+*:not(pre)>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background-color:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed;word-wrap:break-word}
+*:not(pre)>code.nobreak{word-wrap:normal}
+*:not(pre)>code.nowrap{white-space:nowrap}
 pre,pre>code{line-height:1.45;color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;text-rendering:optimizeSpeed}
+em em{font-style:normal}
+strong strong{font-weight:400}
 .keyseq{color:rgba(51,51,51,.8)}
 kbd{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;display:inline-block;color:rgba(0,0,0,.8);font-size:.65em;line-height:1.45;background-color:#f7f7f7;border:1px solid #ccc;-webkit-border-radius:3px;border-radius:3px;-webkit-box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em white inset;box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em #fff inset;margin:0 .15em;padding:.2em .5em;vertical-align:middle;position:relative;top:-.1em;white-space:nowrap}
 .keyseq kbd:first-child{margin-left:0}
@@ -416,7 +417,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 .hide-for-print{display:none!important}
 .show-for-print{display:inherit!important}}
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
 </head>
 <body class="article">
 <div id="header">
@@ -448,6 +449,59 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="paragraph">
 <p>The above modes are listed from least probable to leak data between tenants to most probable. When using a <code>DISCRIMINATOR</code> approach much greater care needs to be taken to ensure tenants don&#8217;t see each other&#8217;s data.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_multi_tenancy_transformations">Multi-Tenancy Transformations</h3>
+<div class="paragraph">
+<p>The following transformations can be applied to any class to simplify greatly the development of Multi-Tenant applications. These include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>@CurrentTenant</code> - Resolve the current tenant for the context of a class or method</p>
+</li>
+<li>
+<p><code>@Tenant</code> - Use a specific tenant for the context of a class or method</p>
+</li>
+<li>
+<p><code>@WithoutTenant</code> - Execute logic without a specific tenant (using the default connection)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.gorm.multitenancy.*
+
+// resolve the current tenant for every method
+@CurrentTenant
+class TeamService {
+
+    // execute the countPlayers method without a tenant id
+    @WithoutTenant
+    int countPlayers() {
+        Player.count()
+    }
+
+    // use the tenant id "another" for all GORM logic within the method
+    @Tenant({"another"})
+    List&lt;Team&gt; allTwoTeams() {
+        Team.list()
+    }
+
+    List&lt;Team&gt; listTeams() {
+        Team.list(max:10)
+    }
+
+    @Transactional
+    void addTeam(String name) {
+        new Team(name:name).save(flush:true)
+    }
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -617,7 +671,10 @@ dataSource:
 </div>
 </div>
 <div class="paragraph">
-<p>The <code>TenantResolver</code> must also implement the <code>AllTenantsResolver</code> interface and return the schema names of all tenants. This gives you the option to hard code these, place them in configuration or read them from the default schema dynamically.</p>
+<p>The <code>TenantResolver</code> can optionally implement the <code>AllTenantsResolver</code> interface and return the schema names of all tenants. This gives you the option to hard code these, place them in configuration or read them from the default schema dynamically.</p>
+</div>
+<div class="paragraph">
+<p>If the <code>AllTenantsResolver</code> resolver is not implemented then GORM will use the configured <a href="../api/org/grails/org/hibernate/jdbc/schema/SchemaHandler.html">SchemaHandler</a> to resolve all the schema names from the database which it will use for the tenants.</p>
 </div>
 </div>
 <div class="sect3">
@@ -626,7 +683,7 @@ dataSource:
 <p>On startup, if <code>dataSource.dbCreate</code> is set to create the database at runtime, then GORM will attempt to create the schemas if they are missing.</p>
 </div>
 <div class="paragraph">
-<p>To do this it uses an instance <a href="../api/org/grails/org/hibernate/jdbc/schema/SchemaHandler.html">SchemaHandler</a> which by default uses the <code>CREATE SCHEMA [name]</code> syntax.</p>
+<p>To do this it uses an instance <a href="../api/org/grails/org/hibernate/jdbc/schema/SchemaHandler.html">SchemaHandler</a> which by default uses the <code>CREATE SCHEMA [name]</code> syntax, but can be overridden and customized for other database dialects as necessary.</p>
 </div>
 <div class="paragraph">
 <p>If you want to use this feature and create schemas at runtime depending on the database you may need to configure an alternate implementation:</p>
@@ -637,6 +694,30 @@ dataSource:
     dbCreate: create-drop
     schemaHandler: foo.bar.MySchemaHandler</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>You can disable completely runtime schema creation by removing the <code>dbCreate</code> option or setting it to <code>none</code>.</p>
+</div>
+<div class="paragraph">
+<p>If you wish to add a schema whilst the application is running then you can use the <code>addTenantForSchema</code> of the <code>HibernateDatastore</code> class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">HibernateDatastore datastore = ...
+datastore.addTenantForSchema("myNewSchema")</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If <code>dbCreate</code> is disabled then you will have to create the schema manually prior to invoking this method
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect3">
@@ -822,6 +903,10 @@ sessionFactory.openSession()</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>o.g.d.m.multitenancy.web.SessionTenantResolver</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the current tenant from the HTTP session using the attribute <code>gorm.tenantId</code> by default</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>o.g.d.m.multitenancy.web.HttpHeaderTenantResolver</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resolves the current tenant from the request HTTP Header using the header name <code>gorm.tenantId</code> by default</p></td>
+</tr>
 </tbody>
 </table>
 <div class="paragraph">
@@ -830,7 +915,7 @@ sessionFactory.openSession()</code></pre>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-web:6.0.14.BUILD-SNAPSHOT"</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-web:7.0.0.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 </div>
