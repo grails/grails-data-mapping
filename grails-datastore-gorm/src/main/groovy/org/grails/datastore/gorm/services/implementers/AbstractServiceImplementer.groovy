@@ -36,6 +36,10 @@ import static org.grails.datastore.gorm.transform.AstMethodDispatchUtils.*
 @CompileStatic
 abstract class AbstractServiceImplementer implements PrefixedServiceImplementer, Ordered {
 
+    @Override
+    int getOrder() {
+        return 0
+    }
 
     @Override
     boolean doesImplement(ClassNode domainClass, MethodNode methodNode) {

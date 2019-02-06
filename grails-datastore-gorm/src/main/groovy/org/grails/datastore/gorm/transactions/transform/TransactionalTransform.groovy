@@ -137,6 +137,11 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
     }
 
     @Override
+    int getOrder() {
+        return POSITION
+    }
+
+    @Override
     protected boolean isValidAnnotation(AnnotationNode annotationNode, AnnotatedNode classNode) {
         return VALID_ANNOTATION_NAMES.contains( annotationNode.classNode.nameWithoutPackage )
     }
