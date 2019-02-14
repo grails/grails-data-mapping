@@ -2,11 +2,11 @@ package grails.gorm.tests
 
 class NullValueEqualSpec extends GormDatastoreSpec {
 
-  void "test not in list returns the correct results"() {
+  void "test null value in equal and not equal"() {
     when:
-    new TestEntity(name:"Fred").save()
-    new TestEntity(name:"Bob", age: 11).save()
-    new TestEntity(name:"Jack").save(flush:true)
+    new TestEntity(name:"Fred").save(failOnError: true)
+    new TestEntity(name:"Bob", age: 11).save(failOnError: true)
+    new TestEntity(name:"Jack").save(flush:true, failOnError: true)
 
     then:
     TestEntity.countByAge(null) == 2
