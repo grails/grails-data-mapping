@@ -219,8 +219,14 @@ public abstract class MethodExpression {
 
         @Override
         public Query.Criterion createCriterion() {
+            Collection<?> argument = (Collection<?>) arguments[0];
+
+            if (argument == null || argument.isEmpty()) {
+                return Restrictions.or(Restrictions.isNull(propertyName), Restrictions.isNotNull(propertyName));
+            }
+
             Query.Negation negation = new Query.Negation();
-            negation.add(Restrictions.in(propertyName, (Collection<?>) arguments[0]));
+            negation.add(Restrictions.in(propertyName, argument));
             return negation;
         }
 
@@ -258,7 +264,12 @@ public abstract class MethodExpression {
 
         @Override
         public Query.Criterion createCriterion() {
-            return Restrictions.in(propertyName, (Collection<?>) arguments[0]);
+            Collection<?> argument = (Collection<?>) arguments[0];
+            if (argument == null || argument.isEmpty()) {
+                return Restrictions.and(Restrictions.isNull(propertyName), Restrictions.isNotNull(propertyName));
+            }
+
+            return Restrictions.in(propertyName, argument);
         }
 
         @Override
@@ -322,6 +333,10 @@ public abstract class MethodExpression {
         @Override
         public Query.Criterion createCriterion() {
             Range<?> range = (Range<?>) arguments[0];
+            if (range.isEmpty()){
+                return Restrictions.and(Restrictions.isNull(propertyName), Restrictions.isNotNull(propertyName));
+            }
+
             return Restrictions.between(propertyName, range.getFrom(), range.getTo());
         }
 
