@@ -610,8 +610,7 @@ class AstUtils {
     static ClassNode getFurthestUnresolvedParent(ClassNode classNode) {
         ClassNode parent = classNode.getSuperClass()
 
-        while (parent != null && !parent.name.equals("java.lang.Object") &&
-                !parent.isResolved() && !Modifier.isAbstract(parent.getModifiers())) {
+        while (parent != null && !parent.name.equals("java.lang.Object") && !parent.isResolved()) {
             classNode = parent
             parent = parent.getSuperClass()
         }
