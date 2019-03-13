@@ -997,6 +997,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Delete collections before owner delete.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html#cascadeDeleteCollection(org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.model.types.Association)" title="Method in NativeEntryEntityPersister">cascadeDeleteCollection(EntityAccess, Association)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/NativeEntryEntityPersister.html">NativeEntryEntityPersister</a>
 </dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/validation/CascadeValidateType.html" title="Enum in org.grails.datastore.mapping.validation">CascadeValidateType</a></span> - Enum in <a href="./org/grails/datastore/mapping/validation/package-summary.html">org.grails.datastore.mapping.validation</a>
+</dt><dd><div class="block">Defines a set of cascade validation options that are propagated to the associated entity.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/validation/CascadingValidator.html" title="Interface in org.grails.datastore.gorm.validation">CascadingValidator</a></span> - Interface in <a href="./org/grails/datastore/gorm/validation/package-summary.html">org.grails.datastore.gorm.validation</a>
 </dt><dd><div class="block">Extends the default Spring Validator interface and provides an additional method that specifies whether
  validation should cascade into associations.</div></dd>
@@ -2106,7 +2108,10 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/document/config/DocumentPersistentEntity.html#DocumentPersistentEntity(java.lang.Class, org.grails.datastore.mapping.model.MappingContext)" title="Constructor in DocumentPersistentEntity">DocumentPersistentEntity(Class, MappingContext)</a></span> - Constructor in <a href="org/grails/datastore/mapping/document/config/DocumentPersistentEntity.html">DocumentPersistentEntity</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Association.html#doesCascade(javax.persistence.CascadeType)" title="Method in Association">doesCascade(CascadeType)</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Association.html">Association</a>
-</dt><dd> <div class="block">Returns true if the this association cascade for the given cascade operation</div></dd>
+</dt><dd> <div class="block">Returns true if this association cascades for the given cascade operation</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Association.html#doesCascadeValidate(java.lang.Object)" title="Method in Association">doesCascadeValidate(Object)</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Association.html">Association</a>
+</dt><dd> <div class="block">Returns true if this association should cascade validation to the given entity.
+ </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractReadOperationImplementer.html#doesEnhance(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)" title="Method in AbstractReadOperationImplementer">doesEnhance(ClassNode, MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/AbstractReadOperationImplementer.html">AbstractReadOperationImplementer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/implementers/AbstractWriteOperationImplementer.html#doesEnhance(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode)" title="Method in AbstractWriteOperationImplementer">doesEnhance(ClassNode, MethodNode)</a></span> - Method in <a href="org/grails/datastore/gorm/services/implementers/AbstractWriteOperationImplementer.html">AbstractWriteOperationImplementer</a>
@@ -2911,6 +2916,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">The name of the from property</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/jdbc/DatabaseDriver.html#fromJdbcUrl(java.lang.String)" title="Method in DatabaseDriver">fromJdbcUrl(String)</a></span> - Method in <a href="org/grails/datastore/gorm/jdbc/DatabaseDriver.html">DatabaseDriver</a>
 </dt><dd> <div class="block">Find a <a href='../../../../../org/grails/datastore/gorm/jdbc/DatabaseDriver.html' title='DatabaseDriver'>DatabaseDriver</a> for the given URL.</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/validation/CascadeValidateType.html#fromMappedName(java.lang.String)" title="Method in CascadeValidateType">fromMappedName(String)</a></span> - Method in <a href="org/grails/datastore/mapping/validation/CascadeValidateType.html">CascadeValidateType</a>
+</dt><dd> <div class="block">Defines a set of cascade validation options that are propagated to the associated entity.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/jdbc/DatabaseDriver.html#fromProductName(java.lang.String)" title="Method in DatabaseDriver">fromProductName(String)</a></span> - Method in <a href="org/grails/datastore/gorm/jdbc/DatabaseDriver.html">DatabaseDriver</a>
 </dt><dd> <div class="block">Find a <a href='../../../../../org/grails/datastore/gorm/jdbc/DatabaseDriver.html' title='DatabaseDriver'>DatabaseDriver</a> for the given product name.</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaTransformer.html#FUNCTION_CALL_CRITERION" title="Field in DetachedCriteriaTransformer">FUNCTION_CALL_CRITERION</a></span> - Field in <a href="org/grails/datastore/gorm/query/transform/DetachedCriteriaTransformer.html">DetachedCriteriaTransformer</a>
@@ -3149,6 +3156,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/impl/PendingOperation.html#getCascadeOperations()" title="Method in PendingOperation">getCascadeOperations()</a></span> - Method in <a href="org/grails/datastore/mapping/core/impl/PendingOperation.html">PendingOperation</a>
 </dt><dd> <div class="block">Operations to be executed directly following this operation</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/impl/PendingOperationAdapter.html#getCascadeOperations()" title="Method in PendingOperationAdapter">getCascadeOperations()</a></span> - Method in <a href="org/grails/datastore/mapping/core/impl/PendingOperationAdapter.html">PendingOperationAdapter</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/Association.html#getCascadeValidateOperation()" title="Method in Association">getCascadeValidateOperation()</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/Association.html">Association</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractMappingContext.html#getChildEntities(org.grails.datastore.mapping.model.PersistentEntity)" title="Method in AbstractMappingContext">getChildEntities(PersistentEntity)</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractMappingContext.html">AbstractMappingContext</a>
 </dt><dd> <div class="block"></div></dd>
