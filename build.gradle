@@ -26,6 +26,7 @@ project.ext {
 
     // overall project version
     projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
+    releaseVersion = "${projectVersion}.${releaseType}"
     isCiBuild = project.hasProperty("isCiBuild")
     isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
 
