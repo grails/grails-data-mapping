@@ -422,7 +422,12 @@ public abstract class MethodExpression {
 
         @Override
         public Query.Criterion createCriterion() {
-            return Restrictions.eq(propertyName, arguments[0]);
+            Object argument = arguments[0];
+            if (argument != null) {
+                return Restrictions.eq(propertyName, argument);
+            } else {
+                return Restrictions.isNull(propertyName);
+            }
         }
 
     }
@@ -437,7 +442,12 @@ public abstract class MethodExpression {
 
         @Override
         public Query.Criterion createCriterion() {
-            return Restrictions.ne(propertyName, arguments[0]);
+            Object argument = arguments[0];
+            if (argument != null) {
+                return Restrictions.ne(propertyName, arguments[0]);
+            } else {
+                return Restrictions.isNotNull(propertyName);
+            }
         }
 
     }

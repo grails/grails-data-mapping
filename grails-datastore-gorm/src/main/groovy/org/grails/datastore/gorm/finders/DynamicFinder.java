@@ -765,11 +765,11 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
      * @return the initialized expression
      */
     private MethodExpression getInitializedExpression(MethodExpression expression, Object[] arguments) {
-        if (expression instanceof Equal && arguments.length == 1 && arguments[0] == null) {
-            expression = new IsNull(expression.propertyName);
-        } else {
-            expression.setArguments(arguments);
-        }
+//        if (expression instanceof Equal && arguments.length == 1 && arguments[0] == null) { // logic moved directly to Equal.createCriterion
+//            expression = new IsNull(expression.propertyName);
+//        } else {
+        expression.setArguments(arguments);
+//        }
         return expression;
     }
 
