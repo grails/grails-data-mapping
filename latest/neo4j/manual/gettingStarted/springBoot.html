@@ -427,7 +427,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile("org.grails:gorm-neo4j-spring-boot:6.1.8.RELEASE")</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile("org.grails:gorm-neo4j-spring-boot:7.0.0.RELEASE")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -467,7 +467,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.persistence.*
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.gorm.annotation.*
 
 @Entity
 class Person {
