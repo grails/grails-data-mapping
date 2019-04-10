@@ -80,7 +80,7 @@ trait DirtyCheckable {
             def oldValue = ((GroovyObject) this).getProperty(propertyName)
             if ((newValue == null && oldValue != null) ||
                 (newValue != null && oldValue == null) ||
-                (newValue && !newValue.equals(oldValue))) {
+                (newValue != null && !newValue.equals(oldValue))) {
                 $changedProperties.put propertyName, oldValue
             }
         }
@@ -95,7 +95,7 @@ trait DirtyCheckable {
         if( $changedProperties != null && !$changedProperties.containsKey(propertyName))  {
             if ((newValue == null && oldValue != null) ||
                 (newValue != null && oldValue == null) ||
-                (newValue && !newValue.equals(oldValue))) {
+                (newValue != null && !newValue.equals(oldValue))) {
                 $changedProperties.put propertyName, oldValue
             }
         }
