@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.5">
-<title>Basic Setup</title>
+<title>Purpose</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -423,152 +423,62 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel2">
-<li><a href="#_basic_setup">Basic Setup</a></li>
-<li><a href="#_common_errors">Common Errors</a></li>
-<li><a href="#_setup_within_grails_2_x">Setup within Grails 2.x</a></li>
-<li><a href="#_configuring_mongodb">Configuring MongoDB</a></li>
+<ul class="sectlevel4">
+<li><a href="#_purpose">Purpose</a></li>
+<li><a href="#_examples">Examples</a></li>
+<li><a href="#_description">Description</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
-<div class="sect2">
-<h3 id="_basic_setup">Basic Setup</h3>
+<div class="sect4">
+<h5 id="_purpose">Purpose</h5>
 <div class="paragraph">
-<p>To get started with GORM for MongoDB within Grails you need configure it as a dependency in <code>build.gradle</code>:</p>
+<p>Executes a MongoDB <a href="http://docs.mongodb.org/manual/reference/operator/query/geoIntersects/">$geoIntersects</a> query</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_examples">Examples</h5>
+<div class="paragraph">
+<p>Given:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">dependencies {
-    compile 'org.grails.plugins:mongodb:7.0.0'
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If you are using a version of Grails 3 earlier than 3.3 then you may need to enforce the GORM version. If you are using Grails 3.2.7 or above this can be done by modifying the <code>gormVersion</code> setting in <code>gradle.properties</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-properties" data-lang="properties">gormVersion=7.0.0.RELEASE</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Otherwise if you are using an earlier version of Grails you can force the GORM version by adding the following block directly above the <code>dependencies</code> block:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">configurations.all {
-    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-        if( details.requested.group == 'org.grails' &&
-            details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("7.0.0.RELEASE")
-        }
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.mongodb.geo.*
+...
+class Entry {
+    ObjectId id
+    Shape shape
+
+    static mapping = {
+        shape geoIndex:'2dsphere'
     }
 }
-dependencies {
-    ...
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_common_errors">Common Errors</h3>
-<div class="paragraph">
-<p>If you receive an error that indicates a failure to resolve the <code>grails-datastore-simple</code> dependency you may need to add the following to <code>build.gradle</code> directly above the <code>dependencies</code> block:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">configurations.all {
-    exclude module:'grails-datastore-simple'
-}</code></pre>
+...
+new Entry(shape: Polygon.valueOf([[[3, 1], [1, 2], [5, 6], [9, 2], [4, 3], [3, 1]]]) ).save()
+new Entry(shape: LineString.valueOf([[5, 2], [7, 3], [7, 5], [9, 4]]) ).save()
+new Entry(shape: Point.valueOf([5, 2])).save()</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>If you receive an error at runtime such as:</p>
+<p>And then use the <code>findBy*GeoIntersects</code> method to figure out whether shapes intersect with each other:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">Caused by: org.bson.codecs.configuration.CodecConfigurationException: Can't find a codec for class org.bson.BsonDecimal128.
-        at org.bson.codecs.configuration.CodecCache.getOrThrow(CodecCache.java:46)
-        at org.bson.codecs.configuration.ProvidersCodecRegistry.get(ProvidersCodecRegistry.java:63)
-        at org.bson.codecs.configuration.ChildCodecRegistry.get(ChildCodecRegistry.java:51)
-        at org.bson.codecs.BsonTypeCodecMap.&lt;init&gt;(BsonTypeCodecMap.java:44)
-        at org.bson.codecs.BsonDocumentCodec.&lt;init&gt;(BsonDocumentCodec.java:65)</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">assert Entry.findByShapeGeoIntersects( Polygon.valueOf( [[ [0,0], [3,0], [3,3], [0,3], [0,0] ]] ) )
+assert Entry.findByShapeGeoIntersects( LineString.valueOf( [[1,4], [8,4]] ) )
+// native query
+assert Entry.findByShapeGeoIntersects( [ $geometry : [type: "Polygon" ,
+                                                      coordinates: [ [ [ 0 , 0 ] , [ 3 , 6 ] , [ 6 , 1 ] , [ 0 , 0 ] ] ]
+                                                      ]
+                                       ])</code></pre>
 </div>
 </div>
+</div>
+<div class="sect4">
+<h5 id="_description">Description</h5>
 <div class="paragraph">
-<p>It means you have an older version of the MongoDB Java driver on your classpath and you should add the following declaration to <code>build.gradle</code> to ensure the dependency is correct:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.mongodb:mongodb-driver:3.10.0"</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_setup_within_grails_2_x">Setup within Grails 2.x</h3>
-<div class="paragraph">
-<p>For Grails 2.x you need to modify <code>BuildConfig.groovy</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">plugins {
-    compile ':mongodb:7.0.0'
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_configuring_mongodb">Configuring MongoDB</h3>
-<div class="paragraph">
-<p>With that done you need to set up a running MongoDB server. Refer to the <a href="https://docs.mongodb.com/getting-started/shell/">MongoDB Documentation</a> for an explanation on how to startup a MongoDB instance. Once installed, starting MongoDB is typically a matter of executing the following command:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">MONGO_HOME/bin/mongod</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>With the above command executed in a terminal window you should see output like the following appear:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">2015-11-18T19:38:50.073+0100 I JOURNAL  &lt;&lt;initandlisten&gt;&gt; journal dir=/data/db/journal
-2015-11-18T19:38:50.073+0100 I JOURNAL  &lt;&lt;initandlisten&gt;&gt; recover : no journal files present, no recovery needed
-2015-11-18T19:38:50.090+0100 I JOURNAL  &lt;&lt;durability&gt;&gt; Durability thread started
-2015-11-18T19:38:50.090+0100 I JOURNAL  &lt;&lt;journal writer&gt;&gt; Journal writer thread started
-2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; MongoDB starting : pid=52540 port=27017 dbpath=/data/db 64-bit host=Graemes-iMac.local
-2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; ** WARNING: You are running this process as the root user, which is not recommended.
-2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt;
-2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt;
-2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; ** WARNING: soft rlimits too low. Number of files is 256, should be at least 1000
-2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; db version v3.0.4
-2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; git version: 0481c958daeb2969800511e7475dc66986fa9ed5
-2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; build info: Darwin mci-osx108-11.build.10gen.cc 12.5.0 Darwin Kernel Version 12.5.0: Sun Sep 29 13:33:47 PDT 2013; root:xnu-2050.48.12~1/RELEASE_X86_64 x86_64 BOOST_LIB_VERSION=1_49
-2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; allocator: system
-2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; options: {}
-2015-11-18T19:38:50.176+0100 I NETWORK  &lt;&lt;initandlisten&gt;&gt; waiting for connections on port 27017</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>As you can see the server is running on port 27017, but don&#8217;t worry the MongoDB plugin for Grails will automatically configure itself to look for MongoDB on that port by default.</p>
-</div>
-<div class="paragraph">
-<p>If you want to configure how Grails connects to MongoDB then you can do so using the following settings in <code>grails-app/conf/application.yml</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails:
-    mongodb:
-        host: "localhost"
-        port: 27017
-        username: "blah"
-        password: "blah"
-        databaseName: "foo"</code></pre>
-</div>
+<p>The $geoIntersects operator is a geospatial query operator that selects all locations that intersect with a GeoJSON object. See <a href="http://docs.mongodb.org/manual/reference/operator/query/geoIntersects/">$geoIntersects</a>.</p>
 </div>
 </div>
 </div>
