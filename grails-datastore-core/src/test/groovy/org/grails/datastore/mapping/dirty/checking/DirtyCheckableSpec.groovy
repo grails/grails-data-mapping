@@ -33,6 +33,36 @@ class DirtyCheckableSpec extends Specification {
         person.hasChanged('lastViewedPost')
         person.getOriginalValue('lastViewedPost').equals(blogPost)
     }
+
+    def 'setting a field that is a boolean dirty checks properly'() {
+        given: 'a class with a boolean property'
+        def animal = new Animal()
+        animal.trackChanges()
+
+        when:"A boolean property is changed"
+        animal.barks = true
+        animal.markDirty("barks", true, false)
+
+        then:"the property changed"
+        animal.barks
+        animal.hasChanged()
+        animal.hasChanged("barks")
+
+        when:"it is set to false"
+        animal.trackChanges() // reset
+        animal.barks = false
+        animal.markDirty("barks", false, true)
+
+        then:"the property changed"
+        !animal.barks
+        animal.hasChanged()
+        animal.hasChanged("barks")
+
+    }
+}
+
+class Animal implements DirtyCheckable {
+    boolean barks
 }
 
 class Person implements DirtyCheckable {
