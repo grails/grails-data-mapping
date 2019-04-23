@@ -13,7 +13,6 @@ import org.grails.datastore.mapping.multitenancy.MultiTenancySettings
 import org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException
 import org.grails.datastore.mapping.multitenancy.resolvers.SystemPropertyTenantResolver
 import org.grails.datastore.mapping.simple.SimpleMapDatastore
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.TransactionStatus
 import spock.lang.AutoCleanup
 import spock.lang.Shared
@@ -36,6 +35,30 @@ class CurrentTenantTransformSpec  extends Specification {
 
     void setup() {
         System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "")
+    }
+
+    void "Test parsing of @WithoutTenant"() {
+        Class testServiceClass = new GroovyShell().evaluate('''
+import grails.gorm.multitenancy.WithoutTenant
+import grails.gorm.transactions.Transactional
+
+@Transactional
+@WithoutTenant
+class TestService {
+
+    Integer count() {
+        return 10;
+    }
+   
+}
+
+return TestService
+''')
+        PlayService playService = new PlayService()
+
+        expect:
+        testServiceClass.getDeclaredMethod('$mt__count')
+        playService.countPlays() == 10
     }
 
     void "Test parsing of @CurrentTenant"() {
@@ -66,7 +89,6 @@ class TestService {
 
 return TestService
 ''')
-        TeamService teamService = new TeamService()
         teamService.setTargetDatastore(Mock(Datastore))
 
         expect:
@@ -138,6 +160,14 @@ return TestService
         then:"It executed corretly without throwing an exception"
         playerCount == 0
     }
+}
+
+@WithoutTenant
+class PlayService {
+    int countPlays() {
+        return 10;
+    }
+
 }
 
 @CurrentTenant
