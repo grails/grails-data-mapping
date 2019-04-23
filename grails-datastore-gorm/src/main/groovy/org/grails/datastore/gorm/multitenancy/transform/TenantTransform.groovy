@@ -126,8 +126,8 @@ class TenantTransform extends AbstractDatastoreMethodDecoratingTransformation im
     }
 
     @Override
-    protected Parameter[] prepareNewMethodParameters(MethodNode methodNode, Map<String, ClassNode> genericsSpec) {
-        if(methodNode.getAnnotations(WITHOUT_TENANT_ANNOTATION_TYPE).isEmpty()) {
+    protected Parameter[] prepareNewMethodParameters(MethodNode methodNode, Map<String, ClassNode> genericsSpec, ClassNode classNode = null) {
+        if(methodNode.getAnnotations(WITHOUT_TENANT_ANNOTATION_TYPE).isEmpty() && (!classNode || classNode.getAnnotations(WITHOUT_TENANT_ANNOTATION_TYPE).isEmpty())) {
             final Parameter tenantIdParameter = param(make(Serializable), VAR_TENANT_ID)
             Parameter[] parameters = methodNode.getParameters()
             Parameter[] newParameters = parameters.length > 0 ? (copyParameters(((parameters as List) + [tenantIdParameter]) as Parameter[], genericsSpec)) : [tenantIdParameter] as Parameter[]
@@ -137,6 +137,7 @@ class TenantTransform extends AbstractDatastoreMethodDecoratingTransformation im
             return copyParameters(methodNode.getParameters())
         }
     }
+
     @Override
     protected boolean isValidAnnotation(AnnotationNode annotationNode, AnnotatedNode classNode) {
         ClassNode annotationClassNode = annotationNode.getClassNode()
