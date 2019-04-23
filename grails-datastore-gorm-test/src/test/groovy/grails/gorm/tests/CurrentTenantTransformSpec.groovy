@@ -89,6 +89,7 @@ class TestService {
 
 return TestService
 ''')
+        TeamService teamService = new TeamService()
         teamService.setTargetDatastore(Mock(Datastore))
 
         expect:
