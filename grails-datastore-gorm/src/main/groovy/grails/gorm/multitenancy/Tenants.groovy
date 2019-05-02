@@ -199,7 +199,7 @@ class Tenants {
             if (multiTenantCapableDatastore.getMultiTenancyMode().isSharedConnection()) {
                 def i = callable.parameterTypes.length
                 if(i == 0 ) {
-                    throw new IllegalArgumentException("Provided closure accepts too many arguments")
+                    return callable.call()
                 } else {
                     return multiTenantCapableDatastore.withSession { session ->
                         return callable.call(session)
@@ -272,7 +272,7 @@ class Tenants {
 
                 }
             }
-        }
+        } as T
     }
 
     /**
