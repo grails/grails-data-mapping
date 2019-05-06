@@ -55,12 +55,13 @@ class MultiTenantEventListener implements PersistenceEventListener {
                         TenantId tenantId = entity.getTenantId();
                         if(tenantId != null) {
                             Serializable currentId = Tenants.currentId(datastoreClient.getClass());
-                            query.eq(tenantId.getName(), currentId );
+                            if (currentId != ConnectionSource.DEFAULT) {
+                                query.eq(tenantId.getName(), currentId );
+                            }
                         }
                     }
                 }
-            }
-            else if(event instanceof PreInsertEvent) {
+            } else if(event instanceof PreInsertEvent) {
                 PreInsertEvent preInsertEvent = (PreInsertEvent) event;
                 PersistentEntity entity = preInsertEvent.getEntity();
                 if(entity.isMultiTenant()) {
