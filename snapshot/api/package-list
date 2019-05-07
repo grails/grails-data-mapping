@@ -1,4 +1,3 @@
-grails.datastore.test
 grails.gorm
 grails.gorm.annotation
 grails.gorm.api
@@ -6,16 +5,15 @@ grails.gorm.async
 grails.gorm.dirty.checking
 grails.gorm.multitenancy
 grails.gorm.services
+grails.gorm.time
 grails.gorm.transactions
 grails.gorm.validation
 grails.gorm.validation.exceptions
 org.grails.compiler.gorm
 org.grails.datastore.gorm
 org.grails.datastore.gorm.async
-org.grails.datastore.gorm.bean.factory
 org.grails.datastore.gorm.bootstrap
 org.grails.datastore.gorm.bootstrap.support
-org.grails.datastore.gorm.config
 org.grails.datastore.gorm.events
 org.grails.datastore.gorm.finders
 org.grails.datastore.gorm.internal
@@ -102,8 +100,3 @@ org.grails.datastore.mapping.transactions
 org.grails.datastore.mapping.transactions.support
 org.grails.datastore.mapping.validation
 org.grails.datastore.mapping.web.support
-org.grails.orm.hibernate.cfg
-org.grails.orm.hibernate.support
-org.grails.orm.hibernate.validation
-org.grails.orm.hibernate4.support
-org.grails.orm.hibernate5.support
