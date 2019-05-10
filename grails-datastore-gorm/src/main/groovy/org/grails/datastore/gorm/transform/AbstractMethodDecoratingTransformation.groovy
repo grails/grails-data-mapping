@@ -48,8 +48,8 @@ import static org.grails.datastore.mapping.reflect.AstUtils.*
 @CompileStatic
 abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTransformation {
 
-    private static final Set<String> METHOD_NAME_EXCLUDES = new HashSet<String>(Arrays.asList("afterPropertiesSet", "destroy"));
-    private static final Set<String> ANNOTATION_NAME_EXCLUDES = new HashSet<String>(Arrays.asList(PostConstruct.class.getName(), PreDestroy.class.getName(), "grails.web.controllers.ControllerMethod"));
+    private static final Set<String> METHOD_NAME_EXCLUDES = new HashSet<String>(Arrays.asList("afterPropertiesSet", "destroy"))
+    private static final Set<String> ANNOTATION_NAME_EXCLUDES = new HashSet<String>(Arrays.asList(PostConstruct.class.getName(), PreDestroy.class.getName(), "grails.web.controllers.ControllerMethod"))
     /**
      * Key used to store within the original method node metadata, all previous decorated methods
      */
@@ -181,7 +181,7 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
             renamedMethodName = getRenamedMethodPrefix() + methodNode.getName()
         }
 
-        Parameter[] newParameters = prepareNewMethodParameters(methodNode, GenericsUtils.addMethodGenerics(methodNode, genericsSpec) )
+        Parameter[] newParameters = prepareNewMethodParameters(methodNode, GenericsUtils.addMethodGenerics(methodNode, genericsSpec), classNode)
         MethodNode renamedMethod = moveOriginalCodeToNewMethod(methodNode, renamedMethodName, newParameters, classNode, sourceUnit, genericsSpec)
         MethodCallExpression originalMethodCall = buildCallToOriginalMethod(classNode, renamedMethod)
 
@@ -226,7 +226,7 @@ abstract class AbstractMethodDecoratingTransformation extends AbstractGormASTTra
         }
     }
 
-    protected Parameter[] prepareNewMethodParameters(MethodNode methodNode, Map<String, ClassNode> genericsSpec) {
+    protected Parameter[] prepareNewMethodParameters(MethodNode methodNode, Map<String, ClassNode> genericsSpec, ClassNode classNode = null) {
         return copyParameters(methodNode.getParameters(), genericsSpec)
     }
 

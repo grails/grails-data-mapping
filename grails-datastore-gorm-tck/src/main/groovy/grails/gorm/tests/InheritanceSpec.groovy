@@ -91,7 +91,7 @@ class InheritanceSpec extends GormDatastoreSpec {
 
 @Entity
 class Practice implements Serializable {
-    Long id
+//    Long id
     Long version
     String name
     static hasMany = [locations: Location]
@@ -99,7 +99,7 @@ class Practice implements Serializable {
 
 @Entity
 class Location implements Serializable {
-    Long id
+//    Long id
     Long version
     String name
     String code = "DEFAULT"

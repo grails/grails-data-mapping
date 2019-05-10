@@ -66,6 +66,6 @@ class GPathXmlHttpMessageConverter extends AbstractHttpMessageConverter<groovy.u
     }
 
     protected Charset getCharSetForMediaType(MediaType contentType) {
-        contentType ? (contentType.charSet ? contentType.charSet : Charset.forName("UTF-8")) : Charset.forName("UTF-8")
+        contentType ? (contentType.charset ? contentType.charset : Charset.forName("UTF-8")) : Charset.forName("UTF-8")
     }
 }

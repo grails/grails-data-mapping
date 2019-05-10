@@ -41,7 +41,6 @@ import static org.codehaus.groovy.ast.ClassHelper.CLOSURE_TYPE
 import static org.codehaus.groovy.ast.ClassHelper.make
 import static org.codehaus.groovy.ast.tools.GeneralUtils.*
 import static org.grails.datastore.gorm.transform.AstMethodDispatchUtils.callD
-import static org.grails.datastore.mapping.reflect.AstUtils.ZERO_PARAMETERS
 import static org.grails.datastore.mapping.reflect.AstUtils.copyParameters
 import static org.grails.datastore.mapping.reflect.AstUtils.varThis
 
@@ -70,6 +69,8 @@ class TenantTransform extends AbstractDatastoreMethodDecoratingTransformation im
      */
     public static final int POSITION = TransactionalTransform.POSITION - 100
 
+    private static final Parameter[] N0_PARAMETER = null
+
     @Override
     protected String getRenamedMethodPrefix() {
         return RENAMED_METHOD_PREFIX
@@ -87,13 +88,11 @@ class TenantTransform extends AbstractDatastoreMethodDecoratingTransformation im
 
         ClassNode serializableClassNode = make(Serializable)
         ClassNode annotationClassNode = annotationNode.classNode
-        if(CURRENT_TENANT_ANNOTATION_TYPE.equals(annotationClassNode)) {
-            return makeDelegatingClosureCall( tenantServiceVar, "withCurrent", params( param(serializableClassNode, VAR_TENANT_ID)), originalMethodCallExpr, variableScope)
-        }
-        else if(WITHOUT_TENANT_ANNOTATION_TYPE.equals(annotationClassNode)) {
-            return makeDelegatingClosureCall( tenantServiceVar, "withoutId", ZERO_PARAMETERS, originalMethodCallExpr, variableScope)
-        }
-        else {
+        if (CURRENT_TENANT_ANNOTATION_TYPE.equals(annotationClassNode)) {
+            return makeDelegatingClosureCall(tenantServiceVar, "withCurrent", params(param(serializableClassNode, VAR_TENANT_ID)), originalMethodCallExpr, variableScope)
+        } else if (WITHOUT_TENANT_ANNOTATION_TYPE.equals(annotationClassNode)) {
+            return makeDelegatingClosureCall(tenantServiceVar, "withoutId", N0_PARAMETER, originalMethodCallExpr, variableScope)
+        } else {
             // must be @Tenant
             Expression annValue = annotationNode.getMember("value")
             if(annValue instanceof ClosureExpression) {
@@ -126,8 +125,8 @@ class TenantTransform extends AbstractDatastoreMethodDecoratingTransformation im
     }
 
     @Override
-    protected Parameter[] prepareNewMethodParameters(MethodNode methodNode, Map<String, ClassNode> genericsSpec) {
-        if(methodNode.getAnnotations(WITHOUT_TENANT_ANNOTATION_TYPE).isEmpty()) {
+    protected Parameter[] prepareNewMethodParameters(MethodNode methodNode, Map<String, ClassNode> genericsSpec, ClassNode classNode = null) {
+        if(methodNode.getAnnotations(WITHOUT_TENANT_ANNOTATION_TYPE).isEmpty() && (!classNode || classNode.getAnnotations(WITHOUT_TENANT_ANNOTATION_TYPE).isEmpty())) {
             final Parameter tenantIdParameter = param(make(Serializable), VAR_TENANT_ID)
             Parameter[] parameters = methodNode.getParameters()
             Parameter[] newParameters = parameters.length > 0 ? (copyParameters(((parameters as List) + [tenantIdParameter]) as Parameter[], genericsSpec)) : [tenantIdParameter] as Parameter[]
@@ -137,6 +136,7 @@ class TenantTransform extends AbstractDatastoreMethodDecoratingTransformation im
             return copyParameters(methodNode.getParameters())
         }
     }
+
     @Override
     protected boolean isValidAnnotation(AnnotationNode annotationNode, AnnotatedNode classNode) {
         ClassNode annotationClassNode = annotationNode.getClassNode()

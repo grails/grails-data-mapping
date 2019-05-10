@@ -122,7 +122,6 @@ public class ClosureEventTriggeringInterceptor extends AbstractClosureEventTrigg
     public void onSaveOrUpdate(SaveOrUpdateEvent hibernateEvent) throws HibernateException {
         Object entity = getEntity(hibernateEvent);
         if(entity != null && proxyHandler.isInitialized(entity)) {
-            activateDirtyChecking(entity);
             org.grails.datastore.mapping.engine.event.SaveOrUpdateEvent grailsEvent = new org.grails.datastore.mapping.engine.event.SaveOrUpdateEvent(
                     this.datastore, entity);
             publishEvent(hibernateEvent, grailsEvent);
