@@ -18,11 +18,11 @@ project.ext {
 
     projectMajorVersion = "6"
     projectMinorVersion = "1"
-    projectPatchVersion = "13"
-    //releaseType = "RELEASE"
+    projectPatchVersion = "12"
+    releaseType = "RELEASE"
 //    releaseType = "M2"
     // releaseType = "RC1"
-    releaseType = "BUILD-SNAPSHOT"
+//    releaseType = "BUILD-SNAPSHOT"
 
     // overall project version
     projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
@@ -73,7 +73,6 @@ allprojects {
         all {
             resolutionStrategy {
                 force "org.codehaus.groovy:groovy:$groovyVersion"
-                force "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
                 force "org.codehaus.groovy:groovy-xml:$groovyVersion"
                 force "org.codehaus.groovy:groovy-templates:$groovyVersion"
             }
@@ -146,7 +145,6 @@ subprojects {
 
         if (isStandardGroovyMavenProject) {
             documentation "org.fusesource.jansi:jansi:1.11"
-            documentation "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
             documentation 'info.picocli:picocli:3.8.0'
             compile group: 'org.codehaus.groovy', name: 'groovy', version: groovyVersion
 
