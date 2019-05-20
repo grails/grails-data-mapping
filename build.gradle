@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
         classpath "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.0"
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.8.0"
@@ -13,17 +13,7 @@ buildscript {
     }
 }
 
-
-
 project.ext {
-    springVersion = "4.3.18.RELEASE"
-    springBootVersion = "1.5.14.RELEASE"
-    grailsVersion = "3.2.11"
-    grails2Version = '2.5.6'
-    slf4jVersion = "1.7.22"
-    junitVersion = "4.12"
-    javassistVersion = "3.21.0-GA"
-    groovyVersion = System.getProperty('groovyVersion') ?: '2.4.11'
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
     projectMajorVersion = "6"
@@ -31,29 +21,14 @@ project.ext {
     projectPatchVersion = "13"
     //releaseType = "RELEASE"
 //    releaseType = "M2"
-//    releaseType = "RC2"
+    // releaseType = "RC1"
     releaseType = "BUILD-SNAPSHOT"
 
     // overall project version
     projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
-
-    // plugin versions
-    hibernateValidatorVersion = "5.0.3.Final"
-    hibernateVersion = "4.3.11"
-    hibernate5Version = "5.1.3"
-
-    def defaultPluginVersion = releaseType == 'RELEASE' ? projectVersion : "${projectVersion}.${releaseType}"
-    hibernatePluginVersion = defaultPluginVersion
-    mongodbPluginVersion = defaultPluginVersion
-    neo4jPluginVersion = defaultPluginVersion
-    cassandraPluginVersion = defaultPluginVersion
-    redisPluginVersion = defaultPluginVersion
-
-
+    releaseVersion = "${projectVersion}.${releaseType}"
     isCiBuild = project.hasProperty("isCiBuild")
     isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
-
-    servletApiVersion = "3.0.1"
 
     nexusUsername = System.getenv("SONATYPE_USERNAME") ?: project.hasProperty("sonatypeOssUsername") ? project.sonatypeOssUsername : ''
     nexusPassword = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
@@ -77,7 +52,6 @@ configurations {
 version = "${projectVersion}.${releaseType}"
 group = "org.grails"
 
-
 apply plugin: 'idea'
 apply plugin: 'project-report'
 apply plugin: 'io.codearte.nexus-staging'
@@ -99,7 +73,9 @@ allprojects {
         all {
             resolutionStrategy {
                 force "org.codehaus.groovy:groovy:$groovyVersion"
+                force "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
                 force "org.codehaus.groovy:groovy-xml:$groovyVersion"
+                force "org.codehaus.groovy:groovy-templates:$groovyVersion"
             }
         }
     }
@@ -142,59 +118,18 @@ subprojects {
     }
 
 
-    ext {
-        pomInfo = {
-            delegate.name 'Grails GORM'
-            delegate.description 'GORM - Grails Data Access Framework'
-            delegate.url 'http://grails.org/'
-
-            delegate.licenses {
-                delegate.license {
-                    delegate.name 'The Apache Software License, Version 2.0'
-                    delegate.url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    delegate.distribution 'repo'
-                }
-            }
-
-            delegate.scm {
-                delegate.url 'scm:git@github.com:grails/grails-data-mapping.git'
-                delegate.connection 'scm:git@github.com:grails/grails-data-mapping.git'
-                delegate.developerConnection 'scm:git@github.com:grails/grails-data-mapping.git'
-            }
-
-
-            delegate.developers {
-                delegate.developer {
-                    delegate.id 'graemerocher'
-                    delegate.name 'Graeme Rocher'
-                }
-                delegate.developer {
-                    delegate.id 'jeffscottbrown'
-                    delegate.name 'Jeff Brown'
-                }
-                delegate.developer {
-                    delegate.id 'burtbeckwith'
-                    delegate.name 'Burt Beckwith'
-                }
-            }
-
-        }
-    }
-
-
     def isStandardGroovyMavenProject = isGroovyProject(project)
 
     if (isStandardGroovyMavenProject) {
         apply plugin: 'groovy'
         apply plugin: "io.github.groovylang.groovydoc"
         apply plugin: 'eclipse'
-        apply plugin: 'com.bmuschko.nexus'
-        apply plugin: 'maven-publish'
+        apply from:"${rootProject.rootDir}/gradle/publishing.gradle"
         apply plugin: 'idea'
         apply plugin: 'provided-base'
         apply plugin: 'optional-base'
-        sourceCompatibility = "1.7"
-        targetCompatibility = "1.7"
+        sourceCompatibility = "1.8"
+        targetCompatibility = "1.8"
     }
 
     def isGormDatasource = project.name.startsWith("grails-datastore-gorm-") &&
@@ -207,8 +142,12 @@ subprojects {
 
 
     dependencies {
+        compile "javax.annotation:javax.annotation-api:$javaAnnotationApiVersion"
+
         if (isStandardGroovyMavenProject) {
             documentation "org.fusesource.jansi:jansi:1.11"
+            documentation "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
+            documentation 'info.picocli:picocli:3.8.0'
             compile group: 'org.codehaus.groovy', name: 'groovy', version: groovyVersion
 
             testCompile group: 'org.codehaus.groovy', name: 'groovy-test', version: groovyVersion
@@ -285,11 +224,11 @@ subprojects {
             }
         }
         test.doFirst {
-            def tckClassesDir = project(":grails-datastore-gorm-tck").sourceSets.main.output.classesDir
+            File tckClassesDir = project(":grails-datastore-gorm-tck").sourceSets.main.output.classesDirs.files.first()
             def thisProjectsTests = // surely there is a less hardcoded way to do this
             copy {
                 from tckClassesDir
-                into sourceSets.test.output.classesDir
+                into sourceSets.test.output.classesDirs.files.first()
                 include "**/*.class"
                 exclude { details ->
                     // Do not copy across any TCK class (or nested classes of that class)
@@ -325,57 +264,6 @@ subprojects {
             classpath += configurations.documentation
             jvmArgs "-Xmx512M"
         }
-
-        modifyPom {
-            delegate.project {
-                def updatePom = pomInfo.clone()
-                updatePom.delegate = delegate
-                updatePom()
-            }
-        }
-
-        publishing {
-
-            repositories {
-                maven {
-                    credentials {
-                        def u = System.getenv("ARTIFACTORY_USERNAME") ?: project.hasProperty("artifactoryPublishUsername") ? project.artifactoryPublishUsername : ''
-                        def p = System.getenv("ARTIFACTORY_PASSWORD") ?: project.hasProperty("artifactoryPublishPassword") ? project.artifactoryPublishPassword : ''
-                        username = u
-                        password = p
-                    }
-                    if(isBuildSnapshot) {
-                        url  "https://repo.grails.org/grails/libs-snapshots-local"
-                    }
-                    else {
-                        url  "https://repo.grails.org/grails/libs-releases-local"
-                    }
-
-                }
-            }
-
-            publications {
-                maven(MavenPublication) {
-                    from components.java
-
-                    artifact sourcesJar {
-                        classifier "sources"
-                    }
-                    artifact javadocJar {
-                        classifier "javadoc"
-                    }
-
-                    pom.withXml {
-                        def xml = asNode()
-                        def dependency = xml.dependencies.find { dep -> dep.artifactId == 'slf4j-simple' }
-                        dependency?.optional = true
-                        xml.children().last() + pomInfo
-                    }
-
-                }
-            }
-        }
-
     }
 }
 
@@ -392,32 +280,33 @@ dependencies {
 task install(dependsOn: subprojects*.tasks*.withType(PublishToMavenLocal))
 
 
-task test(dependsOn: getTasksByName("test", true)) << {
-    def reportsDir = "${buildDir}/reports"
+task test(dependsOn: getTasksByName("test", true)) {
+     doLast {
+         def reportsDir = "${buildDir}/reports"
 
-    // Aggregate the test results
-    ant.taskdef(
-        name: 'junitreport2',
-        classname: "org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator",
-        classpath: configurations.build.asPath
-    )
+         // Aggregate the test results
+         ant.taskdef(
+             name: 'junitreport2',
+             classname: "org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator",
+             classpath: configurations.build.asPath
+         )
 
-    def testReportsDir = new File("${reportsDir}/tests")
-    if (testReportsDir.exists()) {
-        testReportsDir.deleteDir()
-    }
-    testReportsDir.mkdirs()
+         def testReportsDir = new File("${reportsDir}/tests")
+         if (testReportsDir.exists()) {
+             testReportsDir.deleteDir()
+         }
+         testReportsDir.mkdirs()
 
-    ant.junitreport2(todir: testReportsDir) {
-        subprojects.each {
-            def testResultsDir = "${it.buildDir}/test-results"
-            if (new File(testResultsDir).exists()) {
-                fileset(dir: testResultsDir) {
-                    include(name: "TEST-*.xml")
-                }
-            }
-        }
-        report(todir: testReportsDir)
-    }
-
+         ant.junitreport2(todir: testReportsDir) {
+             subprojects.each {
+                 def testResultsDir = "${it.buildDir}/test-results"
+                 if (new File(testResultsDir).exists()) {
+                     fileset(dir: testResultsDir) {
+                         include(name: "TEST-*.xml")
+                     }
+                 }
+             }
+             report(todir: testReportsDir)
+         }
+     }
 }
