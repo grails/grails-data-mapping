@@ -127,8 +127,8 @@ subprojects {
         apply plugin: 'idea'
         apply plugin: 'provided-base'
         apply plugin: 'optional-base'
-        sourceCompatibility = "1.8"
-        targetCompatibility = "1.8"
+        sourceCompatibility = "1.7"
+        targetCompatibility = "1.7"
     }
 
     def isGormDatasource = project.name.startsWith("grails-datastore-gorm-") &&
