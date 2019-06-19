@@ -157,7 +157,7 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
     }
 
     @Override
-    protected Parameter[] prepareNewMethodParameters(MethodNode methodNode, Map<String, ClassNode> genericsSpec) {
+    protected Parameter[] prepareNewMethodParameters(MethodNode methodNode, Map<String, ClassNode> genericsSpec, ClassNode classNode = null) {
         final Parameter transactionStatusParameter = param(make(TransactionStatus), "transactionStatus")
         Parameter[] parameters = methodNode.getParameters()
         Parameter[] newParameters = parameters.length > 0 ? (copyParameters(((parameters as List) + [transactionStatusParameter]) as Parameter[], genericsSpec)) : [transactionStatusParameter] as Parameter[]
