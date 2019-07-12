@@ -72,7 +72,7 @@ class Tenants {
             TenantResolver tenantResolver = multiTenantCapableDatastore.getTenantResolver()
             Serializable tenantIdentifier = tenantResolver.resolveTenantIdentifier()
             log.debug "Resolved tenant id [$tenantIdentifier] from resolver [${tenantResolver.getClass().simpleName}]"
-            return tenantIdentifier
+            return tenantIdentifier 
         }
     }
 
