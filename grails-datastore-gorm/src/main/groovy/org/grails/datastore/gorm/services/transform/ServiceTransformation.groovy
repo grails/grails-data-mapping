@@ -42,6 +42,7 @@ import org.codehaus.groovy.control.io.URLReaderSource
 import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 import org.codehaus.groovy.transform.trait.TraitComposer
+import org.grails.compiler.gorm.GroovyEclipseCompilationHelper
 import org.grails.datastore.gorm.services.Implemented
 import org.grails.datastore.gorm.services.ServiceEnhancer
 import org.grails.datastore.gorm.services.ServiceImplementer
@@ -396,11 +397,7 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
         // Don't generate for runtime compiled scripts
         if (readerSource instanceof FileReaderSource || readerSource instanceof URLReaderSource) {
 
-            File targetDirectory = sourceUnit.configuration.targetDirectory
-            if (targetDirectory == null) {
-                targetDirectory = new File("build/resources/main")
-            }
-
+            File targetDirectory = resolveCompilationTargetDirectory(sourceUnit, 'build/resources/main')
             File servicesDir = new File(targetDirectory, "META-INF/services")
             servicesDir.mkdirs()
 
@@ -422,4 +419,17 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             }
         }
     }
+	
+	static File resolveCompilationTargetDirectory(final SourceUnit source, final String defaultPath) {
+		File targetDirectory = null
+		if(source.getClass().name == 'org.codehaus.jdt.groovy.control.EclipseSourceUnit') {
+			targetDirectory = GroovyEclipseCompilationHelper.resolveEclipseCompilationTargetDirectory(source)
+		} else {
+			targetDirectory = source.configuration.targetDirectory
+		}
+		if(targetDirectory == null) {
+			targetDirectory = new File(defaultPath)
+		}
+		return targetDirectory
+	}
 }
