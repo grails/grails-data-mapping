@@ -38,6 +38,7 @@ import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.control.io.FileReaderSource
 import org.codehaus.groovy.control.io.ReaderSource
+import org.codehaus.groovy.control.io.StringReaderSource
 import org.codehaus.groovy.control.io.URLReaderSource
 import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
@@ -391,12 +392,20 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
         }
         return implementers
     }
+	
+	protected boolean shouldGenerateDescriptor (final SourceUnit sourceUnit, final ReaderSource readerSource) {
+		
+		// Don't generate for runtime compiled scripts, unless this is the groovy-eclipse JDT compiler. 
+		readerSource instanceof FileReaderSource || readerSource instanceof URLReaderSource ||
+			(GroovyEclipseCompilationHelper.isGroovyEclipse (sourceUnit) && readerSource instanceof StringReaderSource)
+	}
 
     protected void generateServiceDescriptor(SourceUnit sourceUnit, ClassNode classNode) {
         ReaderSource readerSource = sourceUnit.getSource()
-        // Don't generate for runtime compiled scripts
-        if (readerSource instanceof FileReaderSource || readerSource instanceof URLReaderSource) {
-
+		
+        // Check whether we should generate the descriptor.
+        if (shouldGenerateDescriptor(sourceUnit, readerSource)) {
+			
             File targetDirectory = resolveCompilationTargetDirectory(sourceUnit, 'build/resources/main')
             File servicesDir = new File(targetDirectory, "META-INF/services")
             servicesDir.mkdirs()
@@ -420,13 +429,16 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
         }
     }
 	
-	static File resolveCompilationTargetDirectory(final SourceUnit source, final String defaultPath) {
+	protected File resolveCompilationTargetDirectory(final SourceUnit source, final String defaultPath) {
 		File targetDirectory = null
-		if(source.getClass().name == 'org.codehaus.jdt.groovy.control.EclipseSourceUnit') {
+		
+		if(GroovyEclipseCompilationHelper.isGroovyEclipse (source) ) {
 			targetDirectory = GroovyEclipseCompilationHelper.resolveEclipseCompilationTargetDirectory(source)
 		} else {
 			targetDirectory = source.configuration.targetDirectory
 		}
+		
+		// If we could not use config to set the target directory, then we should use the supplied default.
 		if(targetDirectory == null) {
 			targetDirectory = new File(defaultPath)
 		}
