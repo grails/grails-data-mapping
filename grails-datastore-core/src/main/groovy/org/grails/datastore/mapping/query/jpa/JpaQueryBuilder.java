@@ -625,18 +625,14 @@ public class JpaQueryBuilder {
                     buildSubQuery(q, whereClause, position, parameters, conversionService, allowJoins, hibernateCompatible, subquery);
                 }
                 else {
-                    if (inQuery.getValues().isEmpty()){
-                        whereClause.append("null"); // that also always evaluates to false because NULL in sql is never equal. https://hibernate.atlassian.net/browse/HHH-8091
-                    } else {
-                        for (Iterator i = inQuery.getValues().iterator(); i.hasNext();) {
-                            Object val = i.next();
-                            whereClause.append(PARAMETER_PREFIX);
-                            whereClause.append(++position);
-                            if (i.hasNext()) {
-                                whereClause.append(COMMA);
-                            }
-                            parameters.add(conversionService.convert(val, propType));
+                    for (Iterator i = inQuery.getValues().iterator(); i.hasNext();) {
+                        Object val = i.next();
+                        whereClause.append(PARAMETER_PREFIX);
+                        whereClause.append(++position);
+                        if (i.hasNext()) {
+                            whereClause.append(COMMA);
                         }
+                        parameters.add(conversionService.convert(val, propType));
                     }
                 }
                 whereClause.append(CLOSE_BRACKET);

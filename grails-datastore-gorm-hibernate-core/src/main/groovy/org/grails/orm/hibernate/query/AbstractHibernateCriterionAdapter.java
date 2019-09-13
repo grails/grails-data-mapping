@@ -22,9 +22,7 @@ import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.grails.datastore.mapping.query.criteria.FunctionCallingCriterion;
 import org.hibernate.criterion.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Adapts Grails datastore API to Hibernate API
@@ -242,7 +240,12 @@ public abstract class AbstractHibernateCriterionAdapter {
                     return Property.forName(getPropertyName(criterion,alias)).in( toHibernateDetachedCriteria(hibernateQuery, subquery) );
                 }
                 else {
-                    return Restrictions.in(getPropertyName(criterion, alias), inListQuery.getValues());
+                    Collection values = inListQuery.getValues();
+                    if (values.isEmpty()){
+                        values = new ArrayList(1);
+                        values.add(null);
+                    }
+                    return Restrictions.in(getPropertyName(criterion, alias), values);
                 }
             }
         });
