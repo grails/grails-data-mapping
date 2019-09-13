@@ -228,20 +228,15 @@ class GormEnhancer implements Closeable {
                         def evaluator = new NamedQueriesBuilder()
                         namedQueries = evaluator.evaluate(closure)
                         NAMED_QUERIES.put(className, namedQueries)
-                        return buildNamedCriteriaProxy(entity, namedQueries, queryName, args)
                     }
                     else {
                         NAMED_QUERIES.put(className, Collections.emptyMap())
+                        return null
                     }
                 }
-
-            }
-
-        }
-        else {
-            return buildNamedCriteriaProxy(entity, namedQueries, queryName, args)
-        }
-        return null
+	    }
+        }        
+        return buildNamedCriteriaProxy(entity, namedQueries, queryName, args)
     }
 
     private static NamedCriteriaProxy buildNamedCriteriaProxy(Class entity, Map<String, Closure> namedQueries, String queryName, Object... args) {

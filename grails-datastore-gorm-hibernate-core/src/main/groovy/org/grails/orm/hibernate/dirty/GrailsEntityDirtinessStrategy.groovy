@@ -49,7 +49,7 @@ class GrailsEntityDirtinessStrategy implements CustomEntityDirtinessStrategy {
 
     @Override
     boolean isDirty(Object entity, EntityPersister persister, Session session) {
-        !session.contains(entity) || cast(entity).hasChanged() || DirtyCheckingSupport.areEmbeddedDirty(GormEnhancer.findEntity(Hibernate.getClass(entity)), entity)
+        !session.contains(entity) || !cast(entity).listDirtyPropertyNames().isEmpty() || DirtyCheckingSupport.areEmbeddedDirty(GormEnhancer.findEntity(Hibernate.getClass(entity)), entity)
     }
 
     @Override

@@ -2,6 +2,7 @@ package grails.gorm.validation
 
 import org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry
 import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.keyvalue.mapping.config.GormKeyValueMappingFactory
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
 import org.grails.datastore.mapping.model.MappingContext
@@ -76,24 +77,20 @@ class PersistentEntityValidatorSpec extends Specification {
     }
 
     @Issue('https://github.com/grails/grails-data-mapping/issues/1106')
-    def "validation does not cascade when cascadeValidate is false and not owning side"() {
-        Author author = new Author(name: 'Author', anotherPublisher: new Publisher(), publisher: new Publisher())
+    def "validation cascades by default if association is owned or has cascade options of PERSIST or MERGE"() {
+        Author author = new Author(name: 'Author', publisher: new Publisher())
         Errors errors = new ValidationErrors(author)
 
         when:
         authorValidator.validate(author, errors)
 
-        then: "validate was not called for this association"
-        !errors.hasErrors()
-        !author.anotherPublisher.name
-
-        and: "validate was called for this one since the default for cascadeValidate is true"
-        author.publisher.name == "name"
+        then: "validate was called for this by default"
+        author.publisher.validateCalled
     }
 
     @Issue('https://github.com/grails/grails-data-mapping/issues/1106')
-    def "validation cascades regardless of cascadeValidate when owning side"() {
-        Author author = new Author(name: 'Author', books: [new Book()])
+    def "toMany validation cascades when isOwningSide is true if cascadeValidate option is set to owned or default"() {
+        Author author = new Author(name: 'Author', books: [new Book()], defaultBooks: [new Book()], noneBooks: [new Book()])
         Errors errors = new ValidationErrors(author)
 
         when:
@@ -103,11 +100,33 @@ class PersistentEntityValidatorSpec extends Specification {
         !errors.hasErrors()
         author.books.first()
         author.books.first().name == "name"
+
+        and: "validate is called for defaultBooks"
+        author.defaultBooks.first()
+        author.defaultBooks.first().name == "name"
+
+        and: "validate is not called for noneBooks"
+        author.noneBooks.first()
+        author.noneBooks.first().name == null
     }
 
     @Issue('https://github.com/grails/grails-data-mapping/issues/1106')
-    def "validation does not cascade if not owner and cascade options are not PERSIST or MERGE"() {
-        Author author = new Author(name: 'Author', nonCascadePublisher: new Publisher())
+    def "toMany validation does not cascade when cascadeValidate option is set to none"() {
+        Author author = new Author(name: 'Author', noneBooks: [new Book()])
+        Errors errors = new ValidationErrors(author)
+
+        when:
+        authorValidator.validate(author, errors)
+
+        then: "validate is not called for noneBooks"
+        !errors.hasErrors()
+        author.noneBooks.first()
+        author.noneBooks.first().name == null
+    }
+
+    @Issue('https://github.com/grails/grails-data-mapping/issues/1106')
+    def "toOne validation does not cascade if cascadeValidate option is none"() {
+        Author author = new Author(name: 'Author', nonePublisher: new Publisher())
         Errors errors = new ValidationErrors(author)
 
         when:
@@ -115,7 +134,32 @@ class PersistentEntityValidatorSpec extends Specification {
 
         then: "validate is not called for publisher"
         !errors.hasErrors()
-        !author.nonCascadePublisher.name
+        !author.nonePublisher.validateCalled
+    }
+
+    def "toOne validation cascades if the associated object is dirty and cascadeValidate option set to dirty"() {
+        Author author = new Author(name: 'Author', dirtyPublisher: new Publisher())
+        Errors errors = new ValidationErrors(author)
+
+        when:
+        authorValidator.validate(author, errors)
+
+        then: "validate is called for publisher since it's dirty"
+        !errors.hasErrors()
+        author.dirtyPublisher.validateCalled
+    }
+
+    def "validation does not cascade if the associated object is not dirty and cascadeValidate option set to dirty"() {
+        Author author = new Author(name: 'Author', dirtyPublisher: new Publisher())
+        Errors errors = new ValidationErrors(author)
+        author.dirtyPublisher.trackChanges()
+
+        when:
+        authorValidator.validate(author, errors)
+
+        then: "validate is not called for publisher"
+        !errors.hasErrors()
+        !author.dirtyPublisher.validateCalled
     }
 }
 
@@ -124,23 +168,35 @@ class Author {
     String name
 
     Publisher publisher
-    Publisher anotherPublisher
-    Publisher nonCascadePublisher
+    Publisher ownedPublisher
+    Publisher defaultPublisher
+    Publisher dirtyPublisher
+    Publisher nonePublisher
 
     Set<Book> books
+    Set<Book> defaultBooks
+    Set<Book> noneBooks
 
-    static hasMany = [books: Book]
+    static hasMany = [
+        books: Book, defaultBooks: Book, noneBooks: Book
+    ]
 
     static constraints = {
         publisher(nullable: true)
-        anotherPublisher(nullable: true)
-        nonCascadePublisher(nullable: true)
+        ownedPublisher(nullable: true)
+        defaultPublisher(nullable: true)
+        dirtyPublisher(nullable: true)
+        nonePublisher(nullable: true)
     }
 
     static mapping = {
-        books(cascadeValidate: false) // This will be ignored since Author.isOwningSide of books
-        anotherPublisher(cascadeValidate: false)
-        nonCascadePublisher(cascade: 'none') // This will also prevent cascading validation
+        books(cascadeValidate: 'owned') // This should be validated since author isOwningSide of books
+        noneBooks(cascadeValidate: 'none') // Don't cascade validation at all
+
+        ownedPublisher(cascadeValidate: 'owned') // Only cascade validation when owned (should not be validated since author doesn't own publisher)
+        defaultPublisher(cascadeValidate: 'default') // Explicitly use the default cascade logic
+        dirtyPublisher(cascadeValidate: 'dirty') // Only cascade validation if the object is dirty
+        nonePublisher(cascadeValidate: 'none') // Don't cascade validation at all
     }
 }
 
@@ -155,12 +211,15 @@ class Book {
 }
 
 @Entity
-class Publisher {
+class Publisher implements DirtyCheckable {
     String name
 
+    @Transient
+    boolean validateCalled = false
 
     def beforeValidate() {
         name = "name"
+        validateCalled = true
     }
 
     // some of the persistent entity validator logic relies on errors being present

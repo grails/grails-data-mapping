@@ -102,7 +102,6 @@ class Property implements Cloneable {
      * @return Whether the property is derived or not
      */
     boolean derived
-
     /**
      * Whether an entity of an orphaned association should be removed
      */
@@ -116,7 +115,7 @@ class Property implements Cloneable {
      * Cascade validation for associations that are not owned by the parent entity. Only makes sense
      * if the property is an association.
      */
-    boolean cascadeValidate = true
+    String cascadeValidate
     /**
      * For specifying the cascade type using {@link CascadeType}
      */
