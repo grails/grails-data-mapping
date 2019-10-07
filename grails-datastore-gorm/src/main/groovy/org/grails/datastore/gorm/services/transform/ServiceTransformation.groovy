@@ -396,8 +396,9 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
 	protected boolean shouldGenerateDescriptor (final SourceUnit sourceUnit, final ReaderSource readerSource) {
 		
 		// Don't generate for runtime compiled scripts, unless this is the groovy-eclipse JDT compiler. 
-		readerSource instanceof FileReaderSource || readerSource instanceof URLReaderSource ||
-			(GroovyEclipseCompilationHelper.isGroovyEclipse (sourceUnit) && readerSource instanceof StringReaderSource)
+		readerSource instanceof FileReaderSource ||
+			readerSource instanceof URLReaderSource ||
+			GroovyEclipseCompilationHelper.isGroovyEclipse (sourceUnit)
 	}
 
     protected void generateServiceDescriptor(SourceUnit sourceUnit, ClassNode classNode) {
