@@ -394,10 +394,10 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
     }
 	
 	protected boolean shouldGenerateDescriptor (final SourceUnit sourceUnit, final ReaderSource readerSource) {
-		
 		// Don't generate for runtime compiled scripts, unless this is the groovy-eclipse JDT compiler. 
-		readerSource instanceof FileReaderSource || readerSource instanceof URLReaderSource ||
-			(GroovyEclipseCompilationHelper.isGroovyEclipse (sourceUnit) && readerSource instanceof StringReaderSource)
+		readerSource instanceof FileReaderSource ||
+			readerSource instanceof URLReaderSource ||
+			GroovyEclipseCompilationHelper.isGroovyEclipse (sourceUnit)
 	}
 
     protected void generateServiceDescriptor(SourceUnit sourceUnit, ClassNode classNode) {
@@ -407,41 +407,45 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
         if (shouldGenerateDescriptor(sourceUnit, readerSource)) {
 			
             File targetDirectory = resolveCompilationTargetDirectory(sourceUnit, 'build/resources/main')
-            File servicesDir = new File(targetDirectory, "META-INF/services")
-            servicesDir.mkdirs()
-
-            String className = classNode.name
-            try {
-                def descriptor = new File(servicesDir, org.grails.datastore.mapping.services.Service.name)
-                if (descriptor.exists()) {
-                    String ls = System.getProperty('line.separator')
-                    String contents = descriptor.text
-                    def entries = contents.split('\\n')
-                    if (!entries.contains(className)) {
-                        descriptor.append("${ls}${className}")
-                    }
-                } else {
-                    descriptor.text = className
-                }
-            } catch (Throwable e) {
-                warning(sourceUnit, classNode, "Error generating service loader descriptor for class [${className}]: $e.message")
-            }
+			
+			// targetDirectory could be null when in groovy-eclipse and if we were unable to
+			// resolve a valid directory.
+			if (targetDirectory) {
+	            File servicesDir = new File(targetDirectory, "META-INF/services")
+	            servicesDir.mkdirs()
+	
+	            String className = classNode.name
+	            try {
+	                def descriptor = new File(servicesDir, org.grails.datastore.mapping.services.Service.name)
+	                if (descriptor.exists()) {
+	                    String ls = System.getProperty('line.separator')
+	                    String contents = descriptor.text
+	                    def entries = contents.split('\\n')
+	                    if (!entries.contains(className)) {
+	                        descriptor.append("${ls}${className}")
+	                    }
+	                } else {
+	                    descriptor.text = className
+	                }
+	            } catch (Throwable e) {
+	                warning(sourceUnit, classNode, "Error generating service loader descriptor for class [${className}]: $e.message")
+	            }
+			}
         }
     }
 	
 	protected File resolveCompilationTargetDirectory(final SourceUnit source, final String defaultPath) {
 		File targetDirectory = null
-		
-		if(GroovyEclipseCompilationHelper.isGroovyEclipse (source) ) {
-			targetDirectory = GroovyEclipseCompilationHelper.resolveEclipseCompilationTargetDirectory(source)
+		if( GroovyEclipseCompilationHelper.isGroovyEclipse (source) ) {
+			targetDirectory = GroovyEclipseCompilationHelper.resolveEclipseCompilationTargetDirectory(source, defaultPath)
 		} else {
 			targetDirectory = source.configuration.targetDirectory
+			// If we could not use config to set the target directory, then we should use the supplied default.
+			if (targetDirectory == null) {
+				targetDirectory = new File(defaultPath)
+			}
 		}
 		
-		// If we could not use config to set the target directory, then we should use the supplied default.
-		if(targetDirectory == null) {
-			targetDirectory = new File(defaultPath)
-		}
 		return targetDirectory
 	}
 }
