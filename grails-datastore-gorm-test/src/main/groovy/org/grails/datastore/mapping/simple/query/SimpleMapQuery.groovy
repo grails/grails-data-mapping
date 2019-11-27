@@ -162,7 +162,7 @@ class SimpleMapQuery extends Query {
 
     private List applyMaxAndOffset(List sortedResults) {
         final def total = sortedResults.size()
-        if (offset > total) return Collections.emptyList()
+        if (offset >= total) return Collections.emptyList()
 
         // 0..3
         // 0..-1
