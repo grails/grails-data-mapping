@@ -455,7 +455,7 @@ class Address {
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-If you define the <code>Address</code> class in a separate Groovy file in the <code>grails-app/domain</code> directory you will also get an <code>address</code> table. If you don&#8217;t want this to happen use Groovy&#8217;s ability to define multiple classes per file and include the <code>Address</code> class below the <code>Person</code> class in the <code>grails-app/domain/Person.groovy</code> file
+If you define the <code>Address</code> class in a separate Groovy file in the <code>grails-app/domain</code> directory you will also get an <code>address</code> table. If you don&#8217;t want this to happen use Groovy&#8217;s ability to define multiple classes per file and include the <code>Address</code> class below the <code>Person</code> class in the <code>grails-app/domain/Person.groovy</code> file. Another option is to define the <code>Address</code> class in <code>src/main/groovy/Address.groovy</code> and annotate it with <code>grails.gorm.annotation.Entity</code>
 </td>
 </tr>
 </table>
