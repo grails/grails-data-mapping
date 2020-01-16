@@ -9,6 +9,7 @@ import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.ToOne
+import org.grails.datastore.mapping.proxy.ProxyHandler
 import org.grails.datastore.mapping.reflect.EntityReflector
 import org.springframework.context.MessageSource
 import org.springframework.validation.Errors
@@ -103,6 +104,7 @@ class UniqueConstraint extends AbstractConstraint {
 
         if (constraintParameter) {
             boolean shouldValidate = true
+            final ProxyHandler proxyHandler = targetEntity.getMappingContext().proxyHandler
             detachedCriteria = detachedCriteria.build {
                 eq(constraintPropertyName, propertyValue)
                 if (!group.isEmpty()) {
@@ -113,7 +115,12 @@ class UniqueConstraint extends AbstractConstraint {
                             PersistentProperty associated = targetEntity.getPropertyByName(propName)
                             if (associated instanceof ToOne) {
                                 // We are merely verifying that the object is not transient here
-                                def associationId = ((Association) associated).getAssociatedEntity().getReflector().getIdentifier(value)
+                                def associationId
+                                if (proxyHandler.isProxy(value)) {
+                                    associationId = proxyHandler.getIdentifier(value)
+                                } else {
+                                    associationId = ((Association) associated).getAssociatedEntity().getReflector().getIdentifier(value)
+                                }
                                 if (associationId == null) {
                                     // no need to validate since this group association is unsaved
                                     shouldValidate = false

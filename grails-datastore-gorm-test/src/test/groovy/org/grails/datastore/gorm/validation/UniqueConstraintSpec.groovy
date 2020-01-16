@@ -54,6 +54,30 @@ class UniqueConstraintSpec extends Specification {
 
     }
 
+    void "test unique constraint checks parent field"() {
+
+        setup:
+        Organization organization = new Organization(name: "Test Org")
+        organization.defaultChannel.organization = organization
+        organization.addToChannels(name: "Foo")
+        organization.addToChannels(name: "Bar")
+        organization.save(flush: true, failOnError: true)
+        datastore.currentSession.clear()
+
+        when: "we change the channel name to an existing channel name in the organization"
+        Channel channel = Channel.findByName("Bar")
+        channel.name = "Foo"
+
+        then:
+        !channel.validate()
+        channel.hasErrors()
+        channel.errors.getFieldError('name').code == 'unique'
+
+        cleanup:
+        Channel.deleteAll()
+        Organization.deleteAll(organization)
+    }
+
     void 'unique constraint works with parent/child/child'() {
         given: 'an existing channel'
         def testOrg = new Organization(name: 'Test 1')
@@ -120,7 +144,7 @@ class UniqueConstraintSpec extends Specification {
 
 
 @Entity
-abstract class Channel {
+class Channel {
 
     String name
     static belongsTo = [organization: Organization]
@@ -165,4 +189,5 @@ class Organization {
     DefaultChannel defaultChannel = new DefaultChannel()
 
     static hasOne = [defaultChannel: DefaultChannel]
+    static hasMany = [channels: Channel]
 }
