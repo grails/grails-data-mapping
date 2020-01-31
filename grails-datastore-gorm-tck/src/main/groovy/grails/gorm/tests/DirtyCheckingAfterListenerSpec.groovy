@@ -37,7 +37,7 @@ class DirtyCheckingAfterListenerSpec extends GormDatastoreSpec {
     void "test state change from listener update the object"() {
 
         when:
-        new Player(name: "John").save()
+        Player john = new Player(name: "John").save()
 
         then:
         new PollingConditions().eventually { listener.isExecuted && Player.count()}
@@ -45,7 +45,7 @@ class DirtyCheckingAfterListenerSpec extends GormDatastoreSpec {
         when:
         session.flush()
         session.clear()
-        Player john = Player.get(john.id)
+        john = Player.get(john.id)
 
         then:
         john.attributes
