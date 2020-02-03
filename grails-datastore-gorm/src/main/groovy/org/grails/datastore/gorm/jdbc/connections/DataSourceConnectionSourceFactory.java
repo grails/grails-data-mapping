@@ -47,7 +47,7 @@ public class DataSourceConnectionSourceFactory extends AbstractConnectionSourceF
     public ConnectionSource<DataSource, DataSourceSettings> create(String name, DataSourceSettings settings) {
 
         DataSource dataSource;
-        if(settings.getJndiName() != null) {
+        if(settings.getJndiName() != null && !settings.getJndiName().isEmpty()) {
             JndiObjectFactoryBean jndiObjectFactoryBean = new JndiObjectFactoryBean();
             jndiObjectFactoryBean.setExpectedType(DataSource.class);
             jndiObjectFactoryBean.setJndiName(settings.getJndiName());
