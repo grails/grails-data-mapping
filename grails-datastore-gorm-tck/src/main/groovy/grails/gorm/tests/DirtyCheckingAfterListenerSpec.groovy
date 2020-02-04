@@ -1,7 +1,6 @@
 package grails.gorm.tests
 
-import grails.gorm.annotation.Entity
-import org.grails.datastore.gorm.GormEntity
+import grails.persistence.Entity
 import org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent
@@ -20,7 +19,7 @@ class DirtyCheckingAfterListenerSpec extends GormDatastoreSpec {
 
     @Override
     List getDomainClasses() {
-        return [Player]
+        return [TestPlayer]
     }
 
     def setup() {
@@ -37,15 +36,15 @@ class DirtyCheckingAfterListenerSpec extends GormDatastoreSpec {
     void "test state change from listener update the object"() {
 
         when:
-        Player john = new Player(name: "John").save()
+        TestPlayer john = new TestPlayer(name: "John").save(flush: true)
 
         then:
-        new PollingConditions().eventually { listener.isExecuted && Player.count()}
+        new PollingConditions().eventually { listener.isExecuted && TestPlayer.count()}
 
         when:
         session.flush()
         session.clear()
-        john = Player.get(john.id)
+        john = TestPlayer.get(john.id)
 
         then:
         john.attributes
@@ -55,7 +54,8 @@ class DirtyCheckingAfterListenerSpec extends GormDatastoreSpec {
 }
 
 @Entity
-class Player implements GormEntity<Player> {
+class TestPlayer implements Serializable {
+    Long id
     String name
     List<String> attributes
 
@@ -71,7 +71,7 @@ class TestSaveOrUpdateEventListener extends AbstractPersistenceEventListener {
 
     @Override
     protected void onPersistenceEvent(AbstractPersistenceEvent event) {
-        Player player = (Player) event.entityObject
+        TestPlayer player = (TestPlayer) event.entityObject
         player.attributes = ["test0", "test1", "test2"]
         isExecuted = true
     }
