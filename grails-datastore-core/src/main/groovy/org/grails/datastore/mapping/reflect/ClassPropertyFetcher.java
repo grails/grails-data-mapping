@@ -418,14 +418,14 @@ public class ClassPropertyFetcher {
         if(metaProperty instanceof MetaBeanProperty) {
             CachedField field = ((MetaBeanProperty) metaProperty).getField();
             if(field != null) {
-                return field.field;
+                return field.getCachedField();
             }
         }
         else if(metaProperty instanceof MultipleSetterProperty) {
             MultipleSetterProperty msp = (MultipleSetterProperty) metaProperty;
             CachedField field = msp.getField();
             if(field != null) {
-                return field.field;
+                return field.getCachedField();
             }
         }
         return null;

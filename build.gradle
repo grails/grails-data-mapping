@@ -34,7 +34,7 @@ project.ext {
     nexusPassword = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
 }
 
-def spockDependency = "org.spockframework:spock-core:1.2-groovy-2.5"
+def spockDependency = "org.spockframework:spock-core:2.0-M2-groovy-3.0"
 
 def isGroovyProject(project) {
     !project.name.contains("grails-plugins")
@@ -61,6 +61,12 @@ allprojects {
         maven { url "https://repo.grails.org/grails/core" }
         if(isBuildSnapshot) {
             maven { url "https://repo.grails.org/grails/libs-snapshots-local" }
+        }
+        if(groovyVersion && groovyVersion.endsWith('-SNAPSHOT')) {
+            maven {
+                name 'JFrog OSS snapshot repo'
+                url 'https://oss.jfrog.org/oss-snapshot-local/'
+            }
         }
     }
 
@@ -127,9 +133,9 @@ subprojects {
             documentation 'info.picocli:picocli:3.8.0'
             compile group: 'org.codehaus.groovy', name: 'groovy', version: groovyVersion
 
-            testCompile group: 'org.codehaus.groovy', name: 'groovy-test', version: groovyVersion
+            testCompile group: 'org.codehaus.groovy', name: 'groovy-test-junit5', version: groovyVersion
 
-            testCompile "junit:junit:$junitVersion"
+//            testCompile "junit:junit:$junitVersion"
             testCompile (spockDependency) {
                 exclude group:'junit',module:'junit-dep'
                 exclude group:'org.codehaus.groovy',module:'groovy-all'
@@ -250,7 +256,7 @@ configurations {
 
 dependencies {
     build "com.cenqua.clover:clover:3.0.2"
-    build "org.apache.ant:ant-junit:1.8.1"
+//    build "org.apache.ant:ant-junit:1.8.1"
     build "org.apache.ant:ant-nodeps:1.8.1"
 }
 
