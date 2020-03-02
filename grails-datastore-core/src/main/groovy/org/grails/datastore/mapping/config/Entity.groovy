@@ -288,7 +288,7 @@ class Entity<P extends Property> {
         if(val instanceof Closure) {
             property(name, (Closure)val)
         }
-        else if(val instanceof P) {
+        else if(val instanceof Property) {
             propertyConfigs[name] =((P)val)
         }
         else {
