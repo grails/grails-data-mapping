@@ -5,8 +5,8 @@ import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValue
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValuePersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 /**
  * @author Graeme Rocher
@@ -15,7 +15,7 @@ import org.junit.Test
 class KeyValueMappingFactoryTests {
     def context
 
-    @Before
+    @BeforeEach
     void setUp() {
         context = new KeyValueMappingContext("myspace")
         context.addPersistentEntity(TestEntity)

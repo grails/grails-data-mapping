@@ -1,10 +1,10 @@
 package org.grails.datastore.mapping.model
 
 import grails.gorm.annotation.Entity
-import org.junit.Test
 import org.grails.datastore.mapping.model.types.*
+import org.junit.jupiter.api.Test
 
-import static org.junit.Assert.*
+import static org.junit.jupiter.api.Assertions.*
 
 /**
  * Tests for correct mapping of entities with inheritance.

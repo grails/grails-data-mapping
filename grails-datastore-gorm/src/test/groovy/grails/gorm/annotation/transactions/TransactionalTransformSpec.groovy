@@ -224,18 +224,18 @@ import grails.gorm.transactions.Transactional
         when:
         Class mySpec = new GroovyShell().evaluate('''
     import grails.gorm.transactions.*
-    import org.junit.Test
-    import org.junit.Before
-    import org.junit.After
+    import org.junit.jupiter.api.Test
+    import org.junit.jupiter.api.BeforeEach
+    import org.junit.jupiter.api.AfterEach
 
     @Rollback
     class MyJunitTest {
-        @Before
+        @BeforeEach
         def junitSetup() {
 
         }
 
-        @After
+        @AfterEach
         def junitCleanup() {
 
         }
