@@ -36,7 +36,7 @@ import static org.grails.datastore.mapping.reflect.AstUtils.*
  * @author Graeme Rocher
  * @since 2.0
  */
-@CompileStatic
+//@CompileStatic
 class DirtyCheckingTransformer implements CompilationUnitAware {
     private static final String VOID = "void";
     private static final Class<?>[] EMPTY_JAVA_CLASS_ARRAY = [];

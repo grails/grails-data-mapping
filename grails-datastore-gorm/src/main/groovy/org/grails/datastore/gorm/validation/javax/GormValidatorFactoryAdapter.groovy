@@ -18,7 +18,7 @@ import javax.validation.valueextraction.ValueExtractor
  * @author Graeme Rocher
  * @since 6.1
  */
-@CompileStatic
+//@CompileStatic
 class GormValidatorFactoryAdapter implements ValidatorFactory  {
 
     final ValidatorFactory factory
@@ -72,7 +72,7 @@ class GormValidatorFactoryAdapter implements ValidatorFactory  {
         return factory.unwrap(type)
     }
 
-    @CompileStatic
+//    @CompileStatic
     static class GormValidatorContext implements ValidatorContext {
         final ValidatorContext delegate
 

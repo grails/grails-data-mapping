@@ -23,7 +23,7 @@ import javax.persistence.FetchType
  * @author Graeme Rocher
  * @since 6.0
  */
-@CompileStatic
+//@CompileStatic
 class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> implements PersistentObservable<T> {
     DetachedCriteria(Class<Observable<T>> targetClass, String alias) {
         super(targetClass, alias)

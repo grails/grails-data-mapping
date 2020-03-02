@@ -21,7 +21,7 @@ class ConfigurableApplicationContextEventPublisher implements ConfigurableApplic
     }
 
     @Override
-    void addApplicationListener(ApplicationListener<?> listener) {
+    void addApplicationListener(ApplicationListener<? extends ApplicationEvent> listener) {
         this.applicationContext.addApplicationListener(listener)
     }
 

@@ -21,7 +21,7 @@ import org.springframework.validation.Errors
  * @since 6.0
  *
  */
-@CompileStatic
+//@CompileStatic
 class UniqueConstraint extends AbstractConstraint {
 
     public static final String NAME = "unique"
