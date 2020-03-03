@@ -72,7 +72,7 @@ class GormValidatorFactoryAdapter implements ValidatorFactory  {
         return factory.unwrap(type)
     }
 
-//    @CompileStatic
+    @CompileStatic
     static class GormValidatorContext implements ValidatorContext {
         final ValidatorContext delegate
 
