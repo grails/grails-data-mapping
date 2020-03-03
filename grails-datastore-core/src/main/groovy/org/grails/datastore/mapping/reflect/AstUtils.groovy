@@ -68,7 +68,7 @@ import static org.codehaus.groovy.ast.tools.GenericsUtils.correctToGenericsSpecR
  * @author Graeme Rocher
  * @since 5.0
  */
-//@CompileStatic
+@CompileStatic
 class AstUtils {
     private static final String SPEC_CLASS = "spock.lang.Specification"
     private static final Class<?>[] EMPTY_JAVA_CLASS_ARRAY = []

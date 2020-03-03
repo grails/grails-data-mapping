@@ -16,7 +16,7 @@ import javax.validation.executable.ExecutableValidator
  * @author Graeme Rocher
  * @since 6.1
  */
-//@CompileStatic
+@CompileStatic
 class GormValidatorAdapter extends SpringValidatorAdapter {
 
     final Validator thisValidator

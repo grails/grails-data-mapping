@@ -18,7 +18,7 @@ import java.lang.annotation.Annotation
  * @author Graeme Rocher
  * @since 6.1.2
  */
-//@CompileStatic
+@CompileStatic
 class AstAnnotationUtils {
     private static final Set<String> JUNIT_ANNOTATION_NAMES = new HashSet<String>(Arrays.asList("org.junit.jupiter.api.BeforeEach", "org.junit.jupiter.api.AfterEach"))
 
