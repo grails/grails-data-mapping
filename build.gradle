@@ -132,13 +132,13 @@ subprojects {
             documentation "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
             documentation 'info.picocli:picocli:3.8.0'
 
-            implementation group: 'org.codehaus.groovy', name: 'groovy', version: groovyVersion
-            testImplementation group: 'org.codehaus.groovy', name: 'groovy-test-junit5', version: groovyVersion
-            testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.0"
-            testImplementation "org.junit.platform:junit-platform-runner:1.6.0"
+            compile group: 'org.codehaus.groovy', name: 'groovy', version: groovyVersion
+            testCompile group: 'org.codehaus.groovy', name: 'groovy-test-junit5', version: groovyVersion
+            testCompile "org.junit.jupiter:junit-jupiter-api:5.6.0"
+            testCompile "org.junit.platform:junit-platform-runner:1.6.0"
             testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.6.0"
 
-            testImplementation(spockDependency) {
+            testCompile(spockDependency) {
                 exclude group: 'junit', module: 'junit-dep'
                 exclude group: 'org.codehaus.groovy', module: 'groovy-all'
                 exclude group: 'org.hamcrest', module: 'hamcrest-core'
@@ -147,13 +147,13 @@ subprojects {
         }
 
         if (project.name == "grails-datastore-gorm-tck") {
-            implementation(spockDependency, {
+            compile(spockDependency, {
                 exclude group: 'junit', module: 'junit-dep'
                 exclude group: 'org.codehaus.groovy', module: 'groovy-all'
                 exclude group: 'org.hamcrest', module: 'hamcrest-core'
                 transitive = false
             })
-            implementation "org.junit.platform:junit-platform-runner:1.6.0"
+            compile "org.junit.platform:junit-platform-runner:1.6.0"
         }
     }
 
