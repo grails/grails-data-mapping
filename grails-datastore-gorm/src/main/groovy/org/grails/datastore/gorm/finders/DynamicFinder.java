@@ -466,8 +466,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
      * @param query The query
      * @param argMap The query arguments
      */
-    //TODO: Change {code}Class<? extends Object>{code} to {class<?>} once GROOVY-XXX is fixed.
-    public static void populateArgumentsForCriteria(Class<? extends Object> targetClass, Query query, Map argMap) {
+    public static void populateArgumentsForCriteria(Class<?> targetClass, Query query, Map argMap) {
         if (argMap == null) {
             return;
         }
