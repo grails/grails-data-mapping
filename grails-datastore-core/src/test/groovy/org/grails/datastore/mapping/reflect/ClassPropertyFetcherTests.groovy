@@ -2,7 +2,7 @@ package org.grails.datastore.mapping.reflect
 
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingFactory
 import org.grails.datastore.mapping.model.config.GormProperties
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 import java.beans.PropertyDescriptor
 

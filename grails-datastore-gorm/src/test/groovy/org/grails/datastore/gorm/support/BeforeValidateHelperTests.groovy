@@ -1,76 +1,85 @@
 package org.grails.datastore.gorm.support
 
-class BeforeValidateHelperTests extends GroovyTestCase {
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+
+import static org.junit.jupiter.api.Assertions.*
+
+class BeforeValidateHelperTests {
 
     def beforeValidateHelper
 
+    @BeforeEach
     void setUp() {
-        super.setUp()
         beforeValidateHelper = new BeforeValidateHelper()
     }
 
+    @Test
     void testNoArgBeforeValidate() {
         def obj = new ClassWithNoArgBeforeValidate()
-        assertEquals 'wrong initial counter value', 0, obj.noArgCounter
+        assertEquals 0, obj.noArgCounter, 'wrong initial counter value'
         beforeValidateHelper.invokeBeforeValidate(obj, null)
-        assertEquals 'wrong counter value', 1, obj.noArgCounter
+        assertEquals 1, obj.noArgCounter, 'wrong counter value'
         beforeValidateHelper.invokeBeforeValidate(obj, [])
-        assertEquals 'wrong counter value', 2, obj.noArgCounter
+        assertEquals 2, obj.noArgCounter, 'wrong counter value'
         beforeValidateHelper.invokeBeforeValidate(obj, ['name', 'age', 'town'])
-        assertEquals 'wrong counter value', 3, obj.noArgCounter
+        assertEquals 3, obj.noArgCounter, 'wrong counter value'
     }
 
+    @Test
     void testListArgBeforeValidate() {
         def obj = new ClassWithListArgBeforeValidate()
-        assertEquals 'wrong initial counter value', 0, obj.listArgCounter
+        assertEquals 0, obj.listArgCounter, 'wrong initial counter value'
         beforeValidateHelper.invokeBeforeValidate(obj, null)
-        assertEquals 'wrong counter value', 1, obj.listArgCounter
+        assertEquals  1, obj.listArgCounter, 'wrong counter value'
         beforeValidateHelper.invokeBeforeValidate(obj, [])
-        assertEquals 'wrong counter value', 2, obj.listArgCounter
+        assertEquals 2, obj.listArgCounter, 'wrong counter value'
         beforeValidateHelper.invokeBeforeValidate(obj, ['name', 'age', 'town'])
-        assertEquals 'wrong counter value', 3, obj.listArgCounter
+        assertEquals 3, obj.listArgCounter, 'wrong counter value'
     }
 
+    @Test
     void testOverloadedBeforeValidate() {
         def obj = new ClassWithOverloadedBeforeValidate()
-        assertEquals 'wrong initial list arg counter value', 0, obj.listArgCounter
-        assertEquals 'wrong initial no arg counter value', 0, obj.noArgCounter
+        assertEquals 0, obj.listArgCounter, 'wrong initial list arg counter value'
+        assertEquals 0, obj.noArgCounter, 'wrong initial no arg counter value'
 
         beforeValidateHelper.invokeBeforeValidate(obj, null)
-        assertEquals 'wrong list arg counter value', 0, obj.listArgCounter
-        assertEquals 'wrong no arg counter value', 1, obj.noArgCounter
+        assertEquals 0, obj.listArgCounter, 'wrong list arg counter value'
+        assertEquals 1, obj.noArgCounter, 'wrong no arg counter value'
 
         beforeValidateHelper.invokeBeforeValidate(obj, [])
-        assertEquals 'wrong list arg counter value', 1, obj.listArgCounter
-        assertEquals 'wrong no arg counter value', 1, obj.noArgCounter
+        assertEquals 1, obj.listArgCounter, 'wrong list arg counter value'
+        assertEquals 1, obj.noArgCounter, 'wrong no arg counter value'
 
         beforeValidateHelper.invokeBeforeValidate(obj, ['name', 'age', 'town'])
-        assertEquals 'wrong list arg counter value', 2, obj.listArgCounter
-        assertEquals 'wrong no arg counter value', 1, obj.noArgCounter
+        assertEquals 2, obj.listArgCounter, 'wrong list arg counter value'
+        assertEquals 1, obj.noArgCounter, 'wrong no arg counter value'
     }
 
+    @Test
     void testSerialization() {
         // Make sure something is in the cache
         def obj = new ClassWithNoArgBeforeValidate()
         beforeValidateHelper.invokeBeforeValidate(obj, null)
-        assertEquals 'wrong counter value', 1, obj.noArgCounter
+        assertEquals 1, obj.noArgCounter, 'wrong counter value'
 
         // Serialize
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
         ObjectOutputStream oos = new ObjectOutputStream(byteArrayOutputStream)
         oos.writeObject(beforeValidateHelper)
         oos.close()
-        assertTrue 'class is serialized', byteArrayOutputStream.toByteArray().length > 0
+        assertTrue byteArrayOutputStream.toByteArray().length > 0, 'class is serialized'
 
         // Deserialize
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray())
         ObjectInputStream ois = new ObjectInputStream(byteArrayInputStream)
         beforeValidateHelper = ois.readObject() as BeforeValidateHelper
-        assertNotNull 'class is deserialized', beforeValidateHelper
+        assertNotNull beforeValidateHelper, 'class is deserialized'
 
         // Ensure it still works
         beforeValidateHelper.invokeBeforeValidate(obj, null)
-        assertEquals 'wrong counter value', 2, obj.noArgCounter
+        assertEquals 2, obj.noArgCounter, 'wrong counter value'
     }
 }
 

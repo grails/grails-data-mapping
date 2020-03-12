@@ -3,10 +3,10 @@ package org.grails.datastore.mapping.model
 import grails.gorm.annotation.Entity
 import org.grails.datastore.mapping.model.config.JpaMappingConfigurationStrategy
 
-import static org.junit.Assert.*
+import static org.junit.jupiter.api.Assertions.*
 
 
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.ManyToOne
 import org.grails.datastore.mapping.model.types.OneToMany

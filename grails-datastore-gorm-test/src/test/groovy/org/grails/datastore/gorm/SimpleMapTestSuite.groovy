@@ -1,16 +1,14 @@
 package org.grails.datastore.gorm
 
+import grails.gorm.tests.NotInListSpec
+import org.junit.platform.runner.JUnitPlatform
+import org.junit.platform.suite.api.SelectClasses
 import org.junit.runner.RunWith
-import org.junit.runners.Suite
-import org.junit.runners.Suite.SuiteClasses
-import grails.gorm.tests.*
 
 /**
  * @author graemerocher
  */
-@RunWith(Suite)
-@SuiteClasses([
-NotInListSpec
-])
+@RunWith(JUnitPlatform)
+@SelectClasses([NotInListSpec])
 class SimpleMapTestSuite {
 }

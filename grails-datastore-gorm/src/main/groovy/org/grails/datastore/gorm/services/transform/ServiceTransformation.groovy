@@ -187,7 +187,7 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
         if (isInterface || isAbstractClass) {
             // create a new class to represent the implementation
             String packageName = classNode.packageName ? "${classNode.packageName}." : ""
-            ClassNode[] interfaces = isInterface ? [classNode.plainNodeReference] as ClassNode[] : new ClassNode[0]
+            ClassNode[] interfaces = isInterface ? ([classNode.plainNodeReference] as ClassNode[]) : new ClassNode[0]
             ClassNode superClass = isInterface ? ClassHelper.OBJECT_TYPE : classNode.plainNodeReference
             String serviceClassName = classNode.nameWithoutPackage
             ClassNode impl = new ClassNode("${packageName}\$${serviceClassName}Implementation", // class name

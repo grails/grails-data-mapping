@@ -17,8 +17,8 @@ project.ext {
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
     projectMajorVersion = "7"
-    projectMinorVersion = "0"
-    projectPatchVersion = "4"
+    projectMinorVersion = "1"
+    projectPatchVersion = "0"
 //     releaseType = "RELEASE"
 //    releaseType = "M2"
     // releaseType = "RC1"
@@ -34,7 +34,7 @@ project.ext {
     nexusPassword = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
 }
 
-def spockDependency = "org.spockframework:spock-core:1.2-groovy-2.5"
+def spockDependency = "org.spockframework:spock-core:2.0-M2-groovy-3.0"
 
 def isGroovyProject(project) {
     !project.name.contains("grails-plugins")
@@ -61,6 +61,12 @@ allprojects {
         maven { url "https://repo.grails.org/grails/core" }
         if(isBuildSnapshot) {
             maven { url "https://repo.grails.org/grails/libs-snapshots-local" }
+        }
+        if(groovyVersion && groovyVersion.endsWith('-SNAPSHOT')) {
+            maven {
+                name 'JFrog OSS snapshot repo'
+                url 'https://oss.jfrog.org/oss-snapshot-local/'
+            }
         }
     }
 
@@ -125,26 +131,29 @@ subprojects {
             documentation "org.fusesource.jansi:jansi:1.11"
             documentation "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
             documentation 'info.picocli:picocli:3.8.0'
+
             compile group: 'org.codehaus.groovy', name: 'groovy', version: groovyVersion
+            testCompile group: 'org.codehaus.groovy', name: 'groovy-test-junit5', version: groovyVersion
+            testCompile "org.junit.jupiter:junit-jupiter-api:5.6.0"
+            testCompile "org.junit.platform:junit-platform-runner:1.6.0"
+            testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.6.0"
 
-            testCompile group: 'org.codehaus.groovy', name: 'groovy-test', version: groovyVersion
-
-            testCompile "junit:junit:$junitVersion"
-            testCompile (spockDependency) {
-                exclude group:'junit',module:'junit-dep'
-                exclude group:'org.codehaus.groovy',module:'groovy-all'
-                exclude group:'org.hamcrest',module:'hamcrest-core'
+            testCompile(spockDependency) {
+                exclude group: 'junit', module: 'junit-dep'
+                exclude group: 'org.codehaus.groovy', module: 'groovy-all'
+                exclude group: 'org.hamcrest', module: 'hamcrest-core'
                 transitive = false
             }
         }
 
         if (project.name == "grails-datastore-gorm-tck") {
-            compile spockDependency, {
-                exclude group:'junit',module:'junit-dep'
-                exclude group:'org.codehaus.groovy',module:'groovy-all'
-                exclude group:'org.hamcrest',module:'hamcrest-core'
+            compile(spockDependency, {
+                exclude group: 'junit', module: 'junit-dep'
+                exclude group: 'org.codehaus.groovy', module: 'groovy-all'
+                exclude group: 'org.hamcrest', module: 'hamcrest-core'
                 transitive = false
-            }
+            })
+            compile "org.junit.platform:junit-platform-runner:1.6.0"
         }
     }
 
@@ -179,6 +188,7 @@ subprojects {
         }
 
         test {
+            useJUnitPlatform()
             testLogging {
                 exceptionFormat ='full'
             }
@@ -226,6 +236,10 @@ subprojects {
                 }
             }
         }
+//        Only enable to force update dependencies
+//        configurations.all {
+//            resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+//        }
     }
 
     if (isStandardGroovyMavenProject) {
@@ -250,7 +264,7 @@ configurations {
 
 dependencies {
     build "com.cenqua.clover:clover:3.0.2"
-    build "org.apache.ant:ant-junit:1.8.1"
+//    build "org.apache.ant:ant-junit:1.8.1"
     build "org.apache.ant:ant-nodeps:1.8.1"
 }
 
