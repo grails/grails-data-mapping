@@ -7,7 +7,7 @@ class BuiltinUniqueConstraintWorksWithTargetProxiesConstraintsSpec extends GormD
 
     void "test unique constraint on root instance"() {
 
-        given:
+        setup:
         ContactDetails contactDetails1 = new ContactDetails(phoneNumber: "+1-202-555-0105").save(failOnError: true)
         ContactDetails contactDetails2 = new ContactDetails(phoneNumber: "+1-202-555-0105")
         session.flush()
@@ -27,7 +27,7 @@ class BuiltinUniqueConstraintWorksWithTargetProxiesConstraintsSpec extends GormD
 
     void "test unique constraint for the associated child object"() {
 
-        given:
+        setup:
         ContactDetails contactDetails1 = new ContactDetails(phoneNumber: "+1-202-555-0105").save(failOnError: true)
         Patient patient1 = new Patient(contactDetails: contactDetails1).save(failOnError: true)
         session.flush()
@@ -49,7 +49,7 @@ class BuiltinUniqueConstraintWorksWithTargetProxiesConstraintsSpec extends GormD
 
     void "test unique constraint on the unmodified association loaded as initialized proxy"() {
 
-        given:
+        setup:
         final ProxyHandler proxyHandler = session.mappingContext.getProxyHandler()
         ContactDetails contactDetails = new ContactDetails(phoneNumber: "+1-202-555-0105").save(failOnError: true)
         Patient patient = new Patient(contactDetails: contactDetails).save(failOnError: true)
