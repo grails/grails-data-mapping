@@ -141,7 +141,11 @@ class UniqueConstraint extends AbstractConstraint {
                     // We are merely verifying that the object is not transient here
                     def targetId
                     if (proxyHandler.isProxy(target)) {
-                        targetId = proxyHandler.getIdentifier(target)
+                        if (proxyHandler.isInitialized(target)) {
+                            targetId = reflector.getIdentifier(proxyHandler.unwrap(target))
+                        } else {
+                            targetId = proxyHandler.getIdentifier(target)
+                        }
                     } else {
                         targetId = reflector.getIdentifier(target)
                     }

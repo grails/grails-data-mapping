@@ -14,7 +14,8 @@ class ProxyInitializationSpec extends GormDatastoreSpec {
 
         setup:
         final ProxyHandler proxyHandler = session.mappingContext.getProxyHandler()
-        Long patientId = new Patient(contactDetails: new ContactDetails(phoneNumber: "+1-202-555-0105")).save(failOnError: true).id
+        ContactDetails contactDetails = new ContactDetails(phoneNumber: "+1-202-555-0178").save(failOnError: true)
+        Long patientId = new Patient(contactDetails: contactDetails).save(failOnError: true).id
         session.flush()
         session.clear()
 
@@ -25,9 +26,13 @@ class ProxyInitializationSpec extends GormDatastoreSpec {
         proxyHandler.isProxy(patient.contactDetails)
 
         when:
-        patient.contactDetails.phoneNumber = "+1-202-555-0105"
+        patient.contactDetails.phoneNumber = "+1-202-555-0178"
 
         then:
         proxyHandler.isInitialized(patient.contactDetails)
+
+        cleanup:
+        Patient.deleteAll(patient)
+        ContactDetails.deleteAll(patient.contactDetails)
     }
 }
