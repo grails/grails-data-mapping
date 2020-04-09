@@ -1,131 +1,103 @@
 package grails.gorm.tests
 
-import grails.persistence.Entity
-import org.grails.datastore.mapping.proxy.EntityProxy
+import grails.gorm.annotation.Entity
+import org.grails.datastore.mapping.proxy.ProxyHandler
 
 class BuiltinUniqueConstraintWorksWithTargetProxiesConstraintsSpec extends GormDatastoreSpec {
 
-    void "modified domains object works as expected"() {
-        given: "I have a Domain OBJECT"
-        final Referenced object = new Referenced(name: "object").save(failOnError: true)
-        assert !(object instanceof EntityProxy)
-        
-        and: "I have another Domain OBJECT with the same name"
-        final Referenced another = new Referenced(name: "object")
-        assert !(object instanceof EntityProxy)
+    void "test unique constraint on root instance"() {
+
+        given:
+        ContactDetails contactDetails1 = new ContactDetails(phoneNumber: "+1-202-555-0105").save(failOnError: true)
+        ContactDetails contactDetails2 = new ContactDetails(phoneNumber: "+1-202-555-0105")
+        session.flush()
+        session.clear()
 
         when: "I try to validate the another object"
-        another.validate()
+        contactDetails2.validate()
 
         then: "another should have an error on name because it is duplicated"
-        another.hasErrors()
-        another.errors.hasFieldErrors("name")
-        another.errors.getFieldError("name").codes.contains("unique.name")
+        contactDetails2.hasErrors()
+        contactDetails2.errors.hasFieldErrors("phoneNumber")
+        contactDetails2.errors.getFieldError("phoneNumber").codes.contains("unique.phoneNumber")
 
         cleanup:
-        object?.delete(flush: true)
+        ContactDetails.deleteAll(contactDetails1)
     }
 
-    void "modified Referenced domains object works as expected"() {
-        given: "I have a Domain OBJECT"
-        final Referenced object = new Referenced(name: "object").save(failOnError: true)
-        assert !(object instanceof EntityProxy)
-        and: "a root referencing it"
-        final Root parent = new Root(ref: object).save(failOnError: true)
-        assert !(parent instanceof EntityProxy)
+    void "test unique constraint for the associated child object"() {
 
-        and: "I have another Domain OBJECT with the same name"
-        final Referenced anotherReferenced = new Referenced(name: "object")
-        assert !(object instanceof EntityProxy)
-        final Root anotherRoot = new Root(ref: anotherReferenced)
-        assert !(parent instanceof EntityProxy)
+        given:
+        ContactDetails contactDetails1 = new ContactDetails(phoneNumber: "+1-202-555-0105").save(failOnError: true)
+        Patient patient1 = new Patient(contactDetails: contactDetails1).save(failOnError: true)
+        session.flush()
+        session.clear()
 
-        when: "I try to validate the another object"
-        anotherRoot.validate()
+        when:
+        Patient patient2 = new Patient(contactDetails: new ContactDetails(phoneNumber: "+1-202-555-0105"))
+        patient2.validate()
 
-        then: "another should have an error on name because it is duplicated"
-        anotherRoot.hasErrors()
-        anotherRoot.errors.hasFieldErrors("Referenced.name")
-        anotherRoot.errors.getFieldError("Referenced.name").codes.contains("unique.name")
+        then:
+        patient2.hasErrors()
+        patient2.errors.hasFieldErrors("contactDetails.phoneNumber")
+        patient2.errors.getFieldError("contactDetails.phoneNumber").codes.contains("unique.phoneNumber")
 
         cleanup:
-        object?.delete(flush: true)
-        parent?.delete(flush: true)
+        Patient.deleteAll(patient1)
+        ContactDetails.deleteAll(contactDetails1)
     }
 
-    void "unmodified Referenced proxies object doesnt fail unique constraint checking"() {
-        given: "I have a Domain OBJECT"
-        Long ReferencedId, parentId
-        Root.withNewSession {
-            Root.withNewTransaction {
-                final Referenced object = new Referenced(name: "object").save(failOnError: true)
-                final Root parent = new Root(ref: object).save(failOnError: true)
+    void "test unique constraint on the unmodified association loaded as initialized proxy"() {
 
-                ReferencedId = object.id
-                parentId = parent.id
-            }
-        }
-        and:
-        int tries = 20
-        while (!Root.exists(parentId) && !Referenced.exists(ReferencedId) && tries-- > 0) {
-            sleep(50)
-        }
+        given:
+        final ProxyHandler proxyHandler = session.mappingContext.getProxyHandler()
+        ContactDetails contactDetails = new ContactDetails(phoneNumber: "+1-202-555-0105").save(failOnError: true)
+        Patient patient = new Patient(contactDetails: contactDetails).save(failOnError: true)
+        Long patientId = patient.id
+        session.flush()
+        session.clear()
 
-        and: "I access the parent, forcing the Referenced to be initialized"
+        when:
+        patient = Patient.get(patientId)
+        patient.contactDetails.phoneNumber = "+1-202-555-0105"
 
-        def parent = Root.findAll()[0]
-        assert parent.ref instanceof EntityProxy
-        parent.ref.name == "object"
+        then:
+        proxyHandler.isProxy(patient.contactDetails)
 
-        when: "I try to validate the the parent (which then tries to validate the Referenced)"
-        parent.validate()
-
-        then: "parent.Referenced should not have any errors!"
-        !parent.hasErrors()
-        !parent.errors.hasFieldErrors("Referenced.name")
-        !parent.errors.getFieldError("Referenced.name").codes.contains("unique.name")
+        expect:
+        patient.validate()
 
         cleanup:
-
-        Root.withNewSession {
-            Root.withNewTransaction {
-                Referenced.get(ReferencedId)?.delete(flush: true)
-                Root.get(parentId)?.delete(flush: true)
-            }
-        }
-        tries = 20
-        while (Root.exists(parentId) && Referenced.exists(ReferencedId) && tries-- > 0) {
-            sleep(50)
-        }
+        Patient.deleteAll(patient)
+        ContactDetails.deleteAll(patient.contactDetails)
     }
 
     @Override
     List getDomainClasses() {
-        [Referenced, Root]
+        [ContactDetails, Patient]
     }
 }
 
 @Entity
-class Referenced {
+class ContactDetails implements Serializable {
 
-    String name
+    String phoneNumber
 
     static constraints = {
-        name nullable: false, unique: true
+        phoneNumber nullable: false, unique: true
     }
 }
 
 @Entity
-class Root {
+class Patient implements Serializable {
 
-    Referenced ref
+    ContactDetails contactDetails
 
     static constraints = {
-        ref nullable: false
+        contactDetails nullable: false
     }
 
     static mapping = {
-        ref lazy: false
-        id generator: 'snowflake'
+        contactDetails lazy: true
     }
 }
