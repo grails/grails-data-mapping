@@ -138,7 +138,17 @@ class UniqueConstraint extends AbstractConstraint {
             if (shouldValidate) {
                 def existingId = detachedCriteria.get()
                 if (existingId != null) {
-                    def targetId = reflector.getIdentifier(target)
+                    // We are merely verifying that the object is not transient here
+                    def targetId
+                    if (proxyHandler.isProxy(target)) {
+                        if (proxyHandler.isInitialized(target)) {
+                            targetId = reflector.getIdentifier(proxyHandler.unwrap(target))
+                        } else {
+                            targetId = proxyHandler.getIdentifier(target)
+                        }
+                    } else {
+                        targetId = reflector.getIdentifier(target)
+                    }
                     if (targetId != existingId) {
                         def args = [constraintPropertyName, constraintOwningClass, propertyValue] as Object[]
                         rejectValue(target, errors, "unique", args, getDefaultMessage("default.not.unique.message"))

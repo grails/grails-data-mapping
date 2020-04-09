@@ -31,7 +31,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
 
         echo "Triggering Hibernate 5 build"
-        git clone -b master https://${GH_TOKEN}@github.com/grails/gorm-hibernate5.git gorm-hibernate5
+        git clone -b $TRAVIS_BRANCH https://${GH_TOKEN}@github.com/grails/gorm-hibernate5.git gorm-hibernate5
         cd gorm-hibernate5
         echo "$(date)" > .snapshot
         git add .snapshot
@@ -40,7 +40,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         cd ..
 
         echo "Triggering Neo4j build"
-        git clone https://${GH_TOKEN}@github.com/grails/gorm-neo4j.git gorm-neo4j
+        git clone -b $TRAVIS_BRANCH https://${GH_TOKEN}@github.com/grails/gorm-neo4j.git gorm-neo4j
         cd gorm-neo4j
         echo "$(date)" > .snapshot
         git add .snapshot
@@ -49,7 +49,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         cd ..
 
         echo "Triggering MongoDB build"
-        git clone https://${GH_TOKEN}@github.com/grails/gorm-mongodb.git gorm-mongodb
+        git clone -b $TRAVIS_BRANCH https://${GH_TOKEN}@github.com/grails/gorm-mongodb.git gorm-mongodb
         cd gorm-mongodb
         echo "$(date)" > .snapshot
         git add .snapshot
