@@ -8,6 +8,7 @@ import org.junit.runner.RunWith
 /**
  * @author graemerocher
  */
+//TODO: Replace with JUnit5 declarative test suites once https://github.com/junit-team/junit5/issues/744 is resolved
 @RunWith(JUnitPlatform)
 @SelectClasses([NotInListSpec])
 class SimpleMapTestSuite {
