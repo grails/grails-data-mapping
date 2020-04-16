@@ -80,7 +80,7 @@ trait DirtyCheckable {
             def oldValue = ((GroovyObject) this).getProperty(propertyName)
             if ((newValue == null && oldValue != null) ||
                 (newValue != null && oldValue == null) ||
-                (newValue != null && !newValue.equals(oldValue))) {
+                (newValue != null && !newValue.equals(_unwrapValue(oldValue)))) {
                 $changedProperties.put propertyName, oldValue
             }
         }
@@ -129,5 +129,9 @@ trait DirtyCheckable {
         } else {
             return null
         }
+    }
+
+    private Object _unwrapValue(Object val) {
+        return val instanceof EntityProxy ? ((EntityProxy) val).getTarget() : val
     }
 }
