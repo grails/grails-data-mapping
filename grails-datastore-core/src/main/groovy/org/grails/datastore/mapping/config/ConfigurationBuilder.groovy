@@ -108,7 +108,7 @@ abstract class ConfigurationBuilder<B, C> {
     protected abstract C toConfiguration(B builder)
 
     private C buildInternal(B builder, String startingPrefix) {
-        buildRecurse(builder, null, this.fallBackConfiguration, startingPrefix)
+        buildRecurse(builder, new ArrayList<Class>(), this.fallBackConfiguration, startingPrefix)
 
         return toConfiguration(builder)
     }
@@ -126,13 +126,13 @@ abstract class ConfigurationBuilder<B, C> {
     }
 
     /**
-     * @deprecated use {@link ConfigurationBuilder#buildRecurse(Object, Object, Object, String)} instead
+     * @deprecated use {@link ConfigurationBuilder#buildRecurse(Object, List, Object, String)} instead
      */
     protected void buildRecurse(Object builder, Object fallBackConfig, String startingPrefix) {
-       buildRecurse(builder, null, fallBackConfig, startingPrefix)
+       buildRecurse(builder, new ArrayList<Class>(), fallBackConfig, startingPrefix)
     }
 
-    protected void buildRecurse(Object builder, Object previousBuilder, Object fallBackConfig, String startingPrefix) {
+    protected void buildRecurse(Object builder, List<Class> builderQueue, Object fallBackConfig, String startingPrefix) {
 
         List<Class> hierarchy = toHierarchy(builder.getClass())
 
@@ -191,8 +191,10 @@ abstract class ConfigurationBuilder<B, C> {
                         newChildBuilder(newBuilder, propertyPath)
 
                         Object fallBackChildConfig = getFallBackValue(fallBackConfig, settingName)
-                        if (previousBuilder == null || newBuilder.class != previousBuilder.class) {
-                            buildRecurse(newBuilder, builder, fallBackChildConfig, propertyPath)
+                        if (!builderQueue.contains(newBuilder.class)) {
+                            builderQueue.add(newBuilder.class)
+                            buildRecurse(newBuilder, builderQueue, fallBackChildConfig, propertyPath)
+                            builderQueue.remove(newBuilder.class)
 
                             def buildMethod = ReflectionUtils.findMethod(newBuilder.getClass(), 'build')
                             if (buildMethod != null) {
@@ -216,8 +218,10 @@ abstract class ConfigurationBuilder<B, C> {
                             if (newBuilder != null) {
                                 Object fallBackChildConfig = getFallBackValue(fallBackConfig, settingName)
                                 newBuilder = newChildBuilderForFallback(newBuilder, fallBackChildConfig)
-                                if (previousBuilder == null || newBuilder.class != previousBuilder.class) {
-                                    buildRecurse(newBuilder, builder, fallBackChildConfig, propertyPath)
+                                if (!builderQueue.contains(newBuilder.class)) {
+                                    builderQueue.add(newBuilder.class)
+                                    buildRecurse(newBuilder, builderQueue, fallBackChildConfig, propertyPath)
+                                    builderQueue.remove(newBuilder.class)
                                     newChildBuilder(newBuilder, propertyPath)
                                     method.invoke(builder, newBuilder)
                                 }
@@ -247,8 +251,10 @@ abstract class ConfigurationBuilder<B, C> {
                         newChildBuilder(newBuilder, propertyPath)
 
                         Object fallBackChildConfig = getFallBackValue(fallBackConfig, methodName)
-                        if (previousBuilder == null || newBuilder.class != previousBuilder.class) {
-                            buildRecurse(newBuilder, builder, fallBackChildConfig, propertyPath)
+                        if (!builderQueue.contains(newBuilder.class)) {
+                            builderQueue.add(newBuilder.class)
+                            buildRecurse(newBuilder, builderQueue, fallBackChildConfig, propertyPath)
+                            builderQueue.remove(newBuilder.class)
                             method.invoke(builder, newBuilder)
                         }
                         continue
@@ -297,8 +303,10 @@ abstract class ConfigurationBuilder<B, C> {
                             }
 
                             String getterPropertyPath = startingPrefix ? "${startingPrefix}.${NameUtils.getPropertyNameForGetterOrSetter(methodName)}" : NameUtils.getPropertyNameForGetterOrSetter(methodName)
-                            if (previousBuilder == null || childBuilder.class != previousBuilder.class) {
-                                buildRecurse(childBuilder, builder, fallBackChildConfig, getterPropertyPath)
+                            if (!builderQueue.contains(childBuilder.class)) {
+                                builderQueue.add(childBuilder.class)
+                                buildRecurse(childBuilder, builderQueue, fallBackChildConfig, getterPropertyPath)
+                                builderQueue.remove(childBuilder.class)
                             }
                             continue
                         }

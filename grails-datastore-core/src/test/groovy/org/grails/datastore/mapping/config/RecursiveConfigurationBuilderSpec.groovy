@@ -27,7 +27,7 @@ class RecursiveConfigurationBuilderSpec extends Specification {
         PropertyResolver config = DatastoreUtils.createPropertyResolver(["grails.mongodb.options.autoEncryptionSettings.bypassAutoEncryption": true])
 
         when:
-        MongoConnectionSourceSettingsBuilder builder = new MongoConnectionSourceSettingsBuilder(config, "grails.mongodb");
+        MongoConnectionSourceSettingsBuilder builder = new MongoConnectionSourceSettingsBuilder(config, "grails.mongodb")
         MongoConnectionSourceSettings settings = builder.build()
 
         then:
@@ -119,12 +119,12 @@ class RecursiveConfigurationBuilderSpec extends Specification {
             }
 
             Builder autoEncryptionSettings(AutoEncryptionSettings autoEncryptionSettings) {
-                this.autoEncryptionSettings = autoEncryptionSettings;
+                this.autoEncryptionSettings = autoEncryptionSettings
                 this
             }
 
             MongoClientSettings build() {
-                new MongoClientSettings(this);
+                new MongoClientSettings(this)
             }
         }
     }
@@ -134,8 +134,8 @@ class RecursiveConfigurationBuilderSpec extends Specification {
         private boolean bypassAutoEncryption
 
         private AutoEncryptionSettings(Builder builder) {
-            this.keyVaultMongoClientSettings = builder.keyVaultMongoClientSettings;
-            this.bypassAutoEncryption = builder.bypassAutoEncryption;
+            this.keyVaultMongoClientSettings = builder.keyVaultMongoClientSettings
+            this.bypassAutoEncryption = builder.bypassAutoEncryption
         }
 
         static Builder builder() {
@@ -150,12 +150,12 @@ class RecursiveConfigurationBuilderSpec extends Specification {
             }
 
             Builder bypassAutoEncryption(boolean bypassAutoEncryption) {
-                this.bypassAutoEncryption = bypassAutoEncryption;
+                this.bypassAutoEncryption = bypassAutoEncryption
                 this
             }
 
             Builder keyVaultMongoClientSettings(MongoClientSettings keyVaultMongoClientSettings) {
-                this.keyVaultMongoClientSettings = keyVaultMongoClientSettings;
+                this.keyVaultMongoClientSettings = keyVaultMongoClientSettings
                 this
             }
 
