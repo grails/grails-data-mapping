@@ -191,7 +191,7 @@ abstract class ConfigurationBuilder<B, C> {
                             try {
                                 method.invoke(builder, buildMethod.invoke(newBuilder))
                             } catch(Throwable e) {
-                                log.error("build method threw exception")
+                                log.error("build method threw exception", e)
                             }
                         } else {
                             method.invoke(builder, newBuilder)
