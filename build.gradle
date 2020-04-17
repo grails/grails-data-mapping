@@ -251,6 +251,7 @@ configurations {
 
 dependencies {
     build "com.cenqua.clover:clover:3.0.2"
+    build "org.apache.ant:ant-junit:1.8.1"
     build "org.apache.ant:ant-nodeps:1.8.1"
 }
 
