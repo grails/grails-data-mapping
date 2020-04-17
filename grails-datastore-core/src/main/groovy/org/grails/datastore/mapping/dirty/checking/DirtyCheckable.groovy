@@ -95,7 +95,7 @@ trait DirtyCheckable {
         if( $changedProperties != null && !$changedProperties.containsKey(propertyName))  {
             if ((newValue == null && oldValue != null) ||
                 (newValue != null && oldValue == null) ||
-                (newValue != null && !newValue.equals(oldValue))) {
+                (newValue != null && !newValue.equals(_unwrapValue(oldValue)))) {
                 $changedProperties.put propertyName, oldValue
             }
         }
