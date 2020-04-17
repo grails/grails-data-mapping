@@ -5,12 +5,10 @@ import groovy.transform.builder.Builder
 import groovy.transform.builder.SimpleStrategy
 import org.grails.datastore.mapping.core.DatastoreUtils
 import org.springframework.core.env.PropertyResolver
-import spock.lang.PendingFeature
 import spock.lang.Specification
 
 class MandatoryFieldsInConfigurationBuilderSpec extends Specification {
 
-    @PendingFeature
     void "mandatory fields in optional child builders don't stop configuration"() {
         given:
         PropertyResolver config = DatastoreUtils.createPropertyResolver([:])
