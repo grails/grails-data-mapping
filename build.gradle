@@ -144,6 +144,7 @@ subprojects {
             compile "org.codehaus.groovy:groovy-test-junit5:$groovyVersion"
             compile "org.junit.jupiter:junit-jupiter-api:5.6.0"
             compile "org.junit.platform:junit-platform-runner:1.6.0"
+            runtimeOnly "org.junit.jupiter:junit-jupiter-engine:5.6.0"
             compile(spockDependency) { transitive = false }
         }
     }
