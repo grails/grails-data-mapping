@@ -108,7 +108,7 @@ abstract class ConfigurationBuilder<B, C> {
     protected abstract C toConfiguration(B builder)
 
     private C buildInternal(B builder, String startingPrefix) {
-        buildRecurse(builder, this.fallBackConfiguration, startingPrefix)
+        buildRecurse(builder, null, this.fallBackConfiguration, startingPrefix)
 
         return toConfiguration(builder)
     }
@@ -125,7 +125,14 @@ abstract class ConfigurationBuilder<B, C> {
         return classes.reverse()
     }
 
+    /**
+     * @deprecated use {@link ConfigurationBuilder#buildRecurse(Object, Object, Object, String)} instead
+     */
     protected void buildRecurse(Object builder, Object fallBackConfig, String startingPrefix) {
+       buildRecurse(builder, null, fallBackConfig, startingPrefix)
+    }
+
+    protected void buildRecurse(Object builder, Object previousBuilder, Object fallBackConfig, String startingPrefix) {
 
         List<Class> hierarchy = toHierarchy(builder.getClass())
 
@@ -184,14 +191,17 @@ abstract class ConfigurationBuilder<B, C> {
                         newChildBuilder(newBuilder, propertyPath)
 
                         Object fallBackChildConfig = getFallBackValue(fallBackConfig, settingName)
-                        buildRecurse(newBuilder, fallBackChildConfig, propertyPath)
+                        if (previousBuilder == null || newBuilder.class != previousBuilder.class) {
+                            buildRecurse(newBuilder, builder, fallBackChildConfig, propertyPath)
 
-                        def buildMethod = ReflectionUtils.findMethod(newBuilder.getClass(), 'build')
-                        if (buildMethod != null) {
-                            method.invoke(builder, buildMethod.invoke(newBuilder))
-                        } else {
-                            method.invoke(builder, newBuilder)
+                            def buildMethod = ReflectionUtils.findMethod(newBuilder.getClass(), 'build')
+                            if (buildMethod != null) {
+                                method.invoke(builder, buildMethod.invoke(newBuilder))
+                            } else {
+                                method.invoke(builder, newBuilder)
+                            }
                         }
+
                         continue
                     }
 
@@ -206,9 +216,11 @@ abstract class ConfigurationBuilder<B, C> {
                             if (newBuilder != null) {
                                 Object fallBackChildConfig = getFallBackValue(fallBackConfig, settingName)
                                 newBuilder = newChildBuilderForFallback(newBuilder, fallBackChildConfig)
-                                buildRecurse(newBuilder, fallBackChildConfig, propertyPath)
-                                newChildBuilder(newBuilder, propertyPath)
-                                method.invoke(builder, newBuilder)
+                                if (previousBuilder == null || newBuilder.class != previousBuilder.class) {
+                                    buildRecurse(newBuilder, builder, fallBackChildConfig, propertyPath)
+                                    newChildBuilder(newBuilder, propertyPath)
+                                    method.invoke(builder, newBuilder)
+                                }
                                 continue
                             }
                         }
@@ -235,8 +247,10 @@ abstract class ConfigurationBuilder<B, C> {
                         newChildBuilder(newBuilder, propertyPath)
 
                         Object fallBackChildConfig = getFallBackValue(fallBackConfig, methodName)
-                        buildRecurse(newBuilder, fallBackChildConfig, propertyPath)
-                        method.invoke(builder, newBuilder)
+                        if (previousBuilder == null || newBuilder.class != previousBuilder.class) {
+                            buildRecurse(newBuilder, builder, fallBackChildConfig, propertyPath)
+                            method.invoke(builder, newBuilder)
+                        }
                         continue
                     }
 
@@ -283,7 +297,9 @@ abstract class ConfigurationBuilder<B, C> {
                             }
 
                             String getterPropertyPath = startingPrefix ? "${startingPrefix}.${NameUtils.getPropertyNameForGetterOrSetter(methodName)}" : NameUtils.getPropertyNameForGetterOrSetter(methodName)
-                            buildRecurse(childBuilder, fallBackChildConfig, getterPropertyPath)
+                            if (previousBuilder == null || childBuilder.class != previousBuilder.class) {
+                                buildRecurse(childBuilder, builder, fallBackChildConfig, getterPropertyPath)
+                            }
                             continue
                         }
                     }
