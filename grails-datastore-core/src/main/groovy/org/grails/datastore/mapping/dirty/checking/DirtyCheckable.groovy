@@ -78,10 +78,10 @@ trait DirtyCheckable {
     void markDirty(String propertyName, newValue) {
         if( $changedProperties != null && !$changedProperties.containsKey(propertyName))  {
             def oldValue = ((GroovyObject) this).getProperty(propertyName)
-             boolean isNull = newValue == null
-            if ((isNull && oldValue != null) ||
+            boolean isNull = newValue == null
+            if ((!isNull && oldValue != null) ||
                 (!isNull && oldValue == null) ||
-                (!isNull && !newValue.equals(oldValue))) {
+                (!isNull && !newValue.equals(_unwrapValue(oldValue)))) {
                 $changedProperties.put propertyName, oldValue
             }
         }
@@ -97,7 +97,7 @@ trait DirtyCheckable {
             boolean isNull = newValue == null
             if ((isNull && oldValue != null) ||
                 (!isNull && oldValue == null) ||
-                (!isNull && !newValue.equals(oldValue))) {
+                (!isNull && !newValue.equals(_unwrapValue(oldValue)))) {
                 $changedProperties.put propertyName, oldValue
             }
         }
@@ -131,5 +131,9 @@ trait DirtyCheckable {
         } else {
             return null
         }
+    }
+
+    private Object _unwrapValue(Object val) {
+        return val instanceof EntityProxy ? ((EntityProxy) val).getTarget() : val
     }
 }
