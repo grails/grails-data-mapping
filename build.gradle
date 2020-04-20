@@ -20,7 +20,7 @@ project.ext {
     projectMinorVersion = "1"
     projectPatchVersion = "0"
 //     releaseType = "RELEASE"
-//    releaseType = "M2"
+//    releaseType = "M1"
 //    releaseType = "RC1"
     releaseType = "BUILD-SNAPSHOT"
 
@@ -57,7 +57,6 @@ ext {
 
 allprojects {
     repositories {
-        mavenLocal()
         maven { url "https://repo.grails.org/grails/core" }
         if(isBuildSnapshot) {
             maven { url "https://repo.grails.org/grails/libs-snapshots-local" }
@@ -132,28 +131,21 @@ subprojects {
             documentation "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
             documentation 'info.picocli:picocli:3.8.0'
 
-            compile group: 'org.codehaus.groovy', name: 'groovy', version: groovyVersion
-            testCompile group: 'org.codehaus.groovy', name: 'groovy-test-junit5', version: groovyVersion
+            compile "org.codehaus.groovy:groovy:$groovyVersion"
+            testCompile "org.codehaus.groovy:groovy-test-junit5:$groovyVersion"
             testCompile "org.junit.jupiter:junit-jupiter-api:5.6.0"
             testCompile "org.junit.platform:junit-platform-runner:1.6.0"
             testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.6.0"
 
-            testCompile(spockDependency) {
-                exclude group: 'junit', module: 'junit-dep'
-                exclude group: 'org.codehaus.groovy', module: 'groovy-all'
-                exclude group: 'org.hamcrest', module: 'hamcrest-core'
-                transitive = false
-            }
+            testCompile(spockDependency) { transitive = false }
         }
 
         if (project.name == "grails-datastore-gorm-tck") {
-            compile(spockDependency, {
-                exclude group: 'junit', module: 'junit-dep'
-                exclude group: 'org.codehaus.groovy', module: 'groovy-all'
-                exclude group: 'org.hamcrest', module: 'hamcrest-core'
-                transitive = false
-            })
+            compile "org.codehaus.groovy:groovy-test-junit5:$groovyVersion"
+            compile "org.junit.jupiter:junit-jupiter-api:5.6.0"
             compile "org.junit.platform:junit-platform-runner:1.6.0"
+            runtimeOnly "org.junit.jupiter:junit-jupiter-engine:5.6.0"
+            compile(spockDependency) { transitive = false }
         }
     }
 
