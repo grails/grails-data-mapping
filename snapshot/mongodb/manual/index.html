@@ -901,7 +901,7 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile 'org.grails.plugins:mongodb:7.1.0.BUILD-SNAPSHOT'
+    compile 'org.grails.plugins:mongodb:7.0.1.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
@@ -910,7 +910,7 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=7.1.0.BUILD-SNAPSHOT</code></pre>
+<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=7.0.1.BUILD-SNAPSHOT</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -923,7 +923,7 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("7.1.0.BUILD-SNAPSHOT")
+            details.useVersion("7.0.1.BUILD-SNAPSHOT")
         }
     }
 }
@@ -977,7 +977,7 @@ dependencies {
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">plugins {
-    compile ':mongodb:7.1.0.BUILD-SNAPSHOT'
+    compile ':mongodb:7.0.1.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
@@ -1185,7 +1185,7 @@ dependencies {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-mongodb-spring-boot:7.1.0.BUILD-SNAPSHOT")</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-mongodb-spring-boot:7.0.1.BUILD-SNAPSHOT")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1242,7 +1242,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-mongodb:7.1.0.BUILD-SNAPSHOT"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-mongodb:7.0.1.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 <div class="paragraph">
