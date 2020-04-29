@@ -557,6 +557,7 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<T> implements GormOpe
      */
     Number deleteAll() {
         GormEnhancer.findStaticApi(targetClass, connectionName).withDatastoreSession { Session session ->
+            applyLazyCriteria()
             session.deleteAll(this)
         }
     }
@@ -568,6 +569,7 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<T> implements GormOpe
      */
     Number updateAll(Map properties) {
         GormEnhancer.findStaticApi(targetClass, connectionName).withDatastoreSession { Session session ->
+            applyLazyCriteria()
             session.updateAll(this, properties)
         }
     }
