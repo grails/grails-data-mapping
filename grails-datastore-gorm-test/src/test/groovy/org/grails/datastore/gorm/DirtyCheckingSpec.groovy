@@ -110,26 +110,62 @@ class DirtyCheckingSpec extends GormDatastoreSpec {
         TestBook.deleteAll()
         TestAuthor.deleteAll()
     }
+
+    void "test relationships are marked dirty when proxies are used but different"() {
+        given:
+        Long bookId = new TestBook(title: 'Martin Fierro', author: new TestAuthor(name: 'Jose Hernandez'))
+                .save(flush: true, failOnError: true)
+                .id
+        Long otherAuthorId = new TestAuthor(name: "JD").save(flush: true, failOnError: true).id
+        session.flush()
+        session.clear()
+
+        when:
+        TestBook book = TestBook.get(bookId)
+        book.author = TestAuthor.load(otherAuthorId)
+
+        then:
+        proxyHandler.isProxy(book.author)
+        book.isDirty('author')
+        book.isDirty()
+
+        cleanup:
+        TestBook.deleteAll()
+        TestAuthor.deleteAll()
+    }
+
+    void "test relationships marked dirty when domain objects are used and changed"() {
+
+        given:
+        Long bookId = new TestBook(title: 'Martin Fierro', author: new TestAuthor(name: 'Jose Hernandez'))
+                .save(flush: true, failOnError: true)
+                .id
+        Long otherAuthorId = new TestAuthor(name: "JD").save(flush: true, failOnError: true).id
+        session.flush()
+        session.clear()
+
+        when:
+        TestBook book = TestBook.get(bookId)
+        book.author = TestAuthor.get(otherAuthorId)
+
+        then:
+        !proxyHandler.isProxy(book.author)
+        book.isDirty('author')
+        book.isDirty()
+
+        cleanup:
+        TestBook.deleteAll()
+        TestAuthor.deleteAll()
+    }
 }
 
 @Entity
 class TestAuthor {
     String name
-    long version
-
-    @Override
-    boolean equals(o) {
-        if (!(o instanceof TestAuthor)) return false
-        if (this.is(o)) return true
-        TestAuthor that = (TestAuthor) o
-        if (id !=null && that.id !=null) return id == that.id
-        return false
-    }
 }
 
 @Entity
 class TestBook {
     String title
-    long version
     TestAuthor author
 }

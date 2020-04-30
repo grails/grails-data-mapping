@@ -78,12 +78,7 @@ trait DirtyCheckable {
     void markDirty(String propertyName, newValue) {
         if( $changedProperties != null && !$changedProperties.containsKey(propertyName))  {
             def oldValue = ((GroovyObject) this).getProperty(propertyName)
-             boolean isNull = newValue == null
-            if ((isNull && oldValue != null) ||
-                (!isNull && oldValue == null) ||
-                (!isNull && !newValue.equals(oldValue))) {
-                $changedProperties.put propertyName, oldValue
-            }
+            markDirty(propertyName, newValue, oldValue)
         }
     }
 
@@ -97,10 +92,15 @@ trait DirtyCheckable {
             boolean isNull = newValue == null
             if ((isNull && oldValue != null) ||
                 (!isNull && oldValue == null) ||
-                (!isNull && !newValue.equals(oldValue))) {
+                (!isNull && (newOldOrOldValueIsProxy(newValue, oldValue) && newValue.getAt("id") != oldValue.getAt("id")
+                        || (!newOldOrOldValueIsProxy(newValue, oldValue) && !newValue.equals(oldValue))))) {
                 $changedProperties.put propertyName, oldValue
             }
         }
+    }
+
+    boolean newOldOrOldValueIsProxy(newValue, oldValue) {
+        (newValue instanceof EntityProxy || oldValue instanceof EntityProxy)
     }
 
     /**
