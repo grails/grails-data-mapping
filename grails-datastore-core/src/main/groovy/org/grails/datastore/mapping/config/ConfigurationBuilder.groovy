@@ -108,7 +108,7 @@ abstract class ConfigurationBuilder<B, C> {
     protected abstract C toConfiguration(B builder)
 
     private C buildInternal(B builder, String startingPrefix) {
-        buildRecurse(builder, this.fallBackConfiguration, startingPrefix)
+        buildRecurse(builder, new ArrayList<Class>(), this.fallBackConfiguration, startingPrefix)
 
         return toConfiguration(builder)
     }
@@ -125,7 +125,14 @@ abstract class ConfigurationBuilder<B, C> {
         return classes.reverse()
     }
 
+    /**
+     * @deprecated use {@link ConfigurationBuilder#buildRecurse(Object, List, Object, String)} instead
+     */
     protected void buildRecurse(Object builder, Object fallBackConfig, String startingPrefix) {
+       buildRecurse(builder, new ArrayList<Class>(), fallBackConfig, startingPrefix)
+    }
+
+    protected void buildRecurse(Object builder, List<Class> builderQueue, Object fallBackConfig, String startingPrefix) {
 
         List<Class> hierarchy = toHierarchy(builder.getClass())
 
@@ -184,18 +191,23 @@ abstract class ConfigurationBuilder<B, C> {
                         newChildBuilder(newBuilder, propertyPath)
 
                         Object fallBackChildConfig = getFallBackValue(fallBackConfig, settingName)
-                        buildRecurse(newBuilder, fallBackChildConfig, propertyPath)
+                        if (!builderQueue.contains(newBuilder.class)) {
+                            builderQueue.add(newBuilder.class)
+                            buildRecurse(newBuilder, builderQueue, fallBackChildConfig, propertyPath)
+                            builderQueue.remove(newBuilder.class)
 
-                        def buildMethod = ReflectionUtils.findMethod(newBuilder.getClass(), 'build')
-                        if (buildMethod != null) {
-                            try {
-                                method.invoke(builder, buildMethod.invoke(newBuilder))
-                            } catch(Throwable e) {
-                                log.error("build method threw exception", e)
+                            def buildMethod = ReflectionUtils.findMethod(newBuilder.getClass(), 'build')
+                            if (buildMethod != null) {
+                                try {
+                                    method.invoke(builder, buildMethod.invoke(newBuilder))
+                                } catch(Throwable e) {
+                                    log.error("build method threw exception", e)
+                                }
+                            } else {
+                                method.invoke(builder, newBuilder)
                             }
-                        } else {
-                            method.invoke(builder, newBuilder)
                         }
+
                         continue
                     }
 
@@ -210,9 +222,13 @@ abstract class ConfigurationBuilder<B, C> {
                             if (newBuilder != null) {
                                 Object fallBackChildConfig = getFallBackValue(fallBackConfig, settingName)
                                 newBuilder = newChildBuilderForFallback(newBuilder, fallBackChildConfig)
-                                buildRecurse(newBuilder, fallBackChildConfig, propertyPath)
-                                newChildBuilder(newBuilder, propertyPath)
-                                method.invoke(builder, newBuilder)
+                                if (!builderQueue.contains(newBuilder.class)) {
+                                    builderQueue.add(newBuilder.class)
+                                    buildRecurse(newBuilder, builderQueue, fallBackChildConfig, propertyPath)
+                                    builderQueue.remove(newBuilder.class)
+                                    newChildBuilder(newBuilder, propertyPath)
+                                    method.invoke(builder, newBuilder)
+                                }
                                 continue
                             }
                         }
@@ -239,8 +255,12 @@ abstract class ConfigurationBuilder<B, C> {
                         newChildBuilder(newBuilder, propertyPath)
 
                         Object fallBackChildConfig = getFallBackValue(fallBackConfig, methodName)
-                        buildRecurse(newBuilder, fallBackChildConfig, propertyPath)
-                        method.invoke(builder, newBuilder)
+                        if (!builderQueue.contains(newBuilder.class)) {
+                            builderQueue.add(newBuilder.class)
+                            buildRecurse(newBuilder, builderQueue, fallBackChildConfig, propertyPath)
+                            builderQueue.remove(newBuilder.class)
+                            method.invoke(builder, newBuilder)
+                        }
                         continue
                     }
 
@@ -287,7 +307,11 @@ abstract class ConfigurationBuilder<B, C> {
                             }
 
                             String getterPropertyPath = startingPrefix ? "${startingPrefix}.${NameUtils.getPropertyNameForGetterOrSetter(methodName)}" : NameUtils.getPropertyNameForGetterOrSetter(methodName)
-                            buildRecurse(childBuilder, fallBackChildConfig, getterPropertyPath)
+                            if (!builderQueue.contains(childBuilder.class)) {
+                                builderQueue.add(childBuilder.class)
+                                buildRecurse(childBuilder, builderQueue, fallBackChildConfig, getterPropertyPath)
+                                builderQueue.remove(childBuilder.class)
+                            }
                             continue
                         }
                     }
