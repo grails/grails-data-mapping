@@ -188,7 +188,11 @@ abstract class ConfigurationBuilder<B, C> {
 
                         def buildMethod = ReflectionUtils.findMethod(newBuilder.getClass(), 'build')
                         if (buildMethod != null) {
-                            method.invoke(builder, buildMethod.invoke(newBuilder))
+                            try {
+                                method.invoke(builder, buildMethod.invoke(newBuilder))
+                            } catch(Throwable e) {
+                                log.error("build method threw exception", e)
+                            }
                         } else {
                             method.invoke(builder, newBuilder)
                         }
