@@ -1,20 +1,19 @@
-package org.grails.datastore.gorm
+package grails.gorm.tests
 
 import grails.gorm.annotation.Entity
-import grails.gorm.tests.GormDatastoreSpec
-import grails.gorm.tests.Person
-import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
+import org.grails.datastore.mapping.proxy.ProxyHandler
+import spock.lang.IgnoreIf
 
 /**
  * @author Graeme Rocher
  */
 class DirtyCheckingSpec extends GormDatastoreSpec {
 
-    def proxyHandler
+    ProxyHandler proxyHandler
 
     @Override
     List getDomainClasses() {
-        [Person, TestBook, TestAuthor]
+        [Person, TestBook, TestAuthor, Card, CardProfile]
     }
 
     def setup() {
@@ -22,45 +21,39 @@ class DirtyCheckingSpec extends GormDatastoreSpec {
     }
 
     void "Test that dirty checking methods work when changing entities"() {
-        when:"A new instance is created"
-            def p = new Person(firstName: "Homer", lastName: "Simpson")
 
-        then:"The instance is dirty by default"
-            p instanceof DirtyCheckable
-            p.isDirty()
-            p.isDirty("firstName")
+        when: "A new instance is created"
+        def p = new Person(firstName: "Homer", lastName: "Simpson")
+        p.save(flush: true)
 
-        when:"The instance is saved"
-            p.save(flush:true)
+        then: "The instance is not dirty"
+        !p.isDirty()
+        !p.isDirty("firstName")
 
-        then:"The instance is no longer dirty"
-            !p.isDirty()
-            !p.isDirty("firstName")
+        when: "The instance is changed"
+        p.firstName = "Bart"
 
-        when:"The instance is changed"
-            p.firstName = "Bart"
+        then: "The instance is now dirty"
+        p.isDirty()
+        p.isDirty("firstName")
+        p.dirtyPropertyNames == ['firstName']
+        p.getPersistentValue('firstName') == "Homer"
 
-        then:"The instance is now dirty"
-            p.isDirty()
-            p.isDirty("firstName")
-            p.dirtyPropertyNames == ['firstName']
-            p.getPersistentValue('firstName') == "Homer"
+        when: "The instance is loaded from the db"
+        p.save(flush: true)
+        session.clear()
+        p = Person.get(p.id)
 
-        when:"The instance is loaded from the db"
-            p.save(flush:true)
-            session.clear()
-            p = Person.get(p.id)
+        then: "The instance is not dirty"
+        !p.isDirty()
+        !p.isDirty('firstName')
 
-        then:"The instance is not dirty"
-            !p.isDirty()
-            !p.isDirty('firstName')
+        when: "The instance is changed"
+        p.firstName = "Lisa"
 
-        when:"The instance is changed"
-            p.firstName = "Lisa"
-
-        then:"The instance is dirty"
-            p.isDirty()
-            p.isDirty("firstName")
+        then: "The instance is dirty"
+        p.isDirty()
+        p.isDirty("firstName")
 
 
     }
@@ -99,7 +92,7 @@ class DirtyCheckingSpec extends GormDatastoreSpec {
 
         when:
         TestBook book = TestBook.get(bookId)
-        book.author = TestAuthor.get(book.authorId)
+        book.author = TestAuthor.get(book.author.id)
 
         then:
         !proxyHandler.isProxy(book.author)
@@ -157,15 +150,70 @@ class DirtyCheckingSpec extends GormDatastoreSpec {
         TestBook.deleteAll()
         TestAuthor.deleteAll()
     }
+
+    @IgnoreIf({ Boolean.getBoolean("hibernate5.gorm.suite")}) // because one-to-one association loads eagerly in the Hibernate
+    void "test initialized proxy is not marked as dirty"() {
+
+        given:
+        Card card = new Card(cardNumber: "1111-2222-3333-4444")
+        card.cardProfile = new CardProfile(fullName: "JD")
+        card.save(flush: true, failOnError: true)
+        session.flush()
+        session.clear()
+
+        when:
+        card = Card.get(card.id)
+
+        then:
+        proxyHandler.isProxy(card.cardProfile)
+
+        when:
+        card.cardProfile.hashCode()
+
+        then:
+        proxyHandler.isInitialized(card.cardProfile)
+        !card.isDirty()
+
+        cleanup:
+        Card.deleteAll()
+        CardProfile.deleteAll()
+
+    }
+
 }
 
 @Entity
-class TestAuthor {
+class Card implements Serializable {
+
+    Long id
+    String cardNumber
+    static hasOne = [cardProfile: CardProfile]
+}
+
+@Entity
+class CardProfile implements Serializable {
+
+    Long id
+    String fullName
+    Card card
+
+    static constraints = {
+        card nullable: true
+    }
+
+}
+
+@Entity
+class TestAuthor implements Serializable {
+
+    Long id
     String name
 }
 
 @Entity
-class TestBook {
+class TestBook implements Serializable {
+
+    Long id
     String title
     TestAuthor author
 }
