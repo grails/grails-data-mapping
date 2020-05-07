@@ -91,16 +91,11 @@ trait DirtyCheckable {
         if( $changedProperties != null && !$changedProperties.containsKey(propertyName))  {
             boolean isNull = newValue == null
             if ((isNull && oldValue != null) ||
-                (!isNull && oldValue == null) ||
-                (!isNull && (newOldOrOldValueIsProxy(newValue, oldValue) && newValue.getAt("id") != oldValue.getAt("id")
-                        || (!newOldOrOldValueIsProxy(newValue, oldValue) && !newValue.equals(oldValue))))) {
+                    (!isNull && oldValue == null) ||
+                    (!isNull && !newValue.equals(oldValue))) {
                 $changedProperties.put propertyName, oldValue
             }
         }
-    }
-
-    boolean newOldOrOldValueIsProxy(newValue, oldValue) {
-        (newValue instanceof EntityProxy || oldValue instanceof EntityProxy)
     }
 
     /**

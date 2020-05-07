@@ -162,6 +162,15 @@ class DirtyCheckingSpec extends GormDatastoreSpec {
 @Entity
 class TestAuthor {
     String name
+
+    @Override
+    boolean equals(o) {
+        if (!(o instanceof TestAuthor)) return false
+        if (this.is(o)) return true
+        TestAuthor that = (TestAuthor) o
+        if (id !=null && that.id !=null) return id == that.id
+        return false
+    }
 }
 
 @Entity
