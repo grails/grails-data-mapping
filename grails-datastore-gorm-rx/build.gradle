@@ -7,5 +7,5 @@ dependencies {
     documentation "org.grails:grails-async:$grailsAsyncVersion"
     documentation "org.springframework:spring-beans:$springVersion"
     compileOnly("org.hibernate:hibernate-validator:$hibernateValidatorVersion")
-    compile 'io.reactivex:rxjava:1.2.7'
+    compile 'io.reactivex:rxjava:1.3.8'
 }
