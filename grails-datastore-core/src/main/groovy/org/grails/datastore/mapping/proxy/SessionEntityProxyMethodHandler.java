@@ -16,6 +16,7 @@
 package org.grails.datastore.mapping.proxy;
 
 import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.reflect.FieldEntityAccess;
 import org.slf4j.Logger;
@@ -54,7 +55,7 @@ public class SessionEntityProxyMethodHandler extends EntityProxyMethodHandler {
     @Override
     protected Object resolveDelegate(Object self) {
         if (target == null) {
-            initializeTarget();
+            initializeTarget(self);
 
             // This tends to happen during unit testing if the proxy class is not properly mocked
             // and therefore can't be found in the session.
@@ -70,6 +71,13 @@ public class SessionEntityProxyMethodHandler extends EntityProxyMethodHandler {
             LOG.debug("Lazy loading proxy for class {} with id {}", cls.getName(), id);
         }
         target = session.retrieve(cls, id);
+    }
+
+    protected void initializeTarget(Object self) {
+        initializeTarget();
+        if (target instanceof DirtyCheckable) {
+            ((DirtyCheckable) target).syncChangedProperties(self);
+        }
     }
 
     @Override
