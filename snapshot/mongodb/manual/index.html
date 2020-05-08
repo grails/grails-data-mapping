@@ -1514,7 +1514,7 @@ collection type.</p>
 dirty checking and prevent the property from being updated.</p>
 </div>
 <div class="paragraph">
-<p>If any of your updates are not updating the properties that you anticipate you can force an update using the <code>markDirty</code> method:</p>
+<p>If any of your updates are not updating the properties that you anticipate you can force an update using the <a href="../api/org/grails/datastore/mapping/dirty/checking/DirtyCheckable.html#markDirty(java.lang.String)">markDirty()</a> method:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1523,6 +1523,42 @@ dirty checking and prevent the property from being updated.</p>
 </div>
 <div class="paragraph">
 <p>This will force GORM for MongoDB to issue an update for the given property name.</p>
+</div>
+<div class="sect3">
+<h4 id="_dirty_checking_and_proxies">Dirty Checking and Proxies</h4>
+<div class="paragraph">
+<p>Dirty checking uses the <code>equals()</code> method to determine if a property has changed. In the case of associations, it is important to recognize that if the association is a proxy, comparing properties on the domain that are not related to the identifier will initialize the proxy, causing another database query.</p>
+</div>
+<div class="paragraph">
+<p>If the association does not define <code>equals()</code> method, then the default Groovy behavior of verifying the instances are the same will be used. Because proxies are not the same instance as an instance loaded from the database, which can cause confusing behavior. It is recommended to implement the <code>equals()</code> method if you need to check the dirtiness of an association. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Author</span> {
+    <span class="predefined-type">Long</span> id
+    <span class="predefined-type">String</span> name
+
+     <span class="comment">/**
+     * This ensures that if either or both of the instances
+     * have a null id (new instances), they are not equal.
+     */</span>
+    <span class="annotation">@Override</span>
+    <span class="type">boolean</span> equals(o) {
+        <span class="keyword">if</span> (!(o <span class="keyword">instanceof</span> Author)) <span class="keyword">return</span> <span class="predefined-constant">false</span>
+        <span class="keyword">if</span> (<span class="local-variable">this</span>.is(o)) <span class="keyword">return</span> <span class="predefined-constant">true</span>
+        Author that = (Author) o
+        <span class="keyword">if</span> (id !=<span class="predefined-constant">null</span> &amp;&amp; that.id !=<span class="predefined-constant">null</span>) <span class="keyword">return</span> id == that.id
+        <span class="keyword">return</span> <span class="predefined-constant">false</span>
+    }
+}
+
+<span class="type">class</span> <span class="class">Book</span> {
+    <span class="predefined-type">Long</span> id
+    <span class="predefined-type">String</span> title
+    Author author
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
