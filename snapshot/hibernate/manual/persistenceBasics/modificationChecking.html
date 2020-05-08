@@ -473,35 +473,6 @@ if (airport.isDirty('name')) {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_isdirty_and_proxies">isDirty and Proxies</h4>
-<div class="paragraph">
-<p>DirtyCheckable use the <a href="../api/org/grails/datastore/mapping/dirty/checking/DirtyCheckable.html#markDirty(java.lang.String,java.lang.Object,java.lang.Object)">markDirty()</a> to mark a property/association as dirty which internally use the <code>equals()</code> method to compare values. So, it might initialize the association proxy if you are accessing a property on association other than <code>id</code>. You could avoid this by overriding the <code>equals()</code> method as follows:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Author {
-    Long id
-    String name
-
-    @Override
-    boolean equals(o) {
-        if (!(o instanceof Author)) return false
-        if (this.is(o)) return true
-        Author that = (Author) o
-        if (id !=null &amp;&amp; that.id !=null) return id == that.id
-        return false
-    }
-}
-
-class Book {
-    Long id
-    String title
-    Author author
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
 <h4 id="_getdirtypropertynames">getDirtyPropertyNames</h4>
 <div class="paragraph">
 <p>You can use the <a href="../api/org/grails/datastore/gorm/GormEntity.html#getDirtyPropertyNames()">getDirtyPropertyNames()</a> method to retrieve the names of modified fields; this may be empty but will not be null:</p>

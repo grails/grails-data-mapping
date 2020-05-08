@@ -3220,36 +3220,7 @@ airport.properties = params
 </div>
 </div>
 <div class="sect3">
-<h4 id="_isdirty_and_proxies">6.10.2. isDirty and Proxies</h4>
-<div class="paragraph">
-<p>DirtyCheckable use the <a href="../api/org/grails/datastore/mapping/dirty/checking/DirtyCheckable.html#markDirty(java.lang.String,java.lang.Object,java.lang.Object)">markDirty()</a> to mark a property/association as dirty which internally use the <code>equals()</code> method to compare values. So, it might initialize the association proxy if you are accessing a property on association other than <code>id</code>. You could avoid this by overriding the <code>equals()</code> method as follows:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Author</span> {
-    <span class="predefined-type">Long</span> id
-    <span class="predefined-type">String</span> name
-
-    <span class="annotation">@Override</span>
-    <span class="type">boolean</span> equals(o) {
-        <span class="keyword">if</span> (!(o <span class="keyword">instanceof</span> Author)) <span class="keyword">return</span> <span class="predefined-constant">false</span>
-        <span class="keyword">if</span> (<span class="local-variable">this</span>.is(o)) <span class="keyword">return</span> <span class="predefined-constant">true</span>
-        Author that = (Author) o
-        <span class="keyword">if</span> (id !=<span class="predefined-constant">null</span> &amp;&amp; that.id !=<span class="predefined-constant">null</span>) <span class="keyword">return</span> id == that.id
-        <span class="keyword">return</span> <span class="predefined-constant">false</span>
-    }
-}
-
-<span class="type">class</span> <span class="class">Book</span> {
-    <span class="predefined-type">Long</span> id
-    <span class="predefined-type">String</span> title
-    Author author
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_getdirtypropertynames">6.10.3. getDirtyPropertyNames</h4>
+<h4 id="_getdirtypropertynames">6.10.2. getDirtyPropertyNames</h4>
 <div class="paragraph">
 <p>You can use the <a href="../api/org/grails/datastore/gorm/GormEntity.html#getDirtyPropertyNames()">getDirtyPropertyNames()</a> method to retrieve the names of modified fields; this may be empty but will not be null:</p>
 </div>
@@ -3267,7 +3238,7 @@ airport.properties = params
 </div>
 </div>
 <div class="sect3">
-<h4 id="_getpersistentvalue">6.10.4. getPersistentValue</h4>
+<h4 id="_getpersistentvalue">6.10.3. getPersistentValue</h4>
 <div class="paragraph">
 <p>You can use the <a href="../api/org/grails/datastore/gorm/GormEntity.html#getPersistentValue(java.lang.String)">getPersistentValue(fieldName)</a> method to retrieve the value of a modified field:</p>
 </div>
