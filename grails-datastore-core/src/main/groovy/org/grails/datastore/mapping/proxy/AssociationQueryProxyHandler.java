@@ -16,6 +16,7 @@
 package org.grails.datastore.mapping.proxy;
 
 import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.engine.AssociationQueryExecutor;
 import org.grails.datastore.mapping.reflect.FieldEntityAccess;
 import org.springframework.cglib.reflect.FastClass;
@@ -79,6 +80,9 @@ public class AssociationQueryProxyHandler  extends EntityProxyMethodHandler {
             // and therefore can't be found in the session.
             if( target == null ) {
                 throw new DataIntegrityViolationException("Proxy for ["+ proxyClass.getName()+"] for association ["+executor.getIndexedEntity().getName()+"] could not be initialized");
+            }
+            if (target instanceof DirtyCheckable) {
+                ((DirtyCheckable) target).syncChangedProperties(self);
             }
         }
         return target;
