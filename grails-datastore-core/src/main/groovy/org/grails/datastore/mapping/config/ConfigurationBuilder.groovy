@@ -178,33 +178,35 @@ abstract class ConfigurationBuilder<B, C> {
 
                     def builderMethod = ReflectionUtils.findMethod(argType, 'builder')
                     if (builderMethod != null && Modifier.isStatic(builderMethod.modifiers)) {
-                        Method existingGetter = ReflectionUtils.findMethod(builderClass, NameUtils.getGetterName(methodName))
-                        def newBuilder
+                        if (propertyResolver.containsProperty(propertyPath)) {
+                            Method existingGetter = ReflectionUtils.findMethod(builderClass, NameUtils.getGetterName(methodName))
+                            def newBuilder
 
-                        if (existingGetter != null) {
-                            newBuilder = existingGetter.invoke(builder)
-                        }
-                        if (newBuilder == null) {
-                            newBuilder = builderMethod.invoke(argType)
-                        }
+                            if (existingGetter != null) {
+                                newBuilder = existingGetter.invoke(builder)
+                            }
+                            if (newBuilder == null) {
+                                newBuilder = builderMethod.invoke(argType)
+                            }
 
-                        newChildBuilder(newBuilder, propertyPath)
+                            newChildBuilder(newBuilder, propertyPath)
 
-                        Object fallBackChildConfig = getFallBackValue(fallBackConfig, settingName)
-                        if (!builderQueue.contains(newBuilder.class)) {
-                            builderQueue.add(newBuilder.class)
-                            buildRecurse(newBuilder, builderQueue, fallBackChildConfig, propertyPath)
-                            builderQueue.remove(newBuilder.class)
+                            Object fallBackChildConfig = getFallBackValue(fallBackConfig, settingName)
+                            if (!builderQueue.contains(newBuilder.class)) {
+                                builderQueue.add(newBuilder.class)
+                                buildRecurse(newBuilder, builderQueue, fallBackChildConfig, propertyPath)
+                                builderQueue.remove(newBuilder.class)
 
-                            def buildMethod = ReflectionUtils.findMethod(newBuilder.getClass(), 'build')
-                            if (buildMethod != null) {
-                                try {
-                                    method.invoke(builder, buildMethod.invoke(newBuilder))
-                                } catch(Throwable e) {
-                                    log.error("build method threw exception", e)
+                                def buildMethod = ReflectionUtils.findMethod(newBuilder.getClass(), 'build')
+                                if (buildMethod != null) {
+                                    try {
+                                        method.invoke(builder, buildMethod.invoke(newBuilder))
+                                    } catch (Throwable e) {
+                                        log.error("build method threw exception", e)
+                                    }
+                                } else {
+                                    method.invoke(builder, newBuilder)
                                 }
-                            } else {
-                                method.invoke(builder, newBuilder)
                             }
                         }
 
