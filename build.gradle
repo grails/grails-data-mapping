@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5"
         classpath "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.0"
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.2"
@@ -19,7 +19,7 @@ project.ext {
     projectMajorVersion = "7"
     projectMinorVersion = "1"
     projectPatchVersion = "0"
-//     releaseType = "RELEASE"
+//    releaseType = "RELEASE"
 //    releaseType = "M2"
 //    releaseType = "RC1"
     releaseType = "BUILD-SNAPSHOT"

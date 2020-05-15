@@ -61,7 +61,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         # If there is a tag present then this becomes the latest
         if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
             echo "Triggering documentation build"
-            git clone https://${GH_TOKEN}@github.com/grails/gorm-docs.git gorm-docs
+            git clone -b $TRAVIS_BRANCH https://${GH_TOKEN}@github.com/grails/gorm-docs.git gorm-docs
             cd gorm-docs
 
             if [[ $TRAVIS_TAG =~ [M\d|RC\d] ]]; then

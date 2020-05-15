@@ -27,6 +27,26 @@ trait DirtyCheckable {
     }
 
     /**
+     * Sync the changes for a given instance with this instance.
+     *
+     * @param o a given object
+     */
+    void syncChangedProperties(Object o) {
+        if (o instanceof DirtyCheckable) {
+            o.trackChanges($changedProperties)
+        }
+    }
+
+    /**
+     * Initialises the changes with the given changes.
+     *
+     * @param changedProperties The changes.
+     */
+     void trackChanges(Map<String, Object> changedProperties) {
+        $changedProperties = changedProperties
+    }
+
+    /**
      * @return True if the instance has any changes
      */
     boolean hasChanged() {
@@ -78,12 +98,7 @@ trait DirtyCheckable {
     void markDirty(String propertyName, newValue) {
         if( $changedProperties != null && !$changedProperties.containsKey(propertyName))  {
             def oldValue = ((GroovyObject) this).getProperty(propertyName)
-             boolean isNull = newValue == null
-            if ((isNull && oldValue != null) ||
-                (!isNull && oldValue == null) ||
-                (!isNull && !newValue.equals(oldValue))) {
-                $changedProperties.put propertyName, oldValue
-            }
+            markDirty(propertyName, newValue, oldValue)
         }
     }
 
@@ -96,8 +111,8 @@ trait DirtyCheckable {
         if( $changedProperties != null && !$changedProperties.containsKey(propertyName))  {
             boolean isNull = newValue == null
             if ((isNull && oldValue != null) ||
-                (!isNull && oldValue == null) ||
-                (!isNull && !newValue.equals(oldValue))) {
+                    (!isNull && oldValue == null) ||
+                    (!isNull && !newValue.equals(oldValue))) {
                 $changedProperties.put propertyName, oldValue
             }
         }
