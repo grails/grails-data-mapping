@@ -439,12 +439,6 @@ import spock.lang.Ignore
 
 class LocalMongoUnitSpec extends MongoSpec implements EmbeddedMongoClient {
 
-    // Specs ...
-    @Override
-    void setup() {
-        Book.DB.drop()
-    }
-
     @Ignore
     void "test fail on error"() {
 

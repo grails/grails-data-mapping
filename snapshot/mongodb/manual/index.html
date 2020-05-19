@@ -976,7 +976,7 @@ dependencies {
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.mongodb:mongodb-driver:3.10.0"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.mongodb:mongodb-driver:4.0.3"</code></pre>
 </div>
 </div>
 </div>
@@ -3019,12 +3019,6 @@ uses by default a <code>MongoClient</code> instance that connects to a MongoDB i
 <span class="keyword">import</span> <span class="include">spock.lang.Ignore</span>
 
 <span class="type">class</span> <span class="class">LocalMongoUnitSpec</span> <span class="directive">extends</span> MongoSpec <span class="directive">implements</span> EmbeddedMongoClient {
-
-    <span class="comment">// Specs ...</span>
-    <span class="annotation">@Override</span>
-    <span class="type">void</span> setup() {
-        <span class="predefined-type">Book</span>.DB.drop()
-    }
 
     <span class="annotation">@Ignore</span>
     <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test fail on error</span><span class="delimiter">&quot;</span></span>() {
