@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Purpose</title>
+<title>Untitled</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -418,61 +418,171 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
 </head>
-<body class="article toc2 toc-left">
+<body class="article">
 <div id="header">
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel4">
-<li><a href="#_purpose">Purpose</a></li>
-<li><a href="#_example">Example</a></li>
-<li><a href="#_description">Description</a></li>
-</ul>
-</div>
 </div>
 <div id="content">
-<div class="sect4">
-<h5 id="_purpose">Purpose</h5>
 <div class="paragraph">
-<p>Execute a cypher query.</p>
+<p>When retrieving a GORM entity and its associations by default single-ended associations will only retrieve the association id, whilst associations to many objects will not retrieve the association at all until it is accessed. This is called lazy loading.</p>
 </div>
+<div class="paragraph">
+<p>For example given the following domain model:</p>
 </div>
-<div class="sect4">
-<h5 id="_example">Example</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">setup:
-def person = new Person(firstName: "Bob", lastName: "Builder")
-def petType = new PetType(name: "snake")
-def pet = new Pet(name: "Fred", type: petType, owner: person)
-person.addToPets(pet)
-person.save(flush: true)
-session.clear()
-
-when:
-def result = person.cypher("start n=node({this}) match n-[:pets]-&gt;m return m")
-
-then:
-result.iterator().size() == 1</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class League {
+    String name
+    static hasMany = [clubs:Club]
+}
+class Club {
+    String name
+    static belongsTo = [league:League]
+    static hasMany = [teams: Team ]
+}
+class Team  {
+    String name
+    static belongsTo = [club:Club]
+}</code></pre>
 </div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_description">Description</h5>
-<div class="paragraph">
-<p><code>cypher</code> is invoked on any domain instance and returns a <a href="http://neo4j.com/docs/api/java-driver/4.0/org/neo4j/driver/Result.html">org.neo4j.driver.Result</a></p>
 </div>
 <div class="paragraph">
-<p>The parameters passed are:</p>
+<p>When you retrieve the <code>Club</code> by name:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>cypher query string. The query string might use a implicit <code>this</code> parameter pointing to the instance&#8217;s node</p>
-</li>
-<li>
-<p>a optional map of cypher parameters</p>
-</li>
-</ul>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def club = Club.findByName("Manchester United")</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You will get the following Cypher query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cypher" data-lang="cypher">MATCH (n:Club) WHERE ( ID(n)={1} ) RETURN n as data</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see the <code>teams</code> association is not loaded in the query and nor is the <code>league</code> association. Note that if you were to make the <code>league</code> association nullable:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Club {
+ ...
+ static belongsTo = [league:League]
+ static constraints = {
+    league nullable:true
+ }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This would alter the query executed to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cypher" data-lang="cypher">MATCH (n:Club) WHERE ( ID(n) = {1} )
+OPTIONAL MATCH(n)-[:LEAGUE]-&gt;(leagueNode)
+RETURN n as data, collect(DISTINCT ID(leagueNode)) as leagueIds</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that only the ID of the <code>league</code> association is retrieved.</p>
+</div>
+<div class="paragraph">
+<p>The reason the <code>id</code> of the associated entity is retrieved is to differentiate between whether an association exists or is <code>null</code>. You can restore the previous behaviour by making the <code>league</code> association <code>lazy</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Club {
+ ...
+ static belongsTo = [league:League]
+ static constraints = {
+    league nullable:true
+ }
+ static mapping = {
+    league lazy:true
+ }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>However if you were to access the <code>league</code> association and it were <code>null</code> you would get an exception.</p>
+</div>
+<div class="paragraph">
+<p>With all of these approaches, if you then iterate over the teams you will get a second query to obtain the teams:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">for(team in club.teams) {
+    println team.name
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The query generated will be:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">MATCH (from:Club)-[:TEAMS]-&gt;(to:Team) WHERE ID(from) = {id} RETURN to as data</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you wish to avoid this secondary query to retrieve the data you can do so using an eager query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">// using a dynamic finder
+def club = Club.findByName("Manchester United", [fetch:[teams:'join']])
+
+// using a where queries
+def query = Club.where { name == "Manchester United" }
+                .join('teams')
+def club = query.find()
+
+// using criteria
+def query = Club.createCriteria()
+def club = query.get {
+    eq 'name', "Manchester United"
+    join 'teams'
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will instead generate the following query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-cypher" data-lang="cypher">MATCH (n:Club) WHERE ( n.name={1} )
+OPTIONAL MATCH(n)-[:TEAMS]-&gt;(teamsNode) WITH n, collect(DISTINCT teamsNode) as teamsNodes
+RETURN n as data, teamsNodes</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see the associated team nodes are loaded by the query. If you prefer this to happen for every query, then this can also be configured in the mapping:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Club {
+    ...
+
+    static mapping = {
+       teams fetch:"eager"
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also configure the collection ids to be eagerly loaded, but the instances themselves to be lazy loaded via proxies:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Club {
+    ...
+
+    static mapping = {
+       teams fetch:"eager", lazy:true
+    }
+}</code></pre>
 </div>
 </div>
 </div>

@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Purpose</title>
+<title>Untitled</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -418,62 +418,65 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
 </head>
-<body class="article toc2 toc-left">
+<body class="article">
 <div id="header">
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel4">
-<li><a href="#_purpose">Purpose</a></li>
-<li><a href="#_example">Example</a></li>
-<li><a href="#_description">Description</a></li>
-</ul>
-</div>
 </div>
 <div id="content">
-<div class="sect4">
-<h5 id="_purpose">Purpose</h5>
 <div class="paragraph">
-<p>Execute a cypher query.</p>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_example">Example</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">setup:
-def person = new Person(firstName: "Bob", lastName: "Builder")
-def petType = new PetType(name: "snake")
-def pet = new Pet(name: "Fred", type: petType, owner: person)
-person.addToPets(pet)
-person.save(flush: true)
-session.clear()
-
-when:
-def result = person.cypher("start n=node({this}) match n-[:pets]-&gt;m return m")
-
-then:
-result.iterator().size() == 1</code></pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_description">Description</h5>
-<div class="paragraph">
-<p><code>cypher</code> is invoked on any domain instance and returns a <a href="http://neo4j.com/docs/api/java-driver/4.0/org/neo4j/driver/Result.html">org.neo4j.driver.Result</a></p>
+<p>This implementation tries to be as compatible as possible with GORM for Hibernate. In general you can refer to the <a href="../../hibernate">GORM for Hibernate documentation</a> as the majority of features are implemented across both.</p>
 </div>
 <div class="paragraph">
-<p>The parameters passed are:</p>
+<p>The following key features are supported by GORM for Neo4j:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>cypher query string. The query string might use a implicit <code>this</code> parameter pointing to the instance&#8217;s node</p>
+<p>Simple persistence methods (save,delete etc)</p>
 </li>
 <li>
-<p>a optional map of cypher parameters</p>
+<p>Dynamic finders</p>
+</li>
+<li>
+<p>Criteria queries</p>
+</li>
+<li>
+<p>Named queries</p>
+</li>
+<li>
+<p>Inheritance</p>
+</li>
+<li>
+<p>Embedded types</p>
+</li>
+<li>
+<p>Query by example</p>
+</li>
+<li>
+<p>Many-to-many associations (these can be modelled with a mapping class)</p>
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>However, some features are not supported:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>HQL queries (however Cypher Queries are)</p>
+</li>
+<li>
+<p>Composite primary keys</p>
+</li>
+<li>
+<p>Any direct interaction with the Hibernate API</p>
+</li>
+<li>
+<p>Custom Hibernate user types</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>There may be other limitations not mentioned here so in general it shouldn&#8217;t be expected that an application based on GORM for Hibernate will "just work" without some tweaking involved. Having said that, the large majority of common GORM functionality is supported.</p>
 </div>
 </div>
 <div id="footer">

@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Purpose</title>
+<title>Untitled</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -418,61 +418,57 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
 </head>
-<body class="article toc2 toc-left">
+<body class="article">
 <div id="header">
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel4">
-<li><a href="#_purpose">Purpose</a></li>
-<li><a href="#_example">Example</a></li>
-<li><a href="#_description">Description</a></li>
-</ul>
-</div>
 </div>
 <div id="content">
-<div class="sect4">
-<h5 id="_purpose">Purpose</h5>
 <div class="paragraph">
-<p>Execute a cypher query.</p>
+<p>Additional support for <a href="http://gorm.grails.org/6.1.x/hibernate/manual/index.html#dataServices">GORM Data Services</a> exists in GORM for Neo4j beyond what is already offered by GORM core.</p>
 </div>
+<div class="paragraph">
+<p>For example if you declare a data service interface:</p>
 </div>
-<div class="sect4">
-<h5 id="_example">Example</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">setup:
-def person = new Person(firstName: "Bob", lastName: "Builder")
-def petType = new PetType(name: "snake")
-def pet = new Pet(name: "Fred", type: petType, owner: person)
-person.addToPets(pet)
-person.save(flush: true)
-session.clear()
-
-when:
-def result = person.cypher("start n=node({this}) match n-[:pets]-&gt;m return m")
-
-then:
-result.iterator().size() == 1</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Service(Person)
+interface PersonService {
+}</code></pre>
 </div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_description">Description</h5>
-<div class="paragraph">
-<p><code>cypher</code> is invoked on any domain instance and returns a <a href="http://neo4j.com/docs/api/java-driver/4.0/org/neo4j/driver/Result.html">org.neo4j.driver.Result</a></p>
 </div>
 <div class="paragraph">
-<p>The parameters passed are:</p>
+<p>You can use the <code>@Cypher</code> annotation to automatically implement methods that execute Cypher queries:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>cypher query string. The query string might use a implicit <code>this</code> parameter pointing to the instance&#8217;s node</p>
-</li>
-<li>
-<p>a optional map of cypher parameters</p>
-</li>
-</ul>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Cypher("""MATCH ${Person from},${Person to}, p = shortestPath(($from)-[*..15]-($to))
+           WHERE $from.name = $start AND $to.name = $end
+           RETURN p""")
+Path&lt;Person, Person&gt; findPath(String start, String end)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice how you can use the class names within the Cypher query and it will correctly translate the declaration into the appropriate node <code>MATCH</code> statement.</p>
+</div>
+<div class="paragraph">
+<p>Variable references within the <code>@Cypher</code> string declaration are also compile time checked.</p>
+</div>
+<div class="paragraph">
+<p>You can also automatically implement Cypher update operations:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Cypher("""MATCH ${Person p}
+           WHERE $p.name = $name
+           SET p.age = $age""")
+void updatePerson(String name, int age)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally, support for implementing methods that find paths is also possible. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Path&lt;Person, Person&gt; findPath(Person from, Person to)</code></pre>
 </div>
 </div>
 </div>

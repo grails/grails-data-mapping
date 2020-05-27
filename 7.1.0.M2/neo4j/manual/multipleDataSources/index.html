@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Purpose</title>
+<title>Configuring Multiple Bolt Drivers</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -422,57 +422,138 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel4">
-<li><a href="#_purpose">Purpose</a></li>
-<li><a href="#_example">Example</a></li>
-<li><a href="#_description">Description</a></li>
+<ul class="sectlevel2">
+<li><a href="#_configuring_multiple_bolt_drivers">Configuring Multiple Bolt Drivers</a></li>
+<li><a href="#_mapping_domain_classes_to_bolt_drivers">Mapping Domain Classes to Bolt Drivers</a></li>
+<li><a href="#_switching_between_bolt_drivers">Switching between Bolt Drivers</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
-<div class="sect4">
-<h5 id="_purpose">Purpose</h5>
 <div class="paragraph">
-<p>Execute a cypher query.</p>
+<p>GORM for Neo4j supports the notion of multiple data sources where multiple individual Bolt <code>Driver</code> instances can be configured and switched between.</p>
+</div>
+<div class="sect2">
+<h3 id="_configuring_multiple_bolt_drivers">Configuring Multiple Bolt Drivers</h3>
+<div class="paragraph">
+<p>To configure multiple Bolt <code>Driver</code> connections you need to use the <code>grails.neo4j.connections</code> setting. For example in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grails:
+    neo4j:
+        url: bolt://localhost:7687
+        connections:
+            moreBooks:
+                url: bolt://localhost:7688
+            evenMoreBooks:
+                url: bolt://localhost:7689</code></pre>
 </div>
 </div>
-<div class="sect4">
-<h5 id="_example">Example</h5>
+<div class="paragraph">
+<p>You can configure individual settings for each Bolt driver. If a setting is not specified by default the setting is inherited from the default Neo4j driver.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_mapping_domain_classes_to_bolt_drivers">Mapping Domain Classes to Bolt Drivers</h3>
+<div class="paragraph">
+<p>If a domain class has no specified Neo4j driver connection configuration then the default is used.</p>
+</div>
+<div class="paragraph">
+<p>You can set the <code>connection</code> method in the <code>mapping</code> block to configure an alternate Neo4j Driver.</p>
+</div>
+<div class="paragraph">
+<p>For example, if you want to use the <code>ZipCode</code> domain to use a Neo4j Driver connection called <code>'lookup'</code>, configure it like this:</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">setup:
-def person = new Person(firstName: "Bob", lastName: "Builder")
-def petType = new PetType(name: "snake")
-def pet = new Pet(name: "Fred", type: petType, owner: person)
-person.addToPets(pet)
-person.save(flush: true)
-session.clear()
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class ZipCode {
 
-when:
-def result = person.cypher("start n=node({this}) match n-[:pets]-&gt;m return m")
+   String code
 
-then:
-result.iterator().size() == 1</code></pre>
+   static mapping = {
+      connection 'lookup'
+   }
+}</code></pre>
 </div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_description">Description</h5>
-<div class="paragraph">
-<p><code>cypher</code> is invoked on any domain instance and returns a <a href="http://neo4j.com/docs/api/java-driver/4.0/org/neo4j/driver/Result.html">org.neo4j.driver.Result</a></p>
 </div>
 <div class="paragraph">
-<p>The parameters passed are:</p>
+<p>A domain class can also use two or more configured Neo4j Driver connections by using the <code>connections</code> method with a list of names to configure more than one, for example:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>cypher query string. The query string might use a implicit <code>this</code> parameter pointing to the instance&#8217;s node</p>
-</li>
-<li>
-<p>a optional map of cypher parameters</p>
-</li>
-</ul>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class ZipCode {
+
+   String code
+
+   static mapping = {
+      connections(['lookup', 'auditing'])
+   }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If a domain class uses the default connection and one or more others, you can use the <code>ConnectionSource.DEFAULT</code> constant to indicate that:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import org.grails.datastore.mapping.core.connections.*
+
+class ZipCode {
+
+   String code
+
+   static mapping = {
+      connections(['lookup', ConnectionSource.DEFAULT])
+   }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If a domain class uses all configured <code>DataSource</code> instances use the value <code>ALL</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import org.grails.datastore.mapping.core.connections.*
+
+class ZipCode {
+
+   String code
+
+   static mapping = {
+      connection ConnectionSource.ALL
+   }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_switching_between_bolt_drivers">Switching between Bolt Drivers</h3>
+<div class="paragraph">
+<p>You can switch to a different connection at runtime with the <code>withConnection</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.withConnection("moreBooks") {
+    list()
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The call to <code>list()</code> should not be prefixed with <code>Book.</code> as this will use the default connection
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Any logic executed within the body of the closure will use the alternate connection. Once the close finishes execution GORM will switch back to the default connection automatically.</p>
 </div>
 </div>
 </div>

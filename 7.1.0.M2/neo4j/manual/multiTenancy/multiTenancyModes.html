@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Purpose</title>
+<title>Database Per Tenant</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -422,57 +422,114 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel4">
-<li><a href="#_purpose">Purpose</a></li>
-<li><a href="#_example">Example</a></li>
-<li><a href="#_description">Description</a></li>
+<ul class="sectlevel3">
+<li><a href="#_database_per_tenant">Database Per Tenant</a></li>
+<li><a href="#_partitioned_multi_tenancy">Partitioned Multi-Tenancy</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
-<div class="sect4">
-<h5 id="_purpose">Purpose</h5>
 <div class="paragraph">
-<p>Execute a cypher query.</p>
+<p>As mentioned previously, GORM for Neo4j supports the <code>DATABASE</code> and <code>DISCRIMINATOR</code> however there are some considerations to keep in mind.</p>
 </div>
+<div class="sect3">
+<h4 id="_database_per_tenant">Database Per Tenant</h4>
+<div class="paragraph">
+<p>When using the <code>DATABASE</code> mode, only GORM methods calls are dispatched to the correct tenant. This means the following will use the tenant id:</p>
 </div>
-<div class="sect4">
-<h5 id="_example">Example</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">setup:
-def person = new Person(firstName: "Bob", lastName: "Builder")
-def petType = new PetType(name: "snake")
-def pet = new Pet(name: "Fred", type: petType, owner: person)
-person.addToPets(pet)
-person.save(flush: true)
-session.clear()
-
-when:
-def result = person.cypher("start n=node({this}) match n-[:pets]-&gt;m return m")
-
-then:
-result.iterator().size() == 1</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">// switches to the correct client based on the tenant id
+Book.list()</code></pre>
 </div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_description">Description</h5>
-<div class="paragraph">
-<p><code>cypher</code> is invoked on any domain instance and returns a <a href="http://neo4j.com/docs/api/java-driver/4.0/org/neo4j/driver/Result.html">org.neo4j.driver.Result</a></p>
 </div>
 <div class="paragraph">
-<p>The parameters passed are:</p>
+<p>However, going directly through the <code>Driver</code> will not work:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>cypher query string. The query string might use a implicit <code>this</code> parameter pointing to the instance&#8217;s node</p>
-</li>
-<li>
-<p>a optional map of cypher parameters</p>
-</li>
-</ul>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Autowired Driver boltDriver
+
+// uses the default connection and doesn't resolve the tenant it
+boltDriver.session().run("..")</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are working directly with the <code>Driver</code> instance you need to make sure you obtain the correct instance. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.gorm.multitenancy.*
+
+@Autowired Neo4jDatastore neo4jDatastore
+...
+Driver boltDriver =
+        neo4jDatastore.getDatastoreForTenantId(Tenants.currentId())
+                      .getBoltDriver()</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_partitioned_multi_tenancy">Partitioned Multi-Tenancy</h4>
+<div class="paragraph">
+<p>When using the <code>DISCRIMINATOR</code> approach, GORM for Neo4j will store a <code>tenantId</code> attribute in each Neo4j node and attempt to partition the data.</p>
+</div>
+<div class="paragraph">
+<p>Once again this works only when using GORM methods and even then there are cases where it will not work if you use native Neo4j interfaces.</p>
+</div>
+<div class="paragraph">
+<p>For example the following works fine:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">// correctly includes the `tenantId` in the query
+Book.list()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As does this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">// works automatically if you include the tenantId in the query
+Book.find("MATCH (p:Book) WHERE p.title={title} AND p.publisher={tenantId} RETURN p", [name:"The Stand"]")</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>But this query with throw an exception due to a missing tenant id:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.find("MATCH (p:Book) WHERE p.title={title} RETURN p", [name:"The Stand"])</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Also if you obtain the driver directly the the tenant id will not be included in the query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Autowired Driver boltDriver
+
+// uses the default connection and doesn't resolve the tenant it
+boltDriver.session()
+          .run("MATCH (p:Book) WHERE p.title={title} RETURN p", [name:"The Stand"]")</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Since you are operating directly on the Driver cannot know when you perform a query that should be multi-tenant aware.</p>
+</div>
+<div class="paragraph">
+<p>In this case you will have to ensure to include the <code>tenantId</code> manually:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">boltDriver.session()
+          .run("MATCH (p:Book) WHERE p.title={title} AND p.publisher={tenantId} RETURN p",
+                [name:"The Stand", tenantId: Tenants.currentId() ])</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And the same is true of write operations such as inserts that are done with the native API.</p>
 </div>
 </div>
 </div>

@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Purpose</title>
+<title>type = "embedded"</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -422,57 +422,184 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel4">
-<li><a href="#_purpose">Purpose</a></li>
-<li><a href="#_example">Example</a></li>
-<li><a href="#_description">Description</a></li>
+<ul class="sectlevel3">
+<li><a href="#_type_embedded">type = "embedded"</a></li>
+<li><a href="#_type_rest">type = "rest"</a></li>
+<li><a href="#_type_ha">type = "ha"</a></li>
+<li><a href="#_type_impermanent">type = "impermanent"</a></li>
+<li><a href="#_custom_graph_database">custom graph database</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
-<div class="sect4">
-<h5 id="_purpose">Purpose</h5>
 <div class="paragraph">
-<p>Execute a cypher query.</p>
+<p>As mentioned the GORM for Neo4j plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the your <code>grails-app/conf/DataSource.groovy</code> file or in the <code>grails-app/conf/application.groovy</code> file for Grails 3.x and above:</p>
 </div>
-</div>
-<div class="sect4">
-<h5 id="_example">Example</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">setup:
-def person = new Person(firstName: "Bob", lastName: "Builder")
-def petType = new PetType(name: "snake")
-def pet = new Pet(name: "Fred", type: petType, owner: person)
-person.addToPets(pet)
-person.save(flush: true)
-session.clear()
-
-when:
-def result = person.cypher("start n=node({this}) match n-[:pets]-&gt;m return m")
-
-then:
-result.iterator().size() == 1</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails {
+    neo4j {
+        type = "embedded"
+        location = "/var/neo4j"
+    }
+}</code></pre>
 </div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_description">Description</h5>
-<div class="paragraph">
-<p><code>cypher</code> is invoked on any domain instance and returns a <a href="http://neo4j.com/docs/api/java-driver/4.0/org/neo4j/driver/Result.html">org.neo4j.driver.Result</a></p>
 </div>
 <div class="paragraph">
-<p>The parameters passed are:</p>
+<p>The <code>type</code> provides currently the following choices:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>cypher query string. The query string might use a implicit <code>this</code> parameter pointing to the instance&#8217;s node</p>
-</li>
-<li>
-<p>a optional map of cypher parameters</p>
-</li>
-</ul>
+<div class="sect3">
+<h4 id="_type_embedded">type = "embedded"</h4>
+<div class="paragraph">
+<p>Runs Neo4j in embedded mode, Neo4j and Grails use the same JVM. No seperate setup outside the Grails application is required. <code>location</code> specifies the directory where Neo4j stores its data.</p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails {
+    neo4j {
+        type = "embedded"
+        location = "/var/neo4j"
+    }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If your configuration is empty, <em>embedded</em> is used as default.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_type_rest">type = "rest"</h4>
+<div class="paragraph">
+<p>Uses a <code>org.grails.datastore.gorm.neo4j.rest.GrailsCypherRestGraphDatabase</code> instance to connect to a Neo4j database. See <a href="http://neo4j.com/docs/stable/server-installation.html" class="bare">http://neo4j.com/docs/stable/server-installation.html</a> for how to setup a Neo4j server.</p>
+</div>
+<div class="paragraph">
+<p><code>location</code> specifies the URL of he Neo4j REST server. When using the Heroku Neo4j addon, omit the location. In this case location will default to env.NEO4J_URL that is provided by Heroku.</p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails {
+    neo4j {
+        type = "rest"
+        location = "http://localhost:7474/db/data/"
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Additionally you must add the following dependencies to your application&#8217;s <code>build.gradle</code> or <code>grails-app/conf/BuildConfig.groovy</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile 'org.springframework.data:spring-data-neo4j:3.4.0.RELEASE'
+compile 'org.springframework.data:spring-data-neo4j-rest:3.4.0.RELEASE', {
+    exclude group:'org.neo4j.test', module:'neo4j-harness'
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>GORM for Neo4j uses the REST implementation from the Spring Data Neo4j REST project.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_type_ha">type = "ha"</h4>
+<div class="paragraph">
+<p>Uses a Neo4j HA setup, for details see <a href="http://neo4j.com/docs/stable/ha.html" class="bare">http://neo4j.com/docs/stable/ha.html</a>. In this case params must at least contain</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+For Neo4j HA either a commercial license is <a href="http://neo4j.org/licensing-guide/">required</a>, or you could use AGPL.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails {
+    neo4j {
+        type = "ha"
+        location = "/var/neo4j"
+        // see http://neo4j.com/docs/stable/ha-configuration.html
+        options = [
+                'ha.server_id': 1,
+                'ha.coordinators': 'localhost:2181,localhost:2182,localhost:2183'
+        ]
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Additionally you must add another dependency to your application&#8217;s <code>build.gradle</code> or <code>grails-app/conf/BuildConfig.groovy</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile 'org.neo4j:neo4j-ha:$neo4jVersion'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_type_impermanent">type = "impermanent"</h4>
+<div class="paragraph">
+<p>Uses ImpermanentGraphDatabase which is good for testing and early stage development.</p>
+</div>
+<div class="paragraph">
+<p>This option required a dependency to artifact [group: "org.neo4j", name:"neo4j-kernel", version:neo4jVersion, classifier:'tests'] in <code>build.gradle</code> or <code>BuildConfig.groovy</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile group: "org.neo4j", name: "neo4j-kernel", version: neo4jVersion, classifier: 'tests'</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+ImpermanentGraphDatabase is intended to be used for testing.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_custom_graph_database">custom graph database</h4>
+<div class="paragraph">
+<p>If you use a custom implementation of GraphDatabaseService, you can use</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails {
+    neo4j {
+        type = "my.fancy.custom.GraphDatabaseServiceImplementation"
+        location = "/var/neo4j"
+        options = [ :]
+    }
+}</code></pre>
+</div>
 </div>
 </div>
 </div>

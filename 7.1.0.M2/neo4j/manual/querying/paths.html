@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<title>Purpose</title>
+<title>Untitled</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -418,61 +418,74 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
 </head>
-<body class="article toc2 toc-left">
+<body class="article">
 <div id="header">
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel4">
-<li><a href="#_purpose">Purpose</a></li>
-<li><a href="#_example">Example</a></li>
-<li><a href="#_description">Description</a></li>
-</ul>
-</div>
 </div>
 <div id="content">
-<div class="sect4">
-<h5 id="_purpose">Purpose</h5>
 <div class="paragraph">
-<p>Execute a cypher query.</p>
+<p>Since 6.1, GORM for Neo4j features support for Neo4j path queries. To use path queries you must implement the <code>grails.neo4j.Node</code> trait in your domain class. For example given the following class:</p>
 </div>
-</div>
-<div class="sect4">
-<h5 id="_example">Example</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">setup:
-def person = new Person(firstName: "Bob", lastName: "Builder")
-def petType = new PetType(name: "snake")
-def pet = new Pet(name: "Fred", type: petType, owner: person)
-person.addToPets(pet)
-person.save(flush: true)
-session.clear()
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@EqualsAndHashCode(includes = 'name')
+class Person implements Node&lt;Person&gt; {
+    String name
+    static hasMany = [friends: Person]
 
-when:
-def result = person.cypher("start n=node({this}) match n-[:pets]-&gt;m return m")
-
-then:
-result.iterator().size() == 1</code></pre>
+    static mapping = node {
+        id(generator:'assigned', name:'name')
+    }
+}</code></pre>
 </div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_description">Description</h5>
-<div class="paragraph">
-<p><code>cypher</code> is invoked on any domain instance and returns a <a href="http://neo4j.com/docs/api/java-driver/4.0/org/neo4j/driver/Result.html">org.neo4j.driver.Result</a></p>
 </div>
 <div class="paragraph">
-<p>The parameters passed are:</p>
+<p>And the following setup data:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>cypher query string. The query string might use a implicit <code>this</code> parameter pointing to the instance&#8217;s node</p>
-</li>
-<li>
-<p>a optional map of cypher parameters</p>
-</li>
-</ul>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Person joe = new Person(name: "Joe")
+Person barney = new Person(name: "Barney")
+                      .addToFriends(joe)
+Person fred = new Person(name: "Fred")
+                      .addToFriends(barney)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Which creates a friend graph it is possible to find out the shortest path from one friend to another with the <code>findShortestPath</code> method which returns a <code>grails.neo4j.Path</code> instance:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Path&lt;Person, Person&gt; path = Person.findShortestPath(fred, joe, 15)
+for(Path.Segment&lt;Person, Person&gt; segment in path) {
+    println segment.start().name
+    println segment.end().name
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also find the shortest path without first loading the entities using proxies:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Path&lt;Person, Person&gt; path = Person.findShortestPath(Person.proxy("Fred"), Person.proxy("Joe"), 15)
+for(Path.Segment&lt;Person, Person&gt; segment in path) {
+    println segment.start().name
+    println segment.end().name
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally it is also possible to use Cypher queries to find a path:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">String from = "Fred"
+String to = "Joe"
+Path&lt;Person, Person&gt; path = Person.findPath("MATCH (from:Person),(to:Person), p = shortestPath((from)-[*..15]-(to)) WHERE from.name = $from AND to.name = $to RETURN p")
+for(Path.Segment&lt;Person, Person&gt; segment in path) {
+    println segment.start().name
+    println segment.end().name
+}</code></pre>
 </div>
 </div>
 </div>

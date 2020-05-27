@@ -425,6 +425,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel4">
 <li><a href="#_purpose">Purpose</a></li>
 <li><a href="#_example">Example</a></li>
+<li><a href="#_using_map_semantics">Using Map Semantics</a></li>
+<li><a href="#_using_dot_operator">Using Dot Operator</a></li>
 <li><a href="#_description">Description</a></li>
 </ul>
 </div>
@@ -433,46 +435,79 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect4">
 <h5 id="_purpose">Purpose</h5>
 <div class="paragraph">
-<p>Execute a cypher query.</p>
+<p>For domain classes mapped by Neo4j you can put and get arbitrary attributes on a instances by using the dot operator or map semantics on the domain instance.</p>
 </div>
 </div>
 <div class="sect4">
 <h5 id="_example">Example</h5>
+<div class="paragraph">
+<p>A simple domain class:</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">setup:
-def person = new Person(firstName: "Bob", lastName: "Builder")
-def petType = new PetType(name: "snake")
-def pet = new Pet(name: "Fred", type: petType, owner: person)
-person.addToPets(pet)
-person.save(flush: true)
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Person implements Serializable {
+    String firstName
+    String lastName
+    Integer age = 0
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_using_map_semantics">Using Map Semantics</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">when:
+def person = new Person(lastName:'person1').save()
+person['notDeclaredProperty'] = 'someValue'   // n.b. the 'dot' notation is not valid for undeclared properties
+person['emptyArray'] = []
+person['someIntArray'] = [1,2,3]
+person['someStringArray'] = ['a', 'b', 'c']
+person['someDoubleArray'] = [0.9, 1.0, 1.1]
+session.flush()
 session.clear()
-
-when:
-def result = person.cypher("start n=node({this}) match n-[:pets]-&gt;m return m")
+person = Person.get(person.id)
 
 then:
-result.iterator().size() == 1</code></pre>
+person['notDeclaredProperty'] == 'someValue'
+person['lastName'] == 'person1'  // declared properties are also available via map semantics
+person['someIntArray'] == [1,2,3]
+person['someStringArray'] == ['a', 'b', 'c']
+person['someDoubleArray'] == [0.9, 1.0, 1.1]</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_using_dot_operator">Using Dot Operator</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">when:
+def person = new Person(lastName:'person1').save(flush:true)
+session.clear()
+person = Person.load(person.id)
+person.notDeclaredProperty = 'someValue'   // n.b. the 'dot' notation is not valid for undeclared properties
+person.emptyArray = []
+person.someIntArray = [1,2,3]
+person.someStringArray = ['a', 'b', 'c']
+person.someDoubleArray= [0.9, 1.0, 1.1]
+session.flush()
+session.clear()
+person = Person.get(person.id)
+
+then:
+person.notDeclaredProperty == 'someValue'
+person.lastName == 'person1'  // declared properties are also available via map semantics
+person.someIntArray == [1,2,3]
+person.someStringArray == ['a', 'b', 'c']
+person.emptyArray == []
+person.someDoubleArray == [0.9, 1.0, 1.1]</code></pre>
 </div>
 </div>
 </div>
 <div class="sect4">
 <h5 id="_description">Description</h5>
 <div class="paragraph">
-<p><code>cypher</code> is invoked on any domain instance and returns a <a href="http://neo4j.com/docs/api/java-driver/4.0/org/neo4j/driver/Result.html">org.neo4j.driver.Result</a></p>
-</div>
-<div class="paragraph">
-<p>The parameters passed are:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>cypher query string. The query string might use a implicit <code>this</code> parameter pointing to the instance&#8217;s node</p>
-</li>
-<li>
-<p>a optional map of cypher parameters</p>
-</li>
-</ul>
+<p>The non declared attribtes are stored a regular properties on the domain instance&#8217;s node. The values of the schemaless attributes must be a valid type for Neo4j property (String, primitives and arrays of the former two).</p>
 </div>
 </div>
 </div>
