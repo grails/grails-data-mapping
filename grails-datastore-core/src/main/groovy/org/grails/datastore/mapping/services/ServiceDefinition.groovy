@@ -1,7 +1,7 @@
 /*
  * Copyright 2017-2020 original authors
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -13,31 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.mapping.services;
-
-import java.util.function.Supplier;
+package org.grails.datastore.mapping.services
 
 /**
  * A service that may or may not be present on the classpath.
  *
  * @param <T> The service type
  */
-public interface ServiceDefinition<T> {
+interface ServiceDefinition<T> {
 
     /**
      * @return The full class name of the service
      */
-    String getName();
+    String getName()
 
     /**
      * @return The type of the service
      */
-    Class<T> getType();
+    Class<T> getType()
 
     /**
      * @return is the service present
      */
-    boolean isPresent();
+    boolean isPresent()
 
     /**
      * Load the service of throw the given exception.
@@ -47,10 +45,10 @@ public interface ServiceDefinition<T> {
      * @return The instance
      * @throws X The exception concrete type
      */
-    <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X;
+    public <X extends Throwable> T orElseThrow(Closure exceptionSupplier) throws X
 
     /**
      * @return load the service
      */
-    T load();
+    T load()
 }

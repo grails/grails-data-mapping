@@ -3,40 +3,38 @@ package org.grails.datastore.gorm.bootstrap
 import grails.gorm.annotation.Entity
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import org.grails.datastore.gorm.bootstrap.support.ServiceRegistryFactoryBean
 import org.grails.datastore.gorm.events.ConfigurableApplicationContextEventPublisher
 import org.grails.datastore.gorm.events.DefaultApplicationEventPublisher
 import org.grails.datastore.gorm.plugin.support.PersistenceContextInterceptorAggregator
 import org.grails.datastore.gorm.support.AbstractDatastorePersistenceContextInterceptor
+import org.grails.datastore.mapping.config.DatastoreServiceMethodInvokingFactoryBean
 import org.grails.datastore.mapping.core.DatastoreUtils
 import org.grails.datastore.mapping.core.grailsversion.GrailsVersion
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar
 import org.grails.datastore.mapping.reflect.AstUtils
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
+import org.grails.datastore.mapping.reflect.NameUtils
+import org.grails.datastore.mapping.services.Service
+import org.grails.datastore.mapping.services.ServiceDefinition
+import org.grails.datastore.mapping.services.SoftServiceLoader
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
-import org.springframework.context.ApplicationContext
-import org.springframework.context.ApplicationEventPublisher
-import org.springframework.context.ConfigurableApplicationContext
-import org.springframework.context.MessageSource
-import org.springframework.context.ResourceLoaderAware
+import org.springframework.context.*
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.context.support.StaticMessageSource
-import org.springframework.core.convert.converter.Converter
-import org.springframework.core.convert.support.ConfigurableConversionService
 import org.springframework.core.env.ConfigurableEnvironment
-import org.springframework.core.env.MapPropertySource
 import org.springframework.core.env.PropertyResolver
 import org.springframework.core.env.StandardEnvironment
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.core.io.support.ResourcePatternResolver
-import org.springframework.core.type.AnnotationMetadata
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory
 import org.springframework.util.ClassUtils
+
+import java.beans.Introspector
 
 /**
  * Abstract class for datastore initializers to implement
@@ -307,8 +305,6 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
                 datastore = ref("${type}Datastore")
             }
 
-            "${type}DatastoreServiceRegistry"(ServiceRegistryFactoryBean, ref("${type}Datastore"))
-
             def transactionManagerBeanName = TRANSACTION_MANAGER_BEAN
             if (!containsRegisteredBean(delegate, registry, transactionManagerBeanName)) {
                 registry.registerAlias("${type}TransactionManager", transactionManagerBeanName)
@@ -326,7 +322,48 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
                     datastore = ref("${type}Datastore")
                 }
             }
+            loadDataServices(null)
+                    .each {serviceName, serviceClass->
+                "$serviceName"(DatastoreServiceMethodInvokingFactoryBean) {
+                    targetObject = ref("${type}Datastore")
+                    targetMethod = 'getService'
+                    arguments = [serviceClass]
+                }
+            }
         }
+    }
+
+    @CompileDynamic
+    protected Map<String, Class<?>> loadDataServices(String secondaryDatastore = null) {
+        Map<String, Class<?>> dataServices = [:]
+        final SoftServiceLoader<Service> services = SoftServiceLoader.load(Service)
+        for (ServiceDefinition<Service> serviceDefinition: services) {
+            if (serviceDefinition.isPresent()) {
+                final Class<Service> clazz = serviceDefinition.getType()
+                if (clazz.simpleName.startsWith('$') && clazz.simpleName.endsWith('Implementation')) {
+                    Class<?> serviceClass = loadServiceClass(clazz)
+                    final grails.gorm.services.Service ann = clazz.getAnnotation(grails.gorm.services.Service)
+                    String serviceName = ann?.name()
+                    if(serviceName == null) {
+                        serviceName = Introspector.decapitalize(serviceClass.simpleName)
+                    }
+                    if (secondaryDatastore) {
+                        serviceName = secondaryDatastore + NameUtils.capitalize(serviceName)
+                    }
+                    if (serviceClass != null && serviceClass != Object.class) {
+                        dataServices.put(serviceName, serviceClass)
+                    }
+                }
+            }
+        }
+        return dataServices;
+    }
+
+    private Class<?> loadServiceClass(Class<Service> clazz) {
+        final String serviceClassName = clazz.package.getName() + '.' + clazz.simpleName[1..-15]
+        final ClassLoader cl = org.grails.datastore.mapping.reflect.ClassUtils.classLoader
+        final Class<?> serviceClass = cl.loadClass(serviceClassName)
+        serviceClass
     }
 
     @CompileDynamic
