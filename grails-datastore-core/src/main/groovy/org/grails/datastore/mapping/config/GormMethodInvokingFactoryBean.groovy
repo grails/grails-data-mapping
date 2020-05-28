@@ -1,6 +1,8 @@
 package org.grails.datastore.mapping.config
 
 import groovy.transform.Internal
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.services.Service
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 
 /**
@@ -12,5 +14,14 @@ class GormMethodInvokingFactoryBean extends MethodInvokingFactoryBean {
     @Override
     Class<?> getObjectType() {
         arguments[0] as Class<?>
+    }
+
+    @Override
+    protected Object invokeWithTargetException() throws Exception {
+        Object object = super.invokeWithTargetException()
+        if (object) {
+            ((Service) object).setDatastore((Datastore) targetObject)
+        }
+        object
     }
 }
