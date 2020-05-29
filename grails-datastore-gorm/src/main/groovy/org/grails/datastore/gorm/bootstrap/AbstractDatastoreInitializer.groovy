@@ -297,7 +297,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
             for (ServiceDefinition<Service> serviceDefinition: services) {
                 if (serviceDefinition.isPresent()) {
                     final Class<Service> clazz = serviceDefinition.getType()
-                    if (clazz.simpleName.startsWith('$')) {
+                    if (clazz.simpleName.startsWith('$') && clazz.simpleName.endsWith('Implementation')) {
                         String serviceClassName = clazz.name - '$' - 'Implementation'
                         final ClassLoader cl = org.grails.datastore.mapping.reflect.ClassUtils.classLoader
                         final Class<?> serviceClass = cl.loadClass(serviceClassName)
