@@ -298,7 +298,10 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
                 if (serviceDefinition.isPresent()) {
                     final Class<Service> clazz = serviceDefinition.getType()
                     if (clazz.simpleName.startsWith('$') && clazz.simpleName.endsWith('Implementation')) {
-                        String serviceClassName = clazz.name - '$' - 'Implementation'
+                        String dataServiceName = clazz.simpleName
+                        dataServiceName = removeDollarChar(dataServiceName)
+                        dataServiceName = removeImplementationString(dataServiceName)
+                        String serviceClassName = clazz.name.replace(clazz.simpleName, dataServiceName)
                         final ClassLoader cl = org.grails.datastore.mapping.reflect.ClassUtils.classLoader
                         final Class<?> serviceClass = cl.loadClass(serviceClassName)
 
@@ -351,6 +354,14 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     @CompileStatic
     protected Class getGrailsValidatorClass() {
         throw new UnsupportedOperationException("Method getGrailsValidatorClass no longer supported")
+    }
+
+    protected String removeImplementationString(String dataServiceImplementationClassName) {
+        dataServiceImplementationClassName.substring(0, dataServiceImplementationClassName.length() - 14)
+    }
+
+    protected String removeDollarChar(String dataServiceImplementationClassName) {
+        dataServiceImplementationClassName.substring(1)
     }
 
     @CompileDynamic
