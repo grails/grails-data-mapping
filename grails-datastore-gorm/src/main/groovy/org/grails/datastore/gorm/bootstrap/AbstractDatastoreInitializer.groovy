@@ -13,6 +13,7 @@ import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar
 import org.grails.datastore.mapping.reflect.AstUtils
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
+import org.grails.datastore.mapping.reflect.NameUtils
 import org.grails.datastore.mapping.services.Service
 import org.grails.datastore.mapping.services.ServiceDefinition
 import org.grails.datastore.mapping.services.SoftServiceLoader
@@ -293,34 +294,51 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
                     datastore = ref("${type}Datastore")
                 }
             }
-            final SoftServiceLoader<Service> services = SoftServiceLoader.load(Service)
-            for (ServiceDefinition<Service> serviceDefinition: services) {
-                if (serviceDefinition.isPresent()) {
-                    final Class<Service> clazz = serviceDefinition.getType()
-                    if (clazz.simpleName.startsWith('$') && clazz.simpleName.endsWith('Implementation')) {
-                        String dataServiceName = clazz.simpleName
-                        dataServiceName = removeDollarChar(dataServiceName)
-                        dataServiceName = removeImplementationString(dataServiceName)
-                        String serviceClassName = clazz.name.replace(clazz.simpleName, dataServiceName)
-                        final ClassLoader cl = org.grails.datastore.mapping.reflect.ClassUtils.classLoader
-                        final Class<?> serviceClass = cl.loadClass(serviceClassName)
+            loadDataServices(null)
+                    .each {serviceName, serviceClass->
+                "$serviceName"(DatastoreServiceMethodInvokingFactoryBean) {
+                    targetObject = ref("${type}Datastore")
+                    targetMethod = 'getService'
+                    arguments = [serviceClass]
+                }
+            }
+        }
+    }
 
-                        final grails.gorm.services.Service ann = clazz.getAnnotation(grails.gorm.services.Service)
-                        String serviceName = ann?.name()
-                        if(serviceName == null) {
-                            serviceName = Introspector.decapitalize(serviceClass.simpleName)
-                        }
-                        if (serviceClass != null && serviceClass != Object.class) {
-                            "$serviceName"(DatastoreServiceMethodInvokingFactoryBean) {
-                                targetObject = ref("${type}Datastore")
-                                targetMethod = 'getService'
-                                arguments = [serviceClass]
-                            }
-                        }
+    @CompileDynamic
+    protected Map<String, Class<?>> loadDataServices(String secondaryDatastore = null) {
+        Map<String, Class<?>> dataServices = [:]
+        final SoftServiceLoader<Service> services = SoftServiceLoader.load(Service)
+        for (ServiceDefinition<Service> serviceDefinition: services) {
+            if (serviceDefinition.isPresent()) {
+                final Class<Service> clazz = serviceDefinition.getType()
+                if (clazz.simpleName.startsWith('$') && clazz.simpleName.endsWith('Implementation')) {
+                    Class<?> serviceClass = loadServiceClass(clazz)
+                    final grails.gorm.services.Service ann = clazz.getAnnotation(grails.gorm.services.Service)
+                    String serviceName = ann?.name()
+                    if(serviceName == null) {
+                        serviceName = Introspector.decapitalize(serviceClass.simpleName)
+                    }
+                    if (secondaryDatastore) {
+                        serviceName = secondaryDatastore + NameUtils.capitalize(serviceName)
+                    }
+                    if (serviceClass != null && serviceClass != Object.class) {
+                        dataServices.put(serviceName, serviceClass)
                     }
                 }
             }
         }
+        return dataServices;
+    }
+
+    private Class<?> loadServiceClass(Class<Service> clazz) {
+        String dataServiceName = clazz.simpleName
+        dataServiceName = dataServiceName.substring(1)
+        dataServiceName = dataServiceName.substring(0, dataServiceName.length() - 14)
+        final String serviceClassName = clazz.name.replace(clazz.simpleName, dataServiceName)
+        final ClassLoader cl = org.grails.datastore.mapping.reflect.ClassUtils.classLoader
+        final Class<?> serviceClass = cl.loadClass(serviceClassName)
+        serviceClass
     }
 
     @CompileDynamic
@@ -354,14 +372,6 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     @CompileStatic
     protected Class getGrailsValidatorClass() {
         throw new UnsupportedOperationException("Method getGrailsValidatorClass no longer supported")
-    }
-
-    protected String removeImplementationString(String dataServiceImplementationClassName) {
-        dataServiceImplementationClassName.substring(0, dataServiceImplementationClassName.length() - 14)
-    }
-
-    protected String removeDollarChar(String dataServiceImplementationClassName) {
-        dataServiceImplementationClassName.substring(1)
     }
 
     @CompileDynamic
