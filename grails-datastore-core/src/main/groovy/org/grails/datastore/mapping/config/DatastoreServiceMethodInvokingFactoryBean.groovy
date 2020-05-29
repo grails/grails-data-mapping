@@ -11,7 +11,7 @@ import org.springframework.beans.factory.config.MethodInvokingFactoryBean
  */
 @Internal
 @CompileStatic
-class GormMethodInvokingFactoryBean extends MethodInvokingFactoryBean {
+class DatastoreServiceMethodInvokingFactoryBean extends MethodInvokingFactoryBean {
 
     @Override
     Class<?> getObjectType() {

@@ -7,9 +7,8 @@ import org.grails.datastore.gorm.events.ConfigurableApplicationContextEventPubli
 import org.grails.datastore.gorm.events.DefaultApplicationEventPublisher
 import org.grails.datastore.gorm.plugin.support.PersistenceContextInterceptorAggregator
 import org.grails.datastore.gorm.support.AbstractDatastorePersistenceContextInterceptor
-import org.grails.datastore.mapping.config.GormMethodInvokingFactoryBean
+import org.grails.datastore.mapping.config.DatastoreServiceMethodInvokingFactoryBean
 import org.grails.datastore.mapping.core.DatastoreUtils
-import org.grails.datastore.mapping.core.grailsversion.GrailsVersion
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar
 import org.grails.datastore.mapping.reflect.AstUtils
@@ -26,17 +25,13 @@ import org.springframework.context.MessageSource
 import org.springframework.context.ResourceLoaderAware
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.context.support.StaticMessageSource
-import org.springframework.core.convert.converter.Converter
-import org.springframework.core.convert.support.ConfigurableConversionService
 import org.springframework.core.env.ConfigurableEnvironment
-import org.springframework.core.env.MapPropertySource
 import org.springframework.core.env.PropertyResolver
 import org.springframework.core.env.StandardEnvironment
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.core.io.support.ResourcePatternResolver
-import org.springframework.core.type.AnnotationMetadata
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory
 import org.springframework.util.ClassUtils
 
@@ -313,7 +308,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
                             serviceName = Introspector.decapitalize(serviceClass.simpleName)
                         }
                         if (serviceClass != null && serviceClass != Object.class) {
-                            "$serviceName"(GormMethodInvokingFactoryBean) {
+                            "$serviceName"(DatastoreServiceMethodInvokingFactoryBean) {
                                 targetObject = ref("${type}Datastore")
                                 targetMethod = 'getService'
                                 arguments = [serviceClass]
