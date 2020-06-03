@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.5">
-<title>Purpose</title>
+<title>Untitled</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -419,36 +419,58 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
 </head>
-<body class="article toc2 toc-left">
+<body class="article">
 <div id="header">
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel4">
-<li><a href="#_purpose">Purpose</a></li>
-<li><a href="#_examples">Examples</a></li>
-<li><a href="#_description">Description</a></li>
-</ul>
-</div>
 </div>
 <div id="content">
-<div class="sect4">
-<h5 id="_purpose">Purpose</h5>
 <div class="paragraph">
-<p>Returns the MongoDB <a href="http://api.mongodb.com/java/current/com/mongodb/async/client/MongoCollection.html">collection</a> used for the current domain class</p>
+<p>The following transformations can be applied to any class to simplify greatly the development of Multi-Tenant applications. These include:</p>
 </div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>@CurrentTenant</code> - Resolve the current tenant for the context of a class or method</p>
+</li>
+<li>
+<p><code>@Tenant</code> - Use a specific tenant for the context of a class or method</p>
+</li>
+<li>
+<p><code>@WithoutTenant</code> - Execute logic without a specific tenant (using the default connection)</p>
+</li>
+</ul>
 </div>
-<div class="sect4">
-<h5 id="_examples">Examples</h5>
+<div class="paragraph">
+<p>For example:</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">def bookBson = Book.collection.find().first()</code></pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_description">Description</h5>
-<div class="paragraph">
-<p>The <code>collection</code> property allows access to the underlying MongoDB <a href="http://api.mongodb.com/java/current/com/mongodb/async/client/MongoCollection.html">MongoCollection</a> object, thus allowing direct access to the low-level MongoDB driver.</p>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.gorm.multitenancy.*
+
+// resolve the current tenant for every method
+@CurrentTenant
+class TeamService {
+
+    // execute the countPlayers method without a tenant id
+    @WithoutTenant
+    int countPlayers() {
+        Player.count()
+    }
+
+    // use the tenant id "another" for all GORM logic within the method
+    @Tenant({"another"})
+    List&lt;Team&gt; allTwoTeams() {
+        Team.list()
+    }
+
+    List&lt;Team&gt; listTeams() {
+        Team.list(max:10)
+    }
+
+    @Transactional
+    void addTeam(String name) {
+        new Team(name:name).save(flush:true)
+    }
+}</code></pre>
 </div>
 </div>
 </div>
