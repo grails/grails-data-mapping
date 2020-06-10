@@ -6,7 +6,6 @@ buildscript {
     }
     dependencies {
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5"
-        classpath "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.0"
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.2"
     }
@@ -106,8 +105,7 @@ subprojects {
         apply plugin: 'eclipse'
         apply from:"${rootProject.rootDir}/gradle/publishing.gradle"
         apply plugin: 'idea'
-        apply plugin: 'provided-base'
-        apply plugin: 'optional-base'
+        apply plugin: 'java-library'
         sourceCompatibility = "1.8"
         targetCompatibility = "1.8"
     }
@@ -122,7 +120,7 @@ subprojects {
 
 
     dependencies {
-        compile "javax.annotation:javax.annotation-api:$javaAnnotationApiVersion"
+        api "javax.annotation:javax.annotation-api:$javaAnnotationApiVersion"
 
         if (isStandardGroovyMavenProject) {
             documentation "org.fusesource.jansi:jansi:1.18"
@@ -130,27 +128,27 @@ subprojects {
             documentation 'info.picocli:picocli:3.8.0'
             documentation ("com.github.javaparser:javaparser-core:$javaParserCoreVersion")
 
-            compile "org.codehaus.groovy:groovy:$groovyVersion"
-            testCompile "org.codehaus.groovy:groovy-test-junit5:$groovyVersion"
-            testCompile "org.junit.jupiter:junit-jupiter-api:5.6.2"
-            testCompile "org.junit.platform:junit-platform-runner:1.6.2"
-            testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.6.2"
+            api "org.codehaus.groovy:groovy:$groovyVersion"
+            testImplementation "org.codehaus.groovy:groovy-test-junit5:$groovyVersion"
+            testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.2"
+            testImplementation "org.junit.platform:junit-platform-runner:1.6.2"
+            testImplementation "org.junit.jupiter:junit-jupiter-engine:5.6.2"
 
-            testCompile(spockDependency) { transitive = false }
+            testImplementation(spockDependency)
         }
 
         if (project.name == "grails-datastore-gorm-tck") {
-            compile "org.codehaus.groovy:groovy-test-junit5:$groovyVersion"
-            compile "org.junit.jupiter:junit-jupiter-api:5.6.0"
-            compile "org.junit.platform:junit-platform-runner:1.6.0"
+            api "org.codehaus.groovy:groovy-test-junit5:$groovyVersion"
+            api "org.junit.jupiter:junit-jupiter-api:5.6.0"
+            api "org.junit.platform:junit-platform-runner:1.6.0"
             runtimeOnly "org.junit.jupiter:junit-jupiter-engine:5.6.0"
-            compile(spockDependency) { transitive = false }
+            implementation(spockDependency) { transitive = false }
         }
     }
 
     if (isGormDatasource) {
         dependencies {
-            testCompile project(":grails-datastore-gorm-tck")
+            testImplementation project(":grails-datastore-gorm-tck")
         }
 
         // We need to test against the TCK. Gradle cannot find/run tests from jars

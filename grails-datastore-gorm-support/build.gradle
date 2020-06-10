@@ -1,7 +1,7 @@
 dependencies {
-    compile project(':grails-datastore-gorm')
+    api project(':grails-datastore-gorm')
 
-    compile("org.grails:grails-core:$grailsVersion") {
+    api("org.grails:grails-core:$grailsVersion") {
         exclude group:'org.hibernate.javax.persistence', module:'hibernate-jpa-2.1-api'
         exclude group:'aopalliance',module:'aopalliance'
         exclude group:'commons-logging',module:'commons-logging'
@@ -29,7 +29,7 @@ dependencies {
         exclude group:'commons-validator',module:'commons-validator'
         exclude group:'com.googlecode.concurrentlinkedhashmap',module:'concurrentlinkedhashmap-lru'
     }
-    compile("org.grails:grails-bootstrap:$grailsVersion") {
+    api("org.grails:grails-bootstrap:$grailsVersion") {
         exclude group:'org.codehaus.groovy', module:'groovy-ant'
         exclude group:'org.codehaus.groovy', module:'groovy-xml'
         exclude group:'org.apache.ant',module:'ant'
