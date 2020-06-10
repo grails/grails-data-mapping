@@ -9,7 +9,6 @@ buildscript {
         classpath "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.0"
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.2"
-        classpath "io.github.groovylang.groovydoc:groovydoc-gradle-plugin:1.0.1"
     }
 }
 
@@ -104,7 +103,6 @@ subprojects {
 
     if (isStandardGroovyMavenProject) {
         apply plugin: 'groovy'
-        apply plugin: "io.github.groovylang.groovydoc"
         apply plugin: 'eclipse'
         apply from:"${rootProject.rootDir}/gradle/publishing.gradle"
         apply plugin: 'idea'
@@ -130,6 +128,7 @@ subprojects {
             documentation "org.fusesource.jansi:jansi:1.18"
             documentation "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
             documentation 'info.picocli:picocli:3.8.0'
+            documentation ("com.github.javaparser:javaparser-core:$javaParserCoreVersion")
 
             compile "org.codehaus.groovy:groovy:$groovyVersion"
             testCompile "org.codehaus.groovy:groovy-test-junit5:$groovyVersion"
@@ -245,7 +244,6 @@ subprojects {
 
         configure([groovydoc]) {
             classpath += configurations.documentation
-            jvmArgs "-Xmx512M"
         }
     }
 }
