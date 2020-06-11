@@ -1,6 +1,5 @@
 dependencies {
     api project(':grails-datastore-gorm')
-
     api("org.grails:grails-core:$grailsVersion") {
         exclude group:'org.hibernate.javax.persistence', module:'hibernate-jpa-2.1-api'
         exclude group:'aopalliance',module:'aopalliance'
@@ -46,16 +45,8 @@ dependencies {
 
     compileOnly "org.springframework:spring-orm:$springVersion"
     compileOnly "org.springframework:spring-webmvc:$springVersion"
-
-    compileOnly "org.grails:grails-web-url-mappings:$grailsVersion", {
-        transitive = false
-    }
-
-    compileOnly "org.grails:grails-web-common:$grailsVersion", {
-        transitive = false
-    }
-
-
+    compileOnly "org.grails:grails-web-url-mappings:$grailsVersion", { transitive = false }
+    compileOnly "org.grails:grails-web-common:$grailsVersion", { transitive = false }
     compileOnly("org.hibernate:hibernate-core:${hibernateVersion}.Final") {
         exclude group:'commons-logging', module:'commons-logging'
         exclude group:'commons-collections', module:'commons-collections'

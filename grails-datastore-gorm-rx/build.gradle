@@ -1,11 +1,11 @@
 dependencies {
+    api 'io.reactivex:rxjava:1.2.7'
     api project(":grails-datastore-gorm"), {
         exclude group:"org.grails", module:'grails-async'
         exclude group:"org.grails", module:'grails-datastore-core'
     }
     api project(":grails-datastore-core")
-    documentation "org.grails:grails-async:$grailsAsyncVersion"
-    documentation "org.springframework:spring-beans:$springVersion"
     compileOnly("org.hibernate:hibernate-validator:$hibernateValidatorVersion")
-    api 'io.reactivex:rxjava:1.2.7'
+    documentation "org.springframework:spring-beans:$springVersion"
+    documentation "org.grails:grails-async:$grailsAsyncVersion"
 }
