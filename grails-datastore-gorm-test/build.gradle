@@ -2,6 +2,7 @@ dependencies {
     api project(":grails-datastore-gorm"),
             project(":grails-datastore-core")
 
+    implementation "com.github.ben-manes.caffeine:caffeine:$caffeineVersion"
     testImplementation project(":grails-datastore-gorm-rx")
     testImplementation project(":grails-datastore-gorm-tck")
     testImplementation "org.codehaus.groovy:groovy-json:$groovyVersion"

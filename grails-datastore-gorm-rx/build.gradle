@@ -5,6 +5,7 @@ dependencies {
         exclude group:"org.grails", module:'grails-datastore-core'
     }
     api project(":grails-datastore-core")
+    implementation "org.javassist:javassist:$javassistVersion"
     compileOnly("org.hibernate:hibernate-validator:$hibernateValidatorVersion")
     documentation "org.springframework:spring-beans:$springVersion"
     documentation "org.grails:grails-async:$grailsAsyncVersion"
