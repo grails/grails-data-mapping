@@ -2,7 +2,6 @@ dependencies {
     api project(":grails-datastore-core")
     api project(":grails-datastore-gorm-validation")
     
-    implementation("org.slf4j:slf4j-api:$slf4jVersion")
     implementation("javax.el:javax.el-api:$elVersion")
     runtimeOnly('org.glassfish:javax.el:3.0.1-b11')
 
