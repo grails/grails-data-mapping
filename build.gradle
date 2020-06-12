@@ -120,7 +120,6 @@ subprojects {
 
     dependencies {
         api "javax.annotation:javax.annotation-api:$javaAnnotationApiVersion"
-        implementation "org.slf4j:slf4j-api:$slf4jVersion"
 
         if (isStandardGroovyMavenProject) {
             documentation "org.fusesource.jansi:jansi:1.18"

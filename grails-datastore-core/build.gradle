@@ -1,5 +1,7 @@
 dependencies {
     api "javax.transaction:jta:$jtaVersion"
+    api "org.slf4j:slf4j-api:$slf4jVersion"
+    api "org.slf4j:jcl-over-slf4j:$slf4jVersion"
     api "javax.persistence:javax.persistence-api:$jpaVersion"
     api "org.springframework:spring-core:$springVersion" , {
         exclude group:'commons-logging',module:'commons-logging'
@@ -25,7 +27,6 @@ dependencies {
     }
     implementation "com.github.ben-manes.caffeine:caffeine:$caffeineVersion"
     implementation "org.javassist:javassist:$javassistVersion"
-    implementation "org.slf4j:jcl-over-slf4j:$slf4jVersion"
 
     testImplementation project(":grails-datastore-gorm")
     // we need the Grails @Entity annotation to test GORM syntax mapping
