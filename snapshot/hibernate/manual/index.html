@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 1.5.4">
+<meta name="generator" content="Asciidoctor 1.5.5">
 <meta name="author" content="Graeme Rocher">
 <title>GORM for Hibernate</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
@@ -18,7 +18,6 @@ audio:not([controls]){display:none;height:0}
 [hidden],template{display:none}
 script{display:none!important}
 html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}
-body{margin:0}
 a{background:transparent}
 a:focus{outline:thin dotted}
 a:active,a:hover{outline:0}
@@ -53,7 +52,7 @@ textarea{overflow:auto;vertical-align:top}
 table{border-collapse:collapse;border-spacing:0}
 *,*:before,*:after{-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box}
 html,body{font-size:100%}
-body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto;tab-size:4;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
 a:hover{cursor:pointer}
 img,object,embed{max-width:100%;height:auto}
 object,embed{height:100%}
@@ -65,7 +64,6 @@ img{-ms-interpolation-mode:bicubic}
 .text-center{text-align:center!important}
 .text-justify{text-align:justify!important}
 .hide{display:none}
-body{-webkit-font-smoothing:antialiased}
 img,object,svg{display:inline-block;vertical-align:middle}
 textarea{height:auto;min-height:50px}
 select{width:100%}
@@ -120,13 +118,16 @@ table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:
 table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
 table tr.even,table tr.alt,table tr:nth-of-type(even){background:#f8f8f7}
 table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{display:table-cell;line-height:1.6}
-body{tab-size:4}
 h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
 h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
 .clearfix:before,.clearfix:after,.float-group:before,.float-group:after{content:" ";display:table}
 .clearfix:after,.float-group:after{clear:both}
-*:not(pre)>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background-color:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
+*:not(pre)>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background-color:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed;word-wrap:break-word}
+*:not(pre)>code.nobreak{word-wrap:normal}
+*:not(pre)>code.nowrap{white-space:nowrap}
 pre,pre>code{line-height:1.45;color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;text-rendering:optimizeSpeed}
+em em{font-style:normal}
+strong strong{font-weight:400}
 .keyseq{color:rgba(51,51,51,.8)}
 kbd{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;display:inline-block;color:rgba(0,0,0,.8);font-size:.65em;line-height:1.45;background-color:#f7f7f7;border:1px solid #ccc;-webkit-border-radius:3px;border-radius:3px;-webkit-box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em white inset;box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em #fff inset;margin:0 .15em;padding:.2em .5em;vertical-align:middle;position:relative;top:-.1em;white-space:nowrap}
 .keyseq kbd:first-child{margin-left:0}
@@ -417,7 +418,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 .hide-for-print{display:none!important}
 .show-for-print{display:inherit!important}}
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
 <style>
 /* Stylesheet for CodeRay to match GitHub theme | MIT License | http://foundation.zurb.com */
 /*pre.CodeRay {background-color:#f7f7f8;}*/
@@ -624,8 +625,9 @@ table.CodeRay td.code>pre{padding:0}
 <ul class="sectlevel2">
 <li><a href="#_applying_constraints">13.1. Applying Constraints</a></li>
 <li><a href="#_referencing_instances_in_constraints">13.2. Referencing Instances in Constraints</a></li>
-<li><a href="#_constraints_reference">13.3. Constraints Reference</a></li>
-<li><a href="#_constraints_and_database_mapping">13.4. Constraints and Database Mapping</a></li>
+<li><a href="#_cascade_constraints_validation">13.3. Cascade constraints validation</a></li>
+<li><a href="#_constraints_reference">13.4. Constraints Reference</a></li>
+<li><a href="#_constraints_and_database_mapping">13.5. Constraints and Database Mapping</a></li>
 </ul>
 </li>
 <li><a href="#testing">14. GORM and Testing</a>
@@ -672,7 +674,32 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="releaseHistory">1.1. Release History</h3>
 <div class="sect3">
-<h4 id="_gorm_6_1">1.1.1. GORM 6.1</h4>
+<h4 id="_gorm_7_1">1.1.1. GORM 7.1</h4>
+<div class="paragraph">
+<p>GORM 7.1 brings support for Groovy 3</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_gorm_7_0">1.1.2. GORM 7.0</h4>
+<div class="paragraph">
+<p>GORM 7.0 brings support for the latest versions of key dependencies including:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Java 8 minimum (Java 11 supported)</p>
+</li>
+<li>
+<p>Hibernate 5.3 minimum</p>
+</li>
+<li>
+<p>Spring 5.2 minimum</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_gorm_6_1">1.1.3. GORM 6.1</h4>
 <div class="paragraph">
 <p>GORM 6.1 includes a variety of enhancements to GORM 6.0 including:</p>
 </div>
@@ -706,7 +733,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_6_0">1.1.2. GORM 6.0</h4>
+<h4 id="_gorm_6_0">1.1.4. GORM 6.0</h4>
 <div class="paragraph">
 <p>GORM 6.0 continues to evolve the new trait based model and includes the following new features:</p>
 </div>
@@ -737,7 +764,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_5_0">1.1.3. GORM 5.0</h4>
+<h4 id="_gorm_5_0">1.1.5. GORM 5.0</h4>
 <div class="paragraph">
 <p>GORM 5.0 replaced the majority of the custom AST transformations that power GORM with <a href="http://docs.groovy-lang.org/next/html/documentation/core-traits.html">Groovy Traits</a>.</p>
 </div>
@@ -746,7 +773,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_4_0">1.1.4. GORM 4.0</h4>
+<h4 id="_gorm_4_0">1.1.6. GORM 4.0</h4>
 <div class="paragraph">
 <p>GORM 4.0 continued to separate the GORM API from the Grails core APIs and was the first version to be support standalone execution outside of Grails.</p>
 </div>
@@ -758,7 +785,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_3_0">1.1.5. GORM 3.0</h4>
+<h4 id="_gorm_3_0">1.1.7. GORM 3.0</h4>
 <div class="paragraph">
 <p>GORM 3.0 was the first release of GORM that was released separately to the Grails framework itself and was introduced in Grails 2.1.</p>
 </div>
@@ -770,7 +797,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_2_0">1.1.6. GORM 2.0</h4>
+<h4 id="_gorm_2_0">1.1.8. GORM 2.0</h4>
 <div class="paragraph">
 <p>GORM 2.0 evolved as part of Grails 2.0 and re-engineered some of the metaprogramming logic that relied on ExpandoMetaClass into a set of <a href="http://groovy-lang.org/metaprogramming.html#_compile_time_metaprogramming">Groovy AST transformations</a>.</p>
 </div>
@@ -779,7 +806,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_1_0">1.1.7. GORM 1.0</h4>
+<h4 id="_gorm_1_0">1.1.9. GORM 1.0</h4>
 <div class="paragraph">
 <p>The first version of GORM was a series of meta-programming functions that built on the capabilities of Groovy&#8217;s <a href="http://groovy-lang.org/metaprogramming.html#metaprogramming_emc">ExpandoMetaClass</a>.</p>
 </div>
@@ -791,307 +818,48 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="upgradeNotes">1.2. Upgrade Notes</h3>
 <div class="sect3">
-<h4 id="_gorm_6_1_9_and_grails_3_2_x">1.2.1. GORM 6.1.9 and Grails 3.2.x</h4>
+<h4 id="_dependency_upgrades">1.2.1. Dependency Upgrades</h4>
 <div class="paragraph">
-<p>Due to several factors, the version of Spring that GORM 6.1.9 requires was updated to 4.3.14. This may impact Grails 3.2.x users that have an older version on their classpath. For Grails 3.2 users that would like to upgrade to GORM 6.1.9, add the following configuration to your <code>build.gradle</code> above the <code>dependencies</code> block.</p>
+<p>GORM 7.0 supports a minimum version of Java 8, Hibernate 5.3.x and Spring 5.2.x.</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">configurations.all {
-  resolutionStrategy {
-    eachDependency { DependencyResolveDetails details -&gt;
-        <span class="keyword">if</span> (details.requested.group == <span class="string"><span class="delimiter">'</span><span class="content">org.springframework</span><span class="delimiter">'</span></span>) {
-          details.useVersion <span class="string"><span class="delimiter">'</span><span class="content">4.3.14.RELEASE</span><span class="delimiter">'</span></span>
-        }
-    }
-  }
-}</code></pre>
-</div>
+<div class="paragraph">
+<p>Each of these underlying components may have changes that require altering your application. These changes are beyond the scope of this documentation.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_separation_of_gorm_async">1.2.2. Separation of GORM Async</h4>
+<h4 id="_package_restructuring_and_deprecations">1.2.2. Package Restructuring and Deprecations</h4>
 <div class="paragraph">
-<p>GORM Async has been separated from GORM core and is no longer added by default to entities.</p>
-</div>
-<div class="paragraph">
-<p>This was done in order to reduce the number of dependencies necessary to use GORM and to add flexibility in terms of the Async API used in the future.</p>
-</div>
-<div class="paragraph">
-<p>In order to enable GORM Async you need to add the necessary dependency to <code>build.gradle</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-async:6.1.13.BUILD-SNAPSHOT"</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And make your entities implement the <code>AsyncEntity</code> trait:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.gorm.async.*</span>
-
-<span class="type">class</span> <span class="class">Person</span> <span class="directive">implements</span> AsyncEntity&lt;Person&gt; {
-  ...
-}</code></pre>
-</div>
+<p>Previously deprecated classes have been deleted from this release and in order to support Java 11 modules in the future some package re-structuring has occurred.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_removal_of_grails_datastore_simple">1.2.3. Removal of grails-datastore-simple</h4>
+<h4 id="_changes_to_proxy_handling">1.2.3. Changes to Proxy Handling</h4>
 <div class="paragraph">
-<p>The <code>grails-datastore-simple</code> and <code>grails-datastore-gorm-test</code> dependencies have been combined into a single <code>grails-datastore-gorm-test</code> dependency.</p>
-</div>
-<div class="paragraph">
-<p>Unfortunately existing versions of Grails still depend on the old <code>grails-datastore-simple</code> dependency. And you may receive an error such as:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">> Could not resolve all dependencies for configuration ':example:runtime'.
-   > Could not find org.grails:grails-datastore-simple:6.1.13.BUILD-SNAPSHOT.
-     Searched in the following locations:
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.13.BUILD-SNAPSHOT/grails-datastore-simple-6.1.13.BUILD-SNAPSHOT.pom
-         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/6.1.13.BUILD-SNAPSHOT/grails-datastore-simple-6.1.13.BUILD-SNAPSHOT.jar
-     Required by:
-         project :example > org.grails:grails-dependencies:3.2.4 >
-            ...</code></pre>
-</div>
+<p>GORM no longer creates custom proxy factories nor automatically unwraps Hibernate proxies.</p>
 </div>
 <div class="paragraph">
-<p>If you are upgrading you will need to exclude this dependency from <code>grails-dependencies</code> and remove any references from <code>build.gradle</code>. For example:</p>
+<p>This makes it more consistent to the way regular Hibernate behaves and reduces the complexity required at the framework level.</p>
 </div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">    compile <span class="string"><span class="delimiter">&quot;</span><span class="content">org.grails:grails-dependencies:</span><span class="inline"><span class="inline-delimiter">$</span>grailsVersion</span><span class="delimiter">&quot;</span></span>, {
-        exclude <span class="key">module</span>:<span class="string"><span class="delimiter">'</span><span class="content">grails-datastore-simple</span><span class="delimiter">'</span></span>
-    }</code></pre>
-</div>
+<div class="paragraph">
+<p>You may need to alter <code>instanceof</code> checks are manually unwrap proxies in certain cases.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_flush_mode_now_commit_by_default">1.2.4. Flush Mode Now COMMIT by Default</h4>
+<h4 id="_module_code_grails_validation_code_deprecated_and_removed">1.2.4. Module <code>grails-validation</code> Deprecated and Removed</h4>
 <div class="paragraph">
-<p>In previous versions of GORM the flush mode defaulted to AUTO. With this setting the session would be flushed with or without the presence of a transaction and before every query.</p>
-</div>
-<div class="paragraph">
-<p>The frequent flushing of the session before queries can lead to unintended performance consequences if the behaviour of the <code>AUTO</code> is not fully understood by the developer.</p>
+<p>In GORM 6.x the <code>grails-validation</code> module was deprecated and replaced by <code>grails-datastore-gorm-validation</code>.</p>
 </div>
 <div class="paragraph">
-<p>With this in mind <code>COMMIT</code> is the new default flush mode in GORM 6, which will flush the session on transaction commit. You can restore the previous behaviour by configuring the flush mode in your application configuration (for example <code>application.yml</code>):</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">hibernate</span>:
-    <span class="key">flush</span>:
-        <span class="key">mode</span>: <span class="string"><span class="content">AUTO</span></span></code></pre>
-</div>
+<p>Deprecated interfaces were maintained for backwards compatibility. In GORM 7.0 these deprecated classes have been removed and all dependency on <code>grails-validation</code> removed.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_multiple_data_source_configuration_changes">1.2.5. Multiple Data Source Configuration Changes</h4>
+<h4 id="_transactions_now_required_for_all_operations">1.2.5. Transactions Now Required for all Operations</h4>
 <div class="paragraph">
-<p>Configuration of multiple data sources has changed such that the default data source should be configured at the top level and additional data sources should be configured below the <code>dataSources</code> block. In other words instead of:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">dataSources</span>:
-    <span class="key">dataSource</span>:
-        <span class="error">...</span>
-    <span class="key">anotherDataSource</span>:
-        <span class="error">...</span></code></pre>
-</div>
+<p>Previous versions of Hibernate allowed read operations to be executed without the presence of a declaration transaction.</p>
 </div>
 <div class="paragraph">
-<p>The configuration should instead be structured as follows:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">dataSource</span>:
-        <span class="error">...</span>
-<span class="key">dataSources</span>:
-    <span class="key">anotherDataSource</span>:
-        <span class="error">...</span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>In addition Hibernate specific configuration should be nested below each data source definition. For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">dataSource</span>:
-    <span class="key">url</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">..</span><span class="delimiter">&quot;</span></span>
-<span class="key">hibernate</span>:
-    <span class="key">flush</span>:
-        <span class="key">mode</span>: <span class="string"><span class="content">COMMIT</span></span>
-<span class="key">dataSources</span>:
-    <span class="key">anotherDataSource</span>:
-        <span class="key">url</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">..</span><span class="delimiter">&quot;</span></span>
-        <span class="key">hibernate</span>:
-            <span class="key">flush</span>:
-                <span class="key">mode</span>: <span class="string"><span class="content">AUTO</span></span></code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_write_operations_without_a_transaction">1.2.6. Write Operations without a Transaction</h4>
-<div class="paragraph">
-<p>With the aforementioned changes to the default flush mode, write operations that are not surrounded by a transaction may not propagate changes to the database unless <code>flush:true</code> is explicitly passed or the session explicitly flushed.</p>
-</div>
-<div class="paragraph">
-<p>Not using a transaction around a write operation is considered bad practise as the connection is essentially in auto commit mode. If your code is structured this way we recommend that you add the necessary <code>@Transactional</code> transformation to surround the write operation.</p>
-</div>
-<div class="paragraph">
-<p>Also note that Hibernate 5.2 and above throw an exception if you attempt a write operation outside of a transaction, and although this is not the case in the current version of GORM it is a possibility that GORM will follow this path and also throw exception for this case in the future.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_changes_to_configuration_model">1.2.7. Changes to Configuration Model</h4>
-<div class="paragraph">
-<p>In preparation for Hibernate 5.2 support the previous "SessionFactoryBean" notion has been removed. Now if you wish to customize <code>SessionFactory</code> creation you should instead register a custom <code>org.grails.orm.hibernate.connections.HibernateConnectionSourceFactory</code> in Spring.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_identityenumtype_handling_changed">1.2.8. IdentityEnumType Handling Changed</h4>
-<div class="paragraph">
-<p>Previous versions of GORM shipped with a <code>org.grails.orm.hibernate.cfg.IdentityEnumType</code> class for altering the handling of enums. In order to support different versions of Hibernate 5.x which feature different signatures for the <code>org.hibernate.usertype.UserType</code> interface this class has been removed.</p>
-</div>
-<div class="paragraph">
-<p>If you wish to obtain the same functionality you need to change your <code>mapping</code> block to:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">static</span> mapping = {
-   myEnum <span class="key">enumType</span>:<span class="string"><span class="delimiter">&quot;</span><span class="content">identity</span><span class="delimiter">&quot;</span></span>
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_changes_to_support_hibernate_5_2">1.2.9. Changes to Support Hibernate 5.2</h4>
-<div class="paragraph">
-<p>Hibernate 5.2 includes many breaking API changes, in order to support Hibernate 5.2 several classes have been removed or rewritten. Including:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>org.grails.orm.hibernate.proxy.GroovyAwareJavassistLazyInitializer</code></p>
-</li>
-<li>
-<p><code>org.grails.orm.hibernate.proxy.GroovyAwareJavassistProxyFactory</code></p>
-</li>
-<li>
-<p><code>org.grails.orm.hibernate.persister.entity.GroovyAwareJoinedSubclassEntityPersister</code></p>
-</li>
-<li>
-<p><code>org.grails.orm.hibernate.persister.entity.GroovyAwareSingleTableEntityPersister</code></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Most of these classes are considered internal, however if you have extended or references these classes you may need to modify your code appropriately.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_domain_autowiring_disabled_by_default">1.2.10. Domain Autowiring Disabled by Default</h4>
-<div class="paragraph">
-<p>Spring autowiring of domain instances has been disabled by default because it represents a performance bottleneck. If you are autowiring services into your domain instances you will need to re-enable using the <code>mapping</code> block:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">static</span> mapping = {
-   autowire <span class="predefined-constant">true</span>
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Note that if enabled read performance will degrade.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_field_accesstype_by_default">1.2.11. Field AccessType by Default</h4>
-<div class="paragraph">
-<p>Previous versions of GORM used property access to read and write values to entities by default. In other words the respective getters and setters were used when reflecting on the instances. GORM 6.1 uses field access by default instead, which means the field is used when reading and writing data via reflection to instances.</p>
-</div>
-<div class="paragraph">
-<p>If you wish to continue to use property access this can be configured by altering the default mapping in your configuration:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">javax.persistence.*</span>
-grails.gorm.default.mapping = {
-   <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span>(<span class="key">accessType</span>: AccessType.PROPERTY)
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_fail_on_error_package_setting_renamed">1.2.12. Fail on Error Package Setting Renamed</h4>
-<div class="paragraph">
-<p>The <code>grails.gorm.failOnError</code> setting can no longer be used to configure the packages to enable fail on error. Instead <code>grails.gorm.failOnErrorPackages</code> should be used.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_new_dirty_checking_implementation">1.2.13. New Dirty Checking Implementation</h4>
-<div class="paragraph">
-<p>GORM now includes its own implementation of dirty checking in order to improve performance. This implementation uses the <code>DirtyCheckable</code> trait to store changes in the entity itself so that Hibernate does not have to do internal array comparison to verify whether an object has changed or not.</p>
-</div>
-<div class="paragraph">
-<p>There may however be some differences in behaviour, so if you wish to continue to use the Hibernate implementation you can re-enable it with the following configuration:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">hibernate</span>:
-    <span class="key">hibernateDirtyChecking</span>: <span class="string"><span class="content">true</span></span></code></pre>
-</div>
-</div>
-<div class="admonitionblock warning">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-warning" title="Warning"></i>
-</td>
-<td class="content">
-The implementation modifies all setters of your class so that dirty checking is tracked per field. However, there is one corner case where you do <code>name = "blah"</code> in a method internal to the class, the setter will not be called and property will not be marked as dirty. Hence, changing it to <code>setName("blah")</code> resolves the issue.
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>Some differences in behaviour and workarounds are covered below.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_dirty_checking_for_abstract_base_classes">1.2.14. Dirty Checking for Abstract Base Classes</h4>
-<div class="paragraph">
-<p>Domain objects can inherit from abstract base classes defined in the <code>src</code> directory. Previous versions of GORM performed dirty checking automatically on fields from any abstract base class. GORM 6.1 requires that the abstract base class be marked with the <code>@DirtyCheck</code> annotation to include the base class fields in domain object dirty checking:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.gorm.dirty.checking.DirtyCheck</span>
-
-<span class="annotation">@DirtyCheck</span>
-<span class="directive">abstract</span> <span class="type">class</span> <span class="class">BaseDomainObject</span> {
-    <span class="predefined-type">String</span> baseClassField
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_dirty_checking_for_embedded_classes">1.2.15. Dirty Checking for Embedded Classes</h4>
-<div class="paragraph">
-<p>Domain objects embed classes defined in the <code>src</code> directory. Previous versions of GORM performed dirty checking automatically on fields an embedded entity. GORM 6.1 requires that the embedded class be marked with the <code>@DirtyCheck</code> annotation to include the embedded class fields in domain object dirty checking:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">grails.gorm.dirty.checking.DirtyCheck</span>
-
-<span class="annotation">@DirtyCheck</span>
-<span class="directive">abstract</span> <span class="type">class</span> <span class="class">BaseDomainObject</span> {
-    <span class="predefined-type">String</span> baseClassField
-}</code></pre>
-</div>
+<p>Hibernate 5.2 and above require the presence of an active transaction. If see a <code>javax.persistence.TransactionRequiredException</code> exception it means your method lacks a <code>@Transactional</code> annotation around it.</p>
 </div>
 </div>
 </div>
@@ -1101,12 +869,12 @@ The implementation modifies all setters of your class so that dirty checking is 
 <h2 id="gettingStarted">2. Getting Started</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To use GORM 6.1.13.BUILD-SNAPSHOT for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
+<p>To use GORM 7.1.0.BUILD-SNAPSHOT for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile "org.grails.plugins:hibernate5:6.1.13.BUILD-SNAPSHOT"
+    compile "org.grails.plugins:hibernate5:7.1.0.BUILD-SNAPSHOT"
     compile "org.hibernate:hibernate-ehcache"
 }</code></pre>
 </div>
@@ -1116,7 +884,7 @@ The implementation modifies all setters of your class so that dirty checking is 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=6.1.13.BUILD-SNAPSHOT</code></pre>
+<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=7.1.0.BUILD-SNAPSHOT</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1129,7 +897,7 @@ The implementation modifies all setters of your class so that dirty checking is 
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("6.1.13.BUILD-SNAPSHOT")
+            details.useVersion("7.1.0.BUILD-SNAPSHOT")
         }
     }
 }
@@ -1155,7 +923,7 @@ dependencies {
 <div class="sect2">
 <h3 id="hibernateVersions">2.2. Configuring Different Hibernate Versions</h3>
 <div class="paragraph">
-<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 6.1.13.BUILD-SNAPSHOT.</p>
+<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 7.1.0.BUILD-SNAPSHOT.</p>
 </div>
 <div class="sect3">
 <h4 id="_grails_3_2_x_and_above_with_hibernate_4">2.2.1. Grails 3.2.x and above with Hibernate 4</h4>
@@ -1221,9 +989,9 @@ configurations.all {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:6.1.13.BUILD-SNAPSHOT")
-compile "org.hibernate:hibernate-core:5.1.0.Final"
-compile "org.hibernate:hibernate-ehcache:5.1.0.Final"
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:7.1.0.BUILD-SNAPSHOT")
+compile "org.hibernate:hibernate-core"
+compile "org.hibernate:hibernate-ehcache"
 runtime "com.h2database:h2:1.4.192"
 // for MySQL
 // runtime "mysql:mysql-connector-java"
@@ -1354,7 +1122,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:6.1.13.BUILD-SNAPSHOT"
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:7.1.0.BUILD-SNAPSHOT"
 runtime "com.h2database:h2:1.4.192"
 runtime "org.apache.tomcat:tomcat-jdbc:8.5.0"
 runtime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"
@@ -2515,7 +2283,7 @@ For example, the following class creates a <code>nicknames</code> association th
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-If you define the <code>Address</code> class in a separate Groovy file in the <code>grails-app/domain</code> directory you will also get an <code>address</code> table. If you don&#8217;t want this to happen use Groovy&#8217;s ability to define multiple classes per file and include the <code>Address</code> class below the <code>Person</code> class in the <code>grails-app/domain/Person.groovy</code> file
+If you define the <code>Address</code> class in a separate Groovy file in the <code>grails-app/domain</code> directory you will also get an <code>address</code> table. If you don&#8217;t want this to happen use Groovy&#8217;s ability to define multiple classes per file and include the <code>Address</code> class below the <code>Person</code> class in the <code>grails-app/domain/Person.groovy</code> file. Another option is to define the <code>Address</code> class in <code>src/main/groovy/Address.groovy</code> and annotate it with <code>grails.gorm.annotation.Entity</code>
 </td>
 </tr>
 </table>
@@ -2956,7 +2724,7 @@ p.delete(<span class="key">flush</span>: <span class="predefined-constant">true<
 </div>
 </div>
 <div class="paragraph">
-<p>If I now create an <code>Airport</code> and add some <code>Flight`s to it I can save the `Airport</code> and have the updates cascaded down to each flight, hence saving the whole object graph:</p>
+<p>If I now create an <code>Airport</code> and add some ``Flight``s to it I can save the <code>Airport</code> and have the updates cascaded down to each flight, hence saving the whole object graph:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -8039,7 +7807,7 @@ RxJava 2.x support is planned for a future release
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx:6.1.13.BUILD-SNAPSHOT"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx:7.1.0.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -8764,7 +8532,7 @@ sessionFactory.openSession()</code></pre>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:6.1.13.BUILD-SNAPSHOT"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:7.1.0.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 </div>
@@ -8941,7 +8709,77 @@ By default, all domain class properties are not nullable (i.e. they have an impl
 </div>
 </div>
 <div class="sect2">
-<h3 id="_constraints_reference">13.3. Constraints Reference</h3>
+<h3 id="_cascade_constraints_validation">13.3. Cascade constraints validation</h3>
+<div class="paragraph">
+<p>If GORM entity references some other entities, then during its constraints evaluation (validation) the constraints of the referenced entity could be
+evaluated also, if needed. There is a special parameter <code>cascadeValidate</code> in the entity mappings section, which manage the way of this <em>cascaded</em> validation happens.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">Author</span> {
+    Publisher publisher
+
+    <span class="directive">static</span> mapping = {
+        publisher(<span class="key">cascadeValidate</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">dirty</span><span class="delimiter">&quot;</span></span>)
+    }
+}
+
+<span class="type">class</span> <span class="class">Publisher</span> {
+    <span class="predefined-type">String</span> name
+
+    <span class="directive">static</span> constraints = {
+        name <span class="key">blank</span>: <span class="predefined-constant">false</span>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following table presents all options, which can be used:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Option</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">none</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Will not do any cascade validation at all for the association.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">default</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The DEFAULT option. GORM performs cascade validation in some cases.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">dirty</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Only cascade validation if the referenced object is dirty via the <code>DirtyCheckable</code> trait. If the object doesn&#8217;t implement DirtyCheckable, this will fall back to <code>default</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">owned</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Only cascade validation if the entity <a href="#gormAssociation">owns</a> the referenced object.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>It is possible to set the global option for the <code>cascadeValidate</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grails.gorm.default.mapping = {
+    <span class="string"><span class="delimiter">'</span><span class="content">*</span><span class="delimiter">'</span></span>(<span class="key">cascadeValidate</span>: <span class="string"><span class="delimiter">'</span><span class="content">dirty</span><span class="delimiter">'</span></span>)
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_constraints_reference">13.4. Constraints Reference</h3>
 <div class="paragraph">
 <p>The following table summarizes the available constraints with a brief example:</p>
 </div>
@@ -9048,7 +8886,7 @@ By default, all domain class properties are not nullable (i.e. they have an impl
 </table>
 </div>
 <div class="sect2">
-<h3 id="_constraints_and_database_mapping">13.4. Constraints and Database Mapping</h3>
+<h3 id="_constraints_and_database_mapping">13.5. Constraints and Database Mapping</h3>
 <div class="paragraph">
 <p>Although constraints are primarily for validation, it is important to understand that constraints can affect the way in which the database schema is generated.</p>
 </div>
@@ -9124,7 +8962,7 @@ By default, all domain class properties are not nullable (i.e. they have an impl
 <p>This constraint would provide both the application-based validation we want and it would also cause the schema to be generated as shown above.  Below is a description of the other constraints that influence schema generation.</p>
 </div>
 <div class="sect3">
-<h4 id="_constraints_affecting_string_properties">13.4.1. Constraints Affecting String Properties</h4>
+<h4 id="_constraints_affecting_string_properties">13.5.1. Constraints Affecting String Properties</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -9149,7 +8987,7 @@ By default, all domain class properties are not nullable (i.e. they have an impl
 </div>
 </div>
 <div class="sect3">
-<h4 id="_constraints_affecting_numeric_properties">13.4.2. Constraints Affecting Numeric Properties</h4>
+<h4 id="_constraints_affecting_numeric_properties">13.5.2. Constraints Affecting Numeric Properties</h4>
 <div class="ulist">
 <ul>
 <li>
