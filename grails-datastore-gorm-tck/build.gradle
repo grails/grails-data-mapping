@@ -1,11 +1,10 @@
 dependencies {
-    compile "org.springframework:spring-expression:$springVersion"
-    compile 'commons-lang:commons-lang:2.6'
-    compile project(":grails-datastore-gorm-async")
-    compile project(":grails-datastore-gorm-support")
-    compile("javax.servlet:javax.servlet-api:$servletApiVersion")
-
-    runtime "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
+    api "org.springframework:spring-expression:$springVersion"
+    api 'commons-lang:commons-lang:2.6'
+    api project(":grails-datastore-gorm-async")
+    api project(":grails-datastore-gorm-support")
+    api("javax.servlet:javax.servlet-api:$servletApiVersion")
+    runtimeOnly "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
 }
 
 //compileGroovy.groovyOptions.fork = false

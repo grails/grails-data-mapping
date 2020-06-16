@@ -1,22 +1,23 @@
 dependencies {
-    compile "javax.persistence:javax.persistence-api:$jpaVersion"
-    compile "com.github.ben-manes.caffeine:caffeine:$caffeineVersion"
-
-    compile "org.springframework:spring-core:$springVersion" , {
+    api "javax.transaction:jta:$jtaVersion"
+    api "org.slf4j:slf4j-api:$slf4jVersion"
+    api "org.slf4j:jcl-over-slf4j:$slf4jVersion"
+    api "javax.persistence:javax.persistence-api:$jpaVersion"
+    api "org.springframework:spring-core:$springVersion" , {
         exclude group:'commons-logging',module:'commons-logging'
     }
-    compile "org.springframework:spring-beans:$springVersion", {
+    api "org.springframework:spring-beans:$springVersion", {
         exclude group:'org.springframework', module:'spring-core'
         exclude group:'commons-logging',module:'commons-logging'
     }
-    compile "org.springframework:spring-tx:$springVersion", {
+    api "org.springframework:spring-tx:$springVersion", {
         exclude group:'commons-logging',module:'commons-logging'
         exclude group:'org.springframework', module:'spring-context'
         exclude group:'org.springframework', module:'spring-core'
         exclude group:'org.springframework', module:'spring-beans'
         exclude group:'org.springframework', module:'spring-aop'
     }
-    compile "org.springframework:spring-context:$springVersion", {
+    api "org.springframework:spring-context:$springVersion", {
         exclude group:'commons-logging',module:'commons-logging'
         exclude group:'org.springframework', module:'spring-core'
         exclude group:'org.springframework', module:'spring-expression'
@@ -24,14 +25,11 @@ dependencies {
         exclude group:'org.springframework', module:'spring-beans'
         exclude group:'org.springframework', module:'spring-asm'
     }
-    compile "org.javassist:javassist:$javassistVersion"
-    compile "javax.transaction:jta:$jtaVersion"
+    implementation "com.github.ben-manes.caffeine:caffeine:$caffeineVersion"
+    implementation "org.javassist:javassist:$javassistVersion"
 
-    compile "org.slf4j:slf4j-api:$slf4jVersion"
-    compile "org.slf4j:jcl-over-slf4j:$slf4jVersion"
-
-    testCompile project(":grails-datastore-gorm")
+    testImplementation project(":grails-datastore-gorm")
     // we need the Grails @Entity annotation to test GORM syntax mapping
-    testCompile("org.springframework:spring-context:$springVersion")
-    testCompile("org.springframework:spring-web:$springVersion")
+    testImplementation("org.springframework:spring-context:$springVersion")
+    testImplementation("org.springframework:spring-web:$springVersion")
 }
