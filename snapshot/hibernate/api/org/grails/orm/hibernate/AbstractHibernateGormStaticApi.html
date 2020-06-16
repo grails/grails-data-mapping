@@ -99,7 +99,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 
 
 
-    <p> Abstract implementation of the Hibernate static API for GORM, providing String-based method implementations <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>4.0</DD></DL></p>
+    <p> Abstract implementation of the Hibernate static API for GORM, providing String-based method implementations
+ <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>4.0</DD></DL></p>
 
           </li>
     </ul>
@@ -134,13 +135,13 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>protected&nbsp;<a href='../../../../org/grails/orm/hibernate/HibernateSession.html'>HibernateSession</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>protected&nbsp;org.grails.orm.hibernate.HibernateSession</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#hibernateSession">hibernateSession</a></code></td>
                             <td class="colLast"></td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>protected&nbsp;<a href='../../../../org/grails/orm/hibernate/GrailsHibernateTemplate.html'>GrailsHibernateTemplate</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>protected&nbsp;org.grails.orm.hibernate.GrailsHibernateTemplate</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#hibernateTemplate">hibernateTemplate</a></code></td>
                             <td class="colLast"></td>
                         </tr>
@@ -203,20 +204,14 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst">
-                                <code><a href="#AbstractHibernateGormStaticApi(java.lang.Class, org.grails.orm.hibernate.HibernateDatastore, List)">AbstractHibernateGormStaticApi</a>
-                                (java.lang.Class persistentClass, <a href='../../../../org/grails/orm/hibernate/HibernateDatastore.html'>HibernateDatastore</a> datastore, <a href='../../../../List.html'>List</a> finders)</code><br></td>
+                                <code><a href="#AbstractHibernateGormStaticApi(Class<D>, org.grails.orm.hibernate.HibernateDatastore, List<FinderMethod>)">AbstractHibernateGormStaticApi</a>
+                                (java.lang.Class&lt;D&gt; persistentClass, org.grails.orm.hibernate.HibernateDatastore datastore, java.util.List&lt;<a href='../../../../org/grails/datastore/gorm/finders/FinderMethod.html' title='FinderMethod'>FinderMethod</a>&gt; finders)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst">
-                                <code><a href="#AbstractHibernateGormStaticApi(java.lang.Class, org.grails.orm.hibernate.HibernateDatastore, List, org.springframework.transaction.PlatformTransactionManager)">AbstractHibernateGormStaticApi</a>
-                                (java.lang.Class persistentClass, <a href='../../../../org/grails/orm/hibernate/HibernateDatastore.html'>HibernateDatastore</a> datastore, <a href='../../../../List.html'>List</a> finders, org.springframework.transaction.PlatformTransactionManager transactionManager)</code><br></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst">
-                                <code><a href="#AbstractHibernateGormStaticApi()">AbstractHibernateGormStaticApi</a>
-                                ()</code><br></td>
+                                <code><a href="#AbstractHibernateGormStaticApi(Class<D>, org.grails.orm.hibernate.HibernateDatastore, List<FinderMethod>, org.springframework.transaction.PlatformTransactionManager)">AbstractHibernateGormStaticApi</a>
+                                (java.lang.Class&lt;D&gt; persistentClass, org.grails.orm.hibernate.HibernateDatastore datastore, java.util.List&lt;<a href='../../../../org/grails/datastore/gorm/finders/FinderMethod.html' title='FinderMethod'>FinderMethod</a>&gt; finders, org.springframework.transaction.PlatformTransactionManager transactionManager)</code><br></td>
                         </tr>
                         
                     </table>
@@ -243,13 +238,13 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;java.lang.String</code></td>
-                            <td class="colLast"><code><strong><a href="#buildNamedParameterQueryFromGString(GString, Map)">buildNamedParameterQueryFromGString</a></strong>(<a href='../../../../GString.html'>GString</a> query, <a href='../../../../Map.html'>Map</a> params)</code><br>Processes a query converting GString expressions into parameters <DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD><DD><code>params</code> -  The parameters</DD></DL><DL><DT><B>Returns:</B></DT><DD>The final String</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#buildNamedParameterQueryFromGString(groovy.lang.GString, java.util.Map)">buildNamedParameterQueryFromGString</a></strong>(groovy.lang.GString query, java.util.Map params)</code><br>Processes a query converting GString expressions into parameters</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;java.lang.String</code></td>
-                            <td class="colLast"><code><strong><a href="#buildOrdinalParameterQueryFromGString(GString, List)">buildOrdinalParameterQueryFromGString</a></strong>(<a href='../../../../GString.html'>GString</a> query, <a href='../../../../List.html'>List</a> params)</code><br>Processes a query converting GString expressions into parameters <DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD><DD><code>params</code> -  The parameters</DD></DL><DL><DT><B>Returns:</B></DT><DD>The final String</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#buildOrdinalParameterQueryFromGString(groovy.lang.GString, java.util.List)">buildOrdinalParameterQueryFromGString</a></strong>(groovy.lang.GString query, java.util.List params)</code><br>Processes a query converting GString expressions into parameters</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -267,31 +262,31 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;<a href='../../../../org/grails/orm/hibernate/query/HibernateHqlQuery.html'>HibernateHqlQuery</a></code></td>
-                            <td class="colLast"><code><strong><a href="#createHqlQuery(org.hibernate.Session, grails.gorm.services.Query)">createHqlQuery</a></strong>(org.hibernate.Session session, <a href='../../../../grails/gorm/services/Query.html'>Query</a> q)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#createHqlQuery(org.hibernate.Session, org.grails.datastore.mapping.query.Query)">createHqlQuery</a></strong>(org.hibernate.Session session, <a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> q)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../List.html'>List</a></code></td>
+                            <td class="colLast"><code>java.util.List</code></td>
                             <td class="colLast"><code><strong><a href="#executeQuery(java.lang.CharSequence)">executeQuery</a></strong>(java.lang.CharSequence query)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../List.html'>List</a></code></td>
-                            <td class="colLast"><code><strong><a href="#executeQuery(java.lang.CharSequence, Map)">executeQuery</a></strong>(java.lang.CharSequence query, <a href='../../../../Map.html'>Map</a> args)</code><br></td>
+                            <td class="colLast"><code>java.util.List</code></td>
+                            <td class="colLast"><code><strong><a href="#executeQuery(java.lang.CharSequence, java.util.Map)">executeQuery</a></strong>(java.lang.CharSequence query, java.util.Map args)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../List.html'>List</a></code></td>
-                            <td class="colLast"><code><strong><a href="#executeQuery(java.lang.CharSequence, Map, Map)">executeQuery</a></strong>(java.lang.CharSequence query, <a href='../../../../Map.html'>Map</a> params, <a href='../../../../Map.html'>Map</a> args)</code><br></td>
+                            <td class="colLast"><code>java.util.List</code></td>
+                            <td class="colLast"><code><strong><a href="#executeQuery(java.lang.CharSequence, java.util.Map, java.util.Map)">executeQuery</a></strong>(java.lang.CharSequence query, java.util.Map params, java.util.Map args)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../List.html'>List</a></code></td>
-                            <td class="colLast"><code><strong><a href="#executeQuery(java.lang.CharSequence, Collection, Map)">executeQuery</a></strong>(java.lang.CharSequence query, <a href='../../../../Collection.html'>Collection</a> params, <a href='../../../../Map.html'>Map</a> args)</code><br></td>
+                            <td class="colLast"><code>java.util.List</code></td>
+                            <td class="colLast"><code><strong><a href="#executeQuery(java.lang.CharSequence, java.util.Collection, java.util.Map)">executeQuery</a></strong>(java.lang.CharSequence query, java.util.Collection params, java.util.Map args)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -303,7 +298,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.lang.Integer</code></td>
-                            <td class="colLast"><code><strong><a href="#executeUpdate(java.lang.CharSequence, Map)">executeUpdate</a></strong>(java.lang.CharSequence query, <a href='../../../../Map.html'>Map</a> args)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#executeUpdate(java.lang.CharSequence, java.util.Map)">executeUpdate</a></strong>(java.lang.CharSequence query, java.util.Map args)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -314,20 +309,20 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;<a href='../../../../Map.html'>Map</a></code></td>
-                            <td class="colLast"><code><strong><a href="#filterQueryArgumentMap(Map)">filterQueryArgumentMap</a></strong>(<a href='../../../../Map.html'>Map</a> query)</code><br></td>
+                            <td class="colLast"><code>protected&nbsp;java.util.Map</code></td>
+                            <td class="colLast"><code><strong><a href="#filterQueryArgumentMap(java.util.Map)">filterQueryArgumentMap</a></strong>(java.util.Map query)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>D</code></td>
-                            <td class="colLast"><code><strong><a href="#find(java.lang.CharSequence, Map, Map)">find</a></strong>(java.lang.CharSequence query, <a href='../../../../Map.html'>Map</a> queryNamedArgs, <a href='../../../../Map.html'>Map</a> args)</code><br>Implements the 'find(String' method to use HQL queries with named arguments <DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD><DD><code>queryNamedArgs</code> -  The named arguments</DD><DD><code>args</code> -  Any additional query arguments</DD></DL><DL><DT><B>Returns:</B></DT><DD>A result or null if no result found</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#find(java.lang.CharSequence, java.util.Map, java.util.Map)">find</a></strong>(java.lang.CharSequence query, java.util.Map queryNamedArgs, java.util.Map args)</code><br>Implements the 'find(String' method to use HQL queries with named arguments</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>D</code></td>
-                            <td class="colLast"><code><strong><a href="#find(java.lang.CharSequence, Collection, Map)">find</a></strong>(java.lang.CharSequence query, <a href='../../../../Collection.html'>Collection</a> params, <a href='../../../../Map.html'>Map</a> args)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#find(java.lang.CharSequence, java.util.Collection, java.util.Map)">find</a></strong>(java.lang.CharSequence query, java.util.Collection params, java.util.Map args)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -339,85 +334,85 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>D</code></td>
-                            <td class="colLast"><code><strong><a href="#find(java.lang.CharSequence, Map)">find</a></strong>(java.lang.CharSequence query, <a href='../../../../Map.html'>Map</a> params)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#find(java.lang.CharSequence, java.util.Map)">find</a></strong>(java.lang.CharSequence query, java.util.Map params)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>D</code></td>
-                            <td class="colLast"><code><strong><a href="#find(D, Map)">find</a></strong>(D exampleObject, <a href='../../../../Map.html'>Map</a> args)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#find(D, java.util.Map)">find</a></strong>(D exampleObject, java.util.Map args)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../List.html'>List</a></code></td>
-                            <td class="colLast"><code><strong><a href="#findAll(java.lang.CharSequence, Map, Map)">findAll</a></strong>(java.lang.CharSequence query, <a href='../../../../Map.html'>Map</a> params, <a href='../../../../Map.html'>Map</a> args)</code><br></td>
+                            <td class="colLast"><code>java.util.List&lt;D&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#findAll(java.lang.CharSequence, java.util.Map, java.util.Map)">findAll</a></strong>(java.lang.CharSequence query, java.util.Map params, java.util.Map args)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../List.html'>List</a></code></td>
+                            <td class="colLast"><code>java.util.List&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#findAll(java.lang.CharSequence)">findAll</a></strong>(java.lang.CharSequence query)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../List.html'>List</a></code></td>
-                            <td class="colLast"><code><strong><a href="#findAll(java.lang.CharSequence, Map)">findAll</a></strong>(java.lang.CharSequence query, <a href='../../../../Map.html'>Map</a> params)</code><br></td>
+                            <td class="colLast"><code>java.util.List&lt;D&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#findAll(java.lang.CharSequence, java.util.Map)">findAll</a></strong>(java.lang.CharSequence query, java.util.Map params)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../List.html'>List</a></code></td>
-                            <td class="colLast"><code><strong><a href="#findAll(java.lang.CharSequence, Collection, Map)">findAll</a></strong>(java.lang.CharSequence query, <a href='../../../../Collection.html'>Collection</a> params, <a href='../../../../Map.html'>Map</a> args)</code><br></td>
+                            <td class="colLast"><code>java.util.List&lt;D&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#findAll(java.lang.CharSequence, java.util.Collection, java.util.Map)">findAll</a></strong>(java.lang.CharSequence query, java.util.Collection params, java.util.Map args)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../List.html'>List</a></code></td>
-                            <td class="colLast"><code><strong><a href="#findAll(D, Map)">findAll</a></strong>(D exampleObject, <a href='../../../../Map.html'>Map</a> args)</code><br></td>
+                            <td class="colLast"><code>java.util.List&lt;D&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#findAll(D, java.util.Map)">findAll</a></strong>(D exampleObject, java.util.Map args)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../List.html'>List</a></code></td>
-                            <td class="colLast"><code><strong><a href="#findAllWhere(Map, Map)">findAllWhere</a></strong>(<a href='../../../../Map.html'>Map</a> queryMap, <a href='../../../../Map.html'>Map</a> args)</code><br></td>
+                            <td class="colLast"><code>java.util.List&lt;D&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#findAllWhere(java.util.Map, java.util.Map)">findAllWhere</a></strong>(java.util.Map queryMap, java.util.Map args)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../List.html'>List</a></code></td>
-                            <td class="colLast"><code><strong><a href="#findAllWithSql(java.lang.CharSequence, Map)">findAllWithSql</a></strong>(java.lang.CharSequence sql, <a href='../../../../Map.html'>Map</a> args)</code><br>Finds all results for this entity for the given SQL query <DL><DT><B>Parameters:</B></DT><DD><code>sql</code> -  The SQL query</DD><DD><code>args</code> -  The arguments</DD></DL><DL><DT><B>Returns:</B></DT><DD>All entities matching the SQL query</DD></DL></td>
+                            <td class="colLast"><code>java.util.List&lt;D&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#findAllWithSql(java.lang.CharSequence, java.util.Map)">findAllWithSql</a></strong>(java.lang.CharSequence sql, java.util.Map args = Collections.emptyMap()</code><br>Finds all results for this entity for the given SQL query</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>D</code></td>
-                            <td class="colLast"><code><strong><a href="#findWhere(Map, Map)">findWhere</a></strong>(<a href='../../../../Map.html'>Map</a> queryMap, <a href='../../../../Map.html'>Map</a> args)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findWhere(java.util.Map, java.util.Map)">findWhere</a></strong>(java.util.Map queryMap, java.util.Map args)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>&lt;D&gt;</code></td>
                             <td class="colLast"><code>D</code></td>
-                            <td class="colLast"><code><strong><a href="#findWithSql(java.lang.CharSequence, Map)">findWithSql</a></strong>(java.lang.CharSequence sql, <a href='../../../../Map.html'>Map</a> args)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findWithSql(java.lang.CharSequence, java.util.Map)">findWithSql</a></strong>(java.lang.CharSequence sql, java.util.Map args = Collections.emptyMap()</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#firePostQueryEvent(org.hibernate.Session, org.hibernate.Criteria, java.lang.Object)">firePostQueryEvent</a></strong>(org.hibernate.Session session, org.hibernate.Criteria criteria, java.lang.Object result)</code><br>Fire a post query event <DL><DT><B>Parameters:</B></DT><DD><code>session</code> -  The session</DD><DD><code>criteria</code> -  The criteria</DD><DD><code>result</code> -  The result</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#firePostQueryEvent(org.hibernate.Session, org.hibernate.Criteria, java.lang.Object)">firePostQueryEvent</a></strong>(org.hibernate.Session session, org.hibernate.Criteria criteria, java.lang.Object result)</code><br>Fire a post query event</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#firePreQueryEvent(org.hibernate.Session, org.hibernate.Criteria)">firePreQueryEvent</a></strong>(org.hibernate.Session session, org.hibernate.Criteria criteria)</code><br>Fire a pre query event <DL><DT><B>Parameters:</B></DT><DD><code>session</code> -  The session</DD><DD><code>criteria</code> -  The criteria</DD></DL><DL><DT><B>Returns:</B></DT><DD>True if the query should be cancelled</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#firePreQueryEvent(org.hibernate.Session, org.hibernate.Criteria)">firePreQueryEvent</a></strong>(org.hibernate.Session session, org.hibernate.Criteria criteria)</code><br>Fire a pre query event</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>D</code></td>
-                            <td class="colLast"><code><strong><a href="#first(Map)">first</a></strong>(<a href='../../../../Map.html'>Map</a> m)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#first(java.util.Map)">first</a></strong>(java.util.Map m)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -428,26 +423,26 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../List.html'>List</a></code></td>
+                            <td class="colLast"><code>java.util.List&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getAll()">getAll</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../List.html'>List</a></code></td>
-                            <td class="colLast"><code><strong><a href="#getAll(List)">getAll</a></strong>(<a href='../../../../List.html'>List</a> ids)</code><br></td>
+                            <td class="colLast"><code>java.util.List&lt;D&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#getAll(java.util.List)">getAll</a></strong>(java.util.List ids)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../List.html'>List</a></code></td>
-                            <td class="colLast"><code><strong><a href="#getAll(java.lang.Long)">getAll</a></strong>(java.lang.Long[] ids)</code><br></td>
+                            <td class="colLast"><code>java.util.List&lt;D&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#getAll(java.lang.Long)">getAll</a></strong>(java.lang.Long... ids)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../List.html'>List</a></code></td>
-                            <td class="colLast"><code><strong><a href="#getAll(java.io.Serializable)">getAll</a></strong>(java.io.Serializable[] ids)</code><br></td>
+                            <td class="colLast"><code>java.util.List&lt;D&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#getAll(java.io.Serializable)">getAll</a></strong>(java.io.Serializable... ids)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -459,13 +454,13 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;java.lang.Integer</code></td>
-                            <td class="colLast"><code><strong><a href="#intValue(Map, java.lang.String)">intValue</a></strong>(<a href='../../../../Map.html'>Map</a> args, java.lang.String key)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#intValue(java.util.Map, java.lang.String)">intValue</a></strong>(java.util.Map args, java.lang.String key)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>D</code></td>
-                            <td class="colLast"><code><strong><a href="#last(Map)">last</a></strong>(<a href='../../../../Map.html'>Map</a> m)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#last(java.util.Map)">last</a></strong>(java.util.Map m)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -477,13 +472,13 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#populateQueryArguments(grails.gorm.services.Query, Map)">populateQueryArguments</a></strong>(<a href='../../../../grails/gorm/services/Query.html'>Query</a> q, <a href='../../../../Map.html'>Map</a> args)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#populateQueryArguments(org.grails.datastore.mapping.query.Query, java.util.Map)">populateQueryArguments</a></strong>(<a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> q, java.util.Map args)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#populateQueryWithNamedArguments(grails.gorm.services.Query, Map)">populateQueryWithNamedArguments</a></strong>(<a href='../../../../grails/gorm/services/Query.html'>Query</a> q, <a href='../../../../Map.html'>Map</a> queryNamedArgs)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#populateQueryWithNamedArguments(org.grails.datastore.mapping.query.Query, java.util.Map)">populateQueryWithNamedArguments</a></strong>(<a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> q, java.util.Map queryNamedArgs)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -494,20 +489,20 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;<a href='../../../../List.html'>List</a></code></td>
-                            <td class="colLast"><code><strong><a href="#removeNullNames(Map)">removeNullNames</a></strong>(<a href='../../../../Map.html'>Map</a> query)</code><br></td>
+                            <td class="colLast"><code>protected&nbsp;java.util.List&lt;java.lang.String&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#removeNullNames(java.util.Map)">removeNullNames</a></strong>(java.util.Map query)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>T</code></td>
-                            <td class="colLast"><code><strong><a href="#withNewSession(Closure)">withNewSession</a></strong>(<a href='../../../../Closure.html'>Closure</a> callable)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#withNewSession(Closure<T>)">withNewSession</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>T</code></td>
-                            <td class="colLast"><code><strong><a href="#withSession(Closure)">withSession</a></strong>(<a href='../../../../Closure.html'>Closure</a> callable)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#withSession(Closure<T>)">withSession</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br></td>
                         </tr>
                         
                     </table>
@@ -526,15 +521,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html'>GormStaticApi</a></code></td>
-                            <td class="colLast"><code><a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#attach(D)'>attach</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#count()'>count</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#create()'>create</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#createCriteria()'>createCriteria</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#delete(D)'>delete</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#delete(D, Map)'>delete</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#deleteAll(java.lang.Object)'>deleteAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#deleteAll(Map, java.lang.Object)'>deleteAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#deleteAll(java.lang.Iterable)'>deleteAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#deleteAll(Map, java.lang.Iterable)'>deleteAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#discard(D)'>discard</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#eachTenant(Closure)'>eachTenant</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeQuery(java.lang.CharSequence)'>executeQuery</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeQuery(java.lang.CharSequence, Map)'>executeQuery</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeQuery(java.lang.CharSequence, Map, Map)'>executeQuery</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeQuery(java.lang.CharSequence, Collection)'>executeQuery</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeQuery(java.lang.CharSequence, java.lang.Object)'>executeQuery</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeQuery(java.lang.CharSequence, Collection, Map)'>executeQuery</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeUpdate(java.lang.CharSequence)'>executeUpdate</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeUpdate(java.lang.CharSequence, Map)'>executeUpdate</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeUpdate(java.lang.CharSequence, Map, Map)'>executeUpdate</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeUpdate(java.lang.CharSequence, Collection)'>executeUpdate</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeUpdate(java.lang.CharSequence, java.lang.Object)'>executeUpdate</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeUpdate(java.lang.CharSequence, Collection, Map)'>executeUpdate</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#exists(java.io.Serializable)'>exists</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#find(Closure)'>find</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#find(D)'>find</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#find(D, Map)'>find</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#find(java.lang.CharSequence)'>find</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#find(java.lang.CharSequence, Map)'>find</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#find(java.lang.CharSequence, Map, Map)'>find</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#find(java.lang.CharSequence, Collection)'>find</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#find(java.lang.CharSequence, java.lang.Object)'>find</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#find(java.lang.CharSequence, Collection, Map)'>find</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(Closure)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(Map, Closure)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(Map)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(D)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(D, Map)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(java.lang.CharSequence)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(java.lang.CharSequence, Map)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(java.lang.CharSequence, Map, Map)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(java.lang.CharSequence, Collection)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(java.lang.CharSequence, java.lang.Object)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(java.lang.CharSequence, Collection, Map)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAllWhere(Map)'>findAllWhere</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAllWhere(Map, Map)'>findAllWhere</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findOrCreateWhere(Map)'>findOrCreateWhere</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findOrSaveWhere(Map)'>findOrSaveWhere</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findWhere(Map)'>findWhere</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findWhere(Map, Map)'>findWhere</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#first()'>first</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#first(java.lang.String)'>first</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#first(Map)'>first</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#get(java.io.Serializable)'>get</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#getAll(java.lang.Iterable)'>getAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#getAll(java.io.Serializable)'>getAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#getAll()'>getAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#getCount()'>getCount</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#getGormDynamicFinders()'>getGormDynamicFinders</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#getGormPersistentEntity()'>getGormPersistentEntity</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#ident(D)'>ident</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#insert(D)'>insert</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#insert(D, Map)'>insert</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#instanceOf(D, java.lang.Class)'>instanceOf</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#isAttached(D)'>isAttached</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#last()'>last</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#last(java.lang.String)'>last</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#last(Map)'>last</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#list(Map)'>list</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#list()'>list</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#load(java.io.Serializable)'>load</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#lock(java.io.Serializable)'>lock</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#lock(D)'>lock</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#merge(D)'>merge</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#merge(D, Map)'>merge</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#methodMissing(java.lang.String, java.lang.Object)'>methodMissing</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#mutex(D, Closure)'>mutex</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#propertyMissing(java.lang.String)'>propertyMissing</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#propertyMissing(java.lang.String, java.lang.Object)'>propertyMissing</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#propertyMissing(D, java.lang.String)'>propertyMissing</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#proxy(java.io.Serializable)'>proxy</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#read(java.io.Serializable)'>read</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#refresh(D)'>refresh</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#save(D)'>save</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#save(D, boolean)'>save</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#save(D, Map)'>save</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#saveAll(java.lang.Object)'>saveAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#saveAll(java.lang.Iterable)'>saveAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#unsupported(java.lang.Object)'>unsupported</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#where(Closure)'>where</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#whereAny(Closure)'>whereAny</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#whereLazy(Closure)'>whereLazy</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withCriteria(Closure)'>withCriteria</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withCriteria(Map, Closure)'>withCriteria</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withDatastoreSession(Closure)'>withDatastoreSession</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withNewSession(Closure)'>withNewSession</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withNewTransaction(Closure)'>withNewTransaction</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withNewTransaction(Map, Closure)'>withNewTransaction</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withSession(Closure)'>withSession</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withStatelessSession(Closure)'>withStatelessSession</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withTenant(java.io.Serializable, Closure)'>withTenant</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withTenant(java.io.Serializable)'>withTenant</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withTransaction(Closure)'>withTransaction</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withTransaction(Map, Closure)'>withTransaction</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withTransaction(org.springframework.transaction.TransactionDefinition, Closure)'>withTransaction</a></code></td>
+                            <td class="colLast"><code><a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#attach(D)'>attach</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#count()'>count</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#create()'>create</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#createCriteria()'>createCriteria</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#delete(D)'>delete</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#delete(D, java.util.Map)'>delete</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#deleteAll(java.lang.Object)'>deleteAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#deleteAll(java.util.Map, java.lang.Object)'>deleteAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#deleteAll(java.lang.Iterable)'>deleteAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#deleteAll(java.util.Map, java.lang.Iterable)'>deleteAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#discard(D)'>discard</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#eachTenant(groovy.lang.Closure)'>eachTenant</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeQuery(java.lang.CharSequence)'>executeQuery</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeQuery(java.lang.CharSequence, java.util.Map)'>executeQuery</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeQuery(java.lang.CharSequence, java.util.Map, java.util.Map)'>executeQuery</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeQuery(java.lang.CharSequence, java.util.Collection)'>executeQuery</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeQuery(java.lang.CharSequence, java.lang.Object)'>executeQuery</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeQuery(java.lang.CharSequence, java.util.Collection, java.util.Map)'>executeQuery</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeUpdate(java.lang.CharSequence)'>executeUpdate</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeUpdate(java.lang.CharSequence, java.util.Map)'>executeUpdate</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeUpdate(java.lang.CharSequence, java.util.Map, java.util.Map)'>executeUpdate</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeUpdate(java.lang.CharSequence, java.util.Collection)'>executeUpdate</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeUpdate(java.lang.CharSequence, java.lang.Object)'>executeUpdate</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#executeUpdate(java.lang.CharSequence, java.util.Collection, java.util.Map)'>executeUpdate</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#exists(java.io.Serializable)'>exists</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#find(groovy.lang.Closure)'>find</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#find(D)'>find</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#find(D, java.util.Map)'>find</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#find(java.lang.CharSequence)'>find</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#find(java.lang.CharSequence, java.util.Map)'>find</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#find(java.lang.CharSequence, java.util.Map, java.util.Map)'>find</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#find(java.lang.CharSequence, java.util.Collection)'>find</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#find(java.lang.CharSequence, java.lang.Object)'>find</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#find(java.lang.CharSequence, java.util.Collection, java.util.Map)'>find</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(groovy.lang.Closure)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(java.util.Map, groovy.lang.Closure)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(java.util.Map)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(D)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(D, java.util.Map)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(java.lang.CharSequence)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(java.lang.CharSequence, java.util.Map)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(java.lang.CharSequence, java.util.Map, java.util.Map)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(java.lang.CharSequence, java.util.Collection)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(java.lang.CharSequence, java.lang.Object)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAll(java.lang.CharSequence, java.util.Collection, java.util.Map)'>findAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAllWhere(java.util.Map)'>findAllWhere</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findAllWhere(java.util.Map, java.util.Map)'>findAllWhere</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findOrCreateWhere(java.util.Map)'>findOrCreateWhere</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findOrSaveWhere(java.util.Map)'>findOrSaveWhere</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findWhere(java.util.Map)'>findWhere</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#findWhere(java.util.Map, java.util.Map)'>findWhere</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#first()'>first</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#first(java.lang.String)'>first</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#first(java.util.Map)'>first</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#get(java.io.Serializable)'>get</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#getAll(Iterable<Serializable>)'>getAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#getAll(java.io.Serializable)'>getAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#getAll()'>getAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#getCount()'>getCount</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#getGormDynamicFinders()'>getGormDynamicFinders</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#getGormPersistentEntity()'>getGormPersistentEntity</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#ident(D)'>ident</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#insert(D)'>insert</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#insert(D, java.util.Map)'>insert</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#instanceOf(D, java.lang.Class)'>instanceOf</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#isAttached(D)'>isAttached</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#last()'>last</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#last(java.lang.String)'>last</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#last(java.util.Map)'>last</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#list(java.util.Map)'>list</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#list()'>list</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#load(java.io.Serializable)'>load</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#lock(java.io.Serializable)'>lock</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#lock(D)'>lock</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#merge(D)'>merge</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#merge(D, java.util.Map)'>merge</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#methodMissing(java.lang.String, java.lang.Object)'>methodMissing</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#mutex(D, Closure<T>)'>mutex</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#propertyMissing(java.lang.String)'>propertyMissing</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#propertyMissing(java.lang.String, def)'>propertyMissing</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#propertyMissing(D, java.lang.String)'>propertyMissing</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#proxy(java.io.Serializable)'>proxy</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#read(java.io.Serializable)'>read</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#refresh(D)'>refresh</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#save(D)'>save</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#save(D, boolean)'>save</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#save(D, java.util.Map)'>save</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#saveAll(java.lang.Object)'>saveAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#saveAll(Iterable<?>)'>saveAll</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#unsupported(def)'>unsupported</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#where(groovy.lang.Closure)'>where</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#whereAny(groovy.lang.Closure)'>whereAny</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#whereLazy(groovy.lang.Closure)'>whereLazy</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withCriteria(groovy.lang.Closure)'>withCriteria</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withCriteria(java.util.Map, groovy.lang.Closure)'>withCriteria</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withDatastoreSession(Closure<T>)'>withDatastoreSession</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withNewSession(Closure<T>)'>withNewSession</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withNewTransaction(Closure<T>)'>withNewTransaction</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withNewTransaction(java.util.Map, Closure<T>)'>withNewTransaction</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withSession(Closure<T>)'>withSession</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withStatelessSession(Closure<T>)'>withStatelessSession</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withTenant(java.io.Serializable, Closure<T>)'>withTenant</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withTenant(java.io.Serializable)'>withTenant</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withTransaction(Closure<T>)'>withTransaction</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withTransaction(java.util.Map, Closure<T>)'>withTransaction</a>, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html#withTransaction(org.springframework.transaction.TransactionDefinition, Closure<T>)'>withTransaction</a></code></td>
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html'>AbstractGormApi</a></code></td>
-                            <td class="colLast"><code><a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html#getExtendedMethods()'>getExtendedMethods</a>, <a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html#getMethods()'>getMethods</a>, <a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html#initializeMethods(java.lang.Object)'>initializeMethods</a></code></td>
+                            <td class="colLast"><code><a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html#getExtendedMethods()'>getExtendedMethods</a>, <a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html#getMethods()'>getMethods</a>, <a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html#initializeMethods(def)'>initializeMethods</a></code></td>
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../org/grails/datastore/gorm/AbstractDatastoreApi.html'>AbstractDatastoreApi</a></code></td>
-                            <td class="colLast"><code><a href='../../../../org/grails/datastore/gorm/AbstractDatastoreApi.html#execute(org.grails.datastore.mapping.core.SessionCallback)'>execute</a>, <a href='../../../../org/grails/datastore/gorm/AbstractDatastoreApi.html#execute(org.grails.datastore.mapping.core.VoidSessionCallback)'>execute</a>, <a href='../../../../org/grails/datastore/gorm/AbstractDatastoreApi.html#getDatastore()'>getDatastore</a></code></td>
+                            <td class="colLast"><code><a href='../../../../org/grails/datastore/gorm/AbstractDatastoreApi.html#execute(SessionCallback<T>)'>execute</a>, <a href='../../../../org/grails/datastore/gorm/AbstractDatastoreApi.html#execute(org.grails.datastore.mapping.core.VoidSessionCallback)'>execute</a>, <a href='../../../../org/grails/datastore/gorm/AbstractDatastoreApi.html#getDatastore()'>getDatastore</a></code></td>
                         </tr>
                     </table>
                    </ul>
@@ -570,7 +565,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="hibernateSession"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;final&nbsp;<a href='../../../../org/grails/orm/hibernate/HibernateSession.html'>HibernateSession</a> <strong>hibernateSession</strong></h4>
+                                <h4>protected&nbsp;final&nbsp;org.grails.orm.hibernate.HibernateSession <strong>hibernateSession</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -578,7 +573,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="hibernateTemplate"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;<a href='../../../../org/grails/orm/hibernate/GrailsHibernateTemplate.html'>GrailsHibernateTemplate</a> <strong>hibernateTemplate</strong></h4>
+                                <h4>protected&nbsp;org.grails.orm.hibernate.GrailsHibernateTemplate <strong>hibernateTemplate</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -607,26 +602,18 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Constructor Detail</h3>
                     
-                        <a name="AbstractHibernateGormStaticApi(java.lang.Class, org.grails.orm.hibernate.HibernateDatastore, List)"><!-- --></a>
+                        <a name="AbstractHibernateGormStaticApi(Class<D>, org.grails.orm.hibernate.HibernateDatastore, List<FinderMethod>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><strong>AbstractHibernateGormStaticApi</strong>(java.lang.Class persistentClass, <a href='../../../../org/grails/orm/hibernate/HibernateDatastore.html'>HibernateDatastore</a> datastore, <a href='../../../../List.html'>List</a> finders)</h4>
+                                <h4><strong>AbstractHibernateGormStaticApi</strong>(java.lang.Class&lt;D&gt; persistentClass, org.grails.orm.hibernate.HibernateDatastore datastore, java.util.List&lt;<a href='../../../../org/grails/datastore/gorm/finders/FinderMethod.html' title='FinderMethod'>FinderMethod</a>&gt; finders)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="AbstractHibernateGormStaticApi(java.lang.Class, org.grails.orm.hibernate.HibernateDatastore, List, org.springframework.transaction.PlatformTransactionManager)"><!-- --></a>
+                        <a name="AbstractHibernateGormStaticApi(Class<D>, org.grails.orm.hibernate.HibernateDatastore, List<FinderMethod>, org.springframework.transaction.PlatformTransactionManager)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><strong>AbstractHibernateGormStaticApi</strong>(java.lang.Class persistentClass, <a href='../../../../org/grails/orm/hibernate/HibernateDatastore.html'>HibernateDatastore</a> datastore, <a href='../../../../List.html'>List</a> finders, org.springframework.transaction.PlatformTransactionManager transactionManager)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="AbstractHibernateGormStaticApi()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><strong>AbstractHibernateGormStaticApi</strong>()</h4>
+                                <h4><strong>AbstractHibernateGormStaticApi</strong>(java.lang.Class&lt;D&gt; persistentClass, org.grails.orm.hibernate.HibernateDatastore datastore, java.util.List&lt;<a href='../../../../org/grails/datastore/gorm/finders/FinderMethod.html' title='FinderMethod'>FinderMethod</a>&gt; finders, org.springframework.transaction.PlatformTransactionManager transactionManager)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -644,19 +631,21 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Method Detail</h3>
                     
-                        <a name="buildNamedParameterQueryFromGString(GString, Map)"><!-- --></a>
+                        <a name="buildNamedParameterQueryFromGString(groovy.lang.GString, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;java.lang.String <strong>buildNamedParameterQueryFromGString</strong>(<a href='../../../../GString.html'>GString</a> query, <a href='../../../../Map.html'>Map</a> params)</h4>
-                                <p> Processes a query converting GString expressions into parameters <DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD><DD><code>params</code> -  The parameters</DD></DL><DL><DT><B>Returns:</B></DT><DD>The final String</DD></DL></p>
+                                <h4>protected&nbsp;java.lang.String <strong>buildNamedParameterQueryFromGString</strong>(groovy.lang.GString query, java.util.Map params)</h4>
+                                <p> Processes a query converting GString expressions into parameters
+     <DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD><DD><code>params</code> -  The parameters</DD></DL><DL><DT><B>Returns:</B></DT><DD>The final String</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="buildOrdinalParameterQueryFromGString(GString, List)"><!-- --></a>
+                        <a name="buildOrdinalParameterQueryFromGString(groovy.lang.GString, java.util.List)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;java.lang.String <strong>buildOrdinalParameterQueryFromGString</strong>(<a href='../../../../GString.html'>GString</a> query, <a href='../../../../List.html'>List</a> params)</h4>
-                                <p> Processes a query converting GString expressions into parameters <DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD><DD><code>params</code> -  The parameters</DD></DL><DL><DT><B>Returns:</B></DT><DD>The final String</DD></DL></p>
+                                <h4>protected&nbsp;java.lang.String <strong>buildOrdinalParameterQueryFromGString</strong>(groovy.lang.GString query, java.util.List params)</h4>
+                                <p> Processes a query converting GString expressions into parameters
+     <DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD><DD><code>params</code> -  The parameters</DD></DL><DL><DT><B>Returns:</B></DT><DD>The final String</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -671,16 +660,16 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="count()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
+                                <h4>@java.lang.Override
 java.lang.Integer <strong>count</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="createHqlQuery(org.hibernate.Session, grails.gorm.services.Query)"><!-- --></a>
+                        <a name="createHqlQuery(org.hibernate.Session, org.grails.datastore.mapping.query.Query)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;<a href='../../../../org/grails/orm/hibernate/query/HibernateHqlQuery.html'>HibernateHqlQuery</a> <strong>createHqlQuery</strong>(org.hibernate.Session session, <a href='../../../../grails/gorm/services/Query.html'>Query</a> q)</h4>
+                                <h4>protected&nbsp;<a href='../../../../org/grails/orm/hibernate/query/HibernateHqlQuery.html'>HibernateHqlQuery</a> <strong>createHqlQuery</strong>(org.hibernate.Session session, <a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> q)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -688,35 +677,35 @@ java.lang.Integer <strong>count</strong>()</h4>
                         <a name="executeQuery(java.lang.CharSequence)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-<a href='../../../../List.html'>List</a> <strong>executeQuery</strong>(java.lang.CharSequence query)</h4>
+                                <h4>@java.lang.Override
+java.util.List <strong>executeQuery</strong>(java.lang.CharSequence query)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="executeQuery(java.lang.CharSequence, Map)"><!-- --></a>
+                        <a name="executeQuery(java.lang.CharSequence, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-<a href='../../../../List.html'>List</a> <strong>executeQuery</strong>(java.lang.CharSequence query, <a href='../../../../Map.html'>Map</a> args)</h4>
+                                <h4>@java.lang.Override
+java.util.List <strong>executeQuery</strong>(java.lang.CharSequence query, java.util.Map args)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="executeQuery(java.lang.CharSequence, Map, Map)"><!-- --></a>
+                        <a name="executeQuery(java.lang.CharSequence, java.util.Map, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-<a href='../../../../List.html'>List</a> <strong>executeQuery</strong>(java.lang.CharSequence query, <a href='../../../../Map.html'>Map</a> params, <a href='../../../../Map.html'>Map</a> args)</h4>
+                                <h4>@java.lang.Override
+java.util.List <strong>executeQuery</strong>(java.lang.CharSequence query, java.util.Map params, java.util.Map args)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="executeQuery(java.lang.CharSequence, Collection, Map)"><!-- --></a>
+                        <a name="executeQuery(java.lang.CharSequence, java.util.Collection, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-<a href='../../../../List.html'>List</a> <strong>executeQuery</strong>(java.lang.CharSequence query, <a href='../../../../Collection.html'>Collection</a> params, <a href='../../../../Map.html'>Map</a> args)</h4>
+                                <h4>@java.lang.Override
+java.util.List <strong>executeQuery</strong>(java.lang.CharSequence query, java.util.Collection params, java.util.Map args)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -724,17 +713,17 @@ java.lang.Integer <strong>count</strong>()</h4>
                         <a name="executeUpdate(java.lang.CharSequence)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
+                                <h4>@java.lang.Override
 java.lang.Integer <strong>executeUpdate</strong>(java.lang.CharSequence query)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="executeUpdate(java.lang.CharSequence, Map)"><!-- --></a>
+                        <a name="executeUpdate(java.lang.CharSequence, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-java.lang.Integer <strong>executeUpdate</strong>(java.lang.CharSequence query, <a href='../../../../Map.html'>Map</a> args)</h4>
+                                <h4>@java.lang.Override
+java.lang.Integer <strong>executeUpdate</strong>(java.lang.CharSequence query, java.util.Map args)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -742,34 +731,35 @@ java.lang.Integer <strong>executeUpdate</strong>(java.lang.CharSequence query, <
                         <a name="exists(java.io.Serializable)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
+                                <h4>@java.lang.Override
 boolean <strong>exists</strong>(java.io.Serializable id)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="filterQueryArgumentMap(Map)"><!-- --></a>
+                        <a name="filterQueryArgumentMap(java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;<a href='../../../../Map.html'>Map</a> <strong>filterQueryArgumentMap</strong>(<a href='../../../../Map.html'>Map</a> query)</h4>
+                                <h4>protected&nbsp;java.util.Map <strong>filterQueryArgumentMap</strong>(java.util.Map query)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="find(java.lang.CharSequence, Map, Map)"><!-- --></a>
+                        <a name="find(java.lang.CharSequence, java.util.Map, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-D <strong>find</strong>(java.lang.CharSequence query, <a href='../../../../Map.html'>Map</a> queryNamedArgs, <a href='../../../../Map.html'>Map</a> args)</h4>
-                                <p> Implements the 'find(String' method to use HQL queries with named arguments <DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD><DD><code>queryNamedArgs</code> -  The named arguments</DD><DD><code>args</code> -  Any additional query arguments</DD></DL><DL><DT><B>Returns:</B></DT><DD>A result or null if no result found</DD></DL></p>
+                                <h4>@java.lang.Override
+D <strong>find</strong>(java.lang.CharSequence query, java.util.Map queryNamedArgs, java.util.Map args)</h4>
+                                <p> Implements the 'find(String' method to use HQL queries with named arguments
+     <DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD><DD><code>queryNamedArgs</code> -  The named arguments</DD><DD><code>args</code> -  Any additional query arguments</DD></DL><DL><DT><B>Returns:</B></DT><DD>A result or null if no result found</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="find(java.lang.CharSequence, Collection, Map)"><!-- --></a>
+                        <a name="find(java.lang.CharSequence, java.util.Collection, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-D <strong>find</strong>(java.lang.CharSequence query, <a href='../../../../Collection.html'>Collection</a> params, <a href='../../../../Map.html'>Map</a> args)</h4>
+                                <h4>@java.lang.Override
+D <strong>find</strong>(java.lang.CharSequence query, java.util.Collection params, java.util.Map args)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -777,35 +767,35 @@ D <strong>find</strong>(java.lang.CharSequence query, <a href='../../../../Colle
                         <a name="find(java.lang.CharSequence)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
+                                <h4>@java.lang.Override
 D <strong>find</strong>(java.lang.CharSequence query)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="find(java.lang.CharSequence, Map)"><!-- --></a>
+                        <a name="find(java.lang.CharSequence, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-D <strong>find</strong>(java.lang.CharSequence query, <a href='../../../../Map.html'>Map</a> params)</h4>
+                                <h4>@java.lang.Override
+D <strong>find</strong>(java.lang.CharSequence query, java.util.Map params)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="find(D, Map)"><!-- --></a>
+                        <a name="find(D, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-D <strong>find</strong>(D exampleObject, <a href='../../../../Map.html'>Map</a> args)</h4>
+                                <h4>@java.lang.Override
+D <strong>find</strong>(D exampleObject, java.util.Map args)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="findAll(java.lang.CharSequence, Map, Map)"><!-- --></a>
+                        <a name="findAll(java.lang.CharSequence, java.util.Map, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-<a href='../../../../List.html'>List</a> <strong>findAll</strong>(java.lang.CharSequence query, <a href='../../../../Map.html'>Map</a> params, <a href='../../../../Map.html'>Map</a> args)</h4>
+                                <h4>@java.lang.Override
+java.util.List&lt;D&gt; <strong>findAll</strong>(java.lang.CharSequence query, java.util.Map params, java.util.Map args)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -813,71 +803,72 @@ D <strong>find</strong>(D exampleObject, <a href='../../../../Map.html'>Map</a> 
                         <a name="findAll(java.lang.CharSequence)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-<a href='../../../../List.html'>List</a> <strong>findAll</strong>(java.lang.CharSequence query)</h4>
+                                <h4>@java.lang.Override
+java.util.List&lt;D&gt; <strong>findAll</strong>(java.lang.CharSequence query)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="findAll(java.lang.CharSequence, Map)"><!-- --></a>
+                        <a name="findAll(java.lang.CharSequence, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-<a href='../../../../List.html'>List</a> <strong>findAll</strong>(java.lang.CharSequence query, <a href='../../../../Map.html'>Map</a> params)</h4>
+                                <h4>@java.lang.Override
+java.util.List&lt;D&gt; <strong>findAll</strong>(java.lang.CharSequence query, java.util.Map params)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="findAll(java.lang.CharSequence, Collection, Map)"><!-- --></a>
+                        <a name="findAll(java.lang.CharSequence, java.util.Collection, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-<a href='../../../../List.html'>List</a> <strong>findAll</strong>(java.lang.CharSequence query, <a href='../../../../Collection.html'>Collection</a> params, <a href='../../../../Map.html'>Map</a> args)</h4>
+                                <h4>@java.lang.Override
+java.util.List&lt;D&gt; <strong>findAll</strong>(java.lang.CharSequence query, java.util.Collection params, java.util.Map args)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="findAll(D, Map)"><!-- --></a>
+                        <a name="findAll(D, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-<a href='../../../../List.html'>List</a> <strong>findAll</strong>(D exampleObject, <a href='../../../../Map.html'>Map</a> args)</h4>
+                                <h4>@java.lang.Override
+java.util.List&lt;D&gt; <strong>findAll</strong>(D exampleObject, java.util.Map args)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="findAllWhere(Map, Map)"><!-- --></a>
+                        <a name="findAllWhere(java.util.Map, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-<a href='../../../../List.html'>List</a> <strong>findAllWhere</strong>(<a href='../../../../Map.html'>Map</a> queryMap, <a href='../../../../Map.html'>Map</a> args)</h4>
+                                <h4>@java.lang.Override
+java.util.List&lt;D&gt; <strong>findAllWhere</strong>(java.util.Map queryMap, java.util.Map args)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="findAllWithSql(java.lang.CharSequence, Map)"><!-- --></a>
+                        <a name="findAllWithSql(java.lang.CharSequence, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileDynamicCompileDynamic
-<a href='../../../../List.html'>List</a> <strong>findAllWithSql</strong>(java.lang.CharSequence sql, <a href='../../../../Map.html'>Map</a> args)</h4>
-                                <p> Finds all results for this entity for the given SQL query <DL><DT><B>Parameters:</B></DT><DD><code>sql</code> -  The SQL query</DD><DD><code>args</code> -  The arguments</DD></DL><DL><DT><B>Returns:</B></DT><DD>All entities matching the SQL query</DD></DL></p>
+                                <h4>@groovy.transform.CompileDynamic // required for Hibernate 5.2 compatibility
+java.util.List&lt;D&gt; <strong>findAllWithSql</strong>(java.lang.CharSequence sql, java.util.Map args = Collections.emptyMap()</h4>
+                                <p> Finds all results for this entity for the given SQL query
+     <DL><DT><B>Parameters:</B></DT><DD><code>sql</code> -  The SQL query</DD><DD><code>args</code> -  The arguments</DD></DL><DL><DT><B>Returns:</B></DT><DD>All entities matching the SQL query</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="findWhere(Map, Map)"><!-- --></a>
+                        <a name="findWhere(java.util.Map, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-D <strong>findWhere</strong>(<a href='../../../../Map.html'>Map</a> queryMap, <a href='../../../../Map.html'>Map</a> args)</h4>
+                                <h4>@java.lang.Override
+D <strong>findWhere</strong>(java.util.Map queryMap, java.util.Map args)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="findWithSql(java.lang.CharSequence, Map)"><!-- --></a>
+                        <a name="findWithSql(java.lang.CharSequence, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;D&gt; @groovy.transform.CompileDynamicCompileDynamic
-D <strong>findWithSql</strong>(java.lang.CharSequence sql, <a href='../../../../Map.html'>Map</a> args)</h4>
+                                <h4>&lt;D&gt; @groovy.transform.CompileDynamic // required for Hibernate 5.2 compatibility
+D <strong>findWithSql</strong>(java.lang.CharSequence sql, java.util.Map args = Collections.emptyMap()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -886,7 +877,8 @@ D <strong>findWithSql</strong>(java.lang.CharSequence sql, <a href='../../../../
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;void <strong>firePostQueryEvent</strong>(org.hibernate.Session session, org.hibernate.Criteria criteria, java.lang.Object result)</h4>
-                                <p> Fire a post query event <DL><DT><B>Parameters:</B></DT><DD><code>session</code> -  The session</DD><DD><code>criteria</code> -  The criteria</DD><DD><code>result</code> -  The result</DD></DL></p>
+                                <p> Fire a post query event
+     <DL><DT><B>Parameters:</B></DT><DD><code>session</code> -  The session</DD><DD><code>criteria</code> -  The criteria</DD><DD><code>result</code> -  The result</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -894,14 +886,15 @@ D <strong>findWithSql</strong>(java.lang.CharSequence sql, <a href='../../../../
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;void <strong>firePreQueryEvent</strong>(org.hibernate.Session session, org.hibernate.Criteria criteria)</h4>
-                                <p> Fire a pre query event <DL><DT><B>Parameters:</B></DT><DD><code>session</code> -  The session</DD><DD><code>criteria</code> -  The criteria</DD></DL><DL><DT><B>Returns:</B></DT><DD>True if the query should be cancelled</DD></DL></p>
+                                <p> Fire a pre query event
+     <DL><DT><B>Parameters:</B></DT><DD><code>session</code> -  The session</DD><DD><code>criteria</code> -  The criteria</DD></DL><DL><DT><B>Returns:</B></DT><DD>True if the query should be cancelled</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="first(Map)"><!-- --></a>
+                        <a name="first(java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>D <strong>first</strong>(<a href='../../../../Map.html'>Map</a> m)</h4>
+                                <h4>D <strong>first</strong>(java.util.Map m)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -909,7 +902,7 @@ D <strong>findWithSql</strong>(java.lang.CharSequence sql, <a href='../../../../
                         <a name="get(java.io.Serializable)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
+                                <h4>@java.lang.Override
 D <strong>get</strong>(java.io.Serializable id)</h4>
                                 <p></p>
                             </li>
@@ -918,16 +911,16 @@ D <strong>get</strong>(java.io.Serializable id)</h4>
                         <a name="getAll()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-<a href='../../../../List.html'>List</a> <strong>getAll</strong>()</h4>
+                                <h4>@java.lang.Override
+java.util.List&lt;D&gt; <strong>getAll</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="getAll(List)"><!-- --></a>
+                        <a name="getAll(java.util.List)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../List.html'>List</a> <strong>getAll</strong>(<a href='../../../../List.html'>List</a> ids)</h4>
+                                <h4>java.util.List&lt;D&gt; <strong>getAll</strong>(java.util.List ids)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -935,7 +928,7 @@ D <strong>get</strong>(java.io.Serializable id)</h4>
                         <a name="getAll(java.lang.Long)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../List.html'>List</a> <strong>getAll</strong>(java.lang.Long[] ids)</h4>
+                                <h4>java.util.List&lt;D&gt; <strong>getAll</strong>(java.lang.Long... ids)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -943,8 +936,8 @@ D <strong>get</strong>(java.io.Serializable id)</h4>
                         <a name="getAll(java.io.Serializable)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-<a href='../../../../List.html'>List</a> <strong>getAll</strong>(java.io.Serializable[] ids)</h4>
+                                <h4>@java.lang.Override
+java.util.List&lt;D&gt; <strong>getAll</strong>(java.io.Serializable... ids)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -957,18 +950,18 @@ D <strong>get</strong>(java.io.Serializable id)</h4>
                             </li>
                         </ul>
                     
-                        <a name="intValue(Map, java.lang.String)"><!-- --></a>
+                        <a name="intValue(java.util.Map, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;java.lang.Integer <strong>intValue</strong>(<a href='../../../../Map.html'>Map</a> args, java.lang.String key)</h4>
+                                <h4>protected&nbsp;java.lang.Integer <strong>intValue</strong>(java.util.Map args, java.lang.String key)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="last(Map)"><!-- --></a>
+                        <a name="last(java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>D <strong>last</strong>(<a href='../../../../Map.html'>Map</a> m)</h4>
+                                <h4>D <strong>last</strong>(java.util.Map m)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -976,24 +969,24 @@ D <strong>get</strong>(java.io.Serializable id)</h4>
                         <a name="load(java.io.Serializable)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
+                                <h4>@java.lang.Override
 D <strong>load</strong>(java.io.Serializable id)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="populateQueryArguments(grails.gorm.services.Query, Map)"><!-- --></a>
+                        <a name="populateQueryArguments(org.grails.datastore.mapping.query.Query, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>populateQueryArguments</strong>(<a href='../../../../grails/gorm/services/Query.html'>Query</a> q, <a href='../../../../Map.html'>Map</a> args)</h4>
+                                <h4>protected&nbsp;void <strong>populateQueryArguments</strong>(<a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> q, java.util.Map args)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="populateQueryWithNamedArguments(grails.gorm.services.Query, Map)"><!-- --></a>
+                        <a name="populateQueryWithNamedArguments(org.grails.datastore.mapping.query.Query, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>populateQueryWithNamedArguments</strong>(<a href='../../../../grails/gorm/services/Query.html'>Query</a> q, <a href='../../../../Map.html'>Map</a> queryNamedArgs)</h4>
+                                <h4>protected&nbsp;void <strong>populateQueryWithNamedArguments</strong>(<a href='../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> q, java.util.Map queryNamedArgs)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1001,34 +994,34 @@ D <strong>load</strong>(java.io.Serializable id)</h4>
                         <a name="read(java.io.Serializable)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
+                                <h4>@java.lang.Override
 D <strong>read</strong>(java.io.Serializable id)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="removeNullNames(Map)"><!-- --></a>
+                        <a name="removeNullNames(java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;<a href='../../../../List.html'>List</a> <strong>removeNullNames</strong>(<a href='../../../../Map.html'>Map</a> query)</h4>
+                                <h4>protected&nbsp;java.util.List&lt;java.lang.String&gt; <strong>removeNullNames</strong>(java.util.Map query)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="withNewSession(Closure)"><!-- --></a>
+                        <a name="withNewSession(Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; @java.lang.OverrideOverride
-T <strong>withNewSession</strong>(<a href='../../../../Closure.html'>Closure</a> callable)</h4>
+                                <h4>&lt;T&gt; @java.lang.Override
+T <strong>withNewSession</strong>(groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="withSession(Closure)"><!-- --></a>
+                        <a name="withSession(Closure<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; @java.lang.OverrideOverride
-T <strong>withSession</strong>(<a href='../../../../Closure.html'>Closure</a> callable)</h4>
+                                <h4>&lt;T&gt; @java.lang.Override
+T <strong>withSession</strong>(groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1074,7 +1067,7 @@ T <strong>withSession</strong>(<a href='../../../../Closure.html'>Closure</a> ca
             <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
-    <p>Groovy Documentation</p>
+    
     <a name="skip-navbar_bottom">
         <!--   -->
     </a>

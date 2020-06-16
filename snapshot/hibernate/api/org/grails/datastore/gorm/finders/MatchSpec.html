@@ -99,7 +99,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 
 
 
-    <p> A match spec details a matched finder <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>6.1</DD></DL></p>
+    <p> A match spec details a matched finder
+ <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>6.1</DD></DL></p>
 
           </li>
     </ul>
@@ -130,27 +131,27 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../List.html'>List</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>java.util.List&lt;<a href='../../../../../org/grails/datastore/gorm/finders/MethodExpression.html' title='MethodExpression'>MethodExpression</a>&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#methodCallExpressions">methodCallExpressions</a></code><br>The method call expressions</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#methodName">methodName</a></code><br>The full method name</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#prefix">prefix</a></code><br>The prefix (for example "findBy")</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#queryExpression">queryExpression</a></code><br>The query expression without the prefix i.e. methodName - prefix</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;int</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>int</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#requiredArguments">requiredArguments</a></code><br>The required arguments</td>
                         </tr>
                         
@@ -177,14 +178,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst">
-                                <code><a href="#MatchSpec(java.lang.String, java.lang.String, java.lang.String, int, List)">MatchSpec</a>
-                                (java.lang.String methodName, java.lang.String prefix, java.lang.String queryExpression, int requiredArguments, <a href='../../../../../List.html'>List</a> methodCallExpressions)</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst">
-                                <code><a href="#MatchSpec()">MatchSpec</a>
-                                ()</code><br></td>
+                                <code><a href="#MatchSpec(java.lang.String, java.lang.String, java.lang.String, int, List<MethodExpression>)">MatchSpec</a>
+                                (java.lang.String methodName, java.lang.String prefix, java.lang.String queryExpression, int requiredArguments, java.util.List&lt;<a href='../../../../../org/grails/datastore/gorm/finders/MethodExpression.html' title='MethodExpression'>MethodExpression</a>&gt; methodCallExpressions)</code><br></td>
                         </tr>
                         
                     </table>
@@ -210,7 +205,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../../Collection.html'>Collection</a></code></td>
+                            <td class="colLast"><code>java.util.Collection&lt;java.lang.String&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getPropertyNames()">getPropertyNames</a></strong>()</code><br></td>
                         </tr>
                         
@@ -260,40 +255,45 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="methodCallExpressions"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;final&nbsp;<a href='../../../../../List.html'>List</a> <strong>methodCallExpressions</strong></h4>
-                                <p> The method call expressions</p>
+                                <h4>final&nbsp;java.util.List&lt;<a href='../../../../../org/grails/datastore/gorm/finders/MethodExpression.html' title='MethodExpression'>MethodExpression</a>&gt; <strong>methodCallExpressions</strong></h4>
+                                <p> The method call expressions
+     </p>
                             </li>
                         </ul>
                     
                         <a name="methodName"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;final&nbsp;java.lang.String <strong>methodName</strong></h4>
-                                <p> The full method name</p>
+                                <h4>final&nbsp;java.lang.String <strong>methodName</strong></h4>
+                                <p> The full method name
+     </p>
                             </li>
                         </ul>
                     
                         <a name="prefix"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;final&nbsp;java.lang.String <strong>prefix</strong></h4>
-                                <p> The prefix (for example "findBy")</p>
+                                <h4>final&nbsp;java.lang.String <strong>prefix</strong></h4>
+                                <p> The prefix (for example "findBy")
+     </p>
                             </li>
                         </ul>
                     
                         <a name="queryExpression"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;final&nbsp;java.lang.String <strong>queryExpression</strong></h4>
-                                <p> The query expression without the prefix i.e. methodName - prefix</p>
+                                <h4>final&nbsp;java.lang.String <strong>queryExpression</strong></h4>
+                                <p> The query expression without the prefix i.e. methodName - prefix
+     </p>
                             </li>
                         </ul>
                     
                         <a name="requiredArguments"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;final&nbsp;int <strong>requiredArguments</strong></h4>
-                                <p> The required arguments</p>
+                                <h4>final&nbsp;int <strong>requiredArguments</strong></h4>
+                                <p> The required arguments
+     </p>
                             </li>
                         </ul>
                     
@@ -311,18 +311,10 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Constructor Detail</h3>
                     
-                        <a name="MatchSpec(java.lang.String, java.lang.String, java.lang.String, int, List)"><!-- --></a>
+                        <a name="MatchSpec(java.lang.String, java.lang.String, java.lang.String, int, List<MethodExpression>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><strong>MatchSpec</strong>(java.lang.String methodName, java.lang.String prefix, java.lang.String queryExpression, int requiredArguments, <a href='../../../../../List.html'>List</a> methodCallExpressions)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="MatchSpec()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><strong>MatchSpec</strong>()</h4>
+                                <h4><strong>MatchSpec</strong>(java.lang.String methodName, java.lang.String prefix, java.lang.String queryExpression, int requiredArguments, java.util.List&lt;<a href='../../../../../org/grails/datastore/gorm/finders/MethodExpression.html' title='MethodExpression'>MethodExpression</a>&gt; methodCallExpressions)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -343,7 +335,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="getPropertyNames()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../Collection.html'>Collection</a> <strong>getPropertyNames</strong>()</h4>
+                                <h4>java.util.Collection&lt;java.lang.String&gt; <strong>getPropertyNames</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -389,7 +381,7 @@ if (location.href.indexOf('is-external=true') == -1) {
             Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
-    <p>Groovy Documentation</p>
+    
     <a name="skip-navbar_bottom">
         <!--   -->
     </a>

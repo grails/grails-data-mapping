@@ -104,7 +104,7 @@ if (location.href.indexOf('is-external=true') == -1) {
             <!-- todo: direct known subclasses -->
             <hr>
             <br>
-<pre>@groovy.transform.CompileStaticCompileStatic
+<pre>@groovy.transform.CompileStatic
 class JavaxValidatorRegistry
 extends org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry
 
@@ -112,7 +112,8 @@ extends org.grails.datastore.gorm.validation.constraints.registry.DefaultValidat
 
 
 
-    <p> A validator registry that creates validators <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>6.1</DD></DL></p>
+    <p> A validator registry that creates validators
+ <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>6.1</DD></DL></p>
 
           </li>
     </ul>
@@ -163,7 +164,7 @@ extends org.grails.datastore.gorm.validation.constraints.registry.DefaultValidat
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;javax.validation.ValidatorFactory</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>javax.validation.ValidatorFactory</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#validatorFactory">validatorFactory</a></code><br>The validator factory</td>
                         </tr>
                         
@@ -191,13 +192,7 @@ extends org.grails.datastore.gorm.validation.constraints.registry.DefaultValidat
                         <tr class="altColor">
                             <td class="colFirst">
                                 <code><a href="#JavaxValidatorRegistry(org.grails.datastore.mapping.model.MappingContext, org.grails.datastore.mapping.core.connections.ConnectionSourceSettings, org.springframework.context.MessageSource)">JavaxValidatorRegistry</a>
-                                (<a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> mappingContext, <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html'>ConnectionSourceSettings</a> settings, org.springframework.context.MessageSource messageSource)</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst">
-                                <code><a href="#JavaxValidatorRegistry()">JavaxValidatorRegistry</a>
-                                ()</code><br></td>
+                                (<a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> mappingContext, <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html'>ConnectionSourceSettings</a> settings, org.springframework.context.MessageSource messageSource = new StaticMessageSource()</code><br></td>
                         </tr>
                         
                     </table>
@@ -223,20 +218,20 @@ extends org.grails.datastore.gorm.validation.constraints.registry.DefaultValidat
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;org.springframework.context.annotation.Configuration</code></td>
-                            <td class="colLast"><code><strong><a href="#buildConfiguration()">buildConfiguration</a></strong>()</code><br>Builds the default Validator configuration <DL><DT><B>Returns:</B></DT><DD>The configuration</DD></DL></td>
+                            <td class="colLast"><code>protected&nbsp;javax.validation.Configuration&lt;?&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#buildConfiguration()">buildConfiguration</a></strong>()</code><br>Builds the default Validator configuration</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;org.springframework.context.annotation.Configuration</code></td>
-                            <td class="colLast"><code><strong><a href="#buildConfigurationFor(org.grails.datastore.mapping.model.MappingContext, org.springframework.context.MessageSource)">buildConfigurationFor</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, org.springframework.context.MessageSource messageSource)</code><br>Builds a configuration for the given context and message source <DL><DT><B>Parameters:</B></DT><DD><code>context</code> -  The context</DD><DD><code>messageSource</code> -  The message source</DD></DL><DL><DT><B>Returns:</B></DT><DD>The configuration</DD></DL></td>
+                            <td class="colLast"><code>static&nbsp;org.hibernate.cfg.Configuration</code></td>
+                            <td class="colLast"><code><strong><a href="#buildConfigurationFor(org.grails.datastore.mapping.model.MappingContext, org.springframework.context.MessageSource)">buildConfigurationFor</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, org.springframework.context.MessageSource messageSource)</code><br>Builds a configuration for the given context and message source</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;<a href='../../../../../../org/grails/datastore/gorm/validation/javax/GormValidatorFactoryAdapter.html'>GormValidatorFactoryAdapter</a></code></td>
-                            <td class="colLast"><code><strong><a href="#buildValidatorFactoryAdapter(org.springframework.context.annotation.Configuration)">buildValidatorFactoryAdapter</a></strong>(org.springframework.context.annotation.Configuration validatorConfiguration)</code><br>Build the validator factory from the validator configuration <DL><DT><B>Parameters:</B></DT><DD><code>validatorConfiguration</code> -  The configuration</DD></DL><DL><DT><B>Returns:</B></DT><DD>The adapter</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#buildValidatorFactoryAdapter(org.hibernate.cfg.Configuration)">buildValidatorFactoryAdapter</a></strong>(org.hibernate.cfg.Configuration validatorConfiguration)</code><br>Build the validator factory from the validator configuration</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -290,13 +285,13 @@ extends org.grails.datastore.gorm.validation.constraints.registry.DefaultValidat
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#isAvailable()">isAvailable</a></strong>()</code><br><DL><DT><B>Returns:</B></DT><DD>Whether javax.validation is available</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#isAvailable()">isAvailable</a></strong>()</code><br>@return Whether javax.validation is available</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>T</code></td>
-                            <td class="colLast"><code><strong><a href="#unwrap(java.lang.Class)">unwrap</a></strong>(java.lang.Class aClass)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#unwrap(Class<T>)">unwrap</a></strong>(java.lang.Class&lt;T&gt; aClass)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -321,7 +316,7 @@ extends org.grails.datastore.gorm.validation.constraints.registry.DefaultValidat
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>class org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry</code></td>
-                            <td class="colLast"><code>org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#addConstraint(java.lang.Class), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#addConstraint(java.lang.Class, java.util.List), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getMetaClass(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#setMetaClass(groovy.lang.MetaClass), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getDefaultConstraints(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#newConstrainedPropertyBuilder(java.lang.Class), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getConstraintRegistry(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#evaluate(java.lang.Class), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#evaluate(java.lang.Class, boolean, boolean, [Lgroovy.lang.Closure;), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#evaluate(java.lang.Class, boolean), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getValidator(org.grails.datastore.mapping.model.PersistentEntity), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getMessageSource(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#findConstraintFactories(java.lang.Class), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#findConstraintFactories(java.lang.String), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getValidatorMap(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getConstraintsEvaluator(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getMappingContext(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#addConstraintFactory(org.grails.datastore.gorm.validation.constraints.factory.ConstraintFactory), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#wait(long, int), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#wait(long), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#wait(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#equals(java.lang.Object), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#toString(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#hashCode(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getClass(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#notify(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#notifyAll(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#invokeMethod(java.lang.String, java.lang.Object), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#setProperty(java.lang.String, java.lang.Object), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getProperty(java.lang.String)</code></td>
+                            <td class="colLast"><code>org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getValidator(org.grails.datastore.mapping.model.PersistentEntity), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#addConstraint(java.lang.Class), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#addConstraint(java.lang.Class, java.util.List), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#findConstraintFactories(java.lang.Class), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#findConstraintFactories(java.lang.String), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getValidatorMap(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getConstraintsEvaluator(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getConstraintRegistry(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#evaluate(java.lang.Class, boolean), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#evaluate(java.lang.Class), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#evaluate(java.lang.Class, boolean, boolean, [Lgroovy.lang.Closure;), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getMetaClass(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#setMetaClass(groovy.lang.MetaClass), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getMessageSource(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#addConstraintFactory(org.grails.datastore.gorm.validation.constraints.factory.ConstraintFactory), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getDefaultConstraints(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#newConstrainedPropertyBuilder(java.lang.Class), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getMappingContext(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#wait(long, int), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#wait(long), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#wait(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#equals(java.lang.Object), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#toString(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#hashCode(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getClass(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#notify(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#notifyAll(), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#invokeMethod(java.lang.String, java.lang.Object), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#setProperty(java.lang.String, java.lang.Object), org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry#getProperty(java.lang.String)</code></td>
                         </tr>
                     </table>
                    </ul>
@@ -351,8 +346,9 @@ extends org.grails.datastore.gorm.validation.constraints.registry.DefaultValidat
                         <a name="validatorFactory"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;final&nbsp;javax.validation.ValidatorFactory <strong>validatorFactory</strong></h4>
-                                <p> The validator factory</p>
+                                <h4>final&nbsp;javax.validation.ValidatorFactory <strong>validatorFactory</strong></h4>
+                                <p> The validator factory
+     </p>
                             </li>
                         </ul>
                     
@@ -373,15 +369,7 @@ extends org.grails.datastore.gorm.validation.constraints.registry.DefaultValidat
                         <a name="JavaxValidatorRegistry(org.grails.datastore.mapping.model.MappingContext, org.grails.datastore.mapping.core.connections.ConnectionSourceSettings, org.springframework.context.MessageSource)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><strong>JavaxValidatorRegistry</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> mappingContext, <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html'>ConnectionSourceSettings</a> settings, org.springframework.context.MessageSource messageSource)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="JavaxValidatorRegistry()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><strong>JavaxValidatorRegistry</strong>()</h4>
+                                <h4><strong>JavaxValidatorRegistry</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> mappingContext, <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html'>ConnectionSourceSettings</a> settings, org.springframework.context.MessageSource messageSource = new StaticMessageSource()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -402,31 +390,34 @@ extends org.grails.datastore.gorm.validation.constraints.registry.DefaultValidat
                         <a name="buildConfiguration()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;org.springframework.context.annotation.Configuration <strong>buildConfiguration</strong>()</h4>
-                                <p> Builds the default Validator configuration <DL><DT><B>Returns:</B></DT><DD>The configuration</DD></DL></p>
+                                <h4>protected&nbsp;javax.validation.Configuration&lt;?&gt; <strong>buildConfiguration</strong>()</h4>
+                                <p> Builds the default Validator configuration
+     <DL><DT><B>Returns:</B></DT><DD>The configuration</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="buildConfigurationFor(org.grails.datastore.mapping.model.MappingContext, org.springframework.context.MessageSource)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.springframework.context.annotation.Configuration <strong>buildConfigurationFor</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, org.springframework.context.MessageSource messageSource)</h4>
-                                <p> Builds a configuration for the given context and message source <DL><DT><B>Parameters:</B></DT><DD><code>context</code> -  The context</DD><DD><code>messageSource</code> -  The message source</DD></DL><DL><DT><B>Returns:</B></DT><DD>The configuration</DD></DL></p>
+                                <h4>static&nbsp;org.hibernate.cfg.Configuration <strong>buildConfigurationFor</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, org.springframework.context.MessageSource messageSource)</h4>
+                                <p> Builds a configuration for the given context and message source
+     <DL><DT><B>Parameters:</B></DT><DD><code>context</code> -  The context</DD><DD><code>messageSource</code> -  The message source</DD></DL><DL><DT><B>Returns:</B></DT><DD>The configuration</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="buildValidatorFactoryAdapter(org.springframework.context.annotation.Configuration)"><!-- --></a>
+                        <a name="buildValidatorFactoryAdapter(org.hibernate.cfg.Configuration)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;<a href='../../../../../../org/grails/datastore/gorm/validation/javax/GormValidatorFactoryAdapter.html'>GormValidatorFactoryAdapter</a> <strong>buildValidatorFactoryAdapter</strong>(org.springframework.context.annotation.Configuration validatorConfiguration)</h4>
-                                <p> Build the validator factory from the validator configuration <DL><DT><B>Parameters:</B></DT><DD><code>validatorConfiguration</code> -  The configuration</DD></DL><DL><DT><B>Returns:</B></DT><DD>The adapter</DD></DL></p>
+                                <h4>protected&nbsp;<a href='../../../../../../org/grails/datastore/gorm/validation/javax/GormValidatorFactoryAdapter.html'>GormValidatorFactoryAdapter</a> <strong>buildValidatorFactoryAdapter</strong>(org.hibernate.cfg.Configuration validatorConfiguration)</h4>
+                                <p> Build the validator factory from the validator configuration
+     <DL><DT><B>Parameters:</B></DT><DD><code>validatorConfiguration</code> -  The configuration</DD></DL><DL><DT><B>Returns:</B></DT><DD>The adapter</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="close()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
+                                <h4>@java.lang.Override
 void <strong>close</strong>()</h4>
                                 <p></p>
                             </li>
@@ -435,7 +426,7 @@ void <strong>close</strong>()</h4>
                         <a name="getClockProvider()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
+                                <h4>@java.lang.Override
 javax.validation.ClockProvider <strong>getClockProvider</strong>()</h4>
                                 <p></p>
                             </li>
@@ -444,7 +435,7 @@ javax.validation.ClockProvider <strong>getClockProvider</strong>()</h4>
                         <a name="getConstraintValidatorFactory()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
+                                <h4>@java.lang.Override
 javax.validation.ConstraintValidatorFactory <strong>getConstraintValidatorFactory</strong>()</h4>
                                 <p></p>
                             </li>
@@ -453,7 +444,7 @@ javax.validation.ConstraintValidatorFactory <strong>getConstraintValidatorFactor
                         <a name="getMessageInterpolator()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
+                                <h4>@java.lang.Override
 javax.validation.MessageInterpolator <strong>getMessageInterpolator</strong>()</h4>
                                 <p></p>
                             </li>
@@ -462,7 +453,7 @@ javax.validation.MessageInterpolator <strong>getMessageInterpolator</strong>()</
                         <a name="getParameterNameProvider()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
+                                <h4>@java.lang.Override
 javax.validation.ParameterNameProvider <strong>getParameterNameProvider</strong>()</h4>
                                 <p></p>
                             </li>
@@ -471,7 +462,7 @@ javax.validation.ParameterNameProvider <strong>getParameterNameProvider</strong>
                         <a name="getTraversableResolver()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
+                                <h4>@java.lang.Override
 javax.validation.TraversableResolver <strong>getTraversableResolver</strong>()</h4>
                                 <p></p>
                             </li>
@@ -480,7 +471,7 @@ javax.validation.TraversableResolver <strong>getTraversableResolver</strong>()</
                         <a name="getValidator(org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
+                                <h4>@java.lang.Override
 org.springframework.validation.Validator <strong>getValidator</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p></p>
                             </li>
@@ -489,7 +480,7 @@ org.springframework.validation.Validator <strong>getValidator</strong>(<a href='
                         <a name="getValidator()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
+                                <h4>@java.lang.Override
 javax.validation.Validator <strong>getValidator</strong>()</h4>
                                 <p></p>
                             </li>
@@ -499,15 +490,16 @@ javax.validation.Validator <strong>getValidator</strong>()</h4>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>static&nbsp;boolean <strong>isAvailable</strong>()</h4>
-                                <p> <DL><DT><B>Returns:</B></DT><DD>Whether javax.validation is available</DD></DL></p>
+                                <p>
+     <DL><DT><B>Returns:</B></DT><DD>Whether javax.validation is available</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="unwrap(java.lang.Class)"><!-- --></a>
+                        <a name="unwrap(Class<T>)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; @java.lang.OverrideOverride
-T <strong>unwrap</strong>(java.lang.Class aClass)</h4>
+                                <h4>&lt;T&gt; @java.lang.Override
+T <strong>unwrap</strong>(java.lang.Class&lt;T&gt; aClass)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -515,7 +507,7 @@ T <strong>unwrap</strong>(java.lang.Class aClass)</h4>
                         <a name="usingContext()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
+                                <h4>@java.lang.Override
 javax.validation.ValidatorContext <strong>usingContext</strong>()</h4>
                                 <p></p>
                             </li>
@@ -562,7 +554,7 @@ javax.validation.ValidatorContext <strong>usingContext</strong>()</h4>
             Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
-    <p>Groovy Documentation</p>
+    
     <a name="skip-navbar_bottom">
         <!--   -->
     </a>

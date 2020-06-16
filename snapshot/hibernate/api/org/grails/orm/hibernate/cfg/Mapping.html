@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -99,7 +99,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 
 
 
-    <p> Models the mapping from GORM classes to the db. <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>1.0</DD></DL></p>
+    <p> Models the mapping from GORM classes to the db.
+ <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>1.0</DD></DL></p>
 
           </li>
     </ul>
@@ -114,6 +115,26 @@ if (location.href.indexOf('is-external=true') == -1) {
         <!-- =========== ENUM CONSTANT SUMMARY =========== -->
         
         <!-- =========== FIELD SUMMARY =========== -->
+        
+            <ul class="blockList">
+                <li class="blockList"><a name="field_summary"><!--   --></a>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Inherited fields summary table">
+                        <caption><span>Inherited fields</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Fields inherited from class</th>
+                            <th class="colLast" scope="col">Fields</th>
+                        </tr>
+                                                <tr class="altColor">
+                            <td class="colFirst"><strong><code>class <a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></code></strong></td>
+                            <td class="colLast"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html#ALL_DATA_SOURCES'>ALL_DATA_SOURCES</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#DEFAULT_DATA_SOURCE'>DEFAULT_DATA_SOURCE</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#propertyConfigs'>propertyConfigs</a></code></td>
+                        </tr>
+
+                    </table>
+                    </ul>
+                </li>
+                
+            </ul>
         
 
         <!-- =========== PROPERTY SUMMARY =========== -->
@@ -130,57 +151,57 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#autoImport">autoImport</a></code><br>Sets whether packaged domain classes should be auto-imported in HQL queries</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>private&nbsp;java.lang.Integer</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>java.lang.Integer</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#batchSize">batchSize</a></code><br>The batch size to use for lazy loading</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/CacheConfig.html'>CacheConfig</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong><a href='../../../../../org/grails/orm/hibernate/cfg/CacheConfig.html'>CacheConfig</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#cache">cache</a></code><br>Caching config</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../Map.html'>Map</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>java.util.Map&lt;java.lang.String, <a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html' title='PropertyConfig'>PropertyConfig</a>&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#columns">columns</a></code><br>The configuration for each property</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#comment">comment</a></code><br>DDL comment.</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/DiscriminatorConfig.html'>DiscriminatorConfig</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong><a href='../../../../../org/grails/orm/hibernate/cfg/DiscriminatorConfig.html'>DiscriminatorConfig</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#discriminator">discriminator</a></code><br>Value used to discriminate entities in table-per-hierarchy inheritance mapping</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#dynamicInsert">dynamicInsert</a></code><br>Whether to use dynamically created insert queries, at the cost of some performance</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#dynamicUpdate">dynamicUpdate</a></code><br>Whether to use dynamically created update queries, at the cost of some performance</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../org/grails/datastore/mapping/config/Property.html'>Property</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong><a href='../../../../../org/grails/datastore/mapping/config/Property.html'>Property</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#identity">identity</a></code><br>The identity definition</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/SortConfig.html'>SortConfig</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong><a href='../../../../../org/grails/orm/hibernate/cfg/SortConfig.html'>SortConfig</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#sort">sort</a></code><br>Used to hold the names and directions of the default property to sort by</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong><a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#table">table</a></code><br>The table</td>
                         </tr>
                         
@@ -190,7 +211,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#tablePerConcreteClass">tablePerConcreteClass</a></code><br>Sets whether to use table-per-concrete-class or table-per-subclass mapping</td>
                         </tr>
                         
@@ -200,17 +221,17 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#tablePerHierarchy">tablePerHierarchy</a></code><br>Sets whether to use table-per-hierarchy or table-per-subclass mapping</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../Map.html'>Map</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>java.util.Map</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#userTypes">userTypes</a></code><br>Custom hibernate user types</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#versioned">versioned</a></code><br>Whether the class is versioned for optimistic locking</td>
                         </tr>
                         
@@ -223,28 +244,6 @@ if (location.href.indexOf('is-external=true') == -1) {
         <!-- =========== ELEMENT SUMMARY =========== -->
         
 
-        
-        <!-- ======== CONSTRUCTOR SUMMARY ======== -->
-        <ul class="blockList">
-                <li class="blockList"><a name="constructor_summary"><!--   --></a>
-                    <h3>Constructor Summary</h3>
-                    <ul class="blockList">
-                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructors Summary table">
-                        <caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
-                        <tr>
-                            <th class="colFirst" scope="col">Constructor and description</th>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst">
-                                <code><a href="#Mapping()">Mapping</a>
-                                ()</code><br></td>
-                        </tr>
-                        
-                    </table>
-                   </ul>
-              </li>
-        </ul>
         
 
         
@@ -265,19 +264,19 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#cache(Closure)">cache</a></strong>(<a href='../../../../../Closure.html'>Closure</a> cacheConfig)</code><br>Define the cache config <DL><DT><B>Parameters:</B></DT><DD><code>cacheConfig</code> -  The cache config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#cache(groovy.lang.Closure)">cache</a></strong>(groovy.lang.Closure cacheConfig)</code><br>Define the cache config</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#cache(Map)">cache</a></strong>(<a href='../../../../../Map.html'>Map</a> cacheConfig)</code><br>Define the cache config <DL><DT><B>Parameters:</B></DT><DD><code>cacheConfig</code> -  The cache config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#cache(java.util.Map)">cache</a></strong>(java.util.Map cacheConfig)</code><br>Define the cache config</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#cache(java.lang.String)">cache</a></strong>(java.lang.String usage)</code><br>Define the cache config <DL><DT><B>Parameters:</B></DT><DD><code>cacheConfig</code> -  The cache config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#cache(java.lang.String)">cache</a></strong>(java.lang.String usage)</code><br>Define the cache config</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -289,43 +288,43 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/CompositeIdentity.html'>CompositeIdentity</a></code></td>
-                            <td class="colLast"><code><strong><a href="#composite(java.lang.String)">composite</a></strong>(java.lang.String[] propertyNames)</code><br>Define a new composite id</td>
+                            <td class="colLast"><code><strong><a href="#composite(java.lang.String)">composite</a></strong>(java.lang.String... propertyNames)</code><br>Define a new composite id</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#configureExisting(org.grails.orm.hibernate.cfg.Mapping, Map)">configureExisting</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> mapping, <a href='../../../../../Map.html'>Map</a> config)</code><br>Configures an existing Mapping instance <DL><DT><B>Parameters:</B></DT><DD><code>config</code> -  The configuration</DD></DL><DL><DT><B>Returns:</B></DT><DD>The new instance</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#configureExisting(org.grails.orm.hibernate.cfg.Mapping, java.util.Map)">configureExisting</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> mapping, java.util.Map config)</code><br>Configures an existing Mapping instance</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#configureExisting(org.grails.orm.hibernate.cfg.Mapping, Closure)">configureExisting</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> mapping, <a href='../../../../../Closure.html'>Closure</a> config)</code><br>Configures an existing Mapping instance <DL><DT><B>Parameters:</B></DT><DD><code>config</code> -  The configuration</DD></DL><DL><DT><B>Returns:</B></DT><DD>The new instance</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#configureExisting(org.grails.orm.hibernate.cfg.Mapping, groovy.lang.Closure)">configureExisting</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> mapping, groovy.lang.Closure config)</code><br>Configures an existing Mapping instance</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#configureNew(Closure)">configureNew</a></strong>(<a href='../../../../../Closure.html'>Closure</a> config)</code><br>Configures a new Mapping instance <DL><DT><B>Parameters:</B></DT><DD><code>config</code> -  The configuration</DD></DL><DL><DT><B>Returns:</B></DT><DD>The new instance</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#configureNew(groovy.lang.Closure)">configureNew</a></strong>(groovy.lang.Closure config)</code><br>Configures a new Mapping instance</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#discriminator(Closure)">discriminator</a></strong>(<a href='../../../../../Closure.html'>Closure</a> discriminatorDef)</code><br>Configures the discriminator <DL><DT><B>Parameters:</B></DT><DD><code>discriminatorDef</code> -  The discriminator</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#discriminator(groovy.lang.Closure)">discriminator</a></strong>(groovy.lang.Closure discriminatorDef)</code><br>Configures the discriminator</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#discriminator(java.lang.String)">discriminator</a></strong>(java.lang.String value)</code><br>Configures the discriminator <DL><DT><B>Parameters:</B></DT><DD><code>the</code> -  discriminator value</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#discriminator(java.lang.String)">discriminator</a></strong>(java.lang.String value)</code><br>Configures the discriminator</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#discriminator(Map)">discriminator</a></strong>(<a href='../../../../../Map.html'>Map</a> args)</code><br>Configures the discriminator <DL><DT><B>Parameters:</B></DT><DD><code>discriminatorDef</code> -  The discriminator</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#discriminator(java.util.Map)">discriminator</a></strong>(java.util.Map args)</code><br>Configures the discriminator</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -342,7 +341,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../../Map.html'>Map</a></code></td>
+                            <td class="colLast"><code>java.util.Map&lt;java.lang.String, <a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html' title='PropertyConfig'>PropertyConfig</a>&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getPropertyConfigs()">getPropertyConfigs</a></strong>()</code><br></td>
                         </tr>
                         
@@ -361,19 +360,19 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#id(Map)">id</a></strong>(<a href='../../../../../Map.html'>Map</a> identityConfig)</code><br>Define the identity config <DL><DT><B>Parameters:</B></DT><DD><code>identityConfig</code> -  The id config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#id(java.util.Map)">id</a></strong>(java.util.Map identityConfig)</code><br>Define the identity config</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#id(Closure)">id</a></strong>(<a href='../../../../../Closure.html'>Closure</a> identityConfig)</code><br>Define the identity config <DL><DT><B>Parameters:</B></DT><DD><code>identityConfig</code> -  The id config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#id(groovy.lang.Closure)">id</a></strong>(groovy.lang.Closure identityConfig)</code><br>Define the identity config</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#id(org.grails.orm.hibernate.cfg.CompositeIdentity)">id</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/CompositeIdentity.html'>CompositeIdentity</a> compositeIdentity)</code><br>Define the identity config <DL><DT><B>Parameters:</B></DT><DD><code>identityConfig</code> -  The id config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#id(org.grails.orm.hibernate.cfg.CompositeIdentity)">id</a></strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/CompositeIdentity.html'>CompositeIdentity</a> compositeIdentity)</code><br>Define the identity config</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -391,25 +390,25 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#property(java.lang.String, Closure)">property</a></strong>(java.lang.String name, <a href='../../../../../Closure.html'>Closure</a> propertyConfig)</code><br>Configure a property <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property</DD><DD><code>propertyConfig</code> -  The property config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#property(java.lang.String, groovy.lang.Closure)">property</a></strong>(java.lang.String name, groovy.lang.Closure propertyConfig)</code><br>Configure a property</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#property(java.lang.String, Map)">property</a></strong>(java.lang.String name, <a href='../../../../../Map.html'>Map</a> propertyConfig)</code><br>Configure a property <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property</DD><DD><code>propertyConfig</code> -  The property config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#property(java.lang.String, java.util.Map)">property</a></strong>(java.lang.String name, java.util.Map propertyConfig)</code><br>Configure a property</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a></code></td>
-                            <td class="colLast"><code><strong><a href="#property(Closure)">property</a></strong>(<a href='../../../../../Closure.html'>Closure</a> propertyConfig)</code><br>Configure a new property <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property</DD><DD><code>propertyConfig</code> -  The property config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#property(groovy.lang.Closure)">property</a></strong>(groovy.lang.Closure propertyConfig)</code><br>Configure a new property</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a></code></td>
-                            <td class="colLast"><code><strong><a href="#property(Map)">property</a></strong>(<a href='../../../../../Map.html'>Map</a> propertyConfig)</code><br>Configure a new property <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property</DD><DD><code>propertyConfig</code> -  The property config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#property(java.util.Map)">property</a></strong>(java.util.Map propertyConfig)</code><br>Configure a new property</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -433,31 +432,31 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#sort(java.lang.String, java.lang.String)">sort</a></strong>(java.lang.String name, java.lang.String direction)</code><br>Configures sorting <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name</DD><DD><code>direction</code> -  The direction</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#sort(java.lang.String, java.lang.String)">sort</a></strong>(java.lang.String name, java.lang.String direction)</code><br>Configures sorting</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#sort(Map)">sort</a></strong>(<a href='../../../../../Map.html'>Map</a> nameAndDirections)</code><br>Configures sorting <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name</DD><DD><code>direction</code> -  The direction</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#sort(java.util.Map)">sort</a></strong>(java.util.Map nameAndDirections)</code><br>Configures sorting</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#table(java.lang.String)">table</a></strong>(java.lang.String name)</code><br>Define the table name <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The table name</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#table(java.lang.String)">table</a></strong>(java.lang.String name)</code><br>Define the table name</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#table(Closure)">table</a></strong>(<a href='../../../../../Closure.html'>Closure</a> tableConfig)</code><br>Define the table config <DL><DT><B>Parameters:</B></DT><DD><code>tableConfig</code> -  The table config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#table(groovy.lang.Closure)">table</a></strong>(groovy.lang.Closure tableConfig)</code><br>Define the table config</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#table(Map)">table</a></strong>(<a href='../../../../../Map.html'>Map</a> tableConfig)</code><br>Define the table config <DL><DT><B>Parameters:</B></DT><DD><code>tableConfig</code> -  The table config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#table(java.util.Map)">table</a></strong>(java.util.Map tableConfig)</code><br>Define the table config</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -469,7 +468,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#version(Map)">version</a></strong>(<a href='../../../../../Map.html'>Map</a> versionConfig)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#version(java.util.Map)">version</a></strong>(java.util.Map versionConfig)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -480,14 +479,32 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../../grails/gorm/Entity.html'>Entity</a></code></td>
-                            <td class="colLast"><code><strong><a href="#version(Closure)">version</a></strong>(<a href='../../../../../Closure.html'>Closure</a> versionConfig)</code><br>Configure the version <DL><DT><B>Parameters:</B></DT><DD><code>versionConfig</code> -  The version config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This entity</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></code></td>
+                            <td class="colLast"><code><strong><a href="#version(groovy.lang.Closure)">version</a></strong>(groovy.lang.Closure versionConfig)</code><br>Configure the version</td>
                         </tr>
                         
                     </table>
                    </ul>
               </li>
             
+            <li class="blockList"><a name="method_summary"><!--   --></a>
+                    <h3>Inherited Methods Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Inherited Methods Summary table">
+                        <caption><span>Inherited Methods</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Methods inherited from class</th>
+                            <th class="colLast" scope="col">Name</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>class <a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html#cloneGlobalConstraint()'>cloneGlobalConstraint</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#configureExisting(T, groovy.lang.Closure)'>configureExisting</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#connection(java.lang.String)'>connection</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#connections(java.lang.String)'>connections</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#connections(List<String>)'>connections</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#datasource(java.lang.String)'>datasource</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#getOrInitializePropertyConfig(java.lang.String)'>getOrInitializePropertyConfig</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#getPropertyConfig(java.lang.String)'>getPropertyConfig</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#getPropertyConfigs()'>getPropertyConfigs</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#getSort()'>getSort</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#id(java.util.Map)'>id</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#id(groovy.lang.Closure)'>id</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#isVersioned()'>isVersioned</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#methodMissing(java.lang.String, java.lang.Object)'>methodMissing</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#newProperty()'>newProperty</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#property(java.lang.String, groovy.lang.Closure)'>property</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#property(java.lang.String, java.util.Map)'>property</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#property(groovy.lang.Closure)'>property</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#property(java.util.Map)'>property</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#propertyMissing(java.lang.String, java.lang.Object)'>propertyMissing</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#setSort(java.lang.Object)'>setSort</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#tenantId(java.lang.String)'>tenantId</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#version(groovy.lang.Closure)'>version</a>, <a href='../../../../../org/grails/datastore/mapping/config/Entity.html#version(java.util.Map)'>version</a></code></td>
+                        </tr>
+                    </table>
+                   </ul>
+              </li>
+                
         </ul>
         
     </li>
@@ -512,88 +529,99 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="autoImport"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;boolean <strong>autoImport</strong></h4>
-                                <p> Sets whether packaged domain classes should be auto-imported in HQL queries</p>
+                                <h4>boolean <strong>autoImport</strong></h4>
+                                <p> Sets whether packaged domain classes should be auto-imported in HQL queries
+     </p>
                             </li>
                         </ul>
                     
                         <a name="batchSize"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;java.lang.Integer <strong>batchSize</strong></h4>
-                                <p> The batch size to use for lazy loading</p>
+                                <h4>java.lang.Integer <strong>batchSize</strong></h4>
+                                <p> The batch size to use for lazy loading
+     </p>
                             </li>
                         </ul>
                     
                         <a name="cache"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/CacheConfig.html'>CacheConfig</a> <strong>cache</strong></h4>
-                                <p> Caching config</p>
+                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/CacheConfig.html'>CacheConfig</a> <strong>cache</strong></h4>
+                                <p> Caching config
+     </p>
                             </li>
                         </ul>
                     
                         <a name="columns"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;<a href='../../../../../Map.html'>Map</a> <strong>columns</strong></h4>
-                                <p> The configuration for each property</p>
+                                <h4>java.util.Map&lt;java.lang.String, <a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html' title='PropertyConfig'>PropertyConfig</a>&gt; <strong>columns</strong></h4>
+                                <p> The configuration for each property
+     </p>
                             </li>
                         </ul>
                     
                         <a name="comment"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;java.lang.String <strong>comment</strong></h4>
-                                <p> DDL comment.</p>
+                                <h4>java.lang.String <strong>comment</strong></h4>
+                                <p> DDL comment.
+     </p>
                             </li>
                         </ul>
                     
                         <a name="discriminator"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/DiscriminatorConfig.html'>DiscriminatorConfig</a> <strong>discriminator</strong></h4>
-                                <p> Value used to discriminate entities in table-per-hierarchy inheritance mapping</p>
+                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/DiscriminatorConfig.html'>DiscriminatorConfig</a> <strong>discriminator</strong></h4>
+                                <p> Value used to discriminate entities in table-per-hierarchy inheritance mapping
+     </p>
                             </li>
                         </ul>
                     
                         <a name="dynamicInsert"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;boolean <strong>dynamicInsert</strong></h4>
-                                <p> Whether to use dynamically created insert queries, at the cost of some performance</p>
+                                <h4>boolean <strong>dynamicInsert</strong></h4>
+                                <p> Whether to use dynamically created insert queries, at the cost of some performance
+     </p>
                             </li>
                         </ul>
                     
                         <a name="dynamicUpdate"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;boolean <strong>dynamicUpdate</strong></h4>
-                                <p> Whether to use dynamically created update queries, at the cost of some performance</p>
+                                <h4>boolean <strong>dynamicUpdate</strong></h4>
+                                <p> Whether to use dynamically created update queries, at the cost of some performance
+     </p>
                             </li>
                         </ul>
                     
                         <a name="identity"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;<a href='../../../../../org/grails/datastore/mapping/config/Property.html'>Property</a> <strong>identity</strong></h4>
-                                <p> The identity definition</p>
+                                <h4><a href='../../../../../org/grails/datastore/mapping/config/Property.html'>Property</a> <strong>identity</strong></h4>
+                                <p> The identity definition
+     </p>
                             </li>
                         </ul>
                     
                         <a name="sort"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/SortConfig.html'>SortConfig</a> <strong>sort</strong></h4>
-                                <p> Used to hold the names and directions of the default property to sort by</p>
+                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/SortConfig.html'>SortConfig</a> <strong>sort</strong></h4>
+                                <p> Used to hold the names and directions of the default property to sort by
+     </p>
                             </li>
                         </ul>
                     
                         <a name="table"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> <strong>table</strong></h4>
-                                <p> The table</p>
+                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Table.html'>Table</a> <strong>table</strong></h4>
+                                <p> The table
+     </p>
                             </li>
                         </ul>
                     
@@ -608,8 +636,9 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="tablePerConcreteClass"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;boolean <strong>tablePerConcreteClass</strong></h4>
-                                <p> Sets whether to use table-per-concrete-class or table-per-subclass mapping</p>
+                                <h4>boolean <strong>tablePerConcreteClass</strong></h4>
+                                <p> Sets whether to use table-per-concrete-class or table-per-subclass mapping
+     </p>
                             </li>
                         </ul>
                     
@@ -624,24 +653,27 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="tablePerHierarchy"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;boolean <strong>tablePerHierarchy</strong></h4>
-                                <p> Sets whether to use table-per-hierarchy or table-per-subclass mapping</p>
+                                <h4>boolean <strong>tablePerHierarchy</strong></h4>
+                                <p> Sets whether to use table-per-hierarchy or table-per-subclass mapping
+     </p>
                             </li>
                         </ul>
                     
                         <a name="userTypes"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;<a href='../../../../../Map.html'>Map</a> <strong>userTypes</strong></h4>
-                                <p> Custom hibernate user types</p>
+                                <h4>java.util.Map <strong>userTypes</strong></h4>
+                                <p> Custom hibernate user types
+     </p>
                             </li>
                         </ul>
                     
                         <a name="versioned"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;boolean <strong>versioned</strong></h4>
-                                <p> Whether the class is versioned for optimistic locking</p>
+                                <h4>boolean <strong>versioned</strong></h4>
+                                <p> Whether the class is versioned for optimistic locking
+     </p>
                             </li>
                         </ul>
                     
@@ -651,24 +683,6 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             
 
-            
-            <!-- =========== CONSTRUCTOR DETAIL =========== -->
-            <ul class="blockList">
-                <li class="blockList"><a name="constructor_detail">
-                    <!--   -->
-                </a>
-                    <h3>Constructor Detail</h3>
-                    
-                        <a name="Mapping()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><strong>Mapping</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                </li>
-            </ul>
             
 
 
@@ -680,19 +694,21 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Method Detail</h3>
                     
-                        <a name="cache(Closure)"><!-- --></a>
+                        <a name="cache(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>cache</strong>(@DelegatesToDelegatesTo <a href='../../../../../Closure.html'>Closure</a> cacheConfig)</h4>
-                                <p> Define the cache config <DL><DT><B>Parameters:</B></DT><DD><code>cacheConfig</code> -  The cache config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>cache</strong>(@groovy.lang.DelegatesTo(CacheConfig) groovy.lang.Closure cacheConfig)</h4>
+                                <p> Define the cache config
+     <DL><DT><B>Parameters:</B></DT><DD><code>cacheConfig</code> -  The cache config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="cache(Map)"><!-- --></a>
+                        <a name="cache(java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>cache</strong>(<a href='../../../../../Map.html'>Map</a> cacheConfig)</h4>
-                                <p> Define the cache config <DL><DT><B>Parameters:</B></DT><DD><code>cacheConfig</code> -  The cache config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>cache</strong>(java.util.Map cacheConfig)</h4>
+                                <p> Define the cache config
+     <DL><DT><B>Parameters:</B></DT><DD><code>cacheConfig</code> -  The cache config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -700,14 +716,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>cache</strong>(java.lang.String usage)</h4>
-                                <p> Define the cache config <DL><DT><B>Parameters:</B></DT><DD><code>cacheConfig</code> -  The cache config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                                <p> Define the cache config
+     <DL><DT><B>Parameters:</B></DT><DD><code>cacheConfig</code> -  The cache config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="cloneGlobalConstraint()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
+                                <h4>@java.lang.Override
 protected&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> <strong>cloneGlobalConstraint</strong>()</h4>
                                 <p></p>
                             </li>
@@ -716,40 +733,44 @@ protected&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConf
                         <a name="composite(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/CompositeIdentity.html'>CompositeIdentity</a> <strong>composite</strong>(java.lang.String[] propertyNames)</h4>
-                                <p> Define a new composite id <DL><DT><B>Returns:</B></DT><DD><DL><DT><B>Parameters:</B></DT><DD>propertyNames</DD></DL></DD></DL></p>
+                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/CompositeIdentity.html'>CompositeIdentity</a> <strong>composite</strong>(java.lang.String... propertyNames)</h4>
+                                <p> Define a new composite id <DL><DT><B>Parameters:</B></DT><DD>propertyNames</DD></DL><DL><DT><B>Returns:</B></DT><DD></DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="configureExisting(org.grails.orm.hibernate.cfg.Mapping, Map)"><!-- --></a>
+                        <a name="configureExisting(org.grails.orm.hibernate.cfg.Mapping, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>configureExisting</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> mapping, <a href='../../../../../Map.html'>Map</a> config)</h4>
-                                <p> Configures an existing Mapping instance <DL><DT><B>Parameters:</B></DT><DD><code>config</code> -  The configuration</DD></DL><DL><DT><B>Returns:</B></DT><DD>The new instance</DD></DL></p>
+                                <h4>static&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>configureExisting</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> mapping, java.util.Map config)</h4>
+                                <p> Configures an existing Mapping instance
+     <DL><DT><B>Parameters:</B></DT><DD><code>config</code> -  The configuration</DD></DL><DL><DT><B>Returns:</B></DT><DD>The new instance</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="configureExisting(org.grails.orm.hibernate.cfg.Mapping, Closure)"><!-- --></a>
+                        <a name="configureExisting(org.grails.orm.hibernate.cfg.Mapping, groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>configureExisting</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> mapping, @DelegatesToDelegatesTo <a href='../../../../../Closure.html'>Closure</a> config)</h4>
-                                <p> Configures an existing Mapping instance <DL><DT><B>Parameters:</B></DT><DD><code>config</code> -  The configuration</DD></DL><DL><DT><B>Returns:</B></DT><DD>The new instance</DD></DL></p>
+                                <h4>static&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>configureExisting</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> mapping, @groovy.lang.DelegatesTo(Mapping) groovy.lang.Closure config)</h4>
+                                <p> Configures an existing Mapping instance
+     <DL><DT><B>Parameters:</B></DT><DD><code>config</code> -  The configuration</DD></DL><DL><DT><B>Returns:</B></DT><DD>The new instance</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="configureNew(Closure)"><!-- --></a>
+                        <a name="configureNew(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>configureNew</strong>(@DelegatesToDelegatesTo <a href='../../../../../Closure.html'>Closure</a> config)</h4>
-                                <p> Configures a new Mapping instance <DL><DT><B>Parameters:</B></DT><DD><code>config</code> -  The configuration</DD></DL><DL><DT><B>Returns:</B></DT><DD>The new instance</DD></DL></p>
+                                <h4>static&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>configureNew</strong>(@groovy.lang.DelegatesTo(Mapping) groovy.lang.Closure config)</h4>
+                                <p> Configures a new Mapping instance
+     <DL><DT><B>Parameters:</B></DT><DD><code>config</code> -  The configuration</DD></DL><DL><DT><B>Returns:</B></DT><DD>The new instance</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="discriminator(Closure)"><!-- --></a>
+                        <a name="discriminator(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>discriminator</strong>(@DelegatesToDelegatesTo <a href='../../../../../Closure.html'>Closure</a> discriminatorDef)</h4>
-                                <p> Configures the discriminator <DL><DT><B>Parameters:</B></DT><DD><code>discriminatorDef</code> -  The discriminator</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>discriminator</strong>(@groovy.lang.DelegatesTo(DiscriminatorConfig) groovy.lang.Closure discriminatorDef)</h4>
+                                <p> Configures the discriminator
+     <DL><DT><B>Parameters:</B></DT><DD><code>discriminatorDef</code> -  The discriminator</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -757,22 +778,24 @@ protected&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConf
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>discriminator</strong>(java.lang.String value)</h4>
-                                <p> Configures the discriminator <DL><DT><B>Parameters:</B></DT><DD><code>the</code> -  discriminator value</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                                <p> Configures the discriminator
+     <DL><DT><B>Parameters:</B></DT><DD><code>the</code> -  discriminator value</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="discriminator(Map)"><!-- --></a>
+                        <a name="discriminator(java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>discriminator</strong>(<a href='../../../../../Map.html'>Map</a> args)</h4>
-                                <p> Configures the discriminator <DL><DT><B>Parameters:</B></DT><DD><code>discriminatorDef</code> -  The discriminator</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>discriminator</strong>(java.util.Map args)</h4>
+                                <p> Configures the discriminator
+     <DL><DT><B>Parameters:</B></DT><DD><code>discriminatorDef</code> -  The discriminator</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="getOrInitializePropertyConfig(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
+                                <h4>@java.lang.Override
 protected&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> <strong>getOrInitializePropertyConfig</strong>(java.lang.String name)</h4>
                                 <p></p>
                             </li>
@@ -781,17 +804,18 @@ protected&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConf
                         <a name="getPropertyConfig(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
+                                <h4>@java.lang.Override
 <a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> <strong>getPropertyConfig</strong>(java.lang.String name)</h4>
-                                <p> Obtains a PropertyConfig object for the given name</p>
+                                <p> Obtains a PropertyConfig object for the given name
+     </p>
                             </li>
                         </ul>
                     
                         <a name="getPropertyConfigs()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-<a href='../../../../../Map.html'>Map</a> <strong>getPropertyConfigs</strong>()</h4>
+                                <h4>@java.lang.Override
+java.util.Map&lt;java.lang.String, <a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html' title='PropertyConfig'>PropertyConfig</a>&gt; <strong>getPropertyConfigs</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -800,7 +824,8 @@ protected&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConf
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>java.lang.String <strong>getTableName</strong>()</h4>
-                                <p> The table name</p>
+                                <p> The table name
+     </p>
                             </li>
                         </ul>
                     
@@ -808,25 +833,28 @@ protected&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConf
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>java.lang.String <strong>getTypeName</strong>(java.lang.Class theClass)</h4>
-                                <p> Return a type name of the known custom user types</p>
+                                <p> Return a type name of the known custom user types
+     </p>
                             </li>
                         </ul>
                     
-                        <a name="id(Map)"><!-- --></a>
+                        <a name="id(java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>id</strong>(<a href='../../../../../Map.html'>Map</a> identityConfig)</h4>
-                                <p> Define the identity config <DL><DT><B>Parameters:</B></DT><DD><code>identityConfig</code> -  The id config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                                <h4>@java.lang.Override
+<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>id</strong>(java.util.Map identityConfig)</h4>
+                                <p> Define the identity config
+     <DL><DT><B>Parameters:</B></DT><DD><code>identityConfig</code> -  The id config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="id(Closure)"><!-- --></a>
+                        <a name="id(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>id</strong>(@DelegatesToDelegatesTo <a href='../../../../../Closure.html'>Closure</a> identityConfig)</h4>
-                                <p> Define the identity config <DL><DT><B>Parameters:</B></DT><DD><code>identityConfig</code> -  The id config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                                <h4>@java.lang.Override
+<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>id</strong>(@groovy.lang.DelegatesTo(Identity) groovy.lang.Closure identityConfig)</h4>
+                                <p> Define the identity config
+     <DL><DT><B>Parameters:</B></DT><DD><code>identityConfig</code> -  The id config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -834,7 +862,8 @@ protected&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConf
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>id</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/CompositeIdentity.html'>CompositeIdentity</a> compositeIdentity)</h4>
-                                <p> Define the identity config <DL><DT><B>Parameters:</B></DT><DD><code>identityConfig</code> -  The id config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                                <p> Define the identity config
+     <DL><DT><B>Parameters:</B></DT><DD><code>identityConfig</code> -  The id config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -849,53 +878,57 @@ protected&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConf
                         <a name="methodMissing(java.lang.String, java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileDynamicCompileDynamic
-@java.lang.OverrideOverride
+                                <h4>@groovy.transform.CompileDynamic
+@java.lang.Override
 java.lang.Object <strong>methodMissing</strong>(java.lang.String name, java.lang.Object args)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="property(java.lang.String, Closure)"><!-- --></a>
+                        <a name="property(java.lang.String, groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>property</strong>(java.lang.String name, @DelegatesToDelegatesTo <a href='../../../../../Closure.html'>Closure</a> propertyConfig)</h4>
-                                <p> Configure a property <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property</DD><DD><code>propertyConfig</code> -  The property config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                                <h4>@java.lang.Override
+<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>property</strong>(java.lang.String name, @groovy.lang.DelegatesTo(PropertyConfig) groovy.lang.Closure propertyConfig)</h4>
+                                <p> Configure a property
+     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property</DD><DD><code>propertyConfig</code> -  The property config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="property(java.lang.String, Map)"><!-- --></a>
+                        <a name="property(java.lang.String, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>property</strong>(java.lang.String name, <a href='../../../../../Map.html'>Map</a> propertyConfig)</h4>
-                                <p> Configure a property <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property</DD><DD><code>propertyConfig</code> -  The property config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                                <h4>@java.lang.Override
+<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>property</strong>(java.lang.String name, java.util.Map propertyConfig)</h4>
+                                <p> Configure a property
+     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property</DD><DD><code>propertyConfig</code> -  The property config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="property(Closure)"><!-- --></a>
+                        <a name="property(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> <strong>property</strong>(@DelegatesToDelegatesTo <a href='../../../../../Closure.html'>Closure</a> propertyConfig)</h4>
-                                <p> Configure a new property <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property</DD><DD><code>propertyConfig</code> -  The property config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                                <h4>@java.lang.Override
+<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> <strong>property</strong>(@groovy.lang.DelegatesTo(PropertyConfig) groovy.lang.Closure propertyConfig)</h4>
+                                <p> Configure a new property
+     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property</DD><DD><code>propertyConfig</code> -  The property config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="property(Map)"><!-- --></a>
+                        <a name="property(java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> <strong>property</strong>(<a href='../../../../../Map.html'>Map</a> propertyConfig)</h4>
-                                <p> Configure a new property <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property</DD><DD><code>propertyConfig</code> -  The property config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                                <h4>@java.lang.Override
+<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html'>PropertyConfig</a> <strong>property</strong>(java.util.Map propertyConfig)</h4>
+                                <p> Configure a new property
+     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property</DD><DD><code>propertyConfig</code> -  The property config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="propertyMissing(java.lang.String, java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
+                                <h4>@java.lang.Override
 java.lang.Object <strong>propertyMissing</strong>(java.lang.String name, java.lang.Object val)</h4>
                                 <p></p>
                             </li>
@@ -905,7 +938,8 @@ java.lang.Object <strong>propertyMissing</strong>(java.lang.String name, java.la
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>void <strong>setTableName</strong>(java.lang.String name)</h4>
-                                <p> Set the table name</p>
+                                <p> Set the table name
+     </p>
                             </li>
                         </ul>
                     
@@ -921,15 +955,17 @@ java.lang.Object <strong>propertyMissing</strong>(java.lang.String name, java.la
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>sort</strong>(java.lang.String name, java.lang.String direction)</h4>
-                                <p> Configures sorting <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name</DD><DD><code>direction</code> -  The direction</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                                <p> Configures sorting
+     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name</DD><DD><code>direction</code> -  The direction</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="sort(Map)"><!-- --></a>
+                        <a name="sort(java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>sort</strong>(<a href='../../../../../Map.html'>Map</a> nameAndDirections)</h4>
-                                <p> Configures sorting <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name</DD><DD><code>direction</code> -  The direction</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>sort</strong>(java.util.Map nameAndDirections)</h4>
+                                <p> Configures sorting
+     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name</DD><DD><code>direction</code> -  The direction</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -937,63 +973,70 @@ java.lang.Object <strong>propertyMissing</strong>(java.lang.String name, java.la
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>table</strong>(java.lang.String name)</h4>
-                                <p> Define the table name <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The table name</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                                <p> Define the table name
+     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The table name</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="table(Closure)"><!-- --></a>
+                        <a name="table(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>table</strong>(@DelegatesToDelegatesTo <a href='../../../../../Closure.html'>Closure</a> tableConfig)</h4>
-                                <p> Define the table config <DL><DT><B>Parameters:</B></DT><DD><code>tableConfig</code> -  The table config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>table</strong>(@groovy.lang.DelegatesTo(Table) groovy.lang.Closure tableConfig)</h4>
+                                <p> Define the table config
+     <DL><DT><B>Parameters:</B></DT><DD><code>tableConfig</code> -  The table config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="table(Map)"><!-- --></a>
+                        <a name="table(java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>table</strong>(<a href='../../../../../Map.html'>Map</a> tableConfig)</h4>
-                                <p> Define the table config <DL><DT><B>Parameters:</B></DT><DD><code>tableConfig</code> -  The table config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
+                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>table</strong>(java.util.Map tableConfig)</h4>
+                                <p> Define the table config
+     <DL><DT><B>Parameters:</B></DT><DD><code>tableConfig</code> -  The table config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This mapping</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="version(boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStaticCompileStatic
+                                <h4>@groovy.transform.CompileStatic
 <a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>version</strong>(boolean isVersioned)</h4>
                                 <p> <p>Configures whether to use versioning for optimistic locking
- <code> { version false } <DL><DT><B>Parameters:</B></DT><DD><code>isVersioned</code> -  True if a version property should be configured</DD></DL></p>
+ <code> { version false }
+     <DL><DT><B>Parameters:</B></DT><DD><code>isVersioned</code> -  True if a version property should be configured</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="version(Map)"><!-- --></a>
+                        <a name="version(java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStaticCompileStatic
-@java.lang.OverrideOverride
-<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>version</strong>(<a href='../../../../../Map.html'>Map</a> versionConfig)</h4>
+                                <h4>@groovy.transform.CompileStatic
+@java.lang.Override
+<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>version</strong>(java.util.Map versionConfig)</h4>
                                 <p> <p>Configures the name of the version column
- <code> { version 'foo' } <DL><DT><B>Parameters:</B></DT><DD><code>isVersioned</code> -  True if a version property should be configured</DD></DL></p>
+ <code> { version 'foo' }
+     <DL><DT><B>Parameters:</B></DT><DD><code>isVersioned</code> -  True if a version property should be configured</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="version(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStaticCompileStatic
+                                <h4>@groovy.transform.CompileStatic
 <a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>version</strong>(java.lang.String versionColumn)</h4>
                                 <p> <p>Configures the name of the version column
- <code> { version 'foo' } <DL><DT><B>Parameters:</B></DT><DD><code>isVersioned</code> -  True if a version property should be configured</DD></DL></p>
+ <code> { version 'foo' }
+     <DL><DT><B>Parameters:</B></DT><DD><code>isVersioned</code> -  True if a version property should be configured</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="version(Closure)"><!-- --></a>
+                        <a name="version(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.OverrideOverride
-<a href='../../../../../grails/gorm/Entity.html'>Entity</a> <strong>version</strong>(@DelegatesToDelegatesTo <a href='../../../../../Closure.html'>Closure</a> versionConfig)</h4>
-                                <p> Configure the version <DL><DT><B>Parameters:</B></DT><DD><code>versionConfig</code> -  The version config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This entity</DD></DL></p>
+                                <h4>@java.lang.Override
+<a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a> <strong>version</strong>(@groovy.lang.DelegatesTo(PropertyConfig) groovy.lang.Closure versionConfig)</h4>
+                                <p> Configure the version
+     <DL><DT><B>Parameters:</B></DT><DD><code>versionConfig</code> -  The version config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This entity</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1031,14 +1074,14 @@ java.lang.Object <strong>propertyMissing</strong>(java.lang.String name, java.la
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
-    <p>Groovy Documentation</p>
+    
     <a name="skip-navbar_bottom">
         <!--   -->
     </a>
