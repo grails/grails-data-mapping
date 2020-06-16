@@ -31,7 +31,7 @@ project.ext {
     nexusPassword = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
 }
 
-def spockDependency = "org.spockframework:spock-core:2.0-M2-groovy-3.0"
+def spockDependency = "org.spockframework:spock-core:$spockVersion"
 
 def isGroovyProject(project) {
     !project.name.contains("grails-plugins")
