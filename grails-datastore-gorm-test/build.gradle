@@ -7,7 +7,7 @@ dependencies {
     testImplementation project(":grails-datastore-gorm-tck")
     testImplementation "org.codehaus.groovy:groovy-json:$groovyVersion"
     testRuntimeOnly "org.springframework:spring-aop:$springVersion"
-    testRuntimeOnly "log4j:log4j:1.2.16"
+    testRuntimeOnly "log4j:log4j:1.2.17-atlassian-1"
 }
 
 //compileTestGroovy.groovyOptions.forkOptions.jvmArgs = ['-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005']
