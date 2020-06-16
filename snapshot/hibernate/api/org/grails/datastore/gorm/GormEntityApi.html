@@ -98,8 +98,7 @@ if (location.href.indexOf('is-external=true') == -1) {
         <li class="blockList">
 
 
-    <p> API for instance methods defined by a GORM entity
- <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>5.0.5</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code><D></code> -  The entity type</DD></DL></p>
+    <p> API for instance methods defined by a GORM entity <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>5.0.5</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code><D></code> -  The entity type</DD></DL></p>
 
           </li>
     </ul>
@@ -122,6 +121,28 @@ if (location.href.indexOf('is-external=true') == -1) {
         <!-- =========== ELEMENT SUMMARY =========== -->
         
 
+        
+        <!-- ======== CONSTRUCTOR SUMMARY ======== -->
+        <ul class="blockList">
+                <li class="blockList"><a name="constructor_summary"><!--   --></a>
+                    <h3>Constructor Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructors Summary table">
+                        <caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Constructor and description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst">
+                                <code><a href="#GormEntityApi()">GormEntityApi</a>
+                                ()</code><br></td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+              </li>
+        </ul>
         
 
         
@@ -154,7 +175,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#delete(java.util.Map)">delete</a></strong>(java.util.Map params)</code><br>Deletes an instance from the datastore</td>
+                            <td class="colLast"><code><strong><a href="#delete(Map)">delete</a></strong>(<a href='../../../../Map.html'>Map</a> params)</code><br>Deletes an instance from the datastore</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -172,13 +193,13 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>D</code></td>
-                            <td class="colLast"><code><strong><a href="#insert()">insert</a></strong>()</code><br>Forces an insert of an object to the datastore</td>
+                            <td class="colLast"><code><strong><a href="#insert()">insert</a></strong>()</code><br>Forces an insert of an object to the datastore <DL><DT><B>Returns:</B></DT><DD>Returns the instance</DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>D</code></td>
-                            <td class="colLast"><code><strong><a href="#insert(java.util.Map)">insert</a></strong>(java.util.Map params)</code><br>Forces an insert of an object to the datastore</td>
+                            <td class="colLast"><code><strong><a href="#insert(Map)">insert</a></strong>(<a href='../../../../Map.html'>Map</a> params)</code><br>Forces an insert of an object to the datastore <DL><DT><B>Returns:</B></DT><DD>Returns the instance</DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -196,61 +217,61 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#isDirty(java.lang.String)">isDirty</a></strong>(java.lang.String fieldName)</code><br>Checks whether a field is dirty</td>
+                            <td class="colLast"><code><strong><a href="#isDirty(java.lang.String)">isDirty</a></strong>(java.lang.String fieldName)</code><br>Checks whether a field is dirty <DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD><DD><code>fieldName</code> -  The name of the field</DD></DL><DL><DT><B>Returns:</B></DT><DD>true if the field is dirty</DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#isDirty()">isDirty</a></strong>()</code><br>Checks whether an entity is dirty</td>
+                            <td class="colLast"><code><strong><a href="#isDirty()">isDirty</a></strong>()</code><br>Checks whether an entity is dirty <DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD></DL><DL><DT><B>Returns:</B></DT><DD>true if it is dirty</DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>D</code></td>
-                            <td class="colLast"><code><strong><a href="#lock()">lock</a></strong>()</code><br>Upgrades an existing persistence instance to a write lock</td>
+                            <td class="colLast"><code><strong><a href="#lock()">lock</a></strong>()</code><br>Upgrades an existing persistence instance to a write lock <DL><DT><B>Returns:</B></DT><DD>The instance</DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>D</code></td>
-                            <td class="colLast"><code><strong><a href="#merge()">merge</a></strong>()</code><br>Saves an object the datastore</td>
+                            <td class="colLast"><code><strong><a href="#merge()">merge</a></strong>()</code><br>Saves an object the datastore <DL><DT><B>Returns:</B></DT><DD>Returns the instance</DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>D</code></td>
-                            <td class="colLast"><code><strong><a href="#merge(java.util.Map)">merge</a></strong>(java.util.Map params)</code><br>Saves an object the datastore</td>
+                            <td class="colLast"><code><strong><a href="#merge(Map)">merge</a></strong>(<a href='../../../../Map.html'>Map</a> params)</code><br>Saves an object the datastore <DL><DT><B>Returns:</B></DT><DD>Returns the instance</DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.lang.Object</code></td>
-                            <td class="colLast"><code><strong><a href="#mutex(groovy.lang.Closure)">mutex</a></strong>(groovy.lang.Closure callable)</code><br>Locks the instance for updates for the scope of the passed closure</td>
+                            <td class="colLast"><code><strong><a href="#mutex(Closure)">mutex</a></strong>(<a href='../../../../Closure.html'>Closure</a> callable)</code><br>Locks the instance for updates for the scope of the passed closure <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>D</code></td>
-                            <td class="colLast"><code><strong><a href="#refresh()">refresh</a></strong>()</code><br>Refreshes the state of the current instance</td>
+                            <td class="colLast"><code><strong><a href="#refresh()">refresh</a></strong>()</code><br>Refreshes the state of the current instance <DL><DT><B>Returns:</B></DT><DD>The instance</DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>D</code></td>
-                            <td class="colLast"><code><strong><a href="#save()">save</a></strong>()</code><br>Saves an object the datastore</td>
+                            <td class="colLast"><code><strong><a href="#save()">save</a></strong>()</code><br>Saves an object the datastore <DL><DT><B>Returns:</B></DT><DD>Returns the instance</DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>D</code></td>
-                            <td class="colLast"><code><strong><a href="#save(boolean)">save</a></strong>(boolean validate)</code><br>Save method that takes a boolean which indicates whether to perform validation or not</td>
+                            <td class="colLast"><code><strong><a href="#save(boolean)">save</a></strong>(boolean validate)</code><br>Save method that takes a boolean which indicates whether to perform validation or not <DL><DT><B>Parameters:</B></DT><DD><code>validate</code> -  Whether to perform validation</DD></DL><DL><DT><B>Returns:</B></DT><DD>The instance or null if validation fails</DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>D</code></td>
-                            <td class="colLast"><code><strong><a href="#save(java.util.Map)">save</a></strong>(java.util.Map params)</code><br>Saves an object with the given parameters</td>
+                            <td class="colLast"><code><strong><a href="#save(Map)">save</a></strong>(<a href='../../../../Map.html'>Map</a> params)</code><br>Saves an object with the given parameters <DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD><DD><code>params</code> -  The parameters</DD></DL><DL><DT><B>Returns:</B></DT><DD>The instance</DD></DL></td>
                         </tr>
                         
                     </table>
@@ -275,6 +296,24 @@ if (location.href.indexOf('is-external=true') == -1) {
             
 
             
+            <!-- =========== CONSTRUCTOR DETAIL =========== -->
+            <ul class="blockList">
+                <li class="blockList"><a name="constructor_detail">
+                    <!--   -->
+                </a>
+                    <h3>Constructor Detail</h3>
+                    
+                        <a name="GormEntityApi()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><strong>GormEntityApi</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                </li>
+            </ul>
+            
 
 
             
@@ -289,7 +328,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>D <strong>attach</strong>()</h4>
-                                <p> Attaches an instance to an existing session. Requries a session-based model <DL><DT><B>Returns:</B></DT><DD></DD></DL></p>
+                                <p> Attaches an instance to an existing session. Requries a session-based model
+ @return</p>
                             </li>
                         </ul>
                     
@@ -297,17 +337,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>void <strong>delete</strong>()</h4>
-                                <p> Deletes an instance from the datastore
-     </p>
+                                <p> Deletes an instance from the datastore</p>
                             </li>
                         </ul>
                     
-                        <a name="delete(java.util.Map)"><!-- --></a>
+                        <a name="delete(Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>delete</strong>(java.util.Map params)</h4>
-                                <p> Deletes an instance from the datastore
-     </p>
+                                <h4>void <strong>delete</strong>(<a href='../../../../Map.html'>Map</a> params)</h4>
+                                <p> Deletes an instance from the datastore</p>
                             </li>
                         </ul>
                     
@@ -315,8 +353,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>void <strong>discard</strong>()</h4>
-                                <p> Discards any pending changes. Requires a session-based model.
-     </p>
+                                <p> Discards any pending changes. Requires a session-based model.</p>
                             </li>
                         </ul>
                     
@@ -324,8 +361,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>java.io.Serializable <strong>ident</strong>()</h4>
-                                <p> Returns the objects identifier
-     </p>
+                                <p> Returns the objects identifier</p>
                             </li>
                         </ul>
                     
@@ -333,17 +369,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>D <strong>insert</strong>()</h4>
-                                <p> Forces an insert of an object to the datastore
-     <DL><DT><B>Returns:</B></DT><DD>Returns the instance</DD></DL></p>
+                                <p> Forces an insert of an object to the datastore <DL><DT><B>Returns:</B></DT><DD>Returns the instance</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="insert(java.util.Map)"><!-- --></a>
+                        <a name="insert(Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>D <strong>insert</strong>(java.util.Map params)</h4>
-                                <p> Forces an insert of an object to the datastore
-     <DL><DT><B>Returns:</B></DT><DD>Returns the instance</DD></DL></p>
+                                <h4>D <strong>insert</strong>(<a href='../../../../Map.html'>Map</a> params)</h4>
+                                <p> Forces an insert of an object to the datastore <DL><DT><B>Returns:</B></DT><DD>Returns the instance</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -351,8 +385,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>boolean <strong>instanceOf</strong>(java.lang.Class cls)</h4>
-                                <p> Proxy aware instanceOf implementation.
-     </p>
+                                <p> Proxy aware instanceOf implementation.</p>
                             </li>
                         </ul>
                     
@@ -360,8 +393,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>boolean <strong>isAttached</strong>()</h4>
-                                <p> No concept of session-based model so defaults to true
-     </p>
+                                <p> No concept of session-based model so defaults to true</p>
                             </li>
                         </ul>
                     
@@ -369,8 +401,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>boolean <strong>isDirty</strong>(java.lang.String fieldName)</h4>
-                                <p> Checks whether a field is dirty
-     <DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD><DD><code>fieldName</code> -  The name of the field</DD></DL><DL><DT><B>Returns:</B></DT><DD>true if the field is dirty</DD></DL></p>
+                                <p> Checks whether a field is dirty <DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD><DD><code>fieldName</code> -  The name of the field</DD></DL><DL><DT><B>Returns:</B></DT><DD>true if the field is dirty</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -378,8 +409,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>boolean <strong>isDirty</strong>()</h4>
-                                <p> Checks whether an entity is dirty
-     <DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD></DL><DL><DT><B>Returns:</B></DT><DD>true if it is dirty</DD></DL></p>
+                                <p> Checks whether an entity is dirty <DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD></DL><DL><DT><B>Returns:</B></DT><DD>true if it is dirty</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -387,8 +417,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>D <strong>lock</strong>()</h4>
-                                <p> Upgrades an existing persistence instance to a write lock
-     <DL><DT><B>Returns:</B></DT><DD>The instance</DD></DL></p>
+                                <p> Upgrades an existing persistence instance to a write lock <DL><DT><B>Returns:</B></DT><DD>The instance</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -396,26 +425,23 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>D <strong>merge</strong>()</h4>
-                                <p> Saves an object the datastore
-     <DL><DT><B>Returns:</B></DT><DD>Returns the instance</DD></DL></p>
+                                <p> Saves an object the datastore <DL><DT><B>Returns:</B></DT><DD>Returns the instance</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="merge(java.util.Map)"><!-- --></a>
+                        <a name="merge(Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>D <strong>merge</strong>(java.util.Map params)</h4>
-                                <p> Saves an object the datastore
-     <DL><DT><B>Returns:</B></DT><DD>Returns the instance</DD></DL></p>
+                                <h4>D <strong>merge</strong>(<a href='../../../../Map.html'>Map</a> params)</h4>
+                                <p> Saves an object the datastore <DL><DT><B>Returns:</B></DT><DD>Returns the instance</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="mutex(groovy.lang.Closure)"><!-- --></a>
+                        <a name="mutex(Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.Object <strong>mutex</strong>(groovy.lang.Closure callable)</h4>
-                                <p> Locks the instance for updates for the scope of the passed closure
-     <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
+                                <h4>java.lang.Object <strong>mutex</strong>(<a href='../../../../Closure.html'>Closure</a> callable)</h4>
+                                <p> Locks the instance for updates for the scope of the passed closure <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -423,8 +449,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>D <strong>refresh</strong>()</h4>
-                                <p> Refreshes the state of the current instance
-     <DL><DT><B>Returns:</B></DT><DD>The instance</DD></DL></p>
+                                <p> Refreshes the state of the current instance <DL><DT><B>Returns:</B></DT><DD>The instance</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -432,8 +457,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>D <strong>save</strong>()</h4>
-                                <p> Saves an object the datastore
-     <DL><DT><B>Returns:</B></DT><DD>Returns the instance</DD></DL></p>
+                                <p> Saves an object the datastore <DL><DT><B>Returns:</B></DT><DD>Returns the instance</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -441,17 +465,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>D <strong>save</strong>(boolean validate)</h4>
-                                <p> Save method that takes a boolean which indicates whether to perform validation or not
-     <DL><DT><B>Parameters:</B></DT><DD><code>validate</code> -  Whether to perform validation</DD></DL><DL><DT><B>Returns:</B></DT><DD>The instance or null if validation fails</DD></DL></p>
+                                <p> Save method that takes a boolean which indicates whether to perform validation or not <DL><DT><B>Parameters:</B></DT><DD><code>validate</code> -  Whether to perform validation</DD></DL><DL><DT><B>Returns:</B></DT><DD>The instance or null if validation fails</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="save(java.util.Map)"><!-- --></a>
+                        <a name="save(Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>D <strong>save</strong>(java.util.Map params)</h4>
-                                <p> Saves an object with the given parameters
-     <DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD><DD><code>params</code> -  The parameters</DD></DL><DL><DT><B>Returns:</B></DT><DD>The instance</DD></DL></p>
+                                <h4>D <strong>save</strong>(<a href='../../../../Map.html'>Map</a> params)</h4>
+                                <p> Saves an object with the given parameters <DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD><DD><code>params</code> -  The parameters</DD></DL><DL><DT><B>Returns:</B></DT><DD>The instance</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -496,7 +518,7 @@ if (location.href.indexOf('is-external=true') == -1) {
             Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
-    
+    <p>Groovy Documentation</p>
     <a name="skip-navbar_bottom">
         <!--   -->
     </a>

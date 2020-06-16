@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -99,8 +99,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
 
 
-    <p> Settings for Hibernate
- <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>6.0</DD></DL></p>
+    <p> Settings for Hibernate <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>6.0</DD></DL></p>
 
           </li>
     </ul>
@@ -154,17 +153,17 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong><a href='../../../../../org/grails/datastore/gorm/jdbc/connections/DataSourceSettings.html'>DataSourceSettings</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../org/grails/datastore/gorm/jdbc/connections/DataSourceSettings.html'>DataSourceSettings</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#dataSource">dataSource</a></code><br>Settings for the dataSource</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#enableReload">enableReload</a></code><br>Whether to prepare the datastore for runtime reloading</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong><a href='../../../../../org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.HibernateSettings.html'>HibernateConnectionSourceSettings.HibernateSettings</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.HibernateSettings.html'>HibernateConnectionSourceSettings.HibernateSettings</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#hibernate">hibernate</a></code><br>Settings for Hibernate</td>
                         </tr>
                         
@@ -177,6 +176,28 @@ if (location.href.indexOf('is-external=true') == -1) {
         <!-- =========== ELEMENT SUMMARY =========== -->
         
 
+        
+        <!-- ======== CONSTRUCTOR SUMMARY ======== -->
+        <ul class="blockList">
+                <li class="blockList"><a name="constructor_summary"><!--   --></a>
+                    <h3>Constructor Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructors Summary table">
+                        <caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Constructor and description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst">
+                                <code><a href="#HibernateConnectionSourceSettings()">HibernateConnectionSourceSettings</a>
+                                ()</code><br></td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+              </li>
+        </ul>
         
 
         
@@ -197,7 +218,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.util.Properties</code></td>
-                            <td class="colLast"><code><strong><a href="#toProperties()">toProperties</a></strong>()</code><br>Convert to hibernate properties</td>
+                            <td class="colLast"><code><strong><a href="#toProperties()">toProperties</a></strong>()</code><br>Convert to hibernate properties <DL><DT><B>Returns:</B></DT><DD>The properties</DD></DL></td>
                         </tr>
                         
                     </table>
@@ -246,27 +267,24 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="dataSource"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../org/grails/datastore/gorm/jdbc/connections/DataSourceSettings.html'>DataSourceSettings</a> <strong>dataSource</strong></h4>
-                                <p> Settings for the dataSource
-     </p>
+                                <h4>private&nbsp;<a href='../../../../../org/grails/datastore/gorm/jdbc/connections/DataSourceSettings.html'>DataSourceSettings</a> <strong>dataSource</strong></h4>
+                                <p> Settings for the dataSource</p>
                             </li>
                         </ul>
                     
                         <a name="enableReload"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>boolean <strong>enableReload</strong></h4>
-                                <p> Whether to prepare the datastore for runtime reloading
-     </p>
+                                <h4>private&nbsp;boolean <strong>enableReload</strong></h4>
+                                <p> Whether to prepare the datastore for runtime reloading</p>
                             </li>
                         </ul>
                     
                         <a name="hibernate"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.HibernateSettings.html'>HibernateConnectionSourceSettings.HibernateSettings</a> <strong>hibernate</strong></h4>
-                                <p> Settings for Hibernate
-     </p>
+                                <h4>private&nbsp;<a href='../../../../../org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.HibernateSettings.html'>HibernateConnectionSourceSettings.HibernateSettings</a> <strong>hibernate</strong></h4>
+                                <p> Settings for Hibernate</p>
                             </li>
                         </ul>
                     
@@ -276,6 +294,24 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             
 
+            
+            <!-- =========== CONSTRUCTOR DETAIL =========== -->
+            <ul class="blockList">
+                <li class="blockList"><a name="constructor_detail">
+                    <!--   -->
+                </a>
+                    <h3>Constructor Detail</h3>
+                    
+                        <a name="HibernateConnectionSourceSettings()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><strong>HibernateConnectionSourceSettings</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                </li>
+            </ul>
             
 
 
@@ -291,8 +327,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>java.util.Properties <strong>toProperties</strong>()</h4>
-                                <p> Convert to hibernate properties
-     <DL><DT><B>Returns:</B></DT><DD>The properties</DD></DL></p>
+                                <p> Convert to hibernate properties <DL><DT><B>Returns:</B></DT><DD>The properties</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -330,14 +365,14 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
-    
+    <p>Groovy Documentation</p>
     <a name="skip-navbar_bottom">
         <!--   -->
     </a>

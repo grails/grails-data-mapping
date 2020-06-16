@@ -112,8 +112,7 @@ extends java.lang.Object
 
 
     <p> Implements the ORM mapping DSL constructing a model that can be evaluated by the
- GrailsDomainBinder class which maps GORM classes onto the database.
- <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>1.0</DD></DL></p>
+ GrailsDomainBinder class which maps GORM classes onto the database. <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>1.0</DD></DL></p>
 
           </li>
     </ul>
@@ -144,22 +143,22 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>static&nbsp;org.slf4j.Logger</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;org.slf4j.Logger</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#LOG">LOG</a></code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#className">className</a></code><br></td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>groovy.lang.Closure</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../Closure.html'>Closure</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#defaultConstraints">defaultConstraints</a></code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#mapping">mapping</a></code><br></td>
                         </tr>
                         
@@ -192,8 +191,14 @@ extends java.lang.Object
                         
                         <tr class="rowColor">
                             <td class="colFirst">
-                                <code><a href="#HibernateMappingBuilder(org.grails.orm.hibernate.cfg.Mapping, java.lang.String, groovy.lang.Closure)">HibernateMappingBuilder</a>
-                                (<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> mapping, java.lang.String className, groovy.lang.Closure defaultConstraints = null)</code><br></td>
+                                <code><a href="#HibernateMappingBuilder(org.grails.orm.hibernate.cfg.Mapping, java.lang.String, Closure)">HibernateMappingBuilder</a>
+                                (<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> mapping, java.lang.String className, <a href='../../../../../Closure.html'>Closure</a> defaultConstraints)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst">
+                                <code><a href="#HibernateMappingBuilder()">HibernateMappingBuilder</a>
+                                ()</code><br></td>
                         </tr>
                         
                     </table>
@@ -238,13 +243,13 @@ extends java.lang.Object
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#batchSize(java.lang.Integer)">batchSize</a></strong>(java.lang.Integer num)</code><br>Configures the batch-size used for lazy loading</td>
+                            <td class="colLast"><code><strong><a href="#batchSize(java.lang.Integer)">batchSize</a></strong>(java.lang.Integer num)</code><br>Configures the batch-size used for lazy loading <DL><DT><B>Parameters:</B></DT><DD><code>num</code> -  The batch size to use</DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#cache(java.util.Map)">cache</a></strong>(java.util.Map args)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#cache(Map)">cache</a></strong>(<a href='../../../../../Map.html'>Map</a> args)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -256,7 +261,7 @@ extends java.lang.Object
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#cache(java.lang.String, java.util.Map)">cache</a></strong>(java.lang.String usage, java.util.Map args)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#cache(java.lang.String, Map)">cache</a></strong>(java.lang.String usage, <a href='../../../../../Map.html'>Map</a> args)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -268,7 +273,7 @@ extends java.lang.Object
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#columns(groovy.lang.Closure)">columns</a></strong>(groovy.lang.Closure callable)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#columns(Closure)">columns</a></strong>(<a href='../../../../../Closure.html'>Closure</a> callable)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -286,7 +291,7 @@ extends java.lang.Object
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#datasources(List<String>)">datasources</a></strong>(java.util.List&lt;java.lang.String&gt; names)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#datasources(List)">datasources</a></strong>(<a href='../../../../../List.html'>List</a> names)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -298,7 +303,7 @@ extends java.lang.Object
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#discriminator(java.util.Map)">discriminator</a></strong>(java.util.Map args)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#discriminator(Map)">discriminator</a></strong>(<a href='../../../../../Map.html'>Map</a> args)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -316,31 +321,31 @@ extends java.lang.Object
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a></code></td>
-                            <td class="colLast"><code><strong><a href="#evaluate(groovy.lang.Closure, java.lang.Object)">evaluate</a></strong>(groovy.lang.Closure mappingClosure, java.lang.Object context = null)</code><br>Central entry point for the class. </td>
+                            <td class="colLast"><code><strong><a href="#evaluate(Closure, java.lang.Object)">evaluate</a></strong>(<a href='../../../../../Closure.html'>Closure</a> mappingClosure, java.lang.Object context)</code><br>Central entry point for the class. </td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.util.Map&lt;java.lang.String, <a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html' title='PropertyConfig'>PropertyConfig</a>&gt;</code></td>
+                            <td class="colLast"><code><a href='../../../../../Map.html'>Map</a></code></td>
                             <td class="colLast"><code><strong><a href="#getProperties()">getProperties</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#hibernateCustomUserType(java.util.Map)">hibernateCustomUserType</a></strong>(java.util.Map args)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#hibernateCustomUserType(Map)">hibernateCustomUserType</a></strong>(<a href='../../../../../Map.html'>Map</a> args)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#id(java.util.Map)">id</a></strong>(java.util.Map args)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#id(Map)">id</a></strong>(<a href='../../../../../Map.html'>Map</a> args)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#includes(groovy.lang.Closure)">includes</a></strong>(groovy.lang.Closure callable)</code><br>Include another config in this one</td>
+                            <td class="colLast"><code><strong><a href="#includes(Closure)">includes</a></strong>(<a href='../../../../../Closure.html'>Closure</a> callable)</code><br>Include another config in this one</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -364,7 +369,7 @@ extends java.lang.Object
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#sort(java.util.Map)">sort</a></strong>(java.util.Map namesAndDirections)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#sort(Map)">sort</a></strong>(<a href='../../../../../Map.html'>Map</a> namesAndDirections)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -376,7 +381,7 @@ extends java.lang.Object
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#table(java.util.Map)">table</a></strong>(java.util.Map tableDef)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#table(Map)">table</a></strong>(<a href='../../../../../Map.html'>Map</a> tableDef)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -400,7 +405,7 @@ extends java.lang.Object
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#tenantId(java.lang.String)">tenantId</a></strong>(java.lang.String tenantIdProperty)</code><br>Sets the tenant id</td>
+                            <td class="colLast"><code><strong><a href="#tenantId(java.lang.String)">tenantId</a></strong>(java.lang.String tenantIdProperty)</code><br>Sets the tenant id <DL><DT><B>Parameters:</B></DT><DD><code>tenantIdProperty</code> -  The tenant id property</DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -461,7 +466,7 @@ extends java.lang.Object
                         <a name="LOG"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;final&nbsp;org.slf4j.Logger <strong>LOG</strong></h4>
+                                <h4>private&nbsp;static&nbsp;final&nbsp;org.slf4j.Logger <strong>LOG</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -469,7 +474,7 @@ extends java.lang.Object
                         <a name="className"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>final&nbsp;java.lang.String <strong>className</strong></h4>
+                                <h4>private&nbsp;final&nbsp;java.lang.String <strong>className</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -477,7 +482,7 @@ extends java.lang.Object
                         <a name="defaultConstraints"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>final&nbsp;groovy.lang.Closure <strong>defaultConstraints</strong></h4>
+                                <h4>private&nbsp;final&nbsp;<a href='../../../../../Closure.html'>Closure</a> <strong>defaultConstraints</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -485,7 +490,7 @@ extends java.lang.Object
                         <a name="mapping"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>mapping</strong></h4>
+                                <h4>private&nbsp;<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>mapping</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -508,15 +513,22 @@ extends java.lang.Object
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><strong>HibernateMappingBuilder</strong>(java.lang.String className)</h4>
-                                <p> Constructor for builder
-     <DL><DT><B>Parameters:</B></DT><DD><code>className</code> -  The name of the class being mapped</DD></DL></p>
+                                <p> Constructor for builder <DL><DT><B>Parameters:</B></DT><DD><code>className</code> -  The name of the class being mapped</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="HibernateMappingBuilder(org.grails.orm.hibernate.cfg.Mapping, java.lang.String, groovy.lang.Closure)"><!-- --></a>
+                        <a name="HibernateMappingBuilder(org.grails.orm.hibernate.cfg.Mapping, java.lang.String, Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><strong>HibernateMappingBuilder</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> mapping, java.lang.String className, groovy.lang.Closure defaultConstraints = null)</h4>
+                                <h4><strong>HibernateMappingBuilder</strong>(<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> mapping, java.lang.String className, <a href='../../../../../Closure.html'>Closure</a> defaultConstraints)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="HibernateMappingBuilder()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><strong>HibernateMappingBuilder</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -537,21 +549,19 @@ extends java.lang.Object
                         <a name="autoImport(boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
+                                <h4>@groovy.transform.CompileStaticCompileStatic
 void <strong>autoImport</strong>(boolean b)</h4>
                                 <p> <p>Configures whether to auto import packages domain classes in HQL queries. Default is true
- <code> { autoImport false }
-     </p>
+ <code> { autoImport false }</p>
                             </li>
                         </ul>
                     
                         <a name="autoTimestamp(boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
+                                <h4>@groovy.transform.CompileStaticCompileStatic
 void <strong>autoTimestamp</strong>(boolean b)</h4>
-                                <p> Set whether auto time stamping should occur for last_updated and date_created columns
-     </p>
+                                <p> Set whether auto time stamping should occur for last_updated and date_created columns</p>
                             </li>
                         </ul>
                     
@@ -566,73 +576,67 @@ void <strong>autoTimestamp</strong>(boolean b)</h4>
                         <a name="batchSize(java.lang.Integer)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
+                                <h4>@groovy.transform.CompileStaticCompileStatic
 void <strong>batchSize</strong>(java.lang.Integer num)</h4>
-                                <p> Configures the batch-size used for lazy loading
-     <DL><DT><B>Parameters:</B></DT><DD><code>num</code> -  The batch size to use</DD></DL></p>
+                                <p> Configures the batch-size used for lazy loading <DL><DT><B>Parameters:</B></DT><DD><code>num</code> -  The batch size to use</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="cache(java.util.Map)"><!-- --></a>
+                        <a name="cache(Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
-void <strong>cache</strong>(java.util.Map args)</h4>
+                                <h4>@groovy.transform.CompileStaticCompileStatic
+void <strong>cache</strong>(<a href='../../../../../Map.html'>Map</a> args)</h4>
                                 <p> <p>Configures the second-level cache for the class
- <code> { cache usage:'read-only', include:'all' }
-     <DL><DT><B>Parameters:</B></DT><DD><code>args</code> -  Named arguments that contain the "usage" and/or "include" parameters</DD></DL></p>
+ <code> { cache usage:'read-only', include:'all' } <DL><DT><B>Parameters:</B></DT><DD><code>args</code> -  Named arguments that contain the "usage" and/or "include" parameters</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="cache(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
+                                <h4>@groovy.transform.CompileStaticCompileStatic
 void <strong>cache</strong>(java.lang.String usage)</h4>
                                 <p> <p>Configures the second-level cache for the class
- <code> { cache 'read-only' }
-     <DL><DT><B>Parameters:</B></DT><DD><code>usage</code> -  The usage type for the cache which is one of CacheConfig.USAGE_OPTIONS</DD></DL></p>
+ <code> { cache 'read-only' } <DL><DT><B>Parameters:</B></DT><DD><code>usage</code> -  The usage type for the cache which is one of CacheConfig.USAGE_OPTIONS</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="cache(java.lang.String, java.util.Map)"><!-- --></a>
+                        <a name="cache(java.lang.String, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
-void <strong>cache</strong>(java.lang.String usage, java.util.Map args)</h4>
+                                <h4>@groovy.transform.CompileStaticCompileStatic
+void <strong>cache</strong>(java.lang.String usage, <a href='../../../../../Map.html'>Map</a> args)</h4>
                                 <p> <p>Configures the second-level cache for the class
- <code> { cache 'read-only', include:'all }
-     <DL><DT><B>Parameters:</B></DT><DD><code>usage</code> -  The usage type for the cache which is one of CacheConfig.USAGE_OPTIONS</DD></DL></p>
+ <code> { cache 'read-only', include:'all } <DL><DT><B>Parameters:</B></DT><DD><code>usage</code> -  The usage type for the cache which is one of CacheConfig.USAGE_OPTIONS</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="cache(boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
+                                <h4>@groovy.transform.CompileStaticCompileStatic
 void <strong>cache</strong>(boolean shouldCache)</h4>
                                 <p> <p>Configures the second-level cache with the default usage of 'read-write' and the default include of 'all' if
   the passed argument is true
 
- <code> { cache true }
-     <DL><DT><B>Parameters:</B></DT><DD><code>shouldCache</code> -  True if the default cache configuration should be applied</DD></DL></p>
+ <code> { cache true } <DL><DT><B>Parameters:</B></DT><DD><code>shouldCache</code> -  True if the default cache configuration should be applied</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="columns(groovy.lang.Closure)"><!-- --></a>
+                        <a name="columns(Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
-void <strong>columns</strong>(groovy.lang.Closure callable)</h4>
-                                <p> <p>Consumes the columns closure and populates the value into the Mapping objects columns property
-     <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure containing the column definitions</DD></DL></p>
+                                <h4>@groovy.transform.CompileStaticCompileStatic
+void <strong>columns</strong>(<a href='../../../../../Closure.html'>Closure</a> callable)</h4>
+                                <p> <p>Consumes the columns closure and populates the value into the Mapping objects columns property <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure containing the column definitions</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="comment(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
+                                <h4>@groovy.transform.CompileStaticCompileStatic
 void <strong>comment</strong>(java.lang.String comment)</h4>
                                 <p></p>
                             </li>
@@ -641,17 +645,17 @@ void <strong>comment</strong>(java.lang.String comment)</h4>
                         <a name="datasource(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
+                                <h4>@groovy.transform.CompileStaticCompileStatic
 void <strong>datasource</strong>(java.lang.String name)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="datasources(List<String>)"><!-- --></a>
+                        <a name="datasources(List)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
-void <strong>datasources</strong>(java.util.List&lt;java.lang.String&gt; names)</h4>
+                                <h4>@groovy.transform.CompileStaticCompileStatic
+void <strong>datasources</strong>(<a href='../../../../../List.html'>List</a> names)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -659,96 +663,89 @@ void <strong>datasources</strong>(java.util.List&lt;java.lang.String&gt; names)<
                         <a name="discriminator(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
+                                <h4>@groovy.transform.CompileStaticCompileStatic
 void <strong>discriminator</strong>(java.lang.String name)</h4>
                                 <p> <p>Configures the discriminator name. Example:
- <code> { discriminator 'foo' }
-    <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the table</DD></DL></p>
+ <code> { discriminator 'foo' } <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the table</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="discriminator(java.util.Map)"><!-- --></a>
+                        <a name="discriminator(Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
-void <strong>discriminator</strong>(java.util.Map args)</h4>
+                                <h4>@groovy.transform.CompileStaticCompileStatic
+void <strong>discriminator</strong>(<a href='../../../../../Map.html'>Map</a> args)</h4>
                                 <p> <p>Configures the discriminator name. Example:
- <code> { discriminator value:'foo', column:'type' }
-     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the table</DD></DL></p>
+ <code> { discriminator value:'foo', column:'type' } <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the table</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="dynamicInsert(boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
+                                <h4>@groovy.transform.CompileStaticCompileStatic
 void <strong>dynamicInsert</strong>(boolean b)</h4>
-                                <p> Whether to use dynamic update queries
-     </p>
+                                <p> Whether to use dynamic update queries</p>
                             </li>
                         </ul>
                     
                         <a name="dynamicUpdate(boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
+                                <h4>@groovy.transform.CompileStaticCompileStatic
 void <strong>dynamicUpdate</strong>(boolean b)</h4>
-                                <p> Whether to use dynamic update queries
-     </p>
+                                <p> Whether to use dynamic update queries</p>
                             </li>
                         </ul>
                     
-                        <a name="evaluate(groovy.lang.Closure, java.lang.Object)"><!-- --></a>
+                        <a name="evaluate(Closure, java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.Override
-@groovy.transform.CompileStatic
-<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>evaluate</strong>(groovy.lang.Closure mappingClosure, java.lang.Object context = null)</h4>
+                                <h4>@java.lang.OverrideOverride
+@groovy.transform.CompileStaticCompileStatic
+<a href='../../../../../org/grails/orm/hibernate/cfg/Mapping.html'>Mapping</a> <strong>evaluate</strong>(<a href='../../../../../Closure.html'>Closure</a> mappingClosure, java.lang.Object context)</h4>
                                 <p> Central entry point for the class. Passing a closure that defines a set of mappings will evaluate said mappings
- and populate the "mapping" property of this class which can then be obtained with getMappings()
-     <DL><DT><B>Parameters:</B></DT><DD><code>mappingClosure</code> -  The closure that defines the ORM DSL</DD></DL></p>
+ and populate the "mapping" property of this class which can then be obtained with getMappings() <DL><DT><B>Parameters:</B></DT><DD><code>mappingClosure</code> -  The closure that defines the ORM DSL</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="getProperties()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@java.lang.Override
-java.util.Map&lt;java.lang.String, <a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html' title='PropertyConfig'>PropertyConfig</a>&gt; <strong>getProperties</strong>()</h4>
+                                <h4>@java.lang.OverrideOverride
+<a href='../../../../../Map.html'>Map</a> <strong>getProperties</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="hibernateCustomUserType(java.util.Map)"><!-- --></a>
+                        <a name="hibernateCustomUserType(Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
-void <strong>hibernateCustomUserType</strong>(java.util.Map args)</h4>
+                                <h4>@groovy.transform.CompileStaticCompileStatic
+void <strong>hibernateCustomUserType</strong>(<a href='../../../../../Map.html'>Map</a> args)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="id(java.util.Map)"><!-- --></a>
+                        <a name="id(Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>id</strong>(java.util.Map args)</h4>
+                                <h4>void <strong>id</strong>(<a href='../../../../../Map.html'>Map</a> args)</h4>
                                 <p> <p>Configures the identity strategy for the mapping. Examples
 
  <code>
     { id generator:'sequence' }
     { id composite: ['one', 'two'] }
- </code>
-     <DL><DT><B>Parameters:</B></DT><DD><code>args</code> -  The named arguments to the id method</DD></DL></p>
+ </code> <DL><DT><B>Parameters:</B></DT><DD><code>args</code> -  The named arguments to the id method</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="includes(groovy.lang.Closure)"><!-- --></a>
+                        <a name="includes(Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
-void <strong>includes</strong>(groovy.lang.Closure callable)</h4>
-                                <p> Include another config in this one
-     </p>
+                                <h4>@groovy.transform.CompileStaticCompileStatic
+void <strong>includes</strong>(<a href='../../../../../Closure.html'>Closure</a> callable)</h4>
+                                <p> Include another config in this one</p>
                             </li>
                         </ul>
                     
@@ -765,8 +762,7 @@ void <strong>includes</strong>(groovy.lang.Closure callable)</h4>
                             <li class="blockList">
                                 <h4>void <strong>order</strong>(java.lang.String direction)</h4>
                                 <p> <p>Configures the default sort direction. Example:
- <code> { order 'desc' }
-     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property to sort by</DD></DL></p>
+ <code> { order 'desc' } <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property to sort by</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -775,70 +771,63 @@ void <strong>includes</strong>(groovy.lang.Closure callable)</h4>
                             <li class="blockList">
                                 <h4>void <strong>sort</strong>(java.lang.String name)</h4>
                                 <p> <p>Configures the default sort column. Example:
- <code> { sort 'foo' }
-     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property to sort by</DD></DL></p>
+ <code> { sort 'foo' } <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the property to sort by</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="sort(java.util.Map)"><!-- --></a>
+                        <a name="sort(Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>sort</strong>(java.util.Map namesAndDirections)</h4>
+                                <h4>void <strong>sort</strong>(<a href='../../../../../Map.html'>Map</a> namesAndDirections)</h4>
                                 <p> <p>Configures the default sort column. Example:
- <code> { sort foo:'desc' }
-     <DL><DT><B>Parameters:</B></DT><DD><code>namesAndDirections</code> -  The names and directions of the property to sort by</DD></DL></p>
+ <code> { sort foo:'desc' } <DL><DT><B>Parameters:</B></DT><DD><code>namesAndDirections</code> -  The names and directions of the property to sort by</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="table(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
+                                <h4>@groovy.transform.CompileStaticCompileStatic
 void <strong>table</strong>(java.lang.String name)</h4>
                                 <p> <p>Configures the table name. Example:
- <code> { table 'foo' }
-     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the table</DD></DL></p>
+ <code> { table 'foo' } <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the table</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="table(java.util.Map)"><!-- --></a>
+                        <a name="table(Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
-void <strong>table</strong>(java.util.Map tableDef)</h4>
+                                <h4>@groovy.transform.CompileStaticCompileStatic
+void <strong>table</strong>(<a href='../../../../../Map.html'>Map</a> tableDef)</h4>
                                 <p> <p>Configures the table name. Example:
- <code> { table name:'foo', schema:'dbo', catalog:'CRM' }
-     </p>
+ <code> { table name:'foo', schema:'dbo', catalog:'CRM' }</p>
                             </li>
                         </ul>
                     
                         <a name="tablePerConcreteClass(boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
+                                <h4>@groovy.transform.CompileStaticCompileStatic
 void <strong>tablePerConcreteClass</strong>(boolean isTablePerConcreteClass)</h4>
-                                <p> If true the class and its subclasses will be mapped with table per subclass mapping
-     </p>
+                                <p> If true the class and its subclasses will be mapped with table per subclass mapping</p>
                             </li>
                         </ul>
                     
                         <a name="tablePerHierarchy(boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
+                                <h4>@groovy.transform.CompileStaticCompileStatic
 void <strong>tablePerHierarchy</strong>(boolean isTablePerHierarchy)</h4>
-                                <p> If true the class and its sub classes will be mapped with table per hierarchy mapping
-     </p>
+                                <p> If true the class and its sub classes will be mapped with table per hierarchy mapping</p>
                             </li>
                         </ul>
                     
                         <a name="tablePerSubclass(boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
+                                <h4>@groovy.transform.CompileStaticCompileStatic
 void <strong>tablePerSubclass</strong>(boolean isTablePerSubClass)</h4>
-                                <p> If true the class and its subclasses will be mapped with table per subclass mapping
-     </p>
+                                <p> If true the class and its subclasses will be mapped with table per subclass mapping</p>
                             </li>
                         </ul>
                     
@@ -846,30 +835,27 @@ void <strong>tablePerSubclass</strong>(boolean isTablePerSubClass)</h4>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>void <strong>tenantId</strong>(java.lang.String tenantIdProperty)</h4>
-                                <p> Sets the tenant id
-     <DL><DT><B>Parameters:</B></DT><DD><code>tenantIdProperty</code> -  The tenant id property</DD></DL></p>
+                                <p> Sets the tenant id <DL><DT><B>Parameters:</B></DT><DD><code>tenantIdProperty</code> -  The tenant id property</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="version(boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
+                                <h4>@groovy.transform.CompileStaticCompileStatic
 void <strong>version</strong>(boolean isVersioned)</h4>
                                 <p> <p>Configures whether to use versioning for optimistic locking
- <code> { version false }
-     <DL><DT><B>Parameters:</B></DT><DD><code>isVersioned</code> -  True if a version property should be configured</DD></DL></p>
+ <code> { version false } <DL><DT><B>Parameters:</B></DT><DD><code>isVersioned</code> -  True if a version property should be configured</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="version(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@groovy.transform.CompileStatic
+                                <h4>@groovy.transform.CompileStaticCompileStatic
 void <strong>version</strong>(java.lang.String versionColumn)</h4>
                                 <p> <p>Configures the name of the version column
- <code> { version 'foo' }
-     <DL><DT><B>Parameters:</B></DT><DD><code>isVersioned</code> -  True if a version property should be configured</DD></DL></p>
+ <code> { version 'foo' } <DL><DT><B>Parameters:</B></DT><DD><code>isVersioned</code> -  True if a version property should be configured</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -914,7 +900,7 @@ void <strong>version</strong>(java.lang.String versionColumn)</h4>
             Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
-    
+    <p>Groovy Documentation</p>
     <a name="skip-navbar_bottom">
         <!--   -->
     </a>

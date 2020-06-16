@@ -103,7 +103,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
  <p>Subclasses can implement this interface in order to provide
  a different mechanism for mapping entities such as annotations or XML.</p>
- <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>1.0</DD></DL></p>
+  <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>1.0</DD></DL></p>
 
           </li>
     </ul>
@@ -145,7 +145,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a>[]</code></td>
+                            <td class="colLast"><code><a href='../../../../../PersistentProperty.html'>PersistentProperty</a>[]</code></td>
                             <td class="colLast"><code><strong><a href="#getCompositeIdentity(java.lang.Class, org.grails.datastore.mapping.model.MappingContext)">getCompositeIdentity</a></strong>(java.lang.Class javaClass, <a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context)</code><br>Obtains the identity of a persistent entity</td>
                         </tr>
                         
@@ -169,26 +169,26 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.util.Set</code></td>
+                            <td class="colLast"><code><a href='../../../../../Set.html'>Set</a></code></td>
                             <td class="colLast"><code><strong><a href="#getOwningEntities(java.lang.Class, org.grails.datastore.mapping.model.MappingContext)">getOwningEntities</a></strong>(java.lang.Class javaClass, <a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context)</code><br>Returns a set of entities that "own" the given entity. </td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.util.List&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html' title='PersistentProperty'>PersistentProperty</a>&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#getPersistentProperties(java.lang.Class, org.grails.datastore.mapping.model.MappingContext)">getPersistentProperties</a></strong>(java.lang.Class javaClass, <a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context)</code><br>@see #getPersistentProperties(Class, MappingContext, ClassMapping)</td>
+                            <td class="colLast"><code><strong><a href="#getPersistentProperties(java.lang.Class, org.grails.datastore.mapping.model.MappingContext)">getPersistentProperties</a></strong>(java.lang.Class javaClass, <a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='#getPersistentProperties(java.lang.Class, org.grails.datastore.mapping.model.MappingContext, ClassMapping)'>getPersistentProperties(Class, MappingContext, ClassMapping)</a></DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.util.List&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html' title='PersistentProperty'>PersistentProperty</a>&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#getPersistentProperties(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, org.grails.datastore.mapping.model.ClassMapping)">getPersistentProperties</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, <a href='../../../../../org/grails/datastore/mapping/model/ClassMapping.html'>ClassMapping</a> classMapping)</code><br>@see #getPersistentProperties(Class, MappingContext, ClassMapping)</td>
+                            <td class="colLast"><code><strong><a href="#getPersistentProperties(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, org.grails.datastore.mapping.model.ClassMapping)">getPersistentProperties</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, <a href='../../../../../org/grails/datastore/mapping/model/ClassMapping.html'>ClassMapping</a> classMapping)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='#getPersistentProperties(java.lang.Class, org.grails.datastore.mapping.model.MappingContext, ClassMapping)'>getPersistentProperties(Class, MappingContext, ClassMapping)</a></DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.util.List&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html' title='PersistentProperty'>PersistentProperty</a>&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#getPersistentProperties(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, org.grails.datastore.mapping.model.ClassMapping, boolean)">getPersistentProperties</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, <a href='../../../../../org/grails/datastore/mapping/model/ClassMapping.html'>ClassMapping</a> classMapping, boolean includeIdentifiers)</code><br>@see #getPersistentProperties(Class, MappingContext, ClassMapping)</td>
+                            <td class="colLast"><code><strong><a href="#getPersistentProperties(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, org.grails.datastore.mapping.model.ClassMapping, boolean)">getPersistentProperties</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, <a href='../../../../../org/grails/datastore/mapping/model/ClassMapping.html'>ClassMapping</a> classMapping, boolean includeIdentifiers)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='#getPersistentProperties(java.lang.Class, org.grails.datastore.mapping.model.MappingContext, ClassMapping)'>getPersistentProperties(Class, MappingContext, ClassMapping)</a></DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -244,9 +244,9 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="getCompositeIdentity(java.lang.Class, org.grails.datastore.mapping.model.MappingContext)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a>[] <strong>getCompositeIdentity</strong>(java.lang.Class javaClass, <a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context)</h4>
+                                <h4>public&nbsp;<a href='../../../../../PersistentProperty.html'>PersistentProperty</a>[] <strong>getCompositeIdentity</strong>(java.lang.Class javaClass, <a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context)</h4>
                                 <p> Obtains the identity of a persistent entity
-     <DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class</DD><DD><code>context</code> -  The MappingContext</DD></DL><DL><DT><B>Returns:</B></DT><DD>A PersistentProperty instance</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class</DD><DD><code>context</code> -  The MappingContext</DD></DL><DL><DT><B>Returns:</B></DT><DD>A PersistentProperty instance</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -257,7 +257,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <p> Obtains the default manner in which identifiers are mapped. In GORM
  this is just using a property called 'id', but in other frameworks this
  may differ. For example JPA expects an annotated<DL><DT><B>Id:</B></DT><DD>property</DD></DL>
-     <DL><DT><B>Returns:</B></DT><DD>The default identifier mapping</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>classMapping</code> -  The ClassMapping instance</DD></DL></p>
+      <DL><DT><B>Returns:</B></DT><DD>The default identifier mapping</DD></DL><DL><DT><B>Parameters:</B></DT><DD><code>classMapping</code> -  The ClassMapping instance</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -266,7 +266,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> <strong>getIdentity</strong>(java.lang.Class javaClass, <a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context)</h4>
                                 <p> Obtains the identity of a persistent entity
-     <DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class</DD><DD><code>context</code> -  The MappingContext</DD></DL><DL><DT><B>Returns:</B></DT><DD>A PersistentProperty instance</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class</DD><DD><code>context</code> -  The MappingContext</DD></DL><DL><DT><B>Returns:</B></DT><DD>A PersistentProperty instance</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -275,18 +275,18 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/IdentityMapping.html'>IdentityMapping</a> <strong>getIdentityMapping</strong>(<a href='../../../../../org/grails/datastore/mapping/model/ClassMapping.html'>ClassMapping</a> classMapping)</h4>
                                 <p> Obtains the identity mapping for the specified class mapping
-     <DL><DT><B>Parameters:</B></DT><DD><code>classMapping</code> -  The class mapping</DD></DL><DL><DT><B>Returns:</B></DT><DD>The identity mapping</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>classMapping</code> -  The class mapping</DD></DL><DL><DT><B>Returns:</B></DT><DD>The identity mapping</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="getOwningEntities(java.lang.Class, org.grails.datastore.mapping.model.MappingContext)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;java.util.Set <strong>getOwningEntities</strong>(java.lang.Class javaClass, <a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context)</h4>
+                                <h4>public&nbsp;<a href='../../../../../Set.html'>Set</a> <strong>getOwningEntities</strong>(java.lang.Class javaClass, <a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context)</h4>
                                 <p> Returns a set of entities that "own" the given entity. Ownership
  dictates default cascade strategies. So if entity A owns entity B
  then saves, updates and deletes will cascade from A to B
-     <DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class</DD><DD><code>context</code> -  The MappingContext</DD></DL><DL><DT><B>Returns:</B></DT><DD>A Set of owning classes</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class</DD><DD><code>context</code> -  The MappingContext</DD></DL><DL><DT><B>Returns:</B></DT><DD>A Set of owning classes</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -295,7 +295,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;java.util.List&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html' title='PersistentProperty'>PersistentProperty</a>&gt; <strong>getPersistentProperties</strong>(java.lang.Class javaClass, <a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context)</h4>
                                 <p>
-     <DL><DT><B>See Also:</B></DT><DD><a href='#getPersistentProperties(java.lang.Class, org.grails.datastore.mapping.model.MappingContext, org.grails.datastore.mapping.model.ClassMapping)'>getPersistentProperties(Class, MappingContext, ClassMapping)</a></DD></DL></p>
+      <DL><DT><B>See Also:</B></DT><DD><a href='#getPersistentProperties(java.lang.Class, org.grails.datastore.mapping.model.MappingContext, ClassMapping)'>getPersistentProperties(Class, MappingContext, ClassMapping)</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -304,7 +304,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;java.util.List&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html' title='PersistentProperty'>PersistentProperty</a>&gt; <strong>getPersistentProperties</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, <a href='../../../../../org/grails/datastore/mapping/model/ClassMapping.html'>ClassMapping</a> classMapping)</h4>
                                 <p>
-     <DL><DT><B>See Also:</B></DT><DD><a href='#getPersistentProperties(java.lang.Class, org.grails.datastore.mapping.model.MappingContext, org.grails.datastore.mapping.model.ClassMapping)'>getPersistentProperties(Class, MappingContext, ClassMapping)</a></DD></DL></p>
+      <DL><DT><B>See Also:</B></DT><DD><a href='#getPersistentProperties(java.lang.Class, org.grails.datastore.mapping.model.MappingContext, ClassMapping)'>getPersistentProperties(Class, MappingContext, ClassMapping)</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -313,7 +313,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;java.util.List&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html' title='PersistentProperty'>PersistentProperty</a>&gt; <strong>getPersistentProperties</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, <a href='../../../../../org/grails/datastore/mapping/model/ClassMapping.html'>ClassMapping</a> classMapping, boolean includeIdentifiers)</h4>
                                 <p>
-     <DL><DT><B>See Also:</B></DT><DD><a href='#getPersistentProperties(java.lang.Class, org.grails.datastore.mapping.model.MappingContext, org.grails.datastore.mapping.model.ClassMapping)'>getPersistentProperties(Class, MappingContext, ClassMapping)</a></DD></DL></p>
+      <DL><DT><B>See Also:</B></DT><DD><a href='#getPersistentProperties(java.lang.Class, org.grails.datastore.mapping.model.MappingContext, ClassMapping)'>getPersistentProperties(Class, MappingContext, ClassMapping)</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -322,7 +322,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;java.util.List&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html' title='PersistentProperty'>PersistentProperty</a>&gt; <strong>getPersistentProperties</strong>(java.lang.Class javaClass, <a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, <a href='../../../../../org/grails/datastore/mapping/model/ClassMapping.html'>ClassMapping</a> mapping)</h4>
                                 <p> Obtains a List of PersistentProperty instances for the given Mapped class
-     <DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class</DD><DD><code>context</code> -  The MappingContext instance</DD><DD><code>mapping</code> -  The mapping for this class</DD></DL><DL><DT><B>Returns:</B></DT><DD>The PersistentProperty instances</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class</DD><DD><code>context</code> -  The MappingContext instance</DD><DD><code>mapping</code> -  The mapping for this class</DD></DL><DL><DT><B>Returns:</B></DT><DD>The PersistentProperty instances</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -331,7 +331,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;boolean <strong>isPersistentEntity</strong>(java.lang.Class javaClass)</h4>
                                 <p> Tests whether the given class is a persistent entity
-     <DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The java class</DD></DL><DL><DT><B>Returns:</B></DT><DD>true if it is a persistent entity</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The java class</DD></DL><DL><DT><B>Returns:</B></DT><DD>true if it is a persistent entity</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -385,7 +385,7 @@ if (location.href.indexOf('is-external=true') == -1) {
             Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
-    
+    <p>Groovy Documentation</p>
     <a name="skip-navbar_bottom">
         <!--   -->
     </a>

@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -109,7 +109,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
  <p>Uses instances of the <a href='../../../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a> interface to
  discover how to persist objects</p>
- <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>1.0</DD></DL></p>
+  <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>1.0</DD></DL></p>
 
           </li>
     </ul>
@@ -150,32 +150,6 @@ if (location.href.indexOf('is-external=true') == -1) {
         
 
         <!-- =========== PROPERTY SUMMARY =========== -->
-        
-         <ul class="blockList">
-                <li class="blockList"><a name="property_summary"><!--   --></a>
-                    <h3>Properties Summary</h3>
-                    <ul class="blockList">
-                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Properties Summary table, listing nested classes, and an explanation">
-                        <caption><span>Properties</span><span class="tabEnd">&nbsp;</span></caption>
-                        <tr>
-                            <th class="colFirst" scope="col">Type</th>
-                            <th class="colLast" scope="col">Name and description</th>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst"><code><strong><a href='../../../../../org/grails/datastore/mapping/proxy/ProxyFactory.html'>ProxyFactory</a></strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#proxyFactory">proxyFactory</a></code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst"><code><strong><a href='../../../../../org/grails/datastore/mapping/validation/ValidatorRegistry.html'>ValidatorRegistry</a></strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#validatorRegistry">validatorRegistry</a></code><br></td>
-                        </tr>
-                        
-                    </table>
-                   </ul>
-                </li>
-            </ul>
         
 
         <!-- =========== ELEMENT SUMMARY =========== -->
@@ -220,7 +194,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.util.Collection&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#addPersistentEntities(java.lang.Class)">addPersistentEntities</a></strong>(java.lang.Class... javaClasses)</code><br>Adds several PersistentEntity instances</td>
+                            <td class="colLast"><code><strong><a href="#addPersistentEntities(java.lang.Class)">addPersistentEntities</a></strong>(java.lang.Class javaClasses)</code><br>Adds several PersistentEntity instances</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -310,8 +284,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.grails.datastore.mapping.multitenancy.MultiTenancySettings$MultiTenancyMode</code></td>
-                            <td class="colLast"><code><strong><a href="#getMultiTenancyMode()">getMultiTenancyMode</a></strong>()</code><br>@return The multi tenancy mode</td>
+                            <td class="colLast"><code><a href='../../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html'>MultiTenancyMode</a></code></td>
+                            <td class="colLast"><code><strong><a href="#getMultiTenancyMode()">getMultiTenancyMode</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>The multi tenancy mode</DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -341,7 +315,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../org/grails/datastore/mapping/validation/ValidatorRegistry.html'>ValidatorRegistry</a></code></td>
-                            <td class="colLast"><code><strong><a href="#getValidatorRegistry()">getValidatorRegistry</a></strong>()</code><br>@return Gets the validation registry used by this MappingContext</td>
+                            <td class="colLast"><code><strong><a href="#getValidatorRegistry()">getValidatorRegistry</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>Gets the validation registry used by this MappingContext</DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -392,32 +366,6 @@ if (location.href.indexOf('is-external=true') == -1) {
             
 
             
-            <!-- =========== PROPERTY DETAIL =========== -->
-            <ul class="blockList">
-                <li class="blockList"><a name="prop_detail">
-                    <!--   -->
-                </a>
-                    <h3>Property Detail</h3>
-                    
-                        <a name="proxyFactory"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><a href='../../../../../org/grails/datastore/mapping/proxy/ProxyFactory.html'>ProxyFactory</a> <strong>proxyFactory</strong></h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="validatorRegistry"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><a href='../../../../../org/grails/datastore/mapping/validation/ValidatorRegistry.html'>ValidatorRegistry</a> <strong>validatorRegistry</strong></h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                </li>
-            </ul>
-            
 
             
 
@@ -437,7 +385,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;void <strong>addEntityValidator</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.springframework.validation.Validator validator)</h4>
                                 <p> Adds a validator to be used by the entity for validation
-     <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The PersistentEntity</DD><DD><code>validator</code> -  The validator</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The PersistentEntity</DD><DD><code>validator</code> -  The validator</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -447,7 +395,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> <strong>addExternalPersistentEntity</strong>(java.lang.Class javaClass)</h4>
                                 <p> Adds a persistent entity that is not mapped by this MappingContext instance.
  Used for cross store persistence
-     <DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class</DD></DL><DL><DT><B>Returns:</B></DT><DD>The persistent entity</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class</DD></DL><DL><DT><B>Returns:</B></DT><DD>The persistent entity</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -456,16 +404,16 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;void <strong>addMappingContextListener</strong>(<a href='../../../../../Listener.html'>Listener</a> listener)</h4>
                                 <p> Adds a new mapping context listener instance
-     <DL><DT><B>Parameters:</B></DT><DD><code>listener</code> -  The listener</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>listener</code> -  The listener</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="addPersistentEntities(java.lang.Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;java.util.Collection&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>&gt; <strong>addPersistentEntities</strong>(java.lang.Class... javaClasses)</h4>
+                                <h4>public&nbsp;java.util.Collection&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>&gt; <strong>addPersistentEntities</strong>(java.lang.Class javaClasses)</h4>
                                 <p> Adds several PersistentEntity instances
-     <DL><DT><B>Parameters:</B></DT><DD><code>javaClasses</code> -  The Java class representing the entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The PersistentEntity instance</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>javaClasses</code> -  The Java class representing the entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The PersistentEntity instance</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -474,7 +422,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> <strong>addPersistentEntity</strong>(java.lang.Class javaClass)</h4>
                                 <p> Adds a PersistentEntity instance
-     <DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class representing the entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The PersistentEntity instance</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class representing the entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The PersistentEntity instance</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -483,7 +431,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> <strong>addPersistentEntity</strong>(java.lang.Class javaClass, boolean override)</h4>
                                 <p> Adds a PersistentEntity instance
-     <DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class representing the entity</DD><DD><code>override</code> -  Whether to override an existing entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The PersistentEntity instance</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>javaClass</code> -  The Java class representing the entity</DD><DD><code>override</code> -  Whether to override an existing entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The PersistentEntity instance</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -492,7 +440,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;void <strong>addTypeConverter</strong>(org.springframework.core.convert.converter.Converter converter)</h4>
                                 <p> Add a converter used to convert property values to and from the datastore
-     <DL><DT><B>Parameters:</B></DT><DD><code>converter</code> -  The converter to add</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>converter</code> -  The converter to add</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -509,7 +457,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> <strong>createEntityAccess</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.Object instance)</h4>
                                 <p> Creates an <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html' title='EntityAccess'>EntityAccess</a> instance for the given entity and instance of said entity
-     <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD><DD><code>instance</code> -  The instance</DD></DL><DL><DT><B>Returns:</B></DT><DD>The <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html' title='EntityAccess'>EntityAccess</a></DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD><DD><code>instance</code> -  The instance</DD></DL><DL><DT><B>Returns:</B></DT><DD>The <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html' title='EntityAccess'>EntityAccess</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -518,7 +466,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;java.util.Collection&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>&gt; <strong>getChildEntities</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> root)</h4>
                                 <p> Obtains all of the children for the given root
-     <DL><DT><B>Parameters:</B></DT><DD><code>root</code> -  The root</DD></DL><DL><DT><B>Returns:</B></DT><DD>The children</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>root</code> -  The root</DD></DL><DL><DT><B>Returns:</B></DT><DD>The children</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -527,7 +475,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> <strong>getChildEntityByDiscriminator</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> root, java.lang.String discriminator)</h4>
                                 <p> Obtains a child of the given root entity using the given discriminator
-     <DL><DT><B>Parameters:</B></DT><DD><code>root</code> -  The root entity</DD><DD><code>discriminator</code> -  The discriminator</DD></DL><DL><DT><B>Returns:</B></DT><DD>The child entity or null if non exists</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>root</code> -  The root entity</DD><DD><code>discriminator</code> -  The discriminator</DD></DL><DL><DT><B>Returns:</B></DT><DD>The child entity or null if non exists</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -536,7 +484,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;org.springframework.core.convert.ConversionService <strong>getConversionService</strong>()</h4>
                                 <p> Obtains the ConversionService instance to use for type conversion
-     <DL><DT><B>Returns:</B></DT><DD>The conversion service instance</DD></DL></p>
+      <DL><DT><B>Returns:</B></DT><DD>The conversion service instance</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -545,7 +493,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;org.springframework.core.convert.converter.ConverterRegistry <strong>getConverterRegistry</strong>()</h4>
                                 <p> Obtains the converter registry
-     <DL><DT><B>Returns:</B></DT><DD>The converter registry used for type conversion</DD></DL></p>
+      <DL><DT><B>Returns:</B></DT><DD>The converter registry used for type conversion</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -554,7 +502,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;java.util.Collection&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>&gt; <strong>getDirectChildEntities</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> root)</h4>
                                 <p> Obtains only the direct children (1 level down) for the given root entity
-     <DL><DT><B>Parameters:</B></DT><DD><code>root</code> -  The root</DD></DL><DL><DT><B>Returns:</B></DT><DD>The children</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>root</code> -  The root</DD></DL><DL><DT><B>Returns:</B></DT><DD>The children</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -563,7 +511,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/reflect/EntityReflector.html'>EntityReflector</a> <strong>getEntityReflector</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p> Obtains a <a href='../../../../../org/grails/datastore/mapping/reflect/EntityReflector.html' title='EntityReflector'>EntityReflector</a> instance for the given entity
-     <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The class data</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The class data</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -572,7 +520,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;org.springframework.validation.Validator <strong>getEntityValidator</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p> Obtains a validator for the given entity
-     <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>A validator or null if none exists for the given entity</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>A validator or null if none exists for the given entity</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -581,7 +529,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/MappingFactory.html'>MappingFactory</a> <strong>getMappingFactory</strong>()</h4>
                                 <p> Obtains the MappingFactory instance
-     <DL><DT><B>Returns:</B></DT><DD>The mapping factory instance</DD></DL></p>
+      <DL><DT><B>Returns:</B></DT><DD>The mapping factory instance</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -591,16 +539,16 @@ if (location.href.indexOf('is-external=true') == -1) {
                                 <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/MappingConfigurationStrategy.html'>MappingConfigurationStrategy</a> <strong>getMappingSyntaxStrategy</strong>()</h4>
                                 <p> Returns the syntax reader used to interpret the entity
  mapping syntax
-     <DL><DT><B>Returns:</B></DT><DD>The SyntaxReader</DD></DL></p>
+      <DL><DT><B>Returns:</B></DT><DD>The SyntaxReader</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="getMultiTenancyMode()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;org.grails.datastore.mapping.multitenancy.MultiTenancySettings$MultiTenancyMode <strong>getMultiTenancyMode</strong>()</h4>
+                                <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html'>MultiTenancyMode</a> <strong>getMultiTenancyMode</strong>()</h4>
                                 <p>
-     <DL><DT><B>Returns:</B></DT><DD>The multi tenancy mode</DD></DL></p>
+      <DL><DT><B>Returns:</B></DT><DD>The multi tenancy mode</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -609,7 +557,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;java.util.Collection&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>&gt; <strong>getPersistentEntities</strong>()</h4>
                                 <p> Obtains a list of PersistentEntity instances
-     <DL><DT><B>Returns:</B></DT><DD>A list of PersistentEntity instances</DD></DL></p>
+      <DL><DT><B>Returns:</B></DT><DD>A list of PersistentEntity instances</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -618,7 +566,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> <strong>getPersistentEntity</strong>(java.lang.String name)</h4>
                                 <p> Obtains a PersistentEntity by name
-     <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The entity or null</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>name</code> -  The name of the entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>The entity or null</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -627,7 +575,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/proxy/ProxyFactory.html'>ProxyFactory</a> <strong>getProxyFactory</strong>()</h4>
                                 <p> Factory used for creating proxies
-     <DL><DT><B>Returns:</B></DT><DD>The proxy factory</DD></DL></p>
+      <DL><DT><B>Returns:</B></DT><DD>The proxy factory</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -636,7 +584,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/proxy/ProxyHandler.html'>ProxyHandler</a> <strong>getProxyHandler</strong>()</h4>
                                 <p> For handling proxies
-     <DL><DT><B>Returns:</B></DT><DD>The proxy handler</DD></DL></p>
+      <DL><DT><B>Returns:</B></DT><DD>The proxy handler</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -645,7 +593,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/validation/ValidatorRegistry.html'>ValidatorRegistry</a> <strong>getValidatorRegistry</strong>()</h4>
                                 <p>
-     <DL><DT><B>Returns:</B></DT><DD>Gets the validation registry used by this MappingContext</DD></DL></p>
+      <DL><DT><B>Returns:</B></DT><DD>Gets the validation registry used by this MappingContext</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -654,7 +602,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;boolean <strong>isInInheritanceHierarchy</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p> Returns true if the given entity is in an inheritance hierarchy
-     <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>entity</code> -  The entity</DD></DL><DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -663,7 +611,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;boolean <strong>isPersistentEntity</strong>(java.lang.Class type)</h4>
                                 <p> Returns whether the specified class is a persistent entity
-     <DL><DT><B>Parameters:</B></DT><DD><code>type</code> -  The type to check</DD></DL><DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>type</code> -  The type to check</DD></DL><DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -672,7 +620,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;boolean <strong>isPersistentEntity</strong>(java.lang.Object value)</h4>
                                 <p> Returns whether the specified value is a persistent entity
-     <DL><DT><B>Parameters:</B></DT><DD><code>value</code> -  The value to check</DD></DL><DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>value</code> -  The value to check</DD></DL><DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -681,7 +629,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;void <strong>setProxyFactory</strong>(<a href='../../../../../org/grails/datastore/mapping/proxy/ProxyFactory.html'>ProxyFactory</a> factory)</h4>
                                 <p> Factory to use for creating proxies
-     <DL><DT><B>Parameters:</B></DT><DD><code>factory</code> -  The proxy factory</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>factory</code> -  The proxy factory</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -690,7 +638,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>public&nbsp;void <strong>setValidatorRegistry</strong>(<a href='../../../../../org/grails/datastore/mapping/validation/ValidatorRegistry.html'>ValidatorRegistry</a> validatorRegistry)</h4>
                                 <p> Sets the validator registry used by this mapping context
-     <DL><DT><B>Parameters:</B></DT><DD><code>validatorRegistry</code> -  The validator registry</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>validatorRegistry</code> -  The validator registry</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -728,14 +676,14 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
-    
+    <p>Groovy Documentation</p>
     <a name="skip-navbar_bottom">
         <!--   -->
     </a>
