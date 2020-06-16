@@ -9,6 +9,7 @@ language: groovy
 jdk:
 - openjdk8
 - openjdk11
+- openjdk14
 dist: trusty
 env:
   global:
