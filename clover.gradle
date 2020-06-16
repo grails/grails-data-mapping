@@ -19,13 +19,13 @@ class CloverPluginConvention {
 }
 
 dependencies {
-	testRuntime "com.cenqua.clover:clover:3.0.2"
+	testRuntimeOnly "com.cenqua.clover:clover:3.0.2"
 }
 
 test.doFirst {
 	if (project.hasProperty("withClover")) {
-		ant.taskdef(name: 'groovyc', classname:"org.codehaus.groovy.ant.Groovyc", classpath:configurations.testRuntime.asPath)
-		ant.taskdef(resource:"cloverlib.xml", classpath:configurations.testRuntime.asPath)
+		ant.taskdef(name: 'groovyc', classname:"org.codehaus.groovy.ant.Groovyc", classpath:configurations.testRuntimeClasspath.asPath)
+		ant.taskdef(resource:"cloverlib.xml", classpath:configurations.testRuntimeClasspath.asPath)
 		ant.property(name:"clover.license.path", value:cloverConvention.licenseFile)
 
 		ant."clover-clean"()
@@ -56,11 +56,11 @@ test.doFirst {
 			verbose: true
 		) {
 			classpath {
-				pathElement path:configurations.testCompile.asPath
+				pathElement path:configurations.testCompileClasspath.asPath
 			}
 			javac(source:sourceCompatibility, target: targetCompatibility) {
 				classpath {
-					pathElement path:configurations.testRuntime.asPath
+					pathElement path:configurations.testRuntimeClasspath.asPath
 				}
 			}
 
