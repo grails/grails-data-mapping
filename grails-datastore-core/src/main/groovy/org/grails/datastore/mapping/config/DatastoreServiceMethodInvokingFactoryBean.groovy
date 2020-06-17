@@ -31,7 +31,7 @@ class DatastoreServiceMethodInvokingFactoryBean extends MethodInvokingFactoryBea
         if (object) {
             ((Service) object).setDatastore((Datastore) targetObject)
             if (beanFactory instanceof AutowireCapableBeanFactory) {
-                ((AutowireCapableBeanFactory) beanFactory).autowireBean(object)
+                ((AutowireCapableBeanFactory) beanFactory).autowireBeanProperties(object, AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, false)
             }
         }
         object
