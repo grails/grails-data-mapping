@@ -5,7 +5,7 @@ echo "Publishing for branch $TRAVIS_BRANCH JDK: $TRAVIS_JDK_VERSION"
 EXIT_STATUS=0
 
 # Only JDK8 execution will publish the release
-if [ "${TRAVIS_JDK_VERSION}" == "openjdk11" ] ; then
+if [ "${TRAVIS_JDK_VERSION}" == "openjdk11" || "${TRAVIS_JDK_VERSION}" == "openjdk11" ] ; then
   exit $EXIT_STATUS
 fi
 
