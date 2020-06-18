@@ -101,15 +101,15 @@ if (location.href.indexOf('is-external=true') == -1) {
                 <dt>All Implemented Interfaces and Traits:</dt>
                 <dd><a href='../../../../MessageSourceAware.html'>MessageSourceAware</a></dd>
             </dl>
+    
+
             <!-- todo: direct known subclasses -->
             <hr>
             <br>
+
 <pre>public&nbsp;class HibernateDatastore
 extends <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html'>AbstractHibernateDatastore</a>
-
-</pre>
-
-
+implements <a href='../../../../MessageSourceAware.html'>MessageSourceAware</a></pre>
 
     <p> Datastore implementation that uses a Hibernate SessionFactory underneath.
   <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>2.0</DD></DL></p>
@@ -218,7 +218,7 @@ extends <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore
                         
                         <tr class="altColor">
                             <td class="colFirst">
-                                <code><a href="#HibernateDatastore(ConnectionSources<SessionFactory,HibernateConnectionSourceSettings>, org.grails.orm.hibernate.cfg.HibernateMappingContext, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher)">HibernateDatastore</a>
+                                <code><a href="#HibernateDatastore(ConnectionSources, org.grails.orm.hibernate.cfg.HibernateMappingContext, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher)">HibernateDatastore</a>
                                 (ConnectionSources&lt;org.hibernate.SessionFactory, <a href='../../../../org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.html' title='HibernateConnectionSourceSettings'>HibernateConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../org/grails/orm/hibernate/cfg/HibernateMappingContext.html'>HibernateMappingContext</a> mappingContext, <a href='../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher)</code><br>Create a new HibernateDatastore for the given connection sources and mapping context</td>
                         </tr>
                         
@@ -272,13 +272,13 @@ extends <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore
                         
                         <tr class="rowColor">
                             <td class="colFirst">
-                                <code><a href="#HibernateDatastore(Map<String,Object>, java.lang.Class)">HibernateDatastore</a>
+                                <code><a href="#HibernateDatastore(Map, java.lang.Class)">HibernateDatastore</a>
                                 (java.util.Map&lt;java.lang.String, java.lang.Object&gt; configuration, java.lang.Class classes)</code><br>Constructor used purely for testing purposes. </td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst">
-                                <code><a href="#HibernateDatastore(Map<String,Object>, java.lang.Package)">HibernateDatastore</a>
+                                <code><a href="#HibernateDatastore(Map, java.lang.Package)">HibernateDatastore</a>
                                 (java.util.Map&lt;java.lang.String, java.lang.Object&gt; configuration, java.lang.Package packagesToScan)</code><br>Construct a Hibernate datastore scanning the given packages</td>
                         </tr>
                         
@@ -492,7 +492,7 @@ extends <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#withFlushMode(org.grails.orm.hibernate.AbstractHibernateDatastore.FlushMode, Callable<Boolean>)">withFlushMode</a></strong>(<a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.FlushMode.html'>AbstractHibernateDatastore.FlushMode</a> flushMode, java.util.concurrent.Callable&lt;java.lang.Boolean&gt; callable)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#withFlushMode(org.grails.orm.hibernate.AbstractHibernateDatastore.FlushMode, Callable)">withFlushMode</a></strong>(<a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.FlushMode.html'>AbstractHibernateDatastore.FlushMode</a> flushMode, java.util.concurrent.Callable&lt;java.lang.Boolean&gt; callable)</code><br></td>
                         </tr>
                         
                     </table>
@@ -511,11 +511,11 @@ extends <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html'>AbstractHibernateDatastore</a></code></td>
-                            <td class="colLast"><code><a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#call(java.lang.Object)'>call</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#close()'>close</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#createValidatorRegistry(org.springframework.context.MessageSource)'>createValidatorRegistry</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#destroy()'>destroy</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#disableMultiTenancyFilter()'>disableMultiTenancyFilter</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#enableMultiTenancyFilter()'>enableMultiTenancyFilter</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getAutoTimestampEventListener()'>getAutoTimestampEventListener</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getConnectionSources()'>getConnectionSources</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getDataSource()'>getDataSource</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getDataSourceName()'>getDataSourceName</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getDatastoreForConnection(java.lang.String)'>getDatastoreForConnection</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getDatastoreForTenantId(java.io.Serializable)'>getDatastoreForTenantId</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getDefaultFlushMode()'>getDefaultFlushMode</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getDefaultFlushModeName()'>getDefaultFlushModeName</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getEventTriggeringInterceptor()'>getEventTriggeringInterceptor</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getHibernateTemplate(int)'>getHibernateTemplate</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getHibernateTemplate()'>getHibernateTemplate</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getMultiTenancyMode()'>getMultiTenancyMode</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getSessionFactory()'>getSessionFactory</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getTenantResolver()'>getTenantResolver</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#isAutoFlush()'>isAutoFlush</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#isCacheQueries()'>isCacheQueries</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#isFailOnError()'>isFailOnError</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#isOsivReadOnly()'>isOsivReadOnly</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#isPassReadOnlyToHibernate()'>isPassReadOnlyToHibernate</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#openSession()'>openSession</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#prepareMultiTenantClosure(Closure<T>)'>prepareMultiTenantClosure</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#resolveTenantIdentifier()'>resolveTenantIdentifier</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#resolveTenantIds()'>resolveTenantIds</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#setMessageSource(org.springframework.context.MessageSource)'>setMessageSource</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#withFlushMode(org.grails.orm.hibernate.AbstractHibernateDatastore.FlushMode, Callable<Boolean>)'>withFlushMode</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#withNewSession(Closure<T>)'>withNewSession</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#withNewSession(java.io.Serializable, Closure<T1>)'>withNewSession</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#withSession(Closure<T>)'>withSession</a></code></td>
+                            <td class="colLast"><code><a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#call(java.lang.Object)'>call</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#close()'>close</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#createValidatorRegistry(org.springframework.context.MessageSource)'>createValidatorRegistry</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#destroy()'>destroy</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#disableMultiTenancyFilter()'>disableMultiTenancyFilter</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#enableMultiTenancyFilter()'>enableMultiTenancyFilter</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getAutoTimestampEventListener()'>getAutoTimestampEventListener</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getConnectionSources()'>getConnectionSources</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getDataSource()'>getDataSource</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getDataSourceName()'>getDataSourceName</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getDatastoreForConnection(java.lang.String)'>getDatastoreForConnection</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getDatastoreForTenantId(java.io.Serializable)'>getDatastoreForTenantId</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getDefaultFlushMode()'>getDefaultFlushMode</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getDefaultFlushModeName()'>getDefaultFlushModeName</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getEventTriggeringInterceptor()'>getEventTriggeringInterceptor</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getHibernateTemplate(int)'>getHibernateTemplate</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getHibernateTemplate()'>getHibernateTemplate</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getMultiTenancyMode()'>getMultiTenancyMode</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getSessionFactory()'>getSessionFactory</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#getTenantResolver()'>getTenantResolver</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#isAutoFlush()'>isAutoFlush</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#isCacheQueries()'>isCacheQueries</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#isFailOnError()'>isFailOnError</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#isOsivReadOnly()'>isOsivReadOnly</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#isPassReadOnlyToHibernate()'>isPassReadOnlyToHibernate</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#openSession()'>openSession</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#prepareMultiTenantClosure(Closure)'>prepareMultiTenantClosure</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#resolveTenantIdentifier()'>resolveTenantIdentifier</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#resolveTenantIds()'>resolveTenantIds</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#setMessageSource(org.springframework.context.MessageSource)'>setMessageSource</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#withFlushMode(org.grails.orm.hibernate.AbstractHibernateDatastore.FlushMode, Callable)'>withFlushMode</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#withNewSession(Closure)'>withNewSession</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#withNewSession(java.io.Serializable, Closure)'>withNewSession</a>, <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.html#withSession(Closure)'>withSession</a></code></td>
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html'>AbstractDatastore</a></code></td>
-                            <td class="colLast"><code><a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#connect()'>connect</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#connect(org.springframework.core.env.PropertyResolver)'>connect</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#connectStateless()'>connectStateless</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#createSession(org.springframework.core.env.PropertyResolver)'>createSession</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#createStatelessSession(org.springframework.core.env.PropertyResolver)'>createStatelessSession</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#destroy()'>destroy</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#doInSession(org.grails.datastore.mapping.core.Session)'>doInSession</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getApplicationContext()'>getApplicationContext</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getApplicationEventPublisher()'>getApplicationEventPublisher</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getCurrentSession()'>getCurrentSession</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getMappingContext()'>getMappingContext</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getService(Class<T>)'>getService</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getServices()'>getServices</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#hasCurrentSession()'>hasCurrentSession</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#initializeConverters(org.grails.datastore.mapping.model.MappingContext)'>initializeConverters</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#isIndexed(org.grails.datastore.mapping.model.PersistentProperty)'>isIndexed</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#isSchemaless()'>isSchemaless</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#mapToPropertyResolver(Map<String,Object>)'>mapToPropertyResolver</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#retrieveSession()'>retrieveSession</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#retrieveSession(java.lang.Class)'>retrieveSession</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#setApplicationContext(org.springframework.context.ApplicationContext)'>setApplicationContext</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#withSession(Closure<T>)'>withSession</a></code></td>
+                            <td class="colLast"><code><a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#connect()'>connect</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#connect(org.springframework.core.env.PropertyResolver)'>connect</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#connectStateless()'>connectStateless</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#createSession(org.springframework.core.env.PropertyResolver)'>createSession</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#createStatelessSession(org.springframework.core.env.PropertyResolver)'>createStatelessSession</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#destroy()'>destroy</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#doInSession(org.grails.datastore.mapping.core.Session)'>doInSession</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getApplicationContext()'>getApplicationContext</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getApplicationEventPublisher()'>getApplicationEventPublisher</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getCurrentSession()'>getCurrentSession</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getMappingContext()'>getMappingContext</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getService(Class)'>getService</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getServices()'>getServices</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#hasCurrentSession()'>hasCurrentSession</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#initializeConverters(org.grails.datastore.mapping.model.MappingContext)'>initializeConverters</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#isIndexed(org.grails.datastore.mapping.model.PersistentProperty)'>isIndexed</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#isSchemaless()'>isSchemaless</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#mapToPropertyResolver(Map)'>mapToPropertyResolver</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#retrieveSession()'>retrieveSession</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#retrieveSession(java.lang.Class)'>retrieveSession</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#setApplicationContext(org.springframework.context.ApplicationContext)'>setApplicationContext</a>, <a href='../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#withSession(Closure)'>withSession</a></code></td>
                         </tr>
                     </table>
                    </ul>
@@ -596,7 +596,7 @@ extends <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore
                 </a>
                     <h3>Constructor Detail</h3>
                     
-                        <a name="HibernateDatastore(ConnectionSources<SessionFactory,HibernateConnectionSourceSettings>, org.grails.orm.hibernate.cfg.HibernateMappingContext, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher)"><!-- --></a>
+                        <a name="HibernateDatastore(ConnectionSources, org.grails.orm.hibernate.cfg.HibernateMappingContext, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;<strong>HibernateDatastore</strong>(ConnectionSources&lt;org.hibernate.SessionFactory, <a href='../../../../org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.html' title='HibernateConnectionSourceSettings'>HibernateConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../org/grails/orm/hibernate/cfg/HibernateMappingContext.html'>HibernateMappingContext</a> mappingContext, <a href='../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher)</h4>
@@ -677,7 +677,7 @@ extends <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore
                             </li>
                         </ul>
                     
-                        <a name="HibernateDatastore(Map<String,Object>, java.lang.Class)"><!-- --></a>
+                        <a name="HibernateDatastore(Map, java.lang.Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;<strong>HibernateDatastore</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; configuration, java.lang.Class classes)</h4>
@@ -686,7 +686,7 @@ extends <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore
                             </li>
                         </ul>
                     
-                        <a name="HibernateDatastore(Map<String,Object>, java.lang.Package)"><!-- --></a>
+                        <a name="HibernateDatastore(Map, java.lang.Package)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;<strong>HibernateDatastore</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; configuration, java.lang.Package packagesToScan)</h4>
@@ -738,7 +738,7 @@ extends <a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore
                         <a name="addTenantForSchema(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;void <strong>addTenantForSchema</strong>(java.lang.String schemaName)</h4>
                                 <p></p>
                             </li>
@@ -747,7 +747,7 @@ public&nbsp;void <strong>addTenantForSchema</strong>(java.lang.String schemaName
                         <a name="allQualifiers(org.grails.datastore.mapping.core.Datastore, org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;java.util.List&lt;java.lang.String&gt; <strong>allQualifiers</strong>(<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore, <a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p></p>
                             </li>
@@ -772,7 +772,7 @@ public&nbsp;java.util.List&lt;java.lang.String&gt; <strong>allQualifiers</strong
                         <a name="create(java.lang.String, org.grails.datastore.gorm.jdbc.connections.DataSourceSettings)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;ConnectionSource&lt;javax.sql.DataSource, <a href='../../../../org/grails/datastore/gorm/jdbc/connections/DataSourceSettings.html' title='DataSourceSettings'>DataSourceSettings</a>&gt; <strong>create</strong>(java.lang.String name, <a href='../../../../org/grails/datastore/gorm/jdbc/connections/DataSourceSettings.html'>DataSourceSettings</a> settings)</h4>
                                 <p></p>
                             </li>
@@ -781,7 +781,7 @@ public&nbsp;ConnectionSource&lt;javax.sql.DataSource, <a href='../../../../org/g
                         <a name="createSession(org.springframework.core.env.PropertyResolver)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 protected&nbsp;<a href='../../../../org/grails/datastore/mapping/core/Session.html'>Session</a> <strong>createSession</strong>(org.springframework.core.env.PropertyResolver connectionDetails)</h4>
                                 <p></p>
                             </li>
@@ -790,7 +790,7 @@ protected&nbsp;<a href='../../../../org/grails/datastore/mapping/core/Session.ht
                         <a name="destroy()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;void <strong>destroy</strong>()</h4>
                                 <p></p>
                             </li>
@@ -799,7 +799,7 @@ public&nbsp;void <strong>destroy</strong>()</h4>
                         <a name="getApplicationEventPublisher()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;org.springframework.context.ApplicationEventPublisher <strong>getApplicationEventPublisher</strong>()</h4>
                                 <p></p>
                             </li>
@@ -808,7 +808,7 @@ public&nbsp;org.springframework.context.ApplicationEventPublisher <strong>getApp
                         <a name="getConnection()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;java.sql.Connection <strong>getConnection</strong>()</h4>
                                 <p></p>
                             </li>
@@ -817,7 +817,7 @@ public&nbsp;java.sql.Connection <strong>getConnection</strong>()</h4>
                         <a name="getConnection(java.lang.String, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;java.sql.Connection <strong>getConnection</strong>(java.lang.String username, java.lang.String password)</h4>
                                 <p></p>
                             </li>
@@ -826,7 +826,7 @@ public&nbsp;java.sql.Connection <strong>getConnection</strong>(java.lang.String 
                         <a name="getCurrentSession()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;<a href='../../../../org/grails/datastore/mapping/core/Session.html'>Session</a> <strong>getCurrentSession</strong>()</h4>
                                 <p></p>
                             </li>
@@ -835,7 +835,7 @@ public&nbsp;<a href='../../../../org/grails/datastore/mapping/core/Session.html'
                         <a name="getDatastoreForConnection(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;<a href='../../../../org/grails/orm/hibernate/HibernateDatastore.html'>HibernateDatastore</a> <strong>getDatastoreForConnection</strong>(java.lang.String connectionName)</h4>
                                 <p></p>
                             </li>
@@ -853,7 +853,7 @@ public&nbsp;<a href='../../../../org/grails/orm/hibernate/HibernateDatastore.htm
                         <a name="getHibernateTemplate(int)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;<a href='../../../../org/grails/orm/hibernate/IHibernateTemplate.html'>IHibernateTemplate</a> <strong>getHibernateTemplate</strong>(int flushMode)</h4>
                                 <p></p>
                             </li>
@@ -862,7 +862,7 @@ public&nbsp;<a href='../../../../org/grails/orm/hibernate/IHibernateTemplate.htm
                         <a name="getMappingContext()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;<a href='../../../../org/grails/orm/hibernate/cfg/HibernateMappingContext.html'>HibernateMappingContext</a> <strong>getMappingContext</strong>()</h4>
                                 <p></p>
                             </li>
@@ -888,7 +888,7 @@ public&nbsp;<a href='../../../../org/grails/orm/hibernate/cfg/HibernateMappingCo
                         <a name="hasCurrentSession()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;boolean <strong>hasCurrentSession</strong>()</h4>
                                 <p></p>
                             </li>
@@ -897,7 +897,7 @@ public&nbsp;boolean <strong>hasCurrentSession</strong>()</h4>
                         <a name="initialize()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 protected&nbsp;<a href='../../../../org/grails/orm/hibernate/HibernateGormEnhancer.html'>HibernateGormEnhancer</a> <strong>initialize</strong>()</h4>
                                 <p></p>
                             </li>
@@ -914,7 +914,7 @@ protected&nbsp;<a href='../../../../org/grails/orm/hibernate/HibernateGormEnhanc
                         <a name="initialize()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 protected&nbsp;<a href='../../../../org/grails/orm/hibernate/HibernateGormEnhancer.html'>HibernateGormEnhancer</a> <strong>initialize</strong>()</h4>
                                 <p></p>
                             </li>
@@ -923,7 +923,7 @@ protected&nbsp;<a href='../../../../org/grails/orm/hibernate/HibernateGormEnhanc
                         <a name="openSession()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;org.hibernate.Session <strong>openSession</strong>()</h4>
                                 <p></p>
                             </li>
@@ -932,7 +932,7 @@ public&nbsp;org.hibernate.Session <strong>openSession</strong>()</h4>
                         <a name="persistentEntityAdded(org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;void <strong>persistentEntityAdded</strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p></p>
                             </li>
@@ -965,7 +965,7 @@ public&nbsp;void <strong>persistentEntityAdded</strong>(<a href='../../../../org
                         <a name="setMessageSource(org.springframework.context.MessageSource)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;void <strong>setMessageSource</strong>(org.springframework.context.MessageSource messageSource)</h4>
                                 <p></p>
                             </li>
@@ -974,16 +974,16 @@ public&nbsp;void <strong>setMessageSource</strong>(org.springframework.context.M
                         <a name="toString()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;java.lang.String <strong>toString</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="withFlushMode(org.grails.orm.hibernate.AbstractHibernateDatastore.FlushMode, Callable<Boolean>)"><!-- --></a>
+                        <a name="withFlushMode(org.grails.orm.hibernate.AbstractHibernateDatastore.FlushMode, Callable)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;void <strong>withFlushMode</strong>(<a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.FlushMode.html'>AbstractHibernateDatastore.FlushMode</a> flushMode, java.util.concurrent.Callable&lt;java.lang.Boolean&gt; callable)</h4>
                                 <p></p>
                             </li>

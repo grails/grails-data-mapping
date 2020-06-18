@@ -98,9 +98,15 @@ if (location.href.indexOf('is-external=true') == -1) {
         <li class="blockList">
 
 
+            <!-- todo: direct known subclasses -->
+            <hr>
+            <br>
 
-    <p> Class that handles the details of initializing GORM for Hibernate
- <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>3.0</DD></DL></p>
+<pre>@groovy.util.logging.Slf4j
+class HibernateDatastoreSpringInitializer
+extends <a href='../../../org/grails/datastore/gorm/bootstrap/AbstractDatastoreInitializer.html'>AbstractDatastoreInitializer</a></pre>
+
+    <p> Class that handles the details of initializing GORM for Hibernate <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>3.0</DD></DL></p>
 
           </li>
     </ul>
@@ -190,27 +196,27 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>java.util.Set&lt;java.lang.String&gt;</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>private&nbsp;java.util.Set&lt;java.lang.String&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#dataSources">dataSources</a></code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#defaultDataSourceBeanName">defaultDataSourceBeanName</a></code><br></td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#defaultSessionFactoryBeanName">defaultSessionFactoryBeanName</a></code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#enableReload">enableReload</a></code><br></td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>boolean</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#grailsPlugin">grailsPlugin</a></code><br></td>
                         </tr>
                         
@@ -237,32 +243,38 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst">
-                                <code><a href="#HibernateDatastoreSpringInitializer(org.springframework.core.env.PropertyResolver, Collection<Class>)">HibernateDatastoreSpringInitializer</a>
+                                <code><a href="#HibernateDatastoreSpringInitializer(org.springframework.core.env.PropertyResolver, Collection)">HibernateDatastoreSpringInitializer</a>
                                 (org.springframework.core.env.PropertyResolver configuration, java.util.Collection&lt;java.lang.Class&gt; persistentClasses)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst">
                                 <code><a href="#HibernateDatastoreSpringInitializer(org.springframework.core.env.PropertyResolver, java.lang.Class)">HibernateDatastoreSpringInitializer</a>
-                                (org.springframework.core.env.PropertyResolver configuration, java.lang.Class... persistentClasses)</code><br></td>
+                                (org.springframework.core.env.PropertyResolver configuration, java.lang.Class[] persistentClasses)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst">
                                 <code><a href="#HibernateDatastoreSpringInitializer(org.springframework.core.env.PropertyResolver, java.lang.String)">HibernateDatastoreSpringInitializer</a>
-                                (org.springframework.core.env.PropertyResolver configuration, java.lang.String... packages)</code><br></td>
+                                (org.springframework.core.env.PropertyResolver configuration, java.lang.String[] packages)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst">
                                 <code><a href="#HibernateDatastoreSpringInitializer(java.util.Map, java.lang.Class)">HibernateDatastoreSpringInitializer</a>
-                                (java.util.Map configuration, java.lang.Class... persistentClasses)</code><br></td>
+                                (java.util.Map configuration, java.lang.Class[] persistentClasses)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst">
-                                <code><a href="#HibernateDatastoreSpringInitializer(java.util.Map, Collection<Class>)">HibernateDatastoreSpringInitializer</a>
+                                <code><a href="#HibernateDatastoreSpringInitializer(java.util.Map, Collection)">HibernateDatastoreSpringInitializer</a>
                                 (java.util.Map configuration, java.util.Collection&lt;java.lang.Class&gt; persistentClasses)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst">
+                                <code><a href="#HibernateDatastoreSpringInitializer()">HibernateDatastoreSpringInitializer</a>
+                                ()</code><br></td>
                         </tr>
                         
                     </table>
@@ -318,7 +330,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;java.lang.Class&lt;<a href='../../../org/grails/datastore/gorm/support/AbstractDatastorePersistenceContextInterceptor.html' title='AbstractDatastorePersistenceContextInterceptor'>AbstractDatastorePersistenceContextInterceptor</a>&gt;</code></td>
+                            <td class="colLast"><code>protected&nbsp;java.lang.Class&lt;AbstractDatastorePersistenceContextInterceptor&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getPersistenceInterceptorClass()">getPersistenceInterceptorClass</a></strong>()</code><br></td>
                         </tr>
                         
@@ -416,7 +428,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="dataSources"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.Set&lt;java.lang.String&gt; <strong>dataSources</strong></h4>
+                                <h4>private&nbsp;java.util.Set&lt;java.lang.String&gt; <strong>dataSources</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -424,7 +436,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="defaultDataSourceBeanName"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.String <strong>defaultDataSourceBeanName</strong></h4>
+                                <h4>private&nbsp;java.lang.String <strong>defaultDataSourceBeanName</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -432,7 +444,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="defaultSessionFactoryBeanName"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.String <strong>defaultSessionFactoryBeanName</strong></h4>
+                                <h4>private&nbsp;java.lang.String <strong>defaultSessionFactoryBeanName</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -440,7 +452,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="enableReload"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>boolean <strong>enableReload</strong></h4>
+                                <h4>private&nbsp;boolean <strong>enableReload</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -448,7 +460,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="grailsPlugin"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>boolean <strong>grailsPlugin</strong></h4>
+                                <h4>private&nbsp;boolean <strong>grailsPlugin</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -467,7 +479,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Constructor Detail</h3>
                     
-                        <a name="HibernateDatastoreSpringInitializer(org.springframework.core.env.PropertyResolver, Collection<Class>)"><!-- --></a>
+                        <a name="HibernateDatastoreSpringInitializer(org.springframework.core.env.PropertyResolver, Collection)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><strong>HibernateDatastoreSpringInitializer</strong>(org.springframework.core.env.PropertyResolver configuration, java.util.Collection&lt;java.lang.Class&gt; persistentClasses)</h4>
@@ -478,7 +490,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="HibernateDatastoreSpringInitializer(org.springframework.core.env.PropertyResolver, java.lang.Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><strong>HibernateDatastoreSpringInitializer</strong>(org.springframework.core.env.PropertyResolver configuration, java.lang.Class... persistentClasses)</h4>
+                                <h4><strong>HibernateDatastoreSpringInitializer</strong>(org.springframework.core.env.PropertyResolver configuration, java.lang.Class[] persistentClasses)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -486,7 +498,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="HibernateDatastoreSpringInitializer(org.springframework.core.env.PropertyResolver, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><strong>HibernateDatastoreSpringInitializer</strong>(org.springframework.core.env.PropertyResolver configuration, java.lang.String... packages)</h4>
+                                <h4><strong>HibernateDatastoreSpringInitializer</strong>(org.springframework.core.env.PropertyResolver configuration, java.lang.String[] packages)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -494,15 +506,23 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="HibernateDatastoreSpringInitializer(java.util.Map, java.lang.Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><strong>HibernateDatastoreSpringInitializer</strong>(java.util.Map configuration, java.lang.Class... persistentClasses)</h4>
+                                <h4><strong>HibernateDatastoreSpringInitializer</strong>(java.util.Map configuration, java.lang.Class[] persistentClasses)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="HibernateDatastoreSpringInitializer(java.util.Map, Collection<Class>)"><!-- --></a>
+                        <a name="HibernateDatastoreSpringInitializer(java.util.Map, Collection)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><strong>HibernateDatastoreSpringInitializer</strong>(java.util.Map configuration, java.util.Collection&lt;java.lang.Class&gt; persistentClasses)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="HibernateDatastoreSpringInitializer()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><strong>HibernateDatastoreSpringInitializer</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -525,8 +545,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                             <li class="blockList">
                                 <h4>@java.lang.Override
 org.springframework.context.ApplicationContext <strong>configure</strong>()</h4>
-                                <p> Configures an in-memory test data source, don't use in production
-     </p>
+                                <p> Configures an in-memory test data source, don't use in production</p>
                             </li>
                         </ul>
                     
@@ -568,7 +587,7 @@ org.springframework.context.ApplicationContext <strong>configureForDataSource</s
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-protected&nbsp;java.lang.Class&lt;<a href='../../../org/grails/datastore/gorm/support/AbstractDatastorePersistenceContextInterceptor.html' title='AbstractDatastorePersistenceContextInterceptor'>AbstractDatastorePersistenceContextInterceptor</a>&gt; <strong>getPersistenceInterceptorClass</strong>()</h4>
+protected&nbsp;java.lang.Class&lt;AbstractDatastorePersistenceContextInterceptor&gt; <strong>getPersistenceInterceptorClass</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -622,7 +641,7 @@ protected&nbsp;java.lang.Class&lt;<a href='../../../org/grails/datastore/gorm/su
             <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
-    
+    <p>Groovy Documentation</p>
     <a name="skip-navbar_bottom">
         <!--   -->
     </a>

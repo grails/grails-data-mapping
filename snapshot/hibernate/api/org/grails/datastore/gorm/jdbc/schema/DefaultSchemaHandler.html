@@ -101,20 +101,19 @@ if (location.href.indexOf('is-external=true') == -1) {
                 <dt>All Implemented Interfaces and Traits:</dt>
                 <dd><a href='../../../../../../org/grails/datastore/gorm/jdbc/schema/SchemaHandler.html'>SchemaHandler</a></dd>
             </dl>
+    
+
             <!-- todo: direct known subclasses -->
             <hr>
             <br>
+
 <pre>@groovy.transform.CompileStatic
 @groovy.util.logging.Slf4j
 class DefaultSchemaHandler
 extends java.lang.Object
+implements <a href='../../../../../../org/grails/datastore/gorm/jdbc/schema/SchemaHandler.html'>SchemaHandler</a></pre>
 
-</pre>
-
-
-
-    <p> Resolves the schema names
- <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>6.0</DD></DL></p>
+    <p> Resolves the schema names <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>6.0</DD></DL></p>
 
           </li>
     </ul>
@@ -145,17 +144,17 @@ extends java.lang.Object
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#createSchemaStatement">createSchemaStatement</a></code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#defaultSchemaName">defaultSchemaName</a></code><br></td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#useSchemaStatement">useSchemaStatement</a></code><br></td>
                         </tr>
                         
@@ -190,6 +189,12 @@ extends java.lang.Object
                             <td class="colFirst">
                                 <code><a href="#DefaultSchemaHandler(java.lang.String, java.lang.String, java.lang.String)">DefaultSchemaHandler</a>
                                 (java.lang.String useSchemaStatement, java.lang.String createSchemaStatement, java.lang.String defaultSchemaName)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst">
+                                <code><a href="#DefaultSchemaHandler()">DefaultSchemaHandler</a>
+                                ()</code><br></td>
                         </tr>
                         
                     </table>
@@ -283,7 +288,7 @@ extends java.lang.Object
                         <a name="createSchemaStatement"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>final&nbsp;java.lang.String <strong>createSchemaStatement</strong></h4>
+                                <h4>private&nbsp;final&nbsp;java.lang.String <strong>createSchemaStatement</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -291,7 +296,7 @@ extends java.lang.Object
                         <a name="defaultSchemaName"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>final&nbsp;java.lang.String <strong>defaultSchemaName</strong></h4>
+                                <h4>private&nbsp;final&nbsp;java.lang.String <strong>defaultSchemaName</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -299,7 +304,7 @@ extends java.lang.Object
                         <a name="useSchemaStatement"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>final&nbsp;java.lang.String <strong>useSchemaStatement</strong></h4>
+                                <h4>private&nbsp;final&nbsp;java.lang.String <strong>useSchemaStatement</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -330,6 +335,14 @@ extends java.lang.Object
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><strong>DefaultSchemaHandler</strong>(java.lang.String useSchemaStatement, java.lang.String createSchemaStatement, java.lang.String defaultSchemaName)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="DefaultSchemaHandler()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><strong>DefaultSchemaHandler</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -424,7 +437,7 @@ void <strong>useSchema</strong>(java.sql.Connection connection, java.lang.String
             Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
-    
+    <p>Groovy Documentation</p>
     <a name="skip-navbar_bottom">
         <!--   -->
     </a>

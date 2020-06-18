@@ -98,6 +98,13 @@ if (location.href.indexOf('is-external=true') == -1) {
         <li class="blockList">
 
 
+            <!-- todo: direct known subclasses -->
+            <hr>
+            <br>
+
+<pre>@java.lang.SuppressWarnings("rawtypes")
+public&nbsp;class HibernateQuery
+extends <a href='../../../../../AbstractHibernateQuery.html'>AbstractHibernateQuery</a></pre>
 
     <p> Bridges the Query API with the Hibernate Criteria API
   <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>1.0</DD></DL></p>
@@ -179,8 +186,8 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="rowColor">
                             <td class="colFirst">
-                                <code><a href="#HibernateQuery(grails.gorm.DetachedCriteria, org.grails.datastore.mapping.model.PersistentEntity)">HibernateQuery</a>
-                                (<a href='../../../../../grails/gorm/DetachedCriteria.html'>DetachedCriteria</a> criteria, <a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
+                                <code><a href="#HibernateQuery(org.hibernate.criterion.DetachedCriteria, org.grails.datastore.mapping.model.PersistentEntity)">HibernateQuery</a>
+                                (org.hibernate.criterion.DetachedCriteria criteria, <a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
                     </table>
@@ -249,7 +256,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;java.lang.String</code></td>
-                            <td class="colLast"><code><strong><a href="#render(org.hibernate.type.BasicType, List<String>, org.hibernate.SessionFactory, org.hibernate.dialect.function.SQLFunction)">render</a></strong>(org.hibernate.type.BasicType basic, java.util.List&lt;java.lang.String&gt; columns, org.hibernate.SessionFactory sessionFactory, org.hibernate.dialect.function.SQLFunction sqlFunction)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#render(org.hibernate.type.BasicType, List, org.hibernate.SessionFactory, org.hibernate.dialect.function.SQLFunction)">render</a></strong>(org.hibernate.type.BasicType basic, java.util.List&lt;java.lang.String&gt; columns, org.hibernate.SessionFactory sessionFactory, org.hibernate.dialect.function.SQLFunction sqlFunction)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -329,10 +336,10 @@ if (location.href.indexOf('is-external=true') == -1) {
                             </li>
                         </ul>
                     
-                        <a name="HibernateQuery(grails.gorm.DetachedCriteria, org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
+                        <a name="HibernateQuery(org.hibernate.criterion.DetachedCriteria, org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<strong>HibernateQuery</strong>(<a href='../../../../../grails/gorm/DetachedCriteria.html'>DetachedCriteria</a> criteria, <a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <h4>public&nbsp;<strong>HibernateQuery</strong>(org.hibernate.criterion.DetachedCriteria criteria, <a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -353,7 +360,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="clone()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;java.lang.Object <strong>clone</strong>()</h4>
                                 <p></p>
                             </li>
@@ -362,7 +369,7 @@ public&nbsp;java.lang.Object <strong>clone</strong>()</h4>
                         <a name="createHibernateCriterionAdapter()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 protected&nbsp;<a href='../../../../../org/grails/orm/hibernate/query/AbstractHibernateCriterionAdapter.html'>AbstractHibernateCriterionAdapter</a> <strong>createHibernateCriterionAdapter</strong>()</h4>
                                 <p></p>
                             </li>
@@ -379,7 +386,7 @@ protected&nbsp;<a href='../../../../../org/grails/orm/hibernate/query/AbstractHi
                         <a name="getDialect(org.hibernate.SessionFactory)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprDeprecated
+                                <h4>@java.lang.Deprecated
 protected&nbsp;<a href='../../../../../Dialect.html'>Dialect</a> <strong>getDialect</strong>(org.hibernate.SessionFactory sessionFactory)</h4>
                                 <p></p>
                             </li>
@@ -405,13 +412,13 @@ protected&nbsp;<a href='../../../../../Dialect.html'>Dialect</a> <strong>getDial
                         <a name="getTypeResolver(org.hibernate.SessionFactory)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprDeprecated
+                                <h4>@java.lang.Deprecated
 protected&nbsp;org.hibernate.type.TypeResolver <strong>getTypeResolver</strong>(org.hibernate.SessionFactory sessionFactory)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="render(org.hibernate.type.BasicType, List<String>, org.hibernate.SessionFactory, org.hibernate.dialect.function.SQLFunction)"><!-- --></a>
+                        <a name="render(org.hibernate.type.BasicType, List, org.hibernate.SessionFactory, org.hibernate.dialect.function.SQLFunction)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;java.lang.String <strong>render</strong>(org.hibernate.type.BasicType basic, java.util.List&lt;java.lang.String&gt; columns, org.hibernate.SessionFactory sessionFactory, org.hibernate.dialect.function.SQLFunction sqlFunction)</h4>

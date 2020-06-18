@@ -87,7 +87,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
     <div class="subTitle">Package: <strong>org.grails.datastore.mapping.core</strong></div>
 
-    <h2 title="[Java] Class AbstractSessionN" class="title">[Java] Class AbstractSessionN</h2>
+    <h2 title="[Java] Class AbstractSession&lt;N&gt;" class="title">[Java] Class AbstractSession&lt;N&gt;</h2>
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
@@ -101,16 +101,16 @@ if (location.href.indexOf('is-external=true') == -1) {
                 <dt>All Implemented Interfaces and Traits:</dt>
                 <dd><a href='../../../../../org/grails/datastore/mapping/core/SessionImplementor.html'>SessionImplementor</a></dd>
             </dl>
+    
+
             <!-- todo: direct known subclasses -->
             <hr>
             <br>
-<pre>@com.github.javaparser.ast.expr.SingleMemberAnnotationExprSuppressWarnings
-public&nbsp;abstract&nbsp;class AbstractSession
+
+<pre>@java.lang.SuppressWarnings({"rawtypes", "unchecked"})
+public&nbsp;abstract&nbsp;class AbstractSession&lt;N&gt;
 extends <a href='../../../../../org/grails/datastore/mapping/core/AbstractAttributeStoringSession.html'>AbstractAttributeStoringSession</a>
-
-</pre>
-
-
+implements <a href='../../../../../org/grails/datastore/mapping/core/SessionImplementor.html'>SessionImplementor</a></pre>
 
     <p> Abstract implementation of the <a href='../../../../../org/grails/datastore/mapping/core/Session.html' title='Session'>Session</a> interface that uses
  a list of <a href='../../../../../org/grails/datastore/mapping/engine/Persister.html' title='Persister'>Persister</a> instances
@@ -365,7 +365,7 @@ extends <a href='../../../../../org/grails/datastore/mapping/core/AbstractAttrib
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#cacheCollection(org.grails.datastore.mapping.model.PersistentEntity, java.io.Serializable, Collection, java.lang.String)">cacheCollection</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.io.Serializable key, <a href='../../../../../Collection.html'>Collection</a> collection, java.lang.String name)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#cacheCollection(org.grails.datastore.mapping.model.PersistentEntity, java.io.Serializable, java.util.Collection, java.lang.String)">cacheCollection</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.io.Serializable key, java.util.Collection collection, java.lang.String name)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -377,7 +377,7 @@ extends <a href='../../../../../org/grails/datastore/mapping/core/AbstractAttrib
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#cacheEntry(java.io.Serializable, java.lang.Object, Map<Serializable,Object>, boolean)">cacheEntry</a></strong>(java.io.Serializable key, java.lang.Object entry, java.util.Map&lt;java.io.Serializable, java.lang.Object&gt; entryCache, boolean forDirtyCheck)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#cacheEntry(java.io.Serializable, java.lang.Object, Map, boolean)">cacheEntry</a></strong>(java.io.Serializable key, java.lang.Object entry, java.util.Map&lt;java.io.Serializable, java.lang.Object&gt; entryCache, boolean forDirtyCheck)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -461,7 +461,7 @@ extends <a href='../../../../../org/grails/datastore/mapping/core/AbstractAttrib
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#executePendings(Collection<? extends Runnable>)">executePendings</a></strong>(java.util.Collection&lt;? extends java.lang.Runnable&gt; pendings)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#executePendings(Collection)">executePendings</a></strong>(java.util.Collection&lt;? extends java.lang.Runnable&gt; pendings)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -473,26 +473,26 @@ extends <a href='../../../../../org/grails/datastore/mapping/core/AbstractAttrib
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#flushPendingDeletes(Map<PersistentEntity,Collection<PendingDelete>>)">flushPendingDeletes</a></strong>(java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.util.Collection&lt;<a href='../../../../../org/grails/datastore/mapping/core/impl/PendingDelete.html' title='PendingDelete'>PendingDelete</a>&gt;&gt; pendingDeletes)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#flushPendingDeletes(Map)">flushPendingDeletes</a></strong>(java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.util.Collection&lt;<a href='../../../../../org/grails/datastore/mapping/core/impl/PendingDelete.html' title='PendingDelete'>PendingDelete</a>&gt;&gt; pendingDeletes)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#flushPendingInserts(Map<PersistentEntity,Collection<PendingInsert>>)">flushPendingInserts</a></strong>(java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.util.Collection&lt;<a href='../../../../../org/grails/datastore/mapping/core/impl/PendingInsert.html' title='PendingInsert'>PendingInsert</a>&gt;&gt; inserts)</code><br>The default implementation of flushPendingInserts is to iterate over each insert operations
+                            <td class="colLast"><code><strong><a href="#flushPendingInserts(Map)">flushPendingInserts</a></strong>(java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.util.Collection&lt;<a href='../../../../../org/grails/datastore/mapping/core/impl/PendingInsert.html' title='PendingInsert'>PendingInsert</a>&gt;&gt; inserts)</code><br>The default implementation of flushPendingInserts is to iterate over each insert operations
  and execute them one by one. </td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#flushPendingUpdates(Map<PersistentEntity,Collection<PendingUpdate>>)">flushPendingUpdates</a></strong>(java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.util.Collection&lt;<a href='../../../../../org/grails/datastore/mapping/core/impl/PendingUpdate.html' title='PendingUpdate'>PendingUpdate</a>&gt;&gt; updates)</code><br>The default implementation of flushPendingUpdates is to iterate over each update operation
+                            <td class="colLast"><code><strong><a href="#flushPendingUpdates(Map)">flushPendingUpdates</a></strong>(java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.util.Collection&lt;<a href='../../../../../org/grails/datastore/mapping/core/impl/PendingUpdate.html' title='PendingUpdate'>PendingUpdate</a>&gt;&gt; updates)</code><br>The default implementation of flushPendingUpdates is to iterate over each update operation
  and execute them one by one. </td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../../Collection.html'>Collection</a></code></td>
+                            <td class="colLast"><code>java.util.Collection</code></td>
                             <td class="colLast"><code><strong><a href="#getCachedCollection(org.grails.datastore.mapping.model.PersistentEntity, java.io.Serializable, java.lang.String)">getCachedCollection</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.io.Serializable key, java.lang.String name)</code><br></td>
                         </tr>
                         
@@ -672,13 +672,13 @@ extends <a href='../../../../../org/grails/datastore/mapping/core/AbstractAttrib
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../../List.html'>List</a></code></td>
+                            <td class="colLast"><code>java.util.List</code></td>
                             <td class="colLast"><code><strong><a href="#retrieveAll(java.lang.Class, java.lang.Iterable)">retrieveAll</a></strong>(java.lang.Class type, java.lang.Iterable keys)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../../List.html'>List</a></code></td>
+                            <td class="colLast"><code>java.util.List</code></td>
                             <td class="colLast"><code><strong><a href="#retrieveAll(java.lang.Class, java.io.Serializable)">retrieveAll</a></strong>(java.lang.Class type, java.io.Serializable keys)</code><br></td>
                         </tr>
                         
@@ -703,7 +703,7 @@ extends <a href='../../../../../org/grails/datastore/mapping/core/AbstractAttrib
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>long</code></td>
-                            <td class="colLast"><code><strong><a href="#updateAll(org.grails.datastore.mapping.query.api.QueryableCriteria, Map<String,Object>)">updateAll</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> criteria, java.util.Map&lt;java.lang.String, java.lang.Object&gt; properties)</code><br>This default implementation of updateAll is unlikely to be optimal as it iterates and updates each object one by one.</td>
+                            <td class="colLast"><code><strong><a href="#updateAll(org.grails.datastore.mapping.query.api.QueryableCriteria, Map)">updateAll</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> criteria, java.util.Map&lt;java.lang.String, java.lang.Object&gt; properties)</code><br>This default implementation of updateAll is unlikely to be optimal as it iterates and updates each object one by one.</td>
                         </tr>
                         
                     </table>
@@ -971,7 +971,7 @@ extends <a href='../../../../../org/grails/datastore/mapping/core/AbstractAttrib
                         <a name="beginTransaction(org.springframework.transaction.TransactionDefinition)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;<a href='../../../../../org/grails/datastore/mapping/transactions/Transaction.html'>Transaction</a> <strong>beginTransaction</strong>(org.springframework.transaction.TransactionDefinition definition)</h4>
                                 <p></p>
                             </li>
@@ -985,10 +985,10 @@ public&nbsp;<a href='../../../../../org/grails/datastore/mapping/transactions/Tr
                             </li>
                         </ul>
                     
-                        <a name="cacheCollection(org.grails.datastore.mapping.model.PersistentEntity, java.io.Serializable, Collection, java.lang.String)"><!-- --></a>
+                        <a name="cacheCollection(org.grails.datastore.mapping.model.PersistentEntity, java.io.Serializable, java.util.Collection, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>cacheCollection</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.io.Serializable key, <a href='../../../../../Collection.html'>Collection</a> collection, java.lang.String name)</h4>
+                                <h4>public&nbsp;void <strong>cacheCollection</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.io.Serializable key, java.util.Collection collection, java.lang.String name)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1001,7 +1001,7 @@ public&nbsp;<a href='../../../../../org/grails/datastore/mapping/transactions/Tr
                             </li>
                         </ul>
                     
-                        <a name="cacheEntry(java.io.Serializable, java.lang.Object, Map<Serializable,Object>, boolean)"><!-- --></a>
+                        <a name="cacheEntry(java.io.Serializable, java.lang.Object, Map, boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;void <strong>cacheEntry</strong>(java.io.Serializable key, java.lang.Object entry, java.util.Map&lt;java.io.Serializable, java.lang.Object&gt; entryCache, boolean forDirtyCheck)</h4>
@@ -1068,7 +1068,7 @@ public&nbsp;<a href='../../../../../org/grails/datastore/mapping/transactions/Tr
                         <a name="createEntityAccess(org.grails.datastore.mapping.model.PersistentEntity, java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;<a href='../../../../../EntityAccess.html'>EntityAccess</a> <strong>createEntityAccess</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.Object instance)</h4>
                                 <p></p>
                             </li>
@@ -1117,7 +1117,7 @@ public&nbsp;<a href='../../../../../EntityAccess.html'>EntityAccess</a> <strong>
                             </li>
                         </ul>
                     
-                        <a name="executePendings(Collection<? extends Runnable>)"><!-- --></a>
+                        <a name="executePendings(Collection)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;void <strong>executePendings</strong>(java.util.Collection&lt;? extends java.lang.Runnable&gt; pendings)</h4>
@@ -1133,7 +1133,7 @@ public&nbsp;<a href='../../../../../EntityAccess.html'>EntityAccess</a> <strong>
                             </li>
                         </ul>
                     
-                        <a name="flushPendingDeletes(Map<PersistentEntity,Collection<PendingDelete>>)"><!-- --></a>
+                        <a name="flushPendingDeletes(Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;void <strong>flushPendingDeletes</strong>(java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.util.Collection&lt;<a href='../../../../../org/grails/datastore/mapping/core/impl/PendingDelete.html' title='PendingDelete'>PendingDelete</a>&gt;&gt; pendingDeletes)</h4>
@@ -1141,7 +1141,7 @@ public&nbsp;<a href='../../../../../EntityAccess.html'>EntityAccess</a> <strong>
                             </li>
                         </ul>
                     
-                        <a name="flushPendingInserts(Map<PersistentEntity,Collection<PendingInsert>>)"><!-- --></a>
+                        <a name="flushPendingInserts(Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;void <strong>flushPendingInserts</strong>(java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.util.Collection&lt;<a href='../../../../../org/grails/datastore/mapping/core/impl/PendingInsert.html' title='PendingInsert'>PendingInsert</a>&gt;&gt; inserts)</h4>
@@ -1152,7 +1152,7 @@ public&nbsp;<a href='../../../../../EntityAccess.html'>EntityAccess</a> <strong>
                             </li>
                         </ul>
                     
-                        <a name="flushPendingUpdates(Map<PersistentEntity,Collection<PendingUpdate>>)"><!-- --></a>
+                        <a name="flushPendingUpdates(Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;void <strong>flushPendingUpdates</strong>(java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.util.Collection&lt;<a href='../../../../../org/grails/datastore/mapping/core/impl/PendingUpdate.html' title='PendingUpdate'>PendingUpdate</a>&gt;&gt; updates)</h4>
@@ -1166,7 +1166,7 @@ public&nbsp;<a href='../../../../../EntityAccess.html'>EntityAccess</a> <strong>
                         <a name="getCachedCollection(org.grails.datastore.mapping.model.PersistentEntity, java.io.Serializable, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<a href='../../../../../Collection.html'>Collection</a> <strong>getCachedCollection</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.io.Serializable key, java.lang.String name)</h4>
+                                <h4>public&nbsp;java.util.Collection <strong>getCachedCollection</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.io.Serializable key, java.lang.String name)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1222,7 +1222,7 @@ public&nbsp;<a href='../../../../../EntityAccess.html'>EntityAccess</a> <strong>
                         <a name="getObjectIdentifier(java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;java.io.Serializable <strong>getObjectIdentifier</strong>(java.lang.Object instance)</h4>
                                 <p></p>
                             </li>
@@ -1271,7 +1271,7 @@ public&nbsp;java.io.Serializable <strong>getObjectIdentifier</strong>(java.lang.
                         <a name="hasTransaction()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;boolean <strong>hasTransaction</strong>()</h4>
                                 <p></p>
                             </li>
@@ -1280,7 +1280,7 @@ public&nbsp;boolean <strong>hasTransaction</strong>()</h4>
                         <a name="insert(java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;java.io.Serializable <strong>insert</strong>(java.lang.Object o)</h4>
                                 <p></p>
                             </li>
@@ -1305,7 +1305,7 @@ public&nbsp;java.io.Serializable <strong>insert</strong>(java.lang.Object o)</h4
                         <a name="isPendingAlready(java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;boolean <strong>isPendingAlready</strong>(java.lang.Object obj)</h4>
                                 <p></p>
                             </li>
@@ -1314,7 +1314,7 @@ public&nbsp;boolean <strong>isPendingAlready</strong>(java.lang.Object obj)</h4>
                         <a name="isSchemaless()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;boolean <strong>isSchemaless</strong>()</h4>
                                 <p></p>
                             </li>
@@ -1323,7 +1323,7 @@ public&nbsp;boolean <strong>isSchemaless</strong>()</h4>
                         <a name="isStateless()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;boolean <strong>isStateless</strong>()</h4>
                                 <p></p>
                             </li>
@@ -1396,7 +1396,7 @@ public&nbsp;boolean <strong>isStateless</strong>()</h4>
                         <a name="registerPending(java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>@com.github.javaparser.ast.expr.MarkerAnnotationExprOverride
+                                <h4>@java.lang.Override
 public&nbsp;void <strong>registerPending</strong>(java.lang.Object obj)</h4>
                                 <p></p>
                             </li>
@@ -1413,7 +1413,7 @@ public&nbsp;void <strong>registerPending</strong>(java.lang.Object obj)</h4>
                         <a name="retrieveAll(java.lang.Class, java.lang.Iterable)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<a href='../../../../../List.html'>List</a> <strong>retrieveAll</strong>(java.lang.Class type, java.lang.Iterable keys)</h4>
+                                <h4>public&nbsp;java.util.List <strong>retrieveAll</strong>(java.lang.Class type, java.lang.Iterable keys)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1421,7 +1421,7 @@ public&nbsp;void <strong>registerPending</strong>(java.lang.Object obj)</h4>
                         <a name="retrieveAll(java.lang.Class, java.io.Serializable)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<a href='../../../../../List.html'>List</a> <strong>retrieveAll</strong>(java.lang.Class type, java.io.Serializable keys)</h4>
+                                <h4>public&nbsp;java.util.List <strong>retrieveAll</strong>(java.lang.Class type, java.io.Serializable keys)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1451,7 +1451,7 @@ public&nbsp;void <strong>registerPending</strong>(java.lang.Object obj)</h4>
                             </li>
                         </ul>
                     
-                        <a name="updateAll(org.grails.datastore.mapping.query.api.QueryableCriteria, Map<String,Object>)"><!-- --></a>
+                        <a name="updateAll(org.grails.datastore.mapping.query.api.QueryableCriteria, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;long <strong>updateAll</strong>(<a href='../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> criteria, java.util.Map&lt;java.lang.String, java.lang.Object&gt; properties)</h4>
