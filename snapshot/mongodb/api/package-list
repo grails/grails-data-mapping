@@ -4,6 +4,7 @@ grails.gorm.api
 grails.gorm.dirty.checking
 grails.gorm.multitenancy
 grails.gorm.services
+grails.gorm.time
 grails.gorm.transactions
 grails.mongodb
 grails.mongodb.api
@@ -11,12 +12,12 @@ grails.mongodb.bootstrap
 grails.mongodb.geo
 grails.mongodb.mapping
 grails.plugins.mongodb
-grails.plugins.rx.mongodb
 grails.test.mongodb
 org.grails.compiler.gorm
 org.grails.datastore.bson.codecs
 org.grails.datastore.bson.codecs.decoders
 org.grails.datastore.bson.codecs.encoders
+org.grails.datastore.bson.codecs.temporal
 org.grails.datastore.bson.json
 org.grails.datastore.bson.query
 org.grails.datastore.gorm
@@ -30,7 +31,6 @@ org.grails.datastore.gorm.jdbc.connections
 org.grails.datastore.gorm.jdbc.schema
 org.grails.datastore.gorm.mongo
 org.grails.datastore.gorm.mongo.api
-org.grails.datastore.gorm.mongo.bean.factory
 org.grails.datastore.gorm.mongo.extensions
 org.grails.datastore.gorm.mongo.geo
 org.grails.datastore.gorm.mongo.simple
