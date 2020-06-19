@@ -451,12 +451,6 @@ import spock.lang.Ignore
 
 class LocalMongoUnitSpec extends MongoSpec implements EmbeddedMongoClient {
 
-    // Specs ...
-    @Override
-    void setup() {
-        Book.DB.drop()
-    }
-
     @Ignore
     void "test fail on error"() {
 
@@ -528,7 +522,7 @@ is large, classpath scanning may be slow, so it&#8217;s better to override the m
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 7.0.1.BUILD-SNAPSHOT<br>
+Version 7.1.0.BUILD-SNAPSHOT<br>
 </div>
 </div>
 </body>
