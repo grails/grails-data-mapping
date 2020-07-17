@@ -10,7 +10,7 @@ dependencies {
     compileOnly "org.springframework:spring-jdbc:$springVersion"
     compileOnly "org.springframework:spring-web:$springVersion"
     testCompile "org.springframework:spring-jdbc:$springVersion"
-    testRuntime 'com.h2database:h2:1.3.176'
+    testRuntime 'com.h2database:h2:1.4.200'
 
     testCompile("org.hibernate:hibernate-validator:$hibernateValidatorVersion")
 }
