@@ -127,7 +127,7 @@ abstract class AbstractDetachedCriteria<T> implements Criteria, Cloneable {
             add associationCriteria
         }
         else {
-            associationCriteria.alias = alias
+            associationCriteria.setAlias(alias)
         }
         return associationCriteria
     }
@@ -818,7 +818,9 @@ abstract class AbstractDetachedCriteria<T> implements Criteria, Cloneable {
 
     AbstractDetachedCriteria<T> build(@DelegatesTo(AbstractDetachedCriteria) Closure callable) {
         AbstractDetachedCriteria newCriteria = this.clone()
-        newCriteria.with callable
+        final Closure clonedClosure = (Closure) callable.clone()
+        clonedClosure.setResolveStrategy(Closure.DELEGATE_FIRST)
+        newCriteria.with(clonedClosure)
         return newCriteria
     }
 
