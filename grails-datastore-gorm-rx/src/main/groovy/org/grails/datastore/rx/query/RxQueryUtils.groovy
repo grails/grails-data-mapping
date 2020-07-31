@@ -44,7 +44,7 @@ class RxQueryUtils {
             List<String> joinedProperties = []
             observable = observable.switchMap { Object o ->
 
-                List<Observable> observables = [Observable.just(o)]
+                List<Observable<?>> observables = [Observable.just(o)] as List<Observable<?>>
                 if(entity.isInstance(o)) {
 
                     for(fetch in fetchStrategies) {
@@ -82,7 +82,7 @@ class RxQueryUtils {
                                         RxQuery rxQuery = (RxQuery)datastoreClient.createQuery(inverseSide.owner.javaClass, queryState)
                                                 .eq(inverseSide.name, o)
 
-                                        observables.add rxQuery.findAll().toList()
+                                        observables.add((Observable) rxQuery.findAll().toList())
                                     }
                                 }
                                 else if(currentValue instanceof RxUnidirectionalCollection) {
@@ -94,10 +94,10 @@ class RxQueryUtils {
                                         RxQuery rxQuery = (RxQuery)datastoreClient.createQuery(inverseEntity.javaClass, queryState)
                                                 .in(inverseEntity.identity.name, associationKeys)
 
-                                        observables.add rxQuery.findAll().toList()
+                                        observables.add(rxQuery.findAll().toList())
                                     }
                                     else {
-                                        observables.add Observable.just([])
+                                        observables.add(Observable.just([]))
                                     }
                                 }
                             }
