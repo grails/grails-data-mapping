@@ -27,14 +27,14 @@ class DefaultServiceRegistry implements ServiceRegistry, Initializable {
      */
     final Datastore datastore
 
-    protected final Map<Class,Service> servicesByInterface
+    protected final Map<String,Service> servicesByInterface
     protected final Collection<Service> services = []
     private boolean initialized
 
     DefaultServiceRegistry(Datastore datastore, boolean exceptionOnLoadError = true) {
         this.datastore = datastore
         Iterable<Service> services = loadServices()
-        Map<Class,Service> serviceMap = [:]
+        Map<String, Service> serviceMap = [:]
         Iterator<Service> serviceIterator = services.iterator()
         while(serviceIterator.hasNext()) {
             try {
@@ -42,18 +42,18 @@ class DefaultServiceRegistry implements ServiceRegistry, Initializable {
                 this.services.add(service)
                 Class[] allInterfaces = ClassUtils.getAllInterfaces(service)
                 Class theClass = service.getClass()
-                serviceMap.put(theClass, service)
+                serviceMap.put(theClass.name, service)
                 if( theClass.simpleName.startsWith('$') ) {
                     // handle automatically implemented abstract service implementations
                     Class superClass = theClass.getSuperclass()
                     if(superClass != null && superClass != Object.class && Modifier.isAbstract(superClass.modifiers)) {
-                        serviceMap.put(superClass, service)
+                        serviceMap.put(superClass.name, service)
                     }
 
                 }
                 for(Class i in allInterfaces) {
                     if(isValidInterface(i)) {
-                        serviceMap.put(i, service)
+                        serviceMap.put(i.name, service)
                     }
                 }
             } catch (Throwable e) {
@@ -76,7 +76,7 @@ class DefaultServiceRegistry implements ServiceRegistry, Initializable {
 
     @Override
     def <T> T getService(Class<T> interfaceType) throws ServiceNotFoundException {
-        Service s = servicesByInterface.get(interfaceType)
+        final Service s = servicesByInterface.get(interfaceType.name)
         if(s == null) {
             throw new ServiceNotFoundException("No service found for type $interfaceType")
         }
