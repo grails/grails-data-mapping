@@ -143,7 +143,7 @@ implements <a href='../../../../../org/grails/datastore/mapping/engine/EntityAcc
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;java.util.Map&lt;java.lang.String, java.lang.Object&gt;</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>java.util.Map&lt;java.lang.String, java.lang.Object&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#modifiedProperties">modifiedProperties</a></code><br>The modified properties</td>
                         </tr>
                         
@@ -153,7 +153,7 @@ implements <a href='../../../../../org/grails/datastore/mapping/engine/EntityAcc
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong><a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#target">target</a></code><br>The target entity access</td>
                         </tr>
                         
@@ -182,12 +182,6 @@ implements <a href='../../../../../org/grails/datastore/mapping/engine/EntityAcc
                             <td class="colFirst">
                                 <code><a href="#ModificationTrackingEntityAccess(org.grails.datastore.mapping.engine.EntityAccess)">ModificationTrackingEntityAccess</a>
                                 (<a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> target)</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst">
-                                <code><a href="#ModificationTrackingEntityAccess()">ModificationTrackingEntityAccess</a>
-                                ()</code><br></td>
                         </tr>
                         
                     </table>
@@ -275,7 +269,7 @@ implements <a href='../../../../../org/grails/datastore/mapping/engine/EntityAcc
                         <a name="modifiedProperties"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;final&nbsp;java.util.Map&lt;java.lang.String, java.lang.Object&gt; <strong>modifiedProperties</strong></h4>
+                                <h4>final&nbsp;java.util.Map&lt;java.lang.String, java.lang.Object&gt; <strong>modifiedProperties</strong></h4>
                                 <p> The modified properties</p>
                             </li>
                         </ul>
@@ -291,7 +285,8 @@ implements <a href='../../../../../org/grails/datastore/mapping/engine/EntityAcc
                         <a name="target"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;final&nbsp;<a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> <strong>target</strong></h4>
+                                <h4>@groovy.lang.Delegate
+final&nbsp;<a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> <strong>target</strong></h4>
                                 <p> The target entity access</p>
                             </li>
                         </ul>
@@ -314,14 +309,6 @@ implements <a href='../../../../../org/grails/datastore/mapping/engine/EntityAcc
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><strong>ModificationTrackingEntityAccess</strong>(<a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> target)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="ModificationTrackingEntityAccess()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><strong>ModificationTrackingEntityAccess</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>

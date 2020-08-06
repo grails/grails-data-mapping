@@ -137,7 +137,7 @@ extends <a href='../../../../../../org.springframework.validation.beanvalidation
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;org.springframework.validation.Validator</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>org.springframework.validation.Validator</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#thisValidator">thisValidator</a></code><br></td>
                         </tr>
                         
@@ -166,12 +166,6 @@ extends <a href='../../../../../../org.springframework.validation.beanvalidation
                             <td class="colFirst">
                                 <code><a href="#GormValidatorAdapter(org.springframework.validation.Validator)">GormValidatorAdapter</a>
                                 (org.springframework.validation.Validator targetValidator)</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst">
-                                <code><a href="#GormValidatorAdapter()">GormValidatorAdapter</a>
-                                ()</code><br></td>
                         </tr>
                         
                     </table>
@@ -204,7 +198,7 @@ extends <a href='../../../../../../org.springframework.validation.beanvalidation
                         <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>java.util.Set&lt;ConstraintViolation&lt;T&gt;&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#validate(T, java.lang.Class)">validate</a></strong>(T object, java.lang.Class[] groups)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#validate(T, Class)">validate</a></strong>(T object, java.lang.Class&lt;?&gt;[] groups)</code><br></td>
                         </tr>
                         
                     </table>
@@ -235,7 +229,7 @@ extends <a href='../../../../../../org.springframework.validation.beanvalidation
                         <a name="thisValidator"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;final&nbsp;org.springframework.validation.Validator <strong>thisValidator</strong></h4>
+                                <h4>final&nbsp;org.springframework.validation.Validator <strong>thisValidator</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -258,14 +252,6 @@ extends <a href='../../../../../../org.springframework.validation.beanvalidation
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><strong>GormValidatorAdapter</strong>(org.springframework.validation.Validator targetValidator)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="GormValidatorAdapter()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><strong>GormValidatorAdapter</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -293,11 +279,11 @@ extends <a href='../../../../../../org.springframework.validation.beanvalidation
                             </li>
                         </ul>
                     
-                        <a name="validate(T, java.lang.Class)"><!-- --></a>
+                        <a name="validate(T, Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>&lt;T&gt; @java.lang.Override
-java.util.Set&lt;ConstraintViolation&lt;T&gt;&gt; <strong>validate</strong>(T object, java.lang.Class[] groups)</h4>
+java.util.Set&lt;ConstraintViolation&lt;T&gt;&gt; <strong>validate</strong>(T object, java.lang.Class&lt;?&gt;[] groups)</h4>
                                 <p></p>
                             </li>
                         </ul>

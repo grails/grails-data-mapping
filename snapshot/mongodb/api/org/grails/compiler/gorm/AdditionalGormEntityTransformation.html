@@ -128,28 +128,6 @@ extends org.codehaus.groovy.transform.ASTTransformation, groovy.transform.Compil
         
 
         
-        <!-- ======== CONSTRUCTOR SUMMARY ======== -->
-        <ul class="blockList">
-                <li class="blockList"><a name="constructor_summary"><!--   --></a>
-                    <h3>Constructor Summary</h3>
-                    <ul class="blockList">
-                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructors Summary table">
-                        <caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
-                        <tr>
-                            <th class="colFirst" scope="col">Constructor and description</th>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst">
-                                <code><a href="#AdditionalGormEntityTransformation()">AdditionalGormEntityTransformation</a>
-                                ()</code><br></td>
-                        </tr>
-                        
-                    </table>
-                   </ul>
-              </li>
-        </ul>
-        
 
         
         <!-- ========== METHOD SUMMARY =========== -->
@@ -168,13 +146,13 @@ extends org.codehaus.groovy.transform.ASTTransformation, groovy.transform.Compil
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>boolean</code></td>
+                            <td class="colLast"><code>abstract&nbsp;boolean</code></td>
                             <td class="colLast"><code><strong><a href="#isAvailable()">isAvailable</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>Whether the transformation is available</DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
+                            <td class="colLast"><code>abstract&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#visit(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.control.SourceUnit)">visit</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.control.SourceUnit sourceUnit)</code><br>Visit the transform</td>
                         </tr>
                         
@@ -222,24 +200,6 @@ extends org.codehaus.groovy.transform.ASTTransformation, groovy.transform.Compil
             
 
             
-            <!-- =========== CONSTRUCTOR DETAIL =========== -->
-            <ul class="blockList">
-                <li class="blockList"><a name="constructor_detail">
-                    <!--   -->
-                </a>
-                    <h3>Constructor Detail</h3>
-                    
-                        <a name="AdditionalGormEntityTransformation()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><strong>AdditionalGormEntityTransformation</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                </li>
-            </ul>
-            
 
 
             
@@ -253,7 +213,7 @@ extends org.codehaus.groovy.transform.ASTTransformation, groovy.transform.Compil
                         <a name="isAvailable()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>boolean <strong>isAvailable</strong>()</h4>
+                                <h4>abstract&nbsp;boolean <strong>isAvailable</strong>()</h4>
                                 <p> <DL><DT><B>Returns:</B></DT><DD>Whether the transformation is available</DD></DL></p>
                             </li>
                         </ul>
@@ -261,7 +221,7 @@ extends org.codehaus.groovy.transform.ASTTransformation, groovy.transform.Compil
                         <a name="visit(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.control.SourceUnit)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>visit</strong>(org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.control.SourceUnit sourceUnit)</h4>
+                                <h4>abstract&nbsp;void <strong>visit</strong>(org.codehaus.groovy.ast.ClassNode classNode, org.codehaus.groovy.control.SourceUnit sourceUnit)</h4>
                                 <p> Visit the transform <DL><DT><B>Parameters:</B></DT><DD><code>classNode</code> -  The class node</DD><DD><code>sourceUnit</code> -  The source unit</DD></DL></p>
                             </li>
                         </ul>

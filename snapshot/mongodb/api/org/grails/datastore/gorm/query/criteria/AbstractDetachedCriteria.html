@@ -279,7 +279,7 @@ implements <a href='../../../../../../org/grails/datastore/mapping/query/api/Cri
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../../org/grails/datastore/mapping/query/api/ProjectionList.html'>ProjectionList</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong><a href='../../../../../../org/grails/datastore/mapping/query/api/ProjectionList.html'>ProjectionList</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#projectionList">projectionList</a></code><br></td>
                         </tr>
                         
@@ -308,12 +308,6 @@ implements <a href='../../../../../../org/grails/datastore/mapping/query/api/Cri
                             <td class="colFirst">
                                 <code><a href="#AbstractDetachedCriteria(Class, java.lang.String)">AbstractDetachedCriteria</a>
                                 (java.lang.Class&lt;T&gt; targetClass, java.lang.String alias)</code><br>Constructs a DetachedCriteria instance target the given class and alias for the name</td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst">
-                                <code><a href="#AbstractDetachedCriteria()">AbstractDetachedCriteria</a>
-                                ()</code><br></td>
                         </tr>
                         
                     </table>
@@ -387,7 +381,7 @@ implements <a href='../../../../../../org/grails/datastore/mapping/query/api/Cri
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;<a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a></code></td>
+                            <td class="colLast"><code>protected&nbsp;abstract&nbsp;<a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#buildQueryableCriteria(groovy.lang.Closure)">buildQueryableCriteria</a></strong>(groovy.lang.Closure queryClosure)</code><br></td>
                         </tr>
                         
@@ -819,7 +813,7 @@ implements <a href='../../../../../../org/grails/datastore/mapping/query/api/Cri
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;<a href='../../../../../../org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html'>AbstractDetachedCriteria</a></code></td>
+                            <td class="colLast"><code>protected&nbsp;abstract&nbsp;<a href='../../../../../../org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html'>AbstractDetachedCriteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#newInstance()">newInstance</a></strong>()</code><br></td>
                         </tr>
                         
@@ -1175,7 +1169,7 @@ implements <a href='../../../../../../org/grails/datastore/mapping/query/api/Cri
                         <a name="projectionList"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;<a href='../../../../../../org/grails/datastore/mapping/query/api/ProjectionList.html'>ProjectionList</a> <strong>projectionList</strong></h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/ProjectionList.html'>ProjectionList</a> <strong>projectionList</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1199,14 +1193,6 @@ implements <a href='../../../../../../org/grails/datastore/mapping/query/api/Cri
                             <li class="blockList">
                                 <h4><strong>AbstractDetachedCriteria</strong>(java.lang.Class&lt;T&gt; targetClass, java.lang.String alias)</h4>
                                 <p> Constructs a DetachedCriteria instance target the given class and alias for the name <DL><DT><B>Parameters:</B></DT><DD><code>targetClass</code> -  The target class</DD><DD><code>alias</code> -  The root alias to be used in queries</DD></DL></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="AbstractDetachedCriteria()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><strong>AbstractDetachedCriteria</strong>()</h4>
-                                <p></p>
                             </li>
                         </ul>
                     
@@ -1291,7 +1277,7 @@ implements <a href='../../../../../../org/grails/datastore/mapping/query/api/Cri
                         <a name="buildQueryableCriteria(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;<a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> <strong>buildQueryableCriteria</strong>(groovy.lang.Closure queryClosure)</h4>
+                                <h4>protected&nbsp;abstract&nbsp;<a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> <strong>buildQueryableCriteria</strong>(groovy.lang.Closure queryClosure)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1889,7 +1875,7 @@ java.lang.Object <strong>methodMissing</strong>(java.lang.String methodName, jav
                         <a name="newInstance()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;<a href='../../../../../../org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html'>AbstractDetachedCriteria</a> <strong>newInstance</strong>()</h4>
+                                <h4>protected&nbsp;abstract&nbsp;<a href='../../../../../../org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html'>AbstractDetachedCriteria</a> <strong>newInstance</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>

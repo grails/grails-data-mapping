@@ -162,22 +162,22 @@ extends java.lang.Object</pre>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#builderMethodPrefix">builderMethodPrefix</a></code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#configurationPrefix">configurationPrefix</a></code><br></td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;java.lang.Object</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>java.lang.Object</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#fallBackConfiguration">fallBackConfiguration</a></code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>private&nbsp;org.springframework.core.env.PropertyResolver</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>org.springframework.core.env.PropertyResolver</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#propertyResolver">propertyResolver</a></code><br></td>
                         </tr>
                         
@@ -212,12 +212,6 @@ extends java.lang.Object</pre>
                             <td class="colFirst">
                                 <code><a href="#ConfigurationBuilder(org.springframework.core.env.PropertyResolver, java.lang.String, java.lang.Object, java.lang.String)">ConfigurationBuilder</a>
                                 (org.springframework.core.env.PropertyResolver propertyResolver, java.lang.String configurationPrefix, java.lang.Object fallBackConfiguration, java.lang.String builderMethodPrefix)</code><br> <DL><DT><B>Parameters:</B></DT><DD><code>propertyResolver</code> -  The property resolver</DD></DL></td>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst">
-                                <code><a href="#ConfigurationBuilder()">ConfigurationBuilder</a>
-                                ()</code><br></td>
                         </tr>
                         
                     </table>
@@ -261,7 +255,7 @@ extends java.lang.Object</pre>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;B</code></td>
+                            <td class="colLast"><code>protected&nbsp;abstract&nbsp;B</code></td>
                             <td class="colLast"><code><strong><a href="#createBuilder()">createBuilder</a></strong>()</code><br>Creates the native builder</td>
                         </tr>
                         
@@ -291,7 +285,7 @@ extends java.lang.Object</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;C</code></td>
+                            <td class="colLast"><code>protected&nbsp;abstract&nbsp;C</code></td>
                             <td class="colLast"><code><strong><a href="#toConfiguration(B)">toConfiguration</a></strong>(B builder)</code><br>Convert the builder to the final configuration</td>
                         </tr>
                         
@@ -359,7 +353,7 @@ extends java.lang.Object</pre>
                         <a name="builderMethodPrefix"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;final&nbsp;java.lang.String <strong>builderMethodPrefix</strong></h4>
+                                <h4>final&nbsp;java.lang.String <strong>builderMethodPrefix</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -367,7 +361,7 @@ extends java.lang.Object</pre>
                         <a name="configurationPrefix"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;final&nbsp;java.lang.String <strong>configurationPrefix</strong></h4>
+                                <h4>final&nbsp;java.lang.String <strong>configurationPrefix</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -375,7 +369,7 @@ extends java.lang.Object</pre>
                         <a name="fallBackConfiguration"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;final&nbsp;java.lang.Object <strong>fallBackConfiguration</strong></h4>
+                                <h4>final&nbsp;java.lang.Object <strong>fallBackConfiguration</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -383,7 +377,7 @@ extends java.lang.Object</pre>
                         <a name="propertyResolver"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;final&nbsp;org.springframework.core.env.PropertyResolver <strong>propertyResolver</strong></h4>
+                                <h4>final&nbsp;org.springframework.core.env.PropertyResolver <strong>propertyResolver</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -418,14 +412,6 @@ extends java.lang.Object</pre>
                                 <h4>@groovy.transform.CompileDynamic
 <strong>ConfigurationBuilder</strong>(org.springframework.core.env.PropertyResolver propertyResolver, java.lang.String configurationPrefix, java.lang.Object fallBackConfiguration, java.lang.String builderMethodPrefix)</h4>
                                 <p> <DL><DT><B>Parameters:</B></DT><DD><code>propertyResolver</code> -  The property resolver</DD><DD><code>configurationPrefix</code> -  The prefix to resolve settings from within the configuration. Example "grails.gorm.neo4j" or "grails.gorm.mongodb"</DD><DD><code>builderMethodPrefix</code> -  The prefix to builder method calls. Default is null which results in builder methods like "foo(...)". Seting a prefix of "with" results in "withFoo(..)"</DD><DD><code>fallBackConfiguration</code> -  An object to read the fallback configuration from</DD></DL></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="ConfigurationBuilder()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><strong>ConfigurationBuilder</strong>()</h4>
-                                <p></p>
                             </li>
                         </ul>
                     
@@ -469,7 +455,7 @@ extends java.lang.Object</pre>
                         <a name="createBuilder()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;B <strong>createBuilder</strong>()</h4>
+                                <h4>protected&nbsp;abstract&nbsp;B <strong>createBuilder</strong>()</h4>
                                 <p> Creates the native builder <DL><DT><B>Returns:</B></DT><DD>The native builder</DD></DL></p>
                             </li>
                         </ul>
@@ -509,7 +495,7 @@ extends java.lang.Object</pre>
                         <a name="toConfiguration(B)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;C <strong>toConfiguration</strong>(B builder)</h4>
+                                <h4>protected&nbsp;abstract&nbsp;C <strong>toConfiguration</strong>(B builder)</h4>
                                 <p> Convert the builder to the final configuration <DL><DT><B>Parameters:</B></DT><DD><code>builder</code> -  The builder</DD></DL><DL><DT><B>Returns:</B></DT><DD>The final configuration</DD></DL></p>
                             </li>
                         </ul>

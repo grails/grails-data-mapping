@@ -127,28 +127,6 @@ if (location.href.indexOf('is-external=true') == -1) {
         
 
         
-        <!-- ======== CONSTRUCTOR SUMMARY ======== -->
-        <ul class="blockList">
-                <li class="blockList"><a name="constructor_summary"><!--   --></a>
-                    <h3>Constructor Summary</h3>
-                    <ul class="blockList">
-                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructors Summary table">
-                        <caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
-                        <tr>
-                            <th class="colFirst" scope="col">Constructor and description</th>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst">
-                                <code><a href="#SchemaHandler()">SchemaHandler</a>
-                                ()</code><br></td>
-                        </tr>
-                        
-                    </table>
-                   </ul>
-              </li>
-        </ul>
-        
 
         
         <!-- ========== METHOD SUMMARY =========== -->
@@ -167,25 +145,25 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
+                            <td class="colLast"><code>abstract&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#createSchema(java.sql.Connection, java.lang.String)">createSchema</a></strong>(java.sql.Connection connection, java.lang.String name)</code><br>Creates the given schema. </td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.util.Collection&lt;java.lang.String&gt;</code></td>
+                            <td class="colLast"><code>abstract&nbsp;java.util.Collection&lt;java.lang.String&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#resolveSchemaNames(javax.sql.DataSource)">resolveSchemaNames</a></strong>(javax.sql.DataSource dataSource)</code><br> <DL><DT><B>Returns:</B></DT><DD>Resolves the schema names</DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
+                            <td class="colLast"><code>abstract&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#useDefaultSchema(java.sql.Connection)">useDefaultSchema</a></strong>(java.sql.Connection connection)</code><br>Uses the given schema. </td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
+                            <td class="colLast"><code>abstract&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#useSchema(java.sql.Connection, java.lang.String)">useSchema</a></strong>(java.sql.Connection connection, java.lang.String name)</code><br>Uses the given schema. </td>
                         </tr>
                         
@@ -211,24 +189,6 @@ if (location.href.indexOf('is-external=true') == -1) {
             
 
             
-            <!-- =========== CONSTRUCTOR DETAIL =========== -->
-            <ul class="blockList">
-                <li class="blockList"><a name="constructor_detail">
-                    <!--   -->
-                </a>
-                    <h3>Constructor Detail</h3>
-                    
-                        <a name="SchemaHandler()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><strong>SchemaHandler</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                </li>
-            </ul>
-            
 
 
             
@@ -242,7 +202,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="createSchema(java.sql.Connection, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>createSchema</strong>(java.sql.Connection connection, java.lang.String name)</h4>
+                                <h4>abstract&nbsp;void <strong>createSchema</strong>(java.sql.Connection connection, java.lang.String name)</h4>
                                 <p> Creates the given schema. Defaults to "CREATE SCHEMA %s"</p>
                             </li>
                         </ul>
@@ -250,7 +210,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="resolveSchemaNames(javax.sql.DataSource)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.Collection&lt;java.lang.String&gt; <strong>resolveSchemaNames</strong>(javax.sql.DataSource dataSource)</h4>
+                                <h4>abstract&nbsp;java.util.Collection&lt;java.lang.String&gt; <strong>resolveSchemaNames</strong>(javax.sql.DataSource dataSource)</h4>
                                 <p> <DL><DT><B>Returns:</B></DT><DD>Resolves the schema names</DD></DL></p>
                             </li>
                         </ul>
@@ -258,7 +218,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="useDefaultSchema(java.sql.Connection)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>useDefaultSchema</strong>(java.sql.Connection connection)</h4>
+                                <h4>abstract&nbsp;void <strong>useDefaultSchema</strong>(java.sql.Connection connection)</h4>
                                 <p> Uses the given schema. Defaults to "SET SCHEMA PUBLIC"</p>
                             </li>
                         </ul>
@@ -266,7 +226,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="useSchema(java.sql.Connection, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>useSchema</strong>(java.sql.Connection connection, java.lang.String name)</h4>
+                                <h4>abstract&nbsp;void <strong>useSchema</strong>(java.sql.Connection connection, java.lang.String name)</h4>
                                 <p> Uses the given schema. Defaults to "SET SCHEMA %s"</p>
                             </li>
                         </ul>

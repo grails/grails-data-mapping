@@ -137,17 +137,17 @@ extends AbstractConnectionSourceFactory&lt;MongoClient, <a href='../../../../../
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;com.mongodb.MongoClientSettings$Builder</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>com.mongodb.MongoClientSettings$Builder</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#clientOptionsBuilder">clientOptionsBuilder</a></code><br>The client options builder</td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>private&nbsp;org.bson.codecs.configuration.CodecRegistry</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>org.bson.codecs.configuration.CodecRegistry</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#codecRegistry">codecRegistry</a></code><br>An optional additional registry</td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;java.util.List&lt;Codec&gt;</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>java.util.List&lt;Codec&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#codecs">codecs</a></code><br>Optional additional codecs</td>
                         </tr>
                         
@@ -251,7 +251,7 @@ extends AbstractConnectionSourceFactory&lt;MongoClient, <a href='../../../../../
                         <a name="clientOptionsBuilder"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;com.mongodb.MongoClientSettings$Builder <strong>clientOptionsBuilder</strong></h4>
+                                <h4>com.mongodb.MongoClientSettings$Builder <strong>clientOptionsBuilder</strong></h4>
                                 <p> The client options builder</p>
                             </li>
                         </ul>
@@ -259,7 +259,8 @@ extends AbstractConnectionSourceFactory&lt;MongoClient, <a href='../../../../../
                         <a name="codecRegistry"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;org.bson.codecs.configuration.CodecRegistry <strong>codecRegistry</strong></h4>
+                                <h4>@org.springframework.beans.factory.annotation.Autowired(required: false)
+org.bson.codecs.configuration.CodecRegistry <strong>codecRegistry</strong></h4>
                                 <p> An optional additional registry</p>
                             </li>
                         </ul>
@@ -267,7 +268,8 @@ extends AbstractConnectionSourceFactory&lt;MongoClient, <a href='../../../../../
                         <a name="codecs"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;java.util.List&lt;Codec&gt; <strong>codecs</strong></h4>
+                                <h4>@org.springframework.beans.factory.annotation.Autowired(required: false)
+java.util.List&lt;Codec&gt; <strong>codecs</strong></h4>
                                 <p> Optional additional codecs</p>
                             </li>
                         </ul>

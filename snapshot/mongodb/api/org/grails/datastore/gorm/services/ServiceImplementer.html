@@ -157,28 +157,6 @@ if (location.href.indexOf('is-external=true') == -1) {
         
 
         
-        <!-- ======== CONSTRUCTOR SUMMARY ======== -->
-        <ul class="blockList">
-                <li class="blockList"><a name="constructor_summary"><!--   --></a>
-                    <h3>Constructor Summary</h3>
-                    <ul class="blockList">
-                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructors Summary table">
-                        <caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
-                        <tr>
-                            <th class="colFirst" scope="col">Constructor and description</th>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst">
-                                <code><a href="#ServiceImplementer()">ServiceImplementer</a>
-                                ()</code><br></td>
-                        </tr>
-                        
-                    </table>
-                   </ul>
-              </li>
-        </ul>
-        
 
         
         <!-- ========== METHOD SUMMARY =========== -->
@@ -197,13 +175,13 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>boolean</code></td>
+                            <td class="colLast"><code>abstract&nbsp;boolean</code></td>
                             <td class="colLast"><code><strong><a href="#doesImplement(org.codehaus.groovy.ast.ClassNode, MethodNode)">doesImplement</a></strong>(org.codehaus.groovy.ast.ClassNode domainClass, <a href='../../../../../MethodNode.html'>MethodNode</a> methodNode)</code><br>Does this service implement the method</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
+                            <td class="colLast"><code>abstract&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#implement(org.codehaus.groovy.ast.ClassNode, MethodNode, MethodNode, org.codehaus.groovy.ast.ClassNode)">implement</a></strong>(org.codehaus.groovy.ast.ClassNode domainClassNode, <a href='../../../../../MethodNode.html'>MethodNode</a> abstractMethodNode, <a href='../../../../../MethodNode.html'>MethodNode</a> newMethodNode, org.codehaus.groovy.ast.ClassNode targetClassNode)</code><br>Implement the method</td>
                         </tr>
                         
@@ -255,24 +233,6 @@ if (location.href.indexOf('is-external=true') == -1) {
             
 
             
-            <!-- =========== CONSTRUCTOR DETAIL =========== -->
-            <ul class="blockList">
-                <li class="blockList"><a name="constructor_detail">
-                    <!--   -->
-                </a>
-                    <h3>Constructor Detail</h3>
-                    
-                        <a name="ServiceImplementer()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><strong>ServiceImplementer</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                </li>
-            </ul>
-            
 
 
             
@@ -286,7 +246,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="doesImplement(org.codehaus.groovy.ast.ClassNode, MethodNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>boolean <strong>doesImplement</strong>(org.codehaus.groovy.ast.ClassNode domainClass, <a href='../../../../../MethodNode.html'>MethodNode</a> methodNode)</h4>
+                                <h4>abstract&nbsp;boolean <strong>doesImplement</strong>(org.codehaus.groovy.ast.ClassNode domainClass, <a href='../../../../../MethodNode.html'>MethodNode</a> methodNode)</h4>
                                 <p> Does this service implement the method <DL><DT><B>Parameters:</B></DT><DD><code>domainClass</code> -  The domain class that this implementor applies to. If not known will be equal to ClassHelper.OBJECT_TYPE</DD><DD><code>methodNode</code> -  The abstract method node</DD></DL><DL><DT><B>Returns:</B></DT><DD>True if it does</DD></DL></p>
                             </li>
                         </ul>
@@ -294,7 +254,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="implement(org.codehaus.groovy.ast.ClassNode, MethodNode, MethodNode, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>implement</strong>(org.codehaus.groovy.ast.ClassNode domainClassNode, <a href='../../../../../MethodNode.html'>MethodNode</a> abstractMethodNode, <a href='../../../../../MethodNode.html'>MethodNode</a> newMethodNode, org.codehaus.groovy.ast.ClassNode targetClassNode)</h4>
+                                <h4>abstract&nbsp;void <strong>implement</strong>(org.codehaus.groovy.ast.ClassNode domainClassNode, <a href='../../../../../MethodNode.html'>MethodNode</a> abstractMethodNode, <a href='../../../../../MethodNode.html'>MethodNode</a> newMethodNode, org.codehaus.groovy.ast.ClassNode targetClassNode)</h4>
                                 <p> Implement the method <DL><DT><B>Parameters:</B></DT><DD><code>targetClassNode</code> -  The target class node</DD><DD><code>abstractMethodNode</code> -  The abstract method node to implement</DD><DD><code>newMethodNode</code> -  The new method node being implemented</DD></DL></p>
                             </li>
                         </ul>

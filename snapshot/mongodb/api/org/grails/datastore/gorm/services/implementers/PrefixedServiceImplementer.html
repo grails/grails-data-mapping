@@ -152,28 +152,6 @@ extends <a href='../../../../../../org/grails/datastore/gorm/services/ServiceImp
         
 
         
-        <!-- ======== CONSTRUCTOR SUMMARY ======== -->
-        <ul class="blockList">
-                <li class="blockList"><a name="constructor_summary"><!--   --></a>
-                    <h3>Constructor Summary</h3>
-                    <ul class="blockList">
-                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructors Summary table">
-                        <caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
-                        <tr>
-                            <th class="colFirst" scope="col">Constructor and description</th>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst">
-                                <code><a href="#PrefixedServiceImplementer()">PrefixedServiceImplementer</a>
-                                ()</code><br></td>
-                        </tr>
-                        
-                    </table>
-                   </ul>
-              </li>
-        </ul>
-        
 
         
         <!-- ========== METHOD SUMMARY =========== -->
@@ -192,13 +170,13 @@ extends <a href='../../../../../../org/grails/datastore/gorm/services/ServiceImp
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.lang.Iterable&lt;java.lang.String&gt;</code></td>
+                            <td class="colLast"><code>abstract&nbsp;java.lang.Iterable&lt;java.lang.String&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getHandledPrefixes()">getHandledPrefixes</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>The handled prefixes</DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.lang.String</code></td>
+                            <td class="colLast"><code>abstract&nbsp;java.lang.String</code></td>
                             <td class="colLast"><code><strong><a href="#resolvePrefix(MethodNode)">resolvePrefix</a></strong>(<a href='../../../../../../MethodNode.html'>MethodNode</a> mn)</code><br>Resolve the prefix used for the given method</td>
                         </tr>
                         
@@ -242,24 +220,6 @@ extends <a href='../../../../../../org/grails/datastore/gorm/services/ServiceImp
             
 
             
-            <!-- =========== CONSTRUCTOR DETAIL =========== -->
-            <ul class="blockList">
-                <li class="blockList"><a name="constructor_detail">
-                    <!--   -->
-                </a>
-                    <h3>Constructor Detail</h3>
-                    
-                        <a name="PrefixedServiceImplementer()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><strong>PrefixedServiceImplementer</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                </li>
-            </ul>
-            
 
 
             
@@ -273,7 +233,7 @@ extends <a href='../../../../../../org/grails/datastore/gorm/services/ServiceImp
                         <a name="getHandledPrefixes()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.Iterable&lt;java.lang.String&gt; <strong>getHandledPrefixes</strong>()</h4>
+                                <h4>abstract&nbsp;java.lang.Iterable&lt;java.lang.String&gt; <strong>getHandledPrefixes</strong>()</h4>
                                 <p> <DL><DT><B>Returns:</B></DT><DD>The handled prefixes</DD></DL></p>
                             </li>
                         </ul>
@@ -281,7 +241,7 @@ extends <a href='../../../../../../org/grails/datastore/gorm/services/ServiceImp
                         <a name="resolvePrefix(MethodNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.String <strong>resolvePrefix</strong>(<a href='../../../../../../MethodNode.html'>MethodNode</a> mn)</h4>
+                                <h4>abstract&nbsp;java.lang.String <strong>resolvePrefix</strong>(<a href='../../../../../../MethodNode.html'>MethodNode</a> mn)</h4>
                                 <p> Resolve the prefix used for the given method <DL><DT><B>Parameters:</B></DT><DD><code>mn</code> -  The method node</DD></DL><DL><DT><B>Returns:</B></DT><DD>The prefix used or null if it isn't used</DD></DL></p>
                             </li>
                         </ul>

@@ -197,19 +197,19 @@ extends <a href='../../../../../MappingFactory.html'>MappingFactory</a></pre>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../../IdentityMapping.html'>IdentityMapping</a></code></td>
+                            <td class="colLast"><code>public&nbsp;<a href='../../../../../IdentityMapping.html'>IdentityMapping</a></code></td>
                             <td class="colLast"><code><strong><a href="#createIdentityMapping(ClassMapping)">createIdentityMapping</a></strong>(<a href='../../../../../ClassMapping.html'>ClassMapping</a> classMapping)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>R</code></td>
+                            <td class="colLast"><code>public&nbsp;R</code></td>
                             <td class="colLast"><code><strong><a href="#createMappedForm(org.grails.datastore.mapping.model.PersistentEntity)">createMappedForm</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>T</code></td>
+                            <td class="colLast"><code>public&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#createMappedForm(org.grails.datastore.mapping.model.PersistentProperty)">createMappedForm</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> mpp)</code><br></td>
                         </tr>
                         
@@ -221,7 +221,7 @@ extends <a href='../../../../../MappingFactory.html'>MappingFactory</a></pre>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;java.lang.Class&lt;R&gt;</code></td>
+                            <td class="colLast"><code>protected&nbsp;abstract&nbsp;java.lang.Class&lt;R&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getEntityMappedFormType()">getEntityMappedFormType</a></strong>()</code><br></td>
                         </tr>
                         
@@ -233,37 +233,37 @@ extends <a href='../../../../../MappingFactory.html'>MappingFactory</a></pre>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;java.lang.Class&lt;T&gt;</code></td>
+                            <td class="colLast"><code>protected&nbsp;abstract&nbsp;java.lang.Class&lt;T&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getPropertyMappedFormType()">getPropertyMappedFormType</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>boolean</code></td>
+                            <td class="colLast"><code>public&nbsp;boolean</code></td>
                             <td class="colLast"><code><strong><a href="#isTenantId(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.beans.PropertyDescriptor)">isTenantId</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, java.beans.PropertyDescriptor descriptor)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
+                            <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#setContextObject(java.lang.Object)">setContextObject</a></strong>(java.lang.Object contextObject)</code><br> <DL><DT><B>Parameters:</B></DT><DD><code>contextObject</code> -  Context object to be passed to mapping blocks</DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
+                            <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#setDefaultConstraints(groovy.lang.Closure)">setDefaultConstraints</a></strong>(groovy.lang.Closure defaultConstraints)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
+                            <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#setDefaultMapping(groovy.lang.Closure)">setDefaultMapping</a></strong>(groovy.lang.Closure defaultMapping)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
+                            <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#setVersionByDefault(boolean)">setVersionByDefault</a></strong>(boolean versionByDefault)</code><br>Whether the version entities using optimistic locking by default</td>
                         </tr>
                         
@@ -387,7 +387,7 @@ public&nbsp;T <strong>createMappedForm</strong>(<a href='../../../../../org/grai
                         <a name="getEntityMappedFormType()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;java.lang.Class&lt;R&gt; <strong>getEntityMappedFormType</strong>()</h4>
+                                <h4>protected&nbsp;abstract&nbsp;java.lang.Class&lt;R&gt; <strong>getEntityMappedFormType</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -403,7 +403,7 @@ public&nbsp;T <strong>createMappedForm</strong>(<a href='../../../../../org/grai
                         <a name="getPropertyMappedFormType()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;java.lang.Class&lt;T&gt; <strong>getPropertyMappedFormType</strong>()</h4>
+                                <h4>protected&nbsp;abstract&nbsp;java.lang.Class&lt;T&gt; <strong>getPropertyMappedFormType</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>

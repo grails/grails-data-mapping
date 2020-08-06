@@ -177,13 +177,13 @@ implements <a href='../../../../../../org/grails/datastore/mapping/engine/types/
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.lang.Class&lt;T&gt;</code></td>
+                            <td class="colLast"><code>public&nbsp;java.lang.Class&lt;T&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getTargetType()">getTargetType</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>Q</code></td>
+                            <td class="colLast"><code>public&nbsp;Q</code></td>
                             <td class="colLast"><code><strong><a href="#query(org.grails.datastore.mapping.model.PersistentProperty, grails.gorm.services.Query.PropertyCriterion, Q)">query</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, <a href='../../../../../../grails/gorm/services/Query.PropertyCriterion.html'>PropertyCriterion</a> criterion, Q nativeQuery)</code><br></td>
                         </tr>
                         
@@ -195,37 +195,37 @@ implements <a href='../../../../../../org/grails/datastore/mapping/engine/types/
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>T</code></td>
+                            <td class="colLast"><code>public&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#read(org.grails.datastore.mapping.model.PersistentProperty, N)">read</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, N source)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;T</code></td>
+                            <td class="colLast"><code>protected&nbsp;abstract&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#readInternal(org.grails.datastore.mapping.model.PersistentProperty, java.lang.String, N)">readInternal</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, java.lang.String key, N nativeSource)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>boolean</code></td>
+                            <td class="colLast"><code>public&nbsp;boolean</code></td>
                             <td class="colLast"><code><strong><a href="#supports(org.grails.datastore.mapping.core.Datastore)">supports</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>boolean</code></td>
+                            <td class="colLast"><code>public&nbsp;boolean</code></td>
                             <td class="colLast"><code><strong><a href="#supports(org.grails.datastore.mapping.model.MappingContext)">supports</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.lang.Object</code></td>
+                            <td class="colLast"><code>public&nbsp;java.lang.Object</code></td>
                             <td class="colLast"><code><strong><a href="#write(org.grails.datastore.mapping.model.PersistentProperty, T, N)">write</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, T value, N nativeTarget)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;java.lang.Object</code></td>
+                            <td class="colLast"><code>protected&nbsp;abstract&nbsp;java.lang.Object</code></td>
                             <td class="colLast"><code><strong><a href="#writeInternal(org.grails.datastore.mapping.model.PersistentProperty, java.lang.String, T, N)">writeInternal</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, java.lang.String key, T value, N nativeTarget)</code><br></td>
                         </tr>
                         
@@ -332,7 +332,7 @@ implements <a href='../../../../../../org/grails/datastore/mapping/engine/types/
                         <a name="readInternal(org.grails.datastore.mapping.model.PersistentProperty, java.lang.String, N)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;T <strong>readInternal</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, java.lang.String key, N nativeSource)</h4>
+                                <h4>protected&nbsp;abstract&nbsp;T <strong>readInternal</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, java.lang.String key, N nativeSource)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -365,7 +365,7 @@ public&nbsp;boolean <strong>supports</strong>(<a href='../../../../../../org/gra
                         <a name="writeInternal(org.grails.datastore.mapping.model.PersistentProperty, java.lang.String, T, N)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;java.lang.Object <strong>writeInternal</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, java.lang.String key, T value, N nativeTarget)</h4>
+                                <h4>protected&nbsp;abstract&nbsp;java.lang.Object <strong>writeInternal</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentProperty.html'>PersistentProperty</a> property, java.lang.String key, T value, N nativeTarget)</h4>
                                 <p></p>
                             </li>
                         </ul>

@@ -143,12 +143,12 @@ implements java.sql.Connection</pre>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../org/grails/datastore/gorm/jdbc/schema/SchemaHandler.html'>SchemaHandler</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong><a href='../../../../../org/grails/datastore/gorm/jdbc/schema/SchemaHandler.html'>SchemaHandler</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#schemaHandler">schemaHandler</a></code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>private&nbsp;java.sql.Connection</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>java.sql.Connection</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#target">target</a></code><br></td>
                         </tr>
                         
@@ -177,12 +177,6 @@ implements java.sql.Connection</pre>
                             <td class="colFirst">
                                 <code><a href="#MultiTenantConnection(java.sql.Connection, org.grails.datastore.gorm.jdbc.schema.SchemaHandler)">MultiTenantConnection</a>
                                 (java.sql.Connection target, <a href='../../../../../org/grails/datastore/gorm/jdbc/schema/SchemaHandler.html'>SchemaHandler</a> schemaHandler)</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst">
-                                <code><a href="#MultiTenantConnection()">MultiTenantConnection</a>
-                                ()</code><br></td>
                         </tr>
                         
                     </table>
@@ -258,7 +252,7 @@ implements java.sql.Connection</pre>
                         <a name="schemaHandler"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;final&nbsp;<a href='../../../../../org/grails/datastore/gorm/jdbc/schema/SchemaHandler.html'>SchemaHandler</a> <strong>schemaHandler</strong></h4>
+                                <h4>final&nbsp;<a href='../../../../../org/grails/datastore/gorm/jdbc/schema/SchemaHandler.html'>SchemaHandler</a> <strong>schemaHandler</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -266,7 +260,8 @@ implements java.sql.Connection</pre>
                         <a name="target"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;final&nbsp;java.sql.Connection <strong>target</strong></h4>
+                                <h4>@groovy.lang.Delegate
+final&nbsp;java.sql.Connection <strong>target</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -289,14 +284,6 @@ implements java.sql.Connection</pre>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><strong>MultiTenantConnection</strong>(java.sql.Connection target, <a href='../../../../../org/grails/datastore/gorm/jdbc/schema/SchemaHandler.html'>SchemaHandler</a> schemaHandler)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="MultiTenantConnection()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><strong>MultiTenantConnection</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>

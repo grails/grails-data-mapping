@@ -314,19 +314,19 @@ implements <a href='../../../../../org/grails/datastore/gorm/finders/QueryBuildi
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;void</code></td>
+                            <td class="colLast"><code>public&nbsp;static&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#applyDetachedCriteria(org.grails.datastore.mapping.query.Query, org.grails.datastore.gorm.query.criteria.AbstractDetachedCriteria)">applyDetachedCriteria</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query, <a href='../../../../../org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html'>AbstractDetachedCriteria</a> detachedCriteria)</code><br>Applies the given detached criteria to the given query</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;void</code></td>
+                            <td class="colLast"><code>public&nbsp;static&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#applySortForMap(org.grails.datastore.mapping.query.Query, java.util.Map, boolean)">applySortForMap</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query, java.util.Map sortMap, boolean ignoreCase)</code><br>Applies sorting logic to the given query from the given map</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;<a href='../../../../../org/grails/datastore/gorm/finders/MatchSpec.html'>MatchSpec</a></code></td>
+                            <td class="colLast"><code>public&nbsp;static&nbsp;<a href='../../../../../org/grails/datastore/gorm/finders/MatchSpec.html'>MatchSpec</a></code></td>
                             <td class="colLast"><code><strong><a href="#buildMatchSpec(java.lang.String, java.lang.String, int)">buildMatchSpec</a></strong>(java.lang.String prefix, java.lang.String methodName, int parameterCount)</code><br>Builds a match specification that can be used to establish information about a dynamic finder compilation for the purposes of compilation etc.</td>
                         </tr>
                         
@@ -338,19 +338,19 @@ implements <a href='../../../../../org/grails/datastore/gorm/finders/QueryBuildi
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../../grails/gorm/services/Query.Criterion.html'>Criterion</a></code></td>
+                            <td class="colLast"><code>public&nbsp;<a href='../../../../../grails/gorm/services/Query.Criterion.html'>Criterion</a></code></td>
                             <td class="colLast"><code><strong><a href="#createCriterion()">createCriterion</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../../org/grails/datastore/gorm/finders/DynamicFinderInvocation.html'>DynamicFinderInvocation</a></code></td>
+                            <td class="colLast"><code>public&nbsp;<a href='../../../../../org/grails/datastore/gorm/finders/DynamicFinderInvocation.html'>DynamicFinderInvocation</a></code></td>
                             <td class="colLast"><code><strong><a href="#createFinderInvocation(java.lang.Class, java.lang.String, groovy.lang.Closure, java.lang.Object)">createFinderInvocation</a></strong>(java.lang.Class clazz, java.lang.String methodName, groovy.lang.Closure additionalCriteria, java.lang.Object[] arguments)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;java.lang.Object</code></td>
+                            <td class="colLast"><code>protected&nbsp;abstract&nbsp;java.lang.Object</code></td>
                             <td class="colLast"><code><strong><a href="#doInvokeInternal(org.grails.datastore.gorm.finders.DynamicFinderInvocation)">doInvokeInternal</a></strong>(<a href='../../../../../org/grails/datastore/gorm/finders/DynamicFinderInvocation.html'>DynamicFinderInvocation</a> invocation)</code><br></td>
                         </tr>
                         
@@ -368,73 +368,73 @@ implements <a href='../../../../../org/grails/datastore/gorm/finders/QueryBuildi
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.lang.Object[]</code></td>
+                            <td class="colLast"><code>public&nbsp;java.lang.Object[]</code></td>
                             <td class="colLast"><code><strong><a href="#getArguments()">getArguments</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>int</code></td>
+                            <td class="colLast"><code>public&nbsp;int</code></td>
                             <td class="colLast"><code><strong><a href="#getArgumentsRequired()">getArgumentsRequired</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;javax.persistence.FetchType</code></td>
+                            <td class="colLast"><code>public&nbsp;static&nbsp;javax.persistence.FetchType</code></td>
                             <td class="colLast"><code><strong><a href="#getFetchMode(java.lang.Object)">getFetchMode</a></strong>(java.lang.Object object)</code><br>Retrieves the fetch mode for the specified instance; otherwise returns the default FetchMode.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.lang.Object</code></td>
+                            <td class="colLast"><code>public&nbsp;java.lang.Object</code></td>
                             <td class="colLast"><code><strong><a href="#invoke(java.lang.Class, java.lang.String, groovy.lang.Closure, java.lang.Object)">invoke</a></strong>(java.lang.Class clazz, java.lang.String methodName, groovy.lang.Closure additionalCriteria, java.lang.Object[] arguments)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.lang.Object</code></td>
+                            <td class="colLast"><code>public&nbsp;java.lang.Object</code></td>
                             <td class="colLast"><code><strong><a href="#invoke(java.lang.Class, java.lang.String, grails.gorm.DetachedCriteria, java.lang.Object)">invoke</a></strong>(java.lang.Class clazz, java.lang.String methodName, <a href='../../../../../grails/gorm/DetachedCriteria.html'>DetachedCriteria</a> detachedCriteria, java.lang.Object[] arguments)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.lang.Object</code></td>
+                            <td class="colLast"><code>public&nbsp;java.lang.Object</code></td>
                             <td class="colLast"><code><strong><a href="#invoke(java.lang.Class, java.lang.String, java.lang.Object)">invoke</a></strong>(java.lang.Class clazz, java.lang.String methodName, java.lang.Object[] arguments)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>boolean</code></td>
+                            <td class="colLast"><code>public&nbsp;boolean</code></td>
                             <td class="colLast"><code><strong><a href="#isMethodMatch(java.lang.String)">isMethodMatch</a></strong>(java.lang.String methodName)</code><br>Checks whether the given method is a match</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;void</code></td>
+                            <td class="colLast"><code>public&nbsp;static&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#populateArgumentsForCriteria(org.grails.datastore.mapping.query.api.BuildableCriteria, java.util.Map)">populateArgumentsForCriteria</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/api/BuildableCriteria.html'>BuildableCriteria</a> query, java.util.Map argMap)</code><br>Populates arguments for the given query form the given map</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;void</code></td>
+                            <td class="colLast"><code>public&nbsp;static&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#populateArgumentsForCriteria(Class, org.grails.datastore.mapping.query.Query, java.util.Map)">populateArgumentsForCriteria</a></strong>(java.lang.Class&lt;? extends java.lang.Object&gt; targetClass, <a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query, java.util.Map argMap)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;void</code></td>
+                            <td class="colLast"><code>public&nbsp;static&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#registerNewMethodExpression(java.lang.Class)">registerNewMethodExpression</a></strong>(java.lang.Class methodExpression)</code><br>Registers a new method expression. </td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
+                            <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#setArguments(java.lang.Object)">setArguments</a></strong>(java.lang.Object[] arguments)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
+                            <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#setPattern(java.lang.String)">setPattern</a></strong>(java.lang.String pattern)</code><br>Sets the pattern to use for this finder</td>
                         </tr>
                         
@@ -707,7 +707,7 @@ public&nbsp;<a href='../../../../../grails/gorm/services/Query.Criterion.html'>C
                         <a name="doInvokeInternal(org.grails.datastore.gorm.finders.DynamicFinderInvocation)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;java.lang.Object <strong>doInvokeInternal</strong>(<a href='../../../../../org/grails/datastore/gorm/finders/DynamicFinderInvocation.html'>DynamicFinderInvocation</a> invocation)</h4>
+                                <h4>protected&nbsp;abstract&nbsp;java.lang.Object <strong>doInvokeInternal</strong>(<a href='../../../../../org/grails/datastore/gorm/finders/DynamicFinderInvocation.html'>DynamicFinderInvocation</a> invocation)</h4>
                                 <p></p>
                             </li>
                         </ul>

@@ -132,28 +132,6 @@ extends GormStaticOperations&lt;D&gt;</pre>
         
 
         
-        <!-- ======== CONSTRUCTOR SUMMARY ======== -->
-        <ul class="blockList">
-                <li class="blockList"><a name="constructor_summary"><!--   --></a>
-                    <h3>Constructor Summary</h3>
-                    <ul class="blockList">
-                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructors Summary table">
-                        <caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
-                        <tr>
-                            <th class="colFirst" scope="col">Constructor and description</th>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst">
-                                <code><a href="#MongoStaticOperations()">MongoStaticOperations</a>
-                                ()</code><br></td>
-                        </tr>
-                        
-                    </table>
-                   </ul>
-              </li>
-        </ul>
-        
 
         
         <!-- ========== METHOD SUMMARY =========== -->
@@ -172,121 +150,121 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.util.List&lt;D&gt;</code></td>
+                            <td class="colLast"><code>abstract&nbsp;java.util.List&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#aggregate(java.util.List)">aggregate</a></strong>(java.util.List pipeline)</code><br>Execute a MongoDB aggregation pipeline. </td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.util.List&lt;D&gt;</code></td>
+                            <td class="colLast"><code>abstract&nbsp;java.util.List&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#aggregate(java.util.List, Function)">aggregate</a></strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate)</code><br>Execute a MongoDB aggregation pipeline. </td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.util.List&lt;D&gt;</code></td>
+                            <td class="colLast"><code>abstract&nbsp;java.util.List&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#aggregate(java.util.List, Function, com.mongodb.ReadPreference)">aggregate</a></strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate, com.mongodb.ReadPreference readPreference)</code><br>Execute a MongoDB aggregation pipeline. </td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>int</code></td>
+                            <td class="colLast"><code>abstract&nbsp;int</code></td>
                             <td class="colLast"><code><strong><a href="#countHits(java.lang.String)">countHits</a></strong>(java.lang.String query)</code><br>Counts the number of hits</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../org/grails/datastore/gorm/mongo/MongoCriteriaBuilder.html'>MongoCriteriaBuilder</a></code></td>
+                            <td class="colLast"><code>abstract&nbsp;<a href='../../../org/grails/datastore/gorm/mongo/MongoCriteriaBuilder.html'>MongoCriteriaBuilder</a></code></td>
                             <td class="colLast"><code><strong><a href="#createCriteria()">createCriteria</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>Custom MongoDB criteria builder</DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>FindIterable&lt;D&gt;</code></td>
+                            <td class="colLast"><code>abstract&nbsp;FindIterable&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#find(org.bson.conversions.Bson)">find</a></strong>(org.bson.conversions.Bson filter)</code><br>Find an entity for the given filter</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>D</code></td>
+                            <td class="colLast"><code>abstract&nbsp;D</code></td>
                             <td class="colLast"><code><strong><a href="#findOneAndDelete(org.bson.conversions.Bson)">findOneAndDelete</a></strong>(org.bson.conversions.Bson filter)</code><br>Atomically find a document and remove it.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>D</code></td>
+                            <td class="colLast"><code>abstract&nbsp;D</code></td>
                             <td class="colLast"><code><strong><a href="#findOneAndDelete(org.bson.conversions.Bson, com.mongodb.client.model.FindOneAndDeleteOptions)">findOneAndDelete</a></strong>(org.bson.conversions.Bson filter, com.mongodb.client.model.FindOneAndDeleteOptions options)</code><br>Atomically find a document and remove it.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>MongoCollection&lt;Document&gt;</code></td>
+                            <td class="colLast"><code>abstract&nbsp;MongoCollection&lt;Document&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getCollection()">getCollection</a></strong>()</code><br>The actual collection that this entity maps to.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.lang.String</code></td>
+                            <td class="colLast"><code>abstract&nbsp;java.lang.String</code></td>
                             <td class="colLast"><code><strong><a href="#getCollectionName()">getCollectionName</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>The name of the Mongo collection that entity maps to</DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>com.mongodb.client.MongoDatabase</code></td>
+                            <td class="colLast"><code>abstract&nbsp;com.mongodb.client.MongoDatabase</code></td>
                             <td class="colLast"><code><strong><a href="#getDB()">getDB</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>The database for this domain class</DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.util.List&lt;D&gt;</code></td>
+                            <td class="colLast"><code>abstract&nbsp;java.util.List&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#search(java.lang.String)">search</a></strong>(java.lang.String query)</code><br>Search for entities using the given query</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.util.List&lt;D&gt;</code></td>
+                            <td class="colLast"><code>abstract&nbsp;java.util.List&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#search(java.lang.String, java.util.Map)">search</a></strong>(java.lang.String query, java.util.Map options)</code><br>Search for entities using the given query</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.util.List&lt;D&gt;</code></td>
+                            <td class="colLast"><code>abstract&nbsp;java.util.List&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#searchTop(java.lang.String)">searchTop</a></strong>(java.lang.String query)</code><br>Searches for the top results ordered by the MongoDB score</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.util.List&lt;D&gt;</code></td>
+                            <td class="colLast"><code>abstract&nbsp;java.util.List&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#searchTop(java.lang.String, int)">searchTop</a></strong>(java.lang.String query, int limit)</code><br>Searches for the top results ordered by the MongoDB score</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.util.List&lt;D&gt;</code></td>
+                            <td class="colLast"><code>abstract&nbsp;java.util.List&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#searchTop(java.lang.String, int, java.util.Map)">searchTop</a></strong>(java.lang.String query, int limit, java.util.Map options)</code><br>Searches for the top results ordered by the MongoDB score</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.lang.String</code></td>
+                            <td class="colLast"><code>abstract&nbsp;java.lang.String</code></td>
                             <td class="colLast"><code><strong><a href="#useCollection(java.lang.String)">useCollection</a></strong>(java.lang.String collectionName)</code><br>Use the given collection for this entity for the scope of the session</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.lang.String</code></td>
+                            <td class="colLast"><code>abstract&nbsp;java.lang.String</code></td>
                             <td class="colLast"><code><strong><a href="#useDatabase(java.lang.String)">useDatabase</a></strong>(java.lang.String databaseName)</code><br>Use the given database for this entity for the scope of the session</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
-                            <td class="colLast"><code>T</code></td>
+                            <td class="colLast"><code>abstract&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#withCollection(java.lang.String, Closure)">withCollection</a></strong>(java.lang.String collectionName, groovy.lang.Closure&lt;T&gt; callable)</code><br>Use the given collection for this entity for the scope of the closure call</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
-                            <td class="colLast"><code>T</code></td>
+                            <td class="colLast"><code>abstract&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#withDatabase(java.lang.String, Closure)">withDatabase</a></strong>(java.lang.String databaseName, groovy.lang.Closure&lt;T&gt; callable)</code><br>Use the given database for this entity for the scope of the closure call</td>
                         </tr>
                         
@@ -312,24 +290,6 @@ extends GormStaticOperations&lt;D&gt;</pre>
             
 
             
-            <!-- =========== CONSTRUCTOR DETAIL =========== -->
-            <ul class="blockList">
-                <li class="blockList"><a name="constructor_detail">
-                    <!--   -->
-                </a>
-                    <h3>Constructor Detail</h3>
-                    
-                        <a name="MongoStaticOperations()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><strong>MongoStaticOperations</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                </li>
-            </ul>
-            
 
 
             
@@ -343,7 +303,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="aggregate(java.util.List)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline)</h4>
+                                <h4>abstract&nbsp;java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline)</h4>
                                 <p> Execute a MongoDB aggregation pipeline. Note that the pipeline should return documents that represent this domain class as each return document will be converted to a domain instance in the result set <DL><DT><B>Parameters:</B></DT><DD><code>pipeline</code> -  The pipeline</DD></DL><DL><DT><B>Returns:</B></DT><DD>A mongodb result list</DD></DL></p>
                             </li>
                         </ul>
@@ -351,7 +311,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="aggregate(java.util.List, Function)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate)</h4>
+                                <h4>abstract&nbsp;java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate)</h4>
                                 <p> Execute a MongoDB aggregation pipeline. Note that the pipeline should return documents that represent this domain class as each return document will be converted to a domain instance in the result set <DL><DT><B>Parameters:</B></DT><DD><code>pipeline</code> -  The pipeline</DD><DD><code>doWithAggregate</code> -  A callback to modify the aggregate iterable</DD></DL><DL><DT><B>Returns:</B></DT><DD>A mongodb result list</DD></DL></p>
                             </li>
                         </ul>
@@ -359,7 +319,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="aggregate(java.util.List, Function, com.mongodb.ReadPreference)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate, com.mongodb.ReadPreference readPreference)</h4>
+                                <h4>abstract&nbsp;java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate, com.mongodb.ReadPreference readPreference)</h4>
                                 <p> Execute a MongoDB aggregation pipeline. Note that the pipeline should return documents that represent this domain class as each return document will be converted to a domain instance in the result set <DL><DT><B>Parameters:</B></DT><DD><code>pipeline</code> -  The pipeline</DD><DD><code>doWithAggregate</code> -  A callback to modify the aggregate iterable</DD></DL><DL><DT><B>Returns:</B></DT><DD>A mongodb result list</DD></DL></p>
                             </li>
                         </ul>
@@ -367,7 +327,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="countHits(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>int <strong>countHits</strong>(java.lang.String query)</h4>
+                                <h4>abstract&nbsp;int <strong>countHits</strong>(java.lang.String query)</h4>
                                 <p> Counts the number of hits <DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD></DL><DL><DT><B>Returns:</B></DT><DD>The hit count</DD></DL></p>
                             </li>
                         </ul>
@@ -375,7 +335,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="createCriteria()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../org/grails/datastore/gorm/mongo/MongoCriteriaBuilder.html'>MongoCriteriaBuilder</a> <strong>createCriteria</strong>()</h4>
+                                <h4>abstract&nbsp;<a href='../../../org/grails/datastore/gorm/mongo/MongoCriteriaBuilder.html'>MongoCriteriaBuilder</a> <strong>createCriteria</strong>()</h4>
                                 <p> <DL><DT><B>Returns:</B></DT><DD>Custom MongoDB criteria builder</DD></DL></p>
                             </li>
                         </ul>
@@ -383,7 +343,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="find(org.bson.conversions.Bson)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>FindIterable&lt;D&gt; <strong>find</strong>(org.bson.conversions.Bson filter)</h4>
+                                <h4>abstract&nbsp;FindIterable&lt;D&gt; <strong>find</strong>(org.bson.conversions.Bson filter)</h4>
                                 <p> Find an entity for the given filter <DL><DT><B>Parameters:</B></DT><DD><code>filter</code> -  The filter</DD></DL><DL><DT><B>Returns:</B></DT><DD>The FindIterable</DD></DL></p>
                             </li>
                         </ul>
@@ -391,7 +351,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="findOneAndDelete(org.bson.conversions.Bson)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>D <strong>findOneAndDelete</strong>(org.bson.conversions.Bson filter)</h4>
+                                <h4>abstract&nbsp;D <strong>findOneAndDelete</strong>(org.bson.conversions.Bson filter)</h4>
                                 <p> Atomically find a document and remove it. <DL><DT><B>Parameters:</B></DT><DD><code>filter</code> -  the query filter to find the document with</DD></DL><DL><DT><B>Returns:</B></DT><DD>the document that was removed.  If no documents matched the query filter, then null will be returned</DD></DL></p>
                             </li>
                         </ul>
@@ -399,7 +359,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="findOneAndDelete(org.bson.conversions.Bson, com.mongodb.client.model.FindOneAndDeleteOptions)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>D <strong>findOneAndDelete</strong>(org.bson.conversions.Bson filter, com.mongodb.client.model.FindOneAndDeleteOptions options)</h4>
+                                <h4>abstract&nbsp;D <strong>findOneAndDelete</strong>(org.bson.conversions.Bson filter, com.mongodb.client.model.FindOneAndDeleteOptions options)</h4>
                                 <p> Atomically find a document and remove it. <DL><DT><B>Parameters:</B></DT><DD><code>filter</code> -  the query filter to find the document with</DD></DL><DL><DT><B>Returns:</B></DT><DD>the document that was removed.  If no documents matched the query filter, then null will be returned</DD></DL></p>
                             </li>
                         </ul>
@@ -407,7 +367,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="getCollection()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>MongoCollection&lt;Document&gt; <strong>getCollection</strong>()</h4>
+                                <h4>abstract&nbsp;MongoCollection&lt;Document&gt; <strong>getCollection</strong>()</h4>
                                 <p> The actual collection that this entity maps to. <DL><DT><B>Returns:</B></DT><DD>The actual collection</DD></DL></p>
                             </li>
                         </ul>
@@ -415,7 +375,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="getCollectionName()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.String <strong>getCollectionName</strong>()</h4>
+                                <h4>abstract&nbsp;java.lang.String <strong>getCollectionName</strong>()</h4>
                                 <p> <DL><DT><B>Returns:</B></DT><DD>The name of the Mongo collection that entity maps to</DD></DL></p>
                             </li>
                         </ul>
@@ -423,7 +383,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="getDB()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>com.mongodb.client.MongoDatabase <strong>getDB</strong>()</h4>
+                                <h4>abstract&nbsp;com.mongodb.client.MongoDatabase <strong>getDB</strong>()</h4>
                                 <p> <DL><DT><B>Returns:</B></DT><DD>The database for this domain class</DD></DL></p>
                             </li>
                         </ul>
@@ -431,7 +391,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="search(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.List&lt;D&gt; <strong>search</strong>(java.lang.String query)</h4>
+                                <h4>abstract&nbsp;java.util.List&lt;D&gt; <strong>search</strong>(java.lang.String query)</h4>
                                 <p> Search for entities using the given query <DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD></DL><DL><DT><B>Returns:</B></DT><DD>The results</DD></DL></p>
                             </li>
                         </ul>
@@ -439,7 +399,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="search(java.lang.String, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.List&lt;D&gt; <strong>search</strong>(java.lang.String query, java.util.Map options)</h4>
+                                <h4>abstract&nbsp;java.util.List&lt;D&gt; <strong>search</strong>(java.lang.String query, java.util.Map options)</h4>
                                 <p> Search for entities using the given query <DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD></DL><DL><DT><B>Returns:</B></DT><DD>The results</DD></DL></p>
                             </li>
                         </ul>
@@ -447,7 +407,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="searchTop(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.List&lt;D&gt; <strong>searchTop</strong>(java.lang.String query)</h4>
+                                <h4>abstract&nbsp;java.util.List&lt;D&gt; <strong>searchTop</strong>(java.lang.String query)</h4>
                                 <p> Searches for the top results ordered by the MongoDB score <DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD></DL><DL><DT><B>Returns:</B></DT><DD>The results</DD></DL></p>
                             </li>
                         </ul>
@@ -455,7 +415,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="searchTop(java.lang.String, int)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.List&lt;D&gt; <strong>searchTop</strong>(java.lang.String query, int limit)</h4>
+                                <h4>abstract&nbsp;java.util.List&lt;D&gt; <strong>searchTop</strong>(java.lang.String query, int limit)</h4>
                                 <p> Searches for the top results ordered by the MongoDB score <DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD><DD><code>limit</code> -  The maximum number of results. Defaults to 5.</DD></DL><DL><DT><B>Returns:</B></DT><DD>The results</DD></DL></p>
                             </li>
                         </ul>
@@ -463,7 +423,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="searchTop(java.lang.String, int, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.List&lt;D&gt; <strong>searchTop</strong>(java.lang.String query, int limit, java.util.Map options)</h4>
+                                <h4>abstract&nbsp;java.util.List&lt;D&gt; <strong>searchTop</strong>(java.lang.String query, int limit, java.util.Map options)</h4>
                                 <p> Searches for the top results ordered by the MongoDB score <DL><DT><B>Parameters:</B></DT><DD><code>query</code> -  The query</DD><DD><code>limit</code> -  The maximum number of results. Defaults to 5.</DD></DL><DL><DT><B>Returns:</B></DT><DD>The results</DD></DL></p>
                             </li>
                         </ul>
@@ -471,7 +431,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="useCollection(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.String <strong>useCollection</strong>(java.lang.String collectionName)</h4>
+                                <h4>abstract&nbsp;java.lang.String <strong>useCollection</strong>(java.lang.String collectionName)</h4>
                                 <p> Use the given collection for this entity for the scope of the session <DL><DT><B>Parameters:</B></DT><DD><code>collectionName</code> -  The collection name</DD></DL><DL><DT><B>Returns:</B></DT><DD>The previous collection name</DD></DL></p>
                             </li>
                         </ul>
@@ -479,7 +439,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="useDatabase(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.String <strong>useDatabase</strong>(java.lang.String databaseName)</h4>
+                                <h4>abstract&nbsp;java.lang.String <strong>useDatabase</strong>(java.lang.String databaseName)</h4>
                                 <p> Use the given database for this entity for the scope of the session <DL><DT><B>Parameters:</B></DT><DD><code>databaseName</code> -  The collection name</DD></DL><DL><DT><B>Returns:</B></DT><DD>The previous database name</DD></DL></p>
                             </li>
                         </ul>
@@ -487,7 +447,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="withCollection(java.lang.String, Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; T <strong>withCollection</strong>(java.lang.String collectionName, groovy.lang.Closure&lt;T&gt; callable)</h4>
+                                <h4>&lt;T&gt; abstract&nbsp;T <strong>withCollection</strong>(java.lang.String collectionName, groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Use the given collection for this entity for the scope of the closure call <DL><DT><B>Parameters:</B></DT><DD><code>collectionName</code> -  The collection name</DD><DD><code>callable</code> -  The callable</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
                             </li>
                         </ul>
@@ -495,7 +455,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="withDatabase(java.lang.String, Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; T <strong>withDatabase</strong>(java.lang.String databaseName, groovy.lang.Closure&lt;T&gt; callable)</h4>
+                                <h4>&lt;T&gt; abstract&nbsp;T <strong>withDatabase</strong>(java.lang.String databaseName, groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Use the given database for this entity for the scope of the closure call <DL><DT><B>Parameters:</B></DT><DD><code>databaseName</code> -  The collection name</DD><DD><code>callable</code> -  The callable</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
                             </li>
                         </ul>

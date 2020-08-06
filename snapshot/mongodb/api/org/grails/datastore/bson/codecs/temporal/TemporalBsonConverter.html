@@ -131,28 +131,6 @@ extends java.lang.Object</pre>
         
 
         
-        <!-- ======== CONSTRUCTOR SUMMARY ======== -->
-        <ul class="blockList">
-                <li class="blockList"><a name="constructor_summary"><!--   --></a>
-                    <h3>Constructor Summary</h3>
-                    <ul class="blockList">
-                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructors Summary table">
-                        <caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
-                        <tr>
-                            <th class="colFirst" scope="col">Constructor and description</th>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst">
-                                <code><a href="#TemporalBsonConverter()">TemporalBsonConverter</a>
-                                ()</code><br></td>
-                        </tr>
-                        
-                    </table>
-                   </ul>
-              </li>
-        </ul>
-        
 
         
         <!-- ========== METHOD SUMMARY =========== -->
@@ -171,19 +149,19 @@ extends java.lang.Object</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.bson.BsonType</code></td>
+                            <td class="colLast"><code>abstract&nbsp;org.bson.BsonType</code></td>
                             <td class="colLast"><code><strong><a href="#bsonType()">bsonType</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>T</code></td>
+                            <td class="colLast"><code>abstract&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#read(org.bson.BsonReader)">read</a></strong>(org.bson.BsonReader reader)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
+                            <td class="colLast"><code>abstract&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#write(org.bson.BsonWriter, T)">write</a></strong>(org.bson.BsonWriter writer, T value)</code><br></td>
                         </tr>
                         
@@ -227,24 +205,6 @@ extends java.lang.Object</pre>
             
 
             
-            <!-- =========== CONSTRUCTOR DETAIL =========== -->
-            <ul class="blockList">
-                <li class="blockList"><a name="constructor_detail">
-                    <!--   -->
-                </a>
-                    <h3>Constructor Detail</h3>
-                    
-                        <a name="TemporalBsonConverter()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><strong>TemporalBsonConverter</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                </li>
-            </ul>
-            
 
 
             
@@ -258,7 +218,7 @@ extends java.lang.Object</pre>
                         <a name="bsonType()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.bson.BsonType <strong>bsonType</strong>()</h4>
+                                <h4>abstract&nbsp;org.bson.BsonType <strong>bsonType</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -266,7 +226,7 @@ extends java.lang.Object</pre>
                         <a name="read(org.bson.BsonReader)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>T <strong>read</strong>(org.bson.BsonReader reader)</h4>
+                                <h4>abstract&nbsp;T <strong>read</strong>(org.bson.BsonReader reader)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -274,7 +234,7 @@ extends java.lang.Object</pre>
                         <a name="write(org.bson.BsonWriter, T)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>write</strong>(org.bson.BsonWriter writer, T value)</h4>
+                                <h4>abstract&nbsp;void <strong>write</strong>(org.bson.BsonWriter writer, T value)</h4>
                                 <p></p>
                             </li>
                         </ul>

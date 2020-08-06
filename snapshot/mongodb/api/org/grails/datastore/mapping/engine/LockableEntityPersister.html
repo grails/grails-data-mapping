@@ -211,31 +211,31 @@ extends <a href='../../../../../org/grails/datastore/mapping/engine/EntityPersis
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>boolean</code></td>
+                            <td class="colLast"><code>public&nbsp;abstract&nbsp;boolean</code></td>
                             <td class="colLast"><code><strong><a href="#isLocked(java.lang.Object)">isLocked</a></strong>(java.lang.Object o)</code><br>Return whether an object is locked or not</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.lang.Object</code></td>
+                            <td class="colLast"><code>public&nbsp;abstract&nbsp;java.lang.Object</code></td>
                             <td class="colLast"><code><strong><a href="#lock(java.io.Serializable)">lock</a></strong>(java.io.Serializable id)</code><br>Locks an object for the given identifier returning the locked instance</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.lang.Object</code></td>
+                            <td class="colLast"><code>public&nbsp;abstract&nbsp;java.lang.Object</code></td>
                             <td class="colLast"><code><strong><a href="#lock(java.io.Serializable, int)">lock</a></strong>(java.io.Serializable id, int timeout)</code><br>Acquire a lock using the given identifier and timeout delay</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.lang.Object</code></td>
+                            <td class="colLast"><code>public&nbsp;java.lang.Object</code></td>
                             <td class="colLast"><code><strong><a href="#proxy(java.io.Serializable)">proxy</a></strong>(java.io.Serializable key)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>void</code></td>
+                            <td class="colLast"><code>public&nbsp;abstract&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#unlock(java.lang.Object)">unlock</a></strong>(java.lang.Object o)</code><br>Unlocks a locked object</td>
                         </tr>
                         
@@ -328,7 +328,7 @@ extends <a href='../../../../../org/grails/datastore/mapping/engine/EntityPersis
                         <a name="isLocked(java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;boolean <strong>isLocked</strong>(java.lang.Object o)</h4>
+                                <h4>public&nbsp;abstract&nbsp;boolean <strong>isLocked</strong>(java.lang.Object o)</h4>
                                 <p> Return whether an object is locked or not
       <DL><DT><B>Parameters:</B></DT><DD><code>o</code> -  The object</DD></DL><DL><DT><B>Returns:</B></DT><DD>True if it is locked</DD></DL></p>
                             </li>
@@ -337,7 +337,7 @@ extends <a href='../../../../../org/grails/datastore/mapping/engine/EntityPersis
                         <a name="lock(java.io.Serializable)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;java.lang.Object <strong>lock</strong>(java.io.Serializable id)</h4>
+                                <h4>public&nbsp;abstract&nbsp;java.lang.Object <strong>lock</strong>(java.io.Serializable id)</h4>
                                 <p> Locks an object for the given identifier returning the locked instance<DL><DT><B>throws:</B></DT><DD>CannotAcquireLockException Thrown if a lock couldn't be acquired before the default timeout elapsed</DD></DL>
       <DL><DT><B>Parameters:</B></DT><DD><code>id</code> -  The identifier</DD></DL><DL><DT><B>Returns:</B></DT><DD>The locked object</DD></DL></p>
                             </li>
@@ -346,7 +346,7 @@ extends <a href='../../../../../org/grails/datastore/mapping/engine/EntityPersis
                         <a name="lock(java.io.Serializable, int)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;java.lang.Object <strong>lock</strong>(java.io.Serializable id, int timeout)</h4>
+                                <h4>public&nbsp;abstract&nbsp;java.lang.Object <strong>lock</strong>(java.io.Serializable id, int timeout)</h4>
                                 <p> Acquire a lock using the given identifier and timeout delay<DL><DT><B>throws:</B></DT><DD>CannotAcquireLockException</DD></DL>
       <DL><DT><B>Parameters:</B></DT><DD><code>id</code> -  the identifier</DD><DD><code>timeout</code> -  the amount of time to wait before giving up in seconds</DD></DL><DL><DT><B>Returns:</B></DT><DD>The locked object</DD></DL></p>
                             </li>
@@ -365,7 +365,7 @@ public&nbsp;java.lang.Object <strong>proxy</strong>(java.io.Serializable key)</h
                         <a name="unlock(java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>unlock</strong>(java.lang.Object o)</h4>
+                                <h4>public&nbsp;abstract&nbsp;void <strong>unlock</strong>(java.lang.Object o)</h4>
                                 <p> Unlocks a locked object
       <DL><DT><B>Parameters:</B></DT><DD><code>o</code> -  The object to unlock</DD></DL></p>
                             </li>

@@ -127,28 +127,6 @@ if (location.href.indexOf('is-external=true') == -1) {
         
 
         
-        <!-- ======== CONSTRUCTOR SUMMARY ======== -->
-        <ul class="blockList">
-                <li class="blockList"><a name="constructor_summary"><!--   --></a>
-                    <h3>Constructor Summary</h3>
-                    <ul class="blockList">
-                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructors Summary table">
-                        <caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
-                        <tr>
-                            <th class="colFirst" scope="col">Constructor and description</th>
-                        </tr>
-                        
-                        <tr class="altColor">
-                            <td class="colFirst">
-                                <code><a href="#TransactionService()">TransactionService</a>
-                                ()</code><br></td>
-                        </tr>
-                        
-                    </table>
-                   </ul>
-              </li>
-        </ul>
-        
 
         
         <!-- ========== METHOD SUMMARY =========== -->
@@ -167,43 +145,43 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
-                            <td class="colLast"><code>T</code></td>
+                            <td class="colLast"><code>abstract&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#withNewTransaction(Closure)">withNewTransaction</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br>Executes the given callable within the context of a new transaction with the default attributes</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
-                            <td class="colLast"><code>T</code></td>
+                            <td class="colLast"><code>abstract&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#withNewTransaction(org.springframework.transaction.TransactionDefinition, Closure)">withNewTransaction</a></strong>(org.springframework.transaction.TransactionDefinition definition, groovy.lang.Closure&lt;T&gt; callable)</code><br>Executes the given callable within the context of a new transaction with the default attributes</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
-                            <td class="colLast"><code>T</code></td>
+                            <td class="colLast"><code>abstract&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#withRollback(Closure)">withRollback</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br>Executes the given callable within the context of a transaction that is automatically rolled back with the default attributes</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
-                            <td class="colLast"><code>T</code></td>
+                            <td class="colLast"><code>abstract&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#withRollback(org.springframework.transaction.TransactionDefinition, Closure)">withRollback</a></strong>(org.springframework.transaction.TransactionDefinition definition, groovy.lang.Closure&lt;T&gt; callable)</code><br>Executes the given callable within the context of a transaction that is automatically rolled back with the default attributes</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
-                            <td class="colLast"><code>T</code></td>
+                            <td class="colLast"><code>abstract&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#withTransaction(Closure)">withTransaction</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br>Executes the given callable within the context of a transaction with the default attributes</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
-                            <td class="colLast"><code>T</code></td>
+                            <td class="colLast"><code>abstract&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#withTransaction(org.springframework.transaction.TransactionDefinition, Closure)">withTransaction</a></strong>(org.springframework.transaction.TransactionDefinition definition, groovy.lang.Closure&lt;T&gt; callable)</code><br>Executes the given callable within the context of a transaction with the given definition</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
-                            <td class="colLast"><code>T</code></td>
+                            <td class="colLast"><code>abstract&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#withTransaction(java.util.Map, Closure)">withTransaction</a></strong>(java.util.Map definition, groovy.lang.Closure&lt;T&gt; callable)</code><br>Executes the given callable within the context of a transaction with the given definition</td>
                         </tr>
                         
@@ -229,24 +207,6 @@ if (location.href.indexOf('is-external=true') == -1) {
             
 
             
-            <!-- =========== CONSTRUCTOR DETAIL =========== -->
-            <ul class="blockList">
-                <li class="blockList"><a name="constructor_detail">
-                    <!--   -->
-                </a>
-                    <h3>Constructor Detail</h3>
-                    
-                        <a name="TransactionService()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><strong>TransactionService</strong>()</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                </li>
-            </ul>
-            
 
 
             
@@ -260,7 +220,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="withNewTransaction(Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; T <strong>withNewTransaction</strong>(@groovy.transform.stc.ClosureParams(value: SimpleType.class, options: org.springframework.transaction.TransactionStatus) groovy.lang.Closure&lt;T&gt; callable)</h4>
+                                <h4>&lt;T&gt; abstract&nbsp;T <strong>withNewTransaction</strong>(@groovy.transform.stc.ClosureParams(value: SimpleType.class, options: org.springframework.transaction.TransactionStatus) groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Executes the given callable within the context of a new transaction with the default attributes <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result</DD></DL></p>
                             </li>
                         </ul>
@@ -268,7 +228,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="withNewTransaction(org.springframework.transaction.TransactionDefinition, Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; T <strong>withNewTransaction</strong>(org.springframework.transaction.TransactionDefinition definition, @groovy.transform.stc.ClosureParams(value: SimpleType.class, options: org.springframework.transaction.TransactionStatus) groovy.lang.Closure&lt;T&gt; callable)</h4>
+                                <h4>&lt;T&gt; abstract&nbsp;T <strong>withNewTransaction</strong>(org.springframework.transaction.TransactionDefinition definition, @groovy.transform.stc.ClosureParams(value: SimpleType.class, options: org.springframework.transaction.TransactionStatus) groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Executes the given callable within the context of a new transaction with the default attributes <DL><DT><B>Parameters:</B></DT><DD><code>definition</code> -  The transaction definition</DD><DD><code>callable</code> -  The callable</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result</DD></DL></p>
                             </li>
                         </ul>
@@ -276,7 +236,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="withRollback(Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; T <strong>withRollback</strong>(@groovy.transform.stc.ClosureParams(value: SimpleType.class, options: org.springframework.transaction.TransactionStatus) groovy.lang.Closure&lt;T&gt; callable)</h4>
+                                <h4>&lt;T&gt; abstract&nbsp;T <strong>withRollback</strong>(@groovy.transform.stc.ClosureParams(value: SimpleType.class, options: org.springframework.transaction.TransactionStatus) groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Executes the given callable within the context of a transaction that is automatically rolled back with the default attributes <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result</DD></DL></p>
                             </li>
                         </ul>
@@ -284,7 +244,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="withRollback(org.springframework.transaction.TransactionDefinition, Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; T <strong>withRollback</strong>(org.springframework.transaction.TransactionDefinition definition, @groovy.transform.stc.ClosureParams(value: SimpleType.class, options: org.springframework.transaction.TransactionStatus) groovy.lang.Closure&lt;T&gt; callable)</h4>
+                                <h4>&lt;T&gt; abstract&nbsp;T <strong>withRollback</strong>(org.springframework.transaction.TransactionDefinition definition, @groovy.transform.stc.ClosureParams(value: SimpleType.class, options: org.springframework.transaction.TransactionStatus) groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Executes the given callable within the context of a transaction that is automatically rolled back with the default attributes <DL><DT><B>Parameters:</B></DT><DD><code>definition</code> -  The transaction definition</DD><DD><code>callable</code> -  The callable</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result</DD></DL></p>
                             </li>
                         </ul>
@@ -292,7 +252,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="withTransaction(Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; T <strong>withTransaction</strong>(@groovy.transform.stc.ClosureParams(value: SimpleType.class, options: org.springframework.transaction.TransactionStatus) groovy.lang.Closure&lt;T&gt; callable)</h4>
+                                <h4>&lt;T&gt; abstract&nbsp;T <strong>withTransaction</strong>(@groovy.transform.stc.ClosureParams(value: SimpleType.class, options: org.springframework.transaction.TransactionStatus) groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Executes the given callable within the context of a transaction with the default attributes <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result</DD></DL></p>
                             </li>
                         </ul>
@@ -300,7 +260,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="withTransaction(org.springframework.transaction.TransactionDefinition, Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; T <strong>withTransaction</strong>(org.springframework.transaction.TransactionDefinition definition, @groovy.transform.stc.ClosureParams(value: SimpleType.class, options: org.springframework.transaction.TransactionStatus) groovy.lang.Closure&lt;T&gt; callable)</h4>
+                                <h4>&lt;T&gt; abstract&nbsp;T <strong>withTransaction</strong>(org.springframework.transaction.TransactionDefinition definition, @groovy.transform.stc.ClosureParams(value: SimpleType.class, options: org.springframework.transaction.TransactionStatus) groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Executes the given callable within the context of a transaction with the given definition <DL><DT><B>Parameters:</B></DT><DD><code>definition</code> -  The transaction definition</DD><DD><code>callable</code> -  The callable The callable</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the callable</DD></DL></p>
                             </li>
                         </ul>
@@ -308,7 +268,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="withTransaction(java.util.Map, Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; T <strong>withTransaction</strong>(java.util.Map definition, @groovy.transform.stc.ClosureParams(value: SimpleType.class, options: org.springframework.transaction.TransactionStatus) groovy.lang.Closure&lt;T&gt; callable)</h4>
+                                <h4>&lt;T&gt; abstract&nbsp;T <strong>withTransaction</strong>(java.util.Map definition, @groovy.transform.stc.ClosureParams(value: SimpleType.class, options: org.springframework.transaction.TransactionStatus) groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Executes the given callable within the context of a transaction with the given definition <DL><DT><B>Parameters:</B></DT><DD><code>definition</code> -  The transaction definition as a map</DD><DD><code>callable</code> -  The callable The callable</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the callable</DD></DL></p>
                             </li>
                         </ul>

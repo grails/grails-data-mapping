@@ -144,12 +144,12 @@ implements javax.sql.DataSource</pre>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>private&nbsp;javax.sql.DataSource</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>javax.sql.DataSource</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#target">target</a></code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#tenantId">tenantId</a></code><br></td>
                         </tr>
                         
@@ -178,12 +178,6 @@ implements javax.sql.DataSource</pre>
                             <td class="colFirst">
                                 <code><a href="#MultiTenantDataSource(javax.sql.DataSource, java.lang.String)">MultiTenantDataSource</a>
                                 (javax.sql.DataSource target, java.lang.String tenantId)</code><br></td>
-                        </tr>
-                        
-                        <tr class="rowColor">
-                            <td class="colFirst">
-                                <code><a href="#MultiTenantDataSource()">MultiTenantDataSource</a>
-                                ()</code><br></td>
                         </tr>
                         
                     </table>
@@ -238,7 +232,8 @@ implements javax.sql.DataSource</pre>
                         <a name="target"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;final&nbsp;javax.sql.DataSource <strong>target</strong></h4>
+                                <h4>@groovy.lang.Delegate
+final&nbsp;javax.sql.DataSource <strong>target</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -246,7 +241,7 @@ implements javax.sql.DataSource</pre>
                         <a name="tenantId"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>private&nbsp;final&nbsp;java.lang.String <strong>tenantId</strong></h4>
+                                <h4>final&nbsp;java.lang.String <strong>tenantId</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -269,14 +264,6 @@ implements javax.sql.DataSource</pre>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4><strong>MultiTenantDataSource</strong>(javax.sql.DataSource target, java.lang.String tenantId)</h4>
-                                <p></p>
-                            </li>
-                        </ul>
-                    
-                        <a name="MultiTenantDataSource()"><!-- --></a>
-                        <ul class="blockListLast">
-                            <li class="blockList">
-                                <h4><strong>MultiTenantDataSource</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
