@@ -528,7 +528,7 @@ table.CodeRay td.code>pre{padding:0}
 <h1>GORM for Neo4j</h1>
 <div class="details">
 <span id="author" class="author">Stefan Armbruster, Graeme Rocher</span><br>
-<span id="revnumber">version 7.1.0.BUILD-SNAPSHOT</span>
+<span id="revnumber">version 7.0.3.BUILD-SNAPSHOT</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -694,16 +694,6 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 <div class="sect2">
 <h3 id="releaseNotes">Release History</h3>
-<div class="sect3">
-<h4 id="_7_1_x">7.1.x</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Support for Groovy 3</p>
-</li>
-</ul>
-</div>
-</div>
 <div class="sect3">
 <h4 id="_7_0_x">7.0.x</h4>
 <div class="ulist">
@@ -886,18 +876,72 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="upgrading">Upgrading from previous versions</h3>
 <div class="paragraph">
-<p>If you are upgrading from a previous version of the plugin to the 7.1.0.BUILD-SNAPSHOT, you will need to take into account the following changes.</p>
+<p>If you are upgrading from a previous version of the plugin to the 7.0.3.BUILD-SNAPSHOT, you will need to take into account the following changes.</p>
+</div>
+<div class="sect3">
+<h4 id="_removal_of_grails_datastore_simple">Removal of grails-datastore-simple</h4>
+<div class="paragraph">
+<p>The <code>grails-datastore-simple</code> and <code>grails-datastore-gorm-test</code> dependencies have been combined into a single <code>grails-datastore-gorm-test</code> dependency.</p>
+</div>
+<div class="paragraph">
+<p>Unfortunately existing versions of Grails still depend on the old <code>grails-datastore-simple</code> dependency. And you may receive an error such as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">> Could not resolve all dependencies for configuration ':example:runtime'.
+   > Could not find org.grails:grails-datastore-simple:7.0.3.BUILD-SNAPSHOT.
+     Searched in the following locations:
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/7.0.3.BUILD-SNAPSHOT/grails-datastore-simple-7.0.3.BUILD-SNAPSHOT.pom
+         https://repo.grails.org/grails/core/org/grails/grails-datastore-simple/7.0.3.BUILD-SNAPSHOT/grails-datastore-simple-7.0.3.BUILD-SNAPSHOT.jar
+     Required by:
+         project :example > org.grails:grails-dependencies:3.2.4 >
+            ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are upgrading you will need to exclude this dependency using the following Gradle syntax directly before the <code>dependencies</code> block:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">configurations.all { <span class="predefined-type">Configuration</span> c -&gt;
+    c.exclude(<span class="key">group</span>:<span class="string"><span class="delimiter">'</span><span class="content">org.grails</span><span class="delimiter">'</span></span>,<span class="key">module</span>:<span class="string"><span class="delimiter">'</span><span class="content">grails-datastore-simple</span><span class="delimiter">'</span></span>)
+}
+dependencies {
+    ....
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_native_identifiers_by_default">Native Identifiers by Default</h4>
+<div class="paragraph">
+<p>Since 6.1, GORM for Neo4j uses native node and relationship identifiers by default for ids instead of the prevous snowflake id generation strategy. If you wish to revert to the previous strategy you can do so by applying the following configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">grails.gorm.neo4j.default.mapping = {
+    id <span class="key">generator</span>:<span class="string"><span class="delimiter">'</span><span class="content">snowflake</span><span class="delimiter">'</span></span>
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_configuration_changes">Configuration Changes</h4>
 <div class="paragraph">
-<p>The version 4 of the Neo4j driver contains changes in the configuration builder which require configuration changes to conform to them. For example <code>grails.neo4j.options.maxSessions</code> is now <code>grails.neo4j.options.maxConnectionPoolSize</code>. Some configuration defaults have also changed, so be sure to check the documentation of the driver for more information.</p>
+<p>Since the plugin now uses the Neo4j Bolt driver the configuration has been altered.</p>
+</div>
+<div class="paragraph">
+<p>The <code>grails.neo4j.options</code> setting no longer configures the Neo4j embedded options, but instead configures the Bolt driver options.</p>
+</div>
+<div class="paragraph">
+<p>If you want to continue to configure Neo4j in embedded mode you must use <code>grails.neo4j.embedded.options</code>.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_bolt_java_driver_and_api_changes">Bolt Java Driver and API Changes</h4>
 <div class="paragraph">
-<p>The API has changed to accommodate the new Neo4j Bolt driver.</p>
+<p>The API has changed to accommodate the Neo4j Bolt driver and all references to the Neo4j server itself have been removed.</p>
 </div>
 <div class="paragraph">
 <p>Therefore you need to replace the usages of the following interfaces with their bolt equivalents:</p>
@@ -909,35 +953,41 @@ table.CodeRay td.code>pre{padding:0}
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top">Class</th>
-<th class="tableblock halign-left valign-top">Replacement</th>
+<th class="tableblock halign-left valign-top">Neo4j Class</th>
+<th class="tableblock halign-left valign-top">Bolt Driver Replacement</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.graphdb.GraphDatabaseService</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.driver.v1.Driver</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.driver.Driver</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.graphdb.Transaction</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.driver.v1.Transaction</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.driver.Transaction</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.graphdb.Node</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.driver.v1.types.Node</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.driver.types.Node</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.graphdb.Relationship</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.driver.v1.types.Relationship</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.driver.types.Relationship</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.graphdb.Result</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.driver.v1.StatementResult</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">org.neo4j.driver.Result</p></td>
 </tr>
 </tbody>
 </table>
 <div class="paragraph">
-<p>There may be other classes that you need to replace references too. The <code>org.neo4j.driver.v1</code> package has shed its <code>v1</code> package, however there are also other changes.</p>
+<p>There may be other classes that you need to replace references too. Generally the <code>org.neo4j.graphdb</code> package is considered the server-side API and only the <code>org.neo4j.driver.v1</code> package should be used in applications.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_general_neo4j_3_x_changes">General Neo4j 3.x Changes</h4>
+<div class="paragraph">
+<p>Since GORM for Neo4j 7.0.3.BUILD-SNAPSHOT is based on Neo4j 3.x, if you are upgrading from Neo4j 2.x there will be other changes related to Neo4j 3 that you may need to make. These are described in the <a href="https://neo4j.com/guides/upgrade/">upgrade guide</a> on the Neo4j website.</p>
 </div>
 </div>
 </div>
@@ -956,7 +1006,7 @@ table.CodeRay td.code>pre{padding:0}
 <div class="title">build.gradle</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-	compile 'org.grails.plugins:neo4j:7.1.0.BUILD-SNAPSHOT'
+	compile 'org.grails.plugins:neo4j:7.0.3.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
@@ -965,7 +1015,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=7.1.0.BUILD-SNAPSHOT</code></pre>
+<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=7.0.3.BUILD-SNAPSHOT</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -978,7 +1028,7 @@ table.CodeRay td.code>pre{padding:0}
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("7.1.0.BUILD-SNAPSHOT")
+            details.useVersion("7.0.3.BUILD-SNAPSHOT")
         }
     }
 }
@@ -1005,7 +1055,7 @@ GORM for Neo4j requires Grails 2.5.x or above and Neo4j 3.0.x or above, if you w
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">plugins {
-    compile ':neo4j:7.1.0.BUILD-SNAPSHOT'
+    compile ':neo4j:7.0.3.BUILD-SNAPSHOT'
     build ':tomcat:8.22'
 }</code></pre>
 </div>
@@ -1096,19 +1146,20 @@ The Neo4j server uses Jetty, so when you add Neo4j as embedded Grails will also 
 </ul>
 </div>
 <div class="paragraph">
-<p>The <code>grails.neo4j.options</code> setting allows you to configure the properties of <a href="http://neo4j.com/docs/api/java-driver/4.0/org/neo4j/driver/Config.html">org.neo4j.driver.Config</a>, for example:</p>
+<p>The <code>grails.neo4j.options</code> setting allows you to configure the properties of <a href="http://neo4j.com/docs/api/java-driver/1.0/org/neo4j/driver/v1/Config.html">org.neo4j.driver.v1.Config</a>, for example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">grails</span>:
     <span class="key">neo4j</span>:
         <span class="key">options</span>:
-            <span class="key">maxConnectionPoolSize</span>: <span class="string"><span class="content">100</span></span>
-            <span class="key">connectionLivenessCheckTimeout</span>: <span class="string"><span class="content">200</span></span></code></pre>
+            <span class="key">maxSessions</span>: <span class="string"><span class="content">100</span></span>
+            <span class="key">encryptionLevel</span>: <span class="string"><span class="content">NONE</span></span>
+            <span class="key">sessionLivenessCheckTimeout</span>: <span class="string"><span class="content">200</span></span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>For builder methods with 0 arguments, setting the configuration value to true will cause the method to be executed. For example the following configuration will result in the <a href="http://neo4j.com/docs/api/java-driver/4.0/org/neo4j/driver/Config.ConfigBuilder.html#withEncryption--">ConfigBuilder#withEncryption</a> method to be called.</p>
+<p>For builder methods with 0 arguments, setting the configuration value to true will cause the method to be executed. For example the following configuration will result in the <a href="http://neo4j.com/docs/api/java-driver/1.4/org/neo4j/driver/v1/Config.ConfigBuilder.html#withEncryption--">ConfigBuilder#withEncryption</a> method to be called.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1119,7 +1170,7 @@ The Neo4j server uses Jetty, so when you add Neo4j as embedded Grails will also 
 </div>
 </div>
 <div class="paragraph">
-<p>For builder methods with more than 1 argument, it is possible to configure values for the method using <code>arg#</code> syntax. For example the following configuration will result in the <a href="http://neo4j.com/docs/api/java-driver/4.0/org/neo4j/driver/Config.ConfigBuilder.html#withConnectionTimeout-long-java.util.concurrent.TimeUnit-">ConfigBuilder#withConnectionTimeout</a> method to be called.</p>
+<p>For builder methods with more than 1 argument, it is possible to configure values for the method using <code>arg#</code> syntax. For example the following configuration will result in the <a href="http://neo4j.com/docs/api/java-driver/1.4/org/neo4j/driver/v1/Config.ConfigBuilder.html#withConnectionTimeout-long-java.util.concurrent.TimeUnit-">ConfigBuilder#withConnectionTimeout</a> method to be called.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1167,7 +1218,7 @@ The Neo4j server uses Jetty, so when you add Neo4j as embedded Grails will also 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-neo4j-spring-boot:7.1.0.BUILD-SNAPSHOT")</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-neo4j-spring-boot:7.0.3.BUILD-SNAPSHOT")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1227,7 +1278,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-neo4j:7.1.0.BUILD-SNAPSHOT"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-neo4j:7.0.3.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2055,7 +2106,7 @@ RETURN n as data, teamsNodes</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Result</span> result = Club.executeCypher(<span class="string"><span class="delimiter">&quot;</span><span class="content">MATCH n where n.name = {1} RETURN n</span><span class="delimiter">&quot;</span></span>, [<span class="string"><span class="delimiter">'</span><span class="content">FC Bayern Muenchen</span><span class="delimiter">'</span></span>])</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">StatementResult result = Club.executeCypher(<span class="string"><span class="delimiter">&quot;</span><span class="content">MATCH n where n.name = {1} RETURN n</span><span class="delimiter">&quot;</span></span>, [<span class="string"><span class="delimiter">'</span><span class="content">FC Bayern Muenchen</span><span class="delimiter">'</span></span>])</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2067,7 +2118,7 @@ RETURN n as data, teamsNodes</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>When working with raw results, you can convert any <code>org.neo4j.driver.types.Node</code> into a domain instance using the <code>as</code> keyword:</p>
+<p>When working with raw results, you can convert any <code>org.neo4j.driver.v1.types.Node</code> into a domain instance using the <code>as</code> keyword:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2088,11 +2139,11 @@ This also works for <code>Relationship</code> and <code>Path</code> types
 </table>
 </div>
 <div class="paragraph">
-<p>You can also convert any <a href="http://neo4j.com/docs/api/java-driver/4.0/org/neo4j/driver/Result.html">org.neo4j.driver.Result</a> instance to a list of domain classes:</p>
+<p>You can also convert any <a href="http://neo4j.com/docs/api/java-driver/1.0/org/neo4j/driver/v1/StatementResult.html">org.neo4j.driver.v1.StatementResult</a> instance to a list of domain classes:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">Result</span> result = ...
+<pre class="CodeRay highlight"><code data-lang="groovy">StatementResult result = ...
 List&lt;Club&gt; clubs = result.toList(Club)</code></pre>
 </div>
 </div>
@@ -2336,7 +2387,7 @@ Path&lt;Person, Person&gt; findPath(<span class="predefined-type">String</span> 
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">testRuntime "org.neo4j.test:neo4j-harness:3.5.16"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">testRuntime "org.neo4j.test:neo4j-harness:3.5.0"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2738,7 +2789,7 @@ result.iterator().size() == <span class="integer">1</span></code></pre>
 <div class="sect4">
 <h5 id="_description">Description</h5>
 <div class="paragraph">
-<p><code>cypher</code> is invoked on any domain instance and returns a <a href="http://neo4j.com/docs/api/java-driver/4.0/org/neo4j/driver/Result.html">org.neo4j.driver.Result</a></p>
+<p><code>cypher</code> is invoked on any domain instance and returns a <a href="http://neo4j.com/docs/api/java-driver/1.0/org/neo4j/driver/v1/StatementResult.html">org.neo4j.driver.v1.StatementResult</a></p>
 </div>
 <div class="paragraph">
 <p>The parameters passed are:</p>
@@ -2784,7 +2835,7 @@ result.iterator().size()==<span class="integer">1</span></code></pre>
 <div class="sect4">
 <h5 id="_description_2">Description</h5>
 <div class="paragraph">
-<p><code>cypherStatic</code> is invoked on any domain class and returns a <a href="http://neo4j.com/docs/api/java-driver/4.0/org/neo4j/driver/Result.html">org.neo4j.driver.Result</a></p>
+<p><code>cypherStatic</code> is invoked on any domain class and returns a <a href="http://neo4j.com/docs/api/java-driver/1.0/org/neo4j/driver/v1/StatementResult.html">org.neo4j.driver.v1.StatementResult</a></p>
 </div>
 <div class="paragraph">
 <p>The parameters passed are:</p>
@@ -2888,7 +2939,7 @@ person.someDoubleArray == [<span class="float">0.9</span>, <span class="float">1
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 7.1.0.BUILD-SNAPSHOT<br>
+Version 7.0.3.BUILD-SNAPSHOT<br>
 </div>
 </div>
 </body>
