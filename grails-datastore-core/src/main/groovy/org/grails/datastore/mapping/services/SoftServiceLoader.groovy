@@ -81,7 +81,7 @@ final class SoftServiceLoader<S> implements Iterable<ServiceDefinition<S>> {
      * @return A new service loader
      */
     static <S> SoftServiceLoader<S> load(Class<S> service) {
-        return SoftServiceLoader.load(service, SoftServiceLoader.class.getClassLoader())
+        return SoftServiceLoader.load(service, Thread.currentThread().getContextClassLoader())
     }
 
     /**
