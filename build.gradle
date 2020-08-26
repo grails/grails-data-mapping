@@ -124,7 +124,7 @@ subprojects {
         if (isStandardGroovyMavenProject) {
             documentation "org.fusesource.jansi:jansi:1.18"
             documentation "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
-            documentation 'info.picocli:picocli:4.4.0'
+            documentation 'info.picocli:picocli:4.5.1'
             documentation ("com.github.javaparser:javaparser-core:$javaParserCoreVersion")
 
             api "org.codehaus.groovy:groovy:$groovyVersion"
