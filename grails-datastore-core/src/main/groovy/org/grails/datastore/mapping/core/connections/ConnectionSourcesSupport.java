@@ -2,8 +2,10 @@ package org.grails.datastore.mapping.core.connections;
 
 import org.grails.datastore.mapping.config.Entity;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.multitenancy.TenantDataSourceConfig;
 import org.springframework.util.ClassUtils;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,7 +58,7 @@ public class ConnectionSourcesSupport {
     public static boolean usesConnectionSource(PersistentEntity entity, String connectionSourceName) {
         Class[] interfaces = ClassUtils.getAllInterfacesForClass(entity.getJavaClass());
         if(isMultiTenant(interfaces)) {
-            return true;
+            return !isMultiTenantExcludedDataSource( entity, connectionSourceName );
         }
         else {
             List<String> names = getConnectionSourceNames(entity);
@@ -73,5 +75,23 @@ public class ConnectionSourcesSupport {
             }
         }
         return false;
+    }
+
+    /**
+     * Returns whether the given entity should be excluded from given connection source name or not.
+     * It can be configured over {@link TenantDataSourceConfig} annotation
+     *
+     * @param entity The name of the multi tenant entity
+     * @param connectionSourceName The connection source name to check
+     * @return Whether the given connection should be excluded
+     */
+    protected static boolean isMultiTenantExcludedDataSource(PersistentEntity entity, String connectionSourceName) {
+        TenantDataSourceConfig tdsc = (TenantDataSourceConfig) entity.getJavaClass().getAnnotation(TenantDataSourceConfig.class);
+        boolean result = false;
+        if ( null != tdsc ) {
+            final String[] dataSourcesToExclude = tdsc.dataSourcesToExclude();
+            result = Arrays.asList(dataSourcesToExclude).contains(connectionSourceName);
+        }
+        return result;
     }
 }
