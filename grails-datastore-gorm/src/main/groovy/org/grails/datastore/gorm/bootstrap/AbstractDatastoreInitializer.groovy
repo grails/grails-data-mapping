@@ -335,34 +335,36 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
 
     @CompileDynamic
     protected Map<String, Class<?>> loadDataServices(String secondaryDatastore = null) {
-        Map<String, Class<?>> dataServices = [:]
-        final SoftServiceLoader<Service> services = SoftServiceLoader.load(Service)
-        for (ServiceDefinition<Service> serviceDefinition: services) {
+        Map<String, Class<?>> services = [:]
+        final SoftServiceLoader<Service> softServiceLoader = SoftServiceLoader.load(Service)
+        for (ServiceDefinition<Service> serviceDefinition: softServiceLoader) {
             if (serviceDefinition.isPresent()) {
                 final Class<Service> clazz = serviceDefinition.getType()
-                if (clazz.simpleName.startsWith('$') && clazz.simpleName.endsWith('Implementation')) {
-                    Class<?> serviceClass = loadServiceClass(clazz)
-                    final grails.gorm.services.Service ann = clazz.getAnnotation(grails.gorm.services.Service)
-                    String serviceName = ann?.name()
-                    if(serviceName == null) {
-                        serviceName = Introspector.decapitalize(serviceClass.simpleName)
-                    }
-                    if (secondaryDatastore) {
-                        serviceName = secondaryDatastore + NameUtils.capitalize(serviceName)
-                    }
-                    if (serviceClass != null && serviceClass != Object.class) {
-                        dataServices.put(serviceName, serviceClass)
-                    }
+                final Class<?> serviceClass = loadServiceClass(clazz)
+                final grails.gorm.services.Service ann = clazz.getAnnotation(grails.gorm.services.Service)
+                String serviceName = ann?.name()
+                if (serviceName == null) {
+                    serviceName = Introspector.decapitalize(serviceClass.simpleName)
+                }
+                if (secondaryDatastore) {
+                    serviceName = secondaryDatastore + NameUtils.capitalize(serviceName)
+                }
+                if (serviceClass != null && serviceClass != Object.class) {
+                    services.put(serviceName, serviceClass)
                 }
             }
         }
-        return dataServices;
+        return services
     }
 
     private Class<?> loadServiceClass(Class<Service> clazz) {
-        final String serviceClassName = clazz.package.getName() + '.' + clazz.simpleName[1..-15]
-        final Class<?> serviceClass = classLoader.loadClass(serviceClassName)
-        serviceClass
+        if (clazz.simpleName.startsWith('$') && clazz.simpleName.endsWith('Implementation')) {
+            final String serviceClassName = clazz.package.getName() + '.' + clazz.simpleName[1..-15]
+            final Class<?> serviceClass = classLoader.loadClass(serviceClassName)
+            serviceClass
+        } else {
+            clazz
+        }
     }
 
     @CompileDynamic
