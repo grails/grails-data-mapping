@@ -290,7 +290,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
                     datastore = ref("${type}Datastore")
                 }
             }
-            loadServices(null)
+            loadDataServices(null)
                     .each {serviceName, serviceClass->
                 "$serviceName"(DatastoreServiceMethodInvokingFactoryBean) {
                     targetObject = ref("${type}Datastore")
@@ -302,7 +302,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
     }
 
     @CompileDynamic
-    protected Map<String, Class<?>> loadServices(String secondaryDatastore = null) {
+    protected Map<String, Class<?>> loadDataServices(String secondaryDatastore = null) {
         Map<String, Class<?>> services = [:]
         final SoftServiceLoader<Service> softServiceLoader = SoftServiceLoader.load(Service)
         for (ServiceDefinition<Service> serviceDefinition: softServiceLoader) {
