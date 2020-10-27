@@ -122,7 +122,7 @@ subprojects {
         api "javax.annotation:javax.annotation-api:$javaAnnotationApiVersion"
 
         if (isStandardGroovyMavenProject) {
-            documentation "org.fusesource.jansi:jansi:1.18"
+            documentation "org.fusesource.jansi:jansi:2.0"
             documentation "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
             documentation 'info.picocli:picocli:4.4.0'
             documentation ("com.github.javaparser:javaparser-core:$javaParserCoreVersion")
