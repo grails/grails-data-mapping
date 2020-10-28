@@ -2,6 +2,7 @@ package org.grails.datastore.gorm.validation.constraints.builtin
 
 import grails.gorm.DetachedCriteria
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.validation.constraints.AbstractConstraint
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.model.MappingContext
@@ -95,10 +96,15 @@ class UniqueConstraint extends AbstractConstraint {
         PersistentProperty persistentProperty = targetEntity.getPropertyByName(constraintPropertyName)
         boolean isToOne = persistentProperty instanceof ToOne
         if(isToOne) {
-            def associationId = ((Association) persistentProperty).getAssociatedEntity().getReflector().getIdentifier(propertyValue)
-            if(associationId == null) {
-                // unsaved entity
-                return
+            PersistentEntity association = ((Association) persistentProperty).getAssociatedEntity()
+            if (!association.mappingContext.proxyHandler.isProxy(propertyValue)) {
+                def associationId = association.reflector.getIdentifier(propertyValue)
+                if(associationId == null) {
+                    // unsaved entity
+                    return
+                }
+                // replace with proxy to prevent trying to flush transient instance
+                propertyValue = GormEnhancer.findStaticApi(association.javaClass).load(associationId)
             }
         }
 
