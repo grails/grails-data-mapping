@@ -449,7 +449,7 @@ def clubs = Club.findAll("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenc
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">StatementResult result = Club.executeCypher("MATCH n where n.name = {1} RETURN n", ['FC Bayern Muenchen'])</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Result result = Club.executeCypher("MATCH n where n.name = {1} RETURN n", ['FC Bayern Muenchen'])</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -461,7 +461,7 @@ def clubs = Club.findAll("MATCH n where n.name = {1} RETURN n", 'FC Bayern Muenc
 </div>
 </div>
 <div class="paragraph">
-<p>When working with raw results, you can convert any <code>org.neo4j.driver.v1.types.Node</code> into a domain instance using the <code>as</code> keyword:</p>
+<p>When working with raw results, you can convert any <code>org.neo4j.driver.types.Node</code> into a domain instance using the <code>as</code> keyword:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -482,18 +482,18 @@ This also works for <code>Relationship</code> and <code>Path</code> types
 </table>
 </div>
 <div class="paragraph">
-<p>You can also convert any <a href="http://neo4j.com/docs/api/java-driver/1.0/org/neo4j/driver/v1/StatementResult.html">org.neo4j.driver.v1.StatementResult</a> instance to a list of domain classes:</p>
+<p>You can also convert any <a href="http://neo4j.com/docs/api/java-driver/4.0/org/neo4j/driver/Result.html">org.neo4j.driver.Result</a> instance to a list of domain classes:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">StatementResult result = ...
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Result result = ...
 List&lt;Club&gt; clubs = result.toList(Club)</code></pre>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 7.0.3.BUILD-SNAPSHOT<br>
+Version 7.1.0.BUILD-SNAPSHOT<br>
 </div>
 </div>
 </body>
