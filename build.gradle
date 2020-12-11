@@ -17,9 +17,9 @@ project.ext {
     projectMinorVersion = "1"
     projectPatchVersion = "0"
 //    releaseType = "RELEASE"
-    releaseType = "M4"
+//    releaseType = "M4"
 //    releaseType = "RC1"
-//    releaseType = "BUILD-SNAPSHOT"
+    releaseType = "BUILD-SNAPSHOT"
 
     // overall project version
     projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
@@ -138,9 +138,9 @@ subprojects {
 
         if (project.name == "grails-datastore-gorm-tck") {
             api "org.codehaus.groovy:groovy-test-junit5:$groovyVersion"
-            api "org.junit.jupiter:junit-jupiter-api:5.6.0"
-            api "org.junit.platform:junit-platform-runner:1.6.0"
-            runtimeOnly "org.junit.jupiter:junit-jupiter-engine:5.6.0"
+            api "org.junit.jupiter:junit-jupiter-api:5.7.0"
+            api "org.junit.platform:junit-platform-runner:1.7.0"
+            runtimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.0"
             implementation(spockDependency) { transitive = false }
         }
     }
