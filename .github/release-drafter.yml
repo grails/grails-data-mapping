@@ -1,0 +1,18 @@
+name-template: $MAJOR.$MINOR.0.M5
+tag-template: v$MAJOR.$MINOR.0.M5
+categories:
+  - title: 🚀 Features
+    label: "enhancement"
+  - title: 🐛 Bug Fixes
+    label: "bug"
+  - title: 🛠 Dependency upgrades
+    label: "dependencies"
+change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+template: |
+  ## Changes
+
+  $CHANGES
+
+  ## Contributors
+
+  $CONTRIBUTORS
