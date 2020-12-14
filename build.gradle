@@ -13,19 +13,8 @@ buildscript {
 project.ext {
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
 
-    projectMajorVersion = "7"
-    projectMinorVersion = "1"
-    projectPatchVersion = "0"
-//    releaseType = "RELEASE"
-//    releaseType = "M4"
-//    releaseType = "RC1"
-    releaseType = "BUILD-SNAPSHOT"
-
-    // overall project version
-    projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
-    releaseVersion = "${projectVersion}.${releaseType}"
     isCiBuild = project.hasProperty("isCiBuild")
-    isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
+    isBuildSnapshot = project.projectVersion.endsWith("BUILD-SNAPSHOT")
 
     nexusUsername = System.getenv("SONATYPE_USERNAME") ?: project.hasProperty("sonatypeOssUsername") ? project.sonatypeOssUsername : ''
     nexusPassword = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
@@ -41,7 +30,7 @@ configurations {
    all*.exclude group: "commons-logging"
 }
 
-version = "${projectVersion}.${releaseType}"
+version = project.projectVersion
 group = "org.grails"
 
 apply plugin: 'idea'
@@ -84,14 +73,14 @@ subprojects {
     configurations {
         documentation
     }
-   version = "${projectVersion}.${releaseType}"
+   version = project.projectVersion
    group = "org.grails"
 
    afterEvaluate { project ->
         if (isGroovyProject(project)) {
             def hasSnapshotVersion = project.version.endsWith("-SNAPSHOT")
             if(isBuildSnapshot != hasSnapshotVersion) {
-                throw new StopExecutionException("${project.name} has version \"${project.version}\" which is${isBuildSnapshot ? 'n\'t' : ''} a snapshot version. Current release type is ${releaseType}")
+                throw new StopExecutionException("${project.name} has version \"${project.version}\" which is${isBuildSnapshot ? 'n\'t' : ''} a snapshot version. Current release type is ${project.projectVersion.tokenize('.').last()}")
             }
         }
     }
