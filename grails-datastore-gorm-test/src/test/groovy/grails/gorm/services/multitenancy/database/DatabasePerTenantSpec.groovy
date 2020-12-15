@@ -1,12 +1,8 @@
 package grails.gorm.services.multitenancy.database
 
-import grails.gorm.MultiTenant
-import grails.gorm.annotation.Entity
-import grails.gorm.multitenancy.CurrentTenant
-import grails.gorm.services.Service
-import grails.gorm.transactions.ReadOnly
-import grails.gorm.transactions.Transactional
+
 import org.grails.datastore.mapping.config.Settings
+import org.grails.datastore.mapping.core.DatastoreUtils
 import org.grails.datastore.mapping.core.connections.ConnectionSource
 import org.grails.datastore.mapping.multitenancy.MultiTenancySettings
 import org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException
@@ -22,11 +18,11 @@ import spock.lang.Specification
 class DatabasePerTenantSpec extends Specification {
 
     @Shared @AutoCleanup SimpleMapDatastore datastore = new SimpleMapDatastore(
-            [(Settings.SETTING_MULTI_TENANCY_MODE)   : MultiTenancySettings.MultiTenancyMode.DATABASE,
+            DatastoreUtils.createPropertyResolver([(Settings.SETTING_MULTI_TENANCY_MODE)   : MultiTenancySettings.MultiTenancyMode.DATABASE,
              (Settings.SETTING_MULTI_TENANT_RESOLVER): new SystemPropertyTenantResolver(),
-             (Settings.SETTING_DB_CREATE)            : "create-drop"],
+             (Settings.SETTING_DB_CREATE)            : "create-drop"]),
             [ConnectionSource.DEFAULT, "foo", "bar"],
-            getClass().getPackage()
+            Book
     )
     @Shared IBookService bookDataService = datastore.getService(IBookService)
 
@@ -66,30 +62,7 @@ class DatabasePerTenantSpec extends Specification {
     }
 }
 
-@Entity
-class Book implements MultiTenant<Book> {
-    String title
-}
 
-@CurrentTenant
-@Transactional
-class BookService {
 
-    void saveBook(String title) {
-        new Book(title: "The Stand").save()
-    }
 
-    @ReadOnly
-    int countBooks() {
-        Book.count()
-    }
-}
 
-@CurrentTenant
-@Service(Book)
-interface IBookService {
-
-    Book saveBook(String title)
-
-    Integer countBooks()
-}
