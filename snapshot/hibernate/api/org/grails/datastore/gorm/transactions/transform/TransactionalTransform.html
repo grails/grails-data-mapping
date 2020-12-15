@@ -187,7 +187,7 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>static&nbsp;<a href='../../../../../../ClassNode.html'>ClassNode</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>static&nbsp;org.codehaus.groovy.ast.ClassNode</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#MY_TYPE">MY_TYPE</a></code></td>
                             <td class="colLast"></td>
                         </tr>
@@ -199,7 +199,7 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>static&nbsp;<a href='../../../../../../ClassNode.html'>ClassNode</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>static&nbsp;org.codehaus.groovy.ast.ClassNode</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#READ_ONLY_TYPE">READ_ONLY_TYPE</a></code></td>
                             <td class="colLast"></td>
                         </tr>
@@ -286,19 +286,19 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;java.lang.Object</code></td>
-                            <td class="colLast"><code><strong><a href="#applyTransactionalAttributeSettings(AnnotationNode, VariableExpression, org.codehaus.groovy.ast.stmt.BlockStatement, ClassNode, MethodNode)">applyTransactionalAttributeSettings</a></strong>(<a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../VariableExpression.html'>VariableExpression</a> transactionAttributeVar, org.codehaus.groovy.ast.stmt.BlockStatement methodBody, <a href='../../../../../../ClassNode.html'>ClassNode</a> classNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#applyTransactionalAttributeSettings(AnnotationNode, VariableExpression, org.codehaus.groovy.ast.stmt.BlockStatement, org.codehaus.groovy.ast.ClassNode, MethodNode)">applyTransactionalAttributeSettings</a></strong>(<a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../VariableExpression.html'>VariableExpression</a> transactionAttributeVar, org.codehaus.groovy.ast.stmt.BlockStatement methodBody, org.codehaus.groovy.ast.ClassNode classNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>org.codehaus.groovy.ast.expr.MethodCallExpression</code></td>
-                            <td class="colLast"><code><strong><a href="#buildDelegatingMethodCall(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode, MethodNode, org.codehaus.groovy.ast.expr.MethodCallExpression, org.codehaus.groovy.ast.stmt.BlockStatement)">buildDelegatingMethodCall</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> classNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode, org.codehaus.groovy.ast.expr.MethodCallExpression originalMethodCall, org.codehaus.groovy.ast.stmt.BlockStatement newMethodBody)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#buildDelegatingMethodCall(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode, MethodNode, org.codehaus.groovy.ast.expr.MethodCallExpression, org.codehaus.groovy.ast.stmt.BlockStatement)">buildDelegatingMethodCall</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, org.codehaus.groovy.ast.ClassNode classNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode, org.codehaus.groovy.ast.expr.MethodCallExpression originalMethodCall, org.codehaus.groovy.ast.stmt.BlockStatement newMethodBody)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#enhanceClassNode(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode)">enhanceClassNode</a></strong>(org.codehaus.groovy.control.SourceUnit source, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> declaringClassNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#enhanceClassNode(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode)">enhanceClassNode</a></strong>(org.codehaus.groovy.control.SourceUnit source, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, org.codehaus.groovy.ast.ClassNode declaringClassNode)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -309,7 +309,7 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;<a href='../../../../../../ClassNode.html'>ClassNode</a></code></td>
+                            <td class="colLast"><code>protected&nbsp;org.codehaus.groovy.ast.ClassNode</code></td>
                             <td class="colLast"><code><strong><a href="#getAnnotationType()">getAnnotationType</a></strong>()</code><br></td>
                         </tr>
                         
@@ -358,37 +358,37 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;org.codehaus.groovy.ast.Parameter[]</code></td>
-                            <td class="colLast"><code><strong><a href="#prepareNewMethodParameters(MethodNode, Map, ClassNode)">prepareNewMethodParameters</a></strong>(<a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode, java.util.Map&lt;java.lang.String, ClassNode&gt; genericsSpec, <a href='../../../../../../ClassNode.html'>ClassNode</a> classNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#prepareNewMethodParameters(MethodNode, Map, org.codehaus.groovy.ast.ClassNode)">prepareNewMethodParameters</a></strong>(<a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode, java.util.Map&lt;java.lang.String, ClassNode&gt; genericsSpec, org.codehaus.groovy.ast.ClassNode classNode)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#weaveClassNode(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode)">weaveClassNode</a></strong>(org.codehaus.groovy.control.SourceUnit source, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> classNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#weaveClassNode(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode)">weaveClassNode</a></strong>(org.codehaus.groovy.control.SourceUnit source, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, org.codehaus.groovy.ast.ClassNode classNode)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;<a href='../../../../../../MethodNode.html'>MethodNode</a></code></td>
-                            <td class="colLast"><code><strong><a href="#weaveNewMethod(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode, MethodNode, Map)">weaveNewMethod</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> classNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode, java.util.Map&lt;java.lang.String, ClassNode&gt; genericsSpec)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#weaveNewMethod(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode, MethodNode, Map)">weaveNewMethod</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, org.codehaus.groovy.ast.ClassNode classNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode, java.util.Map&lt;java.lang.String, ClassNode&gt; genericsSpec)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#weaveSetTargetDatastoreBody(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode, org.codehaus.groovy.ast.expr.Expression, org.codehaus.groovy.ast.stmt.BlockStatement)">weaveSetTargetDatastoreBody</a></strong>(org.codehaus.groovy.control.SourceUnit source, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> declaringClassNode, org.codehaus.groovy.ast.expr.Expression datastoreVar, org.codehaus.groovy.ast.stmt.BlockStatement setTargetDatastoreBody)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#weaveSetTargetDatastoreBody(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.expr.Expression, org.codehaus.groovy.ast.stmt.BlockStatement)">weaveSetTargetDatastoreBody</a></strong>(org.codehaus.groovy.control.SourceUnit source, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, org.codehaus.groovy.ast.ClassNode declaringClassNode, org.codehaus.groovy.ast.expr.Expression datastoreVar, org.codehaus.groovy.ast.stmt.BlockStatement setTargetDatastoreBody)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#weaveTestSetupMethod(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode, MethodNode, Map)">weaveTestSetupMethod</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> classNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode, java.util.Map&lt;java.lang.String, ClassNode&gt; genericsSpec)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#weaveTestSetupMethod(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode, MethodNode, Map)">weaveTestSetupMethod</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, org.codehaus.groovy.ast.ClassNode classNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode, java.util.Map&lt;java.lang.String, ClassNode&gt; genericsSpec)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#weaveTransactionManagerAware(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode)">weaveTransactionManagerAware</a></strong>(org.codehaus.groovy.control.SourceUnit source, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> declaringClassNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#weaveTransactionManagerAware(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode)">weaveTransactionManagerAware</a></strong>(org.codehaus.groovy.control.SourceUnit source, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, org.codehaus.groovy.ast.ClassNode declaringClassNode)</code><br></td>
                         </tr>
                         
                     </table>
@@ -407,11 +407,11 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractDatastoreMethodDecoratingTransformation.html'>AbstractDatastoreMethodDecoratingTransformation</a></code></td>
-                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/transform/AbstractDatastoreMethodDecoratingTransformation.html#enhanceClassNode(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode)'>enhanceClassNode</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractDatastoreMethodDecoratingTransformation.html#weaveSetTargetDatastoreBody(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode, org.codehaus.groovy.ast.expr.Expression, org.codehaus.groovy.ast.stmt.BlockStatement)'>weaveSetTargetDatastoreBody</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/transform/AbstractDatastoreMethodDecoratingTransformation.html#enhanceClassNode(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode)'>enhanceClassNode</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractDatastoreMethodDecoratingTransformation.html#weaveSetTargetDatastoreBody(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.expr.Expression, org.codehaus.groovy.ast.stmt.BlockStatement)'>weaveSetTargetDatastoreBody</a></code></td>
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html'>AbstractMethodDecoratingTransformation</a></code></td>
-                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#buildCallToOriginalMethod(ClassNode, MethodNode)'>buildCallToOriginalMethod</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#buildDelegatingMethodCall(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode, MethodNode, org.codehaus.groovy.ast.expr.MethodCallExpression, org.codehaus.groovy.ast.stmt.BlockStatement)'>buildDelegatingMethodCall</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#compileMethodStatically(org.codehaus.groovy.control.SourceUnit, MethodNode)'>compileMethodStatically</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#createDelegingMethodBody(org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.expr.MethodCallExpression)'>createDelegingMethodBody</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#enhanceClassNode(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode)'>enhanceClassNode</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#getRenamedMethodPrefix()'>getRenamedMethodPrefix</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#hasExcludedAnnotation(MethodNode)'>hasExcludedAnnotation</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#hasExcludedAnnotation(MethodNode, Set)'>hasExcludedAnnotation</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#isTestSetupOrCleanup(ClassNode, MethodNode)'>isTestSetupOrCleanup</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#makeDelegatingClosureCall(org.codehaus.groovy.ast.expr.Expression, java.lang.String, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.expr.MethodCallExpression, VariableScope)'>makeDelegatingClosureCall</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#makeDelegatingClosureCall(org.codehaus.groovy.ast.expr.Expression, java.lang.String, ArgumentListExpression, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.expr.MethodCallExpression, VariableScope)'>makeDelegatingClosureCall</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#moveOriginalCodeToNewMethod(MethodNode, java.lang.String, org.codehaus.groovy.ast.Parameter, ClassNode, org.codehaus.groovy.control.SourceUnit, Map)'>moveOriginalCodeToNewMethod</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#prepareNewMethodParameters(MethodNode, Map, ClassNode)'>prepareNewMethodParameters</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#resolveReturnTypeForNewMethod(MethodNode)'>resolveReturnTypeForNewMethod</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#visit(org.codehaus.groovy.control.SourceUnit, AnnotationNode, AnnotatedNode)'>visit</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#weaveClassNode(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode)'>weaveClassNode</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#weaveNewMethod(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode, MethodNode, Map)'>weaveNewMethod</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#weaveTestSetupMethod(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode, MethodNode, Map)'>weaveTestSetupMethod</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#buildCallToOriginalMethod(org.codehaus.groovy.ast.ClassNode, MethodNode)'>buildCallToOriginalMethod</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#buildDelegatingMethodCall(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode, MethodNode, org.codehaus.groovy.ast.expr.MethodCallExpression, org.codehaus.groovy.ast.stmt.BlockStatement)'>buildDelegatingMethodCall</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#compileMethodStatically(org.codehaus.groovy.control.SourceUnit, MethodNode)'>compileMethodStatically</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#createDelegingMethodBody(org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.expr.MethodCallExpression)'>createDelegingMethodBody</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#enhanceClassNode(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode)'>enhanceClassNode</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#getRenamedMethodPrefix()'>getRenamedMethodPrefix</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#hasExcludedAnnotation(MethodNode)'>hasExcludedAnnotation</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#hasExcludedAnnotation(MethodNode, Set)'>hasExcludedAnnotation</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#isTestSetupOrCleanup(org.codehaus.groovy.ast.ClassNode, MethodNode)'>isTestSetupOrCleanup</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#makeDelegatingClosureCall(org.codehaus.groovy.ast.expr.Expression, java.lang.String, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.expr.MethodCallExpression, VariableScope)'>makeDelegatingClosureCall</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#makeDelegatingClosureCall(org.codehaus.groovy.ast.expr.Expression, java.lang.String, ArgumentListExpression, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.expr.MethodCallExpression, VariableScope)'>makeDelegatingClosureCall</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#moveOriginalCodeToNewMethod(MethodNode, java.lang.String, org.codehaus.groovy.ast.Parameter, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.control.SourceUnit, Map)'>moveOriginalCodeToNewMethod</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#prepareNewMethodParameters(MethodNode, Map, org.codehaus.groovy.ast.ClassNode)'>prepareNewMethodParameters</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#resolveReturnTypeForNewMethod(MethodNode)'>resolveReturnTypeForNewMethod</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#visit(org.codehaus.groovy.control.SourceUnit, AnnotationNode, AnnotatedNode)'>visit</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#weaveClassNode(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode)'>weaveClassNode</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#weaveNewMethod(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode, MethodNode, Map)'>weaveNewMethod</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#weaveTestSetupMethod(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode, MethodNode, Map)'>weaveTestSetupMethod</a></code></td>
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractGormASTTransformation.html'>AbstractGormASTTransformation</a></code></td>
@@ -451,7 +451,7 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                         <a name="MY_TYPE"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;static&nbsp;final&nbsp;<a href='../../../../../../ClassNode.html'>ClassNode</a> <strong>MY_TYPE</strong></h4>
+                                <h4>public&nbsp;static&nbsp;final&nbsp;org.codehaus.groovy.ast.ClassNode <strong>MY_TYPE</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -467,7 +467,7 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                         <a name="READ_ONLY_TYPE"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;static&nbsp;final&nbsp;<a href='../../../../../../ClassNode.html'>ClassNode</a> <strong>READ_ONLY_TYPE</strong></h4>
+                                <h4>public&nbsp;static&nbsp;final&nbsp;org.codehaus.groovy.ast.ClassNode <strong>READ_ONLY_TYPE</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -517,27 +517,27 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                 </a>
                     <h3>Method Detail</h3>
                     
-                        <a name="applyTransactionalAttributeSettings(AnnotationNode, VariableExpression, org.codehaus.groovy.ast.stmt.BlockStatement, ClassNode, MethodNode)"><!-- --></a>
+                        <a name="applyTransactionalAttributeSettings(AnnotationNode, VariableExpression, org.codehaus.groovy.ast.stmt.BlockStatement, org.codehaus.groovy.ast.ClassNode, MethodNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;java.lang.Object <strong>applyTransactionalAttributeSettings</strong>(<a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../VariableExpression.html'>VariableExpression</a> transactionAttributeVar, org.codehaus.groovy.ast.stmt.BlockStatement methodBody, <a href='../../../../../../ClassNode.html'>ClassNode</a> classNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</h4>
+                                <h4>protected&nbsp;java.lang.Object <strong>applyTransactionalAttributeSettings</strong>(<a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../VariableExpression.html'>VariableExpression</a> transactionAttributeVar, org.codehaus.groovy.ast.stmt.BlockStatement methodBody, org.codehaus.groovy.ast.ClassNode classNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="buildDelegatingMethodCall(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode, MethodNode, org.codehaus.groovy.ast.expr.MethodCallExpression, org.codehaus.groovy.ast.stmt.BlockStatement)"><!-- --></a>
+                        <a name="buildDelegatingMethodCall(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode, MethodNode, org.codehaus.groovy.ast.expr.MethodCallExpression, org.codehaus.groovy.ast.stmt.BlockStatement)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.codehaus.groovy.ast.expr.MethodCallExpression <strong>buildDelegatingMethodCall</strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> classNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode, org.codehaus.groovy.ast.expr.MethodCallExpression originalMethodCall, org.codehaus.groovy.ast.stmt.BlockStatement newMethodBody)</h4>
+                                <h4>org.codehaus.groovy.ast.expr.MethodCallExpression <strong>buildDelegatingMethodCall</strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, org.codehaus.groovy.ast.ClassNode classNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode, org.codehaus.groovy.ast.expr.MethodCallExpression originalMethodCall, org.codehaus.groovy.ast.stmt.BlockStatement newMethodBody)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="enhanceClassNode(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode)"><!-- --></a>
+                        <a name="enhanceClassNode(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-protected&nbsp;void <strong>enhanceClassNode</strong>(org.codehaus.groovy.control.SourceUnit source, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> declaringClassNode)</h4>
+protected&nbsp;void <strong>enhanceClassNode</strong>(org.codehaus.groovy.control.SourceUnit source, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, org.codehaus.groovy.ast.ClassNode declaringClassNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -554,7 +554,7 @@ protected&nbsp;void <strong>enhanceClassNode</strong>(org.codehaus.groovy.contro
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-protected&nbsp;<a href='../../../../../../ClassNode.html'>ClassNode</a> <strong>getAnnotationType</strong>()</h4>
+protected&nbsp;org.codehaus.groovy.ast.ClassNode <strong>getAnnotationType</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -621,55 +621,55 @@ protected&nbsp;boolean <strong>isValidAnnotation</strong>(<a href='../../../../.
                             </li>
                         </ul>
                     
-                        <a name="prepareNewMethodParameters(MethodNode, Map, ClassNode)"><!-- --></a>
+                        <a name="prepareNewMethodParameters(MethodNode, Map, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-protected&nbsp;org.codehaus.groovy.ast.Parameter[] <strong>prepareNewMethodParameters</strong>(<a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode, java.util.Map&lt;java.lang.String, ClassNode&gt; genericsSpec, <a href='../../../../../../ClassNode.html'>ClassNode</a> classNode)</h4>
+protected&nbsp;org.codehaus.groovy.ast.Parameter[] <strong>prepareNewMethodParameters</strong>(<a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode, java.util.Map&lt;java.lang.String, ClassNode&gt; genericsSpec, org.codehaus.groovy.ast.ClassNode classNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="weaveClassNode(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode)"><!-- --></a>
+                        <a name="weaveClassNode(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-protected&nbsp;void <strong>weaveClassNode</strong>(org.codehaus.groovy.control.SourceUnit source, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> classNode)</h4>
+protected&nbsp;void <strong>weaveClassNode</strong>(org.codehaus.groovy.control.SourceUnit source, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, org.codehaus.groovy.ast.ClassNode classNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="weaveNewMethod(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode, MethodNode, Map)"><!-- --></a>
+                        <a name="weaveNewMethod(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode, MethodNode, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-protected&nbsp;<a href='../../../../../../MethodNode.html'>MethodNode</a> <strong>weaveNewMethod</strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> classNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode, java.util.Map&lt;java.lang.String, ClassNode&gt; genericsSpec)</h4>
+protected&nbsp;<a href='../../../../../../MethodNode.html'>MethodNode</a> <strong>weaveNewMethod</strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, org.codehaus.groovy.ast.ClassNode classNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode, java.util.Map&lt;java.lang.String, ClassNode&gt; genericsSpec)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="weaveSetTargetDatastoreBody(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode, org.codehaus.groovy.ast.expr.Expression, org.codehaus.groovy.ast.stmt.BlockStatement)"><!-- --></a>
+                        <a name="weaveSetTargetDatastoreBody(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.expr.Expression, org.codehaus.groovy.ast.stmt.BlockStatement)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-protected&nbsp;void <strong>weaveSetTargetDatastoreBody</strong>(org.codehaus.groovy.control.SourceUnit source, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> declaringClassNode, org.codehaus.groovy.ast.expr.Expression datastoreVar, org.codehaus.groovy.ast.stmt.BlockStatement setTargetDatastoreBody)</h4>
+protected&nbsp;void <strong>weaveSetTargetDatastoreBody</strong>(org.codehaus.groovy.control.SourceUnit source, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, org.codehaus.groovy.ast.ClassNode declaringClassNode, org.codehaus.groovy.ast.expr.Expression datastoreVar, org.codehaus.groovy.ast.stmt.BlockStatement setTargetDatastoreBody)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="weaveTestSetupMethod(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode, MethodNode, Map)"><!-- --></a>
+                        <a name="weaveTestSetupMethod(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode, MethodNode, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-protected&nbsp;void <strong>weaveTestSetupMethod</strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> classNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode, java.util.Map&lt;java.lang.String, ClassNode&gt; genericsSpec)</h4>
+protected&nbsp;void <strong>weaveTestSetupMethod</strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, org.codehaus.groovy.ast.ClassNode classNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode, java.util.Map&lt;java.lang.String, ClassNode&gt; genericsSpec)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="weaveTransactionManagerAware(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode)"><!-- --></a>
+                        <a name="weaveTransactionManagerAware(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>weaveTransactionManagerAware</strong>(org.codehaus.groovy.control.SourceUnit source, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> declaringClassNode)</h4>
+                                <h4>protected&nbsp;void <strong>weaveTransactionManagerAware</strong>(org.codehaus.groovy.control.SourceUnit source, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, org.codehaus.groovy.ast.ClassNode declaringClassNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
