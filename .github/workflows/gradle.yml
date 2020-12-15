@@ -53,3 +53,20 @@ jobs:
         run: |
           echo $SECRING_FILE | base64 -d > secring.gpg
           ./gradlew -Dorg.gradle.internal.publish.checksums.insecure=true -Psigning.keyId="$SIGNING_KEY" -Psigning.password="$SIGNING_PASSPHRASE" -Psigning.secretKeyRingFile="secring.gpg" publish
+      - name: Extract branch name
+        if: success() && github.event_name == 'push' && matrix.java == '8'
+        id: extract_branch
+        run: echo ::set-output name=value::${GITHUB_REF:11}
+      - name: Create Snapshot Message for the Workflow Dispatch
+        if: success() && github.event_name == 'push' && matrix.java == '8'
+        id: dispatch_message
+        run: echo ::set-output name=value::{\"message\":\"New Core Snapshot $(date) - $GITHUB_SHA\"}
+      - name: Invoke the Java CI workflow in GORM Hibernate5
+        if: success() && github.event_name == 'push' && matrix.java == '8'
+        uses: benc-uk/workflow-dispatch@v1.1
+        with:
+          workflow: Java CI
+          repo: grails/gorm-hibernate5
+          ref: master
+          token: ${{ secrets.GH_TOKEN }}
+          inputs: ${{ steps.dispatch_message.outputs.value }}
