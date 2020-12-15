@@ -23,7 +23,7 @@ import rx.Subscription
  * @author Graeme Rocher
  * @since 6.0
  */
-@CompileStatic
+//@CompileStatic
 @Slf4j
 class RxPersistentList extends PersistentList implements RxPersistentCollection, RxUnidirectionalCollection , RxCollection{
     final RxDatastoreClient datastoreClient

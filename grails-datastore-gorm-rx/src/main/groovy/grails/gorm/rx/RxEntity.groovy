@@ -504,7 +504,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @return An observable with all results
      */
     static Observable<D> findAll() {
-        findAll(Collections.emptyMap())
+        findAll(Collections.<String, Object> emptyMap())
     }
 
     /**
