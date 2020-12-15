@@ -4,7 +4,6 @@ on:
     branches:
       - master
       - '[7-9]+.[1-9]+.x'
-      - fixTests
   pull_request:
     branches:
       - master
