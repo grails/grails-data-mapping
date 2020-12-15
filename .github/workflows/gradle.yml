@@ -69,6 +69,6 @@ jobs:
         with:
           workflow: Java CI
           repo: grails/gorm-hibernate5
-          ref: master
+          ref: ${{ steps.extract_branch.outputs.value }}
           token: ${{ secrets.GH_TOKEN }}
           inputs: ${{ steps.dispatch_message.outputs.value }}
