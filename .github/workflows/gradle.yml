@@ -17,7 +17,7 @@ jobs:
     env:
       WORKSPACE: ${{ github.workspace }}
       GRADLE_OPTS: -Xmx1500m -Dfile.encoding=UTF-8
-      RUN_TESTS_ONLY: true
+      RUN_TESTS_ONLY: false
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
