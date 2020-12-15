@@ -177,7 +177,7 @@ implements <a href='../../../../../../org/grails/datastore/gorm/services/impleme
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;abstract&nbsp;<a href='../../../../../../Statement.html'>Statement</a></code></td>
-                            <td class="colLast"><code><strong><a href="#buildQueryReturnStatement(org.codehaus.groovy.ast.ClassNode, MethodNode, MethodNode, org.codehaus.groovy.ast.expr.Expression)">buildQueryReturnStatement</a></strong>(org.codehaus.groovy.ast.ClassNode domainClassNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> abstractMethodNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> newMethodNode, org.codehaus.groovy.ast.expr.Expression args)</code><br>Builds the query return statement</td>
+                            <td class="colLast"><code><strong><a href="#buildQueryReturnStatement(ClassNode, MethodNode, MethodNode, org.codehaus.groovy.ast.expr.Expression)">buildQueryReturnStatement</a></strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClassNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> abstractMethodNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> newMethodNode, org.codehaus.groovy.ast.expr.Expression args)</code><br>Builds the query return statement</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -189,13 +189,13 @@ implements <a href='../../../../../../org/grails/datastore/gorm/services/impleme
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#doImplement(org.codehaus.groovy.ast.ClassNode, MethodNode, MethodNode, org.codehaus.groovy.ast.ClassNode)">doImplement</a></strong>(org.codehaus.groovy.ast.ClassNode domainClassNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> abstractMethodNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> newMethodNode, org.codehaus.groovy.ast.ClassNode targetClassNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#doImplement(ClassNode, MethodNode, MethodNode, ClassNode)">doImplement</a></strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClassNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> abstractMethodNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> newMethodNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> targetClassNode)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#doesImplement(org.codehaus.groovy.ast.ClassNode, MethodNode)">doesImplement</a></strong>(org.codehaus.groovy.ast.ClassNode domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#doesImplement(ClassNode, MethodNode)">doesImplement</a></strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -219,7 +219,7 @@ implements <a href='../../../../../../org/grails/datastore/gorm/services/impleme
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#isAnnotated(org.codehaus.groovy.ast.ClassNode, MethodNode)">isAnnotated</a></strong>(org.codehaus.groovy.ast.ClassNode domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#isAnnotated(ClassNode, MethodNode)">isAnnotated</a></strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</code><br></td>
                         </tr>
                         
                     </table>
@@ -238,11 +238,11 @@ implements <a href='../../../../../../org/grails/datastore/gorm/services/impleme
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractReadOperationImplementer.html'>AbstractReadOperationImplementer</a></code></td>
-                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractReadOperationImplementer.html#applyDefaultTransactionHandling(MethodNode)'>applyDefaultTransactionHandling</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractReadOperationImplementer.html#doImplement(org.codehaus.groovy.ast.ClassNode, MethodNode, MethodNode, org.codehaus.groovy.ast.ClassNode)'>doImplement</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractReadOperationImplementer.html#doesEnhance(org.codehaus.groovy.ast.ClassNode, MethodNode)'>doesEnhance</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractReadOperationImplementer.html#enhance(org.codehaus.groovy.ast.ClassNode, MethodNode, MethodNode, org.codehaus.groovy.ast.ClassNode)'>enhance</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractReadOperationImplementer.html#findArgsExpression(MethodNode)'>findArgsExpression</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractReadOperationImplementer.html#implement(org.codehaus.groovy.ast.ClassNode, MethodNode, MethodNode, org.codehaus.groovy.ast.ClassNode)'>implement</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractReadOperationImplementer.html#resolveDomainClassFromSignature(org.codehaus.groovy.ast.ClassNode, MethodNode)'>resolveDomainClassFromSignature</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractReadOperationImplementer.html#applyDefaultTransactionHandling(MethodNode)'>applyDefaultTransactionHandling</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractReadOperationImplementer.html#doImplement(ClassNode, MethodNode, MethodNode, ClassNode)'>doImplement</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractReadOperationImplementer.html#doesEnhance(ClassNode, MethodNode)'>doesEnhance</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractReadOperationImplementer.html#enhance(ClassNode, MethodNode, MethodNode, ClassNode)'>enhance</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractReadOperationImplementer.html#findArgsExpression(MethodNode)'>findArgsExpression</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractReadOperationImplementer.html#implement(ClassNode, MethodNode, MethodNode, ClassNode)'>implement</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractReadOperationImplementer.html#resolveDomainClassFromSignature(ClassNode, MethodNode)'>resolveDomainClassFromSignature</a></code></td>
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html'>AbstractServiceImplementer</a></code></td>
-                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#buildInstanceApiLookup(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.expr.Expression)'>buildInstanceApiLookup</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#buildStaticApiLookup(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.expr.Expression)'>buildStaticApiLookup</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#copyClassAnnotations(MethodNode, MethodNode)'>copyClassAnnotations</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#datastore()'>datastore</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#doesImplement(org.codehaus.groovy.ast.ClassNode, MethodNode)'>doesImplement</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#findConnectionId(MethodNode)'>findConnectionId</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#findInstanceApiForConnectionId(org.codehaus.groovy.ast.ClassNode, MethodNode)'>findInstanceApiForConnectionId</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#findStaticApiForConnectionId(org.codehaus.groovy.ast.ClassNode, MethodNode)'>findStaticApiForConnectionId</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#getOrder()'>getOrder</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#isCompatibleReturnType(org.codehaus.groovy.ast.ClassNode, MethodNode, org.codehaus.groovy.ast.ClassNode, java.lang.String)'>isCompatibleReturnType</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#isValidParameter(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.Parameter, java.lang.String)'>isValidParameter</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#multiTenantDatastore()'>multiTenantDatastore</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#resolvePrefix(MethodNode)'>resolvePrefix</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#tenantService()'>tenantService</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#transactionService()'>transactionService</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#transactionalDatastore()'>transactionalDatastore</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#buildInstanceApiLookup(ClassNode, org.codehaus.groovy.ast.expr.Expression)'>buildInstanceApiLookup</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#buildStaticApiLookup(ClassNode, org.codehaus.groovy.ast.expr.Expression)'>buildStaticApiLookup</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#copyClassAnnotations(MethodNode, MethodNode)'>copyClassAnnotations</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#datastore()'>datastore</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#doesImplement(ClassNode, MethodNode)'>doesImplement</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#findConnectionId(MethodNode)'>findConnectionId</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#findInstanceApiForConnectionId(ClassNode, MethodNode)'>findInstanceApiForConnectionId</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#findStaticApiForConnectionId(ClassNode, MethodNode)'>findStaticApiForConnectionId</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#getOrder()'>getOrder</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#isCompatibleReturnType(ClassNode, MethodNode, ClassNode, java.lang.String)'>isCompatibleReturnType</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#isValidParameter(ClassNode, org.codehaus.groovy.ast.Parameter, java.lang.String)'>isValidParameter</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#multiTenantDatastore()'>multiTenantDatastore</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#resolvePrefix(MethodNode)'>resolvePrefix</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#tenantService()'>tenantService</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#transactionService()'>transactionService</a>, <a href='../../../../../../org/grails/datastore/gorm/services/implementers/AbstractServiceImplementer.html#transactionalDatastore()'>transactionalDatastore</a></code></td>
                         </tr>
                     </table>
                    </ul>
@@ -294,10 +294,10 @@ implements <a href='../../../../../../org/grails/datastore/gorm/services/impleme
                 </a>
                     <h3>Method Detail</h3>
                     
-                        <a name="buildQueryReturnStatement(org.codehaus.groovy.ast.ClassNode, MethodNode, MethodNode, org.codehaus.groovy.ast.expr.Expression)"><!-- --></a>
+                        <a name="buildQueryReturnStatement(ClassNode, MethodNode, MethodNode, org.codehaus.groovy.ast.expr.Expression)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;abstract&nbsp;<a href='../../../../../../Statement.html'>Statement</a> <strong>buildQueryReturnStatement</strong>(org.codehaus.groovy.ast.ClassNode domainClassNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> abstractMethodNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> newMethodNode, org.codehaus.groovy.ast.expr.Expression args)</h4>
+                                <h4>protected&nbsp;abstract&nbsp;<a href='../../../../../../Statement.html'>Statement</a> <strong>buildQueryReturnStatement</strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClassNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> abstractMethodNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> newMethodNode, org.codehaus.groovy.ast.expr.Expression args)</h4>
                                 <p> Builds the query return statement <DL><DT><B>Parameters:</B></DT><DD><code>domainClassNode</code> -  The domain class</DD><DD><code>args</code> -  The arguments</DD></DL><DL><DT><B>Returns:</B></DT><DD>The statement</DD></DL></p>
                             </li>
                         </ul>
@@ -310,20 +310,20 @@ implements <a href='../../../../../../org/grails/datastore/gorm/services/impleme
                             </li>
                         </ul>
                     
-                        <a name="doImplement(org.codehaus.groovy.ast.ClassNode, MethodNode, MethodNode, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
+                        <a name="doImplement(ClassNode, MethodNode, MethodNode, ClassNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-void <strong>doImplement</strong>(org.codehaus.groovy.ast.ClassNode domainClassNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> abstractMethodNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> newMethodNode, org.codehaus.groovy.ast.ClassNode targetClassNode)</h4>
+void <strong>doImplement</strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClassNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> abstractMethodNode, <a href='../../../../../../MethodNode.html'>MethodNode</a> newMethodNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> targetClassNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="doesImplement(org.codehaus.groovy.ast.ClassNode, MethodNode)"><!-- --></a>
+                        <a name="doesImplement(ClassNode, MethodNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-boolean <strong>doesImplement</strong>(org.codehaus.groovy.ast.ClassNode domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</h4>
+boolean <strong>doesImplement</strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -354,11 +354,11 @@ int <strong>getOrder</strong>()</h4>
                             </li>
                         </ul>
                     
-                        <a name="isAnnotated(org.codehaus.groovy.ast.ClassNode, MethodNode)"><!-- --></a>
+                        <a name="isAnnotated(ClassNode, MethodNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-boolean <strong>isAnnotated</strong>(org.codehaus.groovy.ast.ClassNode domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</h4>
+boolean <strong>isAnnotated</strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
