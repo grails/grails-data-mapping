@@ -311,7 +311,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
                 final Class<?> serviceClass = loadServiceClass(clazz)
                 final grails.gorm.services.Service ann = clazz.getAnnotation(grails.gorm.services.Service)
                 String serviceName = ann?.name()
-                if (serviceName == null) {
+                if (!serviceName) {
                     serviceName = Introspector.decapitalize(serviceClass.simpleName)
                 }
                 if (secondaryDatastore) {
