@@ -21,6 +21,13 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java }}
+      - name: Extract Target Branch
+        id: extract_branch
+        run: |
+          echo "Determining Target Branch"
+          TARGET_BRANCH=`cat $GITHUB_EVENT_PATH | jq '.release.target_commitish' | sed -e 's/^"\(.*\)"$/\1/g'`
+          echo $TARGET_BRANCH
+          echo ::set-output name=value::${TARGET_BRANCH}
       - name: Set the current release version
         id: release_version
         run: echo ::set-output name=release_version::${GITHUB_REF:11}
@@ -39,7 +46,8 @@ jobs:
           SIGNING_PASSPHRASE: ${{ secrets.SIGNING_PASSPHRASE }}
         run: |
           echo "Publishing Artifacts"
-          ./gradlew bintrayUpload
+          (set -x; ./gradlew bintrayUpload --no-daemon)
+          (set -x; ./gradlew assemble --no-daemon)
       - name: Export Gradle Properties
         uses: micronaut-projects/github-actions/export-gradle-properties@master
       - name: Run post-release
@@ -49,6 +57,23 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
         env:
           SNAPSHOT_SUFFIX: .BUILD-SNAPSHOT
+      - name: Create Message for the GORM Documentation Release
+        if: success()
+        id: gorm_docs_release_message
+        run: |
+          echo ::set-output name=value::{\"gorm_version\":\"$RELEASE_VERSION\"}
+        env:
+          RELEASE_VERSION: ${{ steps.release_version.outputs.release_version }}
+      - name: Invoke gorm-docs release workflow
+        if: success()
+        id: gorm_docs
+        uses: benc-uk/workflow-dispatch@v1.1
+        with:
+          workflow: Release
+          repo: grails/gorm-docs
+          ref: ${{ steps.extract_branch.outputs.value }}
+          token: ${{ secrets.GH_TOKEN }}
+          inputs: ${{ steps.gorm_docs_release_message.outputs.value }}
       - name: Create Message for the Maven Central Sync
         if: success()
         id: maven_sync_message
@@ -61,6 +86,6 @@ jobs:
         uses: benc-uk/workflow-dispatch@v1.1
         with:
           workflow: Maven Central Sync
-          ref: master
+          ref: ${{ steps.extract_branch.outputs.value }}
           token: ${{ secrets.GH_TOKEN }}
           inputs: ${{ steps.maven_sync_message.outputs.value }}
