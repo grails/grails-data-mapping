@@ -2,6 +2,9 @@ sudo: false
 cache:
   directories:
   - "$HOME/.gradle"
+branches:
+  only:
+    - 6.0.x
 language: groovy
 jdk:
 - openjdk7
@@ -26,8 +29,6 @@ env:
   - secure: U5U+rh3TugxMuTkpetfBj28f6uACKjD88jsQR5cd0B7gV5j0RAkq3skFpHu1F43y/RmofRcAqeSsYVT8+qRCEBDZjYBwTnT5+N+ItBzGNpv486oEyIhMUCr9bpfibfHz+1uqlPBFF9E+5X2lT5hSIXyIiBa+l/LpwhHsb0wSzH0=
   - secure: V7Dwj9pqJWmjeYJYWHdNGlujNhFwvEc5YbTv5AO9Xn+iUgaaQEmrv43a5I+4m+EGVraD3Pg6ENPBEc7e0/cD7GoocQ0uXwGkfe+dJISvp3s18lDMm7EtdxmTkiKVH5sgsHnGbbEHV4Ku1c9k1u4DKEjmPzfpoNr/vI2yKU9I5EM=
   - secure: XXFQBgzpIYV8boZo/ZeEq300zDLrWzD09vSTh3A9BvPsTTJgGlPBF008zFP2WD2XacBHbCFMPd0hPrO25SSCwX4P8C/PhhRRkrhuYaM1OeYzi6Xxbtnc1gpdUdxm9Z/cZlvLTEKL3cq+9XqbKOkcumM9pxY1mWkoeLVuv/9dsXw=
-before_install:
-
 before_install:
   # Workaround for https://github.com/gradle/gradle/issues/2421:
   # download all Gradle distributions with openjdk8
