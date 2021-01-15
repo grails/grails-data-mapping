@@ -34,7 +34,10 @@ jobs:
           [ -f ./setup.sh ] && ./setup.sh || true
       - name: Run Tests
         run: |
-          ./gradlew --no-daemon --refresh-dependencies clean check
+          (set -x ./gradlew --no-daemon --refresh-dependencies)
+          (set -x ./gradlew --no-daemon clean)
+          (set -x ./gradlew --no-daemon check -x :grails-datastore-gorm-test:test)
+          (set -x ./gradlew --no-daemon :grails-datastore-gorm-test:test)
       - name: Publish Test Report
         uses: scacap/action-surefire-report@v1
         with:
