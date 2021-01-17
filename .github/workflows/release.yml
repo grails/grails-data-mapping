@@ -30,7 +30,7 @@ jobs:
           echo ::set-output name=value::${TARGET_BRANCH}
       - name: Set the current release version
         id: release_version
-        run: echo ::set-output name=release_version::${GITHUB_REF:11}
+        run: echo ::set-output name=release_version::${GITHUB_REF:11}.RELEASE
       - name: Run pre-release
         uses: micronaut-projects/github-actions/pre-release@master
         with:
