@@ -1,10 +1,8 @@
 package grails.gorm.services.multitenancy.partitioned
 
-
 import grails.gorm.MultiTenant
 import grails.gorm.annotation.Entity
 import grails.gorm.multitenancy.CurrentTenant
-import grails.gorm.multitenancy.Tenants
 import grails.gorm.multitenancy.WithoutTenant
 import grails.gorm.services.Service
 import grails.gorm.transactions.ReadOnly
@@ -39,12 +37,14 @@ class PartitionMultiTenancySpec extends Specification {
         then:"You still get an exception"
         thrown(TenantNotFoundException)
 
+        and:
+        bookDataService.countBooks() == 0
+
         when:"But look you can change tenant"
         System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "12")
 
         then:
         bookService.countBooks() == 0
-        bookDataService.countBooks() == 0
 
         when:"And the new @CurrentTenant transformation deals with the details for you!"
         bookService.saveBook("The Stand")
@@ -60,22 +60,18 @@ class PartitionMultiTenancySpec extends Specification {
 
         then:
         bookService.countBooks() == 0
-        bookDataService.countBooks() == 0
+        bookDataService.countBooks() == 2
 
-        when: "calling a method save using Tenants.withoutId"
-        Book book1 = new Book(title: "The Secret", tenantId: 55)
-        Book book2 = new Book(title: "The Secret - 2", tenantId: 55)
-
-        bookDataService.saveBook(book1)
-        bookDataService.saveBook(book2)
-
-        and: "Swapping to another schema and we get the right results!"
+        when: "Swapping to another schema and we get the right results!"
         System.setProperty(SystemPropertyTenantResolver.PROPERTY_NAME, "55")
+
+        and: "calling a method save using Tenants.withoutId"
+        bookDataService.saveBook("The Secret")
+        bookDataService.saveBook("The Secret - 2")
 
         then: "two books are created with tenantId 55"
         bookService.countBooks() == 2
-        bookDataService.countBooks() == 2
-
+        bookDataService.countBooks() == 4
 
         when: "book is saved without tenantId"
         Book book3 = bookDataService.saveBook(
@@ -84,7 +80,6 @@ class PartitionMultiTenancySpec extends Specification {
 
         then: "new book is saved without tenantId"
         book3.id && !book3.tenantId
-
 
     }
 }
@@ -131,5 +126,6 @@ interface IBookService {
     @WithoutTenant
     Book saveBook(Book book)
 
+    @WithoutTenant
     Integer countBooks()
 }
