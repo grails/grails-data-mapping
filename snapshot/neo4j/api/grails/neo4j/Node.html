@@ -155,25 +155,25 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;grails.neo4j.Path&lt;D, D&gt;</code></td>
+                            <td class="colLast"><code>static&nbsp;Path&lt;D, D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#findPath(java.lang.CharSequence)">findPath</a></strong>(java.lang.CharSequence cypher)</code><br>Execute cypher that finds a path to the given entity</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;grails.neo4j.Path&lt;D, D&gt;</code></td>
+                            <td class="colLast"><code>static&nbsp;Path&lt;D, D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#findPath(java.lang.CharSequence, java.util.Map)">findPath</a></strong>(java.lang.CharSequence cypher, java.util.Map params)</code><br>Execute cypher that finds a path to the given entity</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
-                            <td class="colLast"><code>static&nbsp;grails.neo4j.Path&lt;D, T&gt;</code></td>
+                            <td class="colLast"><code>static&nbsp;Path&lt;D, T&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#findPathTo(Class, java.lang.CharSequence)">findPathTo</a></strong>(java.lang.Class&lt;T&gt; type, java.lang.CharSequence cypher)</code><br>Execute cypher that finds a path to the given entity</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
-                            <td class="colLast"><code>static&nbsp;grails.neo4j.Path&lt;D, T&gt;</code></td>
+                            <td class="colLast"><code>static&nbsp;Path&lt;D, T&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#findPathTo(Class, java.lang.CharSequence, java.util.Map)">findPathTo</a></strong>(java.lang.Class&lt;T&gt; type, java.lang.CharSequence cypher, java.util.Map params)</code><br>Execute cypher that finds a path to the given entity</td>
                         </tr>
                         
@@ -197,7 +197,7 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>&lt;F, T&gt;</code></td>
-                            <td class="colLast"><code>static&nbsp;grails.neo4j.Path&lt;F, T&gt;</code></td>
+                            <td class="colLast"><code>static&nbsp;Path&lt;F, T&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#findShortestPath(F, T, int)">findShortestPath</a></strong>(F from, T to, int maxDistance)</code><br>Finds a path between two entities</td>
                         </tr>
                         
@@ -266,7 +266,7 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         <a name="findPath(java.lang.CharSequence)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;grails.neo4j.Path&lt;D, D&gt; <strong>findPath</strong>(java.lang.CharSequence cypher)</h4>
+                                <h4>static&nbsp;Path&lt;D, D&gt; <strong>findPath</strong>(java.lang.CharSequence cypher)</h4>
                                 <p> Execute cypher that finds a path to the given entity <DL><DT><B>Parameters:</B></DT><DD><code>cypher</code> -  The cypher</DD></DL><DL><DT><B>Returns:</B></DT><DD>The path</DD></DL></p>
                             </li>
                         </ul>
@@ -274,7 +274,7 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         <a name="findPath(java.lang.CharSequence, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;grails.neo4j.Path&lt;D, D&gt; <strong>findPath</strong>(java.lang.CharSequence cypher, java.util.Map params)</h4>
+                                <h4>static&nbsp;Path&lt;D, D&gt; <strong>findPath</strong>(java.lang.CharSequence cypher, java.util.Map params)</h4>
                                 <p> Execute cypher that finds a path to the given entity <DL><DT><B>Parameters:</B></DT><DD><code>cypher</code> -  The cypher</DD><DD><code>params</code> -  The parameters</DD></DL><DL><DT><B>Returns:</B></DT><DD>The path or null if non exists</DD></DL></p>
                             </li>
                         </ul>
@@ -282,7 +282,7 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         <a name="findPathTo(Class, java.lang.CharSequence)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; static&nbsp;grails.neo4j.Path&lt;D, T&gt; <strong>findPathTo</strong>(java.lang.Class&lt;T&gt; type, java.lang.CharSequence cypher)</h4>
+                                <h4>&lt;T&gt; static&nbsp;Path&lt;D, T&gt; <strong>findPathTo</strong>(java.lang.Class&lt;T&gt; type, java.lang.CharSequence cypher)</h4>
                                 <p> Execute cypher that finds a path to the given entity <DL><DT><B>Parameters:</B></DT><DD><code>type</code> -  The type to find a path to</DD><DD><code>cypher</code> -  The cypher</DD></DL><DL><DT><B>Returns:</B></DT><DD>The path</DD></DL></p>
                             </li>
                         </ul>
@@ -290,7 +290,7 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         <a name="findPathTo(Class, java.lang.CharSequence, java.util.Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; static&nbsp;grails.neo4j.Path&lt;D, T&gt; <strong>findPathTo</strong>(java.lang.Class&lt;T&gt; type, java.lang.CharSequence cypher, java.util.Map params)</h4>
+                                <h4>&lt;T&gt; static&nbsp;Path&lt;D, T&gt; <strong>findPathTo</strong>(java.lang.Class&lt;T&gt; type, java.lang.CharSequence cypher, java.util.Map params)</h4>
                                 <p> Execute cypher that finds a path to the given entity <DL><DT><B>Parameters:</B></DT><DD><code>cypher</code> -  The cypher</DD></DL><DL><DT><B>Returns:</B></DT><DD>The path</DD></DL></p>
                             </li>
                         </ul>
@@ -322,7 +322,7 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         <a name="findShortestPath(F, T, int)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;F, T&gt; static&nbsp;grails.neo4j.Path&lt;F, T&gt; <strong>findShortestPath</strong>(F from, T to, int maxDistance)</h4>
+                                <h4>&lt;F, T&gt; static&nbsp;Path&lt;F, T&gt; <strong>findShortestPath</strong>(F from, T to, int maxDistance)</h4>
                                 <p> Finds a path between two entities <DL><DT><B>Parameters:</B></DT><DD><code>from</code> -  The from entity (can be a proxy)</DD><DD><code>to</code> -  The to entity (can be a proxy)</DD><DD><code>maxDistance</code> -  The maximum distance to traverse (defaults to 10)</DD></DL><DL><DT><B>Returns:</B></DT><DD>The path or null if non exists</DD></DL></p>
                             </li>
                         </ul>

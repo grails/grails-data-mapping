@@ -147,13 +147,13 @@ implements java.io.Closeable, <a href='../../../../../org/grails/datastore/mappi
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>protected&nbsp;org.neo4j.driver.Driver</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>protected&nbsp;<a href='../../../../../org.neo4j.driver.Driver.html'>Driver</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#boltDriver">boltDriver</a></code></td>
                             <td class="colLast"></td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>protected&nbsp;ConnectionSources&lt;org.neo4j.driver.Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt;</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>protected&nbsp;ConnectionSources&lt;Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#connectionSources">connectionSources</a></code></td>
                             <td class="colLast"></td>
                         </tr>
@@ -251,43 +251,43 @@ implements java.io.Closeable, <a href='../../../../../org/grails/datastore/mappi
                         <tr class="altColor">
                             <td class="colFirst">
                                 <code><a href="#Neo4jDatastore(ConnectionSources, org.grails.datastore.gorm.neo4j.Neo4jMappingContext, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher)">Neo4jDatastore</a>
-                                (ConnectionSources&lt;org.neo4j.driver.Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jMappingContext.html'>Neo4jMappingContext</a> mappingContext, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher)</code><br>Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments</td>
+                                (ConnectionSources&lt;Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jMappingContext.html'>Neo4jMappingContext</a> mappingContext, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher)</code><br>Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst">
                                 <code><a href="#Neo4jDatastore(ConnectionSources, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher, java.lang.Class)">Neo4jDatastore</a>
-                                (ConnectionSources&lt;org.neo4j.driver.Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Class classes)</code><br>Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments</td>
+                                (ConnectionSources&lt;Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Class classes)</code><br>Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst">
                                 <code><a href="#Neo4jDatastore(ConnectionSources, java.lang.Class)">Neo4jDatastore</a>
-                                (ConnectionSources&lt;org.neo4j.driver.Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; connectionSources, java.lang.Class classes)</code><br>Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments</td>
+                                (ConnectionSources&lt;Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; connectionSources, java.lang.Class classes)</code><br>Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst">
                                 <code><a href="#Neo4jDatastore(org.neo4j.driver.Driver, org.springframework.core.env.PropertyResolver, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher, java.lang.Class)">Neo4jDatastore</a>
-                                (org.neo4j.driver.Driver boltDriver, org.springframework.core.env.PropertyResolver configuration, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Class classes)</code><br>Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments</td>
+                                (<a href='../../../../../org.neo4j.driver.Driver.html'>Driver</a> boltDriver, org.springframework.core.env.PropertyResolver configuration, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Class classes)</code><br>Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst">
                                 <code><a href="#Neo4jDatastore(org.neo4j.driver.Driver, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher, java.lang.Class)">Neo4jDatastore</a>
-                                (org.neo4j.driver.Driver boltDriver, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Class classes)</code><br>Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments</td>
+                                (<a href='../../../../../org.neo4j.driver.Driver.html'>Driver</a> boltDriver, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Class classes)</code><br>Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst">
                                 <code><a href="#Neo4jDatastore(org.neo4j.driver.Driver, org.springframework.core.env.PropertyResolver, java.lang.Class)">Neo4jDatastore</a>
-                                (org.neo4j.driver.Driver boltDriver, org.springframework.core.env.PropertyResolver configuration, java.lang.Class classes)</code><br>Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments</td>
+                                (<a href='../../../../../org.neo4j.driver.Driver.html'>Driver</a> boltDriver, org.springframework.core.env.PropertyResolver configuration, java.lang.Class classes)</code><br>Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst">
                                 <code><a href="#Neo4jDatastore(org.neo4j.driver.Driver, java.lang.Class)">Neo4jDatastore</a>
-                                (org.neo4j.driver.Driver boltDriver, java.lang.Class classes)</code><br>Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments</td>
+                                (<a href='../../../../../org.neo4j.driver.Driver.html'>Driver</a> boltDriver, java.lang.Class classes)</code><br>Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -391,14 +391,14 @@ implements java.io.Closeable, <a href='../../../../../org/grails/datastore/mappi
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;static&nbsp;ConnectionSources&lt;org.neo4j.driver.Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#createDefaultConnectionSources(org.neo4j.driver.Driver, org.springframework.core.env.PropertyResolver)">createDefaultConnectionSources</a></strong>(org.neo4j.driver.Driver driver, org.springframework.core.env.PropertyResolver configuration)</code><br>Creates the connection sources for an existing org.neo4j.driver.Driver</td>
+                            <td class="colLast"><code>protected&nbsp;static&nbsp;ConnectionSources&lt;Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#createDefaultConnectionSources(org.neo4j.driver.Driver, org.springframework.core.env.PropertyResolver)">createDefaultConnectionSources</a></strong>(<a href='../../../../../org.neo4j.driver.Driver.html'>Driver</a> driver, org.springframework.core.env.PropertyResolver configuration)</code><br>Creates the connection sources for an existing Driver</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;static&nbsp;<a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jMappingContext.html'>Neo4jMappingContext</a></code></td>
-                            <td class="colLast"><code><strong><a href="#createMappingContext(ConnectionSources, java.lang.Class)">createMappingContext</a></strong>(ConnectionSources&lt;org.neo4j.driver.Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; connectionSources, java.lang.Class classes)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#createMappingContext(ConnectionSources, java.lang.Class)">createMappingContext</a></strong>(ConnectionSources&lt;Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; connectionSources, java.lang.Class classes)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -421,13 +421,13 @@ implements java.io.Closeable, <a href='../../../../../org/grails/datastore/mappi
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>public&nbsp;org.neo4j.driver.Driver</code></td>
-                            <td class="colLast"><code><strong><a href="#getBoltDriver()">getBoltDriver</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>The org.neo4j.driver.Driver used by this datastore</DD></DL></td>
+                            <td class="colLast"><code>public&nbsp;<a href='../../../../../org.neo4j.driver.Driver.html'>Driver</a></code></td>
+                            <td class="colLast"><code><strong><a href="#getBoltDriver()">getBoltDriver</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>The Driver used by this datastore</DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>public&nbsp;ConnectionSources&lt;org.neo4j.driver.Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt;</code></td>
+                            <td class="colLast"><code>public&nbsp;ConnectionSources&lt;Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getConnectionSources()">getConnectionSources</a></strong>()</code><br></td>
                         </tr>
                         
@@ -585,7 +585,7 @@ implements java.io.Closeable, <a href='../../../../../org/grails/datastore/mappi
                         <a name="boltDriver"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;final&nbsp;org.neo4j.driver.Driver <strong>boltDriver</strong></h4>
+                                <h4>protected&nbsp;final&nbsp;<a href='../../../../../org.neo4j.driver.Driver.html'>Driver</a> <strong>boltDriver</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -593,7 +593,7 @@ implements java.io.Closeable, <a href='../../../../../org/grails/datastore/mappi
                         <a name="connectionSources"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;final&nbsp;ConnectionSources&lt;org.neo4j.driver.Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; <strong>connectionSources</strong></h4>
+                                <h4>protected&nbsp;final&nbsp;ConnectionSources&lt;Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; <strong>connectionSources</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -681,7 +681,7 @@ implements java.io.Closeable, <a href='../../../../../org/grails/datastore/mappi
                         <a name="Neo4jDatastore(ConnectionSources, org.grails.datastore.gorm.neo4j.Neo4jMappingContext, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<strong>Neo4jDatastore</strong>(ConnectionSources&lt;org.neo4j.driver.Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jMappingContext.html'>Neo4jMappingContext</a> mappingContext, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher)</h4>
+                                <h4>public&nbsp;<strong>Neo4jDatastore</strong>(ConnectionSources&lt;Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jMappingContext.html'>Neo4jMappingContext</a> mappingContext, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher)</h4>
                                 <p> Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments
       <DL><DT><B>Parameters:</B></DT><DD><code>mappingContext</code> -  The <a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html' title='MappingContext'>MappingContext</a> which contains information about the mapped classes</DD><DD><code>eventPublisher</code> -  The Spring ApplicationContext</DD></DL></p>
                             </li>
@@ -690,7 +690,7 @@ implements java.io.Closeable, <a href='../../../../../org/grails/datastore/mappi
                         <a name="Neo4jDatastore(ConnectionSources, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher, java.lang.Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<strong>Neo4jDatastore</strong>(ConnectionSources&lt;org.neo4j.driver.Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Class classes)</h4>
+                                <h4>public&nbsp;<strong>Neo4jDatastore</strong>(ConnectionSources&lt;Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Class classes)</h4>
                                 <p> Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments
       <DL><DT><B>Parameters:</B></DT><DD><code>eventPublisher</code> -  The Spring ApplicationContext</DD><DD><code>classes</code> -  The persistent classes</DD></DL></p>
                             </li>
@@ -699,7 +699,7 @@ implements java.io.Closeable, <a href='../../../../../org/grails/datastore/mappi
                         <a name="Neo4jDatastore(ConnectionSources, java.lang.Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<strong>Neo4jDatastore</strong>(ConnectionSources&lt;org.neo4j.driver.Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; connectionSources, java.lang.Class classes)</h4>
+                                <h4>public&nbsp;<strong>Neo4jDatastore</strong>(ConnectionSources&lt;Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; connectionSources, java.lang.Class classes)</h4>
                                 <p> Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments
       <DL><DT><B>Parameters:</B></DT><DD><code>classes</code> -  The persistent classes</DD></DL></p>
                             </li>
@@ -708,7 +708,7 @@ implements java.io.Closeable, <a href='../../../../../org/grails/datastore/mappi
                         <a name="Neo4jDatastore(org.neo4j.driver.Driver, org.springframework.core.env.PropertyResolver, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher, java.lang.Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<strong>Neo4jDatastore</strong>(org.neo4j.driver.Driver boltDriver, org.springframework.core.env.PropertyResolver configuration, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Class classes)</h4>
+                                <h4>public&nbsp;<strong>Neo4jDatastore</strong>(<a href='../../../../../org.neo4j.driver.Driver.html'>Driver</a> boltDriver, org.springframework.core.env.PropertyResolver configuration, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Class classes)</h4>
                                 <p> Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments
       <DL><DT><B>Parameters:</B></DT><DD><code>boltDriver</code> -  The driver</DD><DD><code>configuration</code> -  The configuration for the datastore</DD><DD><code>eventPublisher</code> -  The Spring ApplicationContext</DD><DD><code>classes</code> -  The persistent classes</DD></DL></p>
                             </li>
@@ -717,7 +717,7 @@ implements java.io.Closeable, <a href='../../../../../org/grails/datastore/mappi
                         <a name="Neo4jDatastore(org.neo4j.driver.Driver, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher, java.lang.Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<strong>Neo4jDatastore</strong>(org.neo4j.driver.Driver boltDriver, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Class classes)</h4>
+                                <h4>public&nbsp;<strong>Neo4jDatastore</strong>(<a href='../../../../../org.neo4j.driver.Driver.html'>Driver</a> boltDriver, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Class classes)</h4>
                                 <p> Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments
       <DL><DT><B>Parameters:</B></DT><DD><code>boltDriver</code> -  The driver</DD><DD><code>eventPublisher</code> -  The Spring ApplicationContext</DD><DD><code>classes</code> -  The persistent classes</DD></DL></p>
                             </li>
@@ -726,7 +726,7 @@ implements java.io.Closeable, <a href='../../../../../org/grails/datastore/mappi
                         <a name="Neo4jDatastore(org.neo4j.driver.Driver, org.springframework.core.env.PropertyResolver, java.lang.Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<strong>Neo4jDatastore</strong>(org.neo4j.driver.Driver boltDriver, org.springframework.core.env.PropertyResolver configuration, java.lang.Class classes)</h4>
+                                <h4>public&nbsp;<strong>Neo4jDatastore</strong>(<a href='../../../../../org.neo4j.driver.Driver.html'>Driver</a> boltDriver, org.springframework.core.env.PropertyResolver configuration, java.lang.Class classes)</h4>
                                 <p> Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments
       <DL><DT><B>Parameters:</B></DT><DD><code>boltDriver</code> -  The driver</DD><DD><code>configuration</code> -  The configuration for the datastore</DD><DD><code>classes</code> -  The persistent classes</DD></DL></p>
                             </li>
@@ -735,7 +735,7 @@ implements java.io.Closeable, <a href='../../../../../org/grails/datastore/mappi
                         <a name="Neo4jDatastore(org.neo4j.driver.Driver, java.lang.Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<strong>Neo4jDatastore</strong>(org.neo4j.driver.Driver boltDriver, java.lang.Class classes)</h4>
+                                <h4>public&nbsp;<strong>Neo4jDatastore</strong>(<a href='../../../../../org.neo4j.driver.Driver.html'>Driver</a> boltDriver, java.lang.Class classes)</h4>
                                 <p> Configures a new <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jDatastore.html' title='Neo4jDatastore'>Neo4jDatastore</a> for the given arguments
       <DL><DT><B>Parameters:</B></DT><DD><code>boltDriver</code> -  The driver</DD><DD><code>classes</code> -  The persistent classes</DD></DL></p>
                             </li>
@@ -876,16 +876,16 @@ public&nbsp;void <strong>close</strong>()</h4>
                         <a name="createDefaultConnectionSources(org.neo4j.driver.Driver, org.springframework.core.env.PropertyResolver)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;static&nbsp;ConnectionSources&lt;org.neo4j.driver.Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; <strong>createDefaultConnectionSources</strong>(org.neo4j.driver.Driver driver, org.springframework.core.env.PropertyResolver configuration)</h4>
-                                <p> Creates the connection sources for an existing org.neo4j.driver.Driver
-      <DL><DT><B>Parameters:</B></DT><DD><code>driver</code> -  The org.neo4j.driver.Driver</DD><DD><code>configuration</code> -  The configuration</DD></DL><DL><DT><B>Returns:</B></DT><DD>The ConnectionSources</DD></DL></p>
+                                <h4>protected&nbsp;static&nbsp;ConnectionSources&lt;Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; <strong>createDefaultConnectionSources</strong>(<a href='../../../../../org.neo4j.driver.Driver.html'>Driver</a> driver, org.springframework.core.env.PropertyResolver configuration)</h4>
+                                <p> Creates the connection sources for an existing Driver
+      <DL><DT><B>Parameters:</B></DT><DD><code>driver</code> -  The Driver</DD><DD><code>configuration</code> -  The configuration</DD></DL><DL><DT><B>Returns:</B></DT><DD>The ConnectionSources</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="createMappingContext(ConnectionSources, java.lang.Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;static&nbsp;<a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jMappingContext.html'>Neo4jMappingContext</a> <strong>createMappingContext</strong>(ConnectionSources&lt;org.neo4j.driver.Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; connectionSources, java.lang.Class classes)</h4>
+                                <h4>protected&nbsp;static&nbsp;<a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jMappingContext.html'>Neo4jMappingContext</a> <strong>createMappingContext</strong>(ConnectionSources&lt;Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; connectionSources, java.lang.Class classes)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -919,9 +919,9 @@ public&nbsp;<a href='../../../../../org/grails/datastore/gorm/events/Configurabl
                         <a name="getBoltDriver()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;org.neo4j.driver.Driver <strong>getBoltDriver</strong>()</h4>
+                                <h4>public&nbsp;<a href='../../../../../org.neo4j.driver.Driver.html'>Driver</a> <strong>getBoltDriver</strong>()</h4>
                                 <p>
-      <DL><DT><B>Returns:</B></DT><DD>The org.neo4j.driver.Driver used by this datastore</DD></DL></p>
+      <DL><DT><B>Returns:</B></DT><DD>The Driver used by this datastore</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -929,7 +929,7 @@ public&nbsp;<a href='../../../../../org/grails/datastore/gorm/events/Configurabl
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-public&nbsp;ConnectionSources&lt;org.neo4j.driver.Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; <strong>getConnectionSources</strong>()</h4>
+public&nbsp;ConnectionSources&lt;Driver, <a href='../../../../../org/grails/datastore/gorm/neo4j/connections/Neo4jConnectionSourceSettings.html' title='Neo4jConnectionSourceSettings'>Neo4jConnectionSourceSettings</a>&gt; <strong>getConnectionSources</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
