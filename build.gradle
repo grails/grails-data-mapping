@@ -1,14 +1,12 @@
 buildscript {
     repositories {
-        mavenLocal()
         maven { url "https://repo.grails.org/grails/core" }
-        jcenter()
+        maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5"
         classpath "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.0"
+        classpath "io.github.gradle-nexus:publish-plugin:1.0.0"
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.22.0"
         classpath "io.github.groovylang.groovydoc:groovydoc-gradle-plugin:1.0.1"
     }
 }
@@ -22,7 +20,7 @@ project.ext {
 //    releaseType = "RELEASE"
 //    releaseType = "M2"
 //    releaseType = "RC1"
-    releaseType = "BUILD-SNAPSHOT"
+    releaseType = "-TEST"
 
     // overall project version
     projectVersion = "${projectMajorVersion}.${projectMinorVersion}.${projectPatchVersion}"
@@ -49,7 +47,6 @@ group = "org.grails"
 
 apply plugin: 'idea'
 apply plugin: 'project-report'
-apply plugin: 'io.codearte.nexus-staging'
 
 ext {
     isCiBuild = project.hasProperty("isCiBuild")
@@ -57,7 +54,6 @@ ext {
 
 allprojects {
     repositories {
-        mavenLocal()
         maven { url "https://repo.grails.org/grails/core" }
         if(isBuildSnapshot) {
             maven { url "https://repo.grails.org/grails/libs-snapshots-local" }
@@ -101,7 +97,6 @@ subprojects {
         apply plugin: 'groovy'
         apply plugin: "io.github.groovylang.groovydoc"
         apply plugin: 'eclipse'
-        apply from:"${rootProject.rootDir}/gradle/publishing.gradle"
         apply plugin: 'idea'
         apply plugin: 'provided-base'
         apply plugin: 'optional-base'
@@ -256,6 +251,7 @@ dependencies {
 
 task install(dependsOn: subprojects*.tasks*.withType(PublishToMavenLocal))
 
+apply from: 'https://raw.githubusercontent.com/grails/grails-common-build/1.0.x/common-publishing.gradle'
 
 task test(dependsOn: getTasksByName("test", true)) {
      doLast {
