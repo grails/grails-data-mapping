@@ -1,20 +1,21 @@
 buildscript {
     repositories {
         maven { url "https://repo.grails.org/grails/core" }
-        jcenter()
+        maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5"
+        classpath "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.0"
+        classpath "io.github.gradle-nexus:publish-plugin:1.0.0"
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.22.0"
+        classpath "io.github.groovylang.groovydoc:groovydoc-gradle-plugin:1.0.1"
     }
 }
 
 project.ext {
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
-
+    // overall project version
     isCiBuild = project.hasProperty("isCiBuild")
-    isBuildSnapshot = project.projectVersion.endsWith("BUILD-SNAPSHOT")
+    isBuildSnapshot = version.endsWith("-SNAPSHOT")
 
     nexusUsername = System.getenv("SONATYPE_USERNAME") ?: project.hasProperty("sonatypeOssUsername") ? project.sonatypeOssUsername : ''
     nexusPassword = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
@@ -35,7 +36,6 @@ group = "org.grails"
 
 apply plugin: 'idea'
 apply plugin: 'project-report'
-apply plugin: 'io.codearte.nexus-staging'
 
 ext {
     isCiBuild = project.hasProperty("isCiBuild")
@@ -80,7 +80,7 @@ subprojects {
         if (isGroovyProject(project)) {
             def hasSnapshotVersion = project.version.endsWith("-SNAPSHOT")
             if(isBuildSnapshot != hasSnapshotVersion) {
-                throw new StopExecutionException("${project.name} has version \"${project.version}\" which is${isBuildSnapshot ? 'n\'t' : ''} a snapshot version. Current release type is ${project.projectVersion.tokenize('.').last()}")
+                throw new StopExecutionException("${project.name} has version \"${project.version}\" which is${isBuildSnapshot ? 'n\'t' : ''} a snapshot version.")
             }
         }
     }
@@ -91,7 +91,6 @@ subprojects {
     if (isStandardGroovyMavenProject) {
         apply plugin: 'groovy'
         apply plugin: 'eclipse'
-        apply from:"${rootProject.rootDir}/gradle/publishing.gradle"
         apply plugin: 'idea'
         apply plugin: 'java-library'
         sourceCompatibility = "1.8"
@@ -246,6 +245,7 @@ dependencies {
 
 task install(dependsOn: subprojects*.tasks*.withType(PublishToMavenLocal))
 
+apply from: 'https://raw.githubusercontent.com/grails/grails-common-build/1.0.x/common-publishing.gradle'
 
 task test(dependsOn: getTasksByName("test", true)) {
      doLast {
