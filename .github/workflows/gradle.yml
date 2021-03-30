@@ -46,8 +46,8 @@ jobs:
       - name: Publish to repo.grails.org
         if: success() && github.event_name == 'push' && matrix.java == '8'
         env:
-          GRAILS_CENTRAL_USERNAME: ${{ secrets.GRAILS_CENTRAL_USERNAME }}
-          GRAILS_CENTRAL_PASSWORD: ${{ secrets.GRAILS_CENTRAL_PASSWORD }}
+          ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
         run: |
           ./gradlew -Dorg.gradle.internal.publish.checksums.insecure=true publish
       - name: Extract branch name
