@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm.services.implementers
 
 import groovy.transform.CompileStatic
+import groovy.transform.Generated
 import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassHelper
@@ -35,6 +36,7 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.varX
 @CompileStatic
 trait InterfaceProjectionBuilder {
 
+    @Generated
     boolean isInterfaceProjection(ClassNode domainClass, MethodNode methodNode, ClassNode returnType) {
         if(returnType.isInterface() && !returnType.packageName?.startsWith("java.")) {
             List<String> interfacePropertyNames = AstPropertyResolveUtils.getPropertyNames(returnType)
@@ -54,6 +56,7 @@ trait InterfaceProjectionBuilder {
         return false
     }
 
+    @Generated
     MethodNode buildInterfaceImpl(ClassNode interfaceNode, ClassNode declaringClass, ClassNode targetDomainClass, MethodNode abstractMethodNode) {
         List<Expression> getterNames = (List<Expression>) AstPropertyResolveUtils.getPropertyNames(interfaceNode)
                 .collect() {

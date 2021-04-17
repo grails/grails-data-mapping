@@ -1,10 +1,15 @@
 package org.grails.compiler.gorm
+
 import grails.gorm.annotation.Entity
+import groovy.transform.Generated
 import org.codehaus.groovy.ast.ClassNode
 import org.grails.datastore.gorm.GormEntity
 import org.grails.datastore.gorm.GormValidateable
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import spock.lang.Specification
+
+import java.lang.reflect.Method
+
 /*
  * Copyright 2014 original authors
  *
@@ -192,6 +197,17 @@ class Foo {
         thrown MissingPropertyException
     }
 
+    void "test that all GormEntity/GormValidateable trait methods are marked as Generated"() {
+        expect: "all GormEntity methods are marked as Generated on implementation class"
+        GormEntity.getMethods().each { Method traitMethod ->
+            assert Book.class.getMethod(traitMethod.name, traitMethod.parameterTypes).isAnnotationPresent(Generated)
+        }
+
+        and: "all GormValidateable methods are marked as Generated on implementation class"
+        GormValidateable.getMethods().each { Method traitMethod ->
+            assert Book.class.getMethod(traitMethod.name, traitMethod.parameterTypes).isAnnotationPresent(Generated)
+        }
+    }
 }
 
 @Entity
