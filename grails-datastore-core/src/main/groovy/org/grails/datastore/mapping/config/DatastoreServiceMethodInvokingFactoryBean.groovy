@@ -22,7 +22,10 @@ class DatastoreServiceMethodInvokingFactoryBean extends MethodInvokingFactoryBea
 
     @Override
     Class<?> getObjectType() {
-        arguments[0] as Class<?>
+        if (arguments != null && arguments.size() == 1) {
+            return arguments[0] as Class<?>
+        }
+        return super.getObjectType()
     }
 
     @Override

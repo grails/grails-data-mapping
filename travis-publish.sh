@@ -3,6 +3,7 @@
 echo "Publishing for branch $TRAVIS_BRANCH JDK: $TRAVIS_JDK_VERSION"
 
 EXIT_STATUS=0
+TAG_BRANCH=master
 
 # Only JDK8 execution will publish the release
 if [[ "${TRAVIS_JDK_VERSION}" == "openjdk11" || "${TRAVIS_JDK_VERSION}" == "openjdk14" ]]; then
@@ -31,7 +32,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         echo "https://$GH_TOKEN:@github.com" > ~/.git-credentials
 
         echo "Triggering Hibernate 5 build"
-        git clone -b $TRAVIS_BRANCH https://${GH_TOKEN}@github.com/grails/gorm-hibernate5.git gorm-hibernate5
+        git clone -b $TAG_BRANCH https://${GH_TOKEN}@github.com/grails/gorm-hibernate5.git gorm-hibernate5
         cd gorm-hibernate5
         echo "$(date)" > .snapshot
         git add .snapshot
@@ -40,7 +41,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         cd ..
 
         echo "Triggering Neo4j build"
-        git clone -b $TRAVIS_BRANCH https://${GH_TOKEN}@github.com/grails/gorm-neo4j.git gorm-neo4j
+        git clone -b $TAG_BRANCH https://${GH_TOKEN}@github.com/grails/gorm-neo4j.git gorm-neo4j
         cd gorm-neo4j
         echo "$(date)" > .snapshot
         git add .snapshot
@@ -49,7 +50,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         cd ..
 
         echo "Triggering MongoDB build"
-        git clone -b $TRAVIS_BRANCH https://${GH_TOKEN}@github.com/grails/gorm-mongodb.git gorm-mongodb
+        git clone -b $TAG_BRANCH https://${GH_TOKEN}@github.com/grails/gorm-mongodb.git gorm-mongodb
         cd gorm-mongodb
         echo "$(date)" > .snapshot
         git add .snapshot
@@ -61,7 +62,7 @@ if [[ $TRAVIS_REPO_SLUG == "grails/grails-data-mapping" && $TRAVIS_PULL_REQUEST 
         # If there is a tag present then this becomes the latest
         if [[ $TRAVIS_TAG =~ ^v[[:digit:]] ]]; then
             echo "Triggering documentation build"
-            git clone -b $TRAVIS_BRANCH https://${GH_TOKEN}@github.com/grails/gorm-docs.git gorm-docs
+            git clone -b $TAG_BRANCH https://${GH_TOKEN}@github.com/grails/gorm-docs.git gorm-docs
             cd gorm-docs
 
             if [[ $TRAVIS_TAG =~ [M\d|RC\d] ]]; then

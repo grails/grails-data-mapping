@@ -6,6 +6,9 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 language: groovy
+branches:
+  only:
+    - 6.1.x
 jdk:
 - openjdk8
 - openjdk11

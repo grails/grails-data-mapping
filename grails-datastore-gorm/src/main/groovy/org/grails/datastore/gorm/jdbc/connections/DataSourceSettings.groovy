@@ -21,7 +21,7 @@ class DataSourceSettings extends ConnectionSourceSettings {
     /**
      * The data source URL, defaults to an H2 in-memory database
      */
-    String url = "jdbc:h2:mem:grailsDB;MVCC=TRUE;LOCK_TIMEOUT=10000"
+    String url = "jdbc:h2:mem:grailsDB;LOCK_TIMEOUT=10000"
 
     /**
      * The driver class name
