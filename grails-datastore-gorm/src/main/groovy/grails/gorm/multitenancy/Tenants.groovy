@@ -323,7 +323,7 @@ class Tenants {
     @CompileStatic
     protected static class CurrentTenant  {
 
-        private static final ThreadLocal<Serializable> currentTenantThreadLocal = new ThreadLocal<>()
+        private static final InheritableThreadLocal<Serializable> currentTenantThreadLocal = new InheritableThreadLocal<>()
 
         /**
          * @return Obtain the current tenant
