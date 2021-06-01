@@ -451,12 +451,6 @@ import spock.lang.Ignore
 
 class LocalMongoUnitSpec extends MongoSpec implements EmbeddedMongoClient {
 
-    // Specs ...
-    @Override
-    void setup() {
-        Book.DB.drop()
-    }
-
     @Ignore
     void "test fail on error"() {
 
@@ -522,13 +516,16 @@ is large, classpath scanning may be slow, so it&#8217;s better to override the m
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">Unresolved directive in testing.adoc - include::/home/runner/work/gorm-mongodb/gorm-mongodb/examples/grails3-hibernate4-mongodb/src/test/groovy/functional/tests/BookFongoSpec.groovy[tags=getDomainClasses,indent=0]</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Override
+protected List&lt;Class&gt; getDomainClasses() {
+    [Book]
+}</code></pre>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 7.0.2.BUILD-SNAPSHOT<br>
+Version 7.1.0.BUILD-SNAPSHOT<br>
 </div>
 </div>
 </body>
