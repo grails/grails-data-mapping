@@ -50,12 +50,17 @@ class GrailsVersion implements Comparable<GrailsVersion> {
         String[] parts = version.split("\\.")
         if (parts.length >= 3) {
             this.versionText = version
-            if (parts.length > 3) {
-                this.snapshot = new Snapshot(parts[3])
-            }
             this.major = parts[0].toInteger()
             this.minor = parts[1].toInteger()
-            this.patch = parts[2].toInteger()
+            if (parts.length > 3) {
+                this.snapshot = new Snapshot(parts[3])
+            } else if (parts[2].contains('-')) {
+                String[] subParts = parts[2].split("-")
+                this.patch = subParts.first() as int
+                this.snapshot = new Snapshot(subParts[1..-1].join("-"))
+            } else {
+                this.patch = parts[2].toInteger()
+            }
         } else {
             throw new IllegalArgumentException("GrailsVersion only supports comparison of versions with 3 or 4 parts")
         }
