@@ -12,7 +12,7 @@ import groovy.transform.EqualsAndHashCode
 @EqualsAndHashCode(includes = ['text'])
 class Snapshot implements Comparable<Snapshot> {
 
-    private static final String BUILD_SNAPSHOT = "BUILD-SNAPSHOT"
+    private static final String SNAPSHOT = "SNAPSHOT"
     private static final String RC = "RC"
     private static final String MILESTONE = "M"
 
@@ -32,7 +32,7 @@ class Snapshot implements Comparable<Snapshot> {
     }
 
     boolean isBuildSnapshot() {
-        text == BUILD_SNAPSHOT
+        text.endsWith(SNAPSHOT)
     }
 
     boolean isReleaseCandidate() {
