@@ -123,7 +123,10 @@ public class ScaleConstraint extends AbstractConstraint {
      * @param originalValue The original value
      */
     private BigDecimal getScaledValue(BigDecimal originalValue) {
-        return originalValue.setScale(scale, BigDecimal.ROUND_HALF_UP);
+        if (originalValue.scale() > scale) {
+            return originalValue.setScale(scale, BigDecimal.ROUND_HALF_UP);
+        }
+        return originalValue;
     }
 }
 
