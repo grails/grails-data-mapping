@@ -56,7 +56,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
         env:
-          SNAPSHOT_SUFFIX: .BUILD-SNAPSHOT
+          SNAPSHOT_SUFFIX: -SNAPSHOT
       - name: Create Message for the GORM Documentation Release
         if: success()
         id: gorm_docs_release_message
