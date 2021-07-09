@@ -277,6 +277,15 @@ task test(dependsOn: getTasksByName("test", true)) {
      }
 }
 
+if (!isBuildSnapshot) {
+    nexusPublishing {
+        transitionCheckOptions {
+            maxRetries.set(40)
+            delayBetween.set(java.time.Duration.ofMillis(5000))
+        }
+    }
+}
+
 project.afterEvaluate {
     allprojects.repositories.each { handler ->
         handler.each {
