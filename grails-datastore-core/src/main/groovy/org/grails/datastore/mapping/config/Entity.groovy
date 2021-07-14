@@ -82,7 +82,7 @@ class Entity<P extends Property> {
         return defaultSort
     }
 
-    Entity setSort(Object defaultSort) {
+    Entity<P> setSort(Object defaultSort) {
         this.defaultSort = defaultSort
         return this
     }
@@ -99,7 +99,7 @@ class Entity<P extends Property> {
      * @param name
      * @return
      */
-    Entity datasource(String name) {
+    Entity<P> datasource(String name) {
         this.datasources = [name]
         return this
     }
@@ -111,7 +111,7 @@ class Entity<P extends Property> {
      * @param name
      * @return
      */
-    Entity connection(String name) {
+    Entity<P> connection(String name) {
         this.datasources = [name]
         return this
     }
@@ -123,7 +123,7 @@ class Entity<P extends Property> {
      * @param name
      * @return
      */
-    Entity connections(String...names) {
+    Entity<P> connections(String...names) {
         connections(Arrays.asList(names))
         return this
     }
@@ -134,7 +134,7 @@ class Entity<P extends Property> {
      * @param name
      * @return
      */
-    Entity connections(List<String> names) {
+    Entity<P> connections(List<String> names) {
         if(names != null && names.size() > 0) {
             this.datasources = names
         }
@@ -172,7 +172,7 @@ class Entity<P extends Property> {
      * @param identityConfig The id config
      * @return This mapping
      */
-    Entity<P> id(@DelegatesTo(P) Closure identityConfig) {
+    Entity<P> id(@DelegatesTo(type='P') Closure identityConfig) {
         Property.configureExisting(
                 getOrInitializePropertyConfig(GormProperties.IDENTITY),
                 identityConfig
@@ -185,7 +185,7 @@ class Entity<P extends Property> {
      *
      * @param isVersioned True if a version property should be configured
      */
-    Entity version(@DelegatesTo(P) Closure versionConfig) {
+    Entity<P> version(@DelegatesTo(type='P') Closure versionConfig) {
         P pc = getOrInitializePropertyConfig(GormProperties.VERSION)
         Property.configureExisting(pc, versionConfig)
         return this
@@ -196,7 +196,7 @@ class Entity<P extends Property> {
      *
      * @param isVersioned True if a version property should be configured
      */
-    Entity version(Map versionConfig) {
+    Entity<P> version(Map versionConfig) {
         P pc = getOrInitializePropertyConfig(GormProperties.VERSION)
         Property.configureExisting(pc, versionConfig)
         return this
@@ -207,7 +207,7 @@ class Entity<P extends Property> {
      *
      * @param tenantIdProperty The tenant id property
      */
-    Entity tenantId(String tenantIdProperty) {
+    Entity<P> tenantId(String tenantIdProperty) {
         P pc = getOrInitializePropertyConfig(GormProperties.TENANT_IDENTITY)
         pc.name = tenantIdProperty
         return this
@@ -218,7 +218,7 @@ class Entity<P extends Property> {
      * @param propertyConfig The property config
      * @return This mapping
      */
-    Entity property(String name, @DelegatesTo(P) Closure propertyConfig) {
+    Entity<P> property(String name, @DelegatesTo(type='P') Closure propertyConfig) {
         P pc = getOrInitializePropertyConfig(name)
         Property.configureExisting(pc, propertyConfig)
         return this
@@ -230,7 +230,7 @@ class Entity<P extends Property> {
      * @param propertyConfig The property config
      * @return This mapping
      */
-    Entity property(String name, Map propertyConfig) {
+    Entity<P> property(String name, Map propertyConfig) {
         P pc = getOrInitializePropertyConfig(name)
         Property.configureExisting(pc, propertyConfig)
         return this
@@ -242,7 +242,7 @@ class Entity<P extends Property> {
      * @param propertyConfig The property config
      * @return This mapping
      */
-    P property(@DelegatesTo(P) Closure propertyConfig) {
+    P property(@DelegatesTo(type='P') Closure propertyConfig) {
         if(propertyConfigs.containsKey('*')) {
             P cloned = cloneGlobalConstraint()
             return Property.configureExisting(cloned, propertyConfig)
@@ -277,7 +277,7 @@ class Entity<P extends Property> {
      * @param config The configuration
      * @return The new instance
      */
-    static <T extends Entity> T configureExisting(T mapping, @DelegatesTo(T) Closure config) {
+    static <T extends Entity> T configureExisting(@DelegatesTo.Target T mapping, @DelegatesTo(genericTypeIndex = 0) Closure config) {
         config.setDelegate(mapping)
         config.setResolveStrategy(Closure.DELEGATE_ONLY)
         config.call()
@@ -288,7 +288,7 @@ class Entity<P extends Property> {
         if(val instanceof Closure) {
             property(name, (Closure)val)
         }
-        else if(val instanceof P) {
+        else if(val instanceof Property) {
             propertyConfigs[name] =((P)val)
         }
         else {
@@ -302,7 +302,7 @@ class Entity<P extends Property> {
             if(args[0] instanceof Closure) {
                 property(name, (Closure)args[0])
             }
-            else if(args[0] instanceof P) {
+            else if(args[0] instanceof Property) {
                 propertyConfigs[name] = (P)args[0]
             }
             else if(args[0] instanceof Map) {
