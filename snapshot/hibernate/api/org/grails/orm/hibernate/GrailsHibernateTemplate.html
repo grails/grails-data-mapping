@@ -311,7 +311,7 @@ implements <a href='../../../../org/grails/orm/hibernate/IHibernateTemplate.html
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;<a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.FlushMode.html'>AbstractHibernateDatastore.FlushMode</a></code></td>
+                            <td class="colLast"><code>protected&nbsp;org.hibernate.FlushMode</code></td>
                             <td class="colLast"><code><strong><a href="#applyFlushMode(org.hibernate.Session, boolean)">applyFlushMode</a></strong>(org.hibernate.Session session, boolean existingTransaction)</code><br>Apply the flush mode that's been specified for this accessor to the given Session.</td>
                         </tr>
                         
@@ -827,7 +827,7 @@ implements <a href='../../../../org/grails/orm/hibernate/IHibernateTemplate.html
                         <a name="applyFlushMode(org.hibernate.Session, boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;<a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.FlushMode.html'>AbstractHibernateDatastore.FlushMode</a> <strong>applyFlushMode</strong>(org.hibernate.Session session, boolean existingTransaction)</h4>
+                                <h4>protected&nbsp;org.hibernate.FlushMode <strong>applyFlushMode</strong>(org.hibernate.Session session, boolean existingTransaction)</h4>
                                 <p> Apply the flush mode that's been specified for this accessor to the given Session.
       <DL><DT><B>Parameters:</B></DT><DD><code>session</code> -              the current Hibernate Session</DD><DD><code>existingTransaction</code> -  if executing within an existing transaction</DD></DL><DL><DT><B>Returns:</B></DT><DD>the previous flush mode to restore after the operation, or <code>null</code> if none</DD></DL><DL><DT><B>See Also:</B></DT><DD><a href='#setFlushMode'>setFlushMode</a></DD><DD>org.hibernate.Session#setFlushMode</DD></DL></p>
                             </li>
