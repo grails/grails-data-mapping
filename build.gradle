@@ -6,15 +6,15 @@ buildscript {
     dependencies {
         classpath "io.github.gradle-nexus:publish-plugin:1.1.0"
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
-        classpath "io.github.groovylang.groovydoc:groovydoc-gradle-plugin:1.0.1"
     }
 }
 
-project.ext {
+ext {
     isTravisBuild = System.getenv().get("TRAVIS") == 'true'
     // overall project version
     isCiBuild = project.hasProperty("isCiBuild")
-    isBuildSnapshot = version.endsWith("-SNAPSHOT")
+    isSnapshot = project.projectVersion.endsWith("-SNAPSHOT")
+    isReleaseVersion = !isSnapshot
 
     nexusUsername = System.getenv("SONATYPE_USERNAME") ?: project.hasProperty("sonatypeOssUsername") ? project.sonatypeOssUsername : ''
     nexusPassword = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
@@ -36,14 +36,10 @@ group = "org.grails"
 apply plugin: 'idea'
 apply plugin: 'project-report'
 
-ext {
-    isCiBuild = project.hasProperty("isCiBuild")
-}
-
 allprojects {
     repositories {
         maven { url "https://repo.grails.org/grails/core" }
-        if(isBuildSnapshot) {
+        if(isSnapshot) {
             maven { url "https://repo.grails.org/grails/libs-snapshots-local" }
         }
         if(groovyVersion && groovyVersion.endsWith('-SNAPSHOT')) {
@@ -75,11 +71,11 @@ subprojects {
    version = project.projectVersion
    group = "org.grails"
 
-   afterEvaluate { project ->
-        if (isGroovyProject(project)) {
-            def hasSnapshotVersion = project.version.endsWith("-SNAPSHOT")
-            if(isBuildSnapshot != hasSnapshotVersion) {
-                throw new StopExecutionException("${project.name} has version \"${project.version}\" which is${isBuildSnapshot ? 'n\'t' : ''} a snapshot version.")
+   afterEvaluate { subproject ->
+        if (isGroovyProject(subproject)) {
+            def hasSnapshotVersion = subproject.version.endsWith("-SNAPSHOT")
+            if(isSnapshot != hasSnapshotVersion) {
+                throw new StopExecutionException("${subproject.name} has version \"${subproject.version}\" which is${isSnapshot ? 'n\'t' : ''} a snapshot version.")
             }
         }
     }
@@ -277,7 +273,7 @@ task test(dependsOn: getTasksByName("test", true)) {
      }
 }
 
-if (!isBuildSnapshot) {
+if (isReleaseVersion) {
     nexusPublishing {
         transitionCheckOptions {
             maxRetries.set(50)
