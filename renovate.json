@@ -1,5 +1,12 @@
 {
   "extends": [
     "config:base"
+  ],
+  "labels": ["type: dependency-upgrade"],
+  "packageRules": [
+    {
+      "matchPackageNames": ["chalk"],
+      "allowedVersions": "!/SNAPSHOT$/"
+    }
   ]
 }
