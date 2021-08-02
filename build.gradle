@@ -5,7 +5,7 @@ buildscript {
     }
     dependencies {
         classpath "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.0"
-        classpath "io.github.gradle-nexus:publish-plugin:1.0.0"
+        classpath "io.github.gradle-nexus:publish-plugin:1.1.0"
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
         classpath "io.github.groovylang.groovydoc:groovydoc-gradle-plugin:1.0.1"
     }
@@ -108,7 +108,7 @@ subprojects {
         if (isStandardGroovyMavenProject) {
             documentation "org.fusesource.jansi:jansi:1.18"
             documentation "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
-            documentation 'info.picocli:picocli:4.5.2'
+            documentation 'info.picocli:picocli:4.6.1'
             compile group: 'org.codehaus.groovy', name: 'groovy', version: groovyVersion
 
             testCompile group: 'org.codehaus.groovy', name: 'groovy-test', version: groovyVersion
@@ -234,7 +234,7 @@ configurations {
 
 dependencies {
     build "com.cenqua.clover:clover:3.3.0"
-    build "org.apache.ant:ant-junit:1.10.9"
+    build "org.apache.ant:ant-junit:1.10.11"
     build "org.apache.ant:ant-nodeps:1.8.1"
 }
 

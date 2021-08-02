@@ -44,7 +44,9 @@ class RxQueryUtils {
             List<String> joinedProperties = []
             observable = observable.switchMap { Object o ->
 
-                List<Observable> observables = [Observable.just(o)]
+                List<Observable<?>> observables = []
+                observables.add Observable.just(o)
+
                 if(entity.isInstance(o)) {
 
                     for(fetch in fetchStrategies) {

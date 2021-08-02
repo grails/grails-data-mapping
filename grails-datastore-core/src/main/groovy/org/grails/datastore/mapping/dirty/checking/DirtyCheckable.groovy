@@ -94,6 +94,9 @@ trait DirtyCheckable {
     @Generated
     void markDirty(String propertyName) {
         if( $changedProperties != null && !$changedProperties.containsKey(propertyName))  {
+            if (DirtyCheckingSupport.DIRTY_CLASS_MARKER.is($changedProperties)) {
+                trackChanges()
+            }
             $changedProperties.put propertyName, ((GroovyObject)this).getProperty(propertyName)
         }
     }
@@ -123,6 +126,9 @@ trait DirtyCheckable {
             if ((isNull && oldValue != null) ||
                     (!isNull && oldValue == null) ||
                     (!isNull && !newValue.equals(oldValue))) {
+                if (DirtyCheckingSupport.DIRTY_CLASS_MARKER.is($changedProperties)) {
+                    trackChanges()
+                }
                 $changedProperties.put propertyName, oldValue
             }
         }
