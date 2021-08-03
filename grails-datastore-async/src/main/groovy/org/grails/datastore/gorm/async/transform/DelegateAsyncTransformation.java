@@ -24,6 +24,8 @@ import java.util.*;
 import static org.codehaus.groovy.ast.tools.GenericsUtils.correctToGenericsSpecRecurse;
 import static org.codehaus.groovy.ast.tools.GenericsUtils.createGenericsSpec;
 
+import static org.apache.groovy.ast.tools.AnnotatedNodeUtils.markAsGenerated;
+
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
 public class DelegateAsyncTransformation implements ASTTransformation {
     private static final ArgumentListExpression NO_ARGS = new ArgumentListExpression();
@@ -122,6 +124,8 @@ public class DelegateAsyncTransformation implements ASTTransformation {
                     MethodCallExpression delegateMethodCall = new MethodCallExpression(new VariableExpression(fieldName), candidate.getName(), arguments);
                     promiseBody.addStatement(new ExpressionStatement(delegateMethodCall));
                     MethodNode newMethodNode = new MethodNode(candidate.getName(), Modifier.PUBLIC,promiseNode, parameters,null, methodBody);
+
+                    markAsGenerated(classNode, newMethodNode);
                     classNode.addMethod(newMethodNode);
                 }
             }

@@ -71,6 +71,7 @@ import javax.persistence.Version
 import java.lang.annotation.Annotation
 import java.lang.reflect.Modifier
 
+import static org.apache.groovy.ast.tools.AnnotatedNodeUtils.markAsGenerated
 
 /**
  * An AST transformation that adds the following features:<br><br>
@@ -254,7 +255,9 @@ class GormEntityTransformation extends AbstractASTTransformation implements Comp
         )
 
         def methodMissingParameters = [methodNameParam, methodArgsParam] as Parameter[]
-        classNode.addMethod('$static_methodMissing', Modifier.PUBLIC | Modifier.STATIC, AstUtils.OBJECT_CLASS_NODE, methodMissingParameters, null, methodMissingBody)
+        MethodNode methodMissingNode =
+                classNode.addMethod('$static_methodMissing', Modifier.PUBLIC | Modifier.STATIC, AstUtils.OBJECT_CLASS_NODE, methodMissingParameters, null, methodMissingBody)
+        markAsGenerated(classNode, methodMissingNode)
 
 
         // $static_propertyMissing setter
@@ -267,7 +270,9 @@ class GormEntityTransformation extends AbstractASTTransformation implements Comp
                 new ExpressionStatement(propertyMissingSetMethodCall)
         )
         def propertyMissingSetParameters = [propertyMissingSetNameParam, propertyMissingSetValueParam] as Parameter[]
-        classNode.addMethod('$static_propertyMissing', Modifier.PUBLIC | Modifier.STATIC, AstUtils.OBJECT_CLASS_NODE, propertyMissingSetParameters, null, propertyMissingSetBody)
+        MethodNode propertyMissingNodeSetter =
+                classNode.addMethod('$static_propertyMissing', Modifier.PUBLIC | Modifier.STATIC, AstUtils.OBJECT_CLASS_NODE, propertyMissingSetParameters, null, propertyMissingSetBody)
+        markAsGenerated(classNode, propertyMissingNodeSetter)
 
         // $static_propertyMissing getter
         def propertyMissingGetBody = new BlockStatement()
@@ -278,8 +283,9 @@ class GormEntityTransformation extends AbstractASTTransformation implements Comp
                 new ExpressionStatement(propertyMissingGetMethodCall)
         )
         def propertyMissingGetParameters = [propertyMissingGetNameParam] as Parameter[]
-        classNode.addMethod('$static_propertyMissing', Modifier.PUBLIC | Modifier.STATIC, AstUtils.OBJECT_CLASS_NODE, propertyMissingGetParameters, null, propertyMissingGetBody)
-
+        MethodNode propertyMissingNodeGetter =
+                classNode.addMethod('$static_propertyMissing', Modifier.PUBLIC | Modifier.STATIC, AstUtils.OBJECT_CLASS_NODE, propertyMissingGetParameters, null, propertyMissingGetBody)
+        markAsGenerated(classNode, propertyMissingNodeGetter)
 
         // now process named query associations
         // see https://grails.github.io/grails-doc/latest/ref/Domain%20Classes/namedQueries.html
@@ -338,6 +344,8 @@ class GormEntityTransformation extends AbstractASTTransformation implements Comp
                                             }
                                             methodBody.addStatement(returnS(createNamedQueryCall))
                                             MethodNode newMethod = new MethodNode(methodName, Modifier.PUBLIC | Modifier.STATIC, queryOperationsClassNode, newParams, null, methodBody)
+
+                                            markAsGenerated(thisClassNode, newMethod)
                                             thisClassNode.addMethod(newMethod)
 
                                             if(!hasParameters) {
@@ -346,6 +354,7 @@ class GormEntityTransformation extends AbstractASTTransformation implements Comp
                                                 existing = thisClassNode.getMethod(namedQueryGetter, AstUtils.ZERO_PARAMETERS)
                                                 if(existing == null || !existing.getDeclaringClass().equals(thisClassNode)) {
                                                     newMethod = new MethodNode(namedQueryGetter, Modifier.PUBLIC | Modifier.STATIC, queryOperationsClassNode, AstUtils.ZERO_PARAMETERS, null, methodBody)
+                                                    markAsGenerated(thisClassNode, newMethod)
                                                     thisClassNode.addMethod( newMethod)
                                                 }
                                             }
@@ -588,6 +597,7 @@ class GormEntityTransformation extends AbstractASTTransformation implements Comp
             )
 
             def mn = new MethodNode(idProperty, Modifier.PUBLIC, AstUtils.OBJECT_CLASS_NODE, AstUtils.ZERO_PARAMETERS, null, methodBody)
+            markAsGenerated(classNode, mn)
             classNode.addMethod(mn)
         }
     }
@@ -634,6 +644,7 @@ class GormEntityTransformation extends AbstractASTTransformation implements Comp
             )
 
             def mn = new MethodNode(addToMethod, Modifier.PUBLIC, classNode.getPlainNodeReference(), ADD_TO_PARAMETERS, null, methodBody)
+            markAsGenerated(classNode, mn)
             classNode.addMethod(mn)
         }
 
@@ -655,6 +666,7 @@ class GormEntityTransformation extends AbstractASTTransformation implements Comp
             )
 
             def mn = new MethodNode(removeFromMethod, Modifier.PUBLIC, classNode.getPlainNodeReference(), ADD_TO_PARAMETERS, null, methodBody)
+            markAsGenerated(classNode, mn)
             classNode.addMethod(mn)
         }
     }
@@ -689,6 +701,7 @@ class GormEntityTransformation extends AbstractASTTransformation implements Comp
             ge.addValue(new TernaryExpression(new BooleanExpression(idVariable), idVariable, new ConstantExpression("(unsaved)")));
             Statement s = new ReturnStatement(ge);
             MethodNode mn = new MethodNode("toString", Modifier.PUBLIC, new ClassNode(String.class), new Parameter[0], new ClassNode[0], s);
+            markAsGenerated(classNode, mn)
             classNode.addMethod(mn)
         }
     }

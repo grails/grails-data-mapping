@@ -17,6 +17,7 @@ import javax.validation.ParameterNameProvider
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
+import static org.apache.groovy.ast.tools.AnnotatedNodeUtils.markAsGenerated
 import static org.codehaus.groovy.ast.ClassHelper.*
 import static org.codehaus.groovy.ast.tools.GeneralUtils.*
 import static org.grails.datastore.gorm.transform.AstMethodDispatchUtils.callThisD
@@ -154,6 +155,7 @@ class MethodValidationImplementer implements ServiceEnhancer {
         if(constructorNode == null) {
             constructorNode = new ConstructorNode(Modifier.PUBLIC, ZERO_PARAMETERS, null, new BlockStatement())
             innerClassNode.addConstructor(constructorNode)
+            markAsGenerated(innerClassNode, constructorNode)
         }
         BlockStatement constructorBody = (BlockStatement)constructorNode.code
         constructorBody.addStatement(

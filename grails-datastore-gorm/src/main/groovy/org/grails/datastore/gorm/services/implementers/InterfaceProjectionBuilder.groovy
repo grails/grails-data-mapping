@@ -21,6 +21,7 @@ import org.grails.datastore.mapping.reflect.NameUtils
 
 import java.lang.reflect.Modifier
 
+import static org.apache.groovy.ast.tools.AnnotatedNodeUtils.markAsGenerated
 import static org.codehaus.groovy.ast.tools.GeneralUtils.assignS
 import static org.codehaus.groovy.ast.tools.GeneralUtils.block
 import static org.codehaus.groovy.ast.tools.GeneralUtils.param
@@ -76,6 +77,8 @@ trait InterfaceProjectionBuilder {
             methodTarget = innerClassNode.addMethod('$setTarget', Modifier.PUBLIC, ClassHelper.VOID_TYPE, params, null, block(
                     assignS(varX(field), varX(domainClassParam))
             ))
+            markAsGenerated(innerClassNode, methodTarget)
+            
             AnnotationNode delegateAnn = new AnnotationNode(new ClassNode(Delegate))
             delegateAnn.setMember("includes", new ListExpression(getterNames))
             delegateAnn.setMember("interfaces", new ConstantExpression(false))
