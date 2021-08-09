@@ -10,9 +10,8 @@ buildscript {
 }
 
 ext {
-    isTravisBuild = System.getenv().get("TRAVIS") == 'true'
     // overall project version
-    isCiBuild = project.hasProperty("isCiBuild")
+    isCiBuild = System.getenv().get("TRAVIS") == 'true' || System.getenv().get("CI") as Boolean
     isSnapshot = project.projectVersion.endsWith("-SNAPSHOT")
     isReleaseVersion = !isSnapshot
 
@@ -163,7 +162,7 @@ subprojects {
             testLogging {
                 exceptionFormat ='full'
             }
-            if (isTravisBuild) {
+            if (isCiBuild) {
                 maxParallelForks = 2
                 jvmArgs = ['-server', '-Xmx1024M']
                 forkEvery = 20
