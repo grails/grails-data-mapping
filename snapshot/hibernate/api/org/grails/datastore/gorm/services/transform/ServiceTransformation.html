@@ -209,12 +209,12 @@ implements groovy.transform.CompilationUnitAware, org.codehaus.groovy.transform.
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#generateServiceDescriptor(org.codehaus.groovy.control.SourceUnit, ClassNode)">generateServiceDescriptor</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, <a href='../../../../../../ClassNode.html'>ClassNode</a> classNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#generateServiceDescriptor(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ClassNode)">generateServiceDescriptor</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, org.codehaus.groovy.ast.ClassNode classNode)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;<a href='../../../../../../ClassNode.html'>ClassNode</a></code></td>
+                            <td class="colLast"><code>protected&nbsp;org.codehaus.groovy.ast.ClassNode</code></td>
                             <td class="colLast"><code><strong><a href="#getAnnotationType()">getAnnotationType</a></strong>()</code><br></td>
                         </tr>
                         
@@ -245,13 +245,13 @@ implements groovy.transform.CompilationUnitAware, org.codehaus.groovy.transform.
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#shouldWeave(AnnotationNode, ClassNode)">shouldWeave</a></strong>(<a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> classNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#shouldWeave(AnnotationNode, org.codehaus.groovy.ast.ClassNode)">shouldWeave</a></strong>(<a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, org.codehaus.groovy.ast.ClassNode classNode)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#visitAfterTraitApplied(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode)">visitAfterTraitApplied</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> classNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#visitAfterTraitApplied(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode)">visitAfterTraitApplied</a></strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, org.codehaus.groovy.ast.ClassNode classNode)</code><br></td>
                         </tr>
                         
                     </table>
@@ -270,7 +270,7 @@ implements groovy.transform.CompilationUnitAware, org.codehaus.groovy.transform.
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html'>AbstractTraitApplyingGormASTTransformation</a></code></td>
-                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html#getTraitClass()'>getTraitClass</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html#shouldWeave(AnnotationNode, ClassNode)'>shouldWeave</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html#visit(org.codehaus.groovy.control.SourceUnit, AnnotationNode, AnnotatedNode)'>visit</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html#visit(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode)'>visit</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html#visitAfterTraitApplied(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode)'>visitAfterTraitApplied</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html#weaveTrait(ClassNode, org.codehaus.groovy.control.SourceUnit, java.lang.Class, ClassNode)'>weaveTrait</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html#weaveTraitWithGenerics(ClassNode, java.lang.Class, ClassNode)'>weaveTraitWithGenerics</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html#getTraitClass()'>getTraitClass</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html#shouldWeave(AnnotationNode, org.codehaus.groovy.ast.ClassNode)'>shouldWeave</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html#visit(org.codehaus.groovy.control.SourceUnit, AnnotationNode, AnnotatedNode)'>visit</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html#visit(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode)'>visit</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html#visitAfterTraitApplied(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode)'>visitAfterTraitApplied</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html#weaveTrait(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.control.SourceUnit, java.lang.Class, org.codehaus.groovy.ast.ClassNode)'>weaveTrait</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractTraitApplyingGormASTTransformation.html#weaveTraitWithGenerics(org.codehaus.groovy.ast.ClassNode, java.lang.Class, org.codehaus.groovy.ast.ClassNode)'>weaveTraitWithGenerics</a></code></td>
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractGormASTTransformation.html'>AbstractGormASTTransformation</a></code></td>
@@ -352,10 +352,10 @@ implements groovy.transform.CompilationUnitAware, org.codehaus.groovy.transform.
                             </li>
                         </ul>
                     
-                        <a name="generateServiceDescriptor(org.codehaus.groovy.control.SourceUnit, ClassNode)"><!-- --></a>
+                        <a name="generateServiceDescriptor(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>generateServiceDescriptor</strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, <a href='../../../../../../ClassNode.html'>ClassNode</a> classNode)</h4>
+                                <h4>protected&nbsp;void <strong>generateServiceDescriptor</strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, org.codehaus.groovy.ast.ClassNode classNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -364,7 +364,7 @@ implements groovy.transform.CompilationUnitAware, org.codehaus.groovy.transform.
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-protected&nbsp;<a href='../../../../../../ClassNode.html'>ClassNode</a> <strong>getAnnotationType</strong>()</h4>
+protected&nbsp;org.codehaus.groovy.ast.ClassNode <strong>getAnnotationType</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -403,20 +403,20 @@ protected&nbsp;java.lang.Class <strong>getTraitClass</strong>()</h4>
                             </li>
                         </ul>
                     
-                        <a name="shouldWeave(AnnotationNode, ClassNode)"><!-- --></a>
+                        <a name="shouldWeave(AnnotationNode, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-boolean <strong>shouldWeave</strong>(<a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> classNode)</h4>
+boolean <strong>shouldWeave</strong>(<a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, org.codehaus.groovy.ast.ClassNode classNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="visitAfterTraitApplied(org.codehaus.groovy.control.SourceUnit, AnnotationNode, ClassNode)"><!-- --></a>
+                        <a name="visitAfterTraitApplied(org.codehaus.groovy.control.SourceUnit, AnnotationNode, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-void <strong>visitAfterTraitApplied</strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> classNode)</h4>
+void <strong>visitAfterTraitApplied</strong>(org.codehaus.groovy.control.SourceUnit sourceUnit, <a href='../../../../../../AnnotationNode.html'>AnnotationNode</a> annotationNode, org.codehaus.groovy.ast.ClassNode classNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
