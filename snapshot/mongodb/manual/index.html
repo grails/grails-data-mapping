@@ -528,7 +528,7 @@ table.CodeRay td.code>pre{padding:0}
 <h1>GORM for MongoDB</h1>
 <div class="details">
 <span id="author" class="author">Graeme Rocher, Burt Beckwith</span><br>
-<span id="revnumber">version 7.1.0-SNAPSHOT</span>
+<span id="revnumber">version 7.0.3.BUILD-SNAPSHOT</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -702,22 +702,6 @@ table.CodeRay td.code>pre{padding:0}
 <h3 id="releaseNotes">Release Notes</h3>
 <div class="paragraph">
 <p>Below are the details of the changes across releases:</p>
-</div>
-<div class="sect3">
-<h4 id="_7_1">7.1</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Support Groovy 3</p>
-</li>
-<li>
-<p>Upgrade to mongodb-driver-sync 4.0.3</p>
-</li>
-<li>
-<p>Autowire bean by type in the Data Service.</p>
-</li>
-</ul>
-</div>
 </div>
 <div class="sect3">
 <h4 id="_7_0">7.0</h4>
@@ -929,7 +913,7 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile 'org.grails.plugins:mongodb:7.1.0-SNAPSHOT'
+    compile 'org.grails.plugins:mongodb:7.0.3.BUILD-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
@@ -966,7 +950,7 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.mongodb:mongodb-driver:4.3.2"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.mongodb:mongodb-driver:3.10.0"</code></pre>
 </div>
 </div>
 </div>
@@ -1173,7 +1157,7 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-mongodb-spring-boot:7.1.0-SNAPSHOT")</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-mongodb-spring-boot:7.0.3.BUILD-SNAPSHOT")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1230,7 +1214,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-mongodb:7.1.0-SNAPSHOT"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-mongodb:7.0.3.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3033,6 +3017,12 @@ uses by default a <code>MongoClient</code> instance that connects to a MongoDB i
 
 <span class="type">class</span> <span class="class">LocalMongoUnitSpec</span> <span class="directive">extends</span> MongoSpec <span class="directive">implements</span> EmbeddedMongoClient {
 
+    <span class="comment">// Specs ...</span>
+    <span class="annotation">@Override</span>
+    <span class="type">void</span> setup() {
+        <span class="predefined-type">Book</span>.DB.drop()
+    }
+
     <span class="annotation">@Ignore</span>
     <span class="type">void</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">test fail on error</span><span class="delimiter">&quot;</span></span>() {
 
@@ -3098,10 +3088,7 @@ is large, classpath scanning may be slow, so it&#8217;s better to override the m
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Override</span>
-<span class="directive">protected</span> <span class="predefined-type">List</span>&lt;<span class="predefined-type">Class</span>&gt; getDomainClasses() {
-    [<span class="predefined-type">Book</span>]
-}</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">Unresolved directive <span class="keyword">in</span> testing.adoc - <span class="key">include</span>::<span class="regexp"><span class="delimiter">/</span><span class="content">home</span><span class="delimiter">/</span></span>runner/work/gorm-mongodb/gorm-mongodb/examples/grails3-hibernate4-mongodb/src/test/groovy/functional/tests/BookFongoSpec.groovy[tags=getDomainClasses,indent=<span class="integer">0</span>]</code></pre>
 </div>
 </div>
 </div>
@@ -3647,7 +3634,7 @@ Hotel.findByLocationWithinCircle( Circle.valueOf( [[<span class="integer">40</sp
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 7.1.0-SNAPSHOT<br>
+Version 7.0.3.BUILD-SNAPSHOT<br>
 </div>
 </div>
 </body>
