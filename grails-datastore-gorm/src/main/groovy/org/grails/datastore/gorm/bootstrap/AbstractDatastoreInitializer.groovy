@@ -292,7 +292,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
             }
             loadDataServices(null)
                     .each {serviceName, serviceClass->
-                "$serviceName"(DatastoreServiceMethodInvokingFactoryBean) {
+                "$serviceName"(DatastoreServiceMethodInvokingFactoryBean, serviceClass) {
                     targetObject = ref("${type}Datastore")
                     targetMethod = 'getService'
                     arguments = [serviceClass]

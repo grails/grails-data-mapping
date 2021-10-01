@@ -17,15 +17,18 @@ import org.springframework.lang.Nullable
 @CompileStatic
 class DatastoreServiceMethodInvokingFactoryBean extends MethodInvokingFactoryBean {
 
+    private Class<?> serviceClass
+
+    DatastoreServiceMethodInvokingFactoryBean(Class<?> serviceClass) {
+        this.serviceClass = serviceClass
+    }
+
     @Nullable
     private ConfigurableBeanFactory beanFactory
 
     @Override
     Class<?> getObjectType() {
-        if (arguments != null && arguments.size() == 1) {
-            return arguments[0] as Class<?>
-        }
-        return super.getObjectType()
+        return serviceClass
     }
 
     @Override
