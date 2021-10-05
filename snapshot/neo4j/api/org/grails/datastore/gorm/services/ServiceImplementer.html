@@ -176,13 +176,13 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>abstract&nbsp;boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#doesImplement(org.codehaus.groovy.ast.ClassNode, MethodNode)">doesImplement</a></strong>(org.codehaus.groovy.ast.ClassNode domainClass, <a href='../../../../../MethodNode.html'>MethodNode</a> methodNode)</code><br>Does this service implement the method</td>
+                            <td class="colLast"><code><strong><a href="#doesImplement(ClassNode, MethodNode)">doesImplement</a></strong>(<a href='../../../../../ClassNode.html'>ClassNode</a> domainClass, <a href='../../../../../MethodNode.html'>MethodNode</a> methodNode)</code><br>Does this service implement the method</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>abstract&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#implement(org.codehaus.groovy.ast.ClassNode, MethodNode, MethodNode, org.codehaus.groovy.ast.ClassNode)">implement</a></strong>(org.codehaus.groovy.ast.ClassNode domainClassNode, <a href='../../../../../MethodNode.html'>MethodNode</a> abstractMethodNode, <a href='../../../../../MethodNode.html'>MethodNode</a> newMethodNode, org.codehaus.groovy.ast.ClassNode targetClassNode)</code><br>Implement the method</td>
+                            <td class="colLast"><code><strong><a href="#implement(ClassNode, MethodNode, MethodNode, ClassNode)">implement</a></strong>(<a href='../../../../../ClassNode.html'>ClassNode</a> domainClassNode, <a href='../../../../../MethodNode.html'>MethodNode</a> abstractMethodNode, <a href='../../../../../MethodNode.html'>MethodNode</a> newMethodNode, <a href='../../../../../ClassNode.html'>ClassNode</a> targetClassNode)</code><br>Implement the method</td>
                         </tr>
                         
                     </table>
@@ -243,18 +243,18 @@ if (location.href.indexOf('is-external=true') == -1) {
                 </a>
                     <h3>Method Detail</h3>
                     
-                        <a name="doesImplement(org.codehaus.groovy.ast.ClassNode, MethodNode)"><!-- --></a>
+                        <a name="doesImplement(ClassNode, MethodNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>abstract&nbsp;boolean <strong>doesImplement</strong>(org.codehaus.groovy.ast.ClassNode domainClass, <a href='../../../../../MethodNode.html'>MethodNode</a> methodNode)</h4>
+                                <h4>abstract&nbsp;boolean <strong>doesImplement</strong>(<a href='../../../../../ClassNode.html'>ClassNode</a> domainClass, <a href='../../../../../MethodNode.html'>MethodNode</a> methodNode)</h4>
                                 <p> Does this service implement the method <DL><DT><B>Parameters:</B></DT><DD><code>domainClass</code> -  The domain class that this implementor applies to. If not known will be equal to ClassHelper.OBJECT_TYPE</DD><DD><code>methodNode</code> -  The abstract method node</DD></DL><DL><DT><B>Returns:</B></DT><DD>True if it does</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="implement(org.codehaus.groovy.ast.ClassNode, MethodNode, MethodNode, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
+                        <a name="implement(ClassNode, MethodNode, MethodNode, ClassNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>abstract&nbsp;void <strong>implement</strong>(org.codehaus.groovy.ast.ClassNode domainClassNode, <a href='../../../../../MethodNode.html'>MethodNode</a> abstractMethodNode, <a href='../../../../../MethodNode.html'>MethodNode</a> newMethodNode, org.codehaus.groovy.ast.ClassNode targetClassNode)</h4>
+                                <h4>abstract&nbsp;void <strong>implement</strong>(<a href='../../../../../ClassNode.html'>ClassNode</a> domainClassNode, <a href='../../../../../MethodNode.html'>MethodNode</a> abstractMethodNode, <a href='../../../../../MethodNode.html'>MethodNode</a> newMethodNode, <a href='../../../../../ClassNode.html'>ClassNode</a> targetClassNode)</h4>
                                 <p> Implement the method <DL><DT><B>Parameters:</B></DT><DD><code>targetClassNode</code> -  The target class node</DD><DD><code>abstractMethodNode</code> -  The abstract method node to implement</DD><DD><code>newMethodNode</code> -  The new method node being implemented</DD></DL></p>
                             </li>
                         </ul>
