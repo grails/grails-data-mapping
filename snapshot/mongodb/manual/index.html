@@ -708,13 +708,16 @@ table.CodeRay td.code>pre{padding:0}
 <div class="ulist">
 <ul>
 <li>
-<p>Support Groovy 3</p>
+<p>Support Apache Groovy 3, and Java 14</p>
 </li>
 <li>
-<p>Upgrade to mongodb-driver-sync 4.0.3</p>
+<p>Upgrade to mongodb-driver-sync 4.3.3</p>
 </li>
 <li>
-<p>Autowire bean by type in the Data Service.</p>
+<p>Autowire bean by type in the Data Service</p>
+</li>
+<li>
+<p>Compatible only with Grails 5</p>
 </li>
 </ul>
 </div>
@@ -907,12 +910,43 @@ MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails 
 <div class="sect2">
 <h3 id="upgradeNotes">Upgrade Notes</h3>
 <div class="sect3">
-<h4 id="_removal_of_the_rxgorm_module">Removal of the RxGORM Module</h4>
+<h4 id="_dependency_upgrades">Dependency Upgrades</h4>
 <div class="paragraph">
-<p>Due to lack of interest and usage from the community, the RxGORM module for MongoDB has been removed.</p>
+<p>GORM 7.1 supports Apache Groovy 3, Java 14, MongoDB Driver 4.3 and Spring 5.3.x.</p>
 </div>
 <div class="paragraph">
-<p>If you use this module you should stick to the 6.1.x line of GORM.</p>
+<p>Each of these underlying components may have changes that require altering your application. These changes are beyond the scope of this documentation.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_default_autowire_by_type_inside_gorm_data_services">Default Autowire By Type inside GORM Data Services</h4>
+<div class="paragraph">
+<p>A Grails Service (or a bean) inside GORM DataService will default to autowire by-type, For example:</p>
+</div>
+<div class="paragraph">
+<p><em>./grails-app/services/example/BookService.groovy</em></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>package example
+
+import grails.gorm.services.Service
+
+@Service(Book)
+abstract class BookService {
+
+    TestService testRepo
+
+    abstract Book save(String title, String author)
+
+    void doSomething() {
+        assert testRepo != null
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Please note that with autowire by-type as the default, when multiple beans for same type are found the application with throw Exception. Use the Spring `@Qualifier annotation for <a href="https://docs.spring.io/spring-framework/docs/5.3.10/reference/html/core.html#beans-autowired-annotation-qualifiers">Fine-tuning Annotation Based Autowiring with Qualifiers</a>.</p>
 </div>
 </div>
 </div>
