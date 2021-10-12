@@ -450,10 +450,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="paragraph">
-<p>Has a property called <code>id</code> of type <code>java.lang.Long</code>. In this case GORM for Mongo will generate a sequence based identifier using the technique <a href="http://docs.mongodb.org/manual/tutorial/isolate-sequence-of-operations/">described in the Mongo documentation</a> on Atomic operations.</p>
+<p>Has a property called <code>id</code> of type <code>java.lang.Long</code>. In this case GORM for Mongo will generate a sequence based identifier using the technique <a href="https://docs.mongodb.org/manual/tutorial/isolate-sequence-of-operations/">described in the Mongo documentation</a> on Atomic operations.</p>
 </div>
 <div class="paragraph">
-<p>However, sequence based integer identifiers are not ideal for environments that require <a href="http://docs.mongodb.org/manual/sharding/">sharding</a> (one of the nicer features of Mongo). Hence it is generally advised to use either String based ids:</p>
+<p>However, sequence based integer identifiers are not ideal for environments that require <a href="https://docs.mongodb.org/manual/sharding/">sharding</a> (one of the nicer features of Mongo). Hence it is generally advised to use either String based ids:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -463,7 +463,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="paragraph">
-<p>Or a native BSON <a href="http://api.mongodb.org/java/current/org/bson/types/ObjectId.html">ObjectId</a>:</p>
+<p>Or a native BSON <a href="https://api.mongodb.org/java/current/org/bson/types/ObjectId.html">ObjectId</a>:</p>
 </div>
 <div class="listingblock">
 <div class="content">

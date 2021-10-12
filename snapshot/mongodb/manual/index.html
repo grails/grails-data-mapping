@@ -642,7 +642,7 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="compatibility">Compatibility with GORM for Hibernate</h3>
 <div class="paragraph">
-<p>This implementation tries to be as compatible as possible with GORM for Hibernate. In general you can refer to the <a href="http://grails.org/doc/latest/guide/5.%20Object%20Relational%20Mapping%20(GORM).html">GORM documentation</a> and the "Domain Classes" section of the <a href="http://grails.org/doc/latest/">reference guide</a> (see the right nav) for usage information.</p>
+<p>This implementation tries to be as compatible as possible with GORM for Hibernate. In general you can refer to the <a href="https://grails.org/doc/latest/guide/5.%20Object%20Relational%20Mapping%20(GORM).html">GORM documentation</a> and the "Domain Classes" section of the <a href="https://grails.org/doc/latest/">reference guide</a> (see the right nav) for usage information.</p>
 </div>
 <div class="paragraph">
 <p>The following key features are supported by GORM for Mongo:</p>
@@ -1126,13 +1126,13 @@ abstract class BookService {
 </div>
 </div>
 <div class="paragraph">
-<p>Available options and their descriptions are defined in the <a href="http://api.mongodb.org/java/current/com/mongodb/MongoClientOptions.html">MongoClientOptions</a> javadoc.</p>
+<p>Available options and their descriptions are defined in the <a href="https://api.mongodb.org/java/current/com/mongodb/MongoClientOptions.html">MongoClientOptions</a> javadoc.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_mongodb_connection_strings">MongoDB Connection Strings</h4>
 <div class="paragraph">
-<p>Since 2.0, you can also use MongoDB <a href="http://docs.mongodb.org/manual/reference/connection-string/">connection strings</a> to configure the connection:</p>
+<p>Since 2.0, you can also use MongoDB <a href="https://docs.mongodb.org/manual/reference/connection-string/">connection strings</a> to configure the connection:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1331,7 +1331,7 @@ println Person.count()</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This will map onto a MongoDB <a href="http://api.mongodb.org/java/current/com/mongodb/client/MongoCollection.html">Collection</a> called "person".</p>
+<p>This will map onto a MongoDB <a href="https://api.mongodb.org/java/current/com/mongodb/client/MongoCollection.html">Collection</a> called "person".</p>
 </div>
 </div>
 <div class="sect3">
@@ -1431,7 +1431,7 @@ new Person(<span class="key">friends</span>:[<span class="string"><span class="d
 </div>
 </div>
 <div class="paragraph">
-<p>If you are using the mapping engine, for non-embedded associations by default GORM for MongoDB will map links between documents using MongoDB <a href="http://docs.mongodb.org/manual/reference/database-references/">database references</a> also known as <code>DBRefs</code>.</p>
+<p>If you are using the mapping engine, for non-embedded associations by default GORM for MongoDB will map links between documents using MongoDB <a href="https://docs.mongodb.org/manual/reference/database-references/">database references</a> also known as <code>DBRefs</code>.</p>
 </div>
 <div class="paragraph">
 <p>If you prefer not to use DBRefs then you tell GORM to use direct links by using the <code>reference:false</code> mapping:</p>
@@ -1458,10 +1458,10 @@ new Person(<span class="key">friends</span>:[<span class="string"><span class="d
 </div>
 </div>
 <div class="paragraph">
-<p>Has a property called <code>id</code> of type <code>java.lang.Long</code>. In this case GORM for Mongo will generate a sequence based identifier using the technique <a href="http://docs.mongodb.org/manual/tutorial/isolate-sequence-of-operations/">described in the Mongo documentation</a> on Atomic operations.</p>
+<p>Has a property called <code>id</code> of type <code>java.lang.Long</code>. In this case GORM for Mongo will generate a sequence based identifier using the technique <a href="https://docs.mongodb.org/manual/tutorial/isolate-sequence-of-operations/">described in the Mongo documentation</a> on Atomic operations.</p>
 </div>
 <div class="paragraph">
-<p>However, sequence based integer identifiers are not ideal for environments that require <a href="http://docs.mongodb.org/manual/sharding/">sharding</a> (one of the nicer features of Mongo). Hence it is generally advised to use either String based ids:</p>
+<p>However, sequence based integer identifiers are not ideal for environments that require <a href="https://docs.mongodb.org/manual/sharding/">sharding</a> (one of the nicer features of Mongo). Hence it is generally advised to use either String based ids:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1471,7 +1471,7 @@ new Person(<span class="key">friends</span>:[<span class="string"><span class="d
 </div>
 </div>
 <div class="paragraph">
-<p>Or a native BSON <a href="http://api.mongodb.org/java/current/org/bson/types/ObjectId.html">ObjectId</a>:</p>
+<p>Or a native BSON <a href="https://api.mongodb.org/java/current/org/bson/types/ObjectId.html">ObjectId</a>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1617,7 +1617,7 @@ dirty checking and prevent the property from being updated.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>You can use MongoDB <a href="http://docs.mongodb.org/manual/reference/operator/meta/hint/">Query Hints</a> by passing the <code>hint</code> argument to any dynamic finder:</p>
+<p>You can use MongoDB <a href="https://docs.mongodb.org/manual/reference/operator/meta/hint/">Query Hints</a> by passing the <code>hint</code> argument to any dynamic finder:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1638,7 +1638,7 @@ dirty checking and prevent the property from being updated.</p>
 <div class="sect3">
 <h4 id="_compound_indices">Compound Indices</h4>
 <div class="paragraph">
-<p>MongoDB supports the notion of <a href="http://docs.mongodb.org/manual/core/index-compound/">compound keys</a>. GORM for MongoDB enables this feature at the mapping level using the <code>compoundIndex</code> mapping:</p>
+<p>MongoDB supports the notion of <a href="https://docs.mongodb.org/manual/core/index-compound/">compound keys</a>. GORM for MongoDB enables this feature at the mapping level using the <code>compoundIndex</code> mapping:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1667,14 +1667,14 @@ dirty checking and prevent the property from being updated.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>In the above example I define an index on an embedded attribtue of the document. In fact what arguments you pass to the <code>index</code> method get passed to the underlying MongoDB <a href="http://api.mongodb.org/java/2.12/com/mongodb/DBCollection.html#createIndex(com.mongodb.DBObject,%20com.mongodb.DBObject)">createIndex</a> method.</p>
+<p>In the above example I define an index on an embedded attribtue of the document. In fact what arguments you pass to the <code>index</code> method get passed to the underlying MongoDB <a href="https://api.mongodb.org/java/2.12/com/mongodb/DBCollection.html#createIndex(com.mongodb.DBObject,%20com.mongodb.DBObject)">createIndex</a> method.</p>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="writeConcern">Customizing the WriteConcern</h3>
 <div class="paragraph">
-<p>A feature of MongoDB is its ability to customize how important a database write is to the user. The Java client models this as a <a href="http://api.mongodb.org/java/current/com/mongodb/WriteConcern.html">WriteConcern</a> and there are various options that indicate whether the client cares about server or network errors, or whether the data has been successfully written or not.</p>
+<p>A feature of MongoDB is its ability to customize how important a database write is to the user. The Java client models this as a <a href="https://api.mongodb.org/java/current/com/mongodb/WriteConcern.html">WriteConcern</a> and there are various options that indicate whether the client cares about server or network errors, or whether the data has been successfully written or not.</p>
 </div>
 <div class="paragraph">
 <p>If you wish to customize the <code>WriteConcern</code> for a domain class you can do so in the mapping block:</p>
@@ -1745,7 +1745,7 @@ println p[<span class="string"><span class="delimiter">'</span><span class="cont
 <div class="sect3">
 <h4 id="_custom_codecs">Custom Codecs</h4>
 <div class="paragraph">
-<p>GORM for MongoDB is built ontop of MongoDB&#8217;s BSON encoding framework. This means it is possible to implement custom <a href="http://mongodb.github.io/mongo-java-driver/3.2/bson/codecs">Codecs</a> for encoding and decoding values to and from BSON.</p>
+<p>GORM for MongoDB is built ontop of MongoDB&#8217;s BSON encoding framework. This means it is possible to implement custom <a href="https://mongodb.github.io/mongo-java-driver/3.2/bson/codecs">Codecs</a> for encoding and decoding values to and from BSON.</p>
 </div>
 <div class="paragraph">
 <p>For example consider the following simple Groovy class:</p>
@@ -1976,7 +1976,7 @@ beans = {
 <div class="sect2">
 <h3 id="queryingBasicsl">Basic Querying</h3>
 <div class="paragraph">
-<p>GORM for MongoDB supports all of the <a href="http://gorm.grails.org/latest/hibernate/manual/index.html#querying">regular methods</a> for executing GORM queries apart from HQL, which is a Hibernate specific query language more appropriate for SQL databases.</p>
+<p>GORM for MongoDB supports all of the <a href="https://gorm.grails.org/latest/hibernate/manual/index.html#querying">regular methods</a> for executing GORM queries apart from HQL, which is a Hibernate specific query language more appropriate for SQL databases.</p>
 </div>
 <div class="paragraph">
 <p>If you wish to execute a native MongoDB query you can use the <code>find</code> method that takes a <a href="https://api.mongodb.com/java/current/org/bson/conversions/Bson.html">Bson</a> argument. For example:</p>
@@ -2025,7 +2025,7 @@ Document doc = Product.collection
 <div class="sect2">
 <h3 id="geoSpatial">Geospacial Querying</h3>
 <div class="paragraph">
-<p>MongoDB supports storing <a href="http://docs.mongodb.org/manual/applications/geospatial-indexes/">Geospacial data</a> in both flat and spherical surface types.</p>
+<p>MongoDB supports storing <a href="https://docs.mongodb.org/manual/applications/geospatial-indexes/">Geospacial data</a> in both flat and spherical surface types.</p>
 </div>
 <div class="paragraph">
 <p>To store data in a flat surface you use a "2d" index, whilst a "2dsphere" index used for spherical data. GORM for MongoDB supports both and the following sections describe how to define and query Geospacial data.</p>
@@ -2037,10 +2037,10 @@ Document doc = Product.collection
 <div class="sect3">
 <h4 id="_using_a_2dsphere_index">Using a 2dsphere Index</h4>
 <div class="paragraph">
-<p>MongoDB&#8217;s <a href="http://docs.mongodb.org/manual/core/2dsphere/">2dsphere indexes</a> support queries that calculate geometries on an earth-like sphere.</p>
+<p>MongoDB&#8217;s <a href="https://docs.mongodb.org/manual/core/2dsphere/">2dsphere indexes</a> support queries that calculate geometries on an earth-like sphere.</p>
 </div>
 <div class="paragraph">
-<p>Although you can use coordinate pairs in a 2dsphere index, they are considered legacy by the MongoDB documentation and it is recommended you store data using <a href="http://geojson.org/geojson-spec.html#id2">GeoJSON Point</a> types.</p>
+<p>Although you can use coordinate pairs in a 2dsphere index, they are considered legacy by the MongoDB documentation and it is recommended you store data using <a href="https://geojson.org/geojson-spec.html#id2">GeoJSON Point</a> types.</p>
 </div>
 <div class="admonitionblock warning">
 <table>
@@ -2072,7 +2072,7 @@ class Restaurant {
 </div>
 </div>
 <div class="paragraph">
-<p>The <code>Point</code> type gets persisted as a <a href="http://geojson.org/geojson-spec.html#id2">GeoJSON Point</a>. A <code>Point</code> can be constructed from coordinates represented in longitude and latitude (the inverse of 2d index location coordinates!). Example:</p>
+<p>The <code>Point</code> type gets persisted as a <a href="https://geojson.org/geojson-spec.html#id2">GeoJSON Point</a>. A <code>Point</code> can be constructed from coordinates represented in longitude and latitude (the inverse of 2d index location coordinates!). Example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2124,7 +2124,7 @@ Restaurant.findByLocationNear( <span class="predefined-type">Point</span>.valueO
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Note that a <code>Sphere</code> differs from a <code>Circle</code> in that the radius is specified in <a href="http://docs.mongodb.org/manual/tutorial/calculate-distances-using-spherical-geometry-with-2d-geospatial-indexes/">radians</a>.
+Note that a <code>Sphere</code> differs from a <code>Circle</code> in that the radius is specified in <a href="https://docs.mongodb.org/manual/tutorial/calculate-distances-using-spherical-geometry-with-2d-geospatial-indexes/">radians</a>.
 There is a special <code>Distance</code> class that can help with radian calculation.
 </td>
 </tr>
@@ -2142,13 +2142,13 @@ There is a special <code>Distance</code> class that can help with radian calcula
 </div>
 </div>
 <div class="paragraph">
-<p>In the above example the native query parameters are simply passed to the <a href="http://docs.mongodb.org/manual/reference/operator/query/near/#op._S_near">$near query</a></p>
+<p>In the above example the native query parameters are simply passed to the <a href="https://docs.mongodb.org/manual/reference/operator/query/near/#op._S_near">$near query</a></p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="twodindex">Geospacial 2D Index Support</h4>
 <div class="paragraph">
-<p>MongoDB supports <a href="http://docs.mongodb.org/manual/core/2d/">2d indexes</a> that store points on a two-dimensional plane. although they are considered legacy and you should use <code>2dsphere</code> indexes instead.</p>
+<p>MongoDB supports <a href="https://docs.mongodb.org/manual/core/2d/">2d indexes</a> that store points on a two-dimensional plane. although they are considered legacy and you should use <code>2dsphere</code> indexes instead.</p>
 </div>
 <div class="paragraph">
 <p>It is possible to use a MongoDB 2d index by mapping a list or map property using the <code>geoIndex</code> mapping:</p>
@@ -2293,7 +2293,7 @@ new Entry(<span class="key">shape</span>: <span class="predefined-type">Polygon<
 <div class="sect2">
 <h3 id="textSearch">Full Text Search</h3>
 <div class="paragraph">
-<p>Using MongoDB 2.6 and above you can create <a href="http://docs.mongodb.org/manual/reference/operator/query/text/#op._S_text">full text search</a> indices.</p>
+<p>Using MongoDB 2.6 and above you can create <a href="https://docs.mongodb.org/manual/reference/operator/query/text/#op._S_text">full text search</a> indices.</p>
 </div>
 <div class="paragraph">
 <p>To create a "text" index using the <code>index</code> method inside the <code>mapping</code> block:</p>
@@ -2948,7 +2948,7 @@ b.insert()</code></pre>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-There is an excellent tutorial on how to use the MongoDB Java driver&#8217;s API directly in the <a href="http://mongodb.github.io/mongo-java-driver/3.1/driver/getting-started/quick-tour/">MongoDB documentation</a>
+There is an excellent tutorial on how to use the MongoDB Java driver&#8217;s API directly in the <a href="https://mongodb.github.io/mongo-java-driver/3.1/driver/getting-started/quick-tour/">MongoDB documentation</a>
 </td>
 </tr>
 </table>
@@ -2973,7 +2973,7 @@ db.languages &lt;&lt; [[<span class="key">name</span>: <span class="string"><spa
 </div>
 </div>
 <div class="paragraph">
-<p>To get hold of the <code>mongo</code> instance (which is an instance of the <a href="http://api.mongodb.org/java/current/com/mongodb/Mongo.html">com.mongodb.Mongo</a> class) inside a controller or service simple define a <code>mongo</code> property:</p>
+<p>To get hold of the <code>mongo</code> instance (which is an instance of the <a href="https://api.mongodb.org/java/current/com/mongodb/Mongo.html">com.mongodb.Mongo</a> class) inside a controller or service simple define a <code>mongo</code> property:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -3044,7 +3044,7 @@ Person.collection.findOne(<span class="key">firstName</span>:<span class="string
 <p>For example in this case neither <code>Person</code> object will be persisted to the database, because underneath the surface a persistence session is being used to batch up both insert operations into a single insert. When an exception is thrown neither insert is ever executed, hence we allow for some transactional semantics at the GORM-level.</p>
 </div>
 <div class="paragraph">
-<p>Using the lower level API you can of course also take advantage of Mongo&#8217;s support for <a href="http://docs.mongodb.org/manual/tutorial/isolate-sequence-of-operations">Atomic operations</a>.</p>
+<p>Using the lower level API you can of course also take advantage of Mongo&#8217;s support for <a href="https://docs.mongodb.org/manual/tutorial/isolate-sequence-of-operations">Atomic operations</a>.</p>
 </div>
 </div>
 </div>
@@ -3161,7 +3161,7 @@ is large, classpath scanning may be slow, so it&#8217;s better to override the m
 <div class="sect4">
 <h5 id="_purpose">Purpose</h5>
 <div class="paragraph">
-<p>Provides access to the native <a href="http://api.mongodb.com/java/current/com/mongodb/async/client/MongoClient.html">MongoClient</a> instance.</p>
+<p>Provides access to the native <a href="https://api.mongodb.com/java/current/com/mongodb/async/client/MongoClient.html">MongoClient</a> instance.</p>
 </div>
 </div>
 <div class="sect4">
@@ -3183,7 +3183,7 @@ is large, classpath scanning may be slow, so it&#8217;s better to override the m
 <div class="sect4">
 <h5 id="_description">Description</h5>
 <div class="paragraph">
-<p>See the API for the <a href="http://api.mongodb.org/java/current/">Mongo Java Driver</a> for API usage info.</p>
+<p>See the API for the <a href="https://api.mongodb.org/java/current/">Mongo Java Driver</a> for API usage info.</p>
 </div>
 </div>
 </div>
@@ -3195,7 +3195,7 @@ is large, classpath scanning may be slow, so it&#8217;s better to override the m
 <div class="sect4">
 <h5 id="_purpose_2">Purpose</h5>
 <div class="paragraph">
-<p>Returns the MongoDB <a href="http://api.mongodb.com/java/current/com/mongodb/async/client/MongoCollection.html">collection</a> used for the current domain class</p>
+<p>Returns the MongoDB <a href="https://api.mongodb.com/java/current/com/mongodb/async/client/MongoCollection.html">collection</a> used for the current domain class</p>
 </div>
 </div>
 <div class="sect4">
@@ -3209,7 +3209,7 @@ is large, classpath scanning may be slow, so it&#8217;s better to override the m
 <div class="sect4">
 <h5 id="_description_2">Description</h5>
 <div class="paragraph">
-<p>The <code>collection</code> property allows access to the underlying MongoDB <a href="http://api.mongodb.com/java/current/com/mongodb/async/client/MongoCollection.html">MongoCollection</a> object, thus allowing direct access to the low-level MongoDB driver.</p>
+<p>The <code>collection</code> property allows access to the underlying MongoDB <a href="https://api.mongodb.com/java/current/com/mongodb/async/client/MongoCollection.html">MongoCollection</a> object, thus allowing direct access to the low-level MongoDB driver.</p>
 </div>
 </div>
 </div>
@@ -3218,7 +3218,7 @@ is large, classpath scanning may be slow, so it&#8217;s better to override the m
 <div class="sect4">
 <h5 id="_purpose_3">Purpose</h5>
 <div class="paragraph">
-<p>Returns the name of the MongoDB <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html">collection</a> used for the current domain class</p>
+<p>Returns the name of the MongoDB <a href="https://api.mongodb.org/java/current/com/mongodb/DBCollection.html">collection</a> used for the current domain class</p>
 </div>
 </div>
 <div class="sect4">
@@ -3232,7 +3232,7 @@ is large, classpath scanning may be slow, so it&#8217;s better to override the m
 <div class="sect4">
 <h5 id="_description_3">Description</h5>
 <div class="paragraph">
-<p>The <code>collectionName</code> property allows introspection of the name of the <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html">DBCollection</a> object used by a given domain class. Can be used in conjunction with <code>useCollection</code> to switch to different collections and back again.</p>
+<p>The <code>collectionName</code> property allows introspection of the name of the <a href="https://api.mongodb.org/java/current/com/mongodb/DBCollection.html">DBCollection</a> object used by a given domain class. Can be used in conjunction with <code>useCollection</code> to switch to different collections and back again.</p>
 </div>
 </div>
 </div>
@@ -3241,7 +3241,7 @@ is large, classpath scanning may be slow, so it&#8217;s better to override the m
 <div class="sect4">
 <h5 id="_purpose_4">Purpose</h5>
 <div class="paragraph">
-<p>Executes a MongoDB <a href="http://docs.mongodb.org/manual/reference/operator/query/text/#op._S_text">$text</a> search query and returns the number of hits.</p>
+<p>Executes a MongoDB <a href="https://docs.mongodb.org/manual/reference/operator/query/text/#op._S_text">$text</a> search query and returns the number of hits.</p>
 </div>
 </div>
 <div class="sect4">
@@ -3266,7 +3266,7 @@ is large, classpath scanning may be slow, so it&#8217;s better to override the m
 <div class="sect3">
 <h4 id="_purpose_5">Purpose</h4>
 <div class="paragraph">
-<p>Returns the MongoDB <a href="http://api.mongodb.com/java/current/com/mongodb/async/client/MongoDatabase.html">MongoDatabase</a> object.</p>
+<p>Returns the MongoDB <a href="https://api.mongodb.com/java/current/com/mongodb/async/client/MongoDatabase.html">MongoDatabase</a> object.</p>
 </div>
 <div class="sect4">
 <h5 id="_examples_5">Examples</h5>
@@ -3279,7 +3279,7 @@ is large, classpath scanning may be slow, so it&#8217;s better to override the m
 <div class="sect4">
 <h5 id="_description_5">Description</h5>
 <div class="paragraph">
-<p>The <code>DB</code> property allows access to the underlying MongoDB <a href="http://api.mongodb.com/java/current/com/mongodb/async/client/MongoDatabase.html">MongoDatabase</a> object, thus allowing easy access to the low-level MongoDB Java driver.</p>
+<p>The <code>DB</code> property allows access to the underlying MongoDB <a href="https://api.mongodb.com/java/current/com/mongodb/async/client/MongoDatabase.html">MongoDatabase</a> object, thus allowing easy access to the low-level MongoDB Java driver.</p>
 </div>
 </div>
 </div>
@@ -3288,7 +3288,7 @@ is large, classpath scanning may be slow, so it&#8217;s better to override the m
 <div class="sect4">
 <h5 id="_purpose_6">Purpose</h5>
 <div class="paragraph">
-<p>Returns the MongoDB <a href="http://api.mongodb.com/java/current/org/bson/Document.html">Document</a> for an instance of a domain class</p>
+<p>Returns the MongoDB <a href="https://api.mongodb.com/java/current/org/bson/Document.html">Document</a> for an instance of a domain class</p>
 </div>
 <div class="admonitionblock warning">
 <table>
@@ -3316,7 +3316,7 @@ println b.dbo</code></pre>
 <div class="sect4">
 <h5 id="_description_6">Description</h5>
 <div class="paragraph">
-<p>The <code>dbo</code> property allows access to the underlying MongoDB <a href="http://api.mongodb.com/java/current/org/bson/Document.html">Document</a>, which is a respresentation of the stored BSON document that can be manipulated in memory.</p>
+<p>The <code>dbo</code> property allows access to the underlying MongoDB <a href="https://api.mongodb.com/java/current/org/bson/Document.html">Document</a>, which is a respresentation of the stored BSON document that can be manipulated in memory.</p>
 </div>
 </div>
 </div>
@@ -3325,7 +3325,7 @@ println b.dbo</code></pre>
 <div class="sect4">
 <h5 id="_purpose_7">Purpose</h5>
 <div class="paragraph">
-<p>Executes a MongoDB <a href="http://docs.mongodb.org/manual/reference/operator/query/geoIntersects/">$geoIntersects</a> query</p>
+<p>Executes a MongoDB <a href="https://docs.mongodb.org/manual/reference/operator/query/geoIntersects/">$geoIntersects</a> query</p>
 </div>
 </div>
 <div class="sect4">
@@ -3369,7 +3369,7 @@ new Entry(<span class="key">shape</span>: <span class="predefined-type">Polygon<
 <div class="sect4">
 <h5 id="_description_7">Description</h5>
 <div class="paragraph">
-<p>The $geoIntersects operator is a geospatial query operator that selects all locations that intersect with a GeoJSON object. See <a href="http://docs.mongodb.org/manual/reference/operator/query/geoIntersects/">$geoIntersects</a>.</p>
+<p>The $geoIntersects operator is a geospatial query operator that selects all locations that intersect with a GeoJSON object. See <a href="https://docs.mongodb.org/manual/reference/operator/query/geoIntersects/">$geoIntersects</a>.</p>
 </div>
 </div>
 </div>
@@ -3378,7 +3378,7 @@ new Entry(<span class="key">shape</span>: <span class="predefined-type">Polygon<
 <div class="sect4">
 <h5 id="_purpose_8">Purpose</h5>
 <div class="paragraph">
-<p>Executes a MongoDB <a href="http://docs.mongodb.org/manual/reference/operator/query/geoWithin/">$geoWithin</a> query</p>
+<p>Executes a MongoDB <a href="https://docs.mongodb.org/manual/reference/operator/query/geoWithin/">$geoWithin</a> query</p>
 </div>
 </div>
 <div class="sect4">
@@ -3398,7 +3398,7 @@ Restaurant.findByPointGeoWithin([ <span class="string"><span class="delimiter">'
 <h5 id="_description_8">Description</h5>
 <div class="paragraph">
 <p>The $geoWithin operator is a geospatial query operator that queries for a defined point, line or shape that exists entirely within another defined shape. When determining inclusion, MongoDB considers the border of a shape to be part of the shape, subject to the precision of floating point numbers.
-See <a href="http://docs.mongodb.org/manual/reference/operator/query/geoWithin/">$geoWithin</a> for more information.</p>
+See <a href="https://docs.mongodb.org/manual/reference/operator/query/geoWithin/">$geoWithin</a> for more information.</p>
 </div>
 </div>
 </div>
@@ -3407,7 +3407,7 @@ See <a href="http://docs.mongodb.org/manual/reference/operator/query/geoWithin/"
 <div class="sect4">
 <h5 id="_purpose_9">Purpose</h5>
 <div class="paragraph">
-<p>Executes a MongoDB <a href="http://docs.mongodb.org/manual/reference/operator/query/near/">$near</a> query</p>
+<p>Executes a MongoDB <a href="https://docs.mongodb.org/manual/reference/operator/query/near/">$near</a> query</p>
 </div>
 </div>
 <div class="sect4">
@@ -3429,7 +3429,7 @@ Restaurant.withCriteria {
 <div class="sect4">
 <h5 id="_description_9">Description</h5>
 <div class="paragraph">
-<p>Specifies a point for which a geospatial query returns the closest documents first. The query sorts the documents from nearest to farthest. See <a href="http://docs.mongodb.org/manual/reference/operator/query/near/">$near</a> documentation for more info.</p>
+<p>Specifies a point for which a geospatial query returns the closest documents first. The query sorts the documents from nearest to farthest. See <a href="https://docs.mongodb.org/manual/reference/operator/query/near/">$near</a> documentation for more info.</p>
 </div>
 </div>
 </div>
@@ -3438,7 +3438,7 @@ Restaurant.withCriteria {
 <div class="sect4">
 <h5 id="_purpose_10">Purpose</h5>
 <div class="paragraph">
-<p>Executes a MongoDB <a href="http://docs.mongodb.org/manual/reference/operator/query/nearSphere/">$nearSphere</a> query</p>
+<p>Executes a MongoDB <a href="https://docs.mongodb.org/manual/reference/operator/query/nearSphere/">$nearSphere</a> query</p>
 </div>
 </div>
 <div class="sect4">
@@ -3463,7 +3463,7 @@ Restaurant.withCriteria {
 <p>Specifies a point for which a geospatial query returns the closest documents first. The query sorts the documents from nearest to farthest. MongoDB calculates distances for $nearSphere using spherical geometry.</p>
 </div>
 <div class="paragraph">
-<p>See the documentation for the <a href="http://docs.mongodb.org/manual/reference/operator/query/nearSphere/">$nearSphere</a> query operator.</p>
+<p>See the documentation for the <a href="https://docs.mongodb.org/manual/reference/operator/query/nearSphere/">$nearSphere</a> query operator.</p>
 </div>
 </div>
 </div>

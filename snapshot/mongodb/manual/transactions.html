@@ -462,7 +462,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>For example in this case neither <code>Person</code> object will be persisted to the database, because underneath the surface a persistence session is being used to batch up both insert operations into a single insert. When an exception is thrown neither insert is ever executed, hence we allow for some transactional semantics at the GORM-level.</p>
 </div>
 <div class="paragraph">
-<p>Using the lower level API you can of course also take advantage of Mongo&#8217;s support for <a href="http://docs.mongodb.org/manual/tutorial/isolate-sequence-of-operations">Atomic operations</a>.</p>
+<p>Using the lower level API you can of course also take advantage of Mongo&#8217;s support for <a href="https://docs.mongodb.org/manual/tutorial/isolate-sequence-of-operations">Atomic operations</a>.</p>
 </div>
 </div>
 <div id="footer">
