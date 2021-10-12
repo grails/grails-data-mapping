@@ -495,7 +495,7 @@ If your configuration is empty, <em>embedded</em> is used as default.
 <div class="sect3">
 <h4 id="_type_rest">type = "rest"</h4>
 <div class="paragraph">
-<p>Uses a <code>org.grails.datastore.gorm.neo4j.rest.GrailsCypherRestGraphDatabase</code> instance to connect to a Neo4j database. See <a href="http://neo4j.com/docs/stable/server-installation.html" class="bare">http://neo4j.com/docs/stable/server-installation.html</a> for how to setup a Neo4j server.</p>
+<p>Uses a <code>org.grails.datastore.gorm.neo4j.rest.GrailsCypherRestGraphDatabase</code> instance to connect to a Neo4j database. See <a href="https://neo4j.com/docs/stable/server-installation.html" class="bare">https://neo4j.com/docs/stable/server-installation.html</a> for how to setup a Neo4j server.</p>
 </div>
 <div class="paragraph">
 <p><code>location</code> specifies the URL of he Neo4j REST server. When using the Heroku Neo4j addon, omit the location. In this case location will default to env.NEO4J_URL that is provided by Heroku.</p>
@@ -531,7 +531,7 @@ compile 'org.springframework.data:spring-data-neo4j-rest:3.4.0.RELEASE', {
 <div class="sect3">
 <h4 id="_type_ha">type = "ha"</h4>
 <div class="paragraph">
-<p>Uses a Neo4j HA setup, for details see <a href="http://neo4j.com/docs/stable/ha.html" class="bare">http://neo4j.com/docs/stable/ha.html</a>. In this case params must at least contain</p>
+<p>Uses a Neo4j HA setup, for details see <a href="https://neo4j.com/docs/stable/ha.html" class="bare">https://neo4j.com/docs/stable/ha.html</a>. In this case params must at least contain</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -540,7 +540,7 @@ compile 'org.springframework.data:spring-data-neo4j-rest:3.4.0.RELEASE', {
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-For Neo4j HA either a commercial license is <a href="http://neo4j.org/licensing-guide/">required</a>, or you could use AGPL.
+For Neo4j HA either a commercial license is <a href="https://neo4j.org/licensing-guide/">required</a>, or you could use AGPL.
 </td>
 </tr>
 </table>
@@ -554,7 +554,7 @@ For Neo4j HA either a commercial license is <a href="http://neo4j.org/licensing-
     neo4j {
         type = "ha"
         location = "/var/neo4j"
-        // see http://neo4j.com/docs/stable/ha-configuration.html
+        // see https://neo4j.com/docs/stable/ha-configuration.html
         options = [
                 'ha.server_id': 1,
                 'ha.coordinators': 'localhost:2181,localhost:2182,localhost:2183'
@@ -618,7 +618,7 @@ ImpermanentGraphDatabase is intended to be used for testing.
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 7.0.2.RELEASE<br>
+Version 7.1.0<br>
 </div>
 </div>
 </body>
