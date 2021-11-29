@@ -39,7 +39,7 @@ jobs:
         with:
           arguments: clean build
       - name: Publish Test Report
-        if: steps.build.outcome == 'success' && github.event_name == 'push' && matrix.java == '8'
+        if: steps.build.outcome == 'failure' || steps.tests.outcome == 'failure'
         uses: scacap/action-surefire-report@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
