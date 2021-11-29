@@ -106,23 +106,23 @@ subprojects {
         if (isStandardGroovyMavenProject) {
             documentation "org.fusesource.jansi:jansi:2.4.0"
             documentation "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
-            documentation 'info.picocli:picocli:4.6.1'
+            documentation 'info.picocli:picocli:4.6.2'
             documentation ("com.github.javaparser:javaparser-core:$javaParserCoreVersion")
 
             api "org.codehaus.groovy:groovy:$groovyVersion"
             testImplementation "org.codehaus.groovy:groovy-test-junit5:$groovyVersion"
-            testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.1"
-            testImplementation "org.junit.platform:junit-platform-runner:1.8.1"
-            testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.1"
+            testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
+            testImplementation "org.junit.platform:junit-platform-runner:1.8.2"
+            testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.2"
 
             testImplementation(spockDependency) { transitive = false }
         }
 
         if (project.name == "grails-datastore-gorm-tck") {
             api "org.codehaus.groovy:groovy-test-junit5:$groovyVersion"
-            api "org.junit.jupiter:junit-jupiter-api:5.8.1"
-            api "org.junit.platform:junit-platform-runner:1.8.1"
-            runtimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.1"
+            api "org.junit.jupiter:junit-jupiter-api:5.8.2"
+            api "org.junit.platform:junit-platform-runner:1.8.2"
+            runtimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.2"
             implementation(spockDependency) { transitive = false }
         }
     }
