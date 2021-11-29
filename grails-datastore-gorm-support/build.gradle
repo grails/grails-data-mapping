@@ -56,3 +56,9 @@ dependencies {
         exclude group:'antlr', module: 'antlr'
     }
 }
+
+project.tasks.withType(Jar) {
+    configure {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+}
