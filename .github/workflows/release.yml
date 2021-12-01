@@ -36,7 +36,13 @@ jobs:
         uses: micronaut-projects/github-actions/pre-release@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate secring file
+        env:
+          SECRING_FILE: ${{ secrets.SECRING_FILE }}
+        run: echo $SECRING_FILE | base64 -d > ${{ github.workspace }}/secring.gpg
       - name: Publish to Sonatype OSSRH
+        id: publish
+        uses: gradle/gradle-build-action@v2
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
@@ -44,22 +50,25 @@ jobs:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSPHRASE: ${{ secrets.SIGNING_PASSPHRASE }}
           SECRING_FILE: ${{ secrets.SECRING_FILE }}
-        run: |
-          echo $SECRING_FILE | base64 -d > secring.gpg
-          echo "Publishing Artifacts"
-          (set -x; ./gradlew -Psigning.secretKeyRingFile="${GITHUB_WORKSPACE}/secring.gpg" publishToSonatype closeAndReleaseSonatypeStagingRepository --no-daemon)
-          (set -x; ./gradlew assemble --no-daemon)
+        with:
+          arguments: -Psigning.secretKeyRingFile=${{ github.workspace }}/secring.gpg publishToSonatype closeAndReleaseSonatypeStagingRepository
+      - name: Run Assemble
+        if: steps.publish.outcome == 'success'
+        id: assemble
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: assemble
       - name: Export Gradle Properties
         uses: micronaut-projects/github-actions/export-gradle-properties@master
       - name: Run post-release
-        if: success()
+        if: steps.publish.outcome == 'success'
         uses: micronaut-projects/github-actions/post-release@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
         env:
           SNAPSHOT_SUFFIX: -SNAPSHOT
       - name: Create Message for the GORM Documentation Release
-        if: success()
+        if: steps.assemble.outcome == 'success'
         id: gorm_docs_release_message
         run: |
           echo ::set-output name=value::{\"gorm_version\":\"$RELEASE_VERSION\"}
