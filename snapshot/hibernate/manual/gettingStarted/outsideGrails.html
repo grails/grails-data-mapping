@@ -440,7 +440,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:7.0.6.BUILD-SNAPSHOT"
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:7.1.1-SNAPSHOT"
 runtime "com.h2database:h2:1.4.192"
 runtime "org.apache.tomcat:tomcat-jdbc:8.5.0"
 runtime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"
@@ -454,7 +454,7 @@ runtime "org.slf4j:slf4j-api:1.7.10"</code></pre>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-The above example also uses the <a href="http://www.h2database.com">H2 Database</a> and Tomcat connection pool.
+The above example also uses the <a href="https://www.h2database.com">H2 Database</a> and Tomcat connection pool.
 However other pool implementations are supported including <code>commons-dbcp</code>, <code>tomcat pool</code> or <code>hikari</code>.
 If a connection pool is not specified <code>org.springframework.jdbc.datasource.DriverManagerDataSource</code> is used,
 which creates a new connection to the database each time you request a connect.
@@ -510,7 +510,7 @@ HibernateDatastore datastore = new HibernateDatastore( configuration, Person)</c
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 7.0.6.BUILD-SNAPSHOT<br>
+Version 7.1.1-SNAPSHOT<br>
 </div>
 </div>
 </body>

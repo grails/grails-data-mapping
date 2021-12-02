@@ -107,7 +107,9 @@ if (location.href.indexOf('is-external=true') == -1) {
             <hr>
             <br>
 
-<pre>public&nbsp;class GrailsHibernateTemplate</pre>
+<pre>public&nbsp;class GrailsHibernateTemplate
+extends java.lang.Object
+implements <a href='../../../../org/grails/orm/hibernate/IHibernateTemplate.html'>IHibernateTemplate</a></pre>
 
           </li>
     </ul>
@@ -226,7 +228,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>protected&nbsp;<a href='../../../../org.springframework.jdbc.support.SQLExceptionTranslator.html'>SQLExceptionTranslator</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>protected&nbsp;org.springframework.jdbc.support.SQLExceptionTranslator</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#jdbcExceptionTranslator">jdbcExceptionTranslator</a></code></td>
                             <td class="colLast"></td>
                         </tr>
@@ -309,7 +311,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;<a href='../../../../FlushMode.html'>FlushMode</a></code></td>
+                            <td class="colLast"><code>protected&nbsp;<a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.FlushMode.html'>AbstractHibernateDatastore.FlushMode</a></code></td>
                             <td class="colLast"><code><strong><a href="#applyFlushMode(org.hibernate.Session, boolean)">applyFlushMode</a></strong>(org.hibernate.Session session, boolean existingTransaction)</code><br>Apply the flush mode that's been specified for this accessor to the given Session.</td>
                         </tr>
                         
@@ -346,7 +348,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;org.springframework.dao.DataAccessException</code></td>
-                            <td class="colLast"><code><strong><a href="#convertJdbcAccessException(JDBCException, org.springframework.jdbc.support.SQLExceptionTranslator)">convertJdbcAccessException</a></strong>(<a href='../../../../JDBCException.html'>JDBCException</a> ex, <a href='../../../../org.springframework.jdbc.support.SQLExceptionTranslator.html'>SQLExceptionTranslator</a> translator)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#convertJdbcAccessException(JDBCException, org.springframework.jdbc.support.SQLExceptionTranslator)">convertJdbcAccessException</a></strong>(<a href='../../../../JDBCException.html'>JDBCException</a> ex, org.springframework.jdbc.support.SQLExceptionTranslator translator)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -748,7 +750,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="jdbcExceptionTranslator"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;<a href='../../../../org.springframework.jdbc.support.SQLExceptionTranslator.html'>SQLExceptionTranslator</a> <strong>jdbcExceptionTranslator</strong></h4>
+                                <h4>protected&nbsp;org.springframework.jdbc.support.SQLExceptionTranslator <strong>jdbcExceptionTranslator</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -825,7 +827,7 @@ if (location.href.indexOf('is-external=true') == -1) {
                         <a name="applyFlushMode(org.hibernate.Session, boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;<a href='../../../../FlushMode.html'>FlushMode</a> <strong>applyFlushMode</strong>(org.hibernate.Session session, boolean existingTransaction)</h4>
+                                <h4>protected&nbsp;<a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.FlushMode.html'>AbstractHibernateDatastore.FlushMode</a> <strong>applyFlushMode</strong>(org.hibernate.Session session, boolean existingTransaction)</h4>
                                 <p> Apply the flush mode that's been specified for this accessor to the given Session.
       <DL><DT><B>Parameters:</B></DT><DD><code>session</code> -              the current Hibernate Session</DD><DD><code>existingTransaction</code> -  if executing within an existing transaction</DD></DL><DL><DT><B>Returns:</B></DT><DD>the previous flush mode to restore after the operation, or <code>null</code> if none</DD></DL><DL><DT><B>See Also:</B></DT><DD><a href='#setFlushMode'>setFlushMode</a></DD><DD>org.hibernate.Session#setFlushMode</DD></DL></p>
                             </li>
@@ -878,7 +880,7 @@ protected&nbsp;org.springframework.dao.DataAccessException <strong>convertHibern
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.SuppressWarnings("SqlDialectInspection")
-protected&nbsp;org.springframework.dao.DataAccessException <strong>convertJdbcAccessException</strong>(<a href='../../../../JDBCException.html'>JDBCException</a> ex, <a href='../../../../org.springframework.jdbc.support.SQLExceptionTranslator.html'>SQLExceptionTranslator</a> translator)</h4>
+protected&nbsp;org.springframework.dao.DataAccessException <strong>convertJdbcAccessException</strong>(<a href='../../../../JDBCException.html'>JDBCException</a> ex, org.springframework.jdbc.support.SQLExceptionTranslator translator)</h4>
                                 <p></p>
                             </li>
                         </ul>
