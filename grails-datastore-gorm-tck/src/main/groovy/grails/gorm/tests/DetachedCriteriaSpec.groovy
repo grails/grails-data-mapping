@@ -83,8 +83,6 @@ class DetachedCriteriaSpec extends GormDatastoreSpec {
             criteria.asBoolean() == true
     }
 
-    // Ignore on Travis infrastructure which doesn't support MongoDB 26
-    @IgnoreIf({ System.getenv("TRAVIS")})
     void "Test updateAll method"() {
         given:"A bunch of people"
             createPeople()

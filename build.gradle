@@ -12,7 +12,7 @@ buildscript {
 
 ext {
     // overall project version
-    isCiBuild = System.getenv().get("TRAVIS") == 'true' || System.getenv().get("CI") as Boolean
+    isCiBuild = System.getenv().get("CI") as Boolean
     isSnapshot = project.projectVersion.endsWith("-SNAPSHOT")
     isReleaseVersion = !isSnapshot
 
