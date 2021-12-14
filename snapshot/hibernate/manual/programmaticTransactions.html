@@ -439,7 +439,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>GORM&#8217;s transaction management is built on Spring and uses Spring&#8217;s Transaction abstraction for dealing with programmatic transactions.</p>
 </div>
 <div class="paragraph">
-<p>However, GORM classes have been enhanced to make this simpler with the <a href="../api/org/grails/datastore/gorm/GormEntity.html#withTransaction(groovy.lang.Closure)">withTransaction(Closure)</a>  method. This method has a single parameter, a Closure, which has a single parameter which is a Spring <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/transaction/TransactionStatus.html">TransactionStatus</a> instance.</p>
+<p>However, GORM classes have been enhanced to make this simpler with the <a href="../api/org/grails/datastore/gorm/GormEntity.html#withTransaction(groovy.lang.Closure)">withTransaction(Closure)</a>  method. This method has a single parameter, a Closure, which has a single parameter which is a Spring <a href="https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/transaction/TransactionStatus.html">TransactionStatus</a> instance.</p>
 </div>
 <div class="sect3">
 <h4 id="_using_the_withtransaction_method">Using the withTransaction Method</h4>
@@ -486,7 +486,7 @@ GORM versions prior to 6.0.0 did not roll back transactions for a checked <code>
 </table>
 </div>
 <div class="paragraph">
-<p>You can also use "save points" to rollback a transaction to a particular point in time if you don&#8217;t want to rollback the entire transaction. This can be achieved through the use of Spring&#8217;s <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/transaction/SavepointManager.html">SavePointManager</a> interface.</p>
+<p>You can also use "save points" to rollback a transaction to a particular point in time if you don&#8217;t want to rollback the entire transaction. This can be achieved through the use of Spring&#8217;s <a href="https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/transaction/SavepointManager.html">SavePointManager</a> interface.</p>
 </div>
 <div class="paragraph">
 <p>The <code>withTransaction</code> method deals with the begin/commit/rollback logic for you within the scope of the block.</p>
@@ -521,7 +521,7 @@ TransactionService transactionService = datastore.getService(TransactionService)
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 7.0.6.BUILD-SNAPSHOT<br>
+Version 7.1.1-SNAPSHOT<br>
 </div>
 </div>
 </body>
