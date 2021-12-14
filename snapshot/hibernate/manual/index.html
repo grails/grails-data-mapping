@@ -1714,7 +1714,7 @@ Because the setting is Groovy configuration it must go into a Groovy-aware confi
 <p>If you are not using Spring it can be passed to the constructor of the <code>HibernateDatastore</code> class on instantiation.</p>
 </div>
 <div class="paragraph">
-<p>The <code>HibernateConnectionSourceFactory</code> has a few useful setters that allow you to specify a Hibernate <a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/Interceptor.html">Interceptor</a> or <a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/boot/spi/MetadataContributor.html">MetadataContributor</a> (Hibernate 5+ only).</p>
+<p>The <code>HibernateConnectionSourceFactory</code> has a few useful setters that allow you to specify a Hibernate <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/Interceptor.html">Interceptor</a> or <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/boot/spi/MetadataContributor.html">MetadataContributor</a> (Hibernate 5+ only).</p>
 </div>
 </div>
 <div class="sect3">
@@ -3108,7 +3108,7 @@ println airport.version</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>When you perform updates Hibernate will automatically check the version property against the  version column in the database and if they differ will throw a <a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/StaleObjectStateException.html">StaleObjectException</a>. This will roll back the transaction if one is active.</p>
+<p>When you perform updates Hibernate will automatically check the version property against the  version column in the database and if they differ will throw a <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/StaleObjectStateException.html">StaleObjectException</a>. This will roll back the transaction if one is active.</p>
 </div>
 <div class="paragraph">
 <p>This is useful as it allows a certain level of atomicity without resorting to pessimistic locking that has an inherit performance penalty. The downside is that you have to deal with this exception if you have highly concurrent writes. This requires flushing the session:</p>
@@ -4303,7 +4303,7 @@ Note that one limitation with regards to batch operations is that join queries (
 <p>Criteria can be used either with the <a href="../api/org/grails/datastore/gorm/GormEntity.html#createCriteria()">createCriteria()</a> or <a href="../api/org/grails/datastore/gorm/GormEntity.html#withCriteria(groovy.lang.Closure)">withCriteria(closure)</a> methods.</p>
 </div>
 <div class="paragraph">
-<p>The builder uses Hibernate&#8217;s Criteria API. The nodes on this builder map the static methods found in the <a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/criterion/Restrictions.html">Restrictions</a> class of the Hibernate Criteria API. For example:</p>
+<p>The builder uses Hibernate&#8217;s Criteria API. The nodes on this builder map the static methods found in the <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/criterion/Restrictions.html">Restrictions</a> class of the Hibernate Criteria API. For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4434,7 +4434,7 @@ def results = c.list {
 <div class="sect3">
 <h4 id="_querying_with_projections">7.5.3. Querying with Projections</h4>
 <div class="paragraph">
-<p>Projections may be used to customise the results. Define a "projections" node within the criteria builder tree to use projections. There are equivalent methods within the projections node to the methods found in the Hibernate <a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/criterion/Projections.html">Projections</a> class:</p>
+<p>Projections may be used to customise the results. Define a "projections" node within the criteria builder tree to use projections. There are equivalent methods within the projections node to the methods found in the Hibernate <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/criterion/Projections.html">Projections</a> class:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4454,7 +4454,7 @@ def numberOfBranches = c.get {
 <div class="sect3">
 <h4 id="_transforming_projection_results">7.5.4. Transforming Projection Results</h4>
 <div class="paragraph">
-<p>If the raw value or simple object array returned by the criteria method doesn&#8217;t suit your needs, the result can be transformed with a <a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/transform/ResultTransformer.html">ResultTransformer</a>. Let&#8217;s say we want to transform the criteria results into a Map so that we can easily reference values by key:</p>
+<p>If the raw value or simple object array returned by the criteria method doesn&#8217;t suit your needs, the result can be transformed with a <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/transform/ResultTransformer.html">ResultTransformer</a>. Let&#8217;s say we want to transform the criteria results into a Map so that we can easily reference values by key:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4476,7 +4476,7 @@ def accountsOverview = c.get {
 <p>Note that we&#8217;ve added an alias to each projection as an additional parameter to be used as the key. For this to work, all projections must have aliases defined, otherwise the corresponding map entry will not be built.</p>
 </div>
 <div class="paragraph">
-<p>We can also transform the result into an object of our choosing via the <a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/transform/Transformers.html#aliasToBean-java.lang.Class-">Transformers.aliasToBean()</a> method. In this case, we&#8217;ll transform it into an <code>AccountsOverview</code>:</p>
+<p>We can also transform the result into an object of our choosing via the <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/transform/Transformers.html#aliasToBean-java.lang.Class-">Transformers.aliasToBean()</a> method. In this case, we&#8217;ll transform it into an <code>AccountsOverview</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4690,7 +4690,7 @@ Note that the parameter there is SQL. The <code>first_name</code> attribute refe
 <div class="sect3">
 <h4 id="_using_scrollable_results">7.5.7. Using Scrollable Results</h4>
 <div class="paragraph">
-<p>You can use Hibernate&#8217;s <a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/ScrollableResults.html">ScrollableResults</a> feature by calling the scroll method:</p>
+<p>You can use Hibernate&#8217;s <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/ScrollableResults.html">ScrollableResults</a> feature by calling the scroll method:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4723,7 +4723,7 @@ def accountNumber = results.getLong(<span class="string"><span class="delimiter"
 <div class="sect3">
 <h4 id="_setting_properties_in_the_criteria_instance">7.5.8. Setting properties in the Criteria instance</h4>
 <div class="paragraph">
-<p>If a node within the builder tree doesn&#8217;t match a particular criterion it will attempt to set a property on the Criteria object itself. This allows full access to all the properties in this class. This example calls <code>setMaxResults</code> and <code>setFirstResult</code> on the <a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/Criteria.html">Criteria</a> instance:</p>
+<p>If a node within the builder tree doesn&#8217;t match a particular criterion it will attempt to set a property on the Criteria object itself. This allows full access to all the properties in this class. This example calls <code>setMaxResults</code> and <code>setFirstResult</code> on the <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/Criteria.html">Criteria</a> instance:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4842,7 +4842,7 @@ def results = Airport.withCriteria {
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>listDistinct</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">If subqueries or associations are used one may end up with the same row multiple times in the result set. This allows listing only distinct entities and is equivalent to <code>DISTINCT_ROOT_ENTITY</code> of the <a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/criterion/CriteriaSpecification.html">CriteriaSpecification</a> class.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If subqueries or associations are used one may end up with the same row multiple times in the result set. This allows listing only distinct entities and is equivalent to <code>DISTINCT_ROOT_ENTITY</code> of the <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/criterion/CriteriaSpecification.html">CriteriaSpecification</a> class.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>count</strong></p></td>
@@ -5240,7 +5240,7 @@ where b.author = a and a.surname = :surname</span><span class="delimiter">&quot;
 <p><code>beforeUpdate</code> - Executed before an object is updated.  If you return false, the update will be cancelled.</p>
 </li>
 <li>
-<p><code>beforeDelete</code> - Executed before an object is deleted.  If you return false, the delete will be cancelled.</p>
+<p><code>beforeDelete</code> - Executed before an object is deleted.  If you return false, the operation delete will be cancelled.</p>
 </li>
 <li>
 <p><code>beforeValidate</code> - Executed before an object is validated</p>
@@ -5567,139 +5567,139 @@ datastore.getApplicationEventPublisher()
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">auto-flush</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/AutoFlushEventListener.html">AutoFlushEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/AutoFlushEventListener.html">AutoFlushEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">merge</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/MergeEventListener.html">MergeEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/MergeEventListener.html">MergeEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">create</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PersistEventListener.html">PersistEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PersistEventListener.html">PersistEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">create-onflush</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PersistEventListener.html">PersistEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PersistEventListener.html">PersistEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">delete</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/DeleteEventListener.html">DeleteEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/DeleteEventListener.html">DeleteEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">dirty-check</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/DirtyCheckEventListener.html">DirtyCheckEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/DirtyCheckEventListener.html">DirtyCheckEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">evict</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/EvictEventListener.html">EvictEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/EvictEventListener.html">EvictEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">flush</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/FlushEventListener.html">FlushEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/FlushEventListener.html">FlushEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">flush-entity</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/FlushEntityEventListener.html">FlushEntityEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/FlushEntityEventListener.html">FlushEntityEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">load</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/LoadEventListener.html">LoadEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/LoadEventListener.html">LoadEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">load-collection</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/InitializeCollectionEventListener.html">InitializeCollectionEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/InitializeCollectionEventListener.html">InitializeCollectionEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">lock</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/LockEventListener.html">LockEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/LockEventListener.html">LockEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">refresh</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/RefreshEventListener.html">RefreshEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/RefreshEventListener.html">RefreshEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">replicate</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/ReplicateEventListener.html">ReplicateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/ReplicateEventListener.html">ReplicateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">save-update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/SaveOrUpdateEventListener.html">SaveOrUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/SaveOrUpdateEventListener.html">SaveOrUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">save</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/SaveOrUpdateEventListener.html">SaveOrUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/SaveOrUpdateEventListener.html">SaveOrUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/SaveOrUpdateEventListener.html">SaveOrUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/SaveOrUpdateEventListener.html">SaveOrUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-load</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreLoadEventListener.html">PreLoadEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreLoadEventListener.html">PreLoadEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreUpdateEventListener.html">PreUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreUpdateEventListener.html">PreUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-delete</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreDeleteEventListener.html">PreDeleteEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreDeleteEventListener.html">PreDeleteEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-insert</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreInsertEventListener.html">PreInsertEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreInsertEventListener.html">PreInsertEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-collection-recreate</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreCollectionRecreateEventListener.html">PreCollectionRecreateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreCollectionRecreateEventListener.html">PreCollectionRecreateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-collection-remove</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreCollectionRemoveEventListener.html">PreCollectionRemoveEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreCollectionRemoveEventListener.html">PreCollectionRemoveEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-collection-update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreCollectionUpdateEventListener.html">PreCollectionUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreCollectionUpdateEventListener.html">PreCollectionUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-load</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostLoadEventListener.html">PostLoadEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostLoadEventListener.html">PostLoadEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostUpdateEventListener.html">PostUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostUpdateEventListener.html">PostUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-delete</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostDeleteEventListener.html">PostDeleteEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostDeleteEventListener.html">PostDeleteEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-insert</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostInsertEventListener.html">PostInsertEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostInsertEventListener.html">PostInsertEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-commit-update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostUpdateEventListener.html">PostUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostUpdateEventListener.html">PostUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-commit-delete</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostDeleteEventListener.html">PostDeleteEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostDeleteEventListener.html">PostDeleteEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-commit-insert</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostInsertEventListener.html">PostInsertEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostInsertEventListener.html">PostInsertEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-collection-recreate</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostCollectionRecreateEventListener.html">PostCollectionRecreateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostCollectionRecreateEventListener.html">PostCollectionRecreateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-collection-remove</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostCollectionRemoveEventListener.html">PostCollectionRemoveEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostCollectionRemoveEventListener.html">PostCollectionRemoveEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-collection-update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostCollectionUpdateEventListener.html">PostCollectionUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostCollectionUpdateEventListener.html">PostCollectionUpdateEventListener</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -5906,7 +5906,7 @@ None of this is necessary if you are happy to stick to the conventions defined b
 <div class="sect4">
 <h5 id="_column_type">Column type</h5>
 <div class="paragraph">
-<p>GORM supports configuration of Hibernate types with the DSL using the type attribute. This includes specifying user types that implement the Hibernate <a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/usertype/UserType.html">org.hibernate.usertype.UserType</a> interface, which allows complete customization of how a type is persisted. As an example if you had a <code>PostCodeType</code> you could use it as follows:</p>
+<p>GORM supports configuration of Hibernate types with the DSL using the type attribute. This includes specifying user types that implement the Hibernate <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/usertype/UserType.html">org.hibernate.usertype.UserType</a> interface, which allows complete customization of how a type is persisted. As an example if you had a <code>PostCodeType</code> you could use it as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -6762,7 +6762,7 @@ If you disable optimistic locking you are essentially on your own with regards t
 <div class="sect3">
 <h4 id="customHibernateTypes">8.2.10. Custom Hibernate Types</h4>
 <div class="paragraph">
-<p>You saw in an earlier section that you can use composition (with the <code>embedded</code> property) to break a table into multiple objects. You can achieve a similar effect with Hibernate&#8217;s custom user types. These are not domain classes themselves, but plain Java or Groovy classes. Each of these types also has a corresponding "meta-type" class that implements <a href="https://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/usertype/UserType.html">org.hibernate.usertype.UserType</a>.</p>
+<p>You saw in an earlier section that you can use composition (with the <code>embedded</code> property) to break a table into multiple objects. You can achieve a similar effect with Hibernate&#8217;s custom user types. These are not domain classes themselves, but plain Java or Groovy classes. Each of these types also has a corresponding "meta-type" class that implements <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/usertype/UserType.html">org.hibernate.usertype.UserType</a>.</p>
 </div>
 <div class="paragraph">
 <p>The <a href="https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#_custom_type">Hibernate reference manual</a> has some information on custom types, but here we will focus on how to map them in GORM. Let&#8217;s start by taking a look at a simple domain class that uses an old-fashioned (pre-Java 1.5) type-safe enum class:</p>
