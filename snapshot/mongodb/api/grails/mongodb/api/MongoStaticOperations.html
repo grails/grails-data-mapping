@@ -163,7 +163,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>abstract&nbsp;java.util.List&lt;D&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#aggregate(java.util.List, Function, com.mongodb.ReadPreference)">aggregate</a></strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate, <a href='../../../com.mongodb.ReadPreference.html'>ReadPreference</a> readPreference)</code><br>Execute a MongoDB aggregation pipeline. </td>
+                            <td class="colLast"><code><strong><a href="#aggregate(java.util.List, Function, com.mongodb.ReadPreference)">aggregate</a></strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate, com.mongodb.ReadPreference readPreference)</code><br>Execute a MongoDB aggregation pipeline. </td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -181,19 +181,19 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>abstract&nbsp;FindIterable&lt;D&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#find(org.bson.conversions.Bson)">find</a></strong>(<a href='../../../org.bson.conversions.Bson.html'>Bson</a> filter)</code><br>Find an entity for the given filter</td>
+                            <td class="colLast"><code><strong><a href="#find(org.bson.conversions.Bson)">find</a></strong>(org.bson.conversions.Bson filter)</code><br>Find an entity for the given filter</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>abstract&nbsp;D</code></td>
-                            <td class="colLast"><code><strong><a href="#findOneAndDelete(org.bson.conversions.Bson)">findOneAndDelete</a></strong>(<a href='../../../org.bson.conversions.Bson.html'>Bson</a> filter)</code><br>Atomically find a document and remove it.</td>
+                            <td class="colLast"><code><strong><a href="#findOneAndDelete(org.bson.conversions.Bson)">findOneAndDelete</a></strong>(org.bson.conversions.Bson filter)</code><br>Atomically find a document and remove it.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>abstract&nbsp;D</code></td>
-                            <td class="colLast"><code><strong><a href="#findOneAndDelete(org.bson.conversions.Bson, com.mongodb.client.model.FindOneAndDeleteOptions)">findOneAndDelete</a></strong>(<a href='../../../org.bson.conversions.Bson.html'>Bson</a> filter, <a href='../../../com.mongodb.client.model.FindOneAndDeleteOptions.html'>FindOneAndDeleteOptions</a> options)</code><br>Atomically find a document and remove it.</td>
+                            <td class="colLast"><code><strong><a href="#findOneAndDelete(org.bson.conversions.Bson, com.mongodb.client.model.FindOneAndDeleteOptions)">findOneAndDelete</a></strong>(org.bson.conversions.Bson filter, com.mongodb.client.model.FindOneAndDeleteOptions options)</code><br>Atomically find a document and remove it.</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -210,7 +210,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>abstract&nbsp;<a href='../../../com.mongodb.client.MongoDatabase.html'>MongoDatabase</a></code></td>
+                            <td class="colLast"><code>abstract&nbsp;com.mongodb.client.MongoDatabase</code></td>
                             <td class="colLast"><code><strong><a href="#getDB()">getDB</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>The database for this domain class</DD></DL></td>
                         </tr>
                         
@@ -319,7 +319,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="aggregate(java.util.List, Function, com.mongodb.ReadPreference)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>abstract&nbsp;java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate, <a href='../../../com.mongodb.ReadPreference.html'>ReadPreference</a> readPreference)</h4>
+                                <h4>abstract&nbsp;java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate, com.mongodb.ReadPreference readPreference)</h4>
                                 <p> Execute a MongoDB aggregation pipeline. Note that the pipeline should return documents that represent this domain class as each return document will be converted to a domain instance in the result set <DL><DT><B>Parameters:</B></DT><DD><code>pipeline</code> -  The pipeline</DD><DD><code>doWithAggregate</code> -  A callback to modify the aggregate iterable</DD></DL><DL><DT><B>Returns:</B></DT><DD>A mongodb result list</DD></DL></p>
                             </li>
                         </ul>
@@ -343,7 +343,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="find(org.bson.conversions.Bson)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>abstract&nbsp;FindIterable&lt;D&gt; <strong>find</strong>(<a href='../../../org.bson.conversions.Bson.html'>Bson</a> filter)</h4>
+                                <h4>abstract&nbsp;FindIterable&lt;D&gt; <strong>find</strong>(org.bson.conversions.Bson filter)</h4>
                                 <p> Find an entity for the given filter <DL><DT><B>Parameters:</B></DT><DD><code>filter</code> -  The filter</DD></DL><DL><DT><B>Returns:</B></DT><DD>The FindIterable</DD></DL></p>
                             </li>
                         </ul>
@@ -351,7 +351,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="findOneAndDelete(org.bson.conversions.Bson)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>abstract&nbsp;D <strong>findOneAndDelete</strong>(<a href='../../../org.bson.conversions.Bson.html'>Bson</a> filter)</h4>
+                                <h4>abstract&nbsp;D <strong>findOneAndDelete</strong>(org.bson.conversions.Bson filter)</h4>
                                 <p> Atomically find a document and remove it. <DL><DT><B>Parameters:</B></DT><DD><code>filter</code> -  the query filter to find the document with</DD></DL><DL><DT><B>Returns:</B></DT><DD>the document that was removed.  If no documents matched the query filter, then null will be returned</DD></DL></p>
                             </li>
                         </ul>
@@ -359,7 +359,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="findOneAndDelete(org.bson.conversions.Bson, com.mongodb.client.model.FindOneAndDeleteOptions)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>abstract&nbsp;D <strong>findOneAndDelete</strong>(<a href='../../../org.bson.conversions.Bson.html'>Bson</a> filter, <a href='../../../com.mongodb.client.model.FindOneAndDeleteOptions.html'>FindOneAndDeleteOptions</a> options)</h4>
+                                <h4>abstract&nbsp;D <strong>findOneAndDelete</strong>(org.bson.conversions.Bson filter, com.mongodb.client.model.FindOneAndDeleteOptions options)</h4>
                                 <p> Atomically find a document and remove it. <DL><DT><B>Parameters:</B></DT><DD><code>filter</code> -  the query filter to find the document with</DD></DL><DL><DT><B>Returns:</B></DT><DD>the document that was removed.  If no documents matched the query filter, then null will be returned</DD></DL></p>
                             </li>
                         </ul>
@@ -383,7 +383,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="getDB()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>abstract&nbsp;<a href='../../../com.mongodb.client.MongoDatabase.html'>MongoDatabase</a> <strong>getDB</strong>()</h4>
+                                <h4>abstract&nbsp;com.mongodb.client.MongoDatabase <strong>getDB</strong>()</h4>
                                 <p> <DL><DT><B>Returns:</B></DT><DD>The database for this domain class</DD></DL></p>
                             </li>
                         </ul>

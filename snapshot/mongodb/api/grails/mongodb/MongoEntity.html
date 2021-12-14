@@ -162,13 +162,13 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;java.util.List&lt;D&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#aggregate(java.util.List, Function, com.mongodb.ReadPreference)">aggregate</a></strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate, <a href='../../com.mongodb.ReadPreference.html'>ReadPreference</a> readPreference)</code><br>Execute a MongoDB aggregation pipeline. </td>
+                            <td class="colLast"><code><strong><a href="#aggregate(java.util.List, Function, com.mongodb.ReadPreference)">aggregate</a></strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate, com.mongodb.ReadPreference readPreference)</code><br>Execute a MongoDB aggregation pipeline. </td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;java.lang.Number</code></td>
-                            <td class="colLast"><code><strong><a href="#count(org.bson.conversions.Bson)">count</a></strong>(<a href='../../org.bson.conversions.Bson.html'>Bson</a> filter)</code><br>Counts the number of the entities in the collection.</td>
+                            <td class="colLast"><code><strong><a href="#count(org.bson.conversions.Bson)">count</a></strong>(org.bson.conversions.Bson filter)</code><br>Counts the number of the entities in the collection.</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -186,19 +186,19 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;FindIterable&lt;D&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#find(org.bson.conversions.Bson)">find</a></strong>(<a href='../../org.bson.conversions.Bson.html'>Bson</a> filter)</code><br>Finds all of the entities in the collection.</td>
+                            <td class="colLast"><code><strong><a href="#find(org.bson.conversions.Bson)">find</a></strong>(org.bson.conversions.Bson filter)</code><br>Finds all of the entities in the collection.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;D</code></td>
-                            <td class="colLast"><code><strong><a href="#findOneAndDelete(org.bson.conversions.Bson)">findOneAndDelete</a></strong>(<a href='../../org.bson.conversions.Bson.html'>Bson</a> filter)</code><br>Atomically find a document and remove it.</td>
+                            <td class="colLast"><code><strong><a href="#findOneAndDelete(org.bson.conversions.Bson)">findOneAndDelete</a></strong>(org.bson.conversions.Bson filter)</code><br>Atomically find a document and remove it.</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;D</code></td>
-                            <td class="colLast"><code><strong><a href="#findOneAndDelete(org.bson.conversions.Bson, com.mongodb.client.model.FindOneAndDeleteOptions)">findOneAndDelete</a></strong>(<a href='../../org.bson.conversions.Bson.html'>Bson</a> filter, <a href='../../com.mongodb.client.model.FindOneAndDeleteOptions.html'>FindOneAndDeleteOptions</a> options)</code><br>Atomically find a document and remove it.</td>
+                            <td class="colLast"><code><strong><a href="#findOneAndDelete(org.bson.conversions.Bson, com.mongodb.client.model.FindOneAndDeleteOptions)">findOneAndDelete</a></strong>(org.bson.conversions.Bson filter, com.mongodb.client.model.FindOneAndDeleteOptions options)</code><br>Atomically find a document and remove it.</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -215,13 +215,13 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;<a href='../../com.mongodb.client.MongoDatabase.html'>MongoDatabase</a></code></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.MongoDatabase</code></td>
                             <td class="colLast"><code><strong><a href="#getDB()">getDB</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>The database for this domain class</DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../org.bson.Document.html'>Document</a></code></td>
+                            <td class="colLast"><code>org.bson.Document</code></td>
                             <td class="colLast"><code><strong><a href="#getDbo()">getDbo</a></strong>()</code><br>Return the DBObject instance for the entity</td>
                         </tr>
                         
@@ -340,7 +340,7 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         <a name="aggregate(java.util.List, Function, com.mongodb.ReadPreference)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate, <a href='../../com.mongodb.ReadPreference.html'>ReadPreference</a> readPreference)</h4>
+                                <h4>static&nbsp;java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate, com.mongodb.ReadPreference readPreference)</h4>
                                 <p> Execute a MongoDB aggregation pipeline. Note that the pipeline should return documents that represent this domain class as each return document will be converted to a domain instance in the result set <DL><DT><B>Parameters:</B></DT><DD><code>pipeline</code> -  The pipeline</DD><DD><code>doWithAggregate</code> -  The function to transform the aggregate iterable (optional)</DD></DL><DL><DT><B>Returns:</B></DT><DD>A mongodb result list</DD></DL></p>
                             </li>
                         </ul>
@@ -348,7 +348,7 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         <a name="count(org.bson.conversions.Bson)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.lang.Number <strong>count</strong>(<a href='../../org.bson.conversions.Bson.html'>Bson</a> filter)</h4>
+                                <h4>static&nbsp;java.lang.Number <strong>count</strong>(org.bson.conversions.Bson filter)</h4>
                                 <p> Counts the number of the entities in the collection. <DL><DT><B>Parameters:</B></DT><DD><code>filter</code> -  the query filter</DD></DL><DL><DT><B>Returns:</B></DT><DD>the find iterable interface</DD></DL></p>
                             </li>
                         </ul>
@@ -372,7 +372,7 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         <a name="find(org.bson.conversions.Bson)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;FindIterable&lt;D&gt; <strong>find</strong>(<a href='../../org.bson.conversions.Bson.html'>Bson</a> filter)</h4>
+                                <h4>static&nbsp;FindIterable&lt;D&gt; <strong>find</strong>(org.bson.conversions.Bson filter)</h4>
                                 <p> Finds all of the entities in the collection. <DL><DT><B>Parameters:</B></DT><DD><code>filter</code> -  the query filter</DD></DL><DL><DT><B>Returns:</B></DT><DD>the find iterable interface</DD></DL></p>
                             </li>
                         </ul>
@@ -380,7 +380,7 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         <a name="findOneAndDelete(org.bson.conversions.Bson)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;D <strong>findOneAndDelete</strong>(<a href='../../org.bson.conversions.Bson.html'>Bson</a> filter)</h4>
+                                <h4>static&nbsp;D <strong>findOneAndDelete</strong>(org.bson.conversions.Bson filter)</h4>
                                 <p> Atomically find a document and remove it. <DL><DT><B>Parameters:</B></DT><DD><code>filter</code> -  the query filter to find the document with</DD></DL><DL><DT><B>Returns:</B></DT><DD>the document that was removed.  If no documents matched the query filter, then null will be returned</DD></DL></p>
                             </li>
                         </ul>
@@ -388,7 +388,7 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         <a name="findOneAndDelete(org.bson.conversions.Bson, com.mongodb.client.model.FindOneAndDeleteOptions)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;D <strong>findOneAndDelete</strong>(<a href='../../org.bson.conversions.Bson.html'>Bson</a> filter, <a href='../../com.mongodb.client.model.FindOneAndDeleteOptions.html'>FindOneAndDeleteOptions</a> options)</h4>
+                                <h4>static&nbsp;D <strong>findOneAndDelete</strong>(org.bson.conversions.Bson filter, com.mongodb.client.model.FindOneAndDeleteOptions options)</h4>
                                 <p> Atomically find a document and remove it. <DL><DT><B>Parameters:</B></DT><DD><code>filter</code> -  the query filter to find the document with</DD></DL><DL><DT><B>Returns:</B></DT><DD>the document that was removed.  If no documents matched the query filter, then null will be returned</DD></DL></p>
                             </li>
                         </ul>
@@ -412,7 +412,7 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         <a name="getDB()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;<a href='../../com.mongodb.client.MongoDatabase.html'>MongoDatabase</a> <strong>getDB</strong>()</h4>
+                                <h4>static&nbsp;com.mongodb.client.MongoDatabase <strong>getDB</strong>()</h4>
                                 <p> <DL><DT><B>Returns:</B></DT><DD>The database for this domain class</DD></DL></p>
                             </li>
                         </ul>
@@ -421,7 +421,7 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Deprecated
-<a href='../../org.bson.Document.html'>Document</a> <strong>getDbo</strong>()</h4>
+org.bson.Document <strong>getDbo</strong>()</h4>
                                 <p> Return the DBObject instance for the entity<DL><DT><B>deprecated:</B></DT><DD>use dynamic properties instead</DD></DL> <DL><DT><B>Parameters:</B></DT><DD><code>instance</code> -  The instance</DD></DL><DL><DT><B>Returns:</B></DT><DD>The DBObject instance</DD></DL></p>
                             </li>
                         </ul>

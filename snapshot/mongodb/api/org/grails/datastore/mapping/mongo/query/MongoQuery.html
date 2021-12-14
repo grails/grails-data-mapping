@@ -446,12 +446,12 @@ implements <a href='../../../../../../org/grails/datastore/mapping/query/api/Que
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;<a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.AggregatePipeline.html'>MongoQuery.AggregatePipeline</a></code></td>
-                            <td class="colLast"><code><strong><a href="#buildAggregatePipeline(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, List)">buildAggregatePipeline</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org.bson.Document.html'>Document</a> query, java.util.List&lt;Projection&gt; projectionList)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#buildAggregatePipeline(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, List)">buildAggregatePipeline</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.bson.Document query, java.util.List&lt;Projection&gt; projectionList)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;<a href='../../../../../../org.bson.Document.html'>Document</a></code></td>
+                            <td class="colLast"><code>protected&nbsp;org.bson.Document</code></td>
                             <td class="colLast"><code><strong><a href="#createQueryObject(org.grails.datastore.mapping.model.PersistentEntity)">createQueryObject</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> persistentEntity)</code><br></td>
                         </tr>
                         
@@ -475,14 +475,14 @@ implements <a href='../../../../../../org/grails/datastore/mapping/query/api/Que
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;MongoCursor&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#executeQuery(org.grails.datastore.mapping.model.PersistentEntity, Junction, com.mongodb.client.MongoCollection, org.bson.Document)">executeQuery</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../Junction.html'>Junction</a> criteria, com.mongodb.client.MongoCollection&lt;Document&gt; collection, <a href='../../../../../../org.bson.Document.html'>Document</a> query)</code><br></td>
+                            <td class="colLast"><code>protected&nbsp;com.mongodb.client.MongoCursor&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#executeQuery(org.grails.datastore.mapping.model.PersistentEntity, Junction, com.mongodb.client.MongoCollection, org.bson.Document)">executeQuery</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../Junction.html'>Junction</a> criteria, com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, org.bson.Document query)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;FindIterable&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#executeQueryAndApplyPagination(com.mongodb.client.MongoCollection, org.bson.Document)">executeQueryAndApplyPagination</a></strong>(com.mongodb.client.MongoCollection&lt;Document&gt; collection, <a href='../../../../../../org.bson.Document.html'>Document</a> query)</code><br></td>
+                            <td class="colLast"><code>protected&nbsp;com.mongodb.client.FindIterable&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#executeQueryAndApplyPagination(com.mongodb.client.MongoCollection, org.bson.Document)">executeQueryAndApplyPagination</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, org.bson.Document query)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -505,122 +505,122 @@ implements <a href='../../../../../../org/grails/datastore/mapping/query/api/Que
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>public&nbsp;<a href='../../../../../../org.bson.Document.html'>Document</a></code></td>
+                            <td class="colLast"><code>public&nbsp;org.bson.Document</code></td>
                             <td class="colLast"><code><strong><a href="#getMongoQuery()">getMongoQuery</a></strong>()</code><br>Gets the Mongo query for this query instance</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, IdEquals, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../IdEquals.html'>IdEquals</a> criterion, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, IdEquals, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../IdEquals.html'>IdEquals</a> criterion, org.bson.Document query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.mapping.query.AssociationQuery, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/query/AssociationQuery.html'>AssociationQuery</a> criterion, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.mapping.query.AssociationQuery, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/query/AssociationQuery.html'>AssociationQuery</a> criterion, org.bson.Document query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.mapping.mongo.query.MongoQuery.WithinBox, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.WithinBox.html'>MongoQuery.WithinBox</a> withinBox, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.mapping.mongo.query.MongoQuery.WithinBox, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.WithinBox.html'>MongoQuery.WithinBox</a> withinBox, org.bson.Document query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.mapping.mongo.query.MongoQuery.WithinPolygon, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.WithinPolygon.html'>MongoQuery.WithinPolygon</a> withinPolygon, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.mapping.mongo.query.MongoQuery.WithinPolygon, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.WithinPolygon.html'>MongoQuery.WithinPolygon</a> withinPolygon, org.bson.Document query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.mapping.mongo.query.MongoQuery.WithinCircle, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.WithinCircle.html'>MongoQuery.WithinCircle</a> withinCentre, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.mapping.mongo.query.MongoQuery.WithinCircle, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.WithinCircle.html'>MongoQuery.WithinCircle</a> withinCentre, org.bson.Document query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.gorm.mongo.Near, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/gorm/mongo/Near.html'>Near</a> near, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.gorm.mongo.Near, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/gorm/mongo/Near.html'>Near</a> near, org.bson.Document query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.mapping.mongo.query.MongoQuery.GeoWithin, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.GeoWithin.html'>MongoQuery.GeoWithin</a> geoWithin, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.mapping.mongo.query.MongoQuery.GeoWithin, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.GeoWithin.html'>MongoQuery.GeoWithin</a> geoWithin, org.bson.Document query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.mapping.mongo.query.MongoQuery.GeoIntersects, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.GeoIntersects.html'>MongoQuery.GeoIntersects</a> geoIntersects, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.mapping.mongo.query.MongoQuery.GeoIntersects, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.GeoIntersects.html'>MongoQuery.GeoIntersects</a> geoIntersects, org.bson.Document query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, Conjunction, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../Conjunction.html'>Conjunction</a> criterion, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, Conjunction, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../Conjunction.html'>Conjunction</a> criterion, org.bson.Document query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, Disjunction, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../Disjunction.html'>Disjunction</a> criterion, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, Disjunction, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../Disjunction.html'>Disjunction</a> criterion, org.bson.Document query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.lang.String</code></td>
-                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, org.bson.Document, AvgProjection)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org.bson.Document.html'>Document</a> projectObject, <a href='../../../../../../org.bson.Document.html'>Document</a> groupBy, <a href='../../../../../../AvgProjection.html'>AvgProjection</a> projection)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, org.bson.Document, AvgProjection)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.bson.Document projectObject, org.bson.Document groupBy, <a href='../../../../../../AvgProjection.html'>AvgProjection</a> projection)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.lang.String</code></td>
-                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, org.bson.Document, CountProjection)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org.bson.Document.html'>Document</a> projectObject, <a href='../../../../../../org.bson.Document.html'>Document</a> groupBy, <a href='../../../../../../CountProjection.html'>CountProjection</a> projection)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, org.bson.Document, CountProjection)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.bson.Document projectObject, org.bson.Document groupBy, <a href='../../../../../../CountProjection.html'>CountProjection</a> projection)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.lang.String</code></td>
-                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, org.bson.Document, CountDistinctProjection)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org.bson.Document.html'>Document</a> projectObject, <a href='../../../../../../org.bson.Document.html'>Document</a> groupBy, <a href='../../../../../../CountDistinctProjection.html'>CountDistinctProjection</a> projection)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, org.bson.Document, CountDistinctProjection)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.bson.Document projectObject, org.bson.Document groupBy, <a href='../../../../../../CountDistinctProjection.html'>CountDistinctProjection</a> projection)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.lang.String</code></td>
-                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, org.bson.Document, MinProjection)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org.bson.Document.html'>Document</a> projectObject, <a href='../../../../../../org.bson.Document.html'>Document</a> groupBy, <a href='../../../../../../MinProjection.html'>MinProjection</a> projection)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, org.bson.Document, MinProjection)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.bson.Document projectObject, org.bson.Document groupBy, <a href='../../../../../../MinProjection.html'>MinProjection</a> projection)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.lang.String</code></td>
-                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, org.bson.Document, MaxProjection)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org.bson.Document.html'>Document</a> projectObject, <a href='../../../../../../org.bson.Document.html'>Document</a> groupBy, <a href='../../../../../../MaxProjection.html'>MaxProjection</a> projection)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, org.bson.Document, MaxProjection)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.bson.Document projectObject, org.bson.Document groupBy, <a href='../../../../../../MaxProjection.html'>MaxProjection</a> projection)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.lang.String</code></td>
-                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, org.bson.Document, SumProjection)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org.bson.Document.html'>Document</a> projectObject, <a href='../../../../../../org.bson.Document.html'>Document</a> groupBy, <a href='../../../../../../SumProjection.html'>SumProjection</a> projection)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, org.bson.Document, SumProjection)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.bson.Document projectObject, org.bson.Document groupBy, <a href='../../../../../../SumProjection.html'>SumProjection</a> projection)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.lang.String</code></td>
-                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, org.bson.Document, DistinctPropertyProjection)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org.bson.Document.html'>Document</a> projectObject, <a href='../../../../../../org.bson.Document.html'>Document</a> groupBy, <a href='../../../../../../DistinctPropertyProjection.html'>DistinctPropertyProjection</a> projection)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, org.bson.Document, DistinctPropertyProjection)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.bson.Document projectObject, org.bson.Document groupBy, <a href='../../../../../../DistinctPropertyProjection.html'>DistinctPropertyProjection</a> projection)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.lang.String</code></td>
-                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, org.bson.Document, PropertyProjection)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org.bson.Document.html'>Document</a> projectObject, <a href='../../../../../../org.bson.Document.html'>Document</a> groupBy, <a href='../../../../../../PropertyProjection.html'>PropertyProjection</a> projection)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, org.bson.Document, PropertyProjection)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.bson.Document projectObject, org.bson.Document groupBy, <a href='../../../../../../PropertyProjection.html'>PropertyProjection</a> projection)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.lang.String</code></td>
-                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, org.bson.Document, IdProjection)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org.bson.Document.html'>Document</a> projectObject, <a href='../../../../../../org.bson.Document.html'>Document</a> groupBy, <a href='../../../../../../IdProjection.html'>IdProjection</a> projection)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#handle(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, org.bson.Document, IdProjection)">handle</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.bson.Document projectObject, org.bson.Document groupBy, <a href='../../../../../../IdProjection.html'>IdProjection</a> projection)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -698,13 +698,13 @@ implements <a href='../../../../../../org/grails/datastore/mapping/query/api/Que
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#populateMongoQuery(org.grails.datastore.mapping.mongo.AbstractMongoSession, org.bson.Document, Junction, org.grails.datastore.mapping.model.PersistentEntity)">populateMongoQuery</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/mongo/AbstractMongoSession.html'>AbstractMongoSession</a> session, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../Junction.html'>Junction</a> criteria, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#populateMongoQuery(org.grails.datastore.mapping.mongo.AbstractMongoSession, org.bson.Document, Junction, org.grails.datastore.mapping.model.PersistentEntity)">populateMongoQuery</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/mongo/AbstractMongoSession.html'>AbstractMongoSession</a> session, org.bson.Document query, <a href='../../../../../../Junction.html'>Junction</a> criteria, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#populateMongoQuery(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.bson.Document, Junction, org.grails.datastore.mapping.model.PersistentEntity)">populateMongoQuery</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../Junction.html'>Junction</a> criteria, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#populateMongoQuery(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.bson.Document, Junction, org.grails.datastore.mapping.model.PersistentEntity)">populateMongoQuery</a></strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, org.bson.Document query, <a href='../../../../../../Junction.html'>Junction</a> criteria, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -1008,7 +1008,7 @@ implements <a href='../../../../../../org/grails/datastore/mapping/query/api/Que
                         <a name="buildAggregatePipeline(org.grails.datastore.mapping.model.PersistentEntity, org.bson.Document, List)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;<a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.AggregatePipeline.html'>MongoQuery.AggregatePipeline</a> <strong>buildAggregatePipeline</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org.bson.Document.html'>Document</a> query, java.util.List&lt;Projection&gt; projectionList)</h4>
+                                <h4>protected&nbsp;<a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.AggregatePipeline.html'>MongoQuery.AggregatePipeline</a> <strong>buildAggregatePipeline</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.bson.Document query, java.util.List&lt;Projection&gt; projectionList)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1016,7 +1016,7 @@ implements <a href='../../../../../../org/grails/datastore/mapping/query/api/Que
                         <a name="createQueryObject(org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;<a href='../../../../../../org.bson.Document.html'>Document</a> <strong>createQueryObject</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> persistentEntity)</h4>
+                                <h4>protected&nbsp;org.bson.Document <strong>createQueryObject</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> persistentEntity)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1051,7 +1051,7 @@ protected&nbsp;java.util.List <strong>executeQuery</strong>(<a href='../../../..
                         <a name="executeQuery(org.grails.datastore.mapping.model.PersistentEntity, Junction, com.mongodb.client.MongoCollection, org.bson.Document)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;MongoCursor&lt;Document&gt; <strong>executeQuery</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../Junction.html'>Junction</a> criteria, com.mongodb.client.MongoCollection&lt;Document&gt; collection, <a href='../../../../../../org.bson.Document.html'>Document</a> query)</h4>
+                                <h4>protected&nbsp;com.mongodb.client.MongoCursor&lt;org.bson.Document&gt; <strong>executeQuery</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../Junction.html'>Junction</a> criteria, com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, org.bson.Document query)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1059,7 +1059,7 @@ protected&nbsp;java.util.List <strong>executeQuery</strong>(<a href='../../../..
                         <a name="executeQueryAndApplyPagination(com.mongodb.client.MongoCollection, org.bson.Document)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;FindIterable&lt;Document&gt; <strong>executeQueryAndApplyPagination</strong>(com.mongodb.client.MongoCollection&lt;Document&gt; collection, <a href='../../../../../../org.bson.Document.html'>Document</a> query)</h4>
+                                <h4>protected&nbsp;com.mongodb.client.FindIterable&lt;org.bson.Document&gt; <strong>executeQueryAndApplyPagination</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, org.bson.Document query)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1094,7 +1094,7 @@ protected&nbsp;void <strong>flushBeforeQuery</strong>()</h4>
                         <a name="getMongoQuery()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<a href='../../../../../../org.bson.Document.html'>Document</a> <strong>getMongoQuery</strong>()</h4>
+                                <h4>public&nbsp;org.bson.Document <strong>getMongoQuery</strong>()</h4>
                                 <p> Gets the Mongo query for this query instance
       <DL><DT><B>Returns:</B></DT><DD>The Mongo query</DD></DL></p>
                             </li>
@@ -1103,7 +1103,7 @@ protected&nbsp;void <strong>flushBeforeQuery</strong>()</h4>
                         <a name="handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, IdEquals, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../IdEquals.html'>IdEquals</a> criterion, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <h4>public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../IdEquals.html'>IdEquals</a> criterion, org.bson.Document query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1111,7 +1111,7 @@ protected&nbsp;void <strong>flushBeforeQuery</strong>()</h4>
                         <a name="handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.mapping.query.AssociationQuery, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/query/AssociationQuery.html'>AssociationQuery</a> criterion, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <h4>public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/query/AssociationQuery.html'>AssociationQuery</a> criterion, org.bson.Document query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1119,7 +1119,7 @@ protected&nbsp;void <strong>flushBeforeQuery</strong>()</h4>
                         <a name="handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.mapping.mongo.query.MongoQuery.WithinBox, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.WithinBox.html'>MongoQuery.WithinBox</a> withinBox, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <h4>public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.WithinBox.html'>MongoQuery.WithinBox</a> withinBox, org.bson.Document query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1127,7 +1127,7 @@ protected&nbsp;void <strong>flushBeforeQuery</strong>()</h4>
                         <a name="handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.mapping.mongo.query.MongoQuery.WithinPolygon, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.WithinPolygon.html'>MongoQuery.WithinPolygon</a> withinPolygon, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <h4>public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.WithinPolygon.html'>MongoQuery.WithinPolygon</a> withinPolygon, org.bson.Document query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1135,7 +1135,7 @@ protected&nbsp;void <strong>flushBeforeQuery</strong>()</h4>
                         <a name="handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.mapping.mongo.query.MongoQuery.WithinCircle, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.WithinCircle.html'>MongoQuery.WithinCircle</a> withinCentre, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <h4>public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.WithinCircle.html'>MongoQuery.WithinCircle</a> withinCentre, org.bson.Document query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1143,7 +1143,7 @@ protected&nbsp;void <strong>flushBeforeQuery</strong>()</h4>
                         <a name="handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.gorm.mongo.Near, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/gorm/mongo/Near.html'>Near</a> near, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <h4>public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/gorm/mongo/Near.html'>Near</a> near, org.bson.Document query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1151,7 +1151,7 @@ protected&nbsp;void <strong>flushBeforeQuery</strong>()</h4>
                         <a name="handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.mapping.mongo.query.MongoQuery.GeoWithin, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.GeoWithin.html'>MongoQuery.GeoWithin</a> geoWithin, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <h4>public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.GeoWithin.html'>MongoQuery.GeoWithin</a> geoWithin, org.bson.Document query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1159,7 +1159,7 @@ protected&nbsp;void <strong>flushBeforeQuery</strong>()</h4>
                         <a name="handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, org.grails.datastore.mapping.mongo.query.MongoQuery.GeoIntersects, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.GeoIntersects.html'>MongoQuery.GeoIntersects</a> geoIntersects, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <h4>public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org/grails/datastore/mapping/mongo/query/MongoQuery.GeoIntersects.html'>MongoQuery.GeoIntersects</a> geoIntersects, org.bson.Document query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1167,7 +1167,7 @@ protected&nbsp;void <strong>flushBeforeQuery</strong>()</h4>
                         <a name="handle(org.grails.datastore.bson.query.EmbeddedQueryEncoder, Conjunction, org.bson.Document, org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../Conjunction.html'>Conjunction</a> criterion, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <h4>public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../Conjunction.html'>Conjunction</a> criterion, org.bson.Document query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1176,7 +1176,7 @@ protected&nbsp;void <strong>flushBeforeQuery</strong>()</h4>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.SuppressWarnings("unchecked")
-public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../Disjunction.html'>Disjunction</a> criterion, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../Disjunction.html'>Disjunction</a> criterion, org.bson.Document query, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1185,7 +1185,7 @@ public&nbsp;void <strong>handle</strong>(<a href='../../../../../../org/grails/d
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org.bson.Document.html'>Document</a> projectObject, <a href='../../../../../../org.bson.Document.html'>Document</a> groupBy, <a href='../../../../../../AvgProjection.html'>AvgProjection</a> projection)</h4>
+public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.bson.Document projectObject, org.bson.Document groupBy, <a href='../../../../../../AvgProjection.html'>AvgProjection</a> projection)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1194,7 +1194,7 @@ public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org.bson.Document.html'>Document</a> projectObject, <a href='../../../../../../org.bson.Document.html'>Document</a> groupBy, <a href='../../../../../../CountProjection.html'>CountProjection</a> projection)</h4>
+public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.bson.Document projectObject, org.bson.Document groupBy, <a href='../../../../../../CountProjection.html'>CountProjection</a> projection)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1203,7 +1203,7 @@ public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org.bson.Document.html'>Document</a> projectObject, <a href='../../../../../../org.bson.Document.html'>Document</a> groupBy, <a href='../../../../../../CountDistinctProjection.html'>CountDistinctProjection</a> projection)</h4>
+public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.bson.Document projectObject, org.bson.Document groupBy, <a href='../../../../../../CountDistinctProjection.html'>CountDistinctProjection</a> projection)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1212,7 +1212,7 @@ public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org.bson.Document.html'>Document</a> projectObject, <a href='../../../../../../org.bson.Document.html'>Document</a> groupBy, <a href='../../../../../../MinProjection.html'>MinProjection</a> projection)</h4>
+public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.bson.Document projectObject, org.bson.Document groupBy, <a href='../../../../../../MinProjection.html'>MinProjection</a> projection)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1221,7 +1221,7 @@ public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org.bson.Document.html'>Document</a> projectObject, <a href='../../../../../../org.bson.Document.html'>Document</a> groupBy, <a href='../../../../../../MaxProjection.html'>MaxProjection</a> projection)</h4>
+public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.bson.Document projectObject, org.bson.Document groupBy, <a href='../../../../../../MaxProjection.html'>MaxProjection</a> projection)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1230,7 +1230,7 @@ public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org.bson.Document.html'>Document</a> projectObject, <a href='../../../../../../org.bson.Document.html'>Document</a> groupBy, <a href='../../../../../../SumProjection.html'>SumProjection</a> projection)</h4>
+public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.bson.Document projectObject, org.bson.Document groupBy, <a href='../../../../../../SumProjection.html'>SumProjection</a> projection)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1239,7 +1239,7 @@ public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org.bson.Document.html'>Document</a> projectObject, <a href='../../../../../../org.bson.Document.html'>Document</a> groupBy, <a href='../../../../../../DistinctPropertyProjection.html'>DistinctPropertyProjection</a> projection)</h4>
+public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.bson.Document projectObject, org.bson.Document groupBy, <a href='../../../../../../DistinctPropertyProjection.html'>DistinctPropertyProjection</a> projection)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1248,7 +1248,7 @@ public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org.bson.Document.html'>Document</a> projectObject, <a href='../../../../../../org.bson.Document.html'>Document</a> groupBy, <a href='../../../../../../PropertyProjection.html'>PropertyProjection</a> projection)</h4>
+public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.bson.Document projectObject, org.bson.Document groupBy, <a href='../../../../../../PropertyProjection.html'>PropertyProjection</a> projection)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1257,7 +1257,7 @@ public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org.bson.Document.html'>Document</a> projectObject, <a href='../../../../../../org.bson.Document.html'>Document</a> groupBy, <a href='../../../../../../IdProjection.html'>IdProjection</a> projection)</h4>
+public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, org.bson.Document projectObject, org.bson.Document groupBy, <a href='../../../../../../IdProjection.html'>IdProjection</a> projection)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1373,7 +1373,7 @@ public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../
                         <a name="populateMongoQuery(org.grails.datastore.mapping.mongo.AbstractMongoSession, org.bson.Document, Junction, org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;static&nbsp;void <strong>populateMongoQuery</strong>(<a href='../../../../../../org/grails/datastore/mapping/mongo/AbstractMongoSession.html'>AbstractMongoSession</a> session, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../Junction.html'>Junction</a> criteria, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <h4>public&nbsp;static&nbsp;void <strong>populateMongoQuery</strong>(<a href='../../../../../../org/grails/datastore/mapping/mongo/AbstractMongoSession.html'>AbstractMongoSession</a> session, org.bson.Document query, <a href='../../../../../../Junction.html'>Junction</a> criteria, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1382,7 +1382,7 @@ public&nbsp;java.lang.String <strong>handle</strong>(<a href='../../../../../../
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.SuppressWarnings("unchecked")
-public&nbsp;static&nbsp;void <strong>populateMongoQuery</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, <a href='../../../../../../org.bson.Document.html'>Document</a> query, <a href='../../../../../../Junction.html'>Junction</a> criteria, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+public&nbsp;static&nbsp;void <strong>populateMongoQuery</strong>(<a href='../../../../../../org/grails/datastore/bson/query/EmbeddedQueryEncoder.html'>EmbeddedQueryEncoder</a> queryEncoder, org.bson.Document query, <a href='../../../../../../Junction.html'>Junction</a> criteria, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p></p>
                             </li>
                         </ul>

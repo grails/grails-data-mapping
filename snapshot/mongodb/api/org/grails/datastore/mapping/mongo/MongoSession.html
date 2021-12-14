@@ -204,7 +204,7 @@ extends <a href='../../../../../org/grails/datastore/mapping/mongo/AbstractMongo
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;<a href='../../../../../org/grails/datastore/mapping/transactions/Transaction.html' title='Transaction'>Transaction</a>&lt;MongoClient&gt;</code></td>
+                            <td class="colLast"><code>protected&nbsp;<a href='../../../../../org/grails/datastore/mapping/transactions/Transaction.html' title='Transaction'>Transaction</a>&lt;com.mongodb.client.MongoClient&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#beginTransactionInternal()">beginTransactionInternal</a></strong>()</code><br></td>
                         </tr>
                         
@@ -228,8 +228,8 @@ extends <a href='../../../../../org/grails/datastore/mapping/mongo/AbstractMongo
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;<a href='../../../../../org.bson.Document.html'>Document</a></code></td>
-                            <td class="colLast"><code><strong><a href="#createSetAndUnsetDoc(org.bson.Document)">createSetAndUnsetDoc</a></strong>(<a href='../../../../../org.bson.Document.html'>Document</a> updateDoc)</code><br></td>
+                            <td class="colLast"><code>protected&nbsp;org.bson.Document</code></td>
+                            <td class="colLast"><code><strong><a href="#createSetAndUnsetDoc(org.bson.Document)">createSetAndUnsetDoc</a></strong>(org.bson.Document updateDoc)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -259,7 +259,7 @@ extends <a href='../../../../../org/grails/datastore/mapping/mongo/AbstractMongo
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#flush(com.mongodb.WriteConcern)">flush</a></strong>(<a href='../../../../../com.mongodb.WriteConcern.html'>WriteConcern</a> writeConcern)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#flush(com.mongodb.WriteConcern)">flush</a></strong>(com.mongodb.WriteConcern writeConcern)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -276,8 +276,8 @@ extends <a href='../../../../../org/grails/datastore/mapping/mongo/AbstractMongo
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;java.util.List&lt;WriteModel&lt;Document&gt;&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#getWriteModelsForEntity(org.grails.datastore.mapping.model.PersistentEntity, Map)">getWriteModelsForEntity</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> persistentEntity, java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.util.List&lt;WriteModel&lt;Document&gt;&gt;&gt; writeModels)</code><br></td>
+                            <td class="colLast"><code>protected&nbsp;java.util.List&lt;WriteModel&lt;org.bson.Document&gt;&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#getWriteModelsForEntity(org.grails.datastore.mapping.model.PersistentEntity, Map)">getWriteModelsForEntity</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> persistentEntity, java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.util.List&lt;WriteModel&lt;org.bson.Document&gt;&gt;&gt; writeModels)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -380,7 +380,7 @@ extends <a href='../../../../../org/grails/datastore/mapping/mongo/AbstractMongo
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-protected&nbsp;<a href='../../../../../org/grails/datastore/mapping/transactions/Transaction.html' title='Transaction'>Transaction</a>&lt;MongoClient&gt; <strong>beginTransactionInternal</strong>()</h4>
+protected&nbsp;<a href='../../../../../org/grails/datastore/mapping/transactions/Transaction.html' title='Transaction'>Transaction</a>&lt;com.mongodb.client.MongoClient&gt; <strong>beginTransactionInternal</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -415,7 +415,7 @@ public&nbsp;<a href='../../../../../org/grails/datastore/mapping/query/Query.htm
                         <a name="createSetAndUnsetDoc(org.bson.Document)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;<a href='../../../../../org.bson.Document.html'>Document</a> <strong>createSetAndUnsetDoc</strong>(<a href='../../../../../org.bson.Document.html'>Document</a> updateDoc)</h4>
+                                <h4>protected&nbsp;org.bson.Document <strong>createSetAndUnsetDoc</strong>(org.bson.Document updateDoc)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -459,7 +459,7 @@ public&nbsp;void <strong>disconnect</strong>()</h4>
                         <a name="flush(com.mongodb.WriteConcern)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>flush</strong>(<a href='../../../../../com.mongodb.WriteConcern.html'>WriteConcern</a> writeConcern)</h4>
+                                <h4>public&nbsp;void <strong>flush</strong>(com.mongodb.WriteConcern writeConcern)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -484,7 +484,7 @@ protected&nbsp;void <strong>flushPendingUpdates</strong>(java.util.Map&lt;<a hre
                         <a name="getWriteModelsForEntity(org.grails.datastore.mapping.model.PersistentEntity, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;java.util.List&lt;WriteModel&lt;Document&gt;&gt; <strong>getWriteModelsForEntity</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> persistentEntity, java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.util.List&lt;WriteModel&lt;Document&gt;&gt;&gt; writeModels)</h4>
+                                <h4>protected&nbsp;java.util.List&lt;WriteModel&lt;org.bson.Document&gt;&gt; <strong>getWriteModelsForEntity</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> persistentEntity, java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.util.List&lt;WriteModel&lt;org.bson.Document&gt;&gt;&gt; writeModels)</h4>
                                 <p></p>
                             </li>
                         </ul>

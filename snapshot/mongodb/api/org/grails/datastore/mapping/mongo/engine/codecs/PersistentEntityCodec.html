@@ -274,7 +274,7 @@ extends <a href='../../../../../../../org/grails/datastore/bson/codecs/BsonPersi
                         <tr class="altColor">
                             <td class="colFirst">
                                 <code><a href="#PersistentEntityCodec(org.bson.codecs.configuration.CodecRegistry, org.grails.datastore.mapping.model.PersistentEntity, boolean)">PersistentEntityCodec</a>
-                                (<a href='../../../../../../../org.bson.codecs.configuration.CodecRegistry.html'>CodecRegistry</a> codecRegistry, <a href='../../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, boolean stateful)</code><br></td>
+                                (org.bson.codecs.configuration.CodecRegistry codecRegistry, <a href='../../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, boolean stateful)</code><br></td>
                         </tr>
                         
                     </table>
@@ -307,19 +307,19 @@ extends <a href='../../../../../../../org/grails/datastore/bson/codecs/BsonPersi
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#encodeEmbeddedCollectionUpdate(org.grails.datastore.mapping.engine.EntityAccess, org.bson.BsonDocument, org.bson.Document, org.grails.datastore.mapping.model.types.Association, java.lang.Object)">encodeEmbeddedCollectionUpdate</a></strong>(<a href='../../../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> parentAccess, <a href='../../../../../../../org.bson.BsonDocument.html'>BsonDocument</a> sets, <a href='../../../../../../../org.bson.Document.html'>Document</a> unsets, <a href='../../../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> association, java.lang.Object v)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#encodeEmbeddedCollectionUpdate(org.grails.datastore.mapping.engine.EntityAccess, org.bson.BsonDocument, org.bson.Document, org.grails.datastore.mapping.model.types.Association, java.lang.Object)">encodeEmbeddedCollectionUpdate</a></strong>(<a href='../../../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> parentAccess, org.bson.BsonDocument sets, org.bson.Document unsets, <a href='../../../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> association, java.lang.Object v)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#encodeEmbeddedUpdate(org.bson.BsonDocument, org.bson.Document, org.grails.datastore.mapping.model.types.Association, java.lang.Object)">encodeEmbeddedUpdate</a></strong>(<a href='../../../../../../../org.bson.BsonDocument.html'>BsonDocument</a> sets, <a href='../../../../../../../org.bson.Document.html'>Document</a> unsets, <a href='../../../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> association, java.lang.Object v)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#encodeEmbeddedUpdate(org.bson.BsonDocument, org.bson.Document, org.grails.datastore.mapping.model.types.Association, java.lang.Object)">encodeEmbeddedUpdate</a></strong>(org.bson.BsonDocument sets, org.bson.Document unsets, <a href='../../../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> association, java.lang.Object v)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../../../../org.bson.Document.html'>Document</a></code></td>
-                            <td class="colLast"><code><strong><a href="#encodeUpdate(java.lang.Object, org.grails.datastore.mapping.engine.EntityAccess, org.bson.codecs.EncoderContext, boolean)">encodeUpdate</a></strong>(java.lang.Object value, <a href='../../../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> access, <a href='../../../../../../../org.bson.codecs.EncoderContext.html'>EncoderContext</a> encoderContext, boolean embedded)</code><br>This method will encode an update for the given object based</td>
+                            <td class="colLast"><code>org.bson.Document</code></td>
+                            <td class="colLast"><code><strong><a href="#encodeUpdate(java.lang.Object, org.grails.datastore.mapping.engine.EntityAccess, org.bson.codecs.EncoderContext, boolean)">encodeUpdate</a></strong>(java.lang.Object value, <a href='../../../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> access, org.bson.codecs.EncoderContext encoderContext, boolean embedded)</code><br>This method will encode an update for the given object based</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -438,7 +438,7 @@ extends <a href='../../../../../../../org/grails/datastore/bson/codecs/BsonPersi
                         <a name="PersistentEntityCodec(org.bson.codecs.configuration.CodecRegistry, org.grails.datastore.mapping.model.PersistentEntity, boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><strong>PersistentEntityCodec</strong>(<a href='../../../../../../../org.bson.codecs.configuration.CodecRegistry.html'>CodecRegistry</a> codecRegistry, <a href='../../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, boolean stateful)</h4>
+                                <h4><strong>PersistentEntityCodec</strong>(org.bson.codecs.configuration.CodecRegistry codecRegistry, <a href='../../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, boolean stateful)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -467,7 +467,7 @@ extends <a href='../../../../../../../org/grails/datastore/bson/codecs/BsonPersi
                         <a name="encodeEmbeddedCollectionUpdate(org.grails.datastore.mapping.engine.EntityAccess, org.bson.BsonDocument, org.bson.Document, org.grails.datastore.mapping.model.types.Association, java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>encodeEmbeddedCollectionUpdate</strong>(<a href='../../../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> parentAccess, <a href='../../../../../../../org.bson.BsonDocument.html'>BsonDocument</a> sets, <a href='../../../../../../../org.bson.Document.html'>Document</a> unsets, <a href='../../../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> association, java.lang.Object v)</h4>
+                                <h4>protected&nbsp;void <strong>encodeEmbeddedCollectionUpdate</strong>(<a href='../../../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> parentAccess, org.bson.BsonDocument sets, org.bson.Document unsets, <a href='../../../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> association, java.lang.Object v)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -475,7 +475,7 @@ extends <a href='../../../../../../../org/grails/datastore/bson/codecs/BsonPersi
                         <a name="encodeEmbeddedUpdate(org.bson.BsonDocument, org.bson.Document, org.grails.datastore.mapping.model.types.Association, java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>encodeEmbeddedUpdate</strong>(<a href='../../../../../../../org.bson.BsonDocument.html'>BsonDocument</a> sets, <a href='../../../../../../../org.bson.Document.html'>Document</a> unsets, <a href='../../../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> association, java.lang.Object v)</h4>
+                                <h4>protected&nbsp;void <strong>encodeEmbeddedUpdate</strong>(org.bson.BsonDocument sets, org.bson.Document unsets, <a href='../../../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> association, java.lang.Object v)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -484,7 +484,7 @@ extends <a href='../../../../../../../org/grails/datastore/bson/codecs/BsonPersi
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-<a href='../../../../../../../org.bson.Document.html'>Document</a> <strong>encodeUpdate</strong>(java.lang.Object value, <a href='../../../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> access, <a href='../../../../../../../org.bson.codecs.EncoderContext.html'>EncoderContext</a> encoderContext, boolean embedded)</h4>
+org.bson.Document <strong>encodeUpdate</strong>(java.lang.Object value, <a href='../../../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> access, org.bson.codecs.EncoderContext encoderContext, boolean embedded)</h4>
                                 <p> This method will encode an update for the given object based <DL><DT><B>Parameters:</B></DT><DD><code>value</code> -  A Bson that is the update object</DD></DL><DL><DT><B>Returns:</B></DT><DD>A Bson</DD></DL></p>
                             </li>
                         </ul>

@@ -183,13 +183,13 @@ implements MongoAllOperations&lt;D&gt;</pre>
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.util.List&lt;D&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#aggregate(java.util.List, Function, com.mongodb.ReadPreference)">aggregate</a></strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate, <a href='../../../../../../com.mongodb.ReadPreference.html'>ReadPreference</a> readPreference)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#aggregate(java.util.List, Function, com.mongodb.ReadPreference)">aggregate</a></strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate, com.mongodb.ReadPreference readPreference)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.lang.Number</code></td>
-                            <td class="colLast"><code><strong><a href="#count(org.bson.conversions.Bson)">count</a></strong>(<a href='../../../../../../org.bson.conversions.Bson.html'>Bson</a> filter)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#count(org.bson.conversions.Bson)">count</a></strong>(org.bson.conversions.Bson filter)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -207,13 +207,13 @@ implements MongoAllOperations&lt;D&gt;</pre>
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>FindIterable&lt;D&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#find(org.bson.conversions.Bson)">find</a></strong>(<a href='../../../../../../org.bson.conversions.Bson.html'>Bson</a> filter)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#find(org.bson.conversions.Bson)">find</a></strong>(org.bson.conversions.Bson filter)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>D</code></td>
-                            <td class="colLast"><code><strong><a href="#findOneAndDelete(org.bson.conversions.Bson, com.mongodb.client.model.FindOneAndDeleteOptions)">findOneAndDelete</a></strong>(<a href='../../../../../../org.bson.conversions.Bson.html'>Bson</a> filter, <a href='../../../../../../com.mongodb.client.model.FindOneAndDeleteOptions.html'>FindOneAndDeleteOptions</a> options)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findOneAndDelete(org.bson.conversions.Bson, com.mongodb.client.model.FindOneAndDeleteOptions)">findOneAndDelete</a></strong>(org.bson.conversions.Bson filter, com.mongodb.client.model.FindOneAndDeleteOptions options)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -230,13 +230,13 @@ implements MongoAllOperations&lt;D&gt;</pre>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../../../com.mongodb.client.MongoDatabase.html'>MongoDatabase</a></code></td>
+                            <td class="colLast"><code>com.mongodb.client.MongoDatabase</code></td>
                             <td class="colLast"><code><strong><a href="#getDB()">getDB</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../../../org.bson.Document.html'>Document</a></code></td>
+                            <td class="colLast"><code>org.bson.Document</code></td>
                             <td class="colLast"><code><strong><a href="#getDbo(D)">getDbo</a></strong>(D instance)</code><br></td>
                         </tr>
                         
@@ -278,8 +278,8 @@ implements MongoAllOperations&lt;D&gt;</pre>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;<a href='../../../../../../org.bson.conversions.Bson.html'>Bson</a></code></td>
-                            <td class="colLast"><code><strong><a href="#wrapFilterWithMultiTenancy(org.bson.conversions.Bson)">wrapFilterWithMultiTenancy</a></strong>(<a href='../../../../../../org.bson.conversions.Bson.html'>Bson</a> filter)</code><br></td>
+                            <td class="colLast"><code>protected&nbsp;org.bson.conversions.Bson</code></td>
+                            <td class="colLast"><code><strong><a href="#wrapFilterWithMultiTenancy(org.bson.conversions.Bson)">wrapFilterWithMultiTenancy</a></strong>(org.bson.conversions.Bson filter)</code><br></td>
                         </tr>
                         
                     </table>
@@ -345,7 +345,7 @@ java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline, Func
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate, <a href='../../../../../../com.mongodb.ReadPreference.html'>ReadPreference</a> readPreference)</h4>
+java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate, com.mongodb.ReadPreference readPreference)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -353,7 +353,7 @@ java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline, Func
                         <a name="count(org.bson.conversions.Bson)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.lang.Number <strong>count</strong>(<a href='../../../../../../org.bson.conversions.Bson.html'>Bson</a> filter)</h4>
+                                <h4>java.lang.Number <strong>count</strong>(org.bson.conversions.Bson filter)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -379,7 +379,7 @@ int <strong>countHits</strong>(java.lang.String query)</h4>
                         <a name="find(org.bson.conversions.Bson)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>FindIterable&lt;D&gt; <strong>find</strong>(<a href='../../../../../../org.bson.conversions.Bson.html'>Bson</a> filter)</h4>
+                                <h4>FindIterable&lt;D&gt; <strong>find</strong>(org.bson.conversions.Bson filter)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -388,7 +388,7 @@ int <strong>countHits</strong>(java.lang.String query)</h4>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-D <strong>findOneAndDelete</strong>(<a href='../../../../../../org.bson.conversions.Bson.html'>Bson</a> filter, <a href='../../../../../../com.mongodb.client.model.FindOneAndDeleteOptions.html'>FindOneAndDeleteOptions</a> options)</h4>
+D <strong>findOneAndDelete</strong>(org.bson.conversions.Bson filter, com.mongodb.client.model.FindOneAndDeleteOptions options)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -415,7 +415,7 @@ java.lang.String <strong>getCollectionName</strong>()</h4>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-<a href='../../../../../../com.mongodb.client.MongoDatabase.html'>MongoDatabase</a> <strong>getDB</strong>()</h4>
+com.mongodb.client.MongoDatabase <strong>getDB</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -425,7 +425,7 @@ java.lang.String <strong>getCollectionName</strong>()</h4>
                             <li class="blockList">
                                 <h4>@java.lang.Override
 @java.lang.Deprecated
-<a href='../../../../../../org.bson.Document.html'>Document</a> <strong>getDbo</strong>(D instance)</h4>
+org.bson.Document <strong>getDbo</strong>(D instance)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -487,7 +487,7 @@ T <strong>withDatabase</strong>(java.lang.String databaseName, groovy.lang.Closu
                         <a name="wrapFilterWithMultiTenancy(org.bson.conversions.Bson)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;<a href='../../../../../../org.bson.conversions.Bson.html'>Bson</a> <strong>wrapFilterWithMultiTenancy</strong>(<a href='../../../../../../org.bson.conversions.Bson.html'>Bson</a> filter)</h4>
+                                <h4>protected&nbsp;org.bson.conversions.Bson <strong>wrapFilterWithMultiTenancy</strong>(org.bson.conversions.Bson filter)</h4>
                                 <p></p>
                             </li>
                         </ul>

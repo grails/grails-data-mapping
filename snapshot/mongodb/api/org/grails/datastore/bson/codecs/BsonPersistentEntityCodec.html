@@ -99,7 +99,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Implemented Interfaces and Traits:</dt>
-                <dd><a href='../../../../../org.bson.codecs.Codec.html'>Codec</a></dd>
+                <dd>org.bson.codecs.Codec</dd>
             </dl>
     
 
@@ -110,7 +110,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <pre>@groovy.transform.CompileStatic
 class BsonPersistentEntityCodec
 extends java.lang.Object
-implements <a href='../../../../../org.bson.codecs.Codec.html'>Codec</a></pre>
+implements org.bson.codecs.Codec</pre>
 
     <p> Encodes and decodes <a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a> objects from a BSON stream <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>6.0</DD></DL></p>
 
@@ -141,13 +141,13 @@ implements <a href='../../../../../org.bson.codecs.Codec.html'>Codec</a></pre>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>static&nbsp;<a href='../../../../../org.bson.codecs.DecoderContext.html'>DecoderContext</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>static&nbsp;org.bson.codecs.DecoderContext</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#DEFAULT_DECODER_CONTEXT">DEFAULT_DECODER_CONTEXT</a></code></td>
                             <td class="colLast"></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>static&nbsp;<a href='../../../../../org.bson.codecs.EncoderContext.html'>EncoderContext</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>static&nbsp;org.bson.codecs.EncoderContext</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#DEFAULT_ENCODER_CONTEXT">DEFAULT_ENCODER_CONTEXT</a></code></td>
                             <td class="colLast"></td>
                         </tr>
@@ -173,7 +173,7 @@ implements <a href='../../../../../org.bson.codecs.Codec.html'>Codec</a></pre>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong><a href='../../../../../org.bson.codecs.configuration.CodecRegistry.html'>CodecRegistry</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>org.bson.codecs.configuration.CodecRegistry</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#codecRegistry">codecRegistry</a></code><br></td>
                         </tr>
                         
@@ -216,7 +216,7 @@ implements <a href='../../../../../org.bson.codecs.Codec.html'>Codec</a></pre>
                         <tr class="altColor">
                             <td class="colFirst">
                                 <code><a href="#BsonPersistentEntityCodec(org.bson.codecs.configuration.CodecRegistry, org.grails.datastore.mapping.model.PersistentEntity, boolean)">BsonPersistentEntityCodec</a>
-                                (<a href='../../../../../org.bson.codecs.configuration.CodecRegistry.html'>CodecRegistry</a> codecRegistry, <a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, boolean stateful)</code><br></td>
+                                (org.bson.codecs.configuration.CodecRegistry codecRegistry, <a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, boolean stateful)</code><br></td>
                         </tr>
                         
                     </table>
@@ -243,7 +243,7 @@ implements <a href='../../../../../org.bson.codecs.Codec.html'>Codec</a></pre>
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#beforeFinishDocument(org.bson.BsonWriter, org.grails.datastore.mapping.engine.EntityAccess)">beforeFinishDocument</a></strong>(<a href='../../../../../org.bson.BsonWriter.html'>BsonWriter</a> bsonWriter, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> access)</code><br>Called directly before the last call to finish the document writing process</td>
+                            <td class="colLast"><code><strong><a href="#beforeFinishDocument(org.bson.BsonWriter, org.grails.datastore.mapping.engine.EntityAccess)">beforeFinishDocument</a></strong>(org.bson.BsonWriter bsonWriter, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> access)</code><br>Called directly before the last call to finish the document writing process</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -261,25 +261,25 @@ implements <a href='../../../../../org.bson.codecs.Codec.html'>Codec</a></pre>
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.lang.Object</code></td>
-                            <td class="colLast"><code><strong><a href="#decode(org.bson.BsonReader, org.bson.codecs.DecoderContext)">decode</a></strong>(<a href='../../../../../org.bson.BsonReader.html'>BsonReader</a> bsonReader, <a href='../../../../../org.bson.codecs.DecoderContext.html'>DecoderContext</a> decoderContext)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#decode(org.bson.BsonReader, org.bson.codecs.DecoderContext)">decode</a></strong>(org.bson.BsonReader bsonReader, org.bson.codecs.DecoderContext decoderContext)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#encode(org.bson.BsonWriter, java.lang.Object, org.bson.codecs.EncoderContext)">encode</a></strong>(<a href='../../../../../org.bson.BsonWriter.html'>BsonWriter</a> writer, java.lang.Object value, <a href='../../../../../org.bson.codecs.EncoderContext.html'>EncoderContext</a> encoderContext)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#encode(org.bson.BsonWriter, java.lang.Object, org.bson.codecs.EncoderContext)">encode</a></strong>(org.bson.BsonWriter writer, java.lang.Object value, org.bson.codecs.EncoderContext encoderContext)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#encode(org.bson.BsonWriter, java.lang.Object, org.bson.codecs.EncoderContext, boolean)">encode</a></strong>(<a href='../../../../../org.bson.BsonWriter.html'>BsonWriter</a> writer, java.lang.Object value, <a href='../../../../../org.bson.codecs.EncoderContext.html'>EncoderContext</a> encoderContext, boolean includeIdentifier)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#encode(org.bson.BsonWriter, java.lang.Object, org.bson.codecs.EncoderContext, boolean)">encode</a></strong>(org.bson.BsonWriter writer, java.lang.Object value, org.bson.codecs.EncoderContext encoderContext, boolean includeIdentifier)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../../org.bson.conversions.Bson.html'>Bson</a></code></td>
-                            <td class="colLast"><code><strong><a href="#encodeUpdate(java.lang.Object, org.grails.datastore.mapping.engine.EntityAccess, org.bson.codecs.EncoderContext, boolean)">encodeUpdate</a></strong>(java.lang.Object value, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> access, <a href='../../../../../org.bson.codecs.EncoderContext.html'>EncoderContext</a> encoderContext, boolean embedded)</code><br>This method will encode an update for the given object based</td>
+                            <td class="colLast"><code>org.bson.conversions.Bson</code></td>
+                            <td class="colLast"><code><strong><a href="#encodeUpdate(java.lang.Object, org.grails.datastore.mapping.engine.EntityAccess, org.bson.codecs.EncoderContext, boolean)">encodeUpdate</a></strong>(java.lang.Object value, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> access, org.bson.codecs.EncoderContext encoderContext, boolean embedded)</code><br>This method will encode an update for the given object based</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -321,7 +321,7 @@ implements <a href='../../../../../org.bson.codecs.Codec.html'>Codec</a></pre>
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#readSchemaless(org.bson.BsonReader, org.grails.datastore.gorm.schemaless.DynamicAttributes, java.lang.String, org.bson.codecs.DecoderContext)">readSchemaless</a></strong>(<a href='../../../../../org.bson.BsonReader.html'>BsonReader</a> bsonReader, <a href='../../../../../org/grails/datastore/gorm/schemaless/DynamicAttributes.html'>DynamicAttributes</a> dynamicAttributes, java.lang.String name, <a href='../../../../../org.bson.codecs.DecoderContext.html'>DecoderContext</a> decoderContext)</code><br>Reads an undeclared property</td>
+                            <td class="colLast"><code><strong><a href="#readSchemaless(org.bson.BsonReader, org.grails.datastore.gorm.schemaless.DynamicAttributes, java.lang.String, org.bson.codecs.DecoderContext)">readSchemaless</a></strong>(org.bson.BsonReader bsonReader, <a href='../../../../../org/grails/datastore/gorm/schemaless/DynamicAttributes.html'>DynamicAttributes</a> dynamicAttributes, java.lang.String name, org.bson.codecs.DecoderContext decoderContext)</code><br>Reads an undeclared property</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -351,7 +351,7 @@ implements <a href='../../../../../org.bson.codecs.Codec.html'>Codec</a></pre>
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#writeAttributes(Map, org.bson.BsonWriter, org.bson.codecs.EncoderContext)">writeAttributes</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; attributes, <a href='../../../../../org.bson.BsonWriter.html'>BsonWriter</a> writer, <a href='../../../../../org.bson.codecs.EncoderContext.html'>EncoderContext</a> encoderContext)</code><br>Writes the dynamic attributes to the writer</td>
+                            <td class="colLast"><code><strong><a href="#writeAttributes(Map, org.bson.BsonWriter, org.bson.codecs.EncoderContext)">writeAttributes</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; attributes, org.bson.BsonWriter writer, org.bson.codecs.EncoderContext encoderContext)</code><br>Writes the dynamic attributes to the writer</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -404,7 +404,7 @@ implements <a href='../../../../../org.bson.codecs.Codec.html'>Codec</a></pre>
                         <a name="DEFAULT_DECODER_CONTEXT"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;static&nbsp;final&nbsp;<a href='../../../../../org.bson.codecs.DecoderContext.html'>DecoderContext</a> <strong>DEFAULT_DECODER_CONTEXT</strong></h4>
+                                <h4>public&nbsp;static&nbsp;final&nbsp;org.bson.codecs.DecoderContext <strong>DEFAULT_DECODER_CONTEXT</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -412,7 +412,7 @@ implements <a href='../../../../../org.bson.codecs.Codec.html'>Codec</a></pre>
                         <a name="DEFAULT_ENCODER_CONTEXT"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;static&nbsp;final&nbsp;<a href='../../../../../org.bson.codecs.EncoderContext.html'>EncoderContext</a> <strong>DEFAULT_ENCODER_CONTEXT</strong></h4>
+                                <h4>public&nbsp;static&nbsp;final&nbsp;org.bson.codecs.EncoderContext <strong>DEFAULT_ENCODER_CONTEXT</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -432,7 +432,7 @@ implements <a href='../../../../../org.bson.codecs.Codec.html'>Codec</a></pre>
                         <a name="codecRegistry"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>final&nbsp;<a href='../../../../../org.bson.codecs.configuration.CodecRegistry.html'>CodecRegistry</a> <strong>codecRegistry</strong></h4>
+                                <h4>final&nbsp;org.bson.codecs.configuration.CodecRegistry <strong>codecRegistry</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -478,7 +478,7 @@ implements <a href='../../../../../org.bson.codecs.Codec.html'>Codec</a></pre>
                         <a name="BsonPersistentEntityCodec(org.bson.codecs.configuration.CodecRegistry, org.grails.datastore.mapping.model.PersistentEntity, boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><strong>BsonPersistentEntityCodec</strong>(<a href='../../../../../org.bson.codecs.configuration.CodecRegistry.html'>CodecRegistry</a> codecRegistry, <a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, boolean stateful)</h4>
+                                <h4><strong>BsonPersistentEntityCodec</strong>(org.bson.codecs.configuration.CodecRegistry codecRegistry, <a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, boolean stateful)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -499,7 +499,7 @@ implements <a href='../../../../../org.bson.codecs.Codec.html'>Codec</a></pre>
                         <a name="beforeFinishDocument(org.bson.BsonWriter, org.grails.datastore.mapping.engine.EntityAccess)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>beforeFinishDocument</strong>(<a href='../../../../../org.bson.BsonWriter.html'>BsonWriter</a> bsonWriter, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> access)</h4>
+                                <h4>protected&nbsp;void <strong>beforeFinishDocument</strong>(org.bson.BsonWriter bsonWriter, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> access)</h4>
                                 <p> Called directly before the last call to finish the document writing process <DL><DT><B>Parameters:</B></DT><DD><code>bsonWriter</code> -  The BsonWriter</DD><DD><code>access</code> -  The entity access</DD></DL></p>
                             </li>
                         </ul>
@@ -524,7 +524,7 @@ implements <a href='../../../../../org.bson.codecs.Codec.html'>Codec</a></pre>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-java.lang.Object <strong>decode</strong>(<a href='../../../../../org.bson.BsonReader.html'>BsonReader</a> bsonReader, <a href='../../../../../org.bson.codecs.DecoderContext.html'>DecoderContext</a> decoderContext)</h4>
+java.lang.Object <strong>decode</strong>(org.bson.BsonReader bsonReader, org.bson.codecs.DecoderContext decoderContext)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -533,7 +533,7 @@ java.lang.Object <strong>decode</strong>(<a href='../../../../../org.bson.BsonRe
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-void <strong>encode</strong>(<a href='../../../../../org.bson.BsonWriter.html'>BsonWriter</a> writer, java.lang.Object value, <a href='../../../../../org.bson.codecs.EncoderContext.html'>EncoderContext</a> encoderContext)</h4>
+void <strong>encode</strong>(org.bson.BsonWriter writer, java.lang.Object value, org.bson.codecs.EncoderContext encoderContext)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -541,7 +541,7 @@ void <strong>encode</strong>(<a href='../../../../../org.bson.BsonWriter.html'>B
                         <a name="encode(org.bson.BsonWriter, java.lang.Object, org.bson.codecs.EncoderContext, boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>encode</strong>(<a href='../../../../../org.bson.BsonWriter.html'>BsonWriter</a> writer, java.lang.Object value, <a href='../../../../../org.bson.codecs.EncoderContext.html'>EncoderContext</a> encoderContext, boolean includeIdentifier)</h4>
+                                <h4>void <strong>encode</strong>(org.bson.BsonWriter writer, java.lang.Object value, org.bson.codecs.EncoderContext encoderContext, boolean includeIdentifier)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -549,7 +549,7 @@ void <strong>encode</strong>(<a href='../../../../../org.bson.BsonWriter.html'>B
                         <a name="encodeUpdate(java.lang.Object, org.grails.datastore.mapping.engine.EntityAccess, org.bson.codecs.EncoderContext, boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../org.bson.conversions.Bson.html'>Bson</a> <strong>encodeUpdate</strong>(java.lang.Object value, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> access, <a href='../../../../../org.bson.codecs.EncoderContext.html'>EncoderContext</a> encoderContext, boolean embedded)</h4>
+                                <h4>org.bson.conversions.Bson <strong>encodeUpdate</strong>(java.lang.Object value, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> access, org.bson.codecs.EncoderContext encoderContext, boolean embedded)</h4>
                                 <p> This method will encode an update for the given object based <DL><DT><B>Parameters:</B></DT><DD><code>value</code> -  A org.bson.conversions.Bson that is the update object</DD></DL><DL><DT><B>Returns:</B></DT><DD>A Bson</DD></DL></p>
                             </li>
                         </ul>
@@ -606,7 +606,7 @@ java.lang.Class <strong>getEncoderClass</strong>()</h4>
                         <a name="readSchemaless(org.bson.BsonReader, org.grails.datastore.gorm.schemaless.DynamicAttributes, java.lang.String, org.bson.codecs.DecoderContext)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>readSchemaless</strong>(<a href='../../../../../org.bson.BsonReader.html'>BsonReader</a> bsonReader, <a href='../../../../../org/grails/datastore/gorm/schemaless/DynamicAttributes.html'>DynamicAttributes</a> dynamicAttributes, java.lang.String name, <a href='../../../../../org.bson.codecs.DecoderContext.html'>DecoderContext</a> decoderContext)</h4>
+                                <h4>protected&nbsp;void <strong>readSchemaless</strong>(org.bson.BsonReader bsonReader, <a href='../../../../../org/grails/datastore/gorm/schemaless/DynamicAttributes.html'>DynamicAttributes</a> dynamicAttributes, java.lang.String name, org.bson.codecs.DecoderContext decoderContext)</h4>
                                 <p> Reads an undeclared property <DL><DT><B>Parameters:</B></DT><DD><code>bsonReader</code> -  The bson reader</DD><DD><code>dynamicAttributes</code> -  a document of undeclared properties</DD><DD>name</DD><DD>decoderContext</DD></DL></p>
                             </li>
                         </ul>
@@ -647,7 +647,7 @@ java.lang.Class <strong>getEncoderClass</strong>()</h4>
                         <a name="writeAttributes(Map, org.bson.BsonWriter, org.bson.codecs.EncoderContext)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;void <strong>writeAttributes</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; attributes, <a href='../../../../../org.bson.BsonWriter.html'>BsonWriter</a> writer, <a href='../../../../../org.bson.codecs.EncoderContext.html'>EncoderContext</a> encoderContext)</h4>
+                                <h4>protected&nbsp;void <strong>writeAttributes</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; attributes, org.bson.BsonWriter writer, org.bson.codecs.EncoderContext encoderContext)</h4>
                                 <p> Writes the dynamic attributes to the writer <DL><DT><B>Parameters:</B></DT><DD><code>attributes</code> -  The dynamic attributes</DD><DD><code>writer</code> -  The writer</DD><DD>encoderContext</DD></DL></p>
                             </li>
                         </ul>

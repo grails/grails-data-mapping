@@ -147,7 +147,7 @@ extends <a href='../../../../../org/grails/datastore/mapping/core/AbstractSessio
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>protected&nbsp;static&nbsp;java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, WriteConcern&gt;</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>protected&nbsp;static&nbsp;java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, com.mongodb.WriteConcern&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#declaredWriteConcerns">declaredWriteConcerns</a></code></td>
                             <td class="colLast"></td>
                         </tr>
@@ -183,7 +183,7 @@ extends <a href='../../../../../org/grails/datastore/mapping/core/AbstractSessio
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>protected&nbsp;<a href='../../../../../com.mongodb.WriteConcern.html'>WriteConcern</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>protected&nbsp;com.mongodb.WriteConcern</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#writeConcern">writeConcern</a></code></td>
                             <td class="colLast"></td>
                         </tr>
@@ -288,12 +288,12 @@ extends <a href='../../../../../org/grails/datastore/mapping/core/AbstractSessio
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;abstract&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#flush(com.mongodb.WriteConcern)">flush</a></strong>(<a href='../../../../../com.mongodb.WriteConcern.html'>WriteConcern</a> writeConcern)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#flush(com.mongodb.WriteConcern)">flush</a></strong>(com.mongodb.WriteConcern writeConcern)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>public&nbsp;com.mongodb.client.MongoCollection&lt;Document&gt;</code></td>
+                            <td class="colLast"><code>public&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getCollection(org.grails.datastore.mapping.model.PersistentEntity)">getCollection</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
@@ -317,7 +317,7 @@ extends <a href='../../../../../org/grails/datastore/mapping/core/AbstractSessio
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>public&nbsp;<a href='../../../../../com.mongodb.WriteConcern.html'>WriteConcern</a></code></td>
+                            <td class="colLast"><code>public&nbsp;com.mongodb.WriteConcern</code></td>
                             <td class="colLast"><code><strong><a href="#getDeclaredWriteConcern(org.grails.datastore.mapping.model.PersistentEntity)">getDeclaredWriteConcern</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
@@ -341,13 +341,13 @@ extends <a href='../../../../../org/grails/datastore/mapping/core/AbstractSessio
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>public&nbsp;<a href='../../../../../com.mongodb.client.MongoClient.html'>MongoClient</a></code></td>
+                            <td class="colLast"><code>public&nbsp;com.mongodb.client.MongoClient</code></td>
                             <td class="colLast"><code><strong><a href="#getNativeInterface()">getNativeInterface</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>public&nbsp;<a href='../../../../../com.mongodb.WriteConcern.html'>WriteConcern</a></code></td>
+                            <td class="colLast"><code>public&nbsp;com.mongodb.WriteConcern</code></td>
                             <td class="colLast"><code><strong><a href="#getWriteConcern()">getWriteConcern</a></strong>()</code><br>Obtains the WriteConcern to use for the session</td>
                         </tr>
                         
@@ -360,7 +360,7 @@ extends <a href='../../../../../org/grails/datastore/mapping/core/AbstractSessio
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#setWriteConcern(com.mongodb.WriteConcern)">setWriteConcern</a></strong>(<a href='../../../../../com.mongodb.WriteConcern.html'>WriteConcern</a> writeConcern)</code><br>Sets the WriteConcern to use for the session</td>
+                            <td class="colLast"><code><strong><a href="#setWriteConcern(com.mongodb.WriteConcern)">setWriteConcern</a></strong>(com.mongodb.WriteConcern writeConcern)</code><br>Sets the WriteConcern to use for the session</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -439,7 +439,7 @@ extends <a href='../../../../../org/grails/datastore/mapping/core/AbstractSessio
                         <a name="declaredWriteConcerns"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;static&nbsp;final&nbsp;java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, WriteConcern&gt; <strong>declaredWriteConcerns</strong></h4>
+                                <h4>protected&nbsp;static&nbsp;final&nbsp;java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, com.mongodb.WriteConcern&gt; <strong>declaredWriteConcerns</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -487,7 +487,7 @@ extends <a href='../../../../../org/grails/datastore/mapping/core/AbstractSessio
                         <a name="writeConcern"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;<a href='../../../../../com.mongodb.WriteConcern.html'>WriteConcern</a> <strong>writeConcern</strong></h4>
+                                <h4>protected&nbsp;com.mongodb.WriteConcern <strong>writeConcern</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -566,7 +566,7 @@ public&nbsp;void <strong>flush</strong>()</h4>
                         <a name="flush(com.mongodb.WriteConcern)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;abstract&nbsp;void <strong>flush</strong>(<a href='../../../../../com.mongodb.WriteConcern.html'>WriteConcern</a> writeConcern)</h4>
+                                <h4>public&nbsp;abstract&nbsp;void <strong>flush</strong>(com.mongodb.WriteConcern writeConcern)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -574,7 +574,7 @@ public&nbsp;void <strong>flush</strong>()</h4>
                         <a name="getCollection(org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;com.mongodb.client.MongoCollection&lt;Document&gt; <strong>getCollection</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <h4>public&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; <strong>getCollection</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -608,7 +608,7 @@ public&nbsp;<a href='../../../../../org/grails/datastore/mapping/mongo/MongoData
                         <a name="getDeclaredWriteConcern(org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<a href='../../../../../com.mongodb.WriteConcern.html'>WriteConcern</a> <strong>getDeclaredWriteConcern</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <h4>public&nbsp;com.mongodb.WriteConcern <strong>getDeclaredWriteConcern</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -642,7 +642,7 @@ public&nbsp;<a href='../../../../../org/grails/datastore/mapping/mongo/config/Mo
                         <a name="getNativeInterface()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<a href='../../../../../com.mongodb.client.MongoClient.html'>MongoClient</a> <strong>getNativeInterface</strong>()</h4>
+                                <h4>public&nbsp;com.mongodb.client.MongoClient <strong>getNativeInterface</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -650,7 +650,7 @@ public&nbsp;<a href='../../../../../org/grails/datastore/mapping/mongo/config/Mo
                         <a name="getWriteConcern()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<a href='../../../../../com.mongodb.WriteConcern.html'>WriteConcern</a> <strong>getWriteConcern</strong>()</h4>
+                                <h4>public&nbsp;com.mongodb.WriteConcern <strong>getWriteConcern</strong>()</h4>
                                 <p> Obtains the WriteConcern to use for the session
       <DL><DT><B>Returns:</B></DT><DD>the WriteConcern</DD></DL></p>
                             </li>
@@ -668,7 +668,7 @@ public&nbsp;boolean <strong>hasTransaction</strong>()</h4>
                         <a name="setWriteConcern(com.mongodb.WriteConcern)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>setWriteConcern</strong>(<a href='../../../../../com.mongodb.WriteConcern.html'>WriteConcern</a> writeConcern)</h4>
+                                <h4>public&nbsp;void <strong>setWriteConcern</strong>(com.mongodb.WriteConcern writeConcern)</h4>
                                 <p> Sets the WriteConcern to use for the session
       <DL><DT><B>Parameters:</B></DT><DD><code>writeConcern</code> -  The WriteConcern to use</DD></DL></p>
                             </li>
