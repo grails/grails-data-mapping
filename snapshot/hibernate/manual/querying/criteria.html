@@ -442,7 +442,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>Criteria can be used either with the <a href="../api/org/grails/datastore/gorm/GormEntity.html#createCriteria()">createCriteria()</a> or <a href="../api/org/grails/datastore/gorm/GormEntity.html#withCriteria(groovy.lang.Closure)">withCriteria(closure)</a> methods.</p>
 </div>
 <div class="paragraph">
-<p>The builder uses Hibernate&#8217;s Criteria API. The nodes on this builder map the static methods found in the <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/criterion/Restrictions.html">Restrictions</a> class of the Hibernate Criteria API. For example:</p>
+<p>The builder uses Hibernate&#8217;s Criteria API. The nodes on this builder map the static methods found in the <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/criterion/Restrictions.html">Restrictions</a> class of the Hibernate Criteria API. For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -573,7 +573,7 @@ def results = c.list {
 <div class="sect3">
 <h4 id="_querying_with_projections">Querying with Projections</h4>
 <div class="paragraph">
-<p>Projections may be used to customise the results. Define a "projections" node within the criteria builder tree to use projections. There are equivalent methods within the projections node to the methods found in the Hibernate <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/criterion/Projections.html">Projections</a> class:</p>
+<p>Projections may be used to customise the results. Define a "projections" node within the criteria builder tree to use projections. There are equivalent methods within the projections node to the methods found in the Hibernate <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/criterion/Projections.html">Projections</a> class:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -593,7 +593,7 @@ def numberOfBranches = c.get {
 <div class="sect3">
 <h4 id="_transforming_projection_results">Transforming Projection Results</h4>
 <div class="paragraph">
-<p>If the raw value or simple object array returned by the criteria method doesn&#8217;t suit your needs, the result can be transformed with a <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/transform/ResultTransformer.html">ResultTransformer</a>. Let&#8217;s say we want to transform the criteria results into a Map so that we can easily reference values by key:</p>
+<p>If the raw value or simple object array returned by the criteria method doesn&#8217;t suit your needs, the result can be transformed with a <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/transform/ResultTransformer.html">ResultTransformer</a>. Let&#8217;s say we want to transform the criteria results into a Map so that we can easily reference values by key:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -615,7 +615,7 @@ def accountsOverview = c.get {
 <p>Note that we&#8217;ve added an alias to each projection as an additional parameter to be used as the key. For this to work, all projections must have aliases defined, otherwise the corresponding map entry will not be built.</p>
 </div>
 <div class="paragraph">
-<p>We can also transform the result into an object of our choosing via the <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/transform/Transformers.html#aliasToBean-java.lang.Class-">Transformers.aliasToBean()</a> method. In this case, we&#8217;ll transform it into an <code>AccountsOverview</code>:</p>
+<p>We can also transform the result into an object of our choosing via the <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/transform/Transformers.html#aliasToBean-java.lang.Class-">Transformers.aliasToBean()</a> method. In this case, we&#8217;ll transform it into an <code>AccountsOverview</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -829,7 +829,7 @@ Note that the parameter there is SQL. The <code>first_name</code> attribute refe
 <div class="sect3">
 <h4 id="_using_scrollable_results">Using Scrollable Results</h4>
 <div class="paragraph">
-<p>You can use Hibernate&#8217;s <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/ScrollableResults.html">ScrollableResults</a> feature by calling the scroll method:</p>
+<p>You can use Hibernate&#8217;s <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/ScrollableResults.html">ScrollableResults</a> feature by calling the scroll method:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -862,7 +862,7 @@ def accountNumber = results.getLong('number')</code></pre>
 <div class="sect3">
 <h4 id="_setting_properties_in_the_criteria_instance">Setting properties in the Criteria instance</h4>
 <div class="paragraph">
-<p>If a node within the builder tree doesn&#8217;t match a particular criterion it will attempt to set a property on the Criteria object itself. This allows full access to all the properties in this class. This example calls <code>setMaxResults</code> and <code>setFirstResult</code> on the <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/Criteria.html">Criteria</a> instance:</p>
+<p>If a node within the builder tree doesn&#8217;t match a particular criterion it will attempt to set a property on the Criteria object itself. This allows full access to all the properties in this class. This example calls <code>setMaxResults</code> and <code>setFirstResult</code> on the <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/Criteria.html">Criteria</a> instance:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -981,7 +981,7 @@ def results = Airport.withCriteria {
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>listDistinct</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">If subqueries or associations are used one may end up with the same row multiple times in the result set. This allows listing only distinct entities and is equivalent to <code>DISTINCT_ROOT_ENTITY</code> of the <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/criterion/CriteriaSpecification.html">CriteriaSpecification</a> class.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If subqueries or associations are used one may end up with the same row multiple times in the result set. This allows listing only distinct entities and is equivalent to <code>DISTINCT_ROOT_ENTITY</code> of the <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/criterion/CriteriaSpecification.html">CriteriaSpecification</a> class.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>count</strong></p></td>
@@ -1018,7 +1018,7 @@ A more flexible approach is to use Detached Criteria, as described in the follow
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 7.1.1-SNAPSHOT<br>
+Version 7.0.6.BUILD-SNAPSHOT<br>
 </div>
 </div>
 </body>
