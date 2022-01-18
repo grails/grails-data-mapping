@@ -11,7 +11,7 @@ dependencies {
     compileOnly("org.springframework:spring-web:$springVersion")
     testImplementation("org.springframework:spring-jdbc:$springVersion")
     testImplementation("org.hibernate:hibernate-validator:$hibernateValidatorVersion")
-    testRuntimeOnly('com.h2database:h2:1.4.200')
+    testRuntimeOnly('com.h2database:h2:2.1.210')
 }
 
 //compileGroovy.groovyOptions.forkOptions.jvmArgs = ['-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005']
