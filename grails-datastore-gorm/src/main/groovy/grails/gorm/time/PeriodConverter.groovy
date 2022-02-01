@@ -1,6 +1,7 @@
 package grails.gorm.time
 
 import groovy.transform.CompileStatic
+import groovy.transform.Generated
 
 import java.time.Period
 
@@ -12,10 +13,12 @@ import java.time.Period
 @CompileStatic
 trait PeriodConverter {
 
+    @Generated
     String convert(Period value) {
         value.toString()
     }
 
+    @Generated
     Period convert(String value) {
         Period.parse(value)
     }

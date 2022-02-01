@@ -28,6 +28,8 @@ import org.grails.datastore.mapping.reflect.AstUtils
 
 import java.lang.reflect.Modifier
 
+import static org.apache.groovy.ast.tools.AnnotatedNodeUtils.markAsGenerated
+
 /**
  * Abstract implementor for read operations
  *
@@ -60,6 +62,9 @@ abstract class AbstractReadOperationImplementer extends AbstractServiceImplement
             domainClassNode = domainClassFromSignature
         }
         doImplement(domainClassNode, abstractMethodNode, newMethodNode, targetClassNode)
+
+        markAsGenerated(targetClassNode, newMethodNode)
+
         abstractMethodNode.putNodeMetaData(IMPLEMENTED, Boolean.TRUE)
     }
 

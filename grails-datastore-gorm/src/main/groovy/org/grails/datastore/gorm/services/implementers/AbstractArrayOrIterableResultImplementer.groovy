@@ -21,6 +21,8 @@ import org.codehaus.groovy.ast.GenericsType
 import org.codehaus.groovy.ast.MethodNode
 import org.grails.datastore.mapping.reflect.AstUtils
 
+import static org.apache.groovy.ast.tools.AnnotatedNodeUtils.markAsGenerated
+
 /**
  * Abstract implementation of a finder that handles Array and Iterables of domain classes
  *
@@ -50,6 +52,7 @@ abstract class AbstractArrayOrIterableResultImplementer extends AbstractReadOper
             domainClassNode = domainClassForReturnType
         }
         doImplement(domainClassNode, targetClassNode, abstractMethodNode, newMethodNode, isArray)
+        markAsGenerated(targetClassNode, newMethodNode)
     }
 
     /**

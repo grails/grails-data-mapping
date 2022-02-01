@@ -6,6 +6,7 @@ import grails.gorm.rx.api.RxGormOperations
 import grails.gorm.rx.api.RxGormStaticOperations
 import grails.gorm.rx.proxy.ObservableProxy
 import groovy.transform.CompileStatic
+import groovy.transform.Generated
 import org.grails.datastore.gorm.GormValidateable
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
@@ -34,21 +35,25 @@ import rx.Subscriber
  */
 @CompileStatic
 trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckable, Serializable {
+    @Generated
     @Override
     boolean validate(Map arguments) {
         RxGormEnhancer.findValidationApi((Class<D>)getClass()).validate((D)this, arguments)
     }
 
+    @Generated
     @Override
     boolean validate(List fields) {
         RxGormEnhancer.findValidationApi((Class<D>)getClass()).validate((D)this, fields)
     }
 
+    @Generated
     @Override
     boolean validate() {
         RxGormEnhancer.findValidationApi((Class<D>)getClass()).validate((D)this)
     }
 
+    @Generated
     @Override
     Observable<D> insert(Map arguments = Collections.emptyMap()) {
         return doSave(arguments, true)
@@ -58,6 +63,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return An observable
      */
+    @Generated
     Observable<D> save() {
         save(Collections.emptyMap())
     }
@@ -67,10 +73,12 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return An observable
      */
+    @Generated
     Observable<D> save(Map arguments) {
         return doSave(arguments, false)
     }
 
+    @Generated
     private Observable<D> doSave(Map arguments, boolean isInsert) {
         boolean shouldValidate = arguments?.containsKey("validate") ? arguments.validate : true
         if (shouldValidate) {
@@ -99,6 +107,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
     /**
      * Returns the objects identifier
      */
+    @Generated
     Serializable ident() {
         currentRxGormInstanceApi().ident this
     }
@@ -109,6 +118,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @return An observable that returns a boolean true if successful
      */
     @Override
+    @Generated
     Observable<Boolean> delete(Map arguments = Collections.emptyMap()) {
         currentRxGormInstanceApi().delete this, arguments
     }
@@ -122,6 +132,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return true if the field is dirty
      */
+    @Generated
     boolean isDirty(String fieldName) {
         hasChanged(fieldName)
     }
@@ -132,6 +143,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param instance The instance
      * @return true if it is dirty
      */
+    @Generated
     boolean isDirty() {
         hasChanged()
     }
@@ -143,6 +155,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param arg The value
      * @return This domain instance
      */
+    @Generated
     D removeFrom(String associationName, Object arg) {
         final PersistentEntity entity = getGormPersistentEntity()
         def prop = entity.getPropertyByName(associationName)
@@ -191,6 +204,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param associationName The association name
      * @return The id of the association or null if it doesn't have one
      */
+    @Generated
     Serializable getAssociationId(String associationName) {
         PersistentEntity entity = getGormPersistentEntity()
         def association = entity.getPropertyByName(associationName)
@@ -218,6 +232,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param arg The value
      * @return This domain instance
      */
+    @Generated
     D addTo(String associationName, Object arg) {
         final PersistentEntity entity = getGormPersistentEntity()
         final def prop = entity.getPropertyByName(associationName)
@@ -297,6 +312,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
     /**
      * @return A new instance of this RxEntity
      */
+    @Generated
     static D create() {
         (D)this.newInstance()
     }
@@ -307,6 +323,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param id The id of the instance
      * @return An observable
      */
+    @Generated
     static Observable<D> get(Serializable id, Map args = Collections.emptyMap()) {
         currentRxGormStaticApi().get(id, args)
     }
@@ -317,6 +334,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param id The id of the instance
      * @return An observable
      */
+    @Generated
     static ObservableProxy<D> proxy(Serializable id, Map args = Collections.emptyMap()) {
         currentRxGormStaticApi().proxy(id, args)
     }
@@ -328,12 +346,14 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param query The query that returns the instance
      * @return An observable
      */
+    @Generated
     static ObservableProxy<D> proxy(DetachedCriteria<D> query, Map args = Collections.emptyMap()) {
         currentRxGormStaticApi().proxy(query, args)
     }
     /**
      * @return Counts the number of instances
      */
+    @Generated
     static Observable<Number> count() {
         currentRxGormStaticApi().count()
     }
@@ -344,6 +364,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param objects The objects to delete
      * @return The number of objects actually deleted
      */
+    @Generated
     static Observable<Number> deleteAll(D...objects) {
         deleteAll( (Iterable<D>)Arrays.asList(objects) )
     }
@@ -354,6 +375,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param objects The objects to delete
      * @return The number of objects actually deleted
      */
+    @Generated
     static Observable<Number> deleteAll(Iterable<D> objects) {
         currentRxGormStaticApi().deleteAll(objects)
     }
@@ -364,6 +386,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param objects The objects to save
      * @return An observable that emits the identifiers of the saved objects
      */
+    @Generated
     static Observable<List<Serializable>> saveAll(Iterable<D> objects, Map arguments = Collections.emptyMap()) {
         currentRxGormStaticApi().saveAll(objects, arguments)
     }
@@ -374,6 +397,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param objects The objects to save
      * @return An observable that emits the identifiers of the saved objects
      */
+    @Generated
     static Observable<List<Serializable>> saveAll(D... objects) {
         saveAll((Iterable<D>)Arrays.asList(objects))
     }
@@ -384,6 +408,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param objects The objects to save
      * @return An observable that emits the identifiers of the saved objects
      */
+    @Generated
     static Observable<List<Serializable>> insertAll(Iterable<D> objects, Map arguments = Collections.emptyMap()) {
         currentRxGormStaticApi().insertAll(objects, arguments)
     }
@@ -394,6 +419,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param objects The objects to save
      * @return An observable that emits the identifiers of the saved objects
      */
+    @Generated
     static Observable<List<Serializable>> insertAll(D... objects) {
         insertAll((Iterable<D>)Arrays.asList(objects))
     }
@@ -404,6 +430,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param id
      * @return
      */
+    @Generated
     static Observable<Boolean> exists(Serializable id) {
         get(id).map { D o ->
             o != null
@@ -417,6 +444,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return A single that will emit the first object, if it exists
      */
+    @Generated
     static Observable<D> first() {
         currentRxGormStaticApi().first()
     }
@@ -428,6 +456,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return A single that will emit the first object, if it exists
      */
+    @Generated
     static Observable<D> first(String propertyName) {
         currentRxGormStaticApi().first propertyName
     }
@@ -441,6 +470,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return the first object in the datastore, null if none exist
      */
+    @Generated
     static Observable<D> first(Map queryParams) {
         currentRxGormStaticApi().first queryParams
     }
@@ -450,6 +480,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return A single that will emit the last object, if it exists
      */
+    @Generated
     static Observable<D> last() {
         currentRxGormStaticApi().last()
     }
@@ -461,6 +492,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return A single that will emit the last object, if it exists
      */
+    @Generated
     static Observable<D> last(String propertyName) {
         currentRxGormStaticApi().last propertyName
     }
@@ -474,6 +506,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return A single that will emit the last object, if it exists
      */
+    @Generated
     static Observable<D> last(Map<String,Object> params) {
         currentRxGormStaticApi().last params
     }
@@ -485,6 +518,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return An observable with all results
      */
+    @Generated
     static Observable<List<D>> list() {
         currentRxGormStaticApi().list()
     }
@@ -494,6 +528,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return An observable with all results
      */
+    @Generated
     static Observable<List<D>> list(Map args) {
         currentRxGormStaticApi().list(args)
     }
@@ -503,6 +538,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return An observable with all results
      */
+    @Generated
     static Observable<D> findAll() {
         findAll(Collections.emptyMap())
     }
@@ -512,6 +548,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return An observable with all results
      */
+    @Generated
     static Observable<D> findAll(Map args) {
         currentRxGormStaticApi().findAll(args)
     }
@@ -522,6 +559,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param queryMap The map of conditions
      * @return A single result
      */
+    @Generated
     static Observable<D> findWhere(Map queryMap) {
         currentRxGormStaticApi().findWhere queryMap
     }
@@ -534,6 +572,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return A single result
      */
+    @Generated
     static Observable<D> findWhere(Map queryMap, Map args) {
         currentRxGormStaticApi().findWhere queryMap, args
     }
@@ -545,6 +584,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param queryMap The map of conditions
      * @return A single result
      */
+    @Generated
     static Observable<D> findOrCreateWhere(Map queryMap) {
         currentRxGormStaticApi().findOrCreateWhere queryMap
     }
@@ -556,6 +596,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param queryMap The map of conditions
      * @return A single result
      */
+    @Generated
     static Observable<D> findOrSaveWhere(Map queryMap) {
         currentRxGormStaticApi().findOrSaveWhere queryMap
     }
@@ -566,6 +607,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param queryMap The map of conditions
      * @return A list of results
      */
+    @Generated
     static Observable<D> findAllWhere(Map queryMap) {
         currentRxGormStaticApi().findAllWhere queryMap
     }
@@ -578,6 +620,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return A list of results
      */
+    @Generated
     static Observable<D> findAllWhere(Map queryMap, Map args) {
         currentRxGormStaticApi().findAllWhere queryMap, args
     }
@@ -588,6 +631,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param callable The callable
      * @return The observable
      */
+    @Generated
     static Observable<D> findAll(@DelegatesTo(DetachedCriteria) Closure callable) {
         currentRxGormStaticApi().findAll callable
     }
@@ -598,6 +642,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param callable The callable
      * @return The observable
      */
+    @Generated
     static Observable<D> find(@DelegatesTo(DetachedCriteria) Closure callable) {
         currentRxGormStaticApi().find callable
     }
@@ -606,6 +651,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param callable Callable closure containing detached criteria definition
      * @return The DetachedCriteria instance
      */
+    @Generated
     static DetachedCriteria<D> where(@DelegatesTo(DetachedCriteria) Closure callable) {
         currentRxGormStaticApi().where callable
     }
@@ -615,6 +661,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param callable Callable closure containing detached criteria definition
      * @return The DetachedCriteria instance that is lazily initialized
      */
+    @Generated
     static DetachedCriteria<D> whereLazy(@DelegatesTo(DetachedCriteria) Closure callable) {
         currentRxGormStaticApi().whereLazy callable
     }
@@ -624,6 +671,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param callable Callable closure containing detached criteria definition
      * @return The DetachedCriteria instance
      */
+    @Generated
     static DetachedCriteria<D> whereAny(@DelegatesTo(DetachedCriteria) Closure callable) {
         currentRxGormStaticApi().whereAny callable
     }
@@ -631,6 +679,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
     /**
      * Creates a criteria builder instance
      */
+    @Generated
     static CriteriaBuilder<D> createCriteria() {
         currentRxGormStaticApi().createCriteria()
     }
@@ -638,6 +687,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
     /**
      * Creates a criteria builder instance
      */
+    @Generated
     static Observable withCriteria(@DelegatesTo(CriteriaBuilder) Closure callable) {
         currentRxGormStaticApi().withCriteria callable
     }
@@ -645,6 +695,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
     /**
      * Creates a criteria builder instance
      */
+    @Generated
     static Observable withCriteria(Map builderArgs, @DelegatesTo(CriteriaBuilder) Closure callable) {
         currentRxGormStaticApi().withCriteria builderArgs, callable
     }
@@ -655,6 +706,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param connectionName The name of the connection
      * @return The {@link RxGormStaticOperations}    instance
      */
+    @Generated
     RxGormAllOperations<D> withConnection(String connectionName) {
         return (RxGormAllOperations<D>)RxGormEnhancer.findStaticApi(getClass(), connectionName)
     }
@@ -667,6 +719,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @param callable The closure
      * @return
      */
+    @Generated
     static <T> T withConnection(String connectionName, @DelegatesTo(RxGormAllOperations) Closure<T> callable ) {
         def staticOperations = (RxGormAllOperations<D>) RxGormEnhancer.findStaticApi(this, connectionName)
         callable.setDelegate(staticOperations)
@@ -681,10 +734,12 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      *
      * @return An observable with the result
      */
+    @Generated
     static Observable<D> staticMethodMissing(String methodName, arg) {
         currentRxGormStaticApi().methodMissing(methodName, arg)
     }
 
+    @Generated
     static Object staticPropertyMissing(String property) {
         currentRxGormStaticApi().propertyMissing(property)
     }
@@ -692,18 +747,22 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
     /**
      * @return The dynamic finders for this domain class
      */
+    @Generated
     static List<FinderMethod> getGormDynamicFinders() {
         currentRxGormStaticApi().gormDynamicFinders
     }
 
+    @Generated
     static PersistentEntity getGormPersistentEntity() {
         currentRxGormStaticApi().entity
     }
 
+    @Generated
     private RxGormInstanceApi<D> currentRxGormInstanceApi() {
         (RxGormInstanceApi<D>)RxGormEnhancer.findInstanceApi(this.getClass())
     }
 
+    @Generated
     private static RxGormStaticApi<D> currentRxGormStaticApi() {
         (RxGormStaticApi<D>)RxGormEnhancer.findStaticApi(this)
     }

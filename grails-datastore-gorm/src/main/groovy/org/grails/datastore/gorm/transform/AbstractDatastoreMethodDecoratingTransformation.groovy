@@ -16,7 +16,11 @@
 package org.grails.datastore.gorm.transform
 
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.ast.*
+import org.codehaus.groovy.ast.AnnotationNode
+import org.codehaus.groovy.ast.ClassNode
+import org.codehaus.groovy.ast.FieldNode
+import org.codehaus.groovy.ast.MethodNode
+import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.expr.ClassExpression
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
@@ -33,10 +37,27 @@ import org.springframework.beans.factory.annotation.Autowired
 
 import java.lang.reflect.Modifier
 
-import static org.codehaus.groovy.ast.ClassHelper.*
-import static org.codehaus.groovy.ast.tools.GeneralUtils.*
+import static org.codehaus.groovy.ast.ClassHelper.STRING_TYPE
+import static org.codehaus.groovy.ast.ClassHelper.VOID_TYPE
+import static org.codehaus.groovy.ast.ClassHelper.make
+import static org.codehaus.groovy.ast.tools.GeneralUtils.assignS
+import static org.codehaus.groovy.ast.tools.GeneralUtils.block
+import static org.codehaus.groovy.ast.tools.GeneralUtils.callX
+import static org.codehaus.groovy.ast.tools.GeneralUtils.castX
+import static org.codehaus.groovy.ast.tools.GeneralUtils.classX
+import static org.codehaus.groovy.ast.tools.GeneralUtils.constX
+import static org.codehaus.groovy.ast.tools.GeneralUtils.ifElseS
+import static org.codehaus.groovy.ast.tools.GeneralUtils.notNullX
+import static org.codehaus.groovy.ast.tools.GeneralUtils.param
+import static org.codehaus.groovy.ast.tools.GeneralUtils.params
+import static org.codehaus.groovy.ast.tools.GeneralUtils.returnS
+import static org.codehaus.groovy.ast.tools.GeneralUtils.varX
 import static org.grails.datastore.gorm.transform.AstMethodDispatchUtils.callD
-import static org.grails.datastore.mapping.reflect.AstUtils.*
+import static org.grails.datastore.mapping.reflect.AstUtils.ZERO_PARAMETERS
+import static org.grails.datastore.mapping.reflect.AstUtils.addAnnotationOrGetExisting
+import static org.grails.datastore.mapping.reflect.AstUtils.implementsInterface
+import static org.grails.datastore.mapping.reflect.AstUtils.isSpockTest
+import static org.apache.groovy.ast.tools.AnnotatedNodeUtils.markAsGenerated
 
 /**
  * An abstract implementation for transformations that decorate a method invocation such that
@@ -103,6 +124,7 @@ abstract class AbstractDatastoreMethodDecoratingTransformation extends AbstractM
                                 returnS( callD( castX(make(MultipleConnectionSourceCapableDatastore), datastoreVar ), METHOD_GET_DATASTORE_FOR_CONNECTION, varX(connectionNameParam) ) ),
                                 returnS(datastoreLookupCall)
                         ))
+                markAsGenerated(declaringClassNode, mn)
                 compileMethodStatically(source, mn)
             }
             if(declaringClassNode.getMethod(METHOD_GET_TARGET_DATASTORE, ZERO_PARAMETERS) == null) {
@@ -111,7 +133,7 @@ abstract class AbstractDatastoreMethodDecoratingTransformation extends AbstractM
                                 returnS(datastoreVar),
                                 returnS(datastoreLookupDefaultCall))
                 )
-
+                markAsGenerated(declaringClassNode, mn)
                 compileMethodStatically(source, mn)
             }
         }
@@ -148,6 +170,7 @@ abstract class AbstractDatastoreMethodDecoratingTransformation extends AbstractM
                 Parameter[] setTargetDatastoreParams = params(datastoresParam)
                 if( declaringClassNode.getMethod("setTargetDatastore", setTargetDatastoreParams) == null) {
                     MethodNode setTargetDatastoreMethod = declaringClassNode.addMethod("setTargetDatastore", Modifier.PUBLIC, VOID_TYPE, setTargetDatastoreParams, null, setTargetDatastoreBody)
+                    markAsGenerated(declaringClassNode, setTargetDatastoreMethod)
 
                     // Autowire setTargetDatastore via Spring
                     addAnnotationOrGetExisting(setTargetDatastoreMethod, Autowired)
@@ -173,6 +196,7 @@ abstract class AbstractDatastoreMethodDecoratingTransformation extends AbstractM
                                     returnS( callX( datastoreFieldVar, METHOD_GET_DATASTORE_FOR_CONNECTION, varX(connectionNameParam) ) ),
                                     returnS(datastoreLookupCall)
                             ))
+                    markAsGenerated(declaringClassNode, mn)
                     if(!isSpockTest) {
                         compileMethodStatically(source, mn)
                     }
@@ -184,6 +208,7 @@ abstract class AbstractDatastoreMethodDecoratingTransformation extends AbstractM
                                     returnS(datastoreLookupDefaultCall))
                     )
 
+                    markAsGenerated(declaringClassNode, mn)
                     if(!isSpockTest) {
                         compileMethodStatically(source, mn)
                     }

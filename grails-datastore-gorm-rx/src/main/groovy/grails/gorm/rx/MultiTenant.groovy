@@ -3,6 +3,7 @@ package grails.gorm.rx
 import grails.gorm.api.GormAllOperations
 import grails.gorm.rx.api.RxGormAllOperations
 import groovy.transform.CompileStatic
+import groovy.transform.Generated
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.mapping.core.connections.ConnectionSource
 import org.grails.gorm.rx.api.RxGormEnhancer
@@ -22,6 +23,7 @@ trait MultiTenant<D> extends RxEntity<D> {
      * @param callable The closure
      * @return The result of the closure
      */
+    @Generated
     static <T> T withTenant(Serializable tenantId, @DelegatesTo(RxGormAllOperations) Closure<T> callable) {
         RxGormEnhancer.findStaticApi(this).withTenant tenantId, callable
     }
@@ -32,6 +34,7 @@ trait MultiTenant<D> extends RxEntity<D> {
      * @param callable The closure
      * @return The result of the closure
      */
+    @Generated
     static RxGormAllOperations<D> eachTenant( @DelegatesTo(RxGormAllOperations) Closure callable) {
         RxGormEnhancer.findStaticApi(this, ConnectionSource.DEFAULT).eachTenant callable
     }
@@ -42,6 +45,7 @@ trait MultiTenant<D> extends RxEntity<D> {
      * @param tenantId The tenant id
      * @return The operations
      */
+    @Generated
     static RxGormAllOperations<D> withTenant(Serializable tenantId) {
         (RxGormAllOperations<D>)RxGormEnhancer.findStaticApi(this).withTenant(tenantId)
     }

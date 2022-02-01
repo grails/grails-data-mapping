@@ -1,6 +1,7 @@
 package grails.gorm.time
 
 import groovy.transform.CompileStatic
+import groovy.transform.Generated
 
 import java.time.Instant
 import java.time.ZonedDateTime
@@ -13,11 +14,13 @@ import java.time.ZonedDateTime
 @CompileStatic
 trait ZonedDateTimeConverter implements TemporalConverter<ZonedDateTime> {
 
+    @Generated
     @Override
     Long convert(ZonedDateTime value) {
         value.toInstant().toEpochMilli()
     }
 
+    @Generated
     @Override
     ZonedDateTime convert(Long value) {
         ZonedDateTime.ofInstant(Instant.ofEpochMilli(value), systemOffset)

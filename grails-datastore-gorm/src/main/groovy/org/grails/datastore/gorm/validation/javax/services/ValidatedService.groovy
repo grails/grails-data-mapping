@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm.validation.javax.services
 
 import groovy.transform.CompileStatic
+import groovy.transform.Generated
 import org.grails.datastore.gorm.validation.javax.ConstraintViolationUtils
 import org.grails.datastore.gorm.validation.javax.JavaxValidatorRegistry
 import org.grails.datastore.mapping.services.Service
@@ -28,20 +29,32 @@ trait ValidatedService<T> extends Service<T> {
     /**
      * The parameter name provided for this service
      */
-    ParameterNameProvider parameterNameProvider
+    private ParameterNameProvider parameterNameProvider
 
     /**
      * The validator factory
      */
     private ValidatorFactory validatorFactory
 
+    @Generated
     private Map<Method, ExecutableValidator> executableValidatorMap = new LinkedHashMap<Method,ExecutableValidator>().withDefault {
         getValidatorFactory().getValidator().forExecutables()
+    }
+
+    @Generated
+    void setParameterNameProvider(ParameterNameProvider parameterNameProvider) {
+        this.parameterNameProvider = parameterNameProvider
+    }
+
+    @Generated
+    ParameterNameProvider getParameterNameProvider() {
+        return this.parameterNameProvider
     }
 
     /**
      * @return The validator factory for this service
      */
+    @Generated
     ValidatorFactory getValidatorFactory() {
         if(validatorFactory == null) {
 
@@ -74,6 +87,7 @@ trait ValidatedService<T> extends Service<T> {
      *
      * @throws ConstraintViolationException If a validation error occurs
      */
+    @Generated
     void javaxValidate(Object instance, Method method, Object...args) throws ConstraintViolationException {
         ExecutableValidator validator = executableValidatorMap.get(method)
         Set<ConstraintViolation> constraintViolations = validator.validateParameters(instance, method, args)
@@ -91,6 +105,7 @@ trait ValidatedService<T> extends Service<T> {
      *
      * @throws ValidationException If a validation error occurs
      */
+    @Generated
     void validate(Object instance, Method method, Object...args) throws ValidationException {
         ExecutableValidator validator = executableValidatorMap.get(method)
         Set<ConstraintViolation> constraintViolations = validator.validateParameters(instance, method, args)
@@ -106,6 +121,7 @@ trait ValidatedService<T> extends Service<T> {
      * @param e The exception
      * @return The errors
      */
+    @Generated
     Errors asErrors(Object object, ConstraintViolationException e) {
         ConstraintViolationUtils.asErrors(object, e)
     }
@@ -117,6 +133,7 @@ trait ValidatedService<T> extends Service<T> {
      * @param e The exception
      * @return The errors
      */
+    @Generated
     Errors asErrors(Object object, Set<ConstraintViolation> constraintViolations) {
         ConstraintViolationUtils.asErrors(object, constraintViolations)
     }

@@ -20,8 +20,18 @@ import grails.gorm.transactions.ReadOnly
 import grails.gorm.transactions.Rollback
 import grails.gorm.transactions.Transactional
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.ast.*
-import org.codehaus.groovy.ast.expr.*
+import org.codehaus.groovy.ast.AnnotatedNode
+import org.codehaus.groovy.ast.AnnotationNode
+import org.codehaus.groovy.ast.ClassNode
+import org.codehaus.groovy.ast.FieldNode
+import org.codehaus.groovy.ast.MethodNode
+import org.codehaus.groovy.ast.Parameter
+import org.codehaus.groovy.ast.expr.ClassExpression
+import org.codehaus.groovy.ast.expr.ConstantExpression
+import org.codehaus.groovy.ast.expr.Expression
+import org.codehaus.groovy.ast.expr.ListExpression
+import org.codehaus.groovy.ast.expr.MethodCallExpression
+import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.Statement
 import org.codehaus.groovy.control.CompilePhase
@@ -44,9 +54,40 @@ import org.springframework.transaction.interceptor.RollbackRuleAttribute
 
 import java.lang.reflect.Modifier
 
-import static org.codehaus.groovy.ast.ClassHelper.*
-import static org.grails.datastore.gorm.transform.AstMethodDispatchUtils.*
-import static org.grails.datastore.mapping.reflect.AstUtils.*
+import static org.codehaus.groovy.ast.ClassHelper.CLASS_Type
+import static org.codehaus.groovy.ast.ClassHelper.STRING_TYPE
+import static org.codehaus.groovy.ast.ClassHelper.VOID_TYPE
+import static org.codehaus.groovy.ast.ClassHelper.make
+import static org.codehaus.groovy.ast.tools.GeneralUtils.args
+import static org.codehaus.groovy.ast.tools.GeneralUtils.assignS
+import static org.codehaus.groovy.ast.tools.GeneralUtils.block
+import static org.codehaus.groovy.ast.tools.GeneralUtils.callX
+import static org.codehaus.groovy.ast.tools.GeneralUtils.castX
+import static org.codehaus.groovy.ast.tools.GeneralUtils.classX
+import static org.codehaus.groovy.ast.tools.GeneralUtils.ctorX
+import static org.codehaus.groovy.ast.tools.GeneralUtils.declS
+import static org.codehaus.groovy.ast.tools.GeneralUtils.ifElseS
+import static org.codehaus.groovy.ast.tools.GeneralUtils.ifS
+import static org.codehaus.groovy.ast.tools.GeneralUtils.notNullX
+import static org.codehaus.groovy.ast.tools.GeneralUtils.param
+import static org.codehaus.groovy.ast.tools.GeneralUtils.params
+import static org.codehaus.groovy.ast.tools.GeneralUtils.propX
+import static org.codehaus.groovy.ast.tools.GeneralUtils.returnS
+import static org.codehaus.groovy.ast.tools.GeneralUtils.stmt
+import static org.codehaus.groovy.ast.tools.GeneralUtils.varX
+import static org.grails.datastore.gorm.transform.AstMethodDispatchUtils.callD
+import static org.grails.datastore.gorm.transform.AstMethodDispatchUtils.callThisD
+import static org.grails.datastore.mapping.reflect.AstUtils.ZERO_ARGUMENTS
+import static org.grails.datastore.mapping.reflect.AstUtils.ZERO_PARAMETERS
+import static org.grails.datastore.mapping.reflect.AstUtils.buildGetPropertyExpression
+import static org.grails.datastore.mapping.reflect.AstUtils.copyParameters
+import static org.grails.datastore.mapping.reflect.AstUtils.findAnnotation
+import static org.grails.datastore.mapping.reflect.AstUtils.hasOrInheritsProperty
+import static org.grails.datastore.mapping.reflect.AstUtils.implementsInterface
+import static org.grails.datastore.mapping.reflect.AstUtils.isSubclassOf
+import static org.apache.groovy.ast.tools.AnnotatedNodeUtils.markAsGenerated
+import static org.grails.datastore.mapping.reflect.AstUtils.nonGeneric
+import static org.grails.datastore.mapping.reflect.AstUtils.varThis
 
 /**
  * <p>This AST transform reads the {@link Transactional} annotation and transforms method calls by
@@ -251,14 +292,14 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
                         notNullX(datastoreVar),
                         returnS( propX( castX(transactionCapableDatastore, datastoreLookupExpr), PROPERTY_TRANSACTION_MANAGER) ),
                         returnS( transactionManagerLookupExpr )
-                )
+                ) as Statement
 
-                declaringClassNode.addMethod(GET_TRANSACTION_MANAGER_METHOD,
+                MethodNode methodNode = declaringClassNode.addMethod(GET_TRANSACTION_MANAGER_METHOD,
                         Modifier.PUBLIC,
                         transactionManagerClassNode,
                         ZERO_PARAMETERS, null,
                         ifElse)
-
+                markAsGenerated(declaringClassNode, methodNode)
             }
             else {
                 /// Add field: PlatformTransactionManager $transactionManager
@@ -291,16 +332,17 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
                         notNullX( transactionManagerPropertyExpr ),
                         returnS( transactionManagerPropertyExpr ),
                         returnS(transactionManagerLookupExpr)
-                )
+                ) as Statement
 
                 getterBody.addStatement( ifElse )
 
                 // Add Method: PlatformTransactionManager getTransactionManager()
-                declaringClassNode.addMethod(GET_TRANSACTION_MANAGER_METHOD,
+                MethodNode getterNode = declaringClassNode.addMethod(GET_TRANSACTION_MANAGER_METHOD,
                         Modifier.PUBLIC,
                         transactionManagerClassNode,
                         ZERO_PARAMETERS, null,
                         getterBody)
+                markAsGenerated(declaringClassNode, getterNode)
 
                 // Prepare setter parameters
                 Parameter p = param(transactionManagerClassNode, PROPERTY_TRANSACTION_MANAGER)
@@ -309,12 +351,14 @@ class TransactionalTransform extends AbstractDatastoreMethodDecoratingTransforma
                     Statement setterBody = assignS(transactionManagerPropertyExpr, varX(p))
 
                     // Add Setter Method: void setTransactionManager(PlatformTransactionManager transactionManager)
-                    declaringClassNode.addMethod(SET_TRANSACTION_MANAGER,
+                    MethodNode setterNode = declaringClassNode.addMethod(SET_TRANSACTION_MANAGER,
                             Modifier.PUBLIC,
                             VOID_TYPE,
                             parameters,
                             null,
                             setterBody)
+
+                    markAsGenerated(declaringClassNode, setterNode)
                 }
             }
 

@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm.services.implementers
 
 import groovy.transform.CompileStatic
+import groovy.transform.Generated
 import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassHelper
@@ -20,6 +21,7 @@ import org.grails.datastore.mapping.reflect.NameUtils
 
 import java.lang.reflect.Modifier
 
+import static org.apache.groovy.ast.tools.AnnotatedNodeUtils.markAsGenerated
 import static org.codehaus.groovy.ast.tools.GeneralUtils.assignS
 import static org.codehaus.groovy.ast.tools.GeneralUtils.block
 import static org.codehaus.groovy.ast.tools.GeneralUtils.param
@@ -35,6 +37,7 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.varX
 @CompileStatic
 trait InterfaceProjectionBuilder {
 
+    @Generated
     boolean isInterfaceProjection(ClassNode domainClass, MethodNode methodNode, ClassNode returnType) {
         if(returnType.isInterface() && !returnType.packageName?.startsWith("java.")) {
             List<String> interfacePropertyNames = AstPropertyResolveUtils.getPropertyNames(returnType)
@@ -54,6 +57,7 @@ trait InterfaceProjectionBuilder {
         return false
     }
 
+    @Generated
     MethodNode buildInterfaceImpl(ClassNode interfaceNode, ClassNode declaringClass, ClassNode targetDomainClass, MethodNode abstractMethodNode) {
         List<Expression> getterNames = (List<Expression>) AstPropertyResolveUtils.getPropertyNames(interfaceNode)
                 .collect() {
@@ -73,6 +77,8 @@ trait InterfaceProjectionBuilder {
             methodTarget = innerClassNode.addMethod('$setTarget', Modifier.PUBLIC, ClassHelper.VOID_TYPE, params, null, block(
                     assignS(varX(field), varX(domainClassParam))
             ))
+            markAsGenerated(innerClassNode, methodTarget)
+            
             AnnotationNode delegateAnn = new AnnotationNode(new ClassNode(Delegate))
             delegateAnn.setMember("includes", new ListExpression(getterNames))
             delegateAnn.setMember("interfaces", new ConstantExpression(false))

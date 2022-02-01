@@ -1,11 +1,14 @@
 package grails.gorm.services
 
+import groovy.transform.Generated
+
 import org.grails.datastore.gorm.validation.javax.services.ValidatedService
 import org.grails.datastore.mapping.validation.ValidationException
 import spock.lang.Specification
 
 import javax.validation.ConstraintViolationException
 import javax.validation.ParameterNameProvider
+import java.lang.reflect.Method
 
 /**
  * Created by graemerocher on 14/02/2017.
@@ -45,6 +48,11 @@ class Foo {
         then:"The impl is valid"
         org.grails.datastore.mapping.services.Service.isAssignableFrom(impl)
         ValidatedService.isAssignableFrom(impl)
+
+        and: "All implemented Trait methods are marked as Generated"
+        ValidatedService.getMethods().each { Method traitMethod ->
+            assert impl.getMethod(traitMethod.name, traitMethod.parameterTypes).isAnnotationPresent(Generated)
+        }
 
         when:"The parameter data is obtained"
         ParameterNameProvider parameterNameProvider = service.classLoader.loadClass("\$MyServiceImplementation\$ParameterNameProvider").newInstance()
