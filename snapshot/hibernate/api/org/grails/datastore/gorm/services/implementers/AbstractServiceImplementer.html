@@ -177,13 +177,13 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;org.codehaus.groovy.ast.expr.Expression</code></td>
-                            <td class="colLast"><code><strong><a href="#buildInstanceApiLookup(ClassNode, org.codehaus.groovy.ast.expr.Expression)">buildInstanceApiLookup</a></strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClass, org.codehaus.groovy.ast.expr.Expression connectionId)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#buildInstanceApiLookup(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.expr.Expression)">buildInstanceApiLookup</a></strong>(org.codehaus.groovy.ast.ClassNode domainClass, org.codehaus.groovy.ast.expr.Expression connectionId)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;org.codehaus.groovy.ast.expr.Expression</code></td>
-                            <td class="colLast"><code><strong><a href="#buildStaticApiLookup(ClassNode, org.codehaus.groovy.ast.expr.Expression)">buildStaticApiLookup</a></strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClass, org.codehaus.groovy.ast.expr.Expression connectionId)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#buildStaticApiLookup(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.expr.Expression)">buildStaticApiLookup</a></strong>(org.codehaus.groovy.ast.ClassNode domainClass, org.codehaus.groovy.ast.expr.Expression connectionId)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -201,7 +201,7 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#doesImplement(ClassNode, MethodNode)">doesImplement</a></strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#doesImplement(org.codehaus.groovy.ast.ClassNode, MethodNode)">doesImplement</a></strong>(org.codehaus.groovy.ast.ClassNode domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -213,13 +213,13 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;org.codehaus.groovy.ast.expr.Expression</code></td>
-                            <td class="colLast"><code><strong><a href="#findInstanceApiForConnectionId(ClassNode, MethodNode)">findInstanceApiForConnectionId</a></strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findInstanceApiForConnectionId(org.codehaus.groovy.ast.ClassNode, MethodNode)">findInstanceApiForConnectionId</a></strong>(org.codehaus.groovy.ast.ClassNode domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;org.codehaus.groovy.ast.expr.Expression</code></td>
-                            <td class="colLast"><code><strong><a href="#findStaticApiForConnectionId(ClassNode, MethodNode)">findStaticApiForConnectionId</a></strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findStaticApiForConnectionId(org.codehaus.groovy.ast.ClassNode, MethodNode)">findStaticApiForConnectionId</a></strong>(org.codehaus.groovy.ast.ClassNode domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -231,13 +231,13 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;abstract&nbsp;boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#isCompatibleReturnType(ClassNode, MethodNode, ClassNode, java.lang.String)">isCompatibleReturnType</a></strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> returnType, java.lang.String prefix)</code><br>Return true if the provided return type is compatible with this implementor.</td>
+                            <td class="colLast"><code><strong><a href="#isCompatibleReturnType(org.codehaus.groovy.ast.ClassNode, MethodNode, org.codehaus.groovy.ast.ClassNode, java.lang.String)">isCompatibleReturnType</a></strong>(org.codehaus.groovy.ast.ClassNode domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode, org.codehaus.groovy.ast.ClassNode returnType, java.lang.String prefix)</code><br>Return true if the provided return type is compatible with this implementor.</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#isValidParameter(ClassNode, org.codehaus.groovy.ast.Parameter, java.lang.String)">isValidParameter</a></strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClassNode, org.codehaus.groovy.ast.Parameter parameter, java.lang.String parameterName)</code><br>Check whether the given parameter is a valid property of the domain class</td>
+                            <td class="colLast"><code><strong><a href="#isValidParameter(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.Parameter, java.lang.String)">isValidParameter</a></strong>(org.codehaus.groovy.ast.ClassNode domainClassNode, org.codehaus.groovy.ast.Parameter parameter, java.lang.String parameterName)</code><br>Check whether the given parameter is a valid property of the domain class</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -338,18 +338,18 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                 </a>
                     <h3>Method Detail</h3>
                     
-                        <a name="buildInstanceApiLookup(ClassNode, org.codehaus.groovy.ast.expr.Expression)"><!-- --></a>
+                        <a name="buildInstanceApiLookup(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.expr.Expression)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;org.codehaus.groovy.ast.expr.Expression <strong>buildInstanceApiLookup</strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClass, org.codehaus.groovy.ast.expr.Expression connectionId)</h4>
+                                <h4>protected&nbsp;org.codehaus.groovy.ast.expr.Expression <strong>buildInstanceApiLookup</strong>(org.codehaus.groovy.ast.ClassNode domainClass, org.codehaus.groovy.ast.expr.Expression connectionId)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="buildStaticApiLookup(ClassNode, org.codehaus.groovy.ast.expr.Expression)"><!-- --></a>
+                        <a name="buildStaticApiLookup(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.expr.Expression)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;org.codehaus.groovy.ast.expr.Expression <strong>buildStaticApiLookup</strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClass, org.codehaus.groovy.ast.expr.Expression connectionId)</h4>
+                                <h4>protected&nbsp;org.codehaus.groovy.ast.expr.Expression <strong>buildStaticApiLookup</strong>(org.codehaus.groovy.ast.ClassNode domainClass, org.codehaus.groovy.ast.expr.Expression connectionId)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -370,11 +370,11 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                             </li>
                         </ul>
                     
-                        <a name="doesImplement(ClassNode, MethodNode)"><!-- --></a>
+                        <a name="doesImplement(org.codehaus.groovy.ast.ClassNode, MethodNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-boolean <strong>doesImplement</strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</h4>
+boolean <strong>doesImplement</strong>(org.codehaus.groovy.ast.ClassNode domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -387,18 +387,18 @@ boolean <strong>doesImplement</strong>(<a href='../../../../../../ClassNode.html
                             </li>
                         </ul>
                     
-                        <a name="findInstanceApiForConnectionId(ClassNode, MethodNode)"><!-- --></a>
+                        <a name="findInstanceApiForConnectionId(org.codehaus.groovy.ast.ClassNode, MethodNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;org.codehaus.groovy.ast.expr.Expression <strong>findInstanceApiForConnectionId</strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</h4>
+                                <h4>protected&nbsp;org.codehaus.groovy.ast.expr.Expression <strong>findInstanceApiForConnectionId</strong>(org.codehaus.groovy.ast.ClassNode domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="findStaticApiForConnectionId(ClassNode, MethodNode)"><!-- --></a>
+                        <a name="findStaticApiForConnectionId(org.codehaus.groovy.ast.ClassNode, MethodNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;org.codehaus.groovy.ast.expr.Expression <strong>findStaticApiForConnectionId</strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</h4>
+                                <h4>protected&nbsp;org.codehaus.groovy.ast.expr.Expression <strong>findStaticApiForConnectionId</strong>(org.codehaus.groovy.ast.ClassNode domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -412,18 +412,18 @@ int <strong>getOrder</strong>()</h4>
                             </li>
                         </ul>
                     
-                        <a name="isCompatibleReturnType(ClassNode, MethodNode, ClassNode, java.lang.String)"><!-- --></a>
+                        <a name="isCompatibleReturnType(org.codehaus.groovy.ast.ClassNode, MethodNode, org.codehaus.groovy.ast.ClassNode, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;abstract&nbsp;boolean <strong>isCompatibleReturnType</strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode, <a href='../../../../../../ClassNode.html'>ClassNode</a> returnType, java.lang.String prefix)</h4>
+                                <h4>protected&nbsp;abstract&nbsp;boolean <strong>isCompatibleReturnType</strong>(org.codehaus.groovy.ast.ClassNode domainClass, <a href='../../../../../../MethodNode.html'>MethodNode</a> methodNode, org.codehaus.groovy.ast.ClassNode returnType, java.lang.String prefix)</h4>
                                 <p> Return true if the provided return type is compatible with this implementor. <DL><DT><B>Parameters:</B></DT><DD><code>domainClass</code> -  The domain class this method applies to</DD><DD><code>methodNode</code> -  The method</DD><DD><code>returnType</code> -  The return type</DD></DL><DL><DT><B>Returns:</B></DT><DD>True if it is a compatible return type</DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="isValidParameter(ClassNode, org.codehaus.groovy.ast.Parameter, java.lang.String)"><!-- --></a>
+                        <a name="isValidParameter(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.Parameter, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;boolean <strong>isValidParameter</strong>(<a href='../../../../../../ClassNode.html'>ClassNode</a> domainClassNode, org.codehaus.groovy.ast.Parameter parameter, java.lang.String parameterName)</h4>
+                                <h4>protected&nbsp;boolean <strong>isValidParameter</strong>(org.codehaus.groovy.ast.ClassNode domainClassNode, org.codehaus.groovy.ast.Parameter parameter, java.lang.String parameterName)</h4>
                                 <p> Check whether the given parameter is a valid property of the domain class <DL><DT><B>Parameters:</B></DT><DD><code>domainClassNode</code> -  The domain class</DD><DD><code>parameter</code> -  The parameter</DD><DD><code>parameterName</code> -  The parameter name</DD></DL><DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL></p>
                             </li>
                         </ul>
