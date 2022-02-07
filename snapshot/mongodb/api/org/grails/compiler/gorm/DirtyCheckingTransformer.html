@@ -178,13 +178,13 @@ implements groovy.transform.CompilationUnitAware</pre>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>static&nbsp;<a href='../../../../ClassNode.html'>ClassNode</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>static&nbsp;org.codehaus.groovy.ast.ClassNode</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#DIRTY_CHECKED_PROPERTY_CLASS_NODE">DIRTY_CHECKED_PROPERTY_CLASS_NODE</a></code></td>
                             <td class="colLast"></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>static&nbsp;<a href='../../../../ClassNode.html'>ClassNode</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>static&nbsp;org.codehaus.groovy.ast.ClassNode</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#DIRTY_CHECK_CLASS_NODE">DIRTY_CHECK_CLASS_NODE</a></code></td>
                             <td class="colLast"></td>
                         </tr>
@@ -280,25 +280,25 @@ implements groovy.transform.CompilationUnitAware</pre>
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#performInjection(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.classgen.GeneratorContext, ClassNode)">performInjection</a></strong>(org.codehaus.groovy.control.SourceUnit source, org.codehaus.groovy.classgen.GeneratorContext context, <a href='../../../../ClassNode.html'>ClassNode</a> classNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#performInjection(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.classgen.GeneratorContext, org.codehaus.groovy.ast.ClassNode)">performInjection</a></strong>(org.codehaus.groovy.control.SourceUnit source, org.codehaus.groovy.classgen.GeneratorContext context, org.codehaus.groovy.ast.ClassNode classNode)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#performInjection(org.codehaus.groovy.control.SourceUnit, ClassNode)">performInjection</a></strong>(org.codehaus.groovy.control.SourceUnit source, <a href='../../../../ClassNode.html'>ClassNode</a> classNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#performInjection(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ClassNode)">performInjection</a></strong>(org.codehaus.groovy.control.SourceUnit source, org.codehaus.groovy.ast.ClassNode classNode)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#performInjectionOnAnnotatedClass(org.codehaus.groovy.control.SourceUnit, ClassNode)">performInjectionOnAnnotatedClass</a></strong>(org.codehaus.groovy.control.SourceUnit source, <a href='../../../../ClassNode.html'>ClassNode</a> classNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#performInjectionOnAnnotatedClass(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ClassNode)">performInjectionOnAnnotatedClass</a></strong>(org.codehaus.groovy.control.SourceUnit source, org.codehaus.groovy.ast.ClassNode classNode)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#performInjectionOnAnnotatedEntity(ClassNode)">performInjectionOnAnnotatedEntity</a></strong>(<a href='../../../../ClassNode.html'>ClassNode</a> classNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#performInjectionOnAnnotatedEntity(org.codehaus.groovy.ast.ClassNode)">performInjectionOnAnnotatedEntity</a></strong>(org.codehaus.groovy.ast.ClassNode classNode)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -379,7 +379,7 @@ implements groovy.transform.CompilationUnitAware</pre>
                         <a name="DIRTY_CHECKED_PROPERTY_CLASS_NODE"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;static&nbsp;final&nbsp;<a href='../../../../ClassNode.html'>ClassNode</a> <strong>DIRTY_CHECKED_PROPERTY_CLASS_NODE</strong></h4>
+                                <h4>public&nbsp;static&nbsp;final&nbsp;org.codehaus.groovy.ast.ClassNode <strong>DIRTY_CHECKED_PROPERTY_CLASS_NODE</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -387,7 +387,7 @@ implements groovy.transform.CompilationUnitAware</pre>
                         <a name="DIRTY_CHECK_CLASS_NODE"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;static&nbsp;final&nbsp;<a href='../../../../ClassNode.html'>ClassNode</a> <strong>DIRTY_CHECK_CLASS_NODE</strong></h4>
+                                <h4>public&nbsp;static&nbsp;final&nbsp;org.codehaus.groovy.ast.ClassNode <strong>DIRTY_CHECK_CLASS_NODE</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -477,34 +477,34 @@ implements groovy.transform.CompilationUnitAware</pre>
                             </li>
                         </ul>
                     
-                        <a name="performInjection(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.classgen.GeneratorContext, ClassNode)"><!-- --></a>
+                        <a name="performInjection(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.classgen.GeneratorContext, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>performInjection</strong>(org.codehaus.groovy.control.SourceUnit source, org.codehaus.groovy.classgen.GeneratorContext context, <a href='../../../../ClassNode.html'>ClassNode</a> classNode)</h4>
+                                <h4>void <strong>performInjection</strong>(org.codehaus.groovy.control.SourceUnit source, org.codehaus.groovy.classgen.GeneratorContext context, org.codehaus.groovy.ast.ClassNode classNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="performInjection(org.codehaus.groovy.control.SourceUnit, ClassNode)"><!-- --></a>
+                        <a name="performInjection(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>performInjection</strong>(org.codehaus.groovy.control.SourceUnit source, <a href='../../../../ClassNode.html'>ClassNode</a> classNode)</h4>
+                                <h4>void <strong>performInjection</strong>(org.codehaus.groovy.control.SourceUnit source, org.codehaus.groovy.ast.ClassNode classNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="performInjectionOnAnnotatedClass(org.codehaus.groovy.control.SourceUnit, ClassNode)"><!-- --></a>
+                        <a name="performInjectionOnAnnotatedClass(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>performInjectionOnAnnotatedClass</strong>(org.codehaus.groovy.control.SourceUnit source, <a href='../../../../ClassNode.html'>ClassNode</a> classNode)</h4>
+                                <h4>void <strong>performInjectionOnAnnotatedClass</strong>(org.codehaus.groovy.control.SourceUnit source, org.codehaus.groovy.ast.ClassNode classNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="performInjectionOnAnnotatedEntity(ClassNode)"><!-- --></a>
+                        <a name="performInjectionOnAnnotatedEntity(org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>performInjectionOnAnnotatedEntity</strong>(<a href='../../../../ClassNode.html'>ClassNode</a> classNode)</h4>
+                                <h4>void <strong>performInjectionOnAnnotatedEntity</strong>(org.codehaus.groovy.ast.ClassNode classNode)</h4>
                                 <p></p>
                             </li>
                         </ul>
