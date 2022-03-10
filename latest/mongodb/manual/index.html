@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.8">
-<meta name="author" content="Graeme Rocher, Burt Beckwith">
+<meta name="author" content="Graeme Rocher, Burt Beckwith, Puneet Behl">
 <title>GORM for MongoDB</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -527,8 +527,8 @@ table.CodeRay td.code>pre{padding:0}
 <div id="header">
 <h1>GORM for MongoDB</h1>
 <div class="details">
-<span id="author" class="author">Graeme Rocher, Burt Beckwith</span><br>
-<span id="revnumber">version 7.2.0</span>
+<span id="author" class="author">Graeme Rocher, Burt Beckwith, Puneet Behl</span><br>
+<span id="revnumber">version 7.2.1</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -963,7 +963,7 @@ abstract class BookService {
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile 'org.grails.plugins:mongodb:7.2.0'
+    compile 'org.grails.plugins:mongodb:7.2.1'
 }</code></pre>
 </div>
 </div>
@@ -1000,7 +1000,7 @@ abstract class BookService {
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.mongodb:mongodb-driver:4.4.0"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.mongodb:mongodb-driver:4.5.0"</code></pre>
 </div>
 </div>
 </div>
@@ -1207,7 +1207,7 @@ abstract class BookService {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-mongodb-spring-boot:7.2.0")</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-mongodb-spring-boot:7.2.1")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1264,7 +1264,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-mongodb:7.2.0"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-mongodb:7.2.1"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3681,7 +3681,7 @@ Hotel.findByLocationWithinCircle( Circle.valueOf( [[<span class="integer">40</sp
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 7.2.0<br>
+Version 7.2.1<br>
 </div>
 </div>
 </body>
