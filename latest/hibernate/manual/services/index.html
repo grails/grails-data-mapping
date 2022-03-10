@@ -508,7 +508,7 @@ The above example also works in Spock unit tests that extend <code>HibernateSpec
 <p><strong>Type Safety</strong> - Data service method signatures are compile time checked and compilation will fail if the types of any parameters don&#8217;t match up with properties in your domain class</p>
 </li>
 <li>
-<p><strong>Testing</strong> - Since Data Services are interfaces this makes them easy to test via <a href="http://spockframework.org/spock/docs/1.0/interaction_based_testing.html">Spock Mocks</a></p>
+<p><strong>Testing</strong> - Since Data Services are interfaces this makes them easy to test via <a href="https://spockframework.org/spock/docs/1.0/interaction_based_testing.html">Spock Mocks</a></p>
 </li>
 <li>
 <p><strong>Performance</strong> - The generated services are statically compiled and unlike competing technologies in the Java space no proxies are created so runtime performance doesn&#8217;t suffer</p>
@@ -1045,7 +1045,7 @@ interface BookService {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Query("update ${Book book} set ${book.title} = $newTitle where book.title = $oldTitle")
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Query("update ${Book book} set ${book.title} = $newTitle where $book.title = $oldTitle")
 Number updateTitle(String newTitle, String oldTitle)</code></pre>
 </div>
 </div>
@@ -1111,7 +1111,7 @@ interface BookService {
 <div class="sect2">
 <h3 id="_rxjava_support">RxJava Support</h3>
 <div class="paragraph">
-<p>GORM Data Services also support returning RxJava 1.x <a href="http://reactivex.io/RxJava/1.x/javadoc/rx/Observable.html">rx.Observable</a> or <a href="http://reactivex.io/RxJava/1.x/javadoc/rx/Single.html">rx.Single</a> types.</p>
+<p>GORM Data Services also support returning RxJava 1.x <a href="https://reactivex.io/RxJava/1.x/javadoc/rx/Observable.html">rx.Observable</a> or <a href="https://reactivex.io/RxJava/1.x/javadoc/rx/Single.html">rx.Single</a> types.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -1131,7 +1131,7 @@ RxJava 2.x support is planned for a future release
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx:7.0.6"</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx:7.2.2"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1161,7 +1161,7 @@ interface BookService {
 </div>
 </div>
 <div class="paragraph">
-<p>For regular GORM entities, GORM will by default execute the persistence operation using RxJava&#8217;s <a href="http://reactivex.io/RxJava/1.x/javadoc/rx/schedulers/Schedulers.html#io()">IO Scheduler</a>.</p>
+<p>For regular GORM entities, GORM will by default execute the persistence operation using RxJava&#8217;s <a href="https://reactivex.io/RxJava/1.x/javadoc/rx/schedulers/Schedulers.html#io()">IO Scheduler</a>.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -1197,7 +1197,7 @@ interface BookService {
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 7.0.6<br>
+Version 7.2.2<br>
 </div>
 </div>
 </body>
