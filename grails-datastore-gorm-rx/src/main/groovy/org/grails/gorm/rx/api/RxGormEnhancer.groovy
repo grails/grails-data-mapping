@@ -62,7 +62,7 @@ class RxGormEnhancer {
         }
 
         if(MultiTenant.isAssignableFrom(entity.javaClass) || defaultConnectionSource == ConnectionSource.ALL) {
-            for(ConnectionSource cs in client.getConnectionSources()) {
+            for(ConnectionSource cs in client.getConnectionSources().getAllConnectionSources()) {
                 registerEntityWithConnectionSource(entity, cs.name, cs.name, rxDatastoreClientImplementor)
             }
         }
@@ -115,7 +115,7 @@ class RxGormEnhancer {
      * @param entity
      * @return
      */
-    static String findTenantId(Class entity) {
+    static <T> String findTenantId(Class<T> entity) {
         if(MultiTenant.isAssignableFrom(entity)) {
             RxDatastoreClient datastoreClient = findStaticApi(entity, ConnectionSource.DEFAULT).datastoreClient
             if(datastoreClient.multiTenancyMode == MultiTenancySettings.MultiTenancyMode.DATABASE) {
