@@ -1,5 +1,5 @@
-![Java CI](https://github.com/grails/grails-data-mapping/workflows/Java%20CI/badge.svg?branch=master)
-![Release](https://github.com/grails/grails-data-mapping/workflows/Release/badge.svg?branch=master)
+[![Java CI](https://github.com/grails/grails-data-mapping/actions/workflows/gradle.yml/badge.svg)](https://github.com/grails/grails-data-mapping/actions/workflows/gradle.yml)
+[![Release](https://github.com/grails/grails-data-mapping/actions/workflows/release.yml/badge.svg)](https://github.com/grails/grails-data-mapping/actions/workflows/release.yml)
 
 GORM (Grails Object Mapping)
 ===
