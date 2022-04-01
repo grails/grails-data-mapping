@@ -206,7 +206,7 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
 
                     // first add the getter
                     ClassNode returnType = resolvePropertyReturnType(pn, classNode)
-                    boolean booleanProperty = ClassHelper.boolean_TYPE.getName().equals(returnType.getName())
+                    boolean booleanProperty = ClassHelper.boolean_TYPE.getName().equals(returnType.getName()) || ClassHelper.Boolean_TYPE.getName().equals(returnType.getName())
                     String fieldName = propertyField.getName()
                     String getterName = NameUtils.getGetterName(propertyName, false)
 
