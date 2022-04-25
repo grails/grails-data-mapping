@@ -8,11 +8,3 @@ updates:
   target-branch: 7.0.x
   labels:
   - "type: dependency upgrade"
-- package-ecosystem: gradle
-  directory: "/"
-  schedule:
-    interval: daily
-  open-pull-requests-limit: 10
-  target-branch: 7.1.x
-  labels:
-  - "type: dependency upgrade"
