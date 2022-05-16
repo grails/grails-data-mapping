@@ -311,7 +311,7 @@ implements <a href='../../../../org/grails/orm/hibernate/IHibernateTemplate.html
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;<a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.FlushMode.html'>AbstractHibernateDatastore.FlushMode</a></code></td>
+                            <td class="colLast"><code>protected&nbsp;org.hibernate.FlushMode</code></td>
                             <td class="colLast"><code><strong><a href="#applyFlushMode(org.hibernate.Session, boolean)">applyFlushMode</a></strong>(org.hibernate.Session session, boolean existingTransaction)</code><br>Apply the flush mode that's been specified for this accessor to the given Session.</td>
                         </tr>
                         
@@ -438,7 +438,7 @@ implements <a href='../../../../org/grails/orm/hibernate/IHibernateTemplate.html
                         <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>public&nbsp;T</code></td>
-                            <td class="colLast"><code><strong><a href="#get(Class, java.io.Serializable, LockMode)">get</a></strong>(java.lang.Class&lt;T&gt; entityClass, java.io.Serializable id, <a href='../../../../LockMode.html'>LockMode</a> mode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#get(Class, java.io.Serializable, org.hibernate.LockMode)">get</a></strong>(java.lang.Class&lt;T&gt; entityClass, java.io.Serializable id, org.hibernate.LockMode mode)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -510,13 +510,13 @@ implements <a href='../../../../org/grails/orm/hibernate/IHibernateTemplate.html
                         <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>public&nbsp;T</code></td>
-                            <td class="colLast"><code><strong><a href="#lock(Class, java.io.Serializable, LockMode)">lock</a></strong>(java.lang.Class&lt;T&gt; entityClass, java.io.Serializable id, <a href='../../../../LockMode.html'>LockMode</a> lockMode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#lock(Class, java.io.Serializable, org.hibernate.LockMode)">lock</a></strong>(java.lang.Class&lt;T&gt; entityClass, java.io.Serializable id, org.hibernate.LockMode lockMode)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#lock(java.lang.Object, LockMode)">lock</a></strong>(java.lang.Object entity, <a href='../../../../LockMode.html'>LockMode</a> lockMode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#lock(java.lang.Object, org.hibernate.LockMode)">lock</a></strong>(java.lang.Object entity, org.hibernate.LockMode lockMode)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -549,7 +549,7 @@ implements <a href='../../../../org/grails/orm/hibernate/IHibernateTemplate.html
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#refresh(java.lang.Object, LockMode)">refresh</a></strong>(java.lang.Object entity, <a href='../../../../LockMode.html'>LockMode</a> lockMode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#refresh(java.lang.Object, org.hibernate.LockMode)">refresh</a></strong>(java.lang.Object entity, org.hibernate.LockMode lockMode)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -827,7 +827,7 @@ implements <a href='../../../../org/grails/orm/hibernate/IHibernateTemplate.html
                         <a name="applyFlushMode(org.hibernate.Session, boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;<a href='../../../../org/grails/orm/hibernate/AbstractHibernateDatastore.FlushMode.html'>AbstractHibernateDatastore.FlushMode</a> <strong>applyFlushMode</strong>(org.hibernate.Session session, boolean existingTransaction)</h4>
+                                <h4>protected&nbsp;org.hibernate.FlushMode <strong>applyFlushMode</strong>(org.hibernate.Session session, boolean existingTransaction)</h4>
                                 <p> Apply the flush mode that's been specified for this accessor to the given Session.
       <DL><DT><B>Parameters:</B></DT><DD><code>session</code> -              the current Hibernate Session</DD><DD><code>existingTransaction</code> -  if executing within an existing transaction</DD></DL><DL><DT><B>Returns:</B></DT><DD>the previous flush mode to restore after the operation, or <code>null</code> if none</DD></DL><DL><DT><B>See Also:</B></DT><DD><a href='#setFlushMode'>setFlushMode</a></DD><DD>org.hibernate.Session#setFlushMode</DD></DL></p>
                             </li>
@@ -1003,10 +1003,10 @@ public&nbsp;T <strong>executeWithNewSession</strong>(groovy.lang.Closure&lt;T&gt
                             </li>
                         </ul>
                     
-                        <a name="get(Class, java.io.Serializable, LockMode)"><!-- --></a>
+                        <a name="get(Class, java.io.Serializable, org.hibernate.LockMode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; public&nbsp;T <strong>get</strong>(java.lang.Class&lt;T&gt; entityClass, java.io.Serializable id, <a href='../../../../LockMode.html'>LockMode</a> mode)</h4>
+                                <h4>&lt;T&gt; public&nbsp;T <strong>get</strong>(java.lang.Class&lt;T&gt; entityClass, java.io.Serializable id, org.hibernate.LockMode mode)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1101,18 +1101,18 @@ protected&nbsp;java.util.Collection <strong>getIterableAsCollection</strong>(jav
                             </li>
                         </ul>
                     
-                        <a name="lock(Class, java.io.Serializable, LockMode)"><!-- --></a>
+                        <a name="lock(Class, java.io.Serializable, org.hibernate.LockMode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; public&nbsp;T <strong>lock</strong>(java.lang.Class&lt;T&gt; entityClass, java.io.Serializable id, <a href='../../../../LockMode.html'>LockMode</a> lockMode)</h4>
+                                <h4>&lt;T&gt; public&nbsp;T <strong>lock</strong>(java.lang.Class&lt;T&gt; entityClass, java.io.Serializable id, org.hibernate.LockMode lockMode)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="lock(java.lang.Object, LockMode)"><!-- --></a>
+                        <a name="lock(java.lang.Object, org.hibernate.LockMode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>lock</strong>(java.lang.Object entity, <a href='../../../../LockMode.html'>LockMode</a> lockMode)</h4>
+                                <h4>public&nbsp;void <strong>lock</strong>(java.lang.Object entity, org.hibernate.LockMode lockMode)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1156,10 +1156,10 @@ protected&nbsp;void <strong>prepareCriteria</strong>(org.hibernate.Criteria crit
                             </li>
                         </ul>
                     
-                        <a name="refresh(java.lang.Object, LockMode)"><!-- --></a>
+                        <a name="refresh(java.lang.Object, org.hibernate.LockMode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>refresh</strong>(java.lang.Object entity, <a href='../../../../LockMode.html'>LockMode</a> lockMode)</h4>
+                                <h4>public&nbsp;void <strong>refresh</strong>(java.lang.Object entity, org.hibernate.LockMode lockMode)</h4>
                                 <p></p>
                             </li>
                         </ul>
