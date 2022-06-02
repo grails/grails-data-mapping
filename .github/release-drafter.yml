@@ -19,6 +19,7 @@ categories:
     labels:
       - "type: ci"
       - "type: build"
+filter-by-commitish: true
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 version-resolver:
   major:
