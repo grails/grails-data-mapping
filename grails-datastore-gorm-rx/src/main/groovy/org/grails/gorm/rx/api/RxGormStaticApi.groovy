@@ -12,6 +12,7 @@ import org.grails.datastore.gorm.GormValidateable
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.core.connections.ConnectionSource
+import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings
 import org.grails.datastore.mapping.core.connections.ConnectionSources
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.multitenancy.MultiTenancySettings
@@ -54,7 +55,8 @@ class RxGormStaticApi<D> implements RxGormAllOperations<D> {
         this.datastoreClient = datastoreClient
         this.gormDynamicFinders = createDynamicFinders()
         this.connectionSources = datastoreClient.connectionSources
-        this.multiTenancyMode = connectionSources.defaultConnectionSource.settings.multiTenancy.mode
+        ConnectionSource<?, ? extends ConnectionSourceSettings> defaultConnectionSource = connectionSources.defaultConnectionSource
+        this.multiTenancyMode = defaultConnectionSource.settings.multiTenancy.mode
     }
 
     /**
