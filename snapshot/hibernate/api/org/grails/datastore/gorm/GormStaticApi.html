@@ -99,7 +99,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Implemented Interfaces and Traits:</dt>
-                <dd>GormAllOperations&lt;D&gt;</dd>
+                <dd><a href='../../../../grails/gorm/api/GormAllOperations.html' title='GormAllOperations'>GormAllOperations</a>&lt;D&gt;</dd>
             </dl>
     
 
@@ -110,7 +110,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <pre>@groovy.transform.CompileStatic
 class GormStaticApi&lt;D&gt;
 extends <a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html' title='AbstractGormApi'>AbstractGormApi</a>&lt;D&gt;
-implements GormAllOperations&lt;D&gt;</pre>
+implements <a href='../../../../grails/gorm/api/GormAllOperations.html' title='GormAllOperations'>GormAllOperations</a>&lt;D&gt;</pre>
 
     <p> Static methods of the GORM API. <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Type Parameters:</B></DT><DD><code>D</code> -  the entity/domain class</DD></DL></p>
 
@@ -159,7 +159,7 @@ implements GormAllOperations&lt;D&gt;</pre>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>protected&nbsp;<a href='../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html'>MultiTenancyMode</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>protected&nbsp;<a href='../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html'>MultiTenancySettings.MultiTenancyMode</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#multiTenancyMode">multiTenancyMode</a></code></td>
                             <td class="colLast"></td>
                         </tr>
@@ -296,7 +296,7 @@ implements GormAllOperations&lt;D&gt;</pre>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>GormAllOperations&lt;D&gt;</code></td>
+                            <td class="colLast"><code><a href='../../../../grails/gorm/api/GormAllOperations.html' title='GormAllOperations'>GormAllOperations</a>&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#eachTenant(groovy.lang.Closure)">eachTenant</a></strong>(groovy.lang.Closure callable)</code><br></td>
                         </tr>
                         
@@ -770,19 +770,19 @@ implements GormAllOperations&lt;D&gt;</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>DetachedCriteria&lt;D&gt;</code></td>
+                            <td class="colLast"><code><a href='../../../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#where(groovy.lang.Closure)">where</a></strong>(groovy.lang.Closure callable)</code><br> <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure containing detached criteria definition</DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>DetachedCriteria&lt;D&gt;</code></td>
+                            <td class="colLast"><code><a href='../../../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#whereAny(groovy.lang.Closure)">whereAny</a></strong>(groovy.lang.Closure callable)</code><br> <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure containing detached criteria definition</DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>DetachedCriteria&lt;D&gt;</code></td>
+                            <td class="colLast"><code><a href='../../../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#whereLazy(groovy.lang.Closure)">whereLazy</a></strong>(groovy.lang.Closure callable)</code><br> <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure containing detached criteria definition</DD></DL></td>
                         </tr>
                         
@@ -844,7 +844,7 @@ implements GormAllOperations&lt;D&gt;</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>GormAllOperations&lt;D&gt;</code></td>
+                            <td class="colLast"><code><a href='../../../../grails/gorm/api/GormAllOperations.html' title='GormAllOperations'>GormAllOperations</a>&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#withTenant(java.io.Serializable)">withTenant</a></strong>(java.io.Serializable tenantId)</code><br></td>
                         </tr>
                         
@@ -866,7 +866,7 @@ implements GormAllOperations&lt;D&gt;</pre>
                         <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>T</code></td>
-                            <td class="colLast"><code><strong><a href="#withTransaction(org.springframework.transaction.TransactionDefinition, Closure)">withTransaction</a></strong>(org.springframework.transaction.TransactionDefinition definition, groovy.lang.Closure&lt;T&gt; callable)</code><br>Executes the closure within the context of a transaction for the given TransactionDefinition</td>
+                            <td class="colLast"><code><strong><a href="#withTransaction(org.springframework.transaction.TransactionDefinition, Closure)">withTransaction</a></strong>(org.springframework.transaction.TransactionDefinition definition, groovy.lang.Closure&lt;T&gt; callable)</code><br>Executes the closure within the context of a transaction for the given org.springframework.transaction.TransactionDefinition</td>
                         </tr>
                         
                     </table>
@@ -919,7 +919,7 @@ implements GormAllOperations&lt;D&gt;</pre>
                         <a name="multiTenancyMode"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;final&nbsp;<a href='../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html'>MultiTenancyMode</a> <strong>multiTenancyMode</strong></h4>
+                                <h4>protected&nbsp;final&nbsp;<a href='../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html'>MultiTenancySettings.MultiTenancyMode</a> <strong>multiTenancyMode</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1074,7 +1074,7 @@ void <strong>discard</strong>(D instance)</h4>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-GormAllOperations&lt;D&gt; <strong>eachTenant</strong>(groovy.lang.Closure callable)</h4>
+<a href='../../../../grails/gorm/api/GormAllOperations.html' title='GormAllOperations'>GormAllOperations</a>&lt;D&gt; <strong>eachTenant</strong>(groovy.lang.Closure callable)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1757,7 +1757,7 @@ D <strong>save</strong>(D instance, java.util.Map params)</h4>
                         <a name="where(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>DetachedCriteria&lt;D&gt; <strong>where</strong>(groovy.lang.Closure callable)</h4>
+                                <h4><a href='../../../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; <strong>where</strong>(groovy.lang.Closure callable)</h4>
                                 <p> <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure containing detached criteria definition</DD></DL><DL><DT><B>Returns:</B></DT><DD>The DetachedCriteria instance</DD></DL></p>
                             </li>
                         </ul>
@@ -1765,7 +1765,7 @@ D <strong>save</strong>(D instance, java.util.Map params)</h4>
                         <a name="whereAny(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>DetachedCriteria&lt;D&gt; <strong>whereAny</strong>(groovy.lang.Closure callable)</h4>
+                                <h4><a href='../../../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; <strong>whereAny</strong>(groovy.lang.Closure callable)</h4>
                                 <p> <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure containing detached criteria definition</DD></DL><DL><DT><B>Returns:</B></DT><DD>The DetachedCriteria instance</DD></DL></p>
                             </li>
                         </ul>
@@ -1773,7 +1773,7 @@ D <strong>save</strong>(D instance, java.util.Map params)</h4>
                         <a name="whereLazy(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>DetachedCriteria&lt;D&gt; <strong>whereLazy</strong>(groovy.lang.Closure callable)</h4>
+                                <h4><a href='../../../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;D&gt; <strong>whereLazy</strong>(groovy.lang.Closure callable)</h4>
                                 <p> <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure containing detached criteria definition</DD></DL><DL><DT><B>Returns:</B></DT><DD>The DetachedCriteria instance that is lazily initialized</DD></DL></p>
                             </li>
                         </ul>
@@ -1825,7 +1825,7 @@ D <strong>save</strong>(D instance, java.util.Map params)</h4>
                                 <p> Executes the closure within the context of a new transaction which is
  configured with the properties contained in transactionProperties.
  transactionProperties may contain any properties supported by
- DefaultTransactionDefinition.  Note that if transactionProperties
+ org.springframework.transaction.support.DefaultTransactionDefinition.  Note that if transactionProperties
  includes entries for propagationBehavior or propagationName, those values
  will be ignored.  This method always sets the propagation level to
  TransactionDefinition.REQUIRES_NEW.
@@ -1836,7 +1836,7 @@ D <strong>save</strong>(D instance, java.util.Map params)</h4>
      // ...
  }
  </pre>
- </blockquote> <DL><DT><B>Parameters:</B></DT><DD><code>transactionProperties</code> -  properties to configure the transaction properties</DD><DD><code>callable</code> -  The closure to call</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure execution</DD></DL><DL><DT><B>See Also:</B></DT><DD>DefaultTransactionDefinition</DD><DD><a href='#withNewTransaction(groovy.lang.Closure)'>withNewTransaction(Closure)</a></DD><DD><a href='#withTransaction(groovy.lang.Closure)'>withTransaction(Closure)</a></DD><DD><a href='#withTransaction(java.util.Map, groovy.lang.Closure)'>withTransaction(Map, Closure)</a></DD></DL></p>
+ </blockquote> <DL><DT><B>Parameters:</B></DT><DD><code>transactionProperties</code> -  properties to configure the transaction properties</DD><DD><code>callable</code> -  The closure to call</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure execution</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.springframework.transaction.support.DefaultTransactionDefinition</DD><DD><a href='#withNewTransaction(groovy.lang.Closure)'>withNewTransaction(Closure)</a></DD><DD><a href='#withTransaction(groovy.lang.Closure)'>withTransaction(Closure)</a></DD><DD><a href='#withTransaction(java.util.Map, groovy.lang.Closure)'>withTransaction(Map, Closure)</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1869,7 +1869,7 @@ T <strong>withTenant</strong>(java.io.Serializable tenantId, groovy.lang.Closure
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-GormAllOperations&lt;D&gt; <strong>withTenant</strong>(java.io.Serializable tenantId)</h4>
+<a href='../../../../grails/gorm/api/GormAllOperations.html' title='GormAllOperations'>GormAllOperations</a>&lt;D&gt; <strong>withTenant</strong>(java.io.Serializable tenantId)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1890,7 +1890,7 @@ GormAllOperations&lt;D&gt; <strong>withTenant</strong>(java.io.Serializable tena
                                 <p> Executes the closure within the context of a transaction which is
  configured with the properties contained in transactionProperties.
  transactionProperties may contain any properties supported by
- DefaultTransactionDefinition.
+ org.springframework.transaction.support.DefaultTransactionDefinition.
 
  <blockquote>
  <pre>
@@ -1899,7 +1899,7 @@ GormAllOperations&lt;D&gt; <strong>withTenant</strong>(java.io.Serializable tena
      // ...
  }
  </pre>
- </blockquote> <DL><DT><B>Parameters:</B></DT><DD><code>transactionProperties</code> -  properties to configure the transaction properties</DD><DD><code>callable</code> -  The closure to call</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure execution</DD></DL><DL><DT><B>See Also:</B></DT><DD>DefaultTransactionDefinition</DD><DD><a href='#withNewTransaction(groovy.lang.Closure)'>withNewTransaction(Closure)</a></DD><DD><a href='#withNewTransaction(java.util.Map, groovy.lang.Closure)'>withNewTransaction(Map, Closure)</a></DD><DD><a href='#withTransaction(groovy.lang.Closure)'>withTransaction(Closure)</a></DD></DL></p>
+ </blockquote> <DL><DT><B>Parameters:</B></DT><DD><code>transactionProperties</code> -  properties to configure the transaction properties</DD><DD><code>callable</code> -  The closure to call</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure execution</DD></DL><DL><DT><B>See Also:</B></DT><DD>org.springframework.transaction.support.DefaultTransactionDefinition</DD><DD><a href='#withNewTransaction(groovy.lang.Closure)'>withNewTransaction(Closure)</a></DD><DD><a href='#withNewTransaction(java.util.Map, groovy.lang.Closure)'>withNewTransaction(Map, Closure)</a></DD><DD><a href='#withTransaction(groovy.lang.Closure)'>withTransaction(Closure)</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1907,7 +1907,7 @@ GormAllOperations&lt;D&gt; <strong>withTenant</strong>(java.io.Serializable tena
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>&lt;T&gt; T <strong>withTransaction</strong>(org.springframework.transaction.TransactionDefinition definition, groovy.lang.Closure&lt;T&gt; callable)</h4>
-                                <p> Executes the closure within the context of a transaction for the given TransactionDefinition <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure to call</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure execution</DD></DL></p>
+                                <p> Executes the closure within the context of a transaction for the given org.springframework.transaction.TransactionDefinition <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure to call</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure execution</DD></DL></p>
                             </li>
                         </ul>
                     

@@ -200,19 +200,19 @@ implements org.hibernate.Criteria, java.lang.Cloneable</pre>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>protected&nbsp;java.util.List&lt;DynamicFinder&gt;</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>protected&nbsp;java.util.List&lt;<a href='../../../../../../org/grails/datastore/gorm/finders/DynamicFinder.html' title='DynamicFinder'>DynamicFinder</a>&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#dynamicFinders">dynamicFinders</a></code></td>
                             <td class="colLast"></td>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>protected&nbsp;java.util.Map&lt;java.lang.String, FetchType&gt;</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>protected&nbsp;java.util.Map&lt;java.lang.String, javax.persistence.FetchType&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#fetchStrategies">fetchStrategies</a></code></td>
                             <td class="colLast"></td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>protected&nbsp;java.util.Map&lt;java.lang.String, JoinType&gt;</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>protected&nbsp;java.util.Map&lt;java.lang.String, javax.persistence.criteria.JoinType&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#joinTypes">joinTypes</a></code></td>
                             <td class="colLast"></td>
                         </tr>
@@ -334,18 +334,18 @@ implements org.hibernate.Criteria, java.lang.Cloneable</pre>
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#add(grails.gorm.services.Query.Criterion)">add</a></strong>(<a href='../../../../../../grails/gorm/services/Query.Criterion.html'>Criterion</a> criterion)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#add(org.grails.datastore.mapping.query.Query.Criterion)">add</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/query/Query.Criterion.html'>Criterion</a> criterion)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#allEq(Map)">allEq</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; propertyValues)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria#allEq(java.util.Map)</DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#and(groovy.lang.Closure)">and</a></strong>(groovy.lang.Closure callable)</code><br>Handles a conjunction</td>
                         </tr>
                         
@@ -363,8 +363,8 @@ implements org.hibernate.Criteria, java.lang.Cloneable</pre>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#between(java.lang.String, java.lang.Object, java.lang.Object)">between</a></strong>(java.lang.String propertyName, java.lang.Object start, java.lang.Object finish)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#between(java.lang.String, java.lang.Object, java.lang.Object)">between</a></strong>(java.lang.String propertyName, java.lang.Object start, java.lang.Object finish)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -387,7 +387,7 @@ implements org.hibernate.Criteria, java.lang.Cloneable</pre>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#cache(boolean)">cache</a></strong>(boolean shouldCache)</code><br></td>
                         </tr>
                         
@@ -405,7 +405,7 @@ implements org.hibernate.Criteria, java.lang.Cloneable</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#createAlias(java.lang.String, java.lang.String)">createAlias</a></strong>(java.lang.String associationPath, java.lang.String alias)</code><br>If the underlying datastore supports aliases, then an alias is created for the given association</td>
                         </tr>
                         
@@ -417,67 +417,67 @@ implements org.hibernate.Criteria, java.lang.Cloneable</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#eq(java.lang.String, java.lang.Object)">eq</a></strong>(java.lang.String propertyName, java.lang.Object propertyValue)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#eq(java.lang.String, java.lang.Object)">eq</a></strong>(java.lang.String propertyName, java.lang.Object propertyValue)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#eqAll(java.lang.String, Closure)">eqAll</a></strong>(java.lang.String propertyName, groovy.lang.Closure&lt;?&gt; propertyValue)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#eqAll(java.lang.String, org.grails.datastore.mapping.query.api.QueryableCriteria)">eqAll</a></strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#eqProperty(java.lang.String, java.lang.String)">eqProperty</a></strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#eqProperty(java.lang.String, java.lang.String)">eqProperty</a></strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#exists(QueryableCriteria)">exists</a></strong>(QueryableCriteria&lt;?&gt; subquery)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria#exists(org.grails.datastore.mapping.query.api.QueryableCriteria)</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#exists(QueryableCriteria)">exists</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html' title='QueryableCriteria'>QueryableCriteria</a>&lt;?&gt; subquery)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria#exists(org.grails.datastore.mapping.query.api.QueryableCriteria)</DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#ge(java.lang.String, java.lang.Object)">ge</a></strong>(java.lang.String property, java.lang.Object value)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#ge(java.lang.String, java.lang.Object)">ge</a></strong>(java.lang.String property, java.lang.Object value)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#geAll(java.lang.String, Closure)">geAll</a></strong>(java.lang.String propertyName, groovy.lang.Closure&lt;?&gt; propertyValue)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#geAll(java.lang.String, org.grails.datastore.mapping.query.api.QueryableCriteria)">geAll</a></strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#geProperty(java.lang.String, java.lang.String)">geProperty</a></strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#geProperty(java.lang.String, java.lang.String)">geProperty</a></strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#geSome(java.lang.String, org.grails.datastore.mapping.query.api.QueryableCriteria)">geSome</a></strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#geSome(java.lang.String, Closure)">geSome</a></strong>(java.lang.String propertyName, groovy.lang.Closure&lt;?&gt; propertyValue)</code><br></td>
                         </tr>
                         
@@ -495,13 +495,13 @@ implements org.hibernate.Criteria, java.lang.Cloneable</pre>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.util.Map&lt;java.lang.String, FetchType&gt;</code></td>
+                            <td class="colLast"><code>java.util.Map&lt;java.lang.String, javax.persistence.FetchType&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getFetchStrategies()">getFetchStrategies</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>Obtain the fetch strategies for each property</DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.util.Map&lt;java.lang.String, JoinType&gt;</code></td>
+                            <td class="colLast"><code>java.util.Map&lt;java.lang.String, javax.persistence.criteria.JoinType&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getJoinTypes()">getJoinTypes</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>Obtain the join types</DD></DL></td>
                         </tr>
                         
@@ -531,44 +531,44 @@ implements org.hibernate.Criteria, java.lang.Cloneable</pre>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#gt(java.lang.String, java.lang.Object)">gt</a></strong>(java.lang.String property, java.lang.Object value)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#gt(java.lang.String, java.lang.Object)">gt</a></strong>(java.lang.String property, java.lang.Object value)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#gtAll(java.lang.String, Closure)">gtAll</a></strong>(java.lang.String propertyName, groovy.lang.Closure&lt;?&gt; propertyValue)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#gtAll(java.lang.String, org.grails.datastore.mapping.query.api.QueryableCriteria)">gtAll</a></strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#gtProperty(java.lang.String, java.lang.String)">gtProperty</a></strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#gtProperty(java.lang.String, java.lang.String)">gtProperty</a></strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#gtSome(java.lang.String, org.grails.datastore.mapping.query.api.QueryableCriteria)">gtSome</a></strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#gtSome(java.lang.String, Closure)">gtSome</a></strong>(java.lang.String propertyName, groovy.lang.Closure&lt;?&gt; propertyValue)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#gte(java.lang.String, java.lang.Object)">gte</a></strong>(java.lang.String property, java.lang.Object value)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#gte(java.lang.String, java.lang.Object)">gte</a></strong>(java.lang.String property, java.lang.Object value)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -585,68 +585,68 @@ implements org.hibernate.Criteria, java.lang.Cloneable</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#idEq(java.lang.Object)">idEq</a></strong>(java.lang.Object propertyValue)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#idEq(java.lang.Object)">idEq</a></strong>(java.lang.Object propertyValue)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#idEquals(java.lang.Object)">idEquals</a></strong>(java.lang.Object value)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#idEquals(java.lang.Object)">idEquals</a></strong>(java.lang.Object value)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#ilike(java.lang.String, java.lang.Object)">ilike</a></strong>(java.lang.String propertyName, java.lang.Object propertyValue)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#ilike(java.lang.String, java.lang.Object)">ilike</a></strong>(java.lang.String propertyName, java.lang.Object propertyValue)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#in(java.lang.String, java.util.Collection)">in</a></strong>(java.lang.String propertyName, java.util.Collection values)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#in(java.lang.String, java.util.Collection)">in</a></strong>(java.lang.String propertyName, java.util.Collection values)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#in(java.lang.String, org.grails.datastore.mapping.query.api.QueryableCriteria)">in</a></strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> subquery)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#in(java.lang.String, org.grails.datastore.mapping.query.api.QueryableCriteria)">in</a></strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> subquery)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#in(java.lang.String, Closure)">in</a></strong>(java.lang.String propertyName, groovy.lang.Closure&lt;?&gt; subquery)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#in(java.lang.String, java.lang.Object)">in</a></strong>(java.lang.String propertyName, java.lang.Object[] values)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#in(java.lang.String, java.lang.Object)">in</a></strong>(java.lang.String propertyName, java.lang.Object[] values)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#inList(java.lang.String, QueryableCriteria)">inList</a></strong>(java.lang.String propertyName, QueryableCriteria&lt;?&gt; subquery)</code><br></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#inList(java.lang.String, QueryableCriteria)">inList</a></strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html' title='QueryableCriteria'>QueryableCriteria</a>&lt;?&gt; subquery)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#inList(java.lang.String, Closure)">inList</a></strong>(java.lang.String propertyName, groovy.lang.Closure&lt;?&gt; subquery)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#inList(java.lang.String, java.util.Collection)">inList</a></strong>(java.lang.String propertyName, java.util.Collection values)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#inList(java.lang.String, java.util.Collection)">inList</a></strong>(java.lang.String propertyName, java.util.Collection values)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#inList(java.lang.String, java.lang.Object)">inList</a></strong>(java.lang.String propertyName, java.lang.Object[] values)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#inList(java.lang.String, java.lang.Object)">inList</a></strong>(java.lang.String propertyName, java.lang.Object[] values)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -657,122 +657,122 @@ implements org.hibernate.Criteria, java.lang.Cloneable</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#isEmpty(java.lang.String)">isEmpty</a></strong>(java.lang.String propertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#isEmpty(java.lang.String)">isEmpty</a></strong>(java.lang.String propertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#isNotEmpty(java.lang.String)">isNotEmpty</a></strong>(java.lang.String propertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#isNotEmpty(java.lang.String)">isNotEmpty</a></strong>(java.lang.String propertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#isNotNull(java.lang.String)">isNotNull</a></strong>(java.lang.String propertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#isNotNull(java.lang.String)">isNotNull</a></strong>(java.lang.String propertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#isNull(java.lang.String)">isNull</a></strong>(java.lang.String propertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#isNull(java.lang.String)">isNull</a></strong>(java.lang.String propertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#join(java.lang.String)">join</a></strong>(java.lang.String property)</code><br>Specifies whether a join query should be used (if join queries are supported by the underlying datastore)</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#join(java.lang.String, javax.persistence.criteria.JoinType)">join</a></strong>(java.lang.String property, javax.persistence.criteria.JoinType joinType)</code><br>Specifies whether a join query should be used (if join queries are supported by the underlying datastore)</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#le(java.lang.String, java.lang.Object)">le</a></strong>(java.lang.String property, java.lang.Object value)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#le(java.lang.String, java.lang.Object)">le</a></strong>(java.lang.String property, java.lang.Object value)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#leAll(java.lang.String, Closure)">leAll</a></strong>(java.lang.String propertyName, groovy.lang.Closure&lt;?&gt; propertyValue)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#leAll(java.lang.String, org.grails.datastore.mapping.query.api.QueryableCriteria)">leAll</a></strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#leProperty(java.lang.String, java.lang.String)">leProperty</a></strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#leProperty(java.lang.String, java.lang.String)">leProperty</a></strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#leSome(java.lang.String, org.grails.datastore.mapping.query.api.QueryableCriteria)">leSome</a></strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#leSome(java.lang.String, Closure)">leSome</a></strong>(java.lang.String propertyName, groovy.lang.Closure&lt;?&gt; propertyValue)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#like(java.lang.String, java.lang.Object)">like</a></strong>(java.lang.String propertyName, java.lang.Object propertyValue)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#like(java.lang.String, java.lang.Object)">like</a></strong>(java.lang.String propertyName, java.lang.Object propertyValue)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#lt(java.lang.String, java.lang.Object)">lt</a></strong>(java.lang.String property, java.lang.Object value)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#lt(java.lang.String, java.lang.Object)">lt</a></strong>(java.lang.String property, java.lang.Object value)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#ltAll(java.lang.String, Closure)">ltAll</a></strong>(java.lang.String propertyName, groovy.lang.Closure&lt;?&gt; propertyValue)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#ltAll(java.lang.String, org.grails.datastore.mapping.query.api.QueryableCriteria)">ltAll</a></strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#ltProperty(java.lang.String, java.lang.String)">ltProperty</a></strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#ltProperty(java.lang.String, java.lang.String)">ltProperty</a></strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#ltSome(java.lang.String, org.grails.datastore.mapping.query.api.QueryableCriteria)">ltSome</a></strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#ltSome(java.lang.String, Closure)">ltSome</a></strong>(java.lang.String propertyName, groovy.lang.Closure&lt;?&gt; propertyValue)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#lte(java.lang.String, java.lang.Object)">lte</a></strong>(java.lang.String property, java.lang.Object value)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#lte(java.lang.String, java.lang.Object)">lte</a></strong>(java.lang.String property, java.lang.Object value)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -801,13 +801,13 @@ implements org.hibernate.Criteria, java.lang.Cloneable</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#ne(java.lang.String, java.lang.Object)">ne</a></strong>(java.lang.String propertyName, java.lang.Object propertyValue)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#ne(java.lang.String, java.lang.Object)">ne</a></strong>(java.lang.String propertyName, java.lang.Object propertyValue)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#neProperty(java.lang.String, java.lang.String)">neProperty</a></strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria#neProperty(java.lang.String, java.lang.String)</DD></DL></td>
                         </tr>
                         
@@ -819,25 +819,25 @@ implements org.hibernate.Criteria, java.lang.Cloneable</pre>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#not(groovy.lang.Closure)">not</a></strong>(groovy.lang.Closure callable)</code><br>Handles a disjunction</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#notExists(QueryableCriteria)">notExists</a></strong>(QueryableCriteria&lt;?&gt; subquery)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria#notExists(org.grails.datastore.mapping.query.api.QueryableCriteria)</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#notExists(QueryableCriteria)">notExists</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html' title='QueryableCriteria'>QueryableCriteria</a>&lt;?&gt; subquery)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria#notExists(org.grails.datastore.mapping.query.api.QueryableCriteria)</DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#notIn(java.lang.String, QueryableCriteria)">notIn</a></strong>(java.lang.String propertyName, QueryableCriteria&lt;?&gt; subquery)</code><br></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#notIn(java.lang.String, QueryableCriteria)">notIn</a></strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html' title='QueryableCriteria'>QueryableCriteria</a>&lt;?&gt; subquery)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#notIn(java.lang.String, Closure)">notIn</a></strong>(java.lang.String propertyName, groovy.lang.Closure&lt;?&gt; subquery)</code><br></td>
                         </tr>
                         
@@ -849,31 +849,31 @@ implements org.hibernate.Criteria, java.lang.Cloneable</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#or(groovy.lang.Closure)">or</a></strong>(groovy.lang.Closure callable)</code><br>Handles a disjunction</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#order(java.lang.String)">order</a></strong>(java.lang.String propertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#order(java.lang.String)">order</a></strong>(java.lang.String propertyName)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#order(grails.gorm.services.Query.Order)">order</a></strong>(<a href='../../../../../../grails/gorm/services/Query.Order.html'>Order</a> o)</code><br></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#order(org.grails.datastore.mapping.query.Query.Order)">order</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/query/Query.Order.html'>Order</a> o)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#order(java.lang.String, java.lang.String)">order</a></strong>(java.lang.String propertyName, java.lang.String direction)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#order(java.lang.String, java.lang.String)">order</a></strong>(java.lang.String propertyName, java.lang.String direction)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#projections(groovy.lang.Closure)">projections</a></strong>(groovy.lang.Closure callable)</code><br>Evaluate projections within the context of the given closure</td>
                         </tr>
                         
@@ -891,62 +891,62 @@ implements org.hibernate.Criteria, java.lang.Cloneable</pre>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#readOnly(boolean)">readOnly</a></strong>(boolean readOnly)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#rlike(java.lang.String, java.lang.Object)">rlike</a></strong>(java.lang.String propertyName, java.lang.Object propertyValue)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#rlike(java.lang.String, java.lang.Object)">rlike</a></strong>(java.lang.String propertyName, java.lang.Object propertyValue)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#select(java.lang.String)">select</a></strong>(java.lang.String property)</code><br>Specifies whether a select (lazy) query should be used (if join queries are supported by the underlying datastore)</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
                             <td class="colLast"><code><strong><a href="#setAlias(java.lang.String)">setAlias</a></strong>(java.lang.String alias)</code><br>Sets the root alias to be used for the query</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#sizeEq(java.lang.String, int)">sizeEq</a></strong>(java.lang.String propertyName, int size)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#sizeEq(java.lang.String, int)">sizeEq</a></strong>(java.lang.String propertyName, int size)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#sizeGe(java.lang.String, int)">sizeGe</a></strong>(java.lang.String propertyName, int size)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#sizeGe(java.lang.String, int)">sizeGe</a></strong>(java.lang.String propertyName, int size)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#sizeGt(java.lang.String, int)">sizeGt</a></strong>(java.lang.String propertyName, int size)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#sizeGt(java.lang.String, int)">sizeGt</a></strong>(java.lang.String propertyName, int size)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#sizeLe(java.lang.String, int)">sizeLe</a></strong>(java.lang.String propertyName, int size)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#sizeLe(java.lang.String, int)">sizeLe</a></strong>(java.lang.String propertyName, int size)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#sizeLt(java.lang.String, int)">sizeLt</a></strong>(java.lang.String propertyName, int size)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#sizeLt(java.lang.String, int)">sizeLt</a></strong>(java.lang.String propertyName, int size)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>org.hibernate.Criteria</code></td>
-                            <td class="colLast"><code><strong><a href="#sizeNe(java.lang.String, int)">sizeNe</a></strong>(java.lang.String propertyName, int size)</code><br> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a></code></td>
+                            <td class="colLast"><code><strong><a href="#sizeNe(java.lang.String, int)">sizeNe</a></strong>(java.lang.String propertyName, int size)</code><br> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -1077,7 +1077,7 @@ implements org.hibernate.Criteria, java.lang.Cloneable</pre>
                         <a name="dynamicFinders"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;java.util.List&lt;DynamicFinder&gt; <strong>dynamicFinders</strong></h4>
+                                <h4>protected&nbsp;java.util.List&lt;<a href='../../../../../../org/grails/datastore/gorm/finders/DynamicFinder.html' title='DynamicFinder'>DynamicFinder</a>&gt; <strong>dynamicFinders</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1085,7 +1085,7 @@ implements org.hibernate.Criteria, java.lang.Cloneable</pre>
                         <a name="fetchStrategies"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;java.util.Map&lt;java.lang.String, FetchType&gt; <strong>fetchStrategies</strong></h4>
+                                <h4>protected&nbsp;java.util.Map&lt;java.lang.String, javax.persistence.FetchType&gt; <strong>fetchStrategies</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1093,7 +1093,7 @@ implements org.hibernate.Criteria, java.lang.Cloneable</pre>
                         <a name="joinTypes"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;java.util.Map&lt;java.lang.String, JoinType&gt; <strong>joinTypes</strong></h4>
+                                <h4>protected&nbsp;java.util.Map&lt;java.lang.String, javax.persistence.criteria.JoinType&gt; <strong>joinTypes</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1209,10 +1209,10 @@ implements org.hibernate.Criteria, java.lang.Cloneable</pre>
                 </a>
                     <h3>Method Detail</h3>
                     
-                        <a name="add(grails.gorm.services.Query.Criterion)"><!-- --></a>
+                        <a name="add(org.grails.datastore.mapping.query.Query.Criterion)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>add</strong>(<a href='../../../../../../grails/gorm/services/Query.Criterion.html'>Criterion</a> criterion)</h4>
+                                <h4>void <strong>add</strong>(<a href='../../../../../../org/grails/datastore/mapping/query/Query.Criterion.html'>Criterion</a> criterion)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1221,7 +1221,7 @@ implements org.hibernate.Criteria, java.lang.Cloneable</pre>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>allEq</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; propertyValues)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>allEq</strong>(java.util.Map&lt;java.lang.String, java.lang.Object&gt; propertyValues)</h4>
                                 <p> <DL><DT><B>See Also:</B></DT><DD>Criteria#allEq(java.util.Map)</DD></DL></p>
                             </li>
                         </ul>
@@ -1229,7 +1229,7 @@ org.hibernate.Criteria <strong>allEq</strong>(java.util.Map&lt;java.lang.String,
                         <a name="and(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>and</strong>(@groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure callable)</h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>and</strong>(@groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure callable)</h4>
                                 <p> Handles a conjunction <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>This criterion</DD></DL></p>
                             </li>
                         </ul>
@@ -1253,8 +1253,8 @@ org.hibernate.Criteria <strong>allEq</strong>(java.util.Map&lt;java.lang.String,
                         <a name="between(java.lang.String, java.lang.Object, java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>between</strong>(java.lang.String propertyName, java.lang.Object start, java.lang.Object finish)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>between</strong>(java.lang.String propertyName, java.lang.Object start, java.lang.Object finish)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1286,7 +1286,7 @@ org.hibernate.Criteria <strong>allEq</strong>(java.util.Map&lt;java.lang.String,
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>cache</strong>(boolean shouldCache)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>cache</strong>(boolean shouldCache)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1312,7 +1312,7 @@ protected&nbsp;<a href='../../../../../../org/grails/datastore/gorm/query/criter
                         <a name="createAlias(java.lang.String, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>createAlias</strong>(java.lang.String associationPath, java.lang.String alias)</h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>createAlias</strong>(java.lang.String associationPath, java.lang.String alias)</h4>
                                 <p> If the underlying datastore supports aliases, then an alias is created for the given association <DL><DT><B>Parameters:</B></DT><DD><code>associationPath</code> -  The name of the association</DD><DD><code>alias</code> -  The alias</DD></DL><DL><DT><B>Returns:</B></DT><DD>This create</DD></DL></p>
                             </li>
                         </ul>
@@ -1328,15 +1328,15 @@ protected&nbsp;<a href='../../../../../../org/grails/datastore/gorm/query/criter
                         <a name="eq(java.lang.String, java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>eq</strong>(java.lang.String propertyName, java.lang.Object propertyValue)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>eq</strong>(java.lang.String propertyName, java.lang.Object propertyValue)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="eqAll(java.lang.String, Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>eqAll</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; propertyValue)</h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>eqAll</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; propertyValue)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1345,7 +1345,7 @@ protected&nbsp;<a href='../../../../../../org/grails/datastore/gorm/query/criter
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>eqAll</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>eqAll</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1353,8 +1353,8 @@ org.hibernate.Criteria <strong>eqAll</strong>(java.lang.String propertyName, <a 
                         <a name="eqProperty(java.lang.String, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>eqProperty</strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>eqProperty</strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1362,7 +1362,7 @@ org.hibernate.Criteria <strong>eqAll</strong>(java.lang.String propertyName, <a 
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>exists</strong>(QueryableCriteria&lt;?&gt; subquery)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>exists</strong>(<a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html' title='QueryableCriteria'>QueryableCriteria</a>&lt;?&gt; subquery)</h4>
                                 <p> <DL><DT><B>See Also:</B></DT><DD>Criteria#exists(org.grails.datastore.mapping.query.api.QueryableCriteria)</DD></DL></p>
                             </li>
                         </ul>
@@ -1370,15 +1370,15 @@ org.hibernate.Criteria <strong>exists</strong>(QueryableCriteria&lt;?&gt; subque
                         <a name="ge(java.lang.String, java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>ge</strong>(java.lang.String property, java.lang.Object value)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>ge</strong>(java.lang.String property, java.lang.Object value)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="geAll(java.lang.String, Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>geAll</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; propertyValue)</h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>geAll</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; propertyValue)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1387,7 +1387,7 @@ org.hibernate.Criteria <strong>exists</strong>(QueryableCriteria&lt;?&gt; subque
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>geAll</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>geAll</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1395,8 +1395,8 @@ org.hibernate.Criteria <strong>geAll</strong>(java.lang.String propertyName, <a 
                         <a name="geProperty(java.lang.String, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>geProperty</strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>geProperty</strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1404,7 +1404,7 @@ org.hibernate.Criteria <strong>geAll</strong>(java.lang.String propertyName, <a 
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>geSome</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>geSome</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1413,7 +1413,7 @@ org.hibernate.Criteria <strong>geSome</strong>(java.lang.String propertyName, <a
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>geSome</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; propertyValue)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>geSome</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; propertyValue)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1437,7 +1437,7 @@ org.hibernate.Criteria <strong>geSome</strong>(java.lang.String propertyName, @g
                         <a name="getFetchStrategies()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.Map&lt;java.lang.String, FetchType&gt; <strong>getFetchStrategies</strong>()</h4>
+                                <h4>java.util.Map&lt;java.lang.String, javax.persistence.FetchType&gt; <strong>getFetchStrategies</strong>()</h4>
                                 <p> <DL><DT><B>Returns:</B></DT><DD>Obtain the fetch strategies for each property</DD></DL></p>
                             </li>
                         </ul>
@@ -1445,7 +1445,7 @@ org.hibernate.Criteria <strong>geSome</strong>(java.lang.String propertyName, @g
                         <a name="getJoinTypes()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>java.util.Map&lt;java.lang.String, JoinType&gt; <strong>getJoinTypes</strong>()</h4>
+                                <h4>java.util.Map&lt;java.lang.String, javax.persistence.criteria.JoinType&gt; <strong>getJoinTypes</strong>()</h4>
                                 <p> <DL><DT><B>Returns:</B></DT><DD>Obtain the join types</DD></DL></p>
                             </li>
                         </ul>
@@ -1485,15 +1485,15 @@ org.hibernate.Criteria <strong>geSome</strong>(java.lang.String propertyName, @g
                         <a name="gt(java.lang.String, java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>gt</strong>(java.lang.String property, java.lang.Object value)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>gt</strong>(java.lang.String property, java.lang.Object value)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="gtAll(java.lang.String, Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>gtAll</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; propertyValue)</h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>gtAll</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; propertyValue)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1502,7 +1502,7 @@ org.hibernate.Criteria <strong>geSome</strong>(java.lang.String propertyName, @g
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>gtAll</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>gtAll</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1510,8 +1510,8 @@ org.hibernate.Criteria <strong>gtAll</strong>(java.lang.String propertyName, <a 
                         <a name="gtProperty(java.lang.String, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>gtProperty</strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>gtProperty</strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1519,7 +1519,7 @@ org.hibernate.Criteria <strong>gtAll</strong>(java.lang.String propertyName, <a 
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>gtSome</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>gtSome</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1528,7 +1528,7 @@ org.hibernate.Criteria <strong>gtSome</strong>(java.lang.String propertyName, <a
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>gtSome</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; propertyValue)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>gtSome</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; propertyValue)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1536,8 +1536,8 @@ org.hibernate.Criteria <strong>gtSome</strong>(java.lang.String propertyName, @g
                         <a name="gte(java.lang.String, java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>gte</strong>(java.lang.String property, java.lang.Object value)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>gte</strong>(java.lang.String property, java.lang.Object value)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1560,40 +1560,40 @@ org.hibernate.Criteria <strong>gtSome</strong>(java.lang.String propertyName, @g
                         <a name="idEq(java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>idEq</strong>(java.lang.Object propertyValue)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>idEq</strong>(java.lang.Object propertyValue)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="idEquals(java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>idEquals</strong>(java.lang.Object value)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>idEquals</strong>(java.lang.Object value)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="ilike(java.lang.String, java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>ilike</strong>(java.lang.String propertyName, java.lang.Object propertyValue)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>ilike</strong>(java.lang.String propertyName, java.lang.Object propertyValue)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="in(java.lang.String, java.util.Collection)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>in</strong>(java.lang.String propertyName, java.util.Collection values)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>in</strong>(java.lang.String propertyName, java.util.Collection values)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="in(java.lang.String, org.grails.datastore.mapping.query.api.QueryableCriteria)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>in</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> subquery)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>in</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> subquery)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1601,7 +1601,7 @@ org.hibernate.Criteria <strong>gtSome</strong>(java.lang.String propertyName, @g
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>in</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; subquery)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>in</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; subquery)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1609,8 +1609,8 @@ org.hibernate.Criteria <strong>in</strong>(java.lang.String propertyName, @groov
                         <a name="in(java.lang.String, java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>in</strong>(java.lang.String propertyName, java.lang.Object[] values)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>in</strong>(java.lang.String propertyName, java.lang.Object[] values)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1618,7 +1618,7 @@ org.hibernate.Criteria <strong>in</strong>(java.lang.String propertyName, @groov
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>inList</strong>(java.lang.String propertyName, QueryableCriteria&lt;?&gt; subquery)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>inList</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html' title='QueryableCriteria'>QueryableCriteria</a>&lt;?&gt; subquery)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1627,7 +1627,7 @@ org.hibernate.Criteria <strong>inList</strong>(java.lang.String propertyName, Qu
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>inList</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; subquery)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>inList</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; subquery)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1635,16 +1635,16 @@ org.hibernate.Criteria <strong>inList</strong>(java.lang.String propertyName, @g
                         <a name="inList(java.lang.String, java.util.Collection)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>inList</strong>(java.lang.String propertyName, java.util.Collection values)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>inList</strong>(java.lang.String propertyName, java.util.Collection values)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="inList(java.lang.String, java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>inList</strong>(java.lang.String propertyName, java.lang.Object[] values)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>inList</strong>(java.lang.String propertyName, java.lang.Object[] values)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1660,39 +1660,39 @@ protected&nbsp;java.lang.Object <strong>initialiseIfNecessary</strong>(java.lang
                         <a name="isEmpty(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>isEmpty</strong>(java.lang.String propertyName)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>isEmpty</strong>(java.lang.String propertyName)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="isNotEmpty(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>isNotEmpty</strong>(java.lang.String propertyName)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>isNotEmpty</strong>(java.lang.String propertyName)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="isNotNull(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>isNotNull</strong>(java.lang.String propertyName)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>isNotNull</strong>(java.lang.String propertyName)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="isNull(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>isNull</strong>(java.lang.String propertyName)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>isNull</strong>(java.lang.String propertyName)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="join(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>join</strong>(java.lang.String property)</h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>join</strong>(java.lang.String property)</h4>
                                 <p> Specifies whether a join query should be used (if join queries are supported by the underlying datastore) <DL><DT><B>Parameters:</B></DT><DD><code>property</code> -  The property</DD></DL><DL><DT><B>Returns:</B></DT><DD>The query</DD></DL></p>
                             </li>
                         </ul>
@@ -1700,7 +1700,7 @@ protected&nbsp;java.lang.Object <strong>initialiseIfNecessary</strong>(java.lang
                         <a name="join(java.lang.String, javax.persistence.criteria.JoinType)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>join</strong>(java.lang.String property, javax.persistence.criteria.JoinType joinType)</h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>join</strong>(java.lang.String property, javax.persistence.criteria.JoinType joinType)</h4>
                                 <p> Specifies whether a join query should be used (if join queries are supported by the underlying datastore) <DL><DT><B>Parameters:</B></DT><DD><code>property</code> -  The property</DD><DD><code>joinType</code> -  The join type</DD></DL><DL><DT><B>Returns:</B></DT><DD>The query</DD></DL></p>
                             </li>
                         </ul>
@@ -1708,15 +1708,15 @@ protected&nbsp;java.lang.Object <strong>initialiseIfNecessary</strong>(java.lang
                         <a name="le(java.lang.String, java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>le</strong>(java.lang.String property, java.lang.Object value)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>le</strong>(java.lang.String property, java.lang.Object value)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="leAll(java.lang.String, Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>leAll</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; propertyValue)</h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>leAll</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; propertyValue)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1725,7 +1725,7 @@ protected&nbsp;java.lang.Object <strong>initialiseIfNecessary</strong>(java.lang
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>leAll</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>leAll</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1733,8 +1733,8 @@ org.hibernate.Criteria <strong>leAll</strong>(java.lang.String propertyName, <a 
                         <a name="leProperty(java.lang.String, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>leProperty</strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>leProperty</strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1742,7 +1742,7 @@ org.hibernate.Criteria <strong>leAll</strong>(java.lang.String propertyName, <a 
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>leSome</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>leSome</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1751,7 +1751,7 @@ org.hibernate.Criteria <strong>leSome</strong>(java.lang.String propertyName, <a
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>leSome</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; propertyValue)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>leSome</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; propertyValue)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1759,23 +1759,23 @@ org.hibernate.Criteria <strong>leSome</strong>(java.lang.String propertyName, @g
                         <a name="like(java.lang.String, java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>like</strong>(java.lang.String propertyName, java.lang.Object propertyValue)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>like</strong>(java.lang.String propertyName, java.lang.Object propertyValue)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="lt(java.lang.String, java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>lt</strong>(java.lang.String property, java.lang.Object value)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>lt</strong>(java.lang.String property, java.lang.Object value)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="ltAll(java.lang.String, Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>ltAll</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; propertyValue)</h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>ltAll</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; propertyValue)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1784,7 +1784,7 @@ org.hibernate.Criteria <strong>leSome</strong>(java.lang.String propertyName, @g
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>ltAll</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>ltAll</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1792,8 +1792,8 @@ org.hibernate.Criteria <strong>ltAll</strong>(java.lang.String propertyName, <a 
                         <a name="ltProperty(java.lang.String, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>ltProperty</strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>ltProperty</strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1801,7 +1801,7 @@ org.hibernate.Criteria <strong>ltAll</strong>(java.lang.String propertyName, <a 
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>ltSome</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>ltSome</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html'>QueryableCriteria</a> propertyValue)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1810,7 +1810,7 @@ org.hibernate.Criteria <strong>ltSome</strong>(java.lang.String propertyName, <a
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>ltSome</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; propertyValue)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>ltSome</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; propertyValue)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1818,8 +1818,8 @@ org.hibernate.Criteria <strong>ltSome</strong>(java.lang.String propertyName, @g
                         <a name="lte(java.lang.String, java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>lte</strong>(java.lang.String property, java.lang.Object value)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>lte</strong>(java.lang.String property, java.lang.Object value)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1859,15 +1859,15 @@ java.lang.Object <strong>methodMissing</strong>(java.lang.String methodName, jav
                         <a name="ne(java.lang.String, java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>ne</strong>(java.lang.String propertyName, java.lang.Object propertyValue)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>ne</strong>(java.lang.String propertyName, java.lang.Object propertyValue)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="neProperty(java.lang.String, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>neProperty</strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>neProperty</strong>(java.lang.String propertyName, java.lang.String otherPropertyName)</h4>
                                 <p> <DL><DT><B>See Also:</B></DT><DD>Criteria#neProperty(java.lang.String, java.lang.String)</DD></DL></p>
                             </li>
                         </ul>
@@ -1883,7 +1883,7 @@ java.lang.Object <strong>methodMissing</strong>(java.lang.String methodName, jav
                         <a name="not(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>not</strong>(@groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure callable)</h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>not</strong>(@groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure callable)</h4>
                                 <p> Handles a disjunction <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>This criterion</DD></DL></p>
                             </li>
                         </ul>
@@ -1892,7 +1892,7 @@ java.lang.Object <strong>methodMissing</strong>(java.lang.String methodName, jav
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>notExists</strong>(QueryableCriteria&lt;?&gt; subquery)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>notExists</strong>(<a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html' title='QueryableCriteria'>QueryableCriteria</a>&lt;?&gt; subquery)</h4>
                                 <p> <DL><DT><B>See Also:</B></DT><DD>Criteria#notExists(org.grails.datastore.mapping.query.api.QueryableCriteria)</DD></DL></p>
                             </li>
                         </ul>
@@ -1901,7 +1901,7 @@ org.hibernate.Criteria <strong>notExists</strong>(QueryableCriteria&lt;?&gt; sub
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>notIn</strong>(java.lang.String propertyName, QueryableCriteria&lt;?&gt; subquery)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>notIn</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/query/api/QueryableCriteria.html' title='QueryableCriteria'>QueryableCriteria</a>&lt;?&gt; subquery)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1910,7 +1910,7 @@ org.hibernate.Criteria <strong>notIn</strong>(java.lang.String propertyName, Que
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>notIn</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; subquery)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>notIn</strong>(java.lang.String propertyName, @groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure&lt;?&gt; subquery)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1926,7 +1926,7 @@ org.hibernate.Criteria <strong>notIn</strong>(java.lang.String propertyName, @gr
                         <a name="or(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>or</strong>(@groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure callable)</h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>or</strong>(@groovy.lang.DelegatesTo(value: AbstractDetachedCriteria) groovy.lang.Closure callable)</h4>
                                 <p> Handles a disjunction <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  Callable closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>This criterion</DD></DL></p>
                             </li>
                         </ul>
@@ -1934,16 +1934,16 @@ org.hibernate.Criteria <strong>notIn</strong>(java.lang.String propertyName, @gr
                         <a name="order(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>order</strong>(java.lang.String propertyName)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>order</strong>(java.lang.String propertyName)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
-                        <a name="order(grails.gorm.services.Query.Order)"><!-- --></a>
+                        <a name="order(org.grails.datastore.mapping.query.Query.Order)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>order</strong>(<a href='../../../../../../grails/gorm/services/Query.Order.html'>Order</a> o)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>order</strong>(<a href='../../../../../../org/grails/datastore/mapping/query/Query.Order.html'>Order</a> o)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1951,15 +1951,15 @@ org.hibernate.Criteria <strong>order</strong>(<a href='../../../../../../grails/
                         <a name="order(java.lang.String, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>order</strong>(java.lang.String propertyName, java.lang.String direction)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>order</strong>(java.lang.String propertyName, java.lang.String direction)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="projections(groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>projections</strong>(@groovy.lang.DelegatesTo(value: ProjectionList) groovy.lang.Closure callable)</h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>projections</strong>(@groovy.lang.DelegatesTo(value: ProjectionList) groovy.lang.Closure callable)</h4>
                                 <p> Evaluate projections within the context of the given closure <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The callable</DD></DL><DL><DT><B>Returns:</B></DT><DD>The projection list</DD></DL></p>
                             </li>
                         </ul>
@@ -1984,7 +1984,7 @@ org.hibernate.Criteria <strong>order</strong>(<a href='../../../../../../grails/
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-org.hibernate.Criteria <strong>readOnly</strong>(boolean readOnly)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>readOnly</strong>(boolean readOnly)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1992,15 +1992,15 @@ org.hibernate.Criteria <strong>readOnly</strong>(boolean readOnly)</h4>
                         <a name="rlike(java.lang.String, java.lang.Object)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>rlike</strong>(java.lang.String propertyName, java.lang.Object propertyValue)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>rlike</strong>(java.lang.String propertyName, java.lang.Object propertyValue)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="select(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>select</strong>(java.lang.String property)</h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>select</strong>(java.lang.String property)</h4>
                                 <p> Specifies whether a select (lazy) query should be used (if join queries are supported by the underlying datastore) <DL><DT><B>Parameters:</B></DT><DD><code>property</code> -  The property</DD></DL><DL><DT><B>Returns:</B></DT><DD>The query</DD></DL></p>
                             </li>
                         </ul>
@@ -2008,7 +2008,7 @@ org.hibernate.Criteria <strong>readOnly</strong>(boolean readOnly)</h4>
                         <a name="setAlias(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>setAlias</strong>(java.lang.String alias)</h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>setAlias</strong>(java.lang.String alias)</h4>
                                 <p> Sets the root alias to be used for the query <DL><DT><B>Parameters:</B></DT><DD><code>alias</code> -  The alias</DD></DL><DL><DT><B>Returns:</B></DT><DD>The alias</DD></DL></p>
                             </li>
                         </ul>
@@ -2016,48 +2016,48 @@ org.hibernate.Criteria <strong>readOnly</strong>(boolean readOnly)</h4>
                         <a name="sizeEq(java.lang.String, int)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>sizeEq</strong>(java.lang.String propertyName, int size)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>sizeEq</strong>(java.lang.String propertyName, int size)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="sizeGe(java.lang.String, int)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>sizeGe</strong>(java.lang.String propertyName, int size)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>sizeGe</strong>(java.lang.String propertyName, int size)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="sizeGt(java.lang.String, int)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>sizeGt</strong>(java.lang.String propertyName, int size)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>sizeGt</strong>(java.lang.String propertyName, int size)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="sizeLe(java.lang.String, int)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>sizeLe</strong>(java.lang.String propertyName, int size)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>sizeLe</strong>(java.lang.String propertyName, int size)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="sizeLt(java.lang.String, int)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>sizeLt</strong>(java.lang.String propertyName, int size)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>sizeLt</strong>(java.lang.String propertyName, int size)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="sizeNe(java.lang.String, int)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>org.hibernate.Criteria <strong>sizeNe</strong>(java.lang.String propertyName, int size)</h4>
-                                <p> <DL><DT><B>See Also:</B></DT><DD>Criteria</DD></DL></p>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html'>Criteria</a> <strong>sizeNe</strong>(java.lang.String propertyName, int size)</h4>
+                                <p> <DL><DT><B>See Also:</B></DT><DD><a href='../../../../../../org/grails/datastore/mapping/query/api/Criteria.html' title='Criteria'>Criteria</a></DD></DL></p>
                             </li>
                         </ul>
                     

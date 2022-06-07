@@ -99,7 +99,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Implemented Interfaces and Traits:</dt>
-                <dd>org.springframework.context.ApplicationContextAware, <a href='../../../../../PostDeleteEventListener.html'>PostDeleteEventListener</a>, <a href='../../../../../PostInsertEventListener.html'>PostInsertEventListener</a>, <a href='../../../../../PostLoadEventListener.html'>PostLoadEventListener</a>, <a href='../../../../../PostUpdateEventListener.html'>PostUpdateEventListener</a>, <a href='../../../../../PreDeleteEventListener.html'>PreDeleteEventListener</a>, <a href='../../../../../PreInsertEventListener.html'>PreInsertEventListener</a>, <a href='../../../../../PreLoadEventListener.html'>PreLoadEventListener</a>, <a href='../../../../../PreUpdateEventListener.html'>PreUpdateEventListener</a></dd>
+                <dd>org.springframework.context.ApplicationContextAware, org.hibernate.event.spi.PreLoadEventListener, org.hibernate.event.spi.PostLoadEventListener, org.hibernate.event.spi.PostInsertEventListener, org.hibernate.event.spi.PostUpdateEventListener, org.hibernate.event.spi.PostDeleteEventListener, org.hibernate.event.spi.PreDeleteEventListener, org.hibernate.event.spi.PreUpdateEventListener, org.hibernate.event.spi.PreInsertEventListener</dd>
             </dl>
     
 
@@ -109,7 +109,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
 <pre>public&nbsp;abstract&nbsp;class AbstractClosureEventTriggeringInterceptor
 extends org.hibernate.event.internal.DefaultSaveOrUpdateEventListener
-implements org.springframework.context.ApplicationContextAware, <a href='../../../../../PostDeleteEventListener.html'>PostDeleteEventListener</a>, <a href='../../../../../PostInsertEventListener.html'>PostInsertEventListener</a>, <a href='../../../../../PostLoadEventListener.html'>PostLoadEventListener</a>, <a href='../../../../../PostUpdateEventListener.html'>PostUpdateEventListener</a>, <a href='../../../../../PreDeleteEventListener.html'>PreDeleteEventListener</a>, <a href='../../../../../PreInsertEventListener.html'>PreInsertEventListener</a>, <a href='../../../../../PreLoadEventListener.html'>PreLoadEventListener</a>, <a href='../../../../../PreUpdateEventListener.html'>PreUpdateEventListener</a></pre>
+implements org.springframework.context.ApplicationContextAware, org.hibernate.event.spi.PreLoadEventListener, org.hibernate.event.spi.PostLoadEventListener, org.hibernate.event.spi.PostInsertEventListener, org.hibernate.event.spi.PostUpdateEventListener, org.hibernate.event.spi.PostDeleteEventListener, org.hibernate.event.spi.PreDeleteEventListener, org.hibernate.event.spi.PreUpdateEventListener, org.hibernate.event.spi.PreInsertEventListener</pre>
 
     <p> Abstract class for defining the event triggering interceptor
   <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>6.0</DD></DL></p>

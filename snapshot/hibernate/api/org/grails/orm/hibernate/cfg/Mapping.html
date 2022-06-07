@@ -105,7 +105,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <pre>@groovy.transform.CompileStatic
 @groovy.transform.builder.Builder(builderStrategy: SimpleStrategy, prefix: )
 class Mapping
-extends Entity&lt;<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html' title='PropertyConfig'>PropertyConfig</a>&gt;</pre>
+extends <a href='../../../../../org/grails/datastore/mapping/config/Entity.html' title='Entity'>Entity</a>&lt;<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyConfig.html' title='PropertyConfig'>PropertyConfig</a>&gt;</pre>
 
     <p> Models the mapping from GORM classes to the db. <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>1.0</DD></DL></p>
 
@@ -488,7 +488,7 @@ extends Entity&lt;<a href='../../../../../org/grails/orm/hibernate/cfg/PropertyC
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../../grails/gorm/Entity.html'>Entity</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></code></td>
                             <td class="colLast"><code><strong><a href="#version(groovy.lang.Closure)">version</a></strong>(groovy.lang.Closure versionConfig)</code><br>Configure the version</td>
                         </tr>
                         
@@ -1001,7 +1001,7 @@ java.lang.Object <strong>propertyMissing</strong>(java.lang.String name, java.la
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-<a href='../../../../../grails/gorm/Entity.html'>Entity</a> <strong>version</strong>(@groovy.lang.DelegatesTo(value: PropertyConfig) groovy.lang.Closure versionConfig)</h4>
+<a href='../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a> <strong>version</strong>(@groovy.lang.DelegatesTo(value: PropertyConfig) groovy.lang.Closure versionConfig)</h4>
                                 <p> Configure the version <DL><DT><B>Parameters:</B></DT><DD><code>versionConfig</code> -  The version config</DD></DL><DL><DT><B>Returns:</B></DT><DD>This entity</DD></DL></p>
                             </li>
                         </ul>
