@@ -103,7 +103,7 @@ if (location.href.indexOf('is-external=true') == -1) {
             <br>
 
 <pre>public&nbsp;class JsonWriter
-extends <a href='../../../../../AbstractBsonWriter.html'>AbstractBsonWriter</a></pre>
+extends org.bson.AbstractBsonWriter</pre>
 
     <p> Simplified fork of org.bson.json.JsonWriter that ignores behaviour specific to MongoDB and produces more compat output
   <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>6.0</DD></DL></p>
@@ -254,7 +254,7 @@ extends <a href='../../../../../AbstractBsonWriter.html'>AbstractBsonWriter</a><
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#doWriteDBPointer(BsonDbPointer)">doWriteDBPointer</a></strong>(<a href='../../../../../BsonDbPointer.html'>BsonDbPointer</a> value)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#doWriteDBPointer(org.bson.BsonDbPointer)">doWriteDBPointer</a></strong>(org.bson.BsonDbPointer value)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -399,6 +399,24 @@ extends <a href='../../../../../AbstractBsonWriter.html'>AbstractBsonWriter</a><
                    </ul>
               </li>
             
+            <li class="blockList"><a name="method_summary"><!--   --></a>
+                    <h3>Inherited Methods Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Inherited Methods Summary table">
+                        <caption><span>Inherited Methods</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Methods inherited from class</th>
+                            <th class="colLast" scope="col">Name</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>class org.bson.AbstractBsonWriter</code></td>
+                            <td class="colLast"><code>org.bson.AbstractBsonWriter#writeDouble(java.lang.String, double), org.bson.AbstractBsonWriter#writeDouble(double), org.bson.AbstractBsonWriter#writeBoolean(java.lang.String, boolean), org.bson.AbstractBsonWriter#writeBoolean(boolean), org.bson.AbstractBsonWriter#writeNull(java.lang.String), org.bson.AbstractBsonWriter#writeNull(), org.bson.AbstractBsonWriter#writeUndefined(), org.bson.AbstractBsonWriter#writeUndefined(java.lang.String), org.bson.AbstractBsonWriter#pipe(org.bson.BsonReader), org.bson.AbstractBsonWriter#pipe(org.bson.BsonReader, java.util.List), org.bson.AbstractBsonWriter#writeStartDocument(), org.bson.AbstractBsonWriter#writeStartDocument(java.lang.String), org.bson.AbstractBsonWriter#writeName(java.lang.String), org.bson.AbstractBsonWriter#writeEndDocument(), org.bson.AbstractBsonWriter#writeString(java.lang.String), org.bson.AbstractBsonWriter#writeString(java.lang.String, java.lang.String), org.bson.AbstractBsonWriter#writeStartArray(), org.bson.AbstractBsonWriter#writeStartArray(java.lang.String), org.bson.AbstractBsonWriter#writeJavaScript(java.lang.String, java.lang.String), org.bson.AbstractBsonWriter#writeJavaScript(java.lang.String), org.bson.AbstractBsonWriter#writeMaxKey(java.lang.String), org.bson.AbstractBsonWriter#writeMaxKey(), org.bson.AbstractBsonWriter#writeObjectId(java.lang.String, org.bson.types.ObjectId), org.bson.AbstractBsonWriter#writeObjectId(org.bson.types.ObjectId), org.bson.AbstractBsonWriter#writeBinaryData(org.bson.BsonBinary), org.bson.AbstractBsonWriter#writeBinaryData(java.lang.String, org.bson.BsonBinary), org.bson.AbstractBsonWriter#writeDecimal128(java.lang.String, org.bson.types.Decimal128), org.bson.AbstractBsonWriter#writeDecimal128(org.bson.types.Decimal128), org.bson.AbstractBsonWriter#writeInt64(long), org.bson.AbstractBsonWriter#writeInt64(java.lang.String, long), org.bson.AbstractBsonWriter#writeMinKey(java.lang.String), org.bson.AbstractBsonWriter#writeMinKey(), org.bson.AbstractBsonWriter#writeDateTime(long), org.bson.AbstractBsonWriter#writeDateTime(java.lang.String, long), org.bson.AbstractBsonWriter#writeDBPointer(org.bson.BsonDbPointer), org.bson.AbstractBsonWriter#writeDBPointer(java.lang.String, org.bson.BsonDbPointer), org.bson.AbstractBsonWriter#writeEndArray(), org.bson.AbstractBsonWriter#writeInt32(java.lang.String, int), org.bson.AbstractBsonWriter#writeInt32(int), org.bson.AbstractBsonWriter#writeJavaScriptWithScope(java.lang.String, java.lang.String), org.bson.AbstractBsonWriter#writeJavaScriptWithScope(java.lang.String), org.bson.AbstractBsonWriter#writeRegularExpression(org.bson.BsonRegularExpression), org.bson.AbstractBsonWriter#writeRegularExpression(java.lang.String, org.bson.BsonRegularExpression), org.bson.AbstractBsonWriter#writeSymbol(java.lang.String, java.lang.String), org.bson.AbstractBsonWriter#writeSymbol(java.lang.String), org.bson.AbstractBsonWriter#writeTimestamp(java.lang.String, org.bson.BsonTimestamp), org.bson.AbstractBsonWriter#writeTimestamp(org.bson.BsonTimestamp), org.bson.AbstractBsonWriter#close(), org.bson.AbstractBsonWriter#wait(long, int), org.bson.AbstractBsonWriter#wait(long), org.bson.AbstractBsonWriter#wait(), org.bson.AbstractBsonWriter#equals(java.lang.Object), org.bson.AbstractBsonWriter#toString(), org.bson.AbstractBsonWriter#hashCode(), org.bson.AbstractBsonWriter#getClass(), org.bson.AbstractBsonWriter#notify(), org.bson.AbstractBsonWriter#notifyAll(), org.bson.AbstractBsonWriter#flush()</code></td>
+                        </tr>
+                    </table>
+                   </ul>
+              </li>
+                
         </ul>
         
     </li>
@@ -513,11 +531,11 @@ protected&nbsp;void <strong>doWriteBoolean</strong>(boolean value)</h4>
                             </li>
                         </ul>
                     
-                        <a name="doWriteDBPointer(BsonDbPointer)"><!-- --></a>
+                        <a name="doWriteDBPointer(org.bson.BsonDbPointer)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-protected&nbsp;void <strong>doWriteDBPointer</strong>(<a href='../../../../../BsonDbPointer.html'>BsonDbPointer</a> value)</h4>
+protected&nbsp;void <strong>doWriteDBPointer</strong>(org.bson.BsonDbPointer value)</h4>
                                 <p></p>
                             </li>
                         </ul>

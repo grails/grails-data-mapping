@@ -172,14 +172,14 @@ extends java.lang.Object</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;AggregateIterable&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#aggregate(MongoCollection, List)">aggregate</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; pipeline)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.AggregateIterable&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#aggregate(MongoCollection, List)">aggregate</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; pipeline)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
-                            <td class="colLast"><code>static&nbsp;AggregateIterable&lt;T&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#aggregate(MongoCollection, List, Class)">aggregate</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; pipeline, java.lang.Class&lt;T&gt; resultClass)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.AggregateIterable&lt;T&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#aggregate(MongoCollection, List, Class)">aggregate</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; pipeline, java.lang.Class&lt;T&gt; resultClass)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -191,271 +191,271 @@ extends java.lang.Object</pre>
                         <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>static&nbsp;T</code></td>
-                            <td class="colLast"><code><strong><a href="#asType(FindIterable, Class)">asType</a></strong>(<a href='../../../../../../FindIterable.html'>FindIterable</a> iterable, java.lang.Class&lt;T&gt; cls)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#asType(com.mongodb.client.FindIterable, Class)">asType</a></strong>(com.mongodb.client.FindIterable iterable, java.lang.Class&lt;T&gt; cls)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;long</code></td>
-                            <td class="colLast"><code><strong><a href="#count(MongoCollection)">count</a></strong>(MongoCollection&lt;Document&gt; collection)</code><br>********** MongoCollection Extensions ************</td>
+                            <td class="colLast"><code><strong><a href="#count(MongoCollection)">count</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection)</code><br>********** MongoCollection Extensions ************</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;long</code></td>
-                            <td class="colLast"><code><strong><a href="#count(MongoCollection, Map)">count</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#count(MongoCollection, Map)">count</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;long</code></td>
-                            <td class="colLast"><code><strong><a href="#count(MongoCollection, Map, com.mongodb.ReadPreference)">count</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, com.mongodb.ReadPreference readPreference)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#count(MongoCollection, Map, com.mongodb.ReadPreference)">count</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, com.mongodb.ReadPreference readPreference)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;long</code></td>
-                            <td class="colLast"><code><strong><a href="#count(MongoCollection, java.util.Map, Map)">count</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#count(MongoCollection, java.util.Map, Map)">count</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;MongoCollection&lt;Document&gt;</code></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#createAndGetCollection(com.mongodb.client.MongoDatabase, java.lang.String, Map)">createAndGetCollection</a></strong>(com.mongodb.client.MongoDatabase db, java.lang.String collectionName, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#createIndex(MongoCollection, Map, java.lang.String)">createIndex</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; keys, java.lang.String name)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#createIndex(MongoCollection, Map, java.lang.String)">createIndex</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; keys, java.lang.String name)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#createIndex(MongoCollection, Map, java.lang.String, boolean)">createIndex</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; keys, java.lang.String name, boolean unique)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#createIndex(MongoCollection, Map, java.lang.String, boolean)">createIndex</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; keys, java.lang.String name, boolean unique)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#createIndex(MongoCollection, Map)">createIndex</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; keys)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#createIndex(MongoCollection, Map)">createIndex</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; keys)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#createIndex(MongoCollection, Map, IndexOptions)">createIndex</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; keys, <a href='../../../../../../IndexOptions.html'>IndexOptions</a> options)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#createIndex(MongoCollection, Map, com.mongodb.client.model.IndexOptions)">createIndex</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; keys, com.mongodb.client.model.IndexOptions options)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#createIndex(MongoCollection, Map, Map)">createIndex</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; keys, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#createIndex(MongoCollection, Map, Map)">createIndex</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; keys, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.DeleteResult</code></td>
-                            <td class="colLast"><code><strong><a href="#deleteMany(MongoCollection, Map)">deleteMany</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#deleteMany(MongoCollection, Map)">deleteMany</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.DeleteResult</code></td>
-                            <td class="colLast"><code><strong><a href="#deleteMany(MongoCollection, Map, com.mongodb.WriteConcern)">deleteMany</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, com.mongodb.WriteConcern writeConcern)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#deleteMany(MongoCollection, Map, com.mongodb.WriteConcern)">deleteMany</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, com.mongodb.WriteConcern writeConcern)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.DeleteResult</code></td>
-                            <td class="colLast"><code><strong><a href="#deleteMany(MongoCollection, Map, Map)">deleteMany</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#deleteMany(MongoCollection, Map, Map)">deleteMany</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.DeleteResult</code></td>
-                            <td class="colLast"><code><strong><a href="#deleteOne(MongoCollection, Map)">deleteOne</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#deleteOne(MongoCollection, Map)">deleteOne</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.DeleteResult</code></td>
-                            <td class="colLast"><code><strong><a href="#deleteOne(MongoCollection, Map, com.mongodb.WriteConcern)">deleteOne</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, com.mongodb.WriteConcern writeConcern)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#deleteOne(MongoCollection, Map, com.mongodb.WriteConcern)">deleteOne</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, com.mongodb.WriteConcern writeConcern)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.DeleteResult</code></td>
-                            <td class="colLast"><code><strong><a href="#deleteOne(MongoCollection, Map, Map)">deleteOne</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#deleteOne(MongoCollection, Map, Map)">deleteOne</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;DistinctIterable&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#distinct(MongoCollection, java.lang.String)">distinct</a></strong>(MongoCollection&lt;Document&gt; collection, java.lang.String fieldName)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.DistinctIterable&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#distinct(MongoCollection, java.lang.String)">distinct</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.lang.String fieldName)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;DistinctIterable&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#distinct(MongoCollection, java.lang.String, com.mongodb.ReadPreference)">distinct</a></strong>(MongoCollection&lt;Document&gt; collection, java.lang.String fieldName, com.mongodb.ReadPreference readPreference)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.DistinctIterable&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#distinct(MongoCollection, java.lang.String, com.mongodb.ReadPreference)">distinct</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.lang.String fieldName, com.mongodb.ReadPreference readPreference)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;DistinctIterable&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#distinct(MongoCollection, java.lang.String, Map)">distinct</a></strong>(MongoCollection&lt;Document&gt; collection, java.lang.String fieldName, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.DistinctIterable&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#distinct(MongoCollection, java.lang.String, Map)">distinct</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.lang.String fieldName, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
-                            <td class="colLast"><code>static&nbsp;DistinctIterable&lt;T&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#distinct(MongoCollection, java.lang.String, Map, Class)">distinct</a></strong>(MongoCollection&lt;Document&gt; collection, java.lang.String fieldName, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.lang.Class&lt;T&gt; resultClass)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.DistinctIterable&lt;T&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#distinct(MongoCollection, java.lang.String, Map, Class)">distinct</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.lang.String fieldName, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.lang.Class&lt;T&gt; resultClass)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;DistinctIterable&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#distinct(MongoCollection, java.lang.String, Map, com.mongodb.ReadPreference)">distinct</a></strong>(MongoCollection&lt;Document&gt; collection, java.lang.String fieldName, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, com.mongodb.ReadPreference readPreference)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.DistinctIterable&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#distinct(MongoCollection, java.lang.String, Map, com.mongodb.ReadPreference)">distinct</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.lang.String fieldName, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, com.mongodb.ReadPreference readPreference)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#dropIndex(MongoCollection, Map)">dropIndex</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; index)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#dropIndex(MongoCollection, Map)">dropIndex</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; index)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#dropIndex(MongoCollection, Map, Map)">dropIndex</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; index, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#dropIndex(MongoCollection, Map, Map)">dropIndex</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; index, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#dropIndex(MongoCollection, Map, DropIndexOptions)">dropIndex</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; index, <a href='../../../../../../DropIndexOptions.html'>DropIndexOptions</a> dropIndexOptions)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#dropIndex(MongoCollection, Map, com.mongodb.client.model.DropIndexOptions)">dropIndex</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; index, com.mongodb.client.model.DropIndexOptions dropIndexOptions)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;FindIterable&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#filter(FindIterable, Map)">filter</a></strong>(FindIterable&lt;Document&gt; iterable, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter)</code><br>********** FindIterable Extensions ************</td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.FindIterable&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#filter(FindIterable, Map)">filter</a></strong>(com.mongodb.client.FindIterable&lt;org.bson.Document&gt; iterable, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter)</code><br>********** FindIterable Extensions ************</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;DistinctIterable&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#filter(DistinctIterable, Map)">filter</a></strong>(DistinctIterable&lt;Document&gt; iterable, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter)</code><br>********** DistinctIterable Extensions ************</td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.DistinctIterable&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#filter(DistinctIterable, Map)">filter</a></strong>(com.mongodb.client.DistinctIterable&lt;org.bson.Document&gt; iterable, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter)</code><br>********** DistinctIterable Extensions ************</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;FindIterable&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#find(MongoCollection, Map)">find</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.FindIterable&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#find(MongoCollection, Map)">find</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
-                            <td class="colLast"><code>static&nbsp;FindIterable&lt;T&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#find(MongoCollection, Map, Class)">find</a></strong>(MongoCollection&lt;T&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.lang.Class&lt;T&gt; type)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.FindIterable&lt;T&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#find(MongoCollection, Map, Class)">find</a></strong>(com.mongodb.client.MongoCollection&lt;T&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.lang.Class&lt;T&gt; type)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;FindIterable&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#find(MongoCollection, Map, Map)">find</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.FindIterable&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#find(MongoCollection, Map, Map)">find</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.bson.Document</code></td>
-                            <td class="colLast"><code><strong><a href="#findOne(MongoCollection, Map)">findOne</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findOne(MongoCollection, Map)">findOne</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.bson.Document</code></td>
-                            <td class="colLast"><code><strong><a href="#findOne(MongoCollection, org.bson.types.ObjectId)">findOne</a></strong>(MongoCollection&lt;Document&gt; collection, org.bson.types.ObjectId id)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findOne(MongoCollection, org.bson.types.ObjectId)">findOne</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, org.bson.types.ObjectId id)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.bson.Document</code></td>
-                            <td class="colLast"><code><strong><a href="#findOne(MongoCollection, java.lang.CharSequence)">findOne</a></strong>(MongoCollection&lt;Document&gt; collection, java.lang.CharSequence id)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findOne(MongoCollection, java.lang.CharSequence)">findOne</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.lang.CharSequence id)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>static&nbsp;T</code></td>
-                            <td class="colLast"><code><strong><a href="#findOne(MongoCollection, java.io.Serializable, Class)">findOne</a></strong>(MongoCollection&lt;Document&gt; collection, java.io.Serializable id, java.lang.Class&lt;T&gt; type)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findOne(MongoCollection, java.io.Serializable, Class)">findOne</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.io.Serializable id, java.lang.Class&lt;T&gt; type)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.bson.Document</code></td>
-                            <td class="colLast"><code><strong><a href="#findOne(MongoCollection, Map, Map)">findOne</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findOne(MongoCollection, Map, Map)">findOne</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.bson.Document</code></td>
-                            <td class="colLast"><code><strong><a href="#findOne(MongoCollection, Map, Map, Map)">findOne</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; sort)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findOne(MongoCollection, Map, Map, Map)">findOne</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; sort)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.bson.Document</code></td>
-                            <td class="colLast"><code><strong><a href="#findOne(MongoCollection)">findOne</a></strong>(MongoCollection&lt;Document&gt; collection)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findOne(MongoCollection)">findOne</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.bson.Document</code></td>
-                            <td class="colLast"><code><strong><a href="#findOne(MongoCollection, Map, Map, com.mongodb.ReadPreference)">findOne</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection, com.mongodb.ReadPreference readPreference)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findOne(MongoCollection, Map, Map, com.mongodb.ReadPreference)">findOne</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection, com.mongodb.ReadPreference readPreference)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.bson.Document</code></td>
-                            <td class="colLast"><code><strong><a href="#findOne(MongoCollection, Map, Map, Map, com.mongodb.ReadPreference)">findOne</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; sort, com.mongodb.ReadPreference readPreference)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findOne(MongoCollection, Map, Map, Map, com.mongodb.ReadPreference)">findOne</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; sort, com.mongodb.ReadPreference readPreference)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.bson.Document</code></td>
-                            <td class="colLast"><code><strong><a href="#findOneAndDelete(MongoCollection, Map)">findOneAndDelete</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findOneAndDelete(MongoCollection, Map)">findOneAndDelete</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.bson.Document</code></td>
-                            <td class="colLast"><code><strong><a href="#findOneAndDelete(MongoCollection, Map, Map)">findOneAndDelete</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findOneAndDelete(MongoCollection, Map, Map)">findOneAndDelete</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.bson.Document</code></td>
-                            <td class="colLast"><code><strong><a href="#findOneAndReplace(MongoCollection, Map, Map)">findOneAndReplace</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; replacement)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findOneAndReplace(MongoCollection, Map, Map)">findOneAndReplace</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; replacement)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.bson.Document</code></td>
-                            <td class="colLast"><code><strong><a href="#findOneAndReplace(MongoCollection, Map, Map, Map)">findOneAndReplace</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; replacement, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findOneAndReplace(MongoCollection, Map, Map, Map)">findOneAndReplace</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; replacement, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.bson.Document</code></td>
-                            <td class="colLast"><code><strong><a href="#findOneAndUpdate(MongoCollection, Map, Map)">findOneAndUpdate</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findOneAndUpdate(MongoCollection, Map, Map)">findOneAndUpdate</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.bson.Document</code></td>
-                            <td class="colLast"><code><strong><a href="#findOneAndUpdate(MongoCollection, Map, Map, Map)">findOneAndUpdate</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#findOneAndUpdate(MongoCollection, Map, Map, Map)">findOneAndUpdate</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -466,116 +466,116 @@ extends java.lang.Object</pre>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;MongoIterable&lt;java.lang.String&gt;</code></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.MongoIterable&lt;java.lang.String&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getCollectionNames(com.mongodb.client.MongoDatabase)">getCollectionNames</a></strong>(com.mongodb.client.MongoDatabase db)</code><br>********** MongoDatabase Extensions ************</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;long</code></td>
-                            <td class="colLast"><code><strong><a href="#getCount(MongoCollection, Map)">getCount</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getCount(MongoCollection, Map)">getCount</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;long</code></td>
-                            <td class="colLast"><code><strong><a href="#getCount(MongoCollection, Map, com.mongodb.ReadPreference)">getCount</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, com.mongodb.ReadPreference readPreference)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getCount(MongoCollection, Map, com.mongodb.ReadPreference)">getCount</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, com.mongodb.ReadPreference readPreference)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;long</code></td>
-                            <td class="colLast"><code><strong><a href="#getCount(MongoCollection, Map, Map)">getCount</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getCount(MongoCollection, Map, Map)">getCount</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;java.lang.String</code></td>
-                            <td class="colLast"><code><strong><a href="#getName(MongoCollection)">getName</a></strong>(MongoCollection&lt;Document&gt; collection)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getName(MongoCollection)">getName</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;FindIterable&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#hint(FindIterable, Map)">hint</a></strong>(FindIterable&lt;Document&gt; iterable, java.util.Map&lt;java.lang.String, java.lang.Object&gt; hint)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.FindIterable&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#hint(FindIterable, Map)">hint</a></strong>(com.mongodb.client.FindIterable&lt;org.bson.Document&gt; iterable, java.util.Map&lt;java.lang.String, java.lang.Object&gt; hint)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#insert(MongoCollection, Map)">insert</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; document)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#insert(MongoCollection, Map)">insert</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; document)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;MongoCollection&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#insert(MongoCollection, Map, com.mongodb.WriteConcern)">insert</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; document, com.mongodb.WriteConcern writeConcern)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#insert(MongoCollection, Map, com.mongodb.WriteConcern)">insert</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; document, com.mongodb.WriteConcern writeConcern)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#insert(MongoCollection, Map)">insert</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt;[] documents)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#insert(MongoCollection, Map)">insert</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt;[] documents)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;MongoCollection&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#insert(MongoCollection, com.mongodb.WriteConcern, Map)">insert</a></strong>(MongoCollection&lt;Document&gt; collection, com.mongodb.WriteConcern writeConcern, java.util.Map&lt;java.lang.String, java.lang.Object&gt;[] documents)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#insert(MongoCollection, com.mongodb.WriteConcern, Map)">insert</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, com.mongodb.WriteConcern writeConcern, java.util.Map&lt;java.lang.String, java.lang.Object&gt;[] documents)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;MongoCollection&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#insert(MongoCollection, Map, com.mongodb.WriteConcern)">insert</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt;[] documents, com.mongodb.WriteConcern writeConcern)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#insert(MongoCollection, Map, com.mongodb.WriteConcern)">insert</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt;[] documents, com.mongodb.WriteConcern writeConcern)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;MongoCollection&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#insert(MongoCollection, List)">insert</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; documents)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#insert(MongoCollection, List)">insert</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; documents)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;MongoCollection&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#insert(MongoCollection, List, com.mongodb.WriteConcern)">insert</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; documents, com.mongodb.WriteConcern aWriteConcern)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#insert(MongoCollection, List, com.mongodb.WriteConcern)">insert</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; documents, com.mongodb.WriteConcern aWriteConcern)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;MongoCollection&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#insert(MongoCollection, List, com.mongodb.WriteConcern, InsertManyOptions)">insert</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; documents, com.mongodb.WriteConcern writeConcern, <a href='../../../../../../InsertManyOptions.html'>InsertManyOptions</a> insertOptions)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#insert(MongoCollection, List, com.mongodb.WriteConcern, com.mongodb.client.model.InsertManyOptions)">insert</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; documents, com.mongodb.WriteConcern writeConcern, com.mongodb.client.model.InsertManyOptions insertOptions)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;MongoCollection&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#insert(MongoCollection, List, InsertManyOptions)">insert</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.List&lt;? extends java.util.Map&gt; documents, <a href='../../../../../../InsertManyOptions.html'>InsertManyOptions</a> insertOptions)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#insert(MongoCollection, List, com.mongodb.client.model.InsertManyOptions)">insert</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.List&lt;? extends java.util.Map&gt; documents, com.mongodb.client.model.InsertManyOptions insertOptions)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;MongoCollection&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#leftShift(MongoCollection, Map)">leftShift</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt;[] documents)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#leftShift(MongoCollection, Map)">leftShift</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt;[] documents)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;FindIterable&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#max(FindIterable, Map)">max</a></strong>(FindIterable&lt;Document&gt; iterable, java.util.Map&lt;java.lang.String, java.lang.Object&gt; max)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.FindIterable&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#max(FindIterable, Map)">max</a></strong>(com.mongodb.client.FindIterable&lt;org.bson.Document&gt; iterable, java.util.Map&lt;java.lang.String, java.lang.Object&gt; max)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;FindIterable&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#min(FindIterable, Map)">min</a></strong>(FindIterable&lt;Document&gt; iterable, java.util.Map&lt;java.lang.String, java.lang.Object&gt; min)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.FindIterable&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#min(FindIterable, Map)">min</a></strong>(com.mongodb.client.FindIterable&lt;org.bson.Document&gt; iterable, java.util.Map&lt;java.lang.String, java.lang.Object&gt; min)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;FindIterable&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#projection(FindIterable, Map)">projection</a></strong>(FindIterable&lt;Document&gt; iterable, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.FindIterable&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#projection(FindIterable, Map)">projection</a></strong>(com.mongodb.client.FindIterable&lt;org.bson.Document&gt; iterable, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -587,43 +587,43 @@ extends java.lang.Object</pre>
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.DeleteResult</code></td>
-                            <td class="colLast"><code><strong><a href="#remove(MongoCollection, Map)">remove</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#remove(MongoCollection, Map)">remove</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.UpdateResult</code></td>
-                            <td class="colLast"><code><strong><a href="#replaceOne(MongoCollection, Map, org.bson.Document)">replaceOne</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, org.bson.Document replacement)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#replaceOne(MongoCollection, Map, org.bson.Document)">replaceOne</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, org.bson.Document replacement)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.UpdateResult</code></td>
-                            <td class="colLast"><code><strong><a href="#replaceOne(MongoCollection, Map, org.bson.Document, Map)">replaceOne</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, org.bson.Document replacement, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#replaceOne(MongoCollection, Map, org.bson.Document, Map)">replaceOne</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, org.bson.Document replacement, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;MongoCollection&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#rightShift(MongoCollection, Map)">rightShift</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#rightShift(MongoCollection, Map)">rightShift</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;<a href='../../../../../../org/grails/datastore/mapping/mongo/config/MongoCollection.html'>MongoCollection</a></code></td>
-                            <td class="colLast"><code><strong><a href="#save(MongoCollection, Map)">save</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; document)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.MongoCollection</code></td>
+                            <td class="colLast"><code><strong><a href="#save(MongoCollection, Map)">save</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; document)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;<a href='../../../../../../org/grails/datastore/mapping/mongo/config/MongoCollection.html'>MongoCollection</a></code></td>
-                            <td class="colLast"><code><strong><a href="#save(MongoCollection, Map, com.mongodb.WriteConcern)">save</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; document, com.mongodb.WriteConcern writeConcern)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.MongoCollection</code></td>
+                            <td class="colLast"><code><strong><a href="#save(MongoCollection, Map, com.mongodb.WriteConcern)">save</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; document, com.mongodb.WriteConcern writeConcern)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;FindIterable&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#sort(FindIterable, Map)">sort</a></strong>(FindIterable&lt;Document&gt; iterable, java.util.Map&lt;java.lang.String, java.lang.Object&gt; sort)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.FindIterable&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#sort(FindIterable, Map)">sort</a></strong>(com.mongodb.client.FindIterable&lt;org.bson.Document&gt; iterable, java.util.Map&lt;java.lang.String, java.lang.Object&gt; sort)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -635,109 +635,109 @@ extends java.lang.Object</pre>
                         <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>static&nbsp;java.util.List&lt;T&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#toList(FindIterable, Class)">toList</a></strong>(<a href='../../../../../../FindIterable.html'>FindIterable</a> iterable, java.lang.Class&lt;T&gt; cls)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#toList(com.mongodb.client.FindIterable, Class)">toList</a></strong>(com.mongodb.client.FindIterable iterable, java.lang.Class&lt;T&gt; cls)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.UpdateResult</code></td>
-                            <td class="colLast"><code><strong><a href="#update(MongoCollection, Map, Map)">update</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#update(MongoCollection, Map, Map)">update</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.UpdateResult</code></td>
-                            <td class="colLast"><code><strong><a href="#update(MongoCollection, Map, Map, Map)">update</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#update(MongoCollection, Map, Map, Map)">update</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.UpdateResult</code></td>
-                            <td class="colLast"><code><strong><a href="#update(MongoCollection, Map, Map, UpdateOptions)">update</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, <a href='../../../../../../UpdateOptions.html'>UpdateOptions</a> updateOptions)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#update(MongoCollection, Map, Map, com.mongodb.client.model.UpdateOptions)">update</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, com.mongodb.client.model.UpdateOptions updateOptions)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.UpdateResult</code></td>
-                            <td class="colLast"><code><strong><a href="#updateMany(MongoCollection, Map, Map)">updateMany</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#updateMany(MongoCollection, Map, Map)">updateMany</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.UpdateResult</code></td>
-                            <td class="colLast"><code><strong><a href="#updateMany(MongoCollection, Map, Map, Map)">updateMany</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#updateMany(MongoCollection, Map, Map, Map)">updateMany</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.UpdateResult</code></td>
-                            <td class="colLast"><code><strong><a href="#updateMany(MongoCollection, Map, Map, UpdateOptions)">updateMany</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, <a href='../../../../../../UpdateOptions.html'>UpdateOptions</a> updateOptions)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#updateMany(MongoCollection, Map, Map, com.mongodb.client.model.UpdateOptions)">updateMany</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, com.mongodb.client.model.UpdateOptions updateOptions)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.UpdateResult</code></td>
-                            <td class="colLast"><code><strong><a href="#updateMany(MongoCollection, Map, List)">updateMany</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#updateMany(MongoCollection, Map, List)">updateMany</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.UpdateResult</code></td>
-                            <td class="colLast"><code><strong><a href="#updateMany(MongoCollection, Map, List, Map)">updateMany</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#updateMany(MongoCollection, Map, List, Map)">updateMany</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.UpdateResult</code></td>
-                            <td class="colLast"><code><strong><a href="#updateMany(MongoCollection, Map, List, UpdateOptions)">updateMany</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update, <a href='../../../../../../UpdateOptions.html'>UpdateOptions</a> updateOptions)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#updateMany(MongoCollection, Map, List, com.mongodb.client.model.UpdateOptions)">updateMany</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update, com.mongodb.client.model.UpdateOptions updateOptions)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.UpdateResult</code></td>
-                            <td class="colLast"><code><strong><a href="#updateOne(MongoCollection, Map, Map)">updateOne</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#updateOne(MongoCollection, Map, Map)">updateOne</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.UpdateResult</code></td>
-                            <td class="colLast"><code><strong><a href="#updateOne(MongoCollection, Map, Map, Map)">updateOne</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#updateOne(MongoCollection, Map, Map, Map)">updateOne</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.UpdateResult</code></td>
-                            <td class="colLast"><code><strong><a href="#updateOne(MongoCollection, Map, Map, UpdateOptions)">updateOne</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, <a href='../../../../../../UpdateOptions.html'>UpdateOptions</a> updateOptions)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#updateOne(MongoCollection, Map, Map, com.mongodb.client.model.UpdateOptions)">updateOne</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, com.mongodb.client.model.UpdateOptions updateOptions)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.UpdateResult</code></td>
-                            <td class="colLast"><code><strong><a href="#updateOne(MongoCollection, Map, List)">updateOne</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#updateOne(MongoCollection, Map, List)">updateOne</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.UpdateResult</code></td>
-                            <td class="colLast"><code><strong><a href="#updateOne(MongoCollection, Map, List, Map)">updateOne</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#updateOne(MongoCollection, Map, List, Map)">updateOne</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;com.mongodb.client.result.UpdateResult</code></td>
-                            <td class="colLast"><code><strong><a href="#updateOne(MongoCollection, Map, List, UpdateOptions)">updateOne</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update, <a href='../../../../../../UpdateOptions.html'>UpdateOptions</a> updateOptions)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#updateOne(MongoCollection, Map, List, com.mongodb.client.model.UpdateOptions)">updateOne</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update, com.mongodb.client.model.UpdateOptions updateOptions)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;ChangeStreamIterable&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#watch(MongoCollection, List)">watch</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; pipeline)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.ChangeStreamIterable&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#watch(MongoCollection, List)">watch</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; pipeline)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
-                            <td class="colLast"><code>static&nbsp;ChangeStreamIterable&lt;T&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#watch(MongoCollection, List, Class)">watch</a></strong>(MongoCollection&lt;Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; pipeline, java.lang.Class&lt;T&gt; resultClass)</code><br></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.ChangeStreamIterable&lt;T&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#watch(MongoCollection, List, Class)">watch</a></strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; pipeline, java.lang.Class&lt;T&gt; resultClass)</code><br></td>
                         </tr>
                         
                     </table>
@@ -811,7 +811,7 @@ extends java.lang.Object</pre>
                         <a name="aggregate(MongoCollection, List)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;AggregateIterable&lt;Document&gt; <strong>aggregate</strong>(MongoCollection&lt;Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; pipeline)</h4>
+                                <h4>static&nbsp;com.mongodb.client.AggregateIterable&lt;org.bson.Document&gt; <strong>aggregate</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; pipeline)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -819,7 +819,7 @@ extends java.lang.Object</pre>
                         <a name="aggregate(MongoCollection, List, Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; static&nbsp;AggregateIterable&lt;T&gt; <strong>aggregate</strong>(MongoCollection&lt;Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; pipeline, java.lang.Class&lt;T&gt; resultClass)</h4>
+                                <h4>&lt;T&gt; static&nbsp;com.mongodb.client.AggregateIterable&lt;T&gt; <strong>aggregate</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; pipeline, java.lang.Class&lt;T&gt; resultClass)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -832,10 +832,10 @@ extends java.lang.Object</pre>
                             </li>
                         </ul>
                     
-                        <a name="asType(FindIterable, Class)"><!-- --></a>
+                        <a name="asType(com.mongodb.client.FindIterable, Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; static&nbsp;T <strong>asType</strong>(<a href='../../../../../../FindIterable.html'>FindIterable</a> iterable, java.lang.Class&lt;T&gt; cls)</h4>
+                                <h4>&lt;T&gt; static&nbsp;T <strong>asType</strong>(com.mongodb.client.FindIterable iterable, java.lang.Class&lt;T&gt; cls)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -843,7 +843,7 @@ extends java.lang.Object</pre>
                         <a name="count(MongoCollection)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;long <strong>count</strong>(MongoCollection&lt;Document&gt; collection)</h4>
+                                <h4>static&nbsp;long <strong>count</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection)</h4>
                                 <p>*********** MongoCollection Extensions ************</p>
                             </li>
                         </ul>
@@ -851,7 +851,7 @@ extends java.lang.Object</pre>
                         <a name="count(MongoCollection, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;long <strong>count</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</h4>
+                                <h4>static&nbsp;long <strong>count</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -859,7 +859,7 @@ extends java.lang.Object</pre>
                         <a name="count(MongoCollection, Map, com.mongodb.ReadPreference)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;long <strong>count</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, com.mongodb.ReadPreference readPreference)</h4>
+                                <h4>static&nbsp;long <strong>count</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, com.mongodb.ReadPreference readPreference)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -867,7 +867,7 @@ extends java.lang.Object</pre>
                         <a name="count(MongoCollection, java.util.Map, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;long <strong>count</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
+                                <h4>static&nbsp;long <strong>count</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -875,7 +875,7 @@ extends java.lang.Object</pre>
                         <a name="createAndGetCollection(com.mongodb.client.MongoDatabase, java.lang.String, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;MongoCollection&lt;Document&gt; <strong>createAndGetCollection</strong>(com.mongodb.client.MongoDatabase db, java.lang.String collectionName, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
+                                <h4>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; <strong>createAndGetCollection</strong>(com.mongodb.client.MongoDatabase db, java.lang.String collectionName, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -883,7 +883,7 @@ extends java.lang.Object</pre>
                         <a name="createIndex(MongoCollection, Map, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;void <strong>createIndex</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; keys, java.lang.String name)</h4>
+                                <h4>static&nbsp;void <strong>createIndex</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; keys, java.lang.String name)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -891,7 +891,7 @@ extends java.lang.Object</pre>
                         <a name="createIndex(MongoCollection, Map, java.lang.String, boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;void <strong>createIndex</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; keys, java.lang.String name, boolean unique)</h4>
+                                <h4>static&nbsp;void <strong>createIndex</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; keys, java.lang.String name, boolean unique)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -899,15 +899,15 @@ extends java.lang.Object</pre>
                         <a name="createIndex(MongoCollection, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;void <strong>createIndex</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; keys)</h4>
+                                <h4>static&nbsp;void <strong>createIndex</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; keys)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="createIndex(MongoCollection, Map, IndexOptions)"><!-- --></a>
+                        <a name="createIndex(MongoCollection, Map, com.mongodb.client.model.IndexOptions)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;void <strong>createIndex</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; keys, <a href='../../../../../../IndexOptions.html'>IndexOptions</a> options)</h4>
+                                <h4>static&nbsp;void <strong>createIndex</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; keys, com.mongodb.client.model.IndexOptions options)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -915,7 +915,7 @@ extends java.lang.Object</pre>
                         <a name="createIndex(MongoCollection, Map, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;void <strong>createIndex</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; keys, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
+                                <h4>static&nbsp;void <strong>createIndex</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; keys, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -923,7 +923,7 @@ extends java.lang.Object</pre>
                         <a name="deleteMany(MongoCollection, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.DeleteResult <strong>deleteMany</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.DeleteResult <strong>deleteMany</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -931,7 +931,7 @@ extends java.lang.Object</pre>
                         <a name="deleteMany(MongoCollection, Map, com.mongodb.WriteConcern)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.DeleteResult <strong>deleteMany</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, com.mongodb.WriteConcern writeConcern)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.DeleteResult <strong>deleteMany</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, com.mongodb.WriteConcern writeConcern)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -939,7 +939,7 @@ extends java.lang.Object</pre>
                         <a name="deleteMany(MongoCollection, Map, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.DeleteResult <strong>deleteMany</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.DeleteResult <strong>deleteMany</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -947,7 +947,7 @@ extends java.lang.Object</pre>
                         <a name="deleteOne(MongoCollection, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.DeleteResult <strong>deleteOne</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.DeleteResult <strong>deleteOne</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -955,7 +955,7 @@ extends java.lang.Object</pre>
                         <a name="deleteOne(MongoCollection, Map, com.mongodb.WriteConcern)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.DeleteResult <strong>deleteOne</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, com.mongodb.WriteConcern writeConcern)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.DeleteResult <strong>deleteOne</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, com.mongodb.WriteConcern writeConcern)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -963,7 +963,7 @@ extends java.lang.Object</pre>
                         <a name="deleteOne(MongoCollection, Map, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.DeleteResult <strong>deleteOne</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.DeleteResult <strong>deleteOne</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -971,7 +971,7 @@ extends java.lang.Object</pre>
                         <a name="distinct(MongoCollection, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;DistinctIterable&lt;Document&gt; <strong>distinct</strong>(MongoCollection&lt;Document&gt; collection, java.lang.String fieldName)</h4>
+                                <h4>static&nbsp;com.mongodb.client.DistinctIterable&lt;org.bson.Document&gt; <strong>distinct</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.lang.String fieldName)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -979,7 +979,7 @@ extends java.lang.Object</pre>
                         <a name="distinct(MongoCollection, java.lang.String, com.mongodb.ReadPreference)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;DistinctIterable&lt;Document&gt; <strong>distinct</strong>(MongoCollection&lt;Document&gt; collection, java.lang.String fieldName, com.mongodb.ReadPreference readPreference)</h4>
+                                <h4>static&nbsp;com.mongodb.client.DistinctIterable&lt;org.bson.Document&gt; <strong>distinct</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.lang.String fieldName, com.mongodb.ReadPreference readPreference)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -987,7 +987,7 @@ extends java.lang.Object</pre>
                         <a name="distinct(MongoCollection, java.lang.String, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;DistinctIterable&lt;Document&gt; <strong>distinct</strong>(MongoCollection&lt;Document&gt; collection, java.lang.String fieldName, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</h4>
+                                <h4>static&nbsp;com.mongodb.client.DistinctIterable&lt;org.bson.Document&gt; <strong>distinct</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.lang.String fieldName, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -995,7 +995,7 @@ extends java.lang.Object</pre>
                         <a name="distinct(MongoCollection, java.lang.String, Map, Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; static&nbsp;DistinctIterable&lt;T&gt; <strong>distinct</strong>(MongoCollection&lt;Document&gt; collection, java.lang.String fieldName, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.lang.Class&lt;T&gt; resultClass)</h4>
+                                <h4>&lt;T&gt; static&nbsp;com.mongodb.client.DistinctIterable&lt;T&gt; <strong>distinct</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.lang.String fieldName, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.lang.Class&lt;T&gt; resultClass)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1003,7 +1003,7 @@ extends java.lang.Object</pre>
                         <a name="distinct(MongoCollection, java.lang.String, Map, com.mongodb.ReadPreference)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;DistinctIterable&lt;Document&gt; <strong>distinct</strong>(MongoCollection&lt;Document&gt; collection, java.lang.String fieldName, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, com.mongodb.ReadPreference readPreference)</h4>
+                                <h4>static&nbsp;com.mongodb.client.DistinctIterable&lt;org.bson.Document&gt; <strong>distinct</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.lang.String fieldName, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, com.mongodb.ReadPreference readPreference)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1011,7 +1011,7 @@ extends java.lang.Object</pre>
                         <a name="dropIndex(MongoCollection, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;void <strong>dropIndex</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; index)</h4>
+                                <h4>static&nbsp;void <strong>dropIndex</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; index)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1019,15 +1019,15 @@ extends java.lang.Object</pre>
                         <a name="dropIndex(MongoCollection, Map, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;void <strong>dropIndex</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; index, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
+                                <h4>static&nbsp;void <strong>dropIndex</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; index, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="dropIndex(MongoCollection, Map, DropIndexOptions)"><!-- --></a>
+                        <a name="dropIndex(MongoCollection, Map, com.mongodb.client.model.DropIndexOptions)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;void <strong>dropIndex</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; index, <a href='../../../../../../DropIndexOptions.html'>DropIndexOptions</a> dropIndexOptions)</h4>
+                                <h4>static&nbsp;void <strong>dropIndex</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; index, com.mongodb.client.model.DropIndexOptions dropIndexOptions)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1035,7 +1035,7 @@ extends java.lang.Object</pre>
                         <a name="filter(FindIterable, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;FindIterable&lt;Document&gt; <strong>filter</strong>(FindIterable&lt;Document&gt; iterable, @com.mongodb.lang.Nullable java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter)</h4>
+                                <h4>static&nbsp;com.mongodb.client.FindIterable&lt;org.bson.Document&gt; <strong>filter</strong>(com.mongodb.client.FindIterable&lt;org.bson.Document&gt; iterable, @com.mongodb.lang.Nullable java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter)</h4>
                                 <p>*********** FindIterable Extensions ************</p>
                             </li>
                         </ul>
@@ -1043,7 +1043,7 @@ extends java.lang.Object</pre>
                         <a name="filter(DistinctIterable, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;DistinctIterable&lt;Document&gt; <strong>filter</strong>(DistinctIterable&lt;Document&gt; iterable, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter)</h4>
+                                <h4>static&nbsp;com.mongodb.client.DistinctIterable&lt;org.bson.Document&gt; <strong>filter</strong>(com.mongodb.client.DistinctIterable&lt;org.bson.Document&gt; iterable, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter)</h4>
                                 <p>*********** DistinctIterable Extensions ************</p>
                             </li>
                         </ul>
@@ -1051,7 +1051,7 @@ extends java.lang.Object</pre>
                         <a name="find(MongoCollection, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;FindIterable&lt;Document&gt; <strong>find</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</h4>
+                                <h4>static&nbsp;com.mongodb.client.FindIterable&lt;org.bson.Document&gt; <strong>find</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1059,7 +1059,7 @@ extends java.lang.Object</pre>
                         <a name="find(MongoCollection, Map, Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; static&nbsp;FindIterable&lt;T&gt; <strong>find</strong>(MongoCollection&lt;T&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.lang.Class&lt;T&gt; type)</h4>
+                                <h4>&lt;T&gt; static&nbsp;com.mongodb.client.FindIterable&lt;T&gt; <strong>find</strong>(com.mongodb.client.MongoCollection&lt;T&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.lang.Class&lt;T&gt; type)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1067,7 +1067,7 @@ extends java.lang.Object</pre>
                         <a name="find(MongoCollection, Map, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;FindIterable&lt;Document&gt; <strong>find</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection)</h4>
+                                <h4>static&nbsp;com.mongodb.client.FindIterable&lt;org.bson.Document&gt; <strong>find</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1075,7 +1075,7 @@ extends java.lang.Object</pre>
                         <a name="findOne(MongoCollection, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.bson.Document <strong>findOne</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</h4>
+                                <h4>static&nbsp;org.bson.Document <strong>findOne</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1083,7 +1083,7 @@ extends java.lang.Object</pre>
                         <a name="findOne(MongoCollection, org.bson.types.ObjectId)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.bson.Document <strong>findOne</strong>(MongoCollection&lt;Document&gt; collection, org.bson.types.ObjectId id)</h4>
+                                <h4>static&nbsp;org.bson.Document <strong>findOne</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, org.bson.types.ObjectId id)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1091,7 +1091,7 @@ extends java.lang.Object</pre>
                         <a name="findOne(MongoCollection, java.lang.CharSequence)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.bson.Document <strong>findOne</strong>(MongoCollection&lt;Document&gt; collection, java.lang.CharSequence id)</h4>
+                                <h4>static&nbsp;org.bson.Document <strong>findOne</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.lang.CharSequence id)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1099,7 +1099,7 @@ extends java.lang.Object</pre>
                         <a name="findOne(MongoCollection, java.io.Serializable, Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; static&nbsp;T <strong>findOne</strong>(MongoCollection&lt;Document&gt; collection, java.io.Serializable id, java.lang.Class&lt;T&gt; type)</h4>
+                                <h4>&lt;T&gt; static&nbsp;T <strong>findOne</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.io.Serializable id, java.lang.Class&lt;T&gt; type)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1107,7 +1107,7 @@ extends java.lang.Object</pre>
                         <a name="findOne(MongoCollection, Map, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.bson.Document <strong>findOne</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection)</h4>
+                                <h4>static&nbsp;org.bson.Document <strong>findOne</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1115,7 +1115,7 @@ extends java.lang.Object</pre>
                         <a name="findOne(MongoCollection, Map, Map, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.bson.Document <strong>findOne</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; sort)</h4>
+                                <h4>static&nbsp;org.bson.Document <strong>findOne</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; sort)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1123,7 +1123,7 @@ extends java.lang.Object</pre>
                         <a name="findOne(MongoCollection)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.bson.Document <strong>findOne</strong>(MongoCollection&lt;Document&gt; collection)</h4>
+                                <h4>static&nbsp;org.bson.Document <strong>findOne</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1131,7 +1131,7 @@ extends java.lang.Object</pre>
                         <a name="findOne(MongoCollection, Map, Map, com.mongodb.ReadPreference)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.bson.Document <strong>findOne</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection, com.mongodb.ReadPreference readPreference)</h4>
+                                <h4>static&nbsp;org.bson.Document <strong>findOne</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection, com.mongodb.ReadPreference readPreference)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1139,7 +1139,7 @@ extends java.lang.Object</pre>
                         <a name="findOne(MongoCollection, Map, Map, Map, com.mongodb.ReadPreference)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.bson.Document <strong>findOne</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; sort, com.mongodb.ReadPreference readPreference)</h4>
+                                <h4>static&nbsp;org.bson.Document <strong>findOne</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; sort, com.mongodb.ReadPreference readPreference)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1147,7 +1147,7 @@ extends java.lang.Object</pre>
                         <a name="findOneAndDelete(MongoCollection, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.bson.Document <strong>findOneAndDelete</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter)</h4>
+                                <h4>static&nbsp;org.bson.Document <strong>findOneAndDelete</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1155,7 +1155,7 @@ extends java.lang.Object</pre>
                         <a name="findOneAndDelete(MongoCollection, Map, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.bson.Document <strong>findOneAndDelete</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
+                                <h4>static&nbsp;org.bson.Document <strong>findOneAndDelete</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1163,7 +1163,7 @@ extends java.lang.Object</pre>
                         <a name="findOneAndReplace(MongoCollection, Map, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.bson.Document <strong>findOneAndReplace</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; replacement)</h4>
+                                <h4>static&nbsp;org.bson.Document <strong>findOneAndReplace</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; replacement)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1171,7 +1171,7 @@ extends java.lang.Object</pre>
                         <a name="findOneAndReplace(MongoCollection, Map, Map, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.bson.Document <strong>findOneAndReplace</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; replacement, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
+                                <h4>static&nbsp;org.bson.Document <strong>findOneAndReplace</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; replacement, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1179,7 +1179,7 @@ extends java.lang.Object</pre>
                         <a name="findOneAndUpdate(MongoCollection, Map, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.bson.Document <strong>findOneAndUpdate</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update)</h4>
+                                <h4>static&nbsp;org.bson.Document <strong>findOneAndUpdate</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1187,7 +1187,7 @@ extends java.lang.Object</pre>
                         <a name="findOneAndUpdate(MongoCollection, Map, Map, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.bson.Document <strong>findOneAndUpdate</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
+                                <h4>static&nbsp;org.bson.Document <strong>findOneAndUpdate</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1196,14 +1196,14 @@ extends java.lang.Object</pre>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>static&nbsp;java.lang.Object <strong>getAt</strong>(com.mongodb.client.MongoDatabase db, java.lang.String name)</h4>
-                                <p> Adds a method to return a collection using the dot syntax <DL><DT><B>Parameters:</B></DT><DD><code>db</code> -  The database object</DD><DD><code>name</code> -  The collection name</DD></DL><DL><DT><B>Returns:</B></DT><DD>A MongoCollection</DD></DL></p>
+                                <p> Adds a method to return a collection using the dot syntax <DL><DT><B>Parameters:</B></DT><DD><code>db</code> -  The database object</DD><DD><code>name</code> -  The collection name</DD></DL><DL><DT><B>Returns:</B></DT><DD>A com.mongodb.client.MongoCollection</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="getCollectionNames(com.mongodb.client.MongoDatabase)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;MongoIterable&lt;java.lang.String&gt; <strong>getCollectionNames</strong>(com.mongodb.client.MongoDatabase db)</h4>
+                                <h4>static&nbsp;com.mongodb.client.MongoIterable&lt;java.lang.String&gt; <strong>getCollectionNames</strong>(com.mongodb.client.MongoDatabase db)</h4>
                                 <p>*********** MongoDatabase Extensions ************</p>
                             </li>
                         </ul>
@@ -1211,7 +1211,7 @@ extends java.lang.Object</pre>
                         <a name="getCount(MongoCollection, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;long <strong>getCount</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</h4>
+                                <h4>static&nbsp;long <strong>getCount</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1219,7 +1219,7 @@ extends java.lang.Object</pre>
                         <a name="getCount(MongoCollection, Map, com.mongodb.ReadPreference)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;long <strong>getCount</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, com.mongodb.ReadPreference readPreference)</h4>
+                                <h4>static&nbsp;long <strong>getCount</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, com.mongodb.ReadPreference readPreference)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1227,7 +1227,7 @@ extends java.lang.Object</pre>
                         <a name="getCount(MongoCollection, Map, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;long <strong>getCount</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
+                                <h4>static&nbsp;long <strong>getCount</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1235,7 +1235,7 @@ extends java.lang.Object</pre>
                         <a name="getName(MongoCollection)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.lang.String <strong>getName</strong>(MongoCollection&lt;Document&gt; collection)</h4>
+                                <h4>static&nbsp;java.lang.String <strong>getName</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1243,7 +1243,7 @@ extends java.lang.Object</pre>
                         <a name="hint(FindIterable, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;FindIterable&lt;Document&gt; <strong>hint</strong>(FindIterable&lt;Document&gt; iterable, @com.mongodb.lang.Nullable java.util.Map&lt;java.lang.String, java.lang.Object&gt; hint)</h4>
+                                <h4>static&nbsp;com.mongodb.client.FindIterable&lt;org.bson.Document&gt; <strong>hint</strong>(com.mongodb.client.FindIterable&lt;org.bson.Document&gt; iterable, @com.mongodb.lang.Nullable java.util.Map&lt;java.lang.String, java.lang.Object&gt; hint)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1251,7 +1251,7 @@ extends java.lang.Object</pre>
                         <a name="insert(MongoCollection, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;void <strong>insert</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; document)</h4>
+                                <h4>static&nbsp;void <strong>insert</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; document)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1259,7 +1259,7 @@ extends java.lang.Object</pre>
                         <a name="insert(MongoCollection, Map, com.mongodb.WriteConcern)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;MongoCollection&lt;Document&gt; <strong>insert</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; document, com.mongodb.WriteConcern writeConcern)</h4>
+                                <h4>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; <strong>insert</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; document, com.mongodb.WriteConcern writeConcern)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1267,7 +1267,7 @@ extends java.lang.Object</pre>
                         <a name="insert(MongoCollection, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;void <strong>insert</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt;[] documents)</h4>
+                                <h4>static&nbsp;void <strong>insert</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt;[] documents)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1275,7 +1275,7 @@ extends java.lang.Object</pre>
                         <a name="insert(MongoCollection, com.mongodb.WriteConcern, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;MongoCollection&lt;Document&gt; <strong>insert</strong>(MongoCollection&lt;Document&gt; collection, com.mongodb.WriteConcern writeConcern, java.util.Map&lt;java.lang.String, java.lang.Object&gt;[] documents)</h4>
+                                <h4>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; <strong>insert</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, com.mongodb.WriteConcern writeConcern, java.util.Map&lt;java.lang.String, java.lang.Object&gt;[] documents)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1283,7 +1283,7 @@ extends java.lang.Object</pre>
                         <a name="insert(MongoCollection, Map, com.mongodb.WriteConcern)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;MongoCollection&lt;Document&gt; <strong>insert</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt;[] documents, com.mongodb.WriteConcern writeConcern)</h4>
+                                <h4>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; <strong>insert</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt;[] documents, com.mongodb.WriteConcern writeConcern)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1291,7 +1291,7 @@ extends java.lang.Object</pre>
                         <a name="insert(MongoCollection, List)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;MongoCollection&lt;Document&gt; <strong>insert</strong>(MongoCollection&lt;Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; documents)</h4>
+                                <h4>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; <strong>insert</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; documents)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1299,23 +1299,23 @@ extends java.lang.Object</pre>
                         <a name="insert(MongoCollection, List, com.mongodb.WriteConcern)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;MongoCollection&lt;Document&gt; <strong>insert</strong>(MongoCollection&lt;Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; documents, com.mongodb.WriteConcern aWriteConcern)</h4>
+                                <h4>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; <strong>insert</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; documents, com.mongodb.WriteConcern aWriteConcern)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="insert(MongoCollection, List, com.mongodb.WriteConcern, InsertManyOptions)"><!-- --></a>
+                        <a name="insert(MongoCollection, List, com.mongodb.WriteConcern, com.mongodb.client.model.InsertManyOptions)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;MongoCollection&lt;Document&gt; <strong>insert</strong>(MongoCollection&lt;Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; documents, com.mongodb.WriteConcern writeConcern, <a href='../../../../../../InsertManyOptions.html'>InsertManyOptions</a> insertOptions)</h4>
+                                <h4>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; <strong>insert</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; documents, com.mongodb.WriteConcern writeConcern, com.mongodb.client.model.InsertManyOptions insertOptions)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="insert(MongoCollection, List, InsertManyOptions)"><!-- --></a>
+                        <a name="insert(MongoCollection, List, com.mongodb.client.model.InsertManyOptions)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;MongoCollection&lt;Document&gt; <strong>insert</strong>(MongoCollection&lt;Document&gt; collection, java.util.List&lt;? extends java.util.Map&gt; documents, <a href='../../../../../../InsertManyOptions.html'>InsertManyOptions</a> insertOptions)</h4>
+                                <h4>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; <strong>insert</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.List&lt;? extends java.util.Map&gt; documents, com.mongodb.client.model.InsertManyOptions insertOptions)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1323,7 +1323,7 @@ extends java.lang.Object</pre>
                         <a name="leftShift(MongoCollection, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;MongoCollection&lt;Document&gt; <strong>leftShift</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt;[] documents)</h4>
+                                <h4>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; <strong>leftShift</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt;[] documents)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1331,7 +1331,7 @@ extends java.lang.Object</pre>
                         <a name="max(FindIterable, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;FindIterable&lt;Document&gt; <strong>max</strong>(FindIterable&lt;Document&gt; iterable, @com.mongodb.lang.Nullable java.util.Map&lt;java.lang.String, java.lang.Object&gt; max)</h4>
+                                <h4>static&nbsp;com.mongodb.client.FindIterable&lt;org.bson.Document&gt; <strong>max</strong>(com.mongodb.client.FindIterable&lt;org.bson.Document&gt; iterable, @com.mongodb.lang.Nullable java.util.Map&lt;java.lang.String, java.lang.Object&gt; max)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1339,7 +1339,7 @@ extends java.lang.Object</pre>
                         <a name="min(FindIterable, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;FindIterable&lt;Document&gt; <strong>min</strong>(FindIterable&lt;Document&gt; iterable, @com.mongodb.lang.Nullable java.util.Map&lt;java.lang.String, java.lang.Object&gt; min)</h4>
+                                <h4>static&nbsp;com.mongodb.client.FindIterable&lt;org.bson.Document&gt; <strong>min</strong>(com.mongodb.client.FindIterable&lt;org.bson.Document&gt; iterable, @com.mongodb.lang.Nullable java.util.Map&lt;java.lang.String, java.lang.Object&gt; min)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1347,7 +1347,7 @@ extends java.lang.Object</pre>
                         <a name="projection(FindIterable, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;FindIterable&lt;Document&gt; <strong>projection</strong>(FindIterable&lt;Document&gt; iterable, @com.mongodb.lang.Nullable java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection)</h4>
+                                <h4>static&nbsp;com.mongodb.client.FindIterable&lt;org.bson.Document&gt; <strong>projection</strong>(com.mongodb.client.FindIterable&lt;org.bson.Document&gt; iterable, @com.mongodb.lang.Nullable java.util.Map&lt;java.lang.String, java.lang.Object&gt; projection)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1356,14 +1356,14 @@ extends java.lang.Object</pre>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>static&nbsp;java.lang.Object <strong>propertyMissing</strong>(com.mongodb.client.MongoDatabase db, java.lang.String name)</h4>
-                                <p> Adds a method to return a collection using the dot syntax <DL><DT><B>Parameters:</B></DT><DD><code>db</code> -  The database object</DD><DD><code>name</code> -  The collection name</DD></DL><DL><DT><B>Returns:</B></DT><DD>A MongoCollection</DD></DL></p>
+                                <p> Adds a method to return a collection using the dot syntax <DL><DT><B>Parameters:</B></DT><DD><code>db</code> -  The database object</DD><DD><code>name</code> -  The collection name</DD></DL><DL><DT><B>Returns:</B></DT><DD>A com.mongodb.client.MongoCollection</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="remove(MongoCollection, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.DeleteResult <strong>remove</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.DeleteResult <strong>remove</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1371,7 +1371,7 @@ extends java.lang.Object</pre>
                         <a name="replaceOne(MongoCollection, Map, org.bson.Document)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>replaceOne</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, org.bson.Document replacement)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>replaceOne</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, org.bson.Document replacement)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1379,7 +1379,7 @@ extends java.lang.Object</pre>
                         <a name="replaceOne(MongoCollection, Map, org.bson.Document, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>replaceOne</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, org.bson.Document replacement, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>replaceOne</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, org.bson.Document replacement, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1387,7 +1387,7 @@ extends java.lang.Object</pre>
                         <a name="rightShift(MongoCollection, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;MongoCollection&lt;Document&gt; <strong>rightShift</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</h4>
+                                <h4>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; <strong>rightShift</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; query)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1395,7 +1395,7 @@ extends java.lang.Object</pre>
                         <a name="save(MongoCollection, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;<a href='../../../../../../org/grails/datastore/mapping/mongo/config/MongoCollection.html'>MongoCollection</a> <strong>save</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; document)</h4>
+                                <h4>static&nbsp;com.mongodb.client.MongoCollection <strong>save</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; document)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1403,7 +1403,7 @@ extends java.lang.Object</pre>
                         <a name="save(MongoCollection, Map, com.mongodb.WriteConcern)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;<a href='../../../../../../org/grails/datastore/mapping/mongo/config/MongoCollection.html'>MongoCollection</a> <strong>save</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; document, com.mongodb.WriteConcern writeConcern)</h4>
+                                <h4>static&nbsp;com.mongodb.client.MongoCollection <strong>save</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; document, com.mongodb.WriteConcern writeConcern)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1411,7 +1411,7 @@ extends java.lang.Object</pre>
                         <a name="sort(FindIterable, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;FindIterable&lt;Document&gt; <strong>sort</strong>(FindIterable&lt;Document&gt; iterable, @com.mongodb.lang.Nullable java.util.Map&lt;java.lang.String, java.lang.Object&gt; sort)</h4>
+                                <h4>static&nbsp;com.mongodb.client.FindIterable&lt;org.bson.Document&gt; <strong>sort</strong>(com.mongodb.client.FindIterable&lt;org.bson.Document&gt; iterable, @com.mongodb.lang.Nullable java.util.Map&lt;java.lang.String, java.lang.Object&gt; sort)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1425,10 +1425,10 @@ static&nbsp;com.mongodb.DBObject <strong>toDBObject</strong>(org.bson.Document d
                             </li>
                         </ul>
                     
-                        <a name="toList(FindIterable, Class)"><!-- --></a>
+                        <a name="toList(com.mongodb.client.FindIterable, Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; static&nbsp;java.util.List&lt;T&gt; <strong>toList</strong>(<a href='../../../../../../FindIterable.html'>FindIterable</a> iterable, java.lang.Class&lt;T&gt; cls)</h4>
+                                <h4>&lt;T&gt; static&nbsp;java.util.List&lt;T&gt; <strong>toList</strong>(com.mongodb.client.FindIterable iterable, java.lang.Class&lt;T&gt; cls)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1436,7 +1436,7 @@ static&nbsp;com.mongodb.DBObject <strong>toDBObject</strong>(org.bson.Document d
                         <a name="update(MongoCollection, Map, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>update</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>update</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1444,15 +1444,15 @@ static&nbsp;com.mongodb.DBObject <strong>toDBObject</strong>(org.bson.Document d
                         <a name="update(MongoCollection, Map, Map, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>update</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>update</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="update(MongoCollection, Map, Map, UpdateOptions)"><!-- --></a>
+                        <a name="update(MongoCollection, Map, Map, com.mongodb.client.model.UpdateOptions)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>update</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, <a href='../../../../../../UpdateOptions.html'>UpdateOptions</a> updateOptions)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>update</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, com.mongodb.client.model.UpdateOptions updateOptions)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1460,7 +1460,7 @@ static&nbsp;com.mongodb.DBObject <strong>toDBObject</strong>(org.bson.Document d
                         <a name="updateMany(MongoCollection, Map, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateMany</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateMany</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1468,15 +1468,15 @@ static&nbsp;com.mongodb.DBObject <strong>toDBObject</strong>(org.bson.Document d
                         <a name="updateMany(MongoCollection, Map, Map, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateMany</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateMany</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="updateMany(MongoCollection, Map, Map, UpdateOptions)"><!-- --></a>
+                        <a name="updateMany(MongoCollection, Map, Map, com.mongodb.client.model.UpdateOptions)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateMany</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, <a href='../../../../../../UpdateOptions.html'>UpdateOptions</a> updateOptions)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateMany</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, com.mongodb.client.model.UpdateOptions updateOptions)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1484,7 +1484,7 @@ static&nbsp;com.mongodb.DBObject <strong>toDBObject</strong>(org.bson.Document d
                         <a name="updateMany(MongoCollection, Map, List)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateMany</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateMany</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1492,15 +1492,15 @@ static&nbsp;com.mongodb.DBObject <strong>toDBObject</strong>(org.bson.Document d
                         <a name="updateMany(MongoCollection, Map, List, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateMany</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateMany</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="updateMany(MongoCollection, Map, List, UpdateOptions)"><!-- --></a>
+                        <a name="updateMany(MongoCollection, Map, List, com.mongodb.client.model.UpdateOptions)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateMany</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update, <a href='../../../../../../UpdateOptions.html'>UpdateOptions</a> updateOptions)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateMany</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update, com.mongodb.client.model.UpdateOptions updateOptions)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1508,7 +1508,7 @@ static&nbsp;com.mongodb.DBObject <strong>toDBObject</strong>(org.bson.Document d
                         <a name="updateOne(MongoCollection, Map, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateOne</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateOne</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1516,15 +1516,15 @@ static&nbsp;com.mongodb.DBObject <strong>toDBObject</strong>(org.bson.Document d
                         <a name="updateOne(MongoCollection, Map, Map, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateOne</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateOne</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="updateOne(MongoCollection, Map, Map, UpdateOptions)"><!-- --></a>
+                        <a name="updateOne(MongoCollection, Map, Map, com.mongodb.client.model.UpdateOptions)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateOne</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, <a href='../../../../../../UpdateOptions.html'>UpdateOptions</a> updateOptions)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateOne</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.Map&lt;java.lang.String, java.lang.Object&gt; update, com.mongodb.client.model.UpdateOptions updateOptions)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1532,7 +1532,7 @@ static&nbsp;com.mongodb.DBObject <strong>toDBObject</strong>(org.bson.Document d
                         <a name="updateOne(MongoCollection, Map, List)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateOne</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateOne</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1540,15 +1540,15 @@ static&nbsp;com.mongodb.DBObject <strong>toDBObject</strong>(org.bson.Document d
                         <a name="updateOne(MongoCollection, Map, List, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateOne</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateOne</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update, java.util.Map&lt;java.lang.String, java.lang.Object&gt; options)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="updateOne(MongoCollection, Map, List, UpdateOptions)"><!-- --></a>
+                        <a name="updateOne(MongoCollection, Map, List, com.mongodb.client.model.UpdateOptions)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateOne</strong>(MongoCollection&lt;Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update, <a href='../../../../../../UpdateOptions.html'>UpdateOptions</a> updateOptions)</h4>
+                                <h4>static&nbsp;com.mongodb.client.result.UpdateResult <strong>updateOne</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.Map&lt;java.lang.String, java.lang.Object&gt; filter, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; update, com.mongodb.client.model.UpdateOptions updateOptions)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1556,7 +1556,7 @@ static&nbsp;com.mongodb.DBObject <strong>toDBObject</strong>(org.bson.Document d
                         <a name="watch(MongoCollection, List)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;ChangeStreamIterable&lt;Document&gt; <strong>watch</strong>(MongoCollection&lt;Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; pipeline)</h4>
+                                <h4>static&nbsp;com.mongodb.client.ChangeStreamIterable&lt;org.bson.Document&gt; <strong>watch</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; pipeline)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1564,7 +1564,7 @@ static&nbsp;com.mongodb.DBObject <strong>toDBObject</strong>(org.bson.Document d
                         <a name="watch(MongoCollection, List, Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; static&nbsp;ChangeStreamIterable&lt;T&gt; <strong>watch</strong>(MongoCollection&lt;Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; pipeline, java.lang.Class&lt;T&gt; resultClass)</h4>
+                                <h4>&lt;T&gt; static&nbsp;com.mongodb.client.ChangeStreamIterable&lt;T&gt; <strong>watch</strong>(com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; collection, java.util.List&lt;? extends java.util.Map&lt;java.lang.String, java.lang.Object&gt;&gt; pipeline, java.lang.Class&lt;T&gt; resultClass)</h4>
                                 <p></p>
                             </li>
                         </ul>

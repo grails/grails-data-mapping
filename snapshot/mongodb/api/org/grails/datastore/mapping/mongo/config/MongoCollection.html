@@ -167,13 +167,13 @@ extends java.util.Collection</pre>
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong><a href='../../../../../../grails/gorm/services/Query.Order.html'>Order</a></strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong><a href='../../../../../../org/grails/datastore/mapping/query/Query.Order.html'>Order</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#sort">sort</a></code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code><strong>com.mongodb.WriteConcern</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#writeConcern">writeConcern</a></code><br> <DL><DT><B>Returns:</B></DT><DD>The WriteConcern for the collection</DD></DL></td>
+                            <td class="colLast"><code><a href="#writeConcern">writeConcern</a></code><br> <DL><DT><B>Returns:</B></DT><DD>The com.mongodb.WriteConcern for the collection</DD></DL></td>
                         </tr>
                         
                     </table>
@@ -244,13 +244,13 @@ extends java.util.Collection</pre>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../../../grails/gorm/services/Query.Order.html'>Order</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/query/Query.Order.html'>Order</a></code></td>
                             <td class="colLast"><code><strong><a href="#getSort()">getSort</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>Entity&lt;Attribute&gt;</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/config/Entity.html' title='Entity'>Entity</a>&lt;<a href='../../../../../../org/grails/datastore/mapping/document/config/Attribute.html' title='Attribute'>Attribute</a>&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#id(groovy.lang.Closure)">id</a></strong>(groovy.lang.Closure identityConfig)</code><br></td>
                         </tr>
                         
@@ -274,7 +274,7 @@ extends java.util.Collection</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../../../grails/gorm/Entity.html'>Entity</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></code></td>
                             <td class="colLast"><code><strong><a href="#property(java.lang.String, groovy.lang.Closure)">property</a></strong>(java.lang.String name, groovy.lang.Closure propertyConfig)</code><br></td>
                         </tr>
                         
@@ -305,7 +305,7 @@ extends java.util.Collection</pre>
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/mongo/config/MongoCollection.html'>MongoCollection</a></code></td>
-                            <td class="colLast"><code><strong><a href="#sort(grails.gorm.services.Query.Order)">sort</a></strong>(<a href='../../../../../../grails/gorm/services/Query.Order.html'>Order</a> sort)</code><br>Sets the default sorting</td>
+                            <td class="colLast"><code><strong><a href="#sort(org.grails.datastore.mapping.query.Query.Order)">sort</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/query/Query.Order.html'>Order</a> sort)</code><br>Sets the default sorting</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -316,7 +316,7 @@ extends java.util.Collection</pre>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../../../grails/gorm/Entity.html'>Entity</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a></code></td>
                             <td class="colLast"><code><strong><a href="#version(groovy.lang.Closure)">version</a></strong>(groovy.lang.Closure versionConfig)</code><br></td>
                         </tr>
                         
@@ -374,7 +374,7 @@ extends java.util.Collection</pre>
                         <a name="sort"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../../grails/gorm/services/Query.Order.html'>Order</a> <strong>sort</strong></h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/Query.Order.html'>Order</a> <strong>sort</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -383,7 +383,7 @@ extends java.util.Collection</pre>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>com.mongodb.WriteConcern <strong>writeConcern</strong></h4>
-                                <p> <DL><DT><B>Returns:</B></DT><DD>The WriteConcern for the collection</DD></DL></p>
+                                <p> <DL><DT><B>Returns:</B></DT><DD>The com.mongodb.WriteConcern for the collection</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -449,7 +449,7 @@ extends java.util.Collection</pre>
                         <a name="getSort()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../../grails/gorm/services/Query.Order.html'>Order</a> <strong>getSort</strong>()</h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/query/Query.Order.html'>Order</a> <strong>getSort</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -458,7 +458,7 @@ extends java.util.Collection</pre>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-Entity&lt;Attribute&gt; <strong>id</strong>(@groovy.lang.DelegatesTo(value: MongoAttribute.class) groovy.lang.Closure identityConfig)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/config/Entity.html' title='Entity'>Entity</a>&lt;<a href='../../../../../../org/grails/datastore/mapping/document/config/Attribute.html' title='Attribute'>Attribute</a>&gt; <strong>id</strong>(@groovy.lang.DelegatesTo(value: MongoAttribute.class) groovy.lang.Closure identityConfig)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -492,7 +492,7 @@ protected&nbsp;<a href='../../../../../../org/grails/datastore/mapping/mongo/con
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-<a href='../../../../../../grails/gorm/Entity.html'>Entity</a> <strong>property</strong>(java.lang.String name, @groovy.lang.DelegatesTo(value: MongoAttribute.class) groovy.lang.Closure propertyConfig)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a> <strong>property</strong>(java.lang.String name, @groovy.lang.DelegatesTo(value: MongoAttribute.class) groovy.lang.Closure propertyConfig)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -531,10 +531,10 @@ protected&nbsp;<a href='../../../../../../org/grails/datastore/mapping/mongo/con
                             </li>
                         </ul>
                     
-                        <a name="sort(grails.gorm.services.Query.Order)"><!-- --></a>
+                        <a name="sort(org.grails.datastore.mapping.query.Query.Order)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><a href='../../../../../../org/grails/datastore/mapping/mongo/config/MongoCollection.html'>MongoCollection</a> <strong>sort</strong>(<a href='../../../../../../grails/gorm/services/Query.Order.html'>Order</a> sort)</h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/mongo/config/MongoCollection.html'>MongoCollection</a> <strong>sort</strong>(<a href='../../../../../../org/grails/datastore/mapping/query/Query.Order.html'>Order</a> sort)</h4>
                                 <p> Sets the default sorting <DL><DT><B>Parameters:</B></DT><DD><code>s</code> -  The sort object</DD></DL><DL><DT><B>Returns:</B></DT><DD>This collection</DD></DL></p>
                             </li>
                         </ul>
@@ -551,7 +551,7 @@ protected&nbsp;<a href='../../../../../../org/grails/datastore/mapping/mongo/con
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-<a href='../../../../../../grails/gorm/Entity.html'>Entity</a> <strong>version</strong>(@groovy.lang.DelegatesTo(value: MongoAttribute.class) groovy.lang.Closure versionConfig)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/config/Entity.html'>Entity</a> <strong>version</strong>(@groovy.lang.DelegatesTo(value: MongoAttribute.class) groovy.lang.Closure versionConfig)</h4>
                                 <p></p>
                             </li>
                         </ul>

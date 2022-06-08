@@ -99,7 +99,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Implemented Interfaces and Traits:</dt>
-                <dd>Codec&lt;OffsetDateTime&gt;, <a href='../../../../../org/grails/datastore/bson/codecs/temporal/OffsetDateTimeBsonConverter.html'>OffsetDateTimeBsonConverter</a></dd>
+                <dd>org.bson.codecs.Codec&lt;java.time.OffsetDateTime&gt;, <a href='../../../../../org/grails/datastore/bson/codecs/temporal/OffsetDateTimeBsonConverter.html'>OffsetDateTimeBsonConverter</a></dd>
             </dl>
     
 
@@ -110,9 +110,9 @@ if (location.href.indexOf('is-external=true') == -1) {
 <pre>@groovy.transform.CompileStatic
 class OffsetDateTimeCodec
 extends java.lang.Object
-implements Codec&lt;OffsetDateTime&gt;, <a href='../../../../../org/grails/datastore/bson/codecs/temporal/OffsetDateTimeBsonConverter.html'>OffsetDateTimeBsonConverter</a></pre>
+implements org.bson.codecs.Codec&lt;java.time.OffsetDateTime&gt;, <a href='../../../../../org/grails/datastore/bson/codecs/temporal/OffsetDateTimeBsonConverter.html'>OffsetDateTimeBsonConverter</a></pre>
 
-    <p> A class to translate a OffsetDateTime in MongoDB <DL><DT><B>Authors:</B></DT><DD>James Kleeh</DD></DL></p>
+    <p> A class to translate a java.time.OffsetDateTime in MongoDB <DL><DT><B>Authors:</B></DT><DD>James Kleeh</DD></DL></p>
 
           </li>
     </ul>
@@ -188,7 +188,7 @@ implements Codec&lt;OffsetDateTime&gt;, <a href='../../../../../org/grails/datas
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.lang.Class&lt;OffsetDateTime&gt;</code></td>
+                            <td class="colLast"><code>java.lang.Class&lt;java.time.OffsetDateTime&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getEncoderClass()">getEncoderClass</a></strong>()</code><br></td>
                         </tr>
                         
@@ -282,7 +282,7 @@ void <strong>encode</strong>(org.bson.BsonWriter writer, java.time.OffsetDateTim
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-java.lang.Class&lt;OffsetDateTime&gt; <strong>getEncoderClass</strong>()</h4>
+java.lang.Class&lt;java.time.OffsetDateTime&gt; <strong>getEncoderClass</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>

@@ -327,19 +327,19 @@ implements org.bson.codecs.Codec</pre>
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#readingComplete(org.grails.datastore.mapping.engine.EntityAccess)">readingComplete</a></strong>(<a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> access)</code><br>Called when reading from a BsonReader is completed</td>
+                            <td class="colLast"><code><strong><a href="#readingComplete(org.grails.datastore.mapping.engine.EntityAccess)">readingComplete</a></strong>(<a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> access)</code><br>Called when reading from a org.bson.BsonReader is completed</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#registerDecoder(Class, org.grails.datastore.bson.codecs.PropertyDecoder)">registerDecoder</a></strong>(java.lang.Class&lt;? extends PersistentProperty&gt; type, <a href='../../../../../org/grails/datastore/bson/codecs/PropertyDecoder.html'>PropertyDecoder</a> propertyDecoder)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#registerDecoder(Class, org.grails.datastore.bson.codecs.PropertyDecoder)">registerDecoder</a></strong>(java.lang.Class&lt;? extends <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html' title='PersistentProperty'>PersistentProperty</a>&gt; type, <a href='../../../../../org/grails/datastore/bson/codecs/PropertyDecoder.html'>PropertyDecoder</a> propertyDecoder)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#registerEncoder(Class, org.grails.datastore.bson.codecs.PropertyEncoder)">registerEncoder</a></strong>(java.lang.Class&lt;? extends PersistentProperty&gt; type, <a href='../../../../../org/grails/datastore/bson/codecs/PropertyEncoder.html'>PropertyEncoder</a> propertyEncoder)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#registerEncoder(Class, org.grails.datastore.bson.codecs.PropertyEncoder)">registerEncoder</a></strong>(java.lang.Class&lt;? extends <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html' title='PersistentProperty'>PersistentProperty</a>&gt; type, <a href='../../../../../org/grails/datastore/bson/codecs/PropertyEncoder.html'>PropertyEncoder</a> propertyEncoder)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -500,7 +500,7 @@ implements org.bson.codecs.Codec</pre>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;void <strong>beforeFinishDocument</strong>(org.bson.BsonWriter bsonWriter, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> access)</h4>
-                                <p> Called directly before the last call to finish the document writing process <DL><DT><B>Parameters:</B></DT><DD><code>bsonWriter</code> -  The BsonWriter</DD><DD><code>access</code> -  The entity access</DD></DL></p>
+                                <p> Called directly before the last call to finish the document writing process <DL><DT><B>Parameters:</B></DT><DD><code>bsonWriter</code> -  The org.bson.BsonWriter</DD><DD><code>access</code> -  The entity access</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -615,14 +615,14 @@ java.lang.Class <strong>getEncoderClass</strong>()</h4>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;void <strong>readingComplete</strong>(<a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> access)</h4>
-                                <p> Called when reading from a BsonReader is completed <DL><DT><B>Parameters:</B></DT><DD><code>access</code> -  the access</DD></DL></p>
+                                <p> Called when reading from a org.bson.BsonReader is completed <DL><DT><B>Parameters:</B></DT><DD><code>access</code> -  the access</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="registerDecoder(Class, org.grails.datastore.bson.codecs.PropertyDecoder)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;void <strong>registerDecoder</strong>(java.lang.Class&lt;? extends PersistentProperty&gt; type, <a href='../../../../../org/grails/datastore/bson/codecs/PropertyDecoder.html'>PropertyDecoder</a> propertyDecoder)</h4>
+                                <h4>static&nbsp;void <strong>registerDecoder</strong>(java.lang.Class&lt;? extends <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html' title='PersistentProperty'>PersistentProperty</a>&gt; type, <a href='../../../../../org/grails/datastore/bson/codecs/PropertyDecoder.html'>PropertyDecoder</a> propertyDecoder)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -630,7 +630,7 @@ java.lang.Class <strong>getEncoderClass</strong>()</h4>
                         <a name="registerEncoder(Class, org.grails.datastore.bson.codecs.PropertyEncoder)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;void <strong>registerEncoder</strong>(java.lang.Class&lt;? extends PersistentProperty&gt; type, <a href='../../../../../org/grails/datastore/bson/codecs/PropertyEncoder.html'>PropertyEncoder</a> propertyEncoder)</h4>
+                                <h4>static&nbsp;void <strong>registerEncoder</strong>(java.lang.Class&lt;? extends <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html' title='PersistentProperty'>PersistentProperty</a>&gt; type, <a href='../../../../../org/grails/datastore/bson/codecs/PropertyEncoder.html'>PropertyEncoder</a> propertyEncoder)</h4>
                                 <p></p>
                             </li>
                         </ul>

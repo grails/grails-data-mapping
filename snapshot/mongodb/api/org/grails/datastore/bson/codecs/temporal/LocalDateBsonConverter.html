@@ -99,7 +99,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Implemented Interfaces and Traits:</dt>
-                <dd><a href='../../../../../../grails/gorm/time/LocalDateConverter.html'>LocalDateConverter</a>, <a href='../../../../../../org/grails/datastore/bson/codecs/temporal/TemporalBsonConverter.html' title='TemporalBsonConverter'>TemporalBsonConverter</a>&lt;LocalDate&gt;</dd>
+                <dd><a href='../../../../../../grails/gorm/time/LocalDateConverter.html'>LocalDateConverter</a>, <a href='../../../../../../org/grails/datastore/bson/codecs/temporal/TemporalBsonConverter.html' title='TemporalBsonConverter'>TemporalBsonConverter</a>&lt;java.time.LocalDate&gt;</dd>
             </dl>
     
 
@@ -111,9 +111,9 @@ if (location.href.indexOf('is-external=true') == -1) {
 @groovy.transform.CompileStatic
 trait LocalDateBsonConverter
 extends java.lang.Object
-implements <a href='../../../../../../grails/gorm/time/LocalDateConverter.html'>LocalDateConverter</a>, <a href='../../../../../../org/grails/datastore/bson/codecs/temporal/TemporalBsonConverter.html' title='TemporalBsonConverter'>TemporalBsonConverter</a>&lt;LocalDate&gt;</pre>
+implements <a href='../../../../../../grails/gorm/time/LocalDateConverter.html'>LocalDateConverter</a>, <a href='../../../../../../org/grails/datastore/bson/codecs/temporal/TemporalBsonConverter.html' title='TemporalBsonConverter'>TemporalBsonConverter</a>&lt;java.time.LocalDate&gt;</pre>
 
-    <p> A trait to read and write a LocalDate to MongoDB <DL><DT><B>Authors:</B></DT><DD>James Kleeh</DD></DL></p>
+    <p> A trait to read and write a java.time.LocalDate to MongoDB <DL><DT><B>Authors:</B></DT><DD>James Kleeh</DD></DL></p>
 
           </li>
     </ul>
@@ -161,14 +161,14 @@ implements <a href='../../../../../../grails/gorm/time/LocalDateConverter.html'>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../../../LocalDate.html'>LocalDate</a></code></td>
+                            <td class="colLast"><code>java.time.LocalDate</code></td>
                             <td class="colLast"><code><strong><a href="#read(org.bson.BsonReader)">read</a></strong>(org.bson.BsonReader reader)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#write(org.bson.BsonWriter, LocalDate)">write</a></strong>(org.bson.BsonWriter writer, <a href='../../../../../../LocalDate.html'>LocalDate</a> value)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#write(org.bson.BsonWriter, java.time.LocalDate)">write</a></strong>(org.bson.BsonWriter writer, java.time.LocalDate value)</code><br></td>
                         </tr>
                         
                     </table>
@@ -234,16 +234,16 @@ org.bson.BsonType <strong>bsonType</strong>()</h4>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-<a href='../../../../../../LocalDate.html'>LocalDate</a> <strong>read</strong>(org.bson.BsonReader reader)</h4>
+java.time.LocalDate <strong>read</strong>(org.bson.BsonReader reader)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="write(org.bson.BsonWriter, LocalDate)"><!-- --></a>
+                        <a name="write(org.bson.BsonWriter, java.time.LocalDate)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-void <strong>write</strong>(org.bson.BsonWriter writer, <a href='../../../../../../LocalDate.html'>LocalDate</a> value)</h4>
+void <strong>write</strong>(org.bson.BsonWriter writer, java.time.LocalDate value)</h4>
                                 <p></p>
                             </li>
                         </ul>

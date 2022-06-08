@@ -99,14 +99,14 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Superinterfaces:</dt>
-                <dd>GormStaticOperations&lt;D&gt;</dd>
+                <dd><a href='../../../grails/gorm/api/GormStaticOperations.html' title='GormStaticOperations'>GormStaticOperations</a>&lt;D&gt;</dd>
             </dl>
             <!-- todo: direct known subclasses -->
             <hr>
             <br>
 
 <pre>interface MongoStaticOperations&lt;D&gt;
-extends GormStaticOperations&lt;D&gt;</pre>
+extends <a href='../../../grails/gorm/api/GormStaticOperations.html' title='GormStaticOperations'>GormStaticOperations</a>&lt;D&gt;</pre>
 
     <p> Static operations for GORM for MongoDB <DL><DT><B>Authors:</B></DT><DD>Graeme rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>6.0</DD></DL></p>
 
@@ -157,13 +157,13 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>abstract&nbsp;java.util.List&lt;D&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#aggregate(java.util.List, Function)">aggregate</a></strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate)</code><br>Execute a MongoDB aggregation pipeline. </td>
+                            <td class="colLast"><code><strong><a href="#aggregate(java.util.List, Function)">aggregate</a></strong>(java.util.List pipeline, java.util.function.Function&lt;com.mongodb.client.AggregateIterable, com.mongodb.client.AggregateIterable&gt; doWithAggregate)</code><br>Execute a MongoDB aggregation pipeline. </td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>abstract&nbsp;java.util.List&lt;D&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#aggregate(java.util.List, Function, com.mongodb.ReadPreference)">aggregate</a></strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate, com.mongodb.ReadPreference readPreference)</code><br>Execute a MongoDB aggregation pipeline. </td>
+                            <td class="colLast"><code><strong><a href="#aggregate(java.util.List, Function, com.mongodb.ReadPreference)">aggregate</a></strong>(java.util.List pipeline, java.util.function.Function&lt;com.mongodb.client.AggregateIterable, com.mongodb.client.AggregateIterable&gt; doWithAggregate, com.mongodb.ReadPreference readPreference)</code><br>Execute a MongoDB aggregation pipeline. </td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -180,7 +180,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>abstract&nbsp;FindIterable&lt;D&gt;</code></td>
+                            <td class="colLast"><code>abstract&nbsp;com.mongodb.client.FindIterable&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#find(org.bson.conversions.Bson)">find</a></strong>(org.bson.conversions.Bson filter)</code><br>Find an entity for the given filter</td>
                         </tr>
                         
@@ -198,7 +198,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>abstract&nbsp;MongoCollection&lt;Document&gt;</code></td>
+                            <td class="colLast"><code>abstract&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getCollection()">getCollection</a></strong>()</code><br>The actual collection that this entity maps to.</td>
                         </tr>
                         
@@ -311,7 +311,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="aggregate(java.util.List, Function)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>abstract&nbsp;java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate)</h4>
+                                <h4>abstract&nbsp;java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline, java.util.function.Function&lt;com.mongodb.client.AggregateIterable, com.mongodb.client.AggregateIterable&gt; doWithAggregate)</h4>
                                 <p> Execute a MongoDB aggregation pipeline. Note that the pipeline should return documents that represent this domain class as each return document will be converted to a domain instance in the result set <DL><DT><B>Parameters:</B></DT><DD><code>pipeline</code> -  The pipeline</DD><DD><code>doWithAggregate</code> -  A callback to modify the aggregate iterable</DD></DL><DL><DT><B>Returns:</B></DT><DD>A mongodb result list</DD></DL></p>
                             </li>
                         </ul>
@@ -319,7 +319,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="aggregate(java.util.List, Function, com.mongodb.ReadPreference)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>abstract&nbsp;java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate, com.mongodb.ReadPreference readPreference)</h4>
+                                <h4>abstract&nbsp;java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline, java.util.function.Function&lt;com.mongodb.client.AggregateIterable, com.mongodb.client.AggregateIterable&gt; doWithAggregate, com.mongodb.ReadPreference readPreference)</h4>
                                 <p> Execute a MongoDB aggregation pipeline. Note that the pipeline should return documents that represent this domain class as each return document will be converted to a domain instance in the result set <DL><DT><B>Parameters:</B></DT><DD><code>pipeline</code> -  The pipeline</DD><DD><code>doWithAggregate</code> -  A callback to modify the aggregate iterable</DD></DL><DL><DT><B>Returns:</B></DT><DD>A mongodb result list</DD></DL></p>
                             </li>
                         </ul>
@@ -343,7 +343,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="find(org.bson.conversions.Bson)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>abstract&nbsp;FindIterable&lt;D&gt; <strong>find</strong>(org.bson.conversions.Bson filter)</h4>
+                                <h4>abstract&nbsp;com.mongodb.client.FindIterable&lt;D&gt; <strong>find</strong>(org.bson.conversions.Bson filter)</h4>
                                 <p> Find an entity for the given filter <DL><DT><B>Parameters:</B></DT><DD><code>filter</code> -  The filter</DD></DL><DL><DT><B>Returns:</B></DT><DD>The FindIterable</DD></DL></p>
                             </li>
                         </ul>
@@ -367,7 +367,7 @@ extends GormStaticOperations&lt;D&gt;</pre>
                         <a name="getCollection()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>abstract&nbsp;MongoCollection&lt;Document&gt; <strong>getCollection</strong>()</h4>
+                                <h4>abstract&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; <strong>getCollection</strong>()</h4>
                                 <p> The actual collection that this entity maps to. <DL><DT><B>Returns:</B></DT><DD>The actual collection</DD></DL></p>
                             </li>
                         </ul>

@@ -112,7 +112,7 @@ class CodecExtensions
 extends java.lang.Object
 implements org.bson.codecs.configuration.CodecProvider</pre>
 
-    <p> Additional Codec extensions. This class implements {@CodecProvider} and integrates with the {@CodecRegistry} to make it easier to convert objects to and from BSON documents <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>4.1</DD></DL></p>
+    <p> Additional org.bson.codecs.Codec extensions. This class implements {@CodecProvider} and integrates with the {@CodecRegistry} to make it easier to convert objects to and from BSON documents <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>4.1</DD></DL></p>
 
           </li>
     </ul>
@@ -337,19 +337,19 @@ implements org.bson.codecs.configuration.CodecProvider</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
-                            <td class="colLast"><code>Codec&lt;T&gt;</code></td>
+                            <td class="colLast"><code>org.bson.codecs.Codec&lt;T&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#get(Class, org.bson.codecs.configuration.CodecRegistry)">get</a></strong>(java.lang.Class&lt;T&gt; clazz, org.bson.codecs.configuration.CodecRegistry registry)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.springframework.core.convert.converter.Converter</code></td>
-                            <td class="colLast"><code><strong><a href="#getBsonConverter(Class)">getBsonConverter</a></strong>(java.lang.Class&lt;? extends BsonValue&gt; type)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#getBsonConverter(Class)">getBsonConverter</a></strong>(java.lang.Class&lt;? extends org.bson.BsonValue&gt; type)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;java.util.Collection&lt;Converter&gt;</code></td>
+                            <td class="colLast"><code>static&nbsp;java.util.Collection&lt;org.springframework.core.convert.converter.Converter&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getBsonConverters()">getBsonConverters</a></strong>()</code><br></td>
                         </tr>
                         
@@ -431,7 +431,7 @@ implements org.bson.codecs.configuration.CodecProvider</pre>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>&lt;T&gt; @java.lang.Override
-Codec&lt;T&gt; <strong>get</strong>(java.lang.Class&lt;T&gt; clazz, org.bson.codecs.configuration.CodecRegistry registry)</h4>
+org.bson.codecs.Codec&lt;T&gt; <strong>get</strong>(java.lang.Class&lt;T&gt; clazz, org.bson.codecs.configuration.CodecRegistry registry)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -439,7 +439,7 @@ Codec&lt;T&gt; <strong>get</strong>(java.lang.Class&lt;T&gt; clazz, org.bson.cod
                         <a name="getBsonConverter(Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;org.springframework.core.convert.converter.Converter <strong>getBsonConverter</strong>(java.lang.Class&lt;? extends BsonValue&gt; type)</h4>
+                                <h4>static&nbsp;org.springframework.core.convert.converter.Converter <strong>getBsonConverter</strong>(java.lang.Class&lt;? extends org.bson.BsonValue&gt; type)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -447,7 +447,7 @@ Codec&lt;T&gt; <strong>get</strong>(java.lang.Class&lt;T&gt; clazz, org.bson.cod
                         <a name="getBsonConverters()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.util.Collection&lt;Converter&gt; <strong>getBsonConverters</strong>()</h4>
+                                <h4>static&nbsp;java.util.Collection&lt;org.springframework.core.convert.converter.Converter&gt; <strong>getBsonConverters</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>

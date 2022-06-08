@@ -103,7 +103,7 @@ if (location.href.indexOf('is-external=true') == -1) {
             <br>
 
 <pre>public&nbsp;class JsonReader
-extends <a href='../../../../../AbstractBsonReader.html'>AbstractBsonReader</a></pre>
+extends org.bson.AbstractBsonReader</pre>
 
     <p> A simplified fork of org.bson.json.JsonReader that works with readers and removes processing related to MongoDB
   <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>6.0</DD></DL></p>
@@ -229,7 +229,7 @@ extends <a href='../../../../../AbstractBsonReader.html'>AbstractBsonReader</a><
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;<a href='../../../../../BsonDbPointer.html'>BsonDbPointer</a></code></td>
+                            <td class="colLast"><code>protected&nbsp;org.bson.BsonDbPointer</code></td>
                             <td class="colLast"><code><strong><a href="#doReadDBPointer()">doReadDBPointer</a></strong>()</code><br></td>
                         </tr>
                         
@@ -373,7 +373,7 @@ extends <a href='../../../../../AbstractBsonReader.html'>AbstractBsonReader</a><
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>public&nbsp;<a href='../../../../../BsonReaderMark.html'>BsonReaderMark</a></code></td>
+                            <td class="colLast"><code>public&nbsp;org.bson.BsonReaderMark</code></td>
                             <td class="colLast"><code><strong><a href="#getMark()">getMark</a></strong>()</code><br></td>
                         </tr>
                         
@@ -387,6 +387,24 @@ extends <a href='../../../../../AbstractBsonReader.html'>AbstractBsonReader</a><
                    </ul>
               </li>
             
+            <li class="blockList"><a name="method_summary"><!--   --></a>
+                    <h3>Inherited Methods Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Inherited Methods Summary table">
+                        <caption><span>Inherited Methods</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Methods inherited from class</th>
+                            <th class="colLast" scope="col">Name</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>class org.bson.AbstractBsonReader</code></td>
+                            <td class="colLast"><code>org.bson.AbstractBsonReader#skipValue(), org.bson.AbstractBsonReader#readNull(), org.bson.AbstractBsonReader#readNull(java.lang.String), org.bson.AbstractBsonReader#readString(java.lang.String), org.bson.AbstractBsonReader#readString(), org.bson.AbstractBsonReader#readBoolean(), org.bson.AbstractBsonReader#readBoolean(java.lang.String), org.bson.AbstractBsonReader#readDouble(), org.bson.AbstractBsonReader#readDouble(java.lang.String), org.bson.AbstractBsonReader#readBinaryData(), org.bson.AbstractBsonReader#readBinaryData(java.lang.String), org.bson.AbstractBsonReader#peekBinarySize(), org.bson.AbstractBsonReader#readDateTime(java.lang.String), org.bson.AbstractBsonReader#readDateTime(), org.bson.AbstractBsonReader#readInt32(java.lang.String), org.bson.AbstractBsonReader#readInt32(), org.bson.AbstractBsonReader#readInt64(), org.bson.AbstractBsonReader#readInt64(java.lang.String), org.bson.AbstractBsonReader#readDecimal128(java.lang.String), org.bson.AbstractBsonReader#readDecimal128(), org.bson.AbstractBsonReader#readJavaScript(), org.bson.AbstractBsonReader#readJavaScript(java.lang.String), org.bson.AbstractBsonReader#readJavaScriptWithScope(), org.bson.AbstractBsonReader#readJavaScriptWithScope(java.lang.String), org.bson.AbstractBsonReader#readMaxKey(), org.bson.AbstractBsonReader#readMaxKey(java.lang.String), org.bson.AbstractBsonReader#readMinKey(), org.bson.AbstractBsonReader#readMinKey(java.lang.String), org.bson.AbstractBsonReader#readObjectId(), org.bson.AbstractBsonReader#readObjectId(java.lang.String), org.bson.AbstractBsonReader#readRegularExpression(java.lang.String), org.bson.AbstractBsonReader#readRegularExpression(), org.bson.AbstractBsonReader#readDBPointer(), org.bson.AbstractBsonReader#readDBPointer(java.lang.String), org.bson.AbstractBsonReader#readSymbol(java.lang.String), org.bson.AbstractBsonReader#readSymbol(), org.bson.AbstractBsonReader#readTimestamp(java.lang.String), org.bson.AbstractBsonReader#readTimestamp(), org.bson.AbstractBsonReader#readUndefined(), org.bson.AbstractBsonReader#readUndefined(java.lang.String), org.bson.AbstractBsonReader#skipName(), org.bson.AbstractBsonReader#readStartDocument(), org.bson.AbstractBsonReader#readBsonType(), org.bson.AbstractBsonReader#readName(), org.bson.AbstractBsonReader#readName(java.lang.String), org.bson.AbstractBsonReader#readEndDocument(), org.bson.AbstractBsonReader#getCurrentName(), org.bson.AbstractBsonReader#getCurrentBsonType(), org.bson.AbstractBsonReader#readStartArray(), org.bson.AbstractBsonReader#peekBinarySubType(), org.bson.AbstractBsonReader#readEndArray(), org.bson.AbstractBsonReader#getState(), org.bson.AbstractBsonReader#close(), org.bson.AbstractBsonReader#wait(long, int), org.bson.AbstractBsonReader#wait(long), org.bson.AbstractBsonReader#wait(), org.bson.AbstractBsonReader#equals(java.lang.Object), org.bson.AbstractBsonReader#toString(), org.bson.AbstractBsonReader#hashCode(), org.bson.AbstractBsonReader#getClass(), org.bson.AbstractBsonReader#notify(), org.bson.AbstractBsonReader#notifyAll(), org.bson.AbstractBsonReader#getMark()</code></td>
+                        </tr>
+                    </table>
+                   </ul>
+              </li>
+                
         </ul>
         
     </li>
@@ -483,7 +501,7 @@ protected&nbsp;boolean <strong>doReadBoolean</strong>()</h4>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-protected&nbsp;<a href='../../../../../BsonDbPointer.html'>BsonDbPointer</a> <strong>doReadDBPointer</strong>()</h4>
+protected&nbsp;org.bson.BsonDbPointer <strong>doReadDBPointer</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -699,7 +717,7 @@ protected&nbsp;<a href='../../../../../org/grails/datastore/bson/json/JsonReader
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-public&nbsp;<a href='../../../../../BsonReaderMark.html'>BsonReaderMark</a> <strong>getMark</strong>()</h4>
+public&nbsp;org.bson.BsonReaderMark <strong>getMark</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>

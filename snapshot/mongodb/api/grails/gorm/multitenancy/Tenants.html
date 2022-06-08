@@ -207,7 +207,7 @@ extends java.lang.Object</pre>
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;java.io.Serializable</code></td>
-                            <td class="colLast"><code><strong><a href="#currentId(Class)">currentId</a></strong>(java.lang.Class&lt;? extends Datastore&gt; datastoreClass)</code><br> <DL><DT><B>Returns:</B></DT><DD>The current tenant id for the given datastore type</DD></DL></td>
+                            <td class="colLast"><code><strong><a href="#currentId(Class)">currentId</a></strong>(java.lang.Class&lt;? extends <a href='../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt; datastoreClass)</code><br> <DL><DT><B>Returns:</B></DT><DD>The current tenant id for the given datastore type</DD></DL></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -219,7 +219,7 @@ extends java.lang.Object</pre>
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#eachTenant(Class, groovy.lang.Closure)">eachTenant</a></strong>(java.lang.Class&lt;? extends Datastore&gt; datastoreClass, groovy.lang.Closure callable)</code><br>Execute the given closure for each tenant.</td>
+                            <td class="colLast"><code><strong><a href="#eachTenant(Class, groovy.lang.Closure)">eachTenant</a></strong>(java.lang.Class&lt;? extends <a href='../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt; datastoreClass, groovy.lang.Closure callable)</code><br>Execute the given closure for each tenant.</td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -237,7 +237,7 @@ extends java.lang.Object</pre>
                         <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>static&nbsp;T</code></td>
-                            <td class="colLast"><code><strong><a href="#withCurrent(Class, Closure)">withCurrent</a></strong>(java.lang.Class&lt;? extends Datastore&gt; datastoreClass, groovy.lang.Closure&lt;T&gt; callable)</code><br>Execute the given closure with the current tenant</td>
+                            <td class="colLast"><code><strong><a href="#withCurrent(Class, Closure)">withCurrent</a></strong>(java.lang.Class&lt;? extends <a href='../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt; datastoreClass, groovy.lang.Closure&lt;T&gt; callable)</code><br>Execute the given closure with the current tenant</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -249,7 +249,7 @@ extends java.lang.Object</pre>
                         <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>static&nbsp;T</code></td>
-                            <td class="colLast"><code><strong><a href="#withId(Class, java.io.Serializable, Closure)">withId</a></strong>(java.lang.Class&lt;? extends Datastore&gt; datastoreClass, java.io.Serializable tenantId, groovy.lang.Closure&lt;T&gt; callable)</code><br>Execute the given closure with given tenant id</td>
+                            <td class="colLast"><code><strong><a href="#withId(Class, java.io.Serializable, Closure)">withId</a></strong>(java.lang.Class&lt;? extends <a href='../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt; datastoreClass, java.io.Serializable tenantId, groovy.lang.Closure&lt;T&gt; callable)</code><br>Execute the given closure with given tenant id</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -357,7 +357,7 @@ extends java.lang.Object</pre>
                         <a name="currentId(Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.io.Serializable <strong>currentId</strong>(java.lang.Class&lt;? extends Datastore&gt; datastoreClass)</h4>
+                                <h4>static&nbsp;java.io.Serializable <strong>currentId</strong>(java.lang.Class&lt;? extends <a href='../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt; datastoreClass)</h4>
                                 <p><DL><DT><B>throws:</B></DT><DD>org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException if no current tenant is found</DD></DL> <DL><DT><B>Returns:</B></DT><DD>The current tenant id for the given datastore type</DD></DL></p>
                             </li>
                         </ul>
@@ -373,7 +373,7 @@ extends java.lang.Object</pre>
                         <a name="eachTenant(Class, groovy.lang.Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;void <strong>eachTenant</strong>(java.lang.Class&lt;? extends Datastore&gt; datastoreClass, groovy.lang.Closure callable)</h4>
+                                <h4>static&nbsp;void <strong>eachTenant</strong>(java.lang.Class&lt;? extends <a href='../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt; datastoreClass, groovy.lang.Closure callable)</h4>
                                 <p> Execute the given closure for each tenant. <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
                             </li>
                         </ul>
@@ -397,7 +397,7 @@ extends java.lang.Object</pre>
                         <a name="withCurrent(Class, Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; static&nbsp;T <strong>withCurrent</strong>(java.lang.Class&lt;? extends Datastore&gt; datastoreClass, groovy.lang.Closure&lt;T&gt; callable)</h4>
+                                <h4>&lt;T&gt; static&nbsp;T <strong>withCurrent</strong>(java.lang.Class&lt;? extends <a href='../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt; datastoreClass, groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Execute the given closure with the current tenant <DL><DT><B>Parameters:</B></DT><DD><code>datastoreClass</code> -  The datastore class</DD><DD><code>callable</code> -  The closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
                             </li>
                         </ul>
@@ -413,7 +413,7 @@ extends java.lang.Object</pre>
                         <a name="withId(Class, java.io.Serializable, Closure)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>&lt;T&gt; static&nbsp;T <strong>withId</strong>(java.lang.Class&lt;? extends Datastore&gt; datastoreClass, java.io.Serializable tenantId, groovy.lang.Closure&lt;T&gt; callable)</h4>
+                                <h4>&lt;T&gt; static&nbsp;T <strong>withId</strong>(java.lang.Class&lt;? extends <a href='../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt; datastoreClass, java.io.Serializable tenantId, groovy.lang.Closure&lt;T&gt; callable)</h4>
                                 <p> Execute the given closure with given tenant id <DL><DT><B>Parameters:</B></DT><DD><code>tenantId</code> -  The tenant id</DD><DD><code>callable</code> -  The closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
                             </li>
                         </ul>

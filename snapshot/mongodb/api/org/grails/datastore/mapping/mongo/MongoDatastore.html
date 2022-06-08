@@ -99,7 +99,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Implemented Interfaces and Traits:</dt>
-                <dd><a href='../../../../../MappingContextListener.html'>MappingContextListener</a>, java.io.Closeable, <a href='../../../../../org/grails/datastore/mapping/multitenancy/MultiTenantCapableDatastore.html'>MultiTenantCapableDatastore</a>, <a href='../../../../../MultipleConnectionSourceCapableDatastore.html'>MultipleConnectionSourceCapableDatastore</a>, <a href='../../../../../org/grails/datastore/mapping/core/StatelessDatastore.html'>StatelessDatastore</a>, <a href='../../../../../org/grails/datastore/mapping/transactions/TransactionCapableDatastore.html'>TransactionCapableDatastore</a></dd>
+                <dd><a href='../../../../../MappingContextListener.html'>MappingContextListener</a>, java.io.Closeable, <a href='../../../../../org/grails/datastore/mapping/multitenancy/MultiTenantCapableDatastore.html'>MultiTenantCapableDatastore</a>, <a href='../../../../../org/grails/datastore/mapping/core/connections/MultipleConnectionSourceCapableDatastore.html'>MultipleConnectionSourceCapableDatastore</a>, <a href='../../../../../org/grails/datastore/mapping/core/StatelessDatastore.html'>StatelessDatastore</a>, <a href='../../../../../org/grails/datastore/mapping/transactions/TransactionCapableDatastore.html'>TransactionCapableDatastore</a></dd>
             </dl>
     
 
@@ -108,8 +108,8 @@ if (location.href.indexOf('is-external=true') == -1) {
             <br>
 
 <pre>public&nbsp;class MongoDatastore
-extends <a href='../../../../../AbstractDatastore.html'>AbstractDatastore</a>
-implements <a href='../../../../../MappingContextListener.html'>MappingContextListener</a>, java.io.Closeable, <a href='../../../../../org/grails/datastore/mapping/multitenancy/MultiTenantCapableDatastore.html'>MultiTenantCapableDatastore</a>, <a href='../../../../../MultipleConnectionSourceCapableDatastore.html'>MultipleConnectionSourceCapableDatastore</a>, <a href='../../../../../org/grails/datastore/mapping/core/StatelessDatastore.html'>StatelessDatastore</a>, <a href='../../../../../org/grails/datastore/mapping/transactions/TransactionCapableDatastore.html'>TransactionCapableDatastore</a></pre>
+extends <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html'>AbstractDatastore</a>
+implements <a href='../../../../../MappingContextListener.html'>MappingContextListener</a>, java.io.Closeable, <a href='../../../../../org/grails/datastore/mapping/multitenancy/MultiTenantCapableDatastore.html'>MultiTenantCapableDatastore</a>, <a href='../../../../../org/grails/datastore/mapping/core/connections/MultipleConnectionSourceCapableDatastore.html'>MultipleConnectionSourceCapableDatastore</a>, <a href='../../../../../org/grails/datastore/mapping/core/StatelessDatastore.html'>StatelessDatastore</a>, <a href='../../../../../org/grails/datastore/mapping/transactions/TransactionCapableDatastore.html'>TransactionCapableDatastore</a></pre>
 
     <p> A Datastore implementation for the Mongo document store.
   <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>1.0</DD></DL></p>
@@ -237,7 +237,7 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>protected&nbsp;ConnectionSources&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt;</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>protected&nbsp;<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#connectionSources">connectionSources</a></code></td>
                             <td class="colLast"></td>
                         </tr>
@@ -279,13 +279,13 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         </tr>
                         
                         <tr class="rowColor">
-                            <td class="colFirst"><code><strong>protected&nbsp;java.util.Map&lt;PersistentEntity, java.lang.String&gt;</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>protected&nbsp;java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.lang.String&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#mongoCollections">mongoCollections</a></code></td>
                             <td class="colLast"></td>
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>protected&nbsp;java.util.Map&lt;PersistentEntity, java.lang.String&gt;</strong></code>&nbsp;</td>
+                            <td class="colFirst"><code><strong>protected&nbsp;java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.lang.String&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#mongoDatabases">mongoDatabases</a></code></td>
                             <td class="colLast"></td>
                         </tr>
@@ -318,6 +318,23 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                    </ul>
                 </li>
                 
+                <li class="blockList"><a name="field_summary"><!--   --></a>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Inherited fields summary table">
+                        <caption><span>Inherited fields</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Fields inherited from class</th>
+                            <th class="colLast" scope="col">Fields</th>
+                        </tr>
+                                                <tr class="altColor">
+                            <td class="colFirst"><strong><code>class <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html'>AbstractDatastore</a></code></strong></td>
+                            <td class="colLast"><code><a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#LOG'>LOG</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#cacheAdapterRepository'>cacheAdapterRepository</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#connectionDetails'>connectionDetails</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#mappingContext'>mappingContext</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#serviceRegistry'>serviceRegistry</a></code></td>
+                        </tr>
+
+                    </table>
+                    </ul>
+                </li>
+                
             </ul>
         
 
@@ -342,13 +359,13 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         <tr class="altColor">
                             <td class="colFirst">
                                 <code><a href="#MongoDatastore(ConnectionSources, org.grails.datastore.mapping.mongo.config.MongoMappingContext, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher)">MongoDatastore</a>
-                                (ConnectionSources&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html'>MongoMappingContext</a> mappingContext, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher)</code><br>Configures a new <a href='../../../../../org/grails/datastore/mapping/mongo/MongoDatastore.html' title='MongoDatastore'>MongoDatastore</a> for the given arguments</td>
+                                (<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html'>MongoMappingContext</a> mappingContext, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher)</code><br>Configures a new <a href='../../../../../org/grails/datastore/mapping/mongo/MongoDatastore.html' title='MongoDatastore'>MongoDatastore</a> for the given arguments</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst">
                                 <code><a href="#MongoDatastore(ConnectionSources, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher, java.lang.Class)">MongoDatastore</a>
-                                (ConnectionSources&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Class classes)</code><br>Configures a new <a href='../../../../../org/grails/datastore/mapping/mongo/MongoDatastore.html' title='MongoDatastore'>MongoDatastore</a> for the given arguments</td>
+                                (<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Class classes)</code><br>Configures a new <a href='../../../../../org/grails/datastore/mapping/mongo/MongoDatastore.html' title='MongoDatastore'>MongoDatastore</a> for the given arguments</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -530,14 +547,14 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;static&nbsp;ConnectionSources&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt;</code></td>
+                            <td class="colLast"><code>protected&nbsp;static&nbsp;<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#createDefaultConnectionSources(com.mongodb.client.MongoClient, org.springframework.core.env.PropertyResolver, org.grails.datastore.mapping.mongo.config.MongoMappingContext)">createDefaultConnectionSources</a></strong>(com.mongodb.client.MongoClient mongoClient, org.springframework.core.env.PropertyResolver configuration, <a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html'>MongoMappingContext</a> mappingContext)</code><br>Creates the connection sources for an existing com.mongodb.client.MongoClient</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;static&nbsp;<a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html'>MongoMappingContext</a></code></td>
-                            <td class="colLast"><code><strong><a href="#createMappingContext(ConnectionSources, java.lang.Class)">createMappingContext</a></strong>(ConnectionSources&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSources, java.lang.Class classes)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#createMappingContext(ConnectionSources, java.lang.Class)">createMappingContext</a></strong>(<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSources, java.lang.Class classes)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -596,8 +613,8 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>public&nbsp;ConnectionSources&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#getConnectionSources()">getConnectionSources</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>The ConnectionSources for this datastore</DD></DL></td>
+                            <td class="colLast"><code>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#getConnectionSources()">getConnectionSources</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>The <a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a> for this datastore</DD></DL></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -723,7 +740,7 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#newConnectionSource(ConnectionSource)">newConnectionSource</a></strong>(ConnectionSource&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSource)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#newConnectionSource(ConnectionSource)">newConnectionSource</a></strong>(<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSource)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -789,7 +806,7 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#setMessageSource(MessageSource)">setMessageSource</a></strong>(<a href='../../../../../MessageSource.html'>MessageSource</a> messageSource)</code><br>The message source used for validation messages</td>
+                            <td class="colLast"><code><strong><a href="#setMessageSource(org.springframework.context.MessageSource)">setMessageSource</a></strong>(org.springframework.context.MessageSource messageSource)</code><br>The message source used for validation messages</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -802,6 +819,24 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                    </ul>
               </li>
             
+            <li class="blockList"><a name="method_summary"><!--   --></a>
+                    <h3>Inherited Methods Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Inherited Methods Summary table">
+                        <caption><span>Inherited Methods</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Methods inherited from class</th>
+                            <th class="colLast" scope="col">Name</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>class <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html'>AbstractDatastore</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#connect()'>connect</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#connect(org.springframework.core.env.PropertyResolver)'>connect</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#connectStateless()'>connectStateless</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#createSession(org.springframework.core.env.PropertyResolver)'>createSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#createStatelessSession(org.springframework.core.env.PropertyResolver)'>createStatelessSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#destroy()'>destroy</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#doInSession(org.grails.datastore.mapping.core.Session)'>doInSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getApplicationContext()'>getApplicationContext</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getApplicationEventPublisher()'>getApplicationEventPublisher</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getCurrentSession()'>getCurrentSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getMappingContext()'>getMappingContext</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getService(Class)'>getService</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getServices()'>getServices</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#hasCurrentSession()'>hasCurrentSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#initializeConverters(org.grails.datastore.mapping.model.MappingContext)'>initializeConverters</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#isIndexed(org.grails.datastore.mapping.model.PersistentProperty)'>isIndexed</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#isSchemaless()'>isSchemaless</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#mapToPropertyResolver(Map)'>mapToPropertyResolver</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#retrieveSession()'>retrieveSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#retrieveSession(java.lang.Class)'>retrieveSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#setApplicationContext(org.springframework.context.ApplicationContext)'>setApplicationContext</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#withSession(Closure)'>withSession</a></code></td>
+                        </tr>
+                    </table>
+                   </ul>
+              </li>
+                
         </ul>
         
     </li>
@@ -952,7 +987,7 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         <a name="connectionSources"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;final&nbsp;ConnectionSources&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; <strong>connectionSources</strong></h4>
+                                <h4>protected&nbsp;final&nbsp;<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; <strong>connectionSources</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1008,7 +1043,7 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         <a name="mongoCollections"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;final&nbsp;java.util.Map&lt;PersistentEntity, java.lang.String&gt; <strong>mongoCollections</strong></h4>
+                                <h4>protected&nbsp;final&nbsp;java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.lang.String&gt; <strong>mongoCollections</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1016,7 +1051,7 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         <a name="mongoDatabases"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;final&nbsp;java.util.Map&lt;PersistentEntity, java.lang.String&gt; <strong>mongoDatabases</strong></h4>
+                                <h4>protected&nbsp;final&nbsp;java.util.Map&lt;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html' title='PersistentEntity'>PersistentEntity</a>, java.lang.String&gt; <strong>mongoDatabases</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1072,18 +1107,18 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         <a name="MongoDatastore(ConnectionSources, org.grails.datastore.mapping.mongo.config.MongoMappingContext, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<strong>MongoDatastore</strong>(ConnectionSources&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html'>MongoMappingContext</a> mappingContext, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher)</h4>
+                                <h4>public&nbsp;<strong>MongoDatastore</strong>(<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html'>MongoMappingContext</a> mappingContext, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher)</h4>
                                 <p> Configures a new <a href='../../../../../org/grails/datastore/mapping/mongo/MongoDatastore.html' title='MongoDatastore'>MongoDatastore</a> for the given arguments
-      <DL><DT><B>Parameters:</B></DT><DD><code>connectionSources</code> -  The ConnectionSources to use</DD><DD><code>eventPublisher</code> -  The Spring ApplicationContext</DD><DD><code>mappingContext</code> -  The mapping context</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>connectionSources</code> -  The <a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a> to use</DD><DD><code>eventPublisher</code> -  The Spring ApplicationContext</DD><DD><code>mappingContext</code> -  The mapping context</DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="MongoDatastore(ConnectionSources, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher, java.lang.Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;<strong>MongoDatastore</strong>(ConnectionSources&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Class classes)</h4>
+                                <h4>public&nbsp;<strong>MongoDatastore</strong>(<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSources, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, java.lang.Class classes)</h4>
                                 <p> Configures a new <a href='../../../../../org/grails/datastore/mapping/mongo/MongoDatastore.html' title='MongoDatastore'>MongoDatastore</a> for the given arguments
-      <DL><DT><B>Parameters:</B></DT><DD><code>connectionSources</code> -  The ConnectionSources to use</DD><DD><code>eventPublisher</code> -  The Spring ApplicationContext</DD><DD><code>classes</code> -  The persistent classes</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>connectionSources</code> -  The <a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a> to use</DD><DD><code>eventPublisher</code> -  The Spring ApplicationContext</DD><DD><code>classes</code> -  The persistent classes</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1337,16 +1372,16 @@ public&nbsp;void <strong>close</strong>()</h4>
                         <a name="createDefaultConnectionSources(com.mongodb.client.MongoClient, org.springframework.core.env.PropertyResolver, org.grails.datastore.mapping.mongo.config.MongoMappingContext)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;static&nbsp;ConnectionSources&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; <strong>createDefaultConnectionSources</strong>(com.mongodb.client.MongoClient mongoClient, org.springframework.core.env.PropertyResolver configuration, <a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html'>MongoMappingContext</a> mappingContext)</h4>
+                                <h4>protected&nbsp;static&nbsp;<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; <strong>createDefaultConnectionSources</strong>(com.mongodb.client.MongoClient mongoClient, org.springframework.core.env.PropertyResolver configuration, <a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html'>MongoMappingContext</a> mappingContext)</h4>
                                 <p> Creates the connection sources for an existing com.mongodb.client.MongoClient
-      <DL><DT><B>Parameters:</B></DT><DD><code>mongoClient</code> -  The com.mongodb.client.MongoClient</DD><DD><code>configuration</code> -  The configuration</DD><DD><code>mappingContext</code> -  The <a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html' title='MongoMappingContext'>MongoMappingContext</a></DD></DL><DL><DT><B>Returns:</B></DT><DD>The ConnectionSources</DD></DL></p>
+      <DL><DT><B>Parameters:</B></DT><DD><code>mongoClient</code> -  The com.mongodb.client.MongoClient</DD><DD><code>configuration</code> -  The configuration</DD><DD><code>mappingContext</code> -  The <a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html' title='MongoMappingContext'>MongoMappingContext</a></DD></DL><DL><DT><B>Returns:</B></DT><DD>The <a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a></DD></DL></p>
                             </li>
                         </ul>
                     
                         <a name="createMappingContext(ConnectionSources, java.lang.Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;static&nbsp;<a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html'>MongoMappingContext</a> <strong>createMappingContext</strong>(ConnectionSources&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSources, java.lang.Class classes)</h4>
+                                <h4>protected&nbsp;static&nbsp;<a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html'>MongoMappingContext</a> <strong>createMappingContext</strong>(<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSources, java.lang.Class classes)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1433,9 +1468,9 @@ public&nbsp;<a href='../../../../../org/grails/datastore/gorm/events/Configurabl
                         <a name="getConnectionSources()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;ConnectionSources&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; <strong>getConnectionSources</strong>()</h4>
+                                <h4>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; <strong>getConnectionSources</strong>()</h4>
                                 <p>
-      <DL><DT><B>Returns:</B></DT><DD>The ConnectionSources for this datastore</DD></DL></p>
+      <DL><DT><B>Returns:</B></DT><DD>The <a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a> for this datastore</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -1622,7 +1657,7 @@ public&nbsp;boolean <strong>isSchemaless</strong>()</h4>
                         <a name="newConnectionSource(ConnectionSource)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>newConnectionSource</strong>(ConnectionSource&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSource)</h4>
+                                <h4>public&nbsp;void <strong>newConnectionSource</strong>(<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSource)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1716,11 +1751,11 @@ public&nbsp;void <strong>setCodecs</strong>(java.util.List&lt;org.bson.codecs.Co
                             </li>
                         </ul>
                     
-                        <a name="setMessageSource(MessageSource)"><!-- --></a>
+                        <a name="setMessageSource(org.springframework.context.MessageSource)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@org.springframework.beans.factory.annotation.Autowired(required = false)
-public&nbsp;void <strong>setMessageSource</strong>(<a href='../../../../../MessageSource.html'>MessageSource</a> messageSource)</h4>
+public&nbsp;void <strong>setMessageSource</strong>(org.springframework.context.MessageSource messageSource)</h4>
                                 <p> The message source used for validation messages
       <DL><DT><B>Parameters:</B></DT><DD><code>messageSource</code> -  The message source</DD></DL></p>
                             </li>

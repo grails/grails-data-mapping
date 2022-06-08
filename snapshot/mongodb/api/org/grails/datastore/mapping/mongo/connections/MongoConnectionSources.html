@@ -104,7 +104,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
 <pre>@groovy.transform.CompileStatic
 class MongoConnectionSources
-extends InMemoryConnectionSources&lt;MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt;</pre>
+extends <a href='../../../../../../org/grails/datastore/mapping/core/connections/InMemoryConnectionSources.html' title='InMemoryConnectionSources'>InMemoryConnectionSources</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt;</pre>
 
     <p>
  A <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a> implementation that reads the connections from MongoDB <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>6.0</DD></DL></p>
@@ -145,7 +145,7 @@ extends InMemoryConnectionSources&lt;MongoClient, <a href='../../../../../../org
                         <tr class="altColor">
                             <td class="colFirst">
                                 <code><a href="#MongoConnectionSources(ConnectionSource, ConnectionSourceFactory, org.springframework.core.env.PropertyResolver)">MongoConnectionSources</a>
-                                (ConnectionSource&lt;MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; defaultConnectionSource, ConnectionSourceFactory&lt;MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSourceFactory, org.springframework.core.env.PropertyResolver configuration)</code><br></td>
+                                (<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; defaultConnectionSource, <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceFactory.html' title='ConnectionSourceFactory'>ConnectionSourceFactory</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSourceFactory, org.springframework.core.env.PropertyResolver configuration)</code><br></td>
                         </tr>
                         
                     </table>
@@ -171,32 +171,32 @@ extends InMemoryConnectionSources&lt;MongoClient, <a href='../../../../../../org
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>ConnectionSource&lt;MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt;</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#addConnectionSource(java.lang.String, org.springframework.core.env.PropertyResolver)">addConnectionSource</a></strong>(java.lang.String name, org.springframework.core.env.PropertyResolver configuration)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>ConnectionSource&lt;MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt;</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#addConnectionSource(java.lang.String, org.bson.Document)">addConnectionSource</a></strong>(java.lang.String name, org.bson.Document configuration)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>ConnectionSource&lt;MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt;</code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#addConnectionSource(java.lang.String, Map)">addConnectionSource</a></strong>(java.lang.String name, java.util.Map&lt;java.lang.String, java.lang.Object&gt; configuration)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;MongoCollection&lt;Document&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#getConnectionsCollection(ConnectionSource)">getConnectionsCollection</a></strong>(ConnectionSource&lt;MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSource)</code><br></td>
+                            <td class="colLast"><code>protected&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#getConnectionsCollection(ConnectionSource)">getConnectionsCollection</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSource)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#initialize(ConnectionSource)">initialize</a></strong>(ConnectionSource&lt;MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSource)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#initialize(ConnectionSource)">initialize</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSource)</code><br></td>
                         </tr>
                         
                     </table>
@@ -231,7 +231,7 @@ extends InMemoryConnectionSources&lt;MongoClient, <a href='../../../../../../org
                         <a name="MongoConnectionSources(ConnectionSource, ConnectionSourceFactory, org.springframework.core.env.PropertyResolver)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4><strong>MongoConnectionSources</strong>(ConnectionSource&lt;MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; defaultConnectionSource, ConnectionSourceFactory&lt;MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSourceFactory, org.springframework.core.env.PropertyResolver configuration)</h4>
+                                <h4><strong>MongoConnectionSources</strong>(<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; defaultConnectionSource, <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceFactory.html' title='ConnectionSourceFactory'>ConnectionSourceFactory</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSourceFactory, org.springframework.core.env.PropertyResolver configuration)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -253,7 +253,7 @@ extends InMemoryConnectionSources&lt;MongoClient, <a href='../../../../../../org
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-ConnectionSource&lt;MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; <strong>addConnectionSource</strong>(java.lang.String name, org.springframework.core.env.PropertyResolver configuration)</h4>
+<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; <strong>addConnectionSource</strong>(java.lang.String name, org.springframework.core.env.PropertyResolver configuration)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -261,7 +261,7 @@ ConnectionSource&lt;MongoClient, <a href='../../../../../../org/grails/datastore
                         <a name="addConnectionSource(java.lang.String, org.bson.Document)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>ConnectionSource&lt;MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; <strong>addConnectionSource</strong>(java.lang.String name, org.bson.Document configuration)</h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; <strong>addConnectionSource</strong>(java.lang.String name, org.bson.Document configuration)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -269,7 +269,7 @@ ConnectionSource&lt;MongoClient, <a href='../../../../../../org/grails/datastore
                         <a name="addConnectionSource(java.lang.String, Map)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>ConnectionSource&lt;MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; <strong>addConnectionSource</strong>(java.lang.String name, java.util.Map&lt;java.lang.String, java.lang.Object&gt; configuration)</h4>
+                                <h4><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; <strong>addConnectionSource</strong>(java.lang.String name, java.util.Map&lt;java.lang.String, java.lang.Object&gt; configuration)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -277,7 +277,7 @@ ConnectionSource&lt;MongoClient, <a href='../../../../../../org/grails/datastore
                         <a name="getConnectionsCollection(ConnectionSource)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>protected&nbsp;MongoCollection&lt;Document&gt; <strong>getConnectionsCollection</strong>(ConnectionSource&lt;MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSource)</h4>
+                                <h4>protected&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; <strong>getConnectionsCollection</strong>(<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSource)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -285,7 +285,7 @@ ConnectionSource&lt;MongoClient, <a href='../../../../../../org/grails/datastore
                         <a name="initialize(ConnectionSource)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>initialize</strong>(ConnectionSource&lt;MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSource)</h4>
+                                <h4>void <strong>initialize</strong>(<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSource)</h4>
                                 <p></p>
                             </li>
                         </ul>

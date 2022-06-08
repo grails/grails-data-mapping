@@ -99,7 +99,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Implemented Interfaces and Traits:</dt>
-                <dd><a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes.html'>DynamicAttributes</a>, GormEntity&lt;D&gt;</dd>
+                <dd><a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes.html'>DynamicAttributes</a>, <a href='../../org/grails/datastore/gorm/GormEntity.html' title='GormEntity'>GormEntity</a>&lt;D&gt;</dd>
             </dl>
     
 
@@ -111,9 +111,9 @@ if (location.href.indexOf('is-external=true') == -1) {
 @groovy.transform.CompileStatic
 trait MongoEntity&lt;D&gt;
 extends java.lang.Object
-implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes.html'>DynamicAttributes</a>, GormEntity&lt;D&gt;</pre>
+implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes.html'>DynamicAttributes</a>, <a href='../../org/grails/datastore/gorm/GormEntity.html' title='GormEntity'>GormEntity</a>&lt;D&gt;</pre>
 
-    <p> Enhances the default GormEntity class with MongoDB specific methods <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>5.0</DD></DL></p>
+    <p> Enhances the default <a href='../../org/grails/datastore/gorm/GormEntity.html' title='GormEntity'>GormEntity</a> class with MongoDB specific methods <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>5.0</DD></DL></p>
 
           </li>
     </ul>
@@ -156,13 +156,13 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;java.util.List&lt;D&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#aggregate(java.util.List, Function)">aggregate</a></strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate)</code><br>Execute a MongoDB aggregation pipeline. </td>
+                            <td class="colLast"><code><strong><a href="#aggregate(java.util.List, Function)">aggregate</a></strong>(java.util.List pipeline, java.util.function.Function&lt;com.mongodb.client.AggregateIterable, com.mongodb.client.AggregateIterable&gt; doWithAggregate)</code><br>Execute a MongoDB aggregation pipeline. </td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;java.util.List&lt;D&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#aggregate(java.util.List, Function, com.mongodb.ReadPreference)">aggregate</a></strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate, com.mongodb.ReadPreference readPreference)</code><br>Execute a MongoDB aggregation pipeline. </td>
+                            <td class="colLast"><code><strong><a href="#aggregate(java.util.List, Function, com.mongodb.ReadPreference)">aggregate</a></strong>(java.util.List pipeline, java.util.function.Function&lt;com.mongodb.client.AggregateIterable, com.mongodb.client.AggregateIterable&gt; doWithAggregate, com.mongodb.ReadPreference readPreference)</code><br>Execute a MongoDB aggregation pipeline. </td>
                         </tr>
                         
                         <tr class="altColor">
@@ -185,7 +185,7 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;FindIterable&lt;D&gt;</code></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.FindIterable&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#find(org.bson.conversions.Bson)">find</a></strong>(org.bson.conversions.Bson filter)</code><br>Finds all of the entities in the collection.</td>
                         </tr>
                         
@@ -203,7 +203,7 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;MongoCollection&lt;Document&gt;</code></td>
+                            <td class="colLast"><code>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getCollection()">getCollection</a></strong>()</code><br>The actual collection that this entity maps to.</td>
                         </tr>
                         
@@ -332,7 +332,7 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         <a name="aggregate(java.util.List, Function)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate)</h4>
+                                <h4>static&nbsp;java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline, java.util.function.Function&lt;com.mongodb.client.AggregateIterable, com.mongodb.client.AggregateIterable&gt; doWithAggregate)</h4>
                                 <p> Execute a MongoDB aggregation pipeline. Note that the pipeline should return documents that represent this domain class as each return document will be converted to a domain instance in the result set <DL><DT><B>Parameters:</B></DT><DD><code>pipeline</code> -  The pipeline</DD><DD><code>doWithAggregate</code> -  The function to transform the aggregate iterable (optional)</DD></DL><DL><DT><B>Returns:</B></DT><DD>A mongodb result list</DD></DL></p>
                             </li>
                         </ul>
@@ -340,7 +340,7 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         <a name="aggregate(java.util.List, Function, com.mongodb.ReadPreference)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline, Function&lt;AggregateIterable, AggregateIterable&gt; doWithAggregate, com.mongodb.ReadPreference readPreference)</h4>
+                                <h4>static&nbsp;java.util.List&lt;D&gt; <strong>aggregate</strong>(java.util.List pipeline, java.util.function.Function&lt;com.mongodb.client.AggregateIterable, com.mongodb.client.AggregateIterable&gt; doWithAggregate, com.mongodb.ReadPreference readPreference)</h4>
                                 <p> Execute a MongoDB aggregation pipeline. Note that the pipeline should return documents that represent this domain class as each return document will be converted to a domain instance in the result set <DL><DT><B>Parameters:</B></DT><DD><code>pipeline</code> -  The pipeline</DD><DD><code>doWithAggregate</code> -  The function to transform the aggregate iterable (optional)</DD></DL><DL><DT><B>Returns:</B></DT><DD>A mongodb result list</DD></DL></p>
                             </li>
                         </ul>
@@ -372,7 +372,7 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         <a name="find(org.bson.conversions.Bson)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;FindIterable&lt;D&gt; <strong>find</strong>(org.bson.conversions.Bson filter)</h4>
+                                <h4>static&nbsp;com.mongodb.client.FindIterable&lt;D&gt; <strong>find</strong>(org.bson.conversions.Bson filter)</h4>
                                 <p> Finds all of the entities in the collection. <DL><DT><B>Parameters:</B></DT><DD><code>filter</code> -  the query filter</DD></DL><DL><DT><B>Returns:</B></DT><DD>the find iterable interface</DD></DL></p>
                             </li>
                         </ul>
@@ -396,7 +396,7 @@ implements <a href='../../org/grails/datastore/gorm/schemaless/DynamicAttributes
                         <a name="getCollection()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>static&nbsp;MongoCollection&lt;Document&gt; <strong>getCollection</strong>()</h4>
+                                <h4>static&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt; <strong>getCollection</strong>()</h4>
                                 <p> The actual collection that this entity maps to. <DL><DT><B>Returns:</B></DT><DD>The actual collection</DD></DL></p>
                             </li>
                         </ul>

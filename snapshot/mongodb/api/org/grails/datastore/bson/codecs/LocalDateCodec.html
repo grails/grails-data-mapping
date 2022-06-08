@@ -99,7 +99,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Implemented Interfaces and Traits:</dt>
-                <dd>Codec&lt;LocalDate&gt;, <a href='../../../../../org/grails/datastore/bson/codecs/temporal/LocalDateBsonConverter.html'>LocalDateBsonConverter</a></dd>
+                <dd>org.bson.codecs.Codec&lt;java.time.LocalDate&gt;, <a href='../../../../../org/grails/datastore/bson/codecs/temporal/LocalDateBsonConverter.html'>LocalDateBsonConverter</a></dd>
             </dl>
     
 
@@ -110,9 +110,9 @@ if (location.href.indexOf('is-external=true') == -1) {
 <pre>@groovy.transform.CompileStatic
 class LocalDateCodec
 extends java.lang.Object
-implements Codec&lt;LocalDate&gt;, <a href='../../../../../org/grails/datastore/bson/codecs/temporal/LocalDateBsonConverter.html'>LocalDateBsonConverter</a></pre>
+implements org.bson.codecs.Codec&lt;java.time.LocalDate&gt;, <a href='../../../../../org/grails/datastore/bson/codecs/temporal/LocalDateBsonConverter.html'>LocalDateBsonConverter</a></pre>
 
-    <p> A class to translate a LocalDate in MongoDB <DL><DT><B>Authors:</B></DT><DD>James Kleeh</DD></DL></p>
+    <p> A class to translate a java.time.LocalDate in MongoDB <DL><DT><B>Authors:</B></DT><DD>James Kleeh</DD></DL></p>
 
           </li>
     </ul>
@@ -176,19 +176,19 @@ implements Codec&lt;LocalDate&gt;, <a href='../../../../../org/grails/datastore/
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code><a href='../../../../../LocalDate.html'>LocalDate</a></code></td>
+                            <td class="colLast"><code>java.time.LocalDate</code></td>
                             <td class="colLast"><code><strong><a href="#decode(org.bson.BsonReader, org.bson.codecs.DecoderContext)">decode</a></strong>(org.bson.BsonReader reader, org.bson.codecs.DecoderContext decoderContext)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#encode(org.bson.BsonWriter, LocalDate, org.bson.codecs.EncoderContext)">encode</a></strong>(org.bson.BsonWriter writer, <a href='../../../../../LocalDate.html'>LocalDate</a> value, org.bson.codecs.EncoderContext encoderContext)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#encode(org.bson.BsonWriter, java.time.LocalDate, org.bson.codecs.EncoderContext)">encode</a></strong>(org.bson.BsonWriter writer, java.time.LocalDate value, org.bson.codecs.EncoderContext encoderContext)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>java.lang.Class&lt;LocalDate&gt;</code></td>
+                            <td class="colLast"><code>java.lang.Class&lt;java.time.LocalDate&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getEncoderClass()">getEncoderClass</a></strong>()</code><br></td>
                         </tr>
                         
@@ -264,16 +264,16 @@ implements Codec&lt;LocalDate&gt;, <a href='../../../../../org/grails/datastore/
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-<a href='../../../../../LocalDate.html'>LocalDate</a> <strong>decode</strong>(org.bson.BsonReader reader, org.bson.codecs.DecoderContext decoderContext)</h4>
+java.time.LocalDate <strong>decode</strong>(org.bson.BsonReader reader, org.bson.codecs.DecoderContext decoderContext)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="encode(org.bson.BsonWriter, LocalDate, org.bson.codecs.EncoderContext)"><!-- --></a>
+                        <a name="encode(org.bson.BsonWriter, java.time.LocalDate, org.bson.codecs.EncoderContext)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-void <strong>encode</strong>(org.bson.BsonWriter writer, <a href='../../../../../LocalDate.html'>LocalDate</a> value, org.bson.codecs.EncoderContext encoderContext)</h4>
+void <strong>encode</strong>(org.bson.BsonWriter writer, java.time.LocalDate value, org.bson.codecs.EncoderContext encoderContext)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -282,7 +282,7 @@ void <strong>encode</strong>(org.bson.BsonWriter writer, <a href='../../../../..
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-java.lang.Class&lt;LocalDate&gt; <strong>getEncoderClass</strong>()</h4>
+java.lang.Class&lt;java.time.LocalDate&gt; <strong>getEncoderClass</strong>()</h4>
                                 <p></p>
                             </li>
                         </ul>

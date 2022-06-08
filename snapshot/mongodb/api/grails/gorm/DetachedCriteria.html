@@ -99,7 +99,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 
             <dl>
                 <dt>All Implemented Interfaces and Traits:</dt>
-                <dd>GormOperations&lt;T&gt;, java.lang.Iterable&lt;T&gt;, QueryableCriteria&lt;T&gt;</dd>
+                <dd><a href='../../org/grails/datastore/gorm/query/GormOperations.html' title='GormOperations'>GormOperations</a>&lt;T&gt;, java.lang.Iterable&lt;T&gt;, <a href='../../org/grails/datastore/mapping/query/api/QueryableCriteria.html' title='QueryableCriteria'>QueryableCriteria</a>&lt;T&gt;</dd>
             </dl>
     
 
@@ -109,8 +109,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 
 <pre>@groovy.transform.CompileStatic
 class DetachedCriteria&lt;T&gt;
-extends AbstractDetachedCriteria&lt;T&gt;
-implements GormOperations&lt;T&gt;, java.lang.Iterable&lt;T&gt;, QueryableCriteria&lt;T&gt;</pre>
+extends <a href='../../org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html' title='AbstractDetachedCriteria'>AbstractDetachedCriteria</a>&lt;T&gt;
+implements <a href='../../org/grails/datastore/gorm/query/GormOperations.html' title='GormOperations'>GormOperations</a>&lt;T&gt;, java.lang.Iterable&lt;T&gt;, <a href='../../org/grails/datastore/mapping/query/api/QueryableCriteria.html' title='QueryableCriteria'>QueryableCriteria</a>&lt;T&gt;</pre>
 
     <p> Represents criteria that is not bound to the current connection and can be built up and re-used at a later date. <DL><DT><B>Authors:</B></DT><DD>Graeme Rocher</DD></DL><DL><DT><B>Since:</B></DT><DD>1.0</DD></DL></p>
 
@@ -285,7 +285,7 @@ implements GormOperations&lt;T&gt;, java.lang.Iterable&lt;T&gt;, QueryableCriter
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;T&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#exists(QueryableCriteria)">exists</a></strong>(QueryableCriteria&lt;?&gt; subquery)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#exists(QueryableCriteria)">exists</a></strong>(<a href='../../org/grails/datastore/mapping/query/api/QueryableCriteria.html' title='QueryableCriteria'>QueryableCriteria</a>&lt;?&gt; subquery)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -447,7 +447,7 @@ implements GormOperations&lt;T&gt;, java.lang.Iterable&lt;T&gt;, QueryableCriter
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;T&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#inList(java.lang.String, QueryableCriteria)">inList</a></strong>(java.lang.String propertyName, QueryableCriteria&lt;?&gt; subquery)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#inList(java.lang.String, QueryableCriteria)">inList</a></strong>(java.lang.String propertyName, <a href='../../org/grails/datastore/mapping/query/api/QueryableCriteria.html' title='QueryableCriteria'>QueryableCriteria</a>&lt;?&gt; subquery)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -651,13 +651,13 @@ implements GormOperations&lt;T&gt;, java.lang.Iterable&lt;T&gt;, QueryableCriter
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;T&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#notExists(QueryableCriteria)">notExists</a></strong>(QueryableCriteria&lt;?&gt; subquery)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#notExists(QueryableCriteria)">notExists</a></strong>(<a href='../../org/grails/datastore/mapping/query/api/QueryableCriteria.html' title='QueryableCriteria'>QueryableCriteria</a>&lt;?&gt; subquery)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;T&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#notIn(java.lang.String, QueryableCriteria)">notIn</a></strong>(java.lang.String propertyName, QueryableCriteria&lt;?&gt; subquery)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#notIn(java.lang.String, QueryableCriteria)">notIn</a></strong>(java.lang.String propertyName, <a href='../../org/grails/datastore/mapping/query/api/QueryableCriteria.html' title='QueryableCriteria'>QueryableCriteria</a>&lt;?&gt; subquery)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -687,7 +687,7 @@ implements GormOperations&lt;T&gt;, java.lang.Iterable&lt;T&gt;, QueryableCriter
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;T&gt;</code></td>
-                            <td class="colLast"><code><strong><a href="#order(grails.gorm.services.Query.Order)">order</a></strong>(<a href='../../grails/gorm/services/Query.Order.html'>Order</a> o)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#order(org.grails.datastore.mapping.query.Query.Order)">order</a></strong>(<a href='../../org/grails/datastore/mapping/query/Query.Order.html'>Order</a> o)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -1012,7 +1012,7 @@ protected&nbsp;<a href='../../grails/gorm/DetachedCriteria.html' title='Detached
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-<a href='../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;T&gt; <strong>exists</strong>(QueryableCriteria&lt;?&gt; subquery)</h4>
+<a href='../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;T&gt; <strong>exists</strong>(<a href='../../org/grails/datastore/mapping/query/api/QueryableCriteria.html' title='QueryableCriteria'>QueryableCriteria</a>&lt;?&gt; subquery)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1249,7 +1249,7 @@ protected&nbsp;<a href='../../grails/gorm/DetachedCriteria.html' title='Detached
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-<a href='../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;T&gt; <strong>inList</strong>(java.lang.String propertyName, QueryableCriteria&lt;?&gt; subquery)</h4>
+<a href='../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;T&gt; <strong>inList</strong>(java.lang.String propertyName, <a href='../../org/grails/datastore/mapping/query/api/QueryableCriteria.html' title='QueryableCriteria'>QueryableCriteria</a>&lt;?&gt; subquery)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1551,7 +1551,7 @@ protected&nbsp;<a href='../../grails/gorm/DetachedCriteria.html'>DetachedCriteri
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-<a href='../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;T&gt; <strong>notExists</strong>(QueryableCriteria&lt;?&gt; subquery)</h4>
+<a href='../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;T&gt; <strong>notExists</strong>(<a href='../../org/grails/datastore/mapping/query/api/QueryableCriteria.html' title='QueryableCriteria'>QueryableCriteria</a>&lt;?&gt; subquery)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1560,7 +1560,7 @@ protected&nbsp;<a href='../../grails/gorm/DetachedCriteria.html'>DetachedCriteri
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-<a href='../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;T&gt; <strong>notIn</strong>(java.lang.String propertyName, QueryableCriteria&lt;?&gt; subquery)</h4>
+<a href='../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;T&gt; <strong>notIn</strong>(java.lang.String propertyName, <a href='../../org/grails/datastore/mapping/query/api/QueryableCriteria.html' title='QueryableCriteria'>QueryableCriteria</a>&lt;?&gt; subquery)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -1601,11 +1601,11 @@ protected&nbsp;<a href='../../grails/gorm/DetachedCriteria.html'>DetachedCriteri
                             </li>
                         </ul>
                     
-                        <a name="order(grails.gorm.services.Query.Order)"><!-- --></a>
+                        <a name="order(org.grails.datastore.mapping.query.Query.Order)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-<a href='../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;T&gt; <strong>order</strong>(<a href='../../grails/gorm/services/Query.Order.html'>Order</a> o)</h4>
+<a href='../../grails/gorm/DetachedCriteria.html' title='DetachedCriteria'>DetachedCriteria</a>&lt;T&gt; <strong>order</strong>(<a href='../../org/grails/datastore/mapping/query/Query.Order.html'>Order</a> o)</h4>
                                 <p></p>
                             </li>
                         </ul>

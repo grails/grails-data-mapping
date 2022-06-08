@@ -108,7 +108,7 @@ if (location.href.indexOf('is-external=true') == -1) {
             <br>
 
 <pre>public&nbsp;class DomainEventListener
-extends <a href='../../../../../AbstractPersistenceEventListener.html'>AbstractPersistenceEventListener</a>
+extends <a href='../../../../../org/grails/datastore/mapping/engine/event/AbstractPersistenceEventListener.html'>AbstractPersistenceEventListener</a>
 implements <a href='../../../../../MappingContextListener.html'>MappingContextListener</a></pre>
 
     <p> An event listener that provides support for GORM domain events.
@@ -154,6 +154,23 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         
                     </table>
                    </ul>
+                </li>
+                
+                <li class="blockList"><a name="field_summary"><!--   --></a>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Inherited fields summary table">
+                        <caption><span>Inherited fields</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Fields inherited from class</th>
+                            <th class="colLast" scope="col">Fields</th>
+                        </tr>
+                                                <tr class="altColor">
+                            <td class="colFirst"><strong><code>class <a href='../../../../../org/grails/datastore/mapping/engine/event/AbstractPersistenceEventListener.html'>AbstractPersistenceEventListener</a></code></strong></td>
+                            <td class="colLast"><code><a href='../../../../../org/grails/datastore/mapping/engine/event/AbstractPersistenceEventListener.html#datastore'>datastore</a></code></td>
+                        </tr>
+
+                    </table>
+                    </ul>
                 </li>
                 
             </ul>
@@ -219,7 +236,7 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#afterDelete(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, PostDeleteEvent)">afterDelete</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../PostDeleteEvent.html'>PostDeleteEvent</a> event)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#afterDelete(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.engine.event.PostDeleteEvent)">afterDelete</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../org/grails/datastore/mapping/engine/event/PostDeleteEvent.html'>PostDeleteEvent</a> event)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -231,7 +248,7 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#afterInsert(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, PostInsertEvent)">afterInsert</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../PostInsertEvent.html'>PostInsertEvent</a> event)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#afterInsert(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.engine.event.PostInsertEvent)">afterInsert</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../org/grails/datastore/mapping/engine/event/PostInsertEvent.html'>PostInsertEvent</a> event)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -243,7 +260,7 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#afterLoad(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, PostLoadEvent)">afterLoad</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../PostLoadEvent.html'>PostLoadEvent</a> event)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#afterLoad(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.engine.event.PostLoadEvent)">afterLoad</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../org/grails/datastore/mapping/engine/event/PostLoadEvent.html'>PostLoadEvent</a> event)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -255,7 +272,7 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#afterUpdate(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, PostUpdateEvent)">afterUpdate</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../PostUpdateEvent.html'>PostUpdateEvent</a> event)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#afterUpdate(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.engine.event.PostUpdateEvent)">afterUpdate</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../org/grails/datastore/mapping/engine/event/PostUpdateEvent.html'>PostUpdateEvent</a> event)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -273,7 +290,7 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#beforeDelete(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, PreDeleteEvent)">beforeDelete</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../PreDeleteEvent.html'>PreDeleteEvent</a> event)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#beforeDelete(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.engine.event.PreDeleteEvent)">beforeDelete</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../org/grails/datastore/mapping/engine/event/PreDeleteEvent.html'>PreDeleteEvent</a> event)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -285,7 +302,7 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#beforeInsert(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, PreInsertEvent)">beforeInsert</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../PreInsertEvent.html'>PreInsertEvent</a> event)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#beforeInsert(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.engine.event.PreInsertEvent)">beforeInsert</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../org/grails/datastore/mapping/engine/event/PreInsertEvent.html'>PreInsertEvent</a> event)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -297,7 +314,7 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#beforeLoad(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, PreLoadEvent)">beforeLoad</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../PreLoadEvent.html'>PreLoadEvent</a> event)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#beforeLoad(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.engine.event.PreLoadEvent)">beforeLoad</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../org/grails/datastore/mapping/engine/event/PreLoadEvent.html'>PreLoadEvent</a> event)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -309,13 +326,13 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#beforeUpdate(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, PreUpdateEvent)">beforeUpdate</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../PreUpdateEvent.html'>PreUpdateEvent</a> event)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#beforeUpdate(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.engine.event.PreUpdateEvent)">beforeUpdate</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../org/grails/datastore/mapping/engine/event/PreUpdateEvent.html'>PreUpdateEvent</a> event)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#onPersistenceEvent(AbstractPersistenceEvent)">onPersistenceEvent</a></strong>(<a href='../../../../../AbstractPersistenceEvent.html'>AbstractPersistenceEvent</a> event)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#onPersistenceEvent(org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent)">onPersistenceEvent</a></strong>(<a href='../../../../../org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html'>AbstractPersistenceEvent</a> event)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -340,6 +357,24 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                    </ul>
               </li>
             
+            <li class="blockList"><a name="method_summary"><!--   --></a>
+                    <h3>Inherited Methods Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Inherited Methods Summary table">
+                        <caption><span>Inherited Methods</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Methods inherited from class</th>
+                            <th class="colLast" scope="col">Name</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>class <a href='../../../../../org/grails/datastore/mapping/engine/event/AbstractPersistenceEventListener.html'>AbstractPersistenceEventListener</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../org/grails/datastore/mapping/engine/event/AbstractPersistenceEventListener.html#getOrder()'>getOrder</a>, <a href='../../../../../org/grails/datastore/mapping/engine/event/AbstractPersistenceEventListener.html#isValidSource(org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent)'>isValidSource</a>, <a href='../../../../../org/grails/datastore/mapping/engine/event/AbstractPersistenceEventListener.html#onApplicationEvent(org.springframework.context.ApplicationEvent)'>onApplicationEvent</a>, <a href='../../../../../org/grails/datastore/mapping/engine/event/AbstractPersistenceEventListener.html#onPersistenceEvent(org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent)'>onPersistenceEvent</a>, <a href='../../../../../org/grails/datastore/mapping/engine/event/AbstractPersistenceEventListener.html#supportsSourceType(Class)'>supportsSourceType</a></code></td>
+                        </tr>
+                    </table>
+                   </ul>
+              </li>
+                
         </ul>
         
     </li>
@@ -429,10 +464,10 @@ public&nbsp;static&nbsp;final&nbsp;java.lang.Class[] <strong>ZERO_PARAMS</strong
                             </li>
                         </ul>
                     
-                        <a name="afterDelete(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, PostDeleteEvent)"><!-- --></a>
+                        <a name="afterDelete(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.engine.event.PostDeleteEvent)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>afterDelete</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../PostDeleteEvent.html'>PostDeleteEvent</a> event)</h4>
+                                <h4>public&nbsp;void <strong>afterDelete</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../org/grails/datastore/mapping/engine/event/PostDeleteEvent.html'>PostDeleteEvent</a> event)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -445,10 +480,10 @@ public&nbsp;static&nbsp;final&nbsp;java.lang.Class[] <strong>ZERO_PARAMS</strong
                             </li>
                         </ul>
                     
-                        <a name="afterInsert(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, PostInsertEvent)"><!-- --></a>
+                        <a name="afterInsert(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.engine.event.PostInsertEvent)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>afterInsert</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../PostInsertEvent.html'>PostInsertEvent</a> event)</h4>
+                                <h4>public&nbsp;void <strong>afterInsert</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../org/grails/datastore/mapping/engine/event/PostInsertEvent.html'>PostInsertEvent</a> event)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -461,10 +496,10 @@ public&nbsp;static&nbsp;final&nbsp;java.lang.Class[] <strong>ZERO_PARAMS</strong
                             </li>
                         </ul>
                     
-                        <a name="afterLoad(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, PostLoadEvent)"><!-- --></a>
+                        <a name="afterLoad(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.engine.event.PostLoadEvent)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>afterLoad</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../PostLoadEvent.html'>PostLoadEvent</a> event)</h4>
+                                <h4>public&nbsp;void <strong>afterLoad</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../org/grails/datastore/mapping/engine/event/PostLoadEvent.html'>PostLoadEvent</a> event)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -477,10 +512,10 @@ public&nbsp;static&nbsp;final&nbsp;java.lang.Class[] <strong>ZERO_PARAMS</strong
                             </li>
                         </ul>
                     
-                        <a name="afterUpdate(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, PostUpdateEvent)"><!-- --></a>
+                        <a name="afterUpdate(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.engine.event.PostUpdateEvent)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>afterUpdate</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../PostUpdateEvent.html'>PostUpdateEvent</a> event)</h4>
+                                <h4>public&nbsp;void <strong>afterUpdate</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../org/grails/datastore/mapping/engine/event/PostUpdateEvent.html'>PostUpdateEvent</a> event)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -501,10 +536,10 @@ public&nbsp;static&nbsp;final&nbsp;java.lang.Class[] <strong>ZERO_PARAMS</strong
                             </li>
                         </ul>
                     
-                        <a name="beforeDelete(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, PreDeleteEvent)"><!-- --></a>
+                        <a name="beforeDelete(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.engine.event.PreDeleteEvent)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;boolean <strong>beforeDelete</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../PreDeleteEvent.html'>PreDeleteEvent</a> event)</h4>
+                                <h4>public&nbsp;boolean <strong>beforeDelete</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../org/grails/datastore/mapping/engine/event/PreDeleteEvent.html'>PreDeleteEvent</a> event)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -518,10 +553,10 @@ public&nbsp;static&nbsp;final&nbsp;java.lang.Class[] <strong>ZERO_PARAMS</strong
                             </li>
                         </ul>
                     
-                        <a name="beforeInsert(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, PreInsertEvent)"><!-- --></a>
+                        <a name="beforeInsert(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.engine.event.PreInsertEvent)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;boolean <strong>beforeInsert</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../PreInsertEvent.html'>PreInsertEvent</a> event)</h4>
+                                <h4>public&nbsp;boolean <strong>beforeInsert</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../org/grails/datastore/mapping/engine/event/PreInsertEvent.html'>PreInsertEvent</a> event)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -534,10 +569,10 @@ public&nbsp;static&nbsp;final&nbsp;java.lang.Class[] <strong>ZERO_PARAMS</strong
                             </li>
                         </ul>
                     
-                        <a name="beforeLoad(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, PreLoadEvent)"><!-- --></a>
+                        <a name="beforeLoad(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.engine.event.PreLoadEvent)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;void <strong>beforeLoad</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../PreLoadEvent.html'>PreLoadEvent</a> event)</h4>
+                                <h4>public&nbsp;void <strong>beforeLoad</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../org/grails/datastore/mapping/engine/event/PreLoadEvent.html'>PreLoadEvent</a> event)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -550,19 +585,19 @@ public&nbsp;static&nbsp;final&nbsp;java.lang.Class[] <strong>ZERO_PARAMS</strong
                             </li>
                         </ul>
                     
-                        <a name="beforeUpdate(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, PreUpdateEvent)"><!-- --></a>
+                        <a name="beforeUpdate(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.engine.event.PreUpdateEvent)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>public&nbsp;boolean <strong>beforeUpdate</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../PreUpdateEvent.html'>PreUpdateEvent</a> event)</h4>
+                                <h4>public&nbsp;boolean <strong>beforeUpdate</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea, <a href='../../../../../org/grails/datastore/mapping/engine/event/PreUpdateEvent.html'>PreUpdateEvent</a> event)</h4>
                                 <p></p>
                             </li>
                         </ul>
                     
-                        <a name="onPersistenceEvent(AbstractPersistenceEvent)"><!-- --></a>
+                        <a name="onPersistenceEvent(org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@java.lang.Override
-protected&nbsp;void <strong>onPersistenceEvent</strong>(<a href='../../../../../AbstractPersistenceEvent.html'>AbstractPersistenceEvent</a> event)</h4>
+protected&nbsp;void <strong>onPersistenceEvent</strong>(<a href='../../../../../org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html'>AbstractPersistenceEvent</a> event)</h4>
                                 <p></p>
                             </li>
                         </ul>
