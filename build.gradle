@@ -113,18 +113,18 @@ subprojects {
 
             api "org.codehaus.groovy:groovy:$groovyVersion"
             testImplementation "org.codehaus.groovy:groovy-test-junit5:$groovyVersion"
-            testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
-            testImplementation "org.junit.platform:junit-platform-runner:1.8.2"
-            testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.2"
+            testImplementation "org.junit.jupiter:junit-jupiter-api:5.9.0"
+            testImplementation "org.junit.platform:junit-platform-runner:1.9.0"
+            testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.9.0"
 
             testImplementation(spockDependency) { transitive = false }
         }
 
         if (project.name == "grails-datastore-gorm-tck") {
             api "org.codehaus.groovy:groovy-test-junit5:$groovyVersion"
-            api "org.junit.jupiter:junit-jupiter-api:5.8.2"
-            api "org.junit.platform:junit-platform-runner:1.8.2"
-            runtimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.2"
+            api "org.junit.jupiter:junit-jupiter-api:5.9.0"
+            api "org.junit.platform:junit-platform-runner:1.9.0"
+            runtimeOnly "org.junit.jupiter:junit-jupiter-engine:5.9.0"
             implementation(spockDependency) { transitive = false }
         }
     }
