@@ -463,6 +463,27 @@ zipCode.auditing.save()</code></pre>
 <div class="paragraph">
 <p>As you can see, you add the <code>DataSource</code> to the method call in both the static case and the instance case.</p>
 </div>
+<div class="paragraph">
+<p>You can use <code>Where</code> queries:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def results = ZipCode.where {
+    code ==~ '995%'
+}.withConnection('auditing').list()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or <code>Criteria</code> queries:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def c = ZipCode.auditing.createCriteria()
+def results = c.list {
+    like('code','995%')
+}</code></pre>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">

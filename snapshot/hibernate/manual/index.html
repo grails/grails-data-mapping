@@ -8073,6 +8073,27 @@ zipCode.auditing.save()</code></pre>
 <div class="paragraph">
 <p>As you can see, you add the <code>DataSource</code> to the method call in both the static case and the instance case.</p>
 </div>
+<div class="paragraph">
+<p>You can use <code>Where</code> queries:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> results = ZipCode.where {
+    code ==~ <span class="string"><span class="delimiter">'</span><span class="content">995%</span><span class="delimiter">'</span></span>
+}.withConnection(<span class="string"><span class="delimiter">'</span><span class="content">auditing</span><span class="delimiter">'</span></span>).list()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or <code>Criteria</code> queries:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> c = ZipCode.auditing.createCriteria()
+<span class="keyword">def</span> results = c.list {
+    like(<span class="string"><span class="delimiter">'</span><span class="content">code</span><span class="delimiter">'</span></span>,<span class="string"><span class="delimiter">'</span><span class="content">995%</span><span class="delimiter">'</span></span>)
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="connectionSources">11.4. The ConnectionSources API</h3>
