@@ -89,8 +89,9 @@ subprojects {
         apply plugin: 'idea'
         apply plugin: 'java-library'
         apply plugin: "org.gradle.test-retry"
-        sourceCompatibility = "1.8"
-        targetCompatibility = "1.8"
+
+        sourceCompatibility = 1.11
+        targetCompatibility = 1.11
     }
 
     def isGormDatasource = project.name.startsWith("grails-datastore-gorm-") &&
