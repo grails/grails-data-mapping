@@ -26,7 +26,7 @@ class RuntimeSupport {
             if( d instanceof ConnectionSourcesProvider) {
                 ConnectionSourcesProvider provider = (ConnectionSourcesProvider)d
                 if(ConnectionSource.DEFAULT == provider.getConnectionSources().defaultConnectionSource.name) {
-                    return d
+                    return (Datastore) d
                 }
             }
         }

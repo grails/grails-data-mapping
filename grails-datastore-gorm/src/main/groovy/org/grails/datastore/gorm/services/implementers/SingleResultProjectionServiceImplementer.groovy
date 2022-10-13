@@ -9,7 +9,7 @@ import org.codehaus.groovy.ast.MethodNode
  * @author Graeme Rocher
  * @since 6.1.1
  */
-interface SingleResultProjectionServiceImplementer extends SingleResultServiceImplementer {
+interface SingleResultProjectionServiceImplementer<T> extends SingleResultServiceImplementer<T> {
 
     /**
      * Is the return type compatible with the projection query

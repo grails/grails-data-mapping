@@ -19,6 +19,7 @@ import grails.gorm.services.Service
 import grails.gorm.transactions.NotTransactional
 import groovy.transform.CompilationUnitAware
 import groovy.transform.CompileStatic
+import groovyjarjarasm.asm.Opcodes
 import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
@@ -191,7 +192,7 @@ class ServiceTransformation extends AbstractTraitApplyingGormASTTransformation i
             ClassNode superClass = isInterface ? ClassHelper.OBJECT_TYPE : classNode.plainNodeReference
             String serviceClassName = classNode.nameWithoutPackage
             ClassNode impl = new ClassNode("${packageName}\$${serviceClassName}Implementation", // class name
-                    ACC_PUBLIC, // public
+                    Opcodes.ACC_PUBLIC, // public
                     superClass,
                     interfaces)
 
