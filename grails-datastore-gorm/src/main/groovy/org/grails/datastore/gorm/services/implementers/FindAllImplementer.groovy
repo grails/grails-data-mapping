@@ -35,7 +35,7 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.*
  * @since 6.1
  */
 @CompileStatic
-class FindAllImplementer extends AbstractDetachedCriteriaServiceImplementor implements Ordered, IterableServiceImplementer<GormEntity> {
+class FindAllImplementer extends AbstractDetachedCriteriaServiceImplementor implements Ordered, IterableServiceImplementer {
 
     static final List<String> HANDLED_PREFIXES = ['list', 'find', 'get', 'retrieve']
 
