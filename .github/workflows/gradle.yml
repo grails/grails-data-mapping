@@ -68,7 +68,7 @@ jobs:
         run: echo ::set-output name=value::{\"message\":\"New Core Snapshot $(date) - $GITHUB_SHA\"}
       - name: Invoke the Java CI workflow in GORM Hibernate5
         if: success() && github.event_name == 'push' && matrix.java == '8'
-        uses: benc-uk/workflow-dispatch@v1.1
+        uses: benc-uk/workflow-dispatch@v1.2
         with:
           workflow: Java CI
           repo: grails/gorm-hibernate5
@@ -77,7 +77,7 @@ jobs:
           inputs: ${{ steps.dispatch_message.outputs.value }}
       - name: Invoke the Java CI workflow in GORM MongoDB
         if: success() && github.event_name == 'push' && matrix.java == '8'
-        uses: benc-uk/workflow-dispatch@v1.1
+        uses: benc-uk/workflow-dispatch@v1.2
         with:
           workflow: Java CI
           repo: grails/gorm-mongodb
@@ -86,7 +86,7 @@ jobs:
           inputs: ${{ steps.dispatch_message.outputs.value }}
       - name: Invoke the Java CI workflow in GORM Neo4j
         if: success() && github.event_name == 'push' && matrix.java == '8'
-        uses: benc-uk/workflow-dispatch@v1.1
+        uses: benc-uk/workflow-dispatch@v1.2
         with:
           workflow: Java CI
           repo: grails/gorm-neo4j
