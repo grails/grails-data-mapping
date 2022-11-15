@@ -383,7 +383,7 @@ extends <a href='../../../../../org/grails/orm/hibernate/support/HibernateRuntim
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;static&nbsp;java.lang.Object</code></td>
-                            <td class="colLast"><code><strong><a href="#unwrapIfProxy(java.lang.Object)">unwrapIfProxy</a></strong>(java.lang.Object instance)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#unwrapIfProxy(java.lang.Object)">unwrapIfProxy</a></strong>(java.lang.Object instance)</code><br>Unproxies a HibernateProxy. </td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -773,7 +773,9 @@ public&nbsp;static&nbsp;void <strong>setBinder</strong>(<a href='../../../../../
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;static&nbsp;java.lang.Object <strong>unwrapIfProxy</strong>(java.lang.Object instance)</h4>
-                                <p></p>
+                                <p> Unproxies a HibernateProxy. If the proxy is uninitialized, it automatically triggers an initialization.
+ In case the supplied object is null or not a proxy, the object will be returned as-is.
+     </p>
                             </li>
                         </ul>
                     
