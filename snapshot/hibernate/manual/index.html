@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.8">
-<meta name="author" content="Graeme Rocher, Puneet Behl">
+<meta name="author" content="Graeme Rocher">
 <title>GORM for Hibernate</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -527,8 +527,8 @@ table.CodeRay td.code>pre{padding:0}
 <div id="header">
 <h1>GORM for Hibernate</h1>
 <div class="details">
-<span id="author" class="author">Graeme Rocher, Puneet Behl</span><br>
-<span id="revnumber">version 7.3.1-SNAPSHOT</span>
+<span id="author" class="author">Graeme Rocher</span><br>
+<span id="revnumber">version 7.0.8.BUILD-SNAPSHOT</span>
 </div>
 <div id="toc" class="toc">
 <div id="toctitle">Table of Contents</div>
@@ -665,19 +665,19 @@ table.CodeRay td.code>pre{padding:0}
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://gorm.grails.org/latest/mongodb/manual">GORM for MongoDB</a></p>
+<p><a href="http://gorm.grails.org/latest/mongodb/manual">GORM for MongoDB</a></p>
 </li>
 <li>
-<p><a href="https://gorm.grails.org/latest/neo4j/manual">GORM for Neo4j</a></p>
+<p><a href="http://gorm.grails.org/latest/neo4j/manual">GORM for Neo4j</a></p>
 </li>
 <li>
-<p><a href="https://gorm.grails.org/latest/cassandra/manual">GORM for Cassandra</a></p>
+<p><a href="http://gorm.grails.org/latest/cassandra/manual">GORM for Cassandra</a></p>
 </li>
 <li>
-<p><a href="https://gorm.grails.org/latest/rx/manual">RxGORM for MongoDB</a></p>
+<p><a href="http://gorm.grails.org/latest/rx/manual">RxGORM for MongoDB</a></p>
 </li>
 <li>
-<p><a href="https://gorm.grails.org/latest/rx/rest-client/manual">RxGORM for REST</a></p>
+<p><a href="http://gorm.grails.org/latest/rx/rest-client/manual">RxGORM for REST</a></p>
 </li>
 </ul>
 </div>
@@ -687,32 +687,7 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect2">
 <h3 id="releaseHistory">1.1. Release History</h3>
 <div class="sect3">
-<h4 id="_gorm_7_1">1.1.1. GORM 7.1</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>GORM 7.1 brings support for Apache Groovy 3</p>
-</li>
-<li>
-<p>Default autowire the bean by type in the Data Service</p>
-</li>
-<li>
-<p>Support for Java 14</p>
-</li>
-<li>
-<p>Spring 5.3</p>
-</li>
-<li>
-<p>Spring Boot 2.5</p>
-</li>
-<li>
-<p>Hibernate 5.5</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_gorm_7_0">1.1.2. GORM 7.0</h4>
+<h4 id="_gorm_7_0">1.1.1. GORM 7.0</h4>
 <div class="paragraph">
 <p>GORM 7.0 brings support for the latest versions of key dependencies including:</p>
 </div>
@@ -731,7 +706,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_6_1">1.1.3. GORM 6.1</h4>
+<h4 id="_gorm_6_1">1.1.2. GORM 6.1</h4>
 <div class="paragraph">
 <p>GORM 6.1 includes a variety of enhancements to GORM 6.0 including:</p>
 </div>
@@ -761,11 +736,11 @@ table.CodeRay td.code>pre{padding:0}
 </ul>
 </div>
 <div class="paragraph">
-<p>See the <a href="https://gorm.grails.org/6.1.x/whatsNew/manual">What&#8217;s New in GORM 6.1</a> guide for more information.</p>
+<p>See the <a href="http://gorm.grails.org/6.1.x/whatsNew/manual">What&#8217;s New in GORM 6.1</a> guide for more information.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_6_0">1.1.4. GORM 6.0</h4>
+<h4 id="_gorm_6_0">1.1.3. GORM 6.0</h4>
 <div class="paragraph">
 <p>GORM 6.0 continues to evolve the new trait based model and includes the following new features:</p>
 </div>
@@ -796,16 +771,16 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_5_0">1.1.5. GORM 5.0</h4>
+<h4 id="_gorm_5_0">1.1.4. GORM 5.0</h4>
 <div class="paragraph">
-<p>GORM 5.0 replaced the majority of the custom AST transformations that power GORM with <a href="https://docs.groovy-lang.org/next/html/documentation/core-traits.html">Groovy Traits</a>.</p>
+<p>GORM 5.0 replaced the majority of the custom AST transformations that power GORM with <a href="http://docs.groovy-lang.org/next/html/documentation/core-traits.html">Groovy Traits</a>.</p>
 </div>
 <div class="paragraph">
 <p>Support for the MongoDB 3.x drivers, Neo4j 2.3.x and Hibernate 5.x was added.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_4_0">1.1.6. GORM 4.0</h4>
+<h4 id="_gorm_4_0">1.1.5. GORM 4.0</h4>
 <div class="paragraph">
 <p>GORM 4.0 continued to separate the GORM API from the Grails core APIs and was the first version to be support standalone execution outside of Grails.</p>
 </div>
@@ -817,7 +792,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_3_0">1.1.7. GORM 3.0</h4>
+<h4 id="_gorm_3_0">1.1.6. GORM 3.0</h4>
 <div class="paragraph">
 <p>GORM 3.0 was the first release of GORM that was released separately to the Grails framework itself and was introduced in Grails 2.1.</p>
 </div>
@@ -829,21 +804,21 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_2_0">1.1.8. GORM 2.0</h4>
+<h4 id="_gorm_2_0">1.1.7. GORM 2.0</h4>
 <div class="paragraph">
-<p>GORM 2.0 evolved as part of Grails 2.0 and re-engineered some of the metaprogramming logic that relied on ExpandoMetaClass into a set of <a href="https://groovy-lang.org/metaprogramming.html#_compile_time_metaprogramming">Groovy AST transformations</a>.</p>
+<p>GORM 2.0 evolved as part of Grails 2.0 and re-engineered some of the metaprogramming logic that relied on ExpandoMetaClass into a set of <a href="http://groovy-lang.org/metaprogramming.html#_compile_time_metaprogramming">Groovy AST transformations</a>.</p>
 </div>
 <div class="paragraph">
 <p>These AST transformations relied on the Grails 2.x compiler infrastructure and hence this version of GORM was also only usable from within Grails.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_gorm_1_0">1.1.9. GORM 1.0</h4>
+<h4 id="_gorm_1_0">1.1.8. GORM 1.0</h4>
 <div class="paragraph">
-<p>The first version of GORM was a series of meta-programming functions that built on the capabilities of Groovy&#8217;s <a href="https://groovy-lang.org/metaprogramming.html#metaprogramming_emc">ExpandoMetaClass</a>.</p>
+<p>The first version of GORM was a series of meta-programming functions that built on the capabilities of Groovy&#8217;s <a href="http://groovy-lang.org/metaprogramming.html#metaprogramming_emc">ExpandoMetaClass</a>.</p>
 </div>
 <div class="paragraph">
-<p>It was purely dynamic and integrated into the <a href="https://grails.org">Grails framework</a> and not usable without Grails and hence no actual distribution exists for this version and it is only available as part of Grails.</p>
+<p>It was purely dynamic and integrated into the <a href="http://grails.org">Grails framework</a> and not usable without Grails and hence no actual distribution exists for this version and it is only available as part of Grails.</p>
 </div>
 </div>
 </div>
@@ -852,41 +827,46 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect3">
 <h4 id="_dependency_upgrades">1.2.1. Dependency Upgrades</h4>
 <div class="paragraph">
-<p>GORM 7.1 supports Apache Groovy 3 and Java 14 Hibernate 5.5.x and Spring 5.3.x.</p>
+<p>GORM 7.0 supports a minimum version of Java 8, Hibernate 5.3.x and Spring 5.2.x.</p>
 </div>
 <div class="paragraph">
 <p>Each of these underlying components may have changes that require altering your application. These changes are beyond the scope of this documentation.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_default_autowire_by_type_inside_gorm_data_services">1.2.2. Default Autowire By Type inside GORM Data Services</h4>
+<h4 id="_package_restructuring_and_deprecations">1.2.2. Package Restructuring and Deprecations</h4>
 <div class="paragraph">
-<p>A Grails Service (or a bean) inside GORM DataService will default to autowire by-type, For example:</p>
+<p>Previously deprecated classes have been deleted from this release and in order to support Java 11 modules in the future some package re-structuring has occurred.</p>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_changes_to_proxy_handling">1.2.3. Changes to Proxy Handling</h4>
 <div class="paragraph">
-<p><em>./grails-app/services/example/BookService.groovy</em></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code>package example
-
-import grails.gorm.services.Service
-
-@Service(Book)
-abstract class BookService {
-
-    TestService testRepo
-
-    abstract Book save(String title, String author)
-
-    void doSomething() {
-        assert testRepo != null
-    }
-}</code></pre>
-</div>
+<p>GORM no longer creates custom proxy factories nor automatically unwraps Hibernate proxies.</p>
 </div>
 <div class="paragraph">
-<p>Please note that with autowire by-type as the default, when multiple beans for same type are found the application with throw Exception. Use the Spring `@Qualifier annotation for <a href="https://docs.spring.io/spring-framework/docs/5.3.10/reference/html/core.html#beans-autowired-annotation-qualifiers">Fine-tuning Annotation Based Autowiring with Qualifiers</a>.</p>
+<p>This makes it more consistent to the way regular Hibernate behaves and reduces the complexity required at the framework level.</p>
+</div>
+<div class="paragraph">
+<p>You may need to alter <code>instanceof</code> checks are manually unwrap proxies in certain cases.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_module_grails_validation_deprecated_and_removed">1.2.4. Module <code>grails-validation</code> Deprecated and Removed</h4>
+<div class="paragraph">
+<p>In GORM 6.x the <code>grails-validation</code> module was deprecated and replaced by <code>grails-datastore-gorm-validation</code>.</p>
+</div>
+<div class="paragraph">
+<p>Deprecated interfaces were maintained for backwards compatibility. In GORM 7.0 these deprecated classes have been removed and all dependency on <code>grails-validation</code> removed.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_transactions_now_required_for_all_operations">1.2.5. Transactions Now Required for all Operations</h4>
+<div class="paragraph">
+<p>Previous versions of Hibernate allowed read operations to be executed without the presence of a declaration transaction.</p>
+</div>
+<div class="paragraph">
+<p>Hibernate 5.2 and above require the presence of an active transaction. If see a <code>javax.persistence.TransactionRequiredException</code> exception it means your method lacks a <code>@Transactional</code> annotation around it.</p>
 </div>
 </div>
 </div>
@@ -896,12 +876,12 @@ abstract class BookService {
 <h2 id="gettingStarted">2. Getting Started</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To use GORM 7.3.1-SNAPSHOT for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
+<p>To use GORM 7.0.8.BUILD-SNAPSHOT for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile "org.grails.plugins:hibernate5:7.3.1-SNAPSHOT"
+    compile "org.grails.plugins:hibernate5:7.0.8.BUILD-SNAPSHOT"
     compile "org.hibernate:hibernate-ehcache"
 }</code></pre>
 </div>
@@ -911,7 +891,7 @@ abstract class BookService {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=7.3.1-SNAPSHOT</code></pre>
+<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=7.0.8.BUILD-SNAPSHOT</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -924,7 +904,7 @@ abstract class BookService {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("7.3.1-SNAPSHOT")
+            details.useVersion("7.0.8.BUILD-SNAPSHOT")
         }
     }
 }
@@ -950,7 +930,7 @@ dependencies {
 <div class="sect2">
 <h3 id="hibernateVersions">2.2. Configuring Different Hibernate Versions</h3>
 <div class="paragraph">
-<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 7.3.1-SNAPSHOT.</p>
+<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 7.0.8.BUILD-SNAPSHOT.</p>
 </div>
 <div class="sect3">
 <h4 id="_grails_3_2_x_and_above_with_hibernate_4">2.2.1. Grails 3.2.x and above with Hibernate 4</h4>
@@ -1016,7 +996,7 @@ configurations.all {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:7.3.1-SNAPSHOT")
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:7.0.8.BUILD-SNAPSHOT")
 compile "org.hibernate:hibernate-core"
 compile "org.hibernate:hibernate-ehcache"
 runtime "com.h2database:h2:1.4.192"
@@ -1029,7 +1009,7 @@ runtime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Then ensure you have configured a <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html">datasource and Hibernate as per the Spring Boot guide</a>. For example in the case of MySQL:</p>
+<p>Then ensure you have configured a <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html">datasource and Hibernate as per the Spring Boot guide</a>. For example in the case of MySQL:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1149,7 +1129,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:7.3.1-SNAPSHOT"
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:7.0.8.BUILD-SNAPSHOT"
 runtime "com.h2database:h2:1.4.192"
 runtime "org.apache.tomcat:tomcat-jdbc:8.5.0"
 runtime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"
@@ -1163,7 +1143,7 @@ runtime "org.slf4j:slf4j-api:1.7.10"</code></pre>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-The above example also uses the <a href="https://www.h2database.com">H2 Database</a> and Tomcat connection pool.
+The above example also uses the <a href="http://www.h2database.com">H2 Database</a> and Tomcat connection pool.
 However other pool implementations are supported including <code>commons-dbcp</code>, <code>tomcat pool</code> or <code>hikari</code>.
 If a connection pool is not specified <code>org.springframework.jdbc.datasource.DriverManagerDataSource</code> is used,
 which creates a new connection to the database each time you request a connect.
@@ -1277,7 +1257,7 @@ If you have the configured the <code>dataSource.dbCreate</code> property and set
 <p>This loads an interactive GUI where you can run Groovy commands with access to the Spring ApplicationContext, GORM, etc.</p>
 </div>
 <div class="paragraph">
-<p>Or if you are not using Grails here is a unit test template (using <a href="https://docs.spockframework.org">Spock</a>) that can be run to test out the examples:</p>
+<p>Or if you are not using Grails here is a unit test template (using <a href="http://docs.spockframework.org">Spock</a>) that can be run to test out the examples:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1430,7 +1410,7 @@ p.delete()</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Each one of the settings under the <code>dataSource</code> block is set on the <a href="../api/org/grails/datastore/gorm/jdbc/connections/DataSourceSettings.html">DataSourceSettings</a> property of <code>HibernateConnectionSourceSettings</code>.</p>
+<p>Each one of the settings under the <code>dataSource</code> block is set on the <a href="../api/org/grails/orm/hibernate/jdbc/connections/DataSourceSettings.html">DataSourceSettings</a> property of <code>HibernateConnectionSourceSettings</code>.</p>
 </div>
 <div class="paragraph">
 <p>Whilst each setting under the <code>hibernate</code> block is set on the <a href="../api/org/grails/orm/hibernate/connections/HibernateConnectionSourceSettings.HibernateSettings.html">HibernateSettings</a> property.</p>
@@ -1458,7 +1438,7 @@ p.delete()</code></pre>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>grails.gorm.flushMode</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The flush mode to use</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>COMMIT</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>AUTO</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>grails.gorm.failOnError</code></p></td>
@@ -1714,7 +1694,7 @@ Because the setting is Groovy configuration it must go into a Groovy-aware confi
 <p>If you are not using Spring it can be passed to the constructor of the <code>HibernateDatastore</code> class on instantiation.</p>
 </div>
 <div class="paragraph">
-<p>The <code>HibernateConnectionSourceFactory</code> has a few useful setters that allow you to specify a Hibernate <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/Interceptor.html">Interceptor</a> or <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/boot/spi/MetadataContributor.html">MetadataContributor</a> (Hibernate 5+ only).</p>
+<p>The <code>HibernateConnectionSourceFactory</code> has a few useful setters that allow you to specify a Hibernate <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/Interceptor.html">Interceptor</a> or <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/boot/spi/MetadataContributor.html">MetadataContributor</a> (Hibernate 5+ only).</p>
 </div>
 </div>
 <div class="sect3">
@@ -1740,7 +1720,7 @@ Because the setting is Groovy configuration it must go into a Groovy-aware confi
 <h2 id="domainClasses">5. Domain Modelling in GORM</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>When building applications you have to consider the problem domain you are trying to solve. For example if you were building an <a href="https://www.amazon.com/">Amazon</a>-style bookstore you would be thinking about books, authors, customers and publishers to name a few.</p>
+<p>When building applications you have to consider the problem domain you are trying to solve. For example if you were building an <a href="http://www.amazon.com/">Amazon</a>-style bookstore you would be thinking about books, authors, customers and publishers to name a few.</p>
 </div>
 <div class="paragraph">
 <p>These are modeled in GORM as Groovy classes, so a <code>Book</code> class may have a title, a release date, an ISBN number and so on. The next few sections show how to model the domain in GORM.</p>
@@ -2021,7 +2001,7 @@ If you have a property called "none" on your domain class, this approach won&#82
 </div>
 </div>
 <div class="paragraph">
-<p>Alternatively you could leverage <a href="https://docs.grails.org/latest/ref/Database%20Mapping/cascade.html">cascade</a> behaviour.</p>
+<p>Alternatively you could leverage <a href="http://docs.grails.org/latest/ref/Database%20Mapping/cascade.html">cascade</a> behaviour.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2040,7 +2020,7 @@ If you have a property called "none" on your domain class, this approach won&#82
 </div>
 </div>
 <div class="paragraph">
-<p>The cascade behaviour takes cares of deleting every orphan <code>Review</code>. Thus, invoking <code>.clear()</code> suffices to remove the book&#8217;s previous reviews.</p>
+<p>The cascade behaviour takes cares of deleting every orphan <code>Review</code>. Thus, invoking <code>.clear()</code> suffices to remove the book' previous reviews.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2472,7 +2452,7 @@ author.save()</code></pre>
 <div class="sect3">
 <h4 id="_bags_of_objects">5.4.3. Bags of Objects</h4>
 <div class="paragraph">
-<p>If ordering and uniqueness aren&#8217;t a concern (or if you manage these explicitly) then you can use the Hibernate <a href="https://docs.jboss.org/hibernate/core/3.6/reference/en-US/html/collections.html">Bag</a> type to represent mapped collections.</p>
+<p>If ordering and uniqueness aren&#8217;t a concern (or if you manage these explicitly) then you can use the Hibernate <a href="http://docs.jboss.org/hibernate/core/3.6/reference/en-US/html/collections.html">Bag</a> type to represent mapped collections.</p>
 </div>
 <div class="paragraph">
 <p>The only change required for this is to define the collection type as a <code>Collection</code>:</p>
@@ -2571,7 +2551,7 @@ author.save()</code></pre>
 <h2 id="persistenceBasics">6. Persistence Basics</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>A key thing to remember about GORM is that under the surface GORM is using <a href="https://www.hibernate.org/">Hibernate</a> for persistence. If you are coming from a background of using <a href="https://api.rubyonrails.org/classes/ActiveRecord/Base.html">ActiveRecord</a> or <a href="https://www.mybatis.org/">iBatis/MyBatis</a>, Hibernate&#8217;s "session" model may feel a little strange.</p>
+<p>A key thing to remember about GORM is that under the surface GORM is using <a href="http://www.hibernate.org/">Hibernate</a> for persistence. If you are coming from a background of using <a href="http://api.rubyonrails.org/classes/ActiveRecord/Base.html">ActiveRecord</a> or <a href="http://www.mybatis.org/">iBatis/MyBatis</a>, Hibernate&#8217;s "session" model may feel a little strange.</p>
 </div>
 <div class="paragraph">
 <p>If you are using Grails, then Grails automatically binds a Hibernate session to the currently executing request. This lets you use the <code>save()</code> and <code>delete</code> methods as well as other GORM methods transparently.</p>
@@ -2751,7 +2731,7 @@ p.delete(<span class="key">flush</span>: <span class="predefined-constant">true<
 </div>
 </div>
 <div class="paragraph">
-<p>If I now create an <code>Airport</code> and add some ``Flight``s to it I can save the <code>Airport</code> and have the updates cascaded down to each flight, hence saving the whole object graph:</p>
+<p>If I now create an <code>Airport</code> and add some <code>Flight`s to it I can save the `Airport</code> and have the updates cascaded down to each flight, hence saving the whole object graph:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -3108,7 +3088,7 @@ println airport.version</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>When you perform updates Hibernate will automatically check the version property against the  version column in the database and if they differ will throw a <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/StaleObjectStateException.html">StaleObjectException</a>. This will roll back the transaction if one is active.</p>
+<p>When you perform updates Hibernate will automatically check the version property against the  version column in the database and if they differ will throw a <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/StaleObjectStateException.html">StaleObjectException</a>. This will roll back the transaction if one is active.</p>
 </div>
 <div class="paragraph">
 <p>This is useful as it allows a certain level of atomicity without resorting to pessimistic locking that has an inherit performance penalty. The downside is that you have to deal with this exception if you have highly concurrent writes. This requires flushing the session:</p>
@@ -3354,7 +3334,7 @@ airport.properties = params
 </ul>
 </div>
 <div class="paragraph">
-<p>In addition, Groovy&#8217;s ability to manipulate collections with <a href="https://groovy.codehaus.org/GPath">GPath</a> and methods like sort, findAll and so on combined with GORM results in a powerful combination.</p>
+<p>In addition, Groovy&#8217;s ability to manipulate collections with <a href="http://groovy.codehaus.org/GPath">GPath</a> and methods like sort, findAll and so on combined with GORM results in a powerful combination.</p>
 </div>
 <div class="paragraph">
 <p>However, let&#8217;s start with the basics.</p>
@@ -4303,7 +4283,7 @@ Note that one limitation with regards to batch operations is that join queries (
 <p>Criteria can be used either with the <a href="../api/org/grails/datastore/gorm/GormEntity.html#createCriteria()">createCriteria()</a> or <a href="../api/org/grails/datastore/gorm/GormEntity.html#withCriteria(groovy.lang.Closure)">withCriteria(closure)</a> methods.</p>
 </div>
 <div class="paragraph">
-<p>The builder uses Hibernate&#8217;s Criteria API. The nodes on this builder map the static methods found in the <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/criterion/Restrictions.html">Restrictions</a> class of the Hibernate Criteria API. For example:</p>
+<p>The builder uses Hibernate&#8217;s Criteria API. The nodes on this builder map the static methods found in the <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/criterion/Restrictions.html">Restrictions</a> class of the Hibernate Criteria API. For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4434,7 +4414,7 @@ def results = c.list {
 <div class="sect3">
 <h4 id="_querying_with_projections">7.5.3. Querying with Projections</h4>
 <div class="paragraph">
-<p>Projections may be used to customise the results. Define a "projections" node within the criteria builder tree to use projections. There are equivalent methods within the projections node to the methods found in the Hibernate <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/criterion/Projections.html">Projections</a> class:</p>
+<p>Projections may be used to customise the results. Define a "projections" node within the criteria builder tree to use projections. There are equivalent methods within the projections node to the methods found in the Hibernate <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/criterion/Projections.html">Projections</a> class:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4454,7 +4434,7 @@ def numberOfBranches = c.get {
 <div class="sect3">
 <h4 id="_transforming_projection_results">7.5.4. Transforming Projection Results</h4>
 <div class="paragraph">
-<p>If the raw value or simple object array returned by the criteria method doesn&#8217;t suit your needs, the result can be transformed with a <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/transform/ResultTransformer.html">ResultTransformer</a>. Let&#8217;s say we want to transform the criteria results into a Map so that we can easily reference values by key:</p>
+<p>If the raw value or simple object array returned by the criteria method doesn&#8217;t suit your needs, the result can be transformed with a <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/transform/ResultTransformer.html">ResultTransformer</a>. Let&#8217;s say we want to transform the criteria results into a Map so that we can easily reference values by key:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4476,7 +4456,7 @@ def accountsOverview = c.get {
 <p>Note that we&#8217;ve added an alias to each projection as an additional parameter to be used as the key. For this to work, all projections must have aliases defined, otherwise the corresponding map entry will not be built.</p>
 </div>
 <div class="paragraph">
-<p>We can also transform the result into an object of our choosing via the <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/transform/Transformers.html#aliasToBean-java.lang.Class-">Transformers.aliasToBean()</a> method. In this case, we&#8217;ll transform it into an <code>AccountsOverview</code>:</p>
+<p>We can also transform the result into an object of our choosing via the <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/transform/Transformers.html#aliasToBean-java.lang.Class-">Transformers.aliasToBean()</a> method. In this case, we&#8217;ll transform it into an <code>AccountsOverview</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4690,7 +4670,7 @@ Note that the parameter there is SQL. The <code>first_name</code> attribute refe
 <div class="sect3">
 <h4 id="_using_scrollable_results">7.5.7. Using Scrollable Results</h4>
 <div class="paragraph">
-<p>You can use Hibernate&#8217;s <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/ScrollableResults.html">ScrollableResults</a> feature by calling the scroll method:</p>
+<p>You can use Hibernate&#8217;s <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/ScrollableResults.html">ScrollableResults</a> feature by calling the scroll method:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4723,7 +4703,7 @@ def accountNumber = results.getLong(<span class="string"><span class="delimiter"
 <div class="sect3">
 <h4 id="_setting_properties_in_the_criteria_instance">7.5.8. Setting properties in the Criteria instance</h4>
 <div class="paragraph">
-<p>If a node within the builder tree doesn&#8217;t match a particular criterion it will attempt to set a property on the Criteria object itself. This allows full access to all the properties in this class. This example calls <code>setMaxResults</code> and <code>setFirstResult</code> on the <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/Criteria.html">Criteria</a> instance:</p>
+<p>If a node within the builder tree doesn&#8217;t match a particular criterion it will attempt to set a property on the Criteria object itself. This allows full access to all the properties in this class. This example calls <code>setMaxResults</code> and <code>setFirstResult</code> on the <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/Criteria.html">Criteria</a> instance:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4842,7 +4822,7 @@ def results = Airport.withCriteria {
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>listDistinct</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">If subqueries or associations are used one may end up with the same row multiple times in the result set. This allows listing only distinct entities and is equivalent to <code>DISTINCT_ROOT_ENTITY</code> of the <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/criterion/CriteriaSpecification.html">CriteriaSpecification</a> class.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If subqueries or associations are used one may end up with the same row multiple times in the result set. This allows listing only distinct entities and is equivalent to <code>DISTINCT_ROOT_ENTITY</code> of the <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/criterion/CriteriaSpecification.html">CriteriaSpecification</a> class.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>count</strong></p></td>
@@ -5153,7 +5133,7 @@ Note that one limitation with regards to batch operations is that join queries (
 <div class="sect2">
 <h3 id="hql">7.7. Hibernate Query Language (HQL)</h3>
 <div class="paragraph">
-<p>GORM classes also support Hibernate&#8217;s query language HQL, a very complete reference for which can be found <a href="https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#hql">in the Hibernate documentation</a> of the Hibernate documentation.</p>
+<p>GORM classes also support Hibernate&#8217;s query language HQL, a very complete reference for which can be found <a href="http://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#hql">in the Hibernate documentation</a> of the Hibernate documentation.</p>
 </div>
 <div class="paragraph">
 <p>GORM provides a number of methods that work with HQL including <a href="../api/org/grails/datastore/gorm/GormEntity.html#find(java.lang.String)">find</a>, <a href="../api/org/grails/datastore/gorm/GormEntity.html#findAll(java.lang.String)">findAll</a> and <a href="../api/org/grails/datastore/gorm/GormEntity.html#executeQuery(java.lang.String)">executeQuery</a>.</p>
@@ -5240,7 +5220,7 @@ where b.author = a and a.surname = :surname</span><span class="delimiter">&quot;
 <p><code>beforeUpdate</code> - Executed before an object is updated.  If you return false, the update will be cancelled.</p>
 </li>
 <li>
-<p><code>beforeDelete</code> - Executed before an object is deleted.  If you return false, the operation delete will be cancelled.</p>
+<p><code>beforeDelete</code> - Executed before an object is deleted.  If you return false, the delete will be cancelled.</p>
 </li>
 <li>
 <p><code>beforeValidate</code> - Executed before an object is validated</p>
@@ -5567,139 +5547,139 @@ datastore.getApplicationEventPublisher()
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">auto-flush</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/AutoFlushEventListener.html">AutoFlushEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/AutoFlushEventListener.html">AutoFlushEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">merge</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/MergeEventListener.html">MergeEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/MergeEventListener.html">MergeEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">create</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PersistEventListener.html">PersistEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PersistEventListener.html">PersistEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">create-onflush</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PersistEventListener.html">PersistEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PersistEventListener.html">PersistEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">delete</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/DeleteEventListener.html">DeleteEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/DeleteEventListener.html">DeleteEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">dirty-check</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/DirtyCheckEventListener.html">DirtyCheckEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/DirtyCheckEventListener.html">DirtyCheckEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">evict</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/EvictEventListener.html">EvictEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/EvictEventListener.html">EvictEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">flush</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/FlushEventListener.html">FlushEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/FlushEventListener.html">FlushEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">flush-entity</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/FlushEntityEventListener.html">FlushEntityEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/FlushEntityEventListener.html">FlushEntityEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">load</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/LoadEventListener.html">LoadEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/LoadEventListener.html">LoadEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">load-collection</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/InitializeCollectionEventListener.html">InitializeCollectionEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/InitializeCollectionEventListener.html">InitializeCollectionEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">lock</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/LockEventListener.html">LockEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/LockEventListener.html">LockEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">refresh</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/RefreshEventListener.html">RefreshEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/RefreshEventListener.html">RefreshEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">replicate</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/ReplicateEventListener.html">ReplicateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/ReplicateEventListener.html">ReplicateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">save-update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/SaveOrUpdateEventListener.html">SaveOrUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/SaveOrUpdateEventListener.html">SaveOrUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">save</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/SaveOrUpdateEventListener.html">SaveOrUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/SaveOrUpdateEventListener.html">SaveOrUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/SaveOrUpdateEventListener.html">SaveOrUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/SaveOrUpdateEventListener.html">SaveOrUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-load</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreLoadEventListener.html">PreLoadEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreLoadEventListener.html">PreLoadEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreUpdateEventListener.html">PreUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreUpdateEventListener.html">PreUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-delete</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreDeleteEventListener.html">PreDeleteEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreDeleteEventListener.html">PreDeleteEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-insert</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreInsertEventListener.html">PreInsertEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreInsertEventListener.html">PreInsertEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-collection-recreate</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreCollectionRecreateEventListener.html">PreCollectionRecreateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreCollectionRecreateEventListener.html">PreCollectionRecreateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-collection-remove</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreCollectionRemoveEventListener.html">PreCollectionRemoveEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreCollectionRemoveEventListener.html">PreCollectionRemoveEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-collection-update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreCollectionUpdateEventListener.html">PreCollectionUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreCollectionUpdateEventListener.html">PreCollectionUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-load</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostLoadEventListener.html">PostLoadEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostLoadEventListener.html">PostLoadEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostUpdateEventListener.html">PostUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostUpdateEventListener.html">PostUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-delete</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostDeleteEventListener.html">PostDeleteEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostDeleteEventListener.html">PostDeleteEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-insert</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostInsertEventListener.html">PostInsertEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostInsertEventListener.html">PostInsertEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-commit-update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostUpdateEventListener.html">PostUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostUpdateEventListener.html">PostUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-commit-delete</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostDeleteEventListener.html">PostDeleteEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostDeleteEventListener.html">PostDeleteEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-commit-insert</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostInsertEventListener.html">PostInsertEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostInsertEventListener.html">PostInsertEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-collection-recreate</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostCollectionRecreateEventListener.html">PostCollectionRecreateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostCollectionRecreateEventListener.html">PostCollectionRecreateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-collection-remove</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostCollectionRemoveEventListener.html">PostCollectionRemoveEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostCollectionRemoveEventListener.html">PostCollectionRemoveEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-collection-update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostCollectionUpdateEventListener.html">PostCollectionUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostCollectionUpdateEventListener.html">PostCollectionUpdateEventListener</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -5906,7 +5886,7 @@ None of this is necessary if you are happy to stick to the conventions defined b
 <div class="sect4">
 <h5 id="_column_type">Column type</h5>
 <div class="paragraph">
-<p>GORM supports configuration of Hibernate types with the DSL using the type attribute. This includes specifying user types that implement the Hibernate <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/usertype/UserType.html">org.hibernate.usertype.UserType</a> interface, which allows complete customization of how a type is persisted. As an example if you had a <code>PostCodeType</code> you could use it as follows:</p>
+<p>GORM supports configuration of Hibernate types with the DSL using the type attribute. This includes specifying user types that implement the Hibernate <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/usertype/UserType.html">org.hibernate.usertype.UserType</a> interface, which allows complete customization of how a type is persisted. As an example if you had a <code>PostCodeType</code> you could use it as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -5941,7 +5921,7 @@ None of this is necessary if you are happy to stick to the conventions defined b
 <p>This would make the <code>postCode</code> column map to the default large-text type for the database you&#8217;re using (for example TEXT or CLOB).</p>
 </div>
 <div class="paragraph">
-<p>See the Hibernate documentation regarding <a href="https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#basic-explicit">Basic Types</a> for further information.</p>
+<p>See the Hibernate documentation regarding <a href="http://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#basic-explicit">Basic Types</a> for further information.</p>
 </div>
 </div>
 <div class="sect4">
@@ -6080,7 +6060,7 @@ None of this is necessary if you are happy to stick to the conventions defined b
 <div class="sect4">
 <h5 id="_setting_up_caching">Setting up caching</h5>
 <div class="paragraph">
-<p><a href="https://www.hibernate.org/">Hibernate</a> features a second-level cache with a customizable cache provider. This needs to be configured in the <code>grails-app/conf/application.yml</code> file as follows:</p>
+<p><a href="http://www.hibernate.org/">Hibernate</a> features a second-level cache with a customizable cache provider. This needs to be configured in the <code>grails-app/conf/application.yml</code> file as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -6102,7 +6082,7 @@ None of this is necessary if you are happy to stick to the conventions defined b
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-For further reading on caching and in particular Hibernate&#8217;s second-level cache, refer to the <a href="https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#caching">Hibernate documentation</a> on the subject.
+For further reading on caching and in particular Hibernate&#8217;s second-level cache, refer to the <a href="http://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#caching">Hibernate documentation</a> on the subject.
 </td>
 </tr>
 </table>
@@ -6302,7 +6282,7 @@ For further reading on caching and in particular Hibernate&#8217;s second-level 
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-For more information on the different Hibernate generators refer to the <a href="https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#identifiers-generators">Hibernate reference documentation</a>
+For more information on the different Hibernate generators refer to the <a href="http://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#identifiers-generators">Hibernate reference documentation</a>
 </td>
 </tr>
 </table>
@@ -6569,7 +6549,7 @@ If you disable optimistic locking you are essentially on your own with regards t
 <p>If a query returns multiple <code>Person</code> instances, then when we access the first <code>pet</code> property, Hibernate will fetch that <code>Pet</code> plus the four next ones. You can get the same behaviour with eager loading by combining <code>batchSize</code> with the <code>lazy: false</code> option.</p>
 </div>
 <div class="paragraph">
-<p>You can find out more about these options in the <a href="https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching">Hibernate user guide</a>. Note that ORM DSL does not currently support the "subselect" fetching strategy.</p>
+<p>You can find out more about these options in the <a href="http://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching">Hibernate user guide</a>. Note that ORM DSL does not currently support the "subselect" fetching strategy.</p>
 </div>
 </div>
 <div class="sect4">
@@ -6607,7 +6587,7 @@ If you disable optimistic locking you are essentially on your own with regards t
 </div>
 </div>
 <div class="sect4">
-<h5 id="_lazy_associations_and_proxies">Lazy Associations and Proxies</h5>
+<h5 id="_lazy_single_ended_associations_and_proxies">Lazy Single-Ended Associations and Proxies</h5>
 <div class="paragraph">
 <p>Hibernate uses runtime-generated proxies to facilitate single-ended lazy associations; Hibernate dynamically subclasses the entity class to create the proxy.</p>
 </div>
@@ -6639,58 +6619,62 @@ If you disable optimistic locking you are essentially on your own with regards t
 </div>
 </div>
 <div class="paragraph">
-<p>Proxies can have confusing behavior when combined with inheritance. Because the proxy is only a subclass of the parent class, any attempt to cast or access data on the subclass will fail. Assuming we have a single <code>Person</code> instance with a <code>Dog</code> as the <code>pet</code>.</p>
-</div>
-<div class="paragraph">
-<p>The code below will not fail because directly querying the <code>Pet</code> table does not require the resulting objects to be proxies because they are not lazy.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> pet = Pet.get(<span class="integer">1</span>)
-<span class="keyword">assert</span> pet <span class="keyword">instanceof</span> Dog</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The following code will fail because the association is lazy and the <code>pet</code> instance is a proxy.</p>
+<p>and assume that we have a single <code>Person</code> instance with a <code>Dog</code> as the <code>pet</code>. The following code will work as you would expect:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> person = Person.get(<span class="integer">1</span>)
-<span class="keyword">assert</span> person.pet <span class="keyword">instanceof</span> Dog</code></pre>
+<span class="keyword">assert</span> person.pet <span class="keyword">instanceof</span> Dog
+<span class="keyword">assert</span> Pet.get(person.petId) <span class="keyword">instanceof</span> Dog</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>If the only goal is to check if the proxy is an instance of a class, there is one helper method available to do so that works with proxies. Take special care in using it though because it does cause a call to the database to retrieve the association data.</p>
+<p>But this won&#8217;t:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> person = Person.get(<span class="integer">1</span>)
-<span class="keyword">assert</span> person.pet.instanceOf(Dog)</code></pre>
+<span class="keyword">assert</span> person.pet <span class="keyword">instanceof</span> Dog
+<span class="keyword">assert</span> Pet.list()[<span class="integer">0</span>] <span class="keyword">instanceof</span> Dog</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>There are a couple of ways to approach this issue. The first rule of thumb is that if it is known ahead of time that the association data is required, join the data in the query of the <code>Person</code>. For example, the following assertion is true.</p>
+<p>The second assertion fails, and to add to the confusion, this will work:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> person = Person.where { id == <span class="integer">1</span> }.join(<span class="string"><span class="delimiter">&quot;</span><span class="content">pet</span><span class="delimiter">&quot;</span></span>).get()
-<span class="keyword">assert</span> person.pet <span class="keyword">instanceof</span> Dog</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">assert</span> Pet.list()[<span class="integer">0</span>] <span class="keyword">instanceof</span> Dog</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>In the above example the <code>pet</code> association is no longer lazy because it is being retrieved along with the <code>Person</code> and thus no proxies are necessary. There are cases when it makes sense for a proxy to be returned, mostly in the case where its impossible to know if the data will be used or not. For those cases in order to access properties of the subclasses, the proxy must be unwrapped. To unwrap a proxy inject an instance of <a href="../api/org/grails/datastore/mapping/proxy/ProxyHandler.html">ProxyHandler</a> and pass the proxy to the <code>unwrap</code> method.</p>
+<p>What&#8217;s going on here? It&#8217;s down to a combination of how proxies work and the guarantees that the Hibernate session makes. When you load the <code>Person</code> instance, Hibernate creates a proxy for its <code>pet</code> relation and attaches it to the session. Once that happens, whenever you retrieve that <code>Pet</code> instance with a query, a <code>get()</code>, or the <code>pet</code> relation <em>within the same session</em> , Hibernate gives you the proxy.</p>
+</div>
+<div class="paragraph">
+<p>Fortunately for us, GORM automatically unwraps the proxy when you use <code>get()</code> and <code>findBy\*()</code>, or when you directly access the relation. That means you don&#8217;t have to worry at all about proxies in the majority of cases. But GORM doesn&#8217;t do that for objects returned with a query that returns a list, such as <code>list()</code> and <code>findAllBy\*()</code>. However, if Hibernate hasn&#8217;t attached the proxy to the session, those queries will return the real instances - hence why the last example works.</p>
+</div>
+<div class="paragraph">
+<p>You can protect yourself to a degree from this problem by using the <code>instanceOf</code> method by GORM:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> person = Person.get(<span class="integer">1</span>)
-<span class="keyword">assert</span> proxyHandler.unwrap(person.pet) <span class="keyword">instanceof</span> Dog</code></pre>
+<pre class="CodeRay highlight"><code data-lang="java">def person = Person.get(<span class="integer">1</span>)
+<span class="keyword">assert</span> Pet.list()[<span class="integer">0</span>].instanceOf(Dog)</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>For cases where dependency injection is impractical or not available, a helper method <a href="../api/org/grails/orm/hibernate/cfg/GrailsHibernateUtil.html#unwrapIfProxy(java.lang.Object)">GrailsHibernateUtil.unwrapIfProxy(Object)</a> can be used instead.</p>
+<p>However, it won&#8217;t help here if casting is involved. For example, the following code will throw a <code>ClassCastException</code> because the first pet in the list is a proxy instance with a class that is neither <code>Dog</code> nor a sub-class of <code>Dog</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">def person = Person.get(<span class="integer">1</span>)
+Dog pet = Pet.list()[<span class="integer">0</span>]</code></pre>
+</div>
 </div>
 <div class="paragraph">
-<p>Unwrapping a proxy is different than initializing it. Initializing a proxy simply populates the underlying instance with data from the database, however unwrapping a returns the inner target.</p>
+<p>Of course, it&#8217;s best not to use static types in this situation. If you use an untyped variable for the pet instead, you can access any <code>Dog</code> properties or methods on the instance without any problems.</p>
+</div>
+<div class="paragraph">
+<p>These days it&#8217;s rare that you will come across this issue, but it&#8217;s best to be aware of it just in case. At least you will know why such an error occurs and be able to work around it.</p>
 </div>
 </div>
 </div>
@@ -6700,7 +6684,7 @@ If you disable optimistic locking you are essentially on your own with regards t
 <p>As described in the section on <a href="#cascades">cascading updates</a>, the primary mechanism to control the way updates and deletes cascade from one association to another is the static <a href="#ref-domain-classes-belongsTo">belongsTo</a> property.</p>
 </div>
 <div class="paragraph">
-<p>However, the ORM DSL gives you complete access to Hibernate&#8217;s <a href="https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#associations">transitive persistence</a> capabilities using the <code>cascade</code> attribute.</p>
+<p>However, the ORM DSL gives you complete access to Hibernate&#8217;s <a href="http://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#associations">transitive persistence</a> capabilities using the <code>cascade</code> attribute.</p>
 </div>
 <div class="paragraph">
 <p>Valid settings for the cascade attribute include:</p>
@@ -6762,10 +6746,10 @@ If you disable optimistic locking you are essentially on your own with regards t
 <div class="sect3">
 <h4 id="customHibernateTypes">8.2.10. Custom Hibernate Types</h4>
 <div class="paragraph">
-<p>You saw in an earlier section that you can use composition (with the <code>embedded</code> property) to break a table into multiple objects. You can achieve a similar effect with Hibernate&#8217;s custom user types. These are not domain classes themselves, but plain Java or Groovy classes. Each of these types also has a corresponding "meta-type" class that implements <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/usertype/UserType.html">org.hibernate.usertype.UserType</a>.</p>
+<p>You saw in an earlier section that you can use composition (with the <code>embedded</code> property) to break a table into multiple objects. You can achieve a similar effect with Hibernate&#8217;s custom user types. These are not domain classes themselves, but plain Java or Groovy classes. Each of these types also has a corresponding "meta-type" class that implements <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/usertype/UserType.html">org.hibernate.usertype.UserType</a>.</p>
 </div>
 <div class="paragraph">
-<p>The <a href="https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#_custom_type">Hibernate reference manual</a> has some information on custom types, but here we will focus on how to map them in GORM. Let&#8217;s start by taking a look at a simple domain class that uses an old-fashioned (pre-Java 1.5) type-safe enum class:</p>
+<p>The <a href="http://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#_custom_type">Hibernate reference manual</a> has some information on custom types, but here we will focus on how to map them in GORM. Let&#8217;s start by taking a look at a simple domain class that uses an old-fashioned (pre-Java 1.5) type-safe enum class:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -7086,7 +7070,7 @@ These mappings will not work for default unidirectional one-to-many or many-to-m
 <p>GORM&#8217;s transaction management is built on Spring and uses Spring&#8217;s Transaction abstraction for dealing with programmatic transactions.</p>
 </div>
 <div class="paragraph">
-<p>However, GORM classes have been enhanced to make this simpler with the <a href="../api/org/grails/datastore/gorm/GormEntity.html#withTransaction(groovy.lang.Closure)">withTransaction(Closure)</a>  method. This method has a single parameter, a Closure, which has a single parameter which is a Spring <a href="https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/transaction/TransactionStatus.html">TransactionStatus</a> instance.</p>
+<p>However, GORM classes have been enhanced to make this simpler with the <a href="../api/org/grails/datastore/gorm/GormEntity.html#withTransaction(groovy.lang.Closure)">withTransaction(Closure)</a>  method. This method has a single parameter, a Closure, which has a single parameter which is a Spring <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/transaction/TransactionStatus.html">TransactionStatus</a> instance.</p>
 </div>
 <div class="sect3">
 <h4 id="_using_the_withtransaction_method">9.1. Using the withTransaction Method</h4>
@@ -7133,7 +7117,7 @@ GORM versions prior to 6.0.0 did not roll back transactions for a checked <code>
 </table>
 </div>
 <div class="paragraph">
-<p>You can also use "save points" to rollback a transaction to a particular point in time if you don&#8217;t want to rollback the entire transaction. This can be achieved through the use of Spring&#8217;s <a href="https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/transaction/SavepointManager.html">SavePointManager</a> interface.</p>
+<p>You can also use "save points" to rollback a transaction to a particular point in time if you don&#8217;t want to rollback the entire transaction. This can be achieved through the use of Spring&#8217;s <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/transaction/SavepointManager.html">SavePointManager</a> interface.</p>
 </div>
 <div class="paragraph">
 <p>The <code>withTransaction</code> method deals with the begin/commit/rollback logic for you within the scope of the block.</p>
@@ -7243,7 +7227,7 @@ The above example also works in Spock unit tests that extend <code>HibernateSpec
 <p><strong>Type Safety</strong> - Data service method signatures are compile time checked and compilation will fail if the types of any parameters don&#8217;t match up with properties in your domain class</p>
 </li>
 <li>
-<p><strong>Testing</strong> - Since Data Services are interfaces this makes them easy to test via <a href="https://spockframework.org/spock/docs/1.0/interaction_based_testing.html">Spock Mocks</a></p>
+<p><strong>Testing</strong> - Since Data Services are interfaces this makes them easy to test via <a href="http://spockframework.org/spock/docs/1.0/interaction_based_testing.html">Spock Mocks</a></p>
 </li>
 <li>
 <p><strong>Performance</strong> - The generated services are statically compiled and unlike competing technologies in the Java space no proxies are created so runtime performance doesn&#8217;t suffer</p>
@@ -7780,7 +7764,7 @@ If a property exists on the interface but not on the domain class you will recei
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">update </span><span class="inline"><span class="inline-delimiter">${</span><span class="predefined-type">Book</span> book<span class="inline-delimiter">}</span></span><span class="content"> set </span><span class="inline"><span class="inline-delimiter">${</span>book.title<span class="inline-delimiter">}</span></span><span class="content"> = </span><span class="inline"><span class="inline-delimiter">$</span>newTitle</span><span class="content"> where </span><span class="inline"><span class="inline-delimiter">$</span>book</span><span class="content">.title = </span><span class="inline"><span class="inline-delimiter">$</span>oldTitle</span><span class="delimiter">&quot;</span></span>)
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="annotation">@Query</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">update </span><span class="inline"><span class="inline-delimiter">${</span><span class="predefined-type">Book</span> book<span class="inline-delimiter">}</span></span><span class="content"> set </span><span class="inline"><span class="inline-delimiter">${</span>book.title<span class="inline-delimiter">}</span></span><span class="content"> = </span><span class="inline"><span class="inline-delimiter">$</span>newTitle</span><span class="content"> where book.title = </span><span class="inline"><span class="inline-delimiter">$</span>oldTitle</span><span class="delimiter">&quot;</span></span>)
 <span class="predefined-type">Number</span> updateTitle(<span class="predefined-type">String</span> newTitle, <span class="predefined-type">String</span> oldTitle)</code></pre>
 </div>
 </div>
@@ -7846,7 +7830,7 @@ If a property exists on the interface but not on the domain class you will recei
 <div class="sect2">
 <h3 id="_rxjava_support">10.6. RxJava Support</h3>
 <div class="paragraph">
-<p>GORM Data Services also support returning RxJava 1.x <a href="https://reactivex.io/RxJava/1.x/javadoc/rx/Observable.html">rx.Observable</a> or <a href="https://reactivex.io/RxJava/1.x/javadoc/rx/Single.html">rx.Single</a> types.</p>
+<p>GORM Data Services also support returning RxJava 1.x <a href="http://reactivex.io/RxJava/1.x/javadoc/rx/Observable.html">rx.Observable</a> or <a href="http://reactivex.io/RxJava/1.x/javadoc/rx/Single.html">rx.Single</a> types.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -7866,7 +7850,7 @@ RxJava 2.x support is planned for a future release
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx:7.3.1-SNAPSHOT"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx:7.0.8.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -7896,7 +7880,7 @@ RxJava 2.x support is planned for a future release
 </div>
 </div>
 <div class="paragraph">
-<p>For regular GORM entities, GORM will by default execute the persistence operation using RxJava&#8217;s <a href="https://reactivex.io/RxJava/1.x/javadoc/rx/schedulers/Schedulers.html#io()">IO Scheduler</a>.</p>
+<p>For regular GORM entities, GORM will by default execute the persistence operation using RxJava&#8217;s <a href="http://reactivex.io/RxJava/1.x/javadoc/rx/schedulers/Schedulers.html#io()">IO Scheduler</a>.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -8072,27 +8056,6 @@ zipCode.auditing.save()</code></pre>
 </div>
 <div class="paragraph">
 <p>As you can see, you add the <code>DataSource</code> to the method call in both the static case and the instance case.</p>
-</div>
-<div class="paragraph">
-<p>You can use <code>Where</code> queries:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> results = ZipCode.where {
-    code ==~ <span class="string"><span class="delimiter">'</span><span class="content">995%</span><span class="delimiter">'</span></span>
-}.withConnection(<span class="string"><span class="delimiter">'</span><span class="content">auditing</span><span class="delimiter">'</span></span>).list()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>or <code>Criteria</code> queries:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">def</span> c = ZipCode.auditing.createCriteria()
-<span class="keyword">def</span> results = c.list {
-    like(<span class="string"><span class="delimiter">'</span><span class="content">code</span><span class="delimiter">'</span></span>,<span class="string"><span class="delimiter">'</span><span class="content">995%</span><span class="delimiter">'</span></span>)
-}</code></pre>
-</div>
 </div>
 </div>
 <div class="sect2">
@@ -8612,7 +8575,7 @@ sessionFactory.openSession()</code></pre>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:7.3.1-SNAPSHOT"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:7.0.8.BUILD-SNAPSHOT"</code></pre>
 </div>
 </div>
 </div>
@@ -9161,7 +9124,7 @@ evaluated also, if needed. There is a special parameter <code>cascadeValidate</c
 <div class="sect2">
 <h3 id="_unit_testing_with_spock">14.1. Unit Testing with Spock</h3>
 <div class="paragraph">
-<p><a href="https://docs.spockframework.org">Spock</a> is the recommended tool for writing unit tests with GORM and is trivial to setup.</p>
+<p><a href="http://docs.spockframework.org">Spock</a> is the recommended tool for writing unit tests with GORM and is trivial to setup.</p>
 </div>
 <div class="sect3">
 <h4 id="_gorm_with_hibernate_and_spock_basics">14.1.1. GORM with Hibernate and Spock Basics</h4>
@@ -9322,7 +9285,7 @@ void setupSpec() {
 <div class="sect2">
 <h3 id="_unit_testing_with_junit">14.2. Unit Testing with JUnit</h3>
 <div class="paragraph">
-<p>To unit test with <a href="https://junit.org/junit4">JUnit</a> it is largely similar to Spock, just following different idioms.</p>
+<p>To unit test with <a href="http://junit.org/junit4">JUnit</a> it is largely similar to Spock, just following different idioms.</p>
 </div>
 <div class="paragraph">
 <p>So instead of <code>setupSpec</code> use <code>@BeforeClass</code>:</p>
@@ -9381,7 +9344,7 @@ JUnit doesn&#8217;t have anything like Spock&#8217;s <code>AutoCleanup</code> so
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 7.3.1-SNAPSHOT<br>
+Version 7.0.8.BUILD-SNAPSHOT<br>
 </div>
 </div>
 </body>
