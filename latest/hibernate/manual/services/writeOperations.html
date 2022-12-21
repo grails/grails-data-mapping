@@ -493,7 +493,7 @@ interface BookService {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Query("update ${Book book} set ${book.title} = $newTitle where $book.title = $oldTitle")
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Query("update ${Book book} set ${book.title} = $newTitle where book.title = $oldTitle")
 Number updateTitle(String newTitle, String oldTitle)</code></pre>
 </div>
 </div>
@@ -535,7 +535,7 @@ void delete(String title, Date date)</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 7.3.0<br>
+Version 7.0.7<br>
 </div>
 </div>
 </body>

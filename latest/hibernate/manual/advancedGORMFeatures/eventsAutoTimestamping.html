@@ -447,7 +447,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p><code>beforeUpdate</code> - Executed before an object is updated.  If you return false, the update will be cancelled.</p>
 </li>
 <li>
-<p><code>beforeDelete</code> - Executed before an object is deleted.  If you return false, the operation delete will be cancelled.</p>
+<p><code>beforeDelete</code> - Executed before an object is deleted.  If you return false, the delete will be cancelled.</p>
 </li>
 <li>
 <p><code>beforeValidate</code> - Executed before an object is validated</p>
@@ -774,139 +774,139 @@ datastore.getApplicationEventPublisher()
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">auto-flush</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/AutoFlushEventListener.html">AutoFlushEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/AutoFlushEventListener.html">AutoFlushEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">merge</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/MergeEventListener.html">MergeEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/MergeEventListener.html">MergeEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">create</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PersistEventListener.html">PersistEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PersistEventListener.html">PersistEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">create-onflush</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PersistEventListener.html">PersistEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PersistEventListener.html">PersistEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">delete</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/DeleteEventListener.html">DeleteEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/DeleteEventListener.html">DeleteEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">dirty-check</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/DirtyCheckEventListener.html">DirtyCheckEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/DirtyCheckEventListener.html">DirtyCheckEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">evict</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/EvictEventListener.html">EvictEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/EvictEventListener.html">EvictEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">flush</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/FlushEventListener.html">FlushEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/FlushEventListener.html">FlushEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">flush-entity</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/FlushEntityEventListener.html">FlushEntityEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/FlushEntityEventListener.html">FlushEntityEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">load</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/LoadEventListener.html">LoadEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/LoadEventListener.html">LoadEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">load-collection</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/InitializeCollectionEventListener.html">InitializeCollectionEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/InitializeCollectionEventListener.html">InitializeCollectionEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">lock</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/LockEventListener.html">LockEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/LockEventListener.html">LockEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">refresh</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/RefreshEventListener.html">RefreshEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/RefreshEventListener.html">RefreshEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">replicate</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/ReplicateEventListener.html">ReplicateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/ReplicateEventListener.html">ReplicateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">save-update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/SaveOrUpdateEventListener.html">SaveOrUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/SaveOrUpdateEventListener.html">SaveOrUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">save</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/SaveOrUpdateEventListener.html">SaveOrUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/SaveOrUpdateEventListener.html">SaveOrUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/SaveOrUpdateEventListener.html">SaveOrUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/SaveOrUpdateEventListener.html">SaveOrUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-load</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreLoadEventListener.html">PreLoadEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreLoadEventListener.html">PreLoadEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreUpdateEventListener.html">PreUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreUpdateEventListener.html">PreUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-delete</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreDeleteEventListener.html">PreDeleteEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreDeleteEventListener.html">PreDeleteEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-insert</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreInsertEventListener.html">PreInsertEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreInsertEventListener.html">PreInsertEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-collection-recreate</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreCollectionRecreateEventListener.html">PreCollectionRecreateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreCollectionRecreateEventListener.html">PreCollectionRecreateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-collection-remove</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreCollectionRemoveEventListener.html">PreCollectionRemoveEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreCollectionRemoveEventListener.html">PreCollectionRemoveEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">pre-collection-update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PreCollectionUpdateEventListener.html">PreCollectionUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PreCollectionUpdateEventListener.html">PreCollectionUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-load</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostLoadEventListener.html">PostLoadEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostLoadEventListener.html">PostLoadEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostUpdateEventListener.html">PostUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostUpdateEventListener.html">PostUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-delete</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostDeleteEventListener.html">PostDeleteEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostDeleteEventListener.html">PostDeleteEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-insert</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostInsertEventListener.html">PostInsertEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostInsertEventListener.html">PostInsertEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-commit-update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostUpdateEventListener.html">PostUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostUpdateEventListener.html">PostUpdateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-commit-delete</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostDeleteEventListener.html">PostDeleteEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostDeleteEventListener.html">PostDeleteEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-commit-insert</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostInsertEventListener.html">PostInsertEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostInsertEventListener.html">PostInsertEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-collection-recreate</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostCollectionRecreateEventListener.html">PostCollectionRecreateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostCollectionRecreateEventListener.html">PostCollectionRecreateEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-collection-remove</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostCollectionRemoveEventListener.html">PostCollectionRemoveEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostCollectionRemoveEventListener.html">PostCollectionRemoveEventListener</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">post-collection-update</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/event/spi/PostCollectionUpdateEventListener.html">PostCollectionUpdateEventListener</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/event/PostCollectionUpdateEventListener.html">PostCollectionUpdateEventListener</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -1024,7 +1024,7 @@ Because the timestamp handling is only disabled for the duration of the closure,
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 7.3.0<br>
+Version 7.0.7<br>
 </div>
 </div>
 </body>

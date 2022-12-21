@@ -438,47 +438,52 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect3">
 <h4 id="_dependency_upgrades">Dependency Upgrades</h4>
 <div class="paragraph">
-<p>GORM 7.1 supports Apache Groovy 3 and Java 14 Hibernate 5.5.x and Spring 5.3.x.</p>
+<p>GORM 7.0 supports a minimum version of Java 8, Hibernate 5.3.x and Spring 5.2.x.</p>
 </div>
 <div class="paragraph">
 <p>Each of these underlying components may have changes that require altering your application. These changes are beyond the scope of this documentation.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_default_autowire_by_type_inside_gorm_data_services">Default Autowire By Type inside GORM Data Services</h4>
+<h4 id="_package_restructuring_and_deprecations">Package Restructuring and Deprecations</h4>
 <div class="paragraph">
-<p>A Grails Service (or a bean) inside GORM DataService will default to autowire by-type, For example:</p>
+<p>Previously deprecated classes have been deleted from this release and in order to support Java 11 modules in the future some package re-structuring has occurred.</p>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_changes_to_proxy_handling">Changes to Proxy Handling</h4>
 <div class="paragraph">
-<p><em>./grails-app/services/example/BookService.groovy</em></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code>package example
-
-import grails.gorm.services.Service
-
-@Service(Book)
-abstract class BookService {
-
-    TestService testRepo
-
-    abstract Book save(String title, String author)
-
-    void doSomething() {
-        assert testRepo != null
-    }
-}</code></pre>
-</div>
+<p>GORM no longer creates custom proxy factories nor automatically unwraps Hibernate proxies.</p>
 </div>
 <div class="paragraph">
-<p>Please note that with autowire by-type as the default, when multiple beans for same type are found the application with throw Exception. Use the Spring `@Qualifier annotation for <a href="https://docs.spring.io/spring-framework/docs/5.3.10/reference/html/core.html#beans-autowired-annotation-qualifiers">Fine-tuning Annotation Based Autowiring with Qualifiers</a>.</p>
+<p>This makes it more consistent to the way regular Hibernate behaves and reduces the complexity required at the framework level.</p>
+</div>
+<div class="paragraph">
+<p>You may need to alter <code>instanceof</code> checks are manually unwrap proxies in certain cases.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_module_grails_validation_deprecated_and_removed">Module <code>grails-validation</code> Deprecated and Removed</h4>
+<div class="paragraph">
+<p>In GORM 6.x the <code>grails-validation</code> module was deprecated and replaced by <code>grails-datastore-gorm-validation</code>.</p>
+</div>
+<div class="paragraph">
+<p>Deprecated interfaces were maintained for backwards compatibility. In GORM 7.0 these deprecated classes have been removed and all dependency on <code>grails-validation</code> removed.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_transactions_now_required_for_all_operations">Transactions Now Required for all Operations</h4>
+<div class="paragraph">
+<p>Previous versions of Hibernate allowed read operations to be executed without the presence of a declaration transaction.</p>
+</div>
+<div class="paragraph">
+<p>Hibernate 5.2 and above require the presence of an active transaction. If see a <code>javax.persistence.TransactionRequiredException</code> exception it means your method lacks a <code>@Transactional</code> annotation around it.</p>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 7.3.0<br>
+Version 7.0.7<br>
 </div>
 </div>
 </body>
