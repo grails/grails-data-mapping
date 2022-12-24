@@ -436,12 +436,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>To use GORM 7.2.3-SNAPSHOT for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
+<p>To use GORM 7.3.1-SNAPSHOT for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">dependencies {
-    compile "org.grails.plugins:hibernate5:7.2.3-SNAPSHOT"
+    compile "org.grails.plugins:hibernate5:7.3.1-SNAPSHOT"
     compile "org.hibernate:hibernate-ehcache"
 }</code></pre>
 </div>
@@ -451,7 +451,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-properties" data-lang="properties">gormVersion=7.2.3-SNAPSHOT</code></pre>
+<pre class="highlight"><code class="language-properties" data-lang="properties">gormVersion=7.3.1-SNAPSHOT</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -464,7 +464,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("7.2.3-SNAPSHOT")
+            details.useVersion("7.3.1-SNAPSHOT")
         }
     }
 }
@@ -490,7 +490,7 @@ dependencies {
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 7.2.3-SNAPSHOT<br>
+Version 7.3.1-SNAPSHOT<br>
 </div>
 </div>
 </body>
