@@ -520,7 +520,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>If a query returns multiple <code>Person</code> instances, then when we access the first <code>pet</code> property, Hibernate will fetch that <code>Pet</code> plus the four next ones. You can get the same behaviour with eager loading by combining <code>batchSize</code> with the <code>lazy: false</code> option.</p>
 </div>
 <div class="paragraph">
-<p>You can find out more about these options in the <a href="http://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching">Hibernate user guide</a>. Note that ORM DSL does not currently support the "subselect" fetching strategy.</p>
+<p>You can find out more about these options in the <a href="https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#fetching">Hibernate user guide</a>. Note that ORM DSL does not currently support the "subselect" fetching strategy.</p>
 </div>
 </div>
 <div class="sect4">
@@ -558,7 +558,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect4">
-<h5 id="_lazy_single_ended_associations_and_proxies">Lazy Single-Ended Associations and Proxies</h5>
+<h5 id="_lazy_associations_and_proxies">Lazy Associations and Proxies</h5>
 <div class="paragraph">
 <p>Hibernate uses runtime-generated proxies to facilitate single-ended lazy associations; Hibernate dynamically subclasses the entity class to create the proxy.</p>
 </div>
@@ -590,68 +590,64 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="paragraph">
-<p>and assume that we have a single <code>Person</code> instance with a <code>Dog</code> as the <code>pet</code>. The following code will work as you would expect:</p>
+<p>Proxies can have confusing behavior when combined with inheritance. Because the proxy is only a subclass of the parent class, any attempt to cast or access data on the subclass will fail. Assuming we have a single <code>Person</code> instance with a <code>Dog</code> as the <code>pet</code>.</p>
+</div>
+<div class="paragraph">
+<p>The code below will not fail because directly querying the <code>Pet</code> table does not require the resulting objects to be proxies because they are not lazy.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def pet = Pet.get(1)
+assert pet instanceof Dog</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following code will fail because the association is lazy and the <code>pet</code> instance is a proxy.</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">def person = Person.get(1)
-assert person.pet instanceof Dog
-assert Pet.get(person.petId) instanceof Dog</code></pre>
+assert person.pet instanceof Dog</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>But this won&#8217;t:</p>
+<p>If the only goal is to check if the proxy is an instance of a class, there is one helper method available to do so that works with proxies. Take special care in using it though because it does cause a call to the database to retrieve the association data.</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">def person = Person.get(1)
-assert person.pet instanceof Dog
-assert Pet.list()[0] instanceof Dog</code></pre>
+assert person.pet.instanceOf(Dog)</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The second assertion fails, and to add to the confusion, this will work:</p>
+<p>There are a couple of ways to approach this issue. The first rule of thumb is that if it is known ahead of time that the association data is required, join the data in the query of the <code>Person</code>. For example, the following assertion is true.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">assert Pet.list()[0] instanceof Dog</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def person = Person.where { id == 1 }.join("pet").get()
+assert person.pet instanceof Dog</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>What&#8217;s going on here? It&#8217;s down to a combination of how proxies work and the guarantees that the Hibernate session makes. When you load the <code>Person</code> instance, Hibernate creates a proxy for its <code>pet</code> relation and attaches it to the session. Once that happens, whenever you retrieve that <code>Pet</code> instance with a query, a <code>get()</code>, or the <code>pet</code> relation <em>within the same session</em> , Hibernate gives you the proxy.</p>
-</div>
-<div class="paragraph">
-<p>Fortunately for us, GORM automatically unwraps the proxy when you use <code>get()</code> and <code>findBy\*()</code>, or when you directly access the relation. That means you don&#8217;t have to worry at all about proxies in the majority of cases. But GORM doesn&#8217;t do that for objects returned with a query that returns a list, such as <code>list()</code> and <code>findAllBy\*()</code>. However, if Hibernate hasn&#8217;t attached the proxy to the session, those queries will return the real instances - hence why the last example works.</p>
-</div>
-<div class="paragraph">
-<p>You can protect yourself to a degree from this problem by using the <code>instanceOf</code> method by GORM:</p>
+<p>In the above example the <code>pet</code> association is no longer lazy because it is being retrieved along with the <code>Person</code> and thus no proxies are necessary. There are cases when it makes sense for a proxy to be returned, mostly in the case where its impossible to know if the data will be used or not. For those cases in order to access properties of the subclasses, the proxy must be unwrapped. To unwrap a proxy inject an instance of <a href="../api/org/grails/datastore/mapping/proxy/ProxyHandler.html">ProxyHandler</a> and pass the proxy to the <code>unwrap</code> method.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">def person = Person.get(1)
-assert Pet.list()[0].instanceOf(Dog)</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def person = Person.get(1)
+assert proxyHandler.unwrap(person.pet) instanceof Dog</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>However, it won&#8217;t help here if casting is involved. For example, the following code will throw a <code>ClassCastException</code> because the first pet in the list is a proxy instance with a class that is neither <code>Dog</code> nor a sub-class of <code>Dog</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">def person = Person.get(1)
-Dog pet = Pet.list()[0]</code></pre>
-</div>
+<p>For cases where dependency injection is impractical or not available, a helper method <a href="../api/org/grails/orm/hibernate/cfg/GrailsHibernateUtil.html#unwrapIfProxy(java.lang.Object)">GrailsHibernateUtil.unwrapIfProxy(Object)</a> can be used instead.</p>
 </div>
 <div class="paragraph">
-<p>Of course, it&#8217;s best not to use static types in this situation. If you use an untyped variable for the pet instead, you can access any <code>Dog</code> properties or methods on the instance without any problems.</p>
-</div>
-<div class="paragraph">
-<p>These days it&#8217;s rare that you will come across this issue, but it&#8217;s best to be aware of it just in case. At least you will know why such an error occurs and be able to work around it.</p>
+<p>Unwrapping a proxy is different than initializing it. Initializing a proxy simply populates the underlying instance with data from the database, however unwrapping a returns the inner target.</p>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 7.0.7<br>
+Version 7.3.1<br>
 </div>
 </div>
 </body>

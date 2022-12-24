@@ -451,7 +451,7 @@ println airport.version</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>When you perform updates Hibernate will automatically check the version property against the  version column in the database and if they differ will throw a <a href="http://docs.jboss.org/hibernate/orm/current/javadocs/org/hibernate/StaleObjectStateException.html">StaleObjectException</a>. This will roll back the transaction if one is active.</p>
+<p>When you perform updates Hibernate will automatically check the version property against the  version column in the database and if they differ will throw a <a href="https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/StaleObjectStateException.html">StaleObjectException</a>. This will roll back the transaction if one is active.</p>
 </div>
 <div class="paragraph">
 <p>This is useful as it allows a certain level of atomicity without resorting to pessimistic locking that has an inherit performance penalty. The downside is that you have to deal with this exception if you have highly concurrent writes. This requires flushing the session:</p>
@@ -546,7 +546,7 @@ airport.save()</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 7.0.7<br>
+Version 7.3.1<br>
 </div>
 </div>
 </body>
