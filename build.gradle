@@ -6,7 +6,6 @@ buildscript {
     dependencies {
         classpath "io.github.gradle-nexus:publish-plugin:1.1.0"
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
-        classpath "org.gradle:test-retry-gradle-plugin:1.4.1"
     }
 }
 
@@ -88,7 +87,6 @@ subprojects {
         apply plugin: 'eclipse'
         apply plugin: 'idea'
         apply plugin: 'java-library'
-        apply plugin: "org.gradle.test-retry"
         sourceCompatibility = "1.8"
         targetCompatibility = "1.8"
     }
