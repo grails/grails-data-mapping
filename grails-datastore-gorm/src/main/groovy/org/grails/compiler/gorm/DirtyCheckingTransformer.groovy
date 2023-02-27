@@ -69,18 +69,24 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
         this.compilationUnit = compilationUnit
     }
 
-    void performInjectionOnAnnotatedClass(SourceUnit source, ClassNode classNode) {
+    void performInjectionOnAnnotatedClass(SourceUnit source, ClassNode classNode, Class traitToInject = DirtyCheckable) {
         // First add a local field that will store the change tracking state. The field is a simple list of property names that have changed
         // the field is only added to root clauses that extend from java.lang.Object
-        final ClassNode changeTrackableClassNode = new ClassNode(DirtyCheckable).getPlainNodeReference()
+        final ClassNode changeTrackableClassNode = new ClassNode(traitToInject).getPlainNodeReference()
+        if (traitToInject != DirtyCheckable) {
+            changeTrackableClassNode.setSuperClass(new ClassNode(DirtyCheckable).getPlainNodeReference())
+        }
         final MethodNode markDirtyMethodNode = changeTrackableClassNode.getMethod(METHOD_NAME_MARK_DIRTY, new Parameter(ClassHelper.STRING_TYPE, "propertyName"), new Parameter(ClassHelper.OBJECT_TYPE, "newValue"))
 
 
         ClassNode superClass = classNode.getSuperClass()
         boolean shouldWeave = superClass.equals(OBJECT_CLASS_NODE)
 
-        ClassNode dirtyCheckableTrait = ClassHelper.make(DirtyCheckable).getPlainNodeReference()
-
+        ClassNode dirtyCheckableTrait = ClassHelper.make(traitToInject).getPlainNodeReference()
+        if (traitToInject != DirtyCheckable) {
+            dirtyCheckableTrait.setSuperClass(new ClassNode(DirtyCheckable).getPlainNodeReference())
+        }
+        
         while(!shouldWeave) {
             if(isDomainClass(superClass) || !superClass.getAnnotations(DIRTY_CHECK_CLASS_NODE).isEmpty()) {
                 break

@@ -56,6 +56,7 @@ import org.codehaus.groovy.transform.AbstractASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormEntity
+import org.grails.datastore.gorm.GormEntityDirtyCheckable
 import org.grails.datastore.gorm.query.GormQueryOperations
 import org.grails.datastore.mapping.model.config.GormProperties
 import org.grails.datastore.mapping.reflect.AstUtils
@@ -240,7 +241,7 @@ class GormEntityTransformation extends AbstractASTTransformation implements Comp
 
         // now apply dirty checking behavior
         def dirtyCheckTransformer = new DirtyCheckingTransformer()
-        dirtyCheckTransformer.performInjectionOnAnnotatedClass(sourceUnit, classNode)
+        dirtyCheckTransformer.performInjectionOnAnnotatedClass(sourceUnit, classNode, GormEntityDirtyCheckable)
 
 
         // convert the methodMissing and propertyMissing implementations to $static_methodMissing and $static_propertyMissing for the static versions
