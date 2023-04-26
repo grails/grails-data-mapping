@@ -5991,6 +5991,9 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd><div class="block">A trait that turns any class into a GORM entity</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntityApi.html" title="Interface in org.grails.datastore.gorm">GormEntityApi</a></span> - Interface in <a href="./org/grails/datastore/gorm/package-summary.html">org.grails.datastore.gorm</a>
 </dt><dd><div class="block">API for instance methods defined by a GORM entity</div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntityDirtyCheckable.html" title="Trait in org.grails.datastore.gorm">GormEntityDirtyCheckable</a></span> - Trait in <a href="./org/grails/datastore/gorm/package-summary.html">org.grails.datastore.gorm</a>
+</dt><dd><div class="block">Special trait meant only for GORM entities to override default behaviour of DirtyCheckable.
+ </div></dd>
 <dt><span class="strong"><a href="org/grails/compiler/gorm/GormEntityTraitProvider.html" title="Interface in org.grails.compiler.gorm">GormEntityTraitProvider</a></span> - Interface in <a href="./org/grails/compiler/gorm/package-summary.html">org.grails.compiler.gorm</a>
 </dt><dd><div class="block">Provides the implementation to use for the GormEntity trait</div></dd>
 <dt><span class="strong"><a href="org/grails/compiler/gorm/GormEntityTransformation.html" title="Class in org.grails.compiler.gorm">GormEntityTransformation</a></span> - Class in <a href="./org/grails/compiler/gorm/package-summary.html">org.grails.compiler.gorm</a>
@@ -6325,6 +6328,8 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingCollection.html#hasChanged()" title="Method in DirtyCheckingCollection">hasChanged()</a></span> - Method in <a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingCollection.html">DirtyCheckingCollection</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingMap.html#hasChanged()" title="Method in DirtyCheckingMap">hasChanged()</a></span> - Method in <a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingMap.html">DirtyCheckingMap</a>
+</dt><dd> <div class="block"></div></dd>
+<dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntityDirtyCheckable.html#hasChanged(java.lang.String)" title="Method in GormEntityDirtyCheckable">hasChanged(java.lang.String)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntityDirtyCheckable.html">GormEntityDirtyCheckable</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingCollection.html#hasChangedElements()" title="Method in DirtyCheckingCollection">hasChangedElements()</a></span> - Method in <a href="org/grails/datastore/mapping/dirty/checking/DirtyCheckingCollection.html">DirtyCheckingCollection</a>
 </dt><dd> <div class="block"></div></dd>
@@ -9366,7 +9371,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html#performInjection(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ClassNode)" title="Method in DirtyCheckingTransformer">performInjection(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ClassNode)</a></span> - Method in <a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html">DirtyCheckingTransformer</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html#performInjectionOnAnnotatedClass(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ClassNode)" title="Method in DirtyCheckingTransformer">performInjectionOnAnnotatedClass(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ClassNode)</a></span> - Method in <a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html">DirtyCheckingTransformer</a>
+<dt><span class="strong"><a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html#performInjectionOnAnnotatedClass(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ClassNode, java.lang.Class)" title="Method in DirtyCheckingTransformer">performInjectionOnAnnotatedClass(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ClassNode, java.lang.Class)</a></span> - Method in <a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html">DirtyCheckingTransformer</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html#performInjectionOnAnnotatedEntity(org.codehaus.groovy.ast.ClassNode)" title="Method in DirtyCheckingTransformer">performInjectionOnAnnotatedEntity(org.codehaus.groovy.ast.ClassNode)</a></span> - Method in <a href="org/grails/compiler/gorm/DirtyCheckingTransformer.html">DirtyCheckingTransformer</a>
 </dt><dd> <div class="block"></div></dd>
@@ -10917,7 +10922,7 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/orm/hibernate/IHibernateTemplate.html#setFlushMode(int)" title="Method in IHibernateTemplate">setFlushMode(int)</a></span> - Method in <a href="org/grails/orm/hibernate/IHibernateTemplate.html">IHibernateTemplate</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/core/Session.html#setFlushMode(javax.persistence.FlushModeType)" title="Method in Session">setFlushMode(javax.persistence.FlushModeType)</a></span> - Method in <a href="org/grails/datastore/mapping/core/Session.html">Session</a>
-</dt><dd> <div class="block">The flush mode, defaults to FlushModeType.AUTO</div></dd>
+</dt><dd> <div class="block">The flush mode, defaults to FlushModeType.COMMIT</div></dd>
 <dt><span class="strong"><a href="org/grails/orm/hibernate/InstanceApiHelper.html#setFlushModeManual()" title="Method in InstanceApiHelper">setFlushModeManual()</a></span> - Method in <a href="org/grails/orm/hibernate/InstanceApiHelper.html">InstanceApiHelper</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/model/types/ToOne.html#setForeignKeyInChild(boolean)" title="Method in ToOne">setForeignKeyInChild(boolean)</a></span> - Method in <a href="org/grails/datastore/mapping/model/types/ToOne.html">ToOne</a>
