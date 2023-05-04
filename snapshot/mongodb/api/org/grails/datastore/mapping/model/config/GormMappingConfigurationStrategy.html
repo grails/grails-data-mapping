@@ -160,8 +160,32 @@ implements <a href='../../../../../../org/grails/datastore/mapping/model/Mapping
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.util.Set</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#EXCLUDED_PROPERTIES">EXCLUDED_PROPERTIES</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#IDENTITY_PROPERTY">IDENTITY_PROPERTY</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>static&nbsp;java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#MAPPED_BY_NONE">MAPPED_BY_NONE</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#VERSION_PROPERTY">VERSION_PROPERTY</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#canExpandMappingContext">canExpandMappingContext</a></code></td>
                             <td class="colLast"></td>
                         </tr>
                         
@@ -231,8 +255,44 @@ implements <a href='../../../../../../org/grails/datastore/mapping/model/Mapping
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;<a href='../../../../../../org/grails/datastore/mapping/model/types/ToOne.html'>ToOne</a></code></td>
+                            <td class="colLast"><code><strong><a href="#establishDomainClassRelationship(org.grails.datastore.mapping.model.PersistentEntity, java.beans.PropertyDescriptor, org.grails.datastore.mapping.model.MappingContext, java.util.Map, boolean)">establishDomainClassRelationship</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.beans.PropertyDescriptor property, <a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, java.util.Map hasOneMap, boolean embedded)</code><br>Establish relationship with related domain class</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;<a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a></code></td>
                             <td class="colLast"><code><strong><a href="#establishRelationshipForCollection(java.beans.PropertyDescriptor, org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, Map, java.util.Map, boolean)">establishRelationshipForCollection</a></strong>(java.beans.PropertyDescriptor property, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, java.util.Map&lt;java.lang.String, java.lang.Class&gt; hasManyMap, java.util.Map mappedByMap, boolean embedded)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;java.util.Set</code></td>
+                            <td class="colLast"><code><strong><a href="#establishRelationshipOwners(org.grails.datastore.mapping.reflect.ClassPropertyFetcher)">establishRelationshipOwners</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html'>ClassPropertyFetcher</a> cpf)</code><br>Evaluates the belongsTo property to find out who owns who</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;java.lang.String</code></td>
+                            <td class="colLast"><code><strong><a href="#findManyRelatedClassPropertyName(java.lang.String, org.grails.datastore.mapping.reflect.ClassPropertyFetcher, java.util.Map, Class)">findManyRelatedClassPropertyName</a></strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html'>ClassPropertyFetcher</a> cpf, java.util.Map classRelationships, java.lang.Class&lt;?&gt; classType)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;java.lang.String</code></td>
+                            <td class="colLast"><code><strong><a href="#findOneToManyThatMatchesType(org.grails.datastore.mapping.model.PersistentEntity, java.beans.PropertyDescriptor, java.util.Map, java.util.Map, org.grails.datastore.mapping.reflect.ClassPropertyFetcher)">findOneToManyThatMatchesType</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.beans.PropertyDescriptor pd, java.util.Map relatedClassRelationships, java.util.Map mappedBy, <a href='../../../../../../org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html'>ClassPropertyFetcher</a> relatedCpf)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;java.beans.PropertyDescriptor</code></td>
+                            <td class="colLast"><code><strong><a href="#findProperty(List, java.lang.String)">findProperty</a></strong>(java.util.List&lt;java.beans.PropertyDescriptor&gt; descriptors, java.lang.String propertyName)</code><br>Finds a property type is an array of descriptors for the given property name</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#forceUnidirectional(java.beans.PropertyDescriptor, java.util.Map)">forceUnidirectional</a></strong>(java.beans.PropertyDescriptor property, java.util.Map mappedBy)</code><br>check if mappedBy is set explicitly to null for the given property.</td>
                         </tr>
                         
                         <tr class="altColor">
@@ -245,6 +305,18 @@ implements <a href='../../../../../../org/grails/datastore/mapping/model/Mapping
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.util.Map</code></td>
                             <td class="colLast"><code><strong><a href="#getAssociationMap(org.grails.datastore.mapping.reflect.ClassPropertyFetcher)">getAssociationMap</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html'>ClassPropertyFetcher</a> cpf)</code><br>Retrieves the association map</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;java.util.Map</code></td>
+                            <td class="colLast"><code><strong><a href="#getAssociationMap(org.grails.datastore.mapping.reflect.ClassPropertyFetcher, java.lang.String)">getAssociationMap</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html'>ClassPropertyFetcher</a> cpf, java.lang.String relationshipType)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;java.util.List</code></td>
+                            <td class="colLast"><code><strong><a href="#getCollectionStaticProperty(org.grails.datastore.mapping.reflect.ClassPropertyFetcher, java.lang.String)">getCollectionStaticProperty</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html'>ClassPropertyFetcher</a> cpf, java.lang.String property)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -273,20 +345,32 @@ implements <a href='../../../../../../org/grails/datastore/mapping/model/Mapping
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>protected&nbsp;<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a></code></td>
-                            <td class="colLast"><code><strong><a href="#getOrCreateAssociatedEntity(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.lang.Class)">getOrCreateAssociatedEntity</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, java.lang.Class propType)</code><br>Tries to obtain or create an associated entity. </td>
+                            <td class="colLast"><code>private&nbsp;java.util.Map</code></td>
+                            <td class="colLast"><code><strong><a href="#getMapStaticProperty(org.grails.datastore.mapping.reflect.ClassPropertyFetcher, java.lang.String)">getMapStaticProperty</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html'>ClassPropertyFetcher</a> cpf, java.lang.String property)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a></code></td>
-                            <td class="colLast"><code><strong><a href="#getOrCreateEmbeddedEntity(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.lang.Class)">getOrCreateEmbeddedEntity</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, java.lang.Class type)</code><br>Tries to obtain or create an embedded entity. </td>
+                            <td class="colLast"><code><strong><a href="#getOrCreateAssociatedEntity(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.lang.Class)">getOrCreateAssociatedEntity</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, java.lang.Class propType)</code><br>Tries to obtain or create an associated entity. </td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>protected&nbsp;<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a></code></td>
+                            <td class="colLast"><code><strong><a href="#getOrCreateEmbeddedEntity(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.lang.Class)">getOrCreateEmbeddedEntity</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, java.lang.Class type)</code><br>Tries to obtain or create an embedded entity. </td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.util.Set</code></td>
                             <td class="colLast"><code><strong><a href="#getOwningEntities(java.lang.Class, org.grails.datastore.mapping.model.MappingContext)">getOwningEntities</a></strong>(java.lang.Class javaClass, <a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a></code></td>
+                            <td class="colLast"><code><strong><a href="#getPersistentEntity(java.lang.Class, org.grails.datastore.mapping.model.MappingContext, org.grails.datastore.mapping.model.ClassMapping)">getPersistentEntity</a></strong>(java.lang.Class javaClass, <a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, <a href='../../../../../../org/grails/datastore/mapping/model/ClassMapping.html'>ClassMapping</a> classMapping)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -315,14 +399,26 @@ implements <a href='../../../../../../org/grails/datastore/mapping/model/Mapping
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>public&nbsp;static&nbsp;boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#isAbstract(org.grails.datastore.mapping.model.PersistentEntity)">isAbstract</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
+                            <td class="colLast"><code>private&nbsp;java.util.List&lt;java.beans.PropertyDescriptor&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#getPropertiesAssignableFromType(java.lang.Class, org.grails.datastore.mapping.reflect.ClassPropertyFetcher)">getPropertiesAssignableFromType</a></strong>(java.lang.Class type, <a href='../../../../../../org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html'>ClassPropertyFetcher</a> propertyFetcher)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>public&nbsp;static&nbsp;boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#isAbstract(org.grails.datastore.mapping.model.PersistentEntity)">isAbstract</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;boolean</code></td>
                             <td class="colLast"><code><strong><a href="#isCollectionType(java.lang.Class)">isCollectionType</a></strong>(java.lang.Class type)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#isExcludeId(java.lang.String, org.grails.datastore.mapping.model.IdentityMapping, java.lang.String, boolean)">isExcludeId</a></strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/model/IdentityMapping.html'>IdentityMapping</a> id, java.lang.String[] identifierName, boolean includeIdentifiers)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -333,17 +429,35 @@ implements <a href='../../../../../../org/grails/datastore/mapping/model/Mapping
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#isIdentifierProperty(java.lang.String, java.lang.String)">isIdentifierProperty</a></strong>(java.lang.String propertyName, java.lang.String[] identifierName)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#isNotMappedToDifferentProperty(java.beans.PropertyDescriptor, java.lang.String, java.util.Map)">isNotMappedToDifferentProperty</a></strong>(java.beans.PropertyDescriptor property, java.lang.String relatedClassPropertyName, java.util.Map mappedBy)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;boolean</code></td>
                             <td class="colLast"><code><strong><a href="#isPersistentEntity(java.lang.Class)">isPersistentEntity</a></strong>(java.lang.Class clazz)</code><br>Tests whether an class is a persistent entity</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#isRelationshipToMany(org.grails.datastore.mapping.model.PersistentEntity, Class, java.util.Map)">isRelationshipToMany</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.Class&lt;?&gt; relatedClassType, java.util.Map relatedClassRelationships)</code><br>Find out if the relationship is a 1-to-many or many-to-many.</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#setCanExpandMappingContext(boolean)">setCanExpandMappingContext</a></strong>(boolean canExpandMappingContext)</code><br>Whether the strategy can add new entities to the mapping context</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;boolean</code></td>
                             <td class="colLast"><code><strong><a href="#supportsCustomType(Class)">supportsCustomType</a></strong>(java.lang.Class&lt;?&gt; propertyType)</code><br></td>
@@ -390,10 +504,42 @@ implements <a href='../../../../../../org/grails/datastore/mapping/model/Mapping
                 </a>
                     <h3>Field Detail</h3>
                     
+                        <a name="EXCLUDED_PROPERTIES"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;java.util.Set <strong>EXCLUDED_PROPERTIES</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="IDENTITY_PROPERTY"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;java.lang.String <strong>IDENTITY_PROPERTY</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="MAPPED_BY_NONE"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;static&nbsp;final&nbsp;java.lang.String <strong>MAPPED_BY_NONE</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="VERSION_PROPERTY"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;java.lang.String <strong>VERSION_PROPERTY</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="canExpandMappingContext"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>canExpandMappingContext</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -451,11 +597,63 @@ implements <a href='../../../../../../org/grails/datastore/mapping/model/Mapping
                             </li>
                         </ul>
                     
+                        <a name="establishDomainClassRelationship(org.grails.datastore.mapping.model.PersistentEntity, java.beans.PropertyDescriptor, org.grails.datastore.mapping.model.MappingContext, java.util.Map, boolean)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;<a href='../../../../../../org/grails/datastore/mapping/model/types/ToOne.html'>ToOne</a> <strong>establishDomainClassRelationship</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.beans.PropertyDescriptor property, <a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, java.util.Map hasOneMap, boolean embedded)</h4>
+                                <p> Establish relationship with related domain class
+      <DL><DT><B>Parameters:</B></DT><DD>entity</DD><DD><code>property</code> -  Establishes a relationship between this class and the domain class property</DD><DD>context</DD><DD>hasOneMap</DD><DD>embedded</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="establishRelationshipForCollection(java.beans.PropertyDescriptor, org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, Map, java.util.Map, boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;<a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a> <strong>establishRelationshipForCollection</strong>(java.beans.PropertyDescriptor property, <a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, <a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, java.util.Map&lt;java.lang.String, java.lang.Class&gt; hasManyMap, java.util.Map mappedByMap, boolean embedded)</h4>
                                 <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="establishRelationshipOwners(org.grails.datastore.mapping.reflect.ClassPropertyFetcher)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.util.Set <strong>establishRelationshipOwners</strong>(<a href='../../../../../../org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html'>ClassPropertyFetcher</a> cpf)</h4>
+                                <p> Evaluates the belongsTo property to find out who owns who
+     </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="findManyRelatedClassPropertyName(java.lang.String, org.grails.datastore.mapping.reflect.ClassPropertyFetcher, java.util.Map, Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.lang.String <strong>findManyRelatedClassPropertyName</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html'>ClassPropertyFetcher</a> cpf, java.util.Map classRelationships, java.lang.Class&lt;?&gt; classType)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="findOneToManyThatMatchesType(org.grails.datastore.mapping.model.PersistentEntity, java.beans.PropertyDescriptor, java.util.Map, java.util.Map, org.grails.datastore.mapping.reflect.ClassPropertyFetcher)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.lang.String <strong>findOneToManyThatMatchesType</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.beans.PropertyDescriptor pd, java.util.Map relatedClassRelationships, java.util.Map mappedBy, <a href='../../../../../../org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html'>ClassPropertyFetcher</a> relatedCpf)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="findProperty(List, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.beans.PropertyDescriptor <strong>findProperty</strong>(java.util.List&lt;java.beans.PropertyDescriptor&gt; descriptors, java.lang.String propertyName)</h4>
+                                <p> Finds a property type is an array of descriptors for the given property name
+      <DL><DT><B>Parameters:</B></DT><DD><code>descriptors</code> -  The descriptors</DD><DD><code>propertyName</code> -  The property name</DD></DL><DL><DT><B>Returns:</B></DT><DD>The Class or null</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="forceUnidirectional(java.beans.PropertyDescriptor, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>forceUnidirectional</strong>(java.beans.PropertyDescriptor property, java.util.Map mappedBy)</h4>
+                                <p> check if mappedBy is set explicitly to null for the given property.
+      <DL><DT><B>Parameters:</B></DT><DD>property</DD><DD>mappedBy</DD></DL><DL><DT><B>Returns:</B></DT><DD>true if mappedBy is set explicitly to null</DD></DL></p>
                             </li>
                         </ul>
                     
@@ -474,6 +672,22 @@ implements <a href='../../../../../../org/grails/datastore/mapping/model/Mapping
                                 <h4>public&nbsp;java.util.Map <strong>getAssociationMap</strong>(<a href='../../../../../../org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html'>ClassPropertyFetcher</a> cpf)</h4>
                                 <p> Retrieves the association map
       <DL><DT><B>Parameters:</B></DT><DD><code>cpf</code> -  The ClassPropertyFetcher instance</DD></DL><DL><DT><B>Returns:</B></DT><DD>The association map</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getAssociationMap(org.grails.datastore.mapping.reflect.ClassPropertyFetcher, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.util.Map <strong>getAssociationMap</strong>(<a href='../../../../../../org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html'>ClassPropertyFetcher</a> cpf, java.lang.String relationshipType)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getCollectionStaticProperty(org.grails.datastore.mapping.reflect.ClassPropertyFetcher, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.util.List <strong>getCollectionStaticProperty</strong>(<a href='../../../../../../org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html'>ClassPropertyFetcher</a> cpf, java.lang.String property)</h4>
+                                <p></p>
                             </li>
                         </ul>
                     
@@ -512,6 +726,14 @@ public&nbsp;<a href='../../../../../../org/grails/datastore/mapping/model/Persis
                             </li>
                         </ul>
                     
+                        <a name="getMapStaticProperty(org.grails.datastore.mapping.reflect.ClassPropertyFetcher, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.util.Map <strong>getMapStaticProperty</strong>(<a href='../../../../../../org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html'>ClassPropertyFetcher</a> cpf, java.lang.String property)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getOrCreateAssociatedEntity(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.model.MappingContext, java.lang.Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -534,6 +756,14 @@ public&nbsp;<a href='../../../../../../org/grails/datastore/mapping/model/Persis
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;java.util.Set <strong>getOwningEntities</strong>(java.lang.Class javaClass, <a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getPersistentEntity(java.lang.Class, org.grails.datastore.mapping.model.MappingContext, org.grails.datastore.mapping.model.ClassMapping)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> <strong>getPersistentEntity</strong>(java.lang.Class javaClass, <a href='../../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> context, <a href='../../../../../../org/grails/datastore/mapping/model/ClassMapping.html'>ClassMapping</a> classMapping)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -571,6 +801,14 @@ public&nbsp;java.util.List&lt;<a href='../../../../../../org/grails/datastore/ma
                             </li>
                         </ul>
                     
+                        <a name="getPropertiesAssignableFromType(java.lang.Class, org.grails.datastore.mapping.reflect.ClassPropertyFetcher)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.util.List&lt;java.beans.PropertyDescriptor&gt; <strong>getPropertiesAssignableFromType</strong>(java.lang.Class type, <a href='../../../../../../org/grails/datastore/mapping/reflect/ClassPropertyFetcher.html'>ClassPropertyFetcher</a> propertyFetcher)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="isAbstract(org.grails.datastore.mapping.model.PersistentEntity)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -587,10 +825,34 @@ public&nbsp;java.util.List&lt;<a href='../../../../../../org/grails/datastore/ma
                             </li>
                         </ul>
                     
+                        <a name="isExcludeId(java.lang.String, org.grails.datastore.mapping.model.IdentityMapping, java.lang.String, boolean)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>isExcludeId</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/model/IdentityMapping.html'>IdentityMapping</a> id, java.lang.String[] identifierName, boolean includeIdentifiers)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="isExcludedProperty(java.lang.String, org.grails.datastore.mapping.model.ClassMapping, java.util.Collection, boolean)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;boolean <strong>isExcludedProperty</strong>(java.lang.String propertyName, <a href='../../../../../../org/grails/datastore/mapping/model/ClassMapping.html'>ClassMapping</a> classMapping, java.util.Collection transients, boolean includeIdentifiers)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="isIdentifierProperty(java.lang.String, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>isIdentifierProperty</strong>(java.lang.String propertyName, java.lang.String[] identifierName)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="isNotMappedToDifferentProperty(java.beans.PropertyDescriptor, java.lang.String, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>isNotMappedToDifferentProperty</strong>(java.beans.PropertyDescriptor property, java.lang.String relatedClassPropertyName, java.util.Map mappedBy)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -603,6 +865,15 @@ public&nbsp;java.util.List&lt;<a href='../../../../../../org/grails/datastore/ma
 
  Based on the same method in Grails core within the DomainClassArtefactHandler class
       <DL><DT><B>Parameters:</B></DT><DD><code>clazz</code> -  The java class</DD></DL><DL><DT><B>Returns:</B></DT><DD>True if it is a persistent entity</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="isRelationshipToMany(org.grails.datastore.mapping.model.PersistentEntity, Class, java.util.Map)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>isRelationshipToMany</strong>(<a href='../../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.Class&lt;?&gt; relatedClassType, java.util.Map relatedClassRelationships)</h4>
+                                <p> Find out if the relationship is a 1-to-many or many-to-many.
+      <DL><DT><B>Parameters:</B></DT><DD><code>relatedClassType</code> -  The related type</DD><DD><code>relatedClassRelationships</code> -  The related types relationships</DD></DL><DL><DT><B>Returns:</B></DT><DD><code>true</code> if the relationship is a many-to-many</DD></DL></p>
                             </li>
                         </ul>
                     

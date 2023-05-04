@@ -135,6 +135,12 @@ extends java.lang.Object</pre>
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.lang.Class[]</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#EMPTY_CLASS_ARRAY">EMPTY_CLASS_ARRAY</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>static&nbsp;java.util.Map&lt;java.lang.Class&lt;?&gt;, java.lang.Class&lt;?&gt;&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#PRIMITIVE_TYPE_COMPATIBLE_CLASSES">PRIMITIVE_TYPE_COMPATIBLE_CLASSES</a></code></td>
                             <td class="colLast"></td>
@@ -208,16 +214,28 @@ extends java.lang.Object</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>public&nbsp;static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#makeAccessible(java.lang.reflect.Field)">makeAccessible</a></strong>(java.lang.reflect.Field field)</code><br>Make the given field accessible, explicitly setting it accessible if necessary.
- </td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#isTypeInstanceOfPropertyType(Class, Class)">isTypeInstanceOfPropertyType</a></strong>(java.lang.Class&lt;?&gt; type, java.lang.Class&lt;?&gt; propertyType)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;static&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#makeAccessible(java.lang.reflect.Field)">makeAccessible</a></strong>(java.lang.reflect.Field field)</code><br>Make the given field accessible, explicitly setting it accessible if necessary.
+ </td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>public&nbsp;static&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#makeAccessible(java.lang.reflect.Method)">makeAccessible</a></strong>(java.lang.reflect.Method method)</code><br>Make the given method accessible, explicitly setting it accessible if necessary.
  </td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#registerPrimitiveClassPair(Class, Class)">registerPrimitiveClassPair</a></strong>(java.lang.Class&lt;?&gt; left, java.lang.Class&lt;?&gt; right)</code><br>Just add two entries to the class compatibility map</td>
                         </tr>
                         
                     </table>
@@ -260,6 +278,15 @@ extends java.lang.Object</pre>
                     <!--   -->
                 </a>
                     <h3>Field Detail</h3>
+                    
+                        <a name="EMPTY_CLASS_ARRAY"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.SuppressWarnings("rawtypes")
+private&nbsp;static&nbsp;final&nbsp;java.lang.Class[] <strong>EMPTY_CLASS_ARRAY</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
                     
                         <a name="PRIMITIVE_TYPE_COMPATIBLE_CLASSES"><!-- --></a>
                         <ul class="blockListLast">
@@ -346,6 +373,14 @@ public&nbsp;static&nbsp;boolean <strong>isSetter</strong>(java.lang.String name,
                             </li>
                         </ul>
                     
+                        <a name="isTypeInstanceOfPropertyType(Class, Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;boolean <strong>isTypeInstanceOfPropertyType</strong>(java.lang.Class&lt;?&gt; type, java.lang.Class&lt;?&gt; propertyType)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="makeAccessible(java.lang.reflect.Field)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -369,6 +404,15 @@ public&nbsp;static&nbsp;boolean <strong>isSetter</strong>(java.lang.String name,
 
  Based on the same method in Spring core.
       <DL><DT><B>Parameters:</B></DT><DD><code>method</code> -  the method to make accessible</DD></DL><DL><DT><B>See Also:</B></DT><DD>java.lang.reflect.Method#setAccessible</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="registerPrimitiveClassPair(Class, Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;void <strong>registerPrimitiveClassPair</strong>(java.lang.Class&lt;?&gt; left, java.lang.Class&lt;?&gt; right)</h4>
+                                <p> Just add two entries to the class compatibility map
+      <DL><DT><B>Parameters:</B></DT><DD>left</DD><DD>right</DD></DL></p>
                             </li>
                         </ul>
                     

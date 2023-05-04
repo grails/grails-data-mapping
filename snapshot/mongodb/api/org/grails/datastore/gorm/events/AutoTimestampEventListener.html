@@ -165,6 +165,12 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../org/grails/datastore/gorm/timestamp/TimestampProvider.html'>TimestampProvider</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#timestampProvider">timestampProvider</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>protected&nbsp;java.util.Collection&lt;java.lang.String&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#uninitializedEntities">uninitializedEntities</a></code></td>
                             <td class="colLast"></td>
@@ -295,20 +301,32 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#initializeIfNecessary(org.grails.datastore.mapping.model.PersistentEntity, java.lang.String)">initializeIfNecessary</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.String name)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#onPersistenceEvent(org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent)">onPersistenceEvent</a></strong>(<a href='../../../../../org/grails/datastore/mapping/engine/event/AbstractPersistenceEvent.html'>AbstractPersistenceEvent</a> event)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#persistentEntityAdded(org.grails.datastore.mapping.model.PersistentEntity)">persistentEntityAdded</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#processAllEntries(Set, java.lang.Runnable)">processAllEntries</a></strong>(java.util.Set&lt;Map.Entry&lt;java.lang.String, java.lang.Boolean&gt;&gt; entries, java.lang.Runnable runnable)</code><br></td>
+                        </tr>
+                        
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#run()">run</a></strong>()</code><br></td>
+                            <td class="colLast"><code>private&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#processEntries(List, Map, java.lang.Runnable)">processEntries</a></strong>(java.util.List&lt;java.lang.Class&gt; classes, java.util.Map&lt;java.lang.String, java.lang.Boolean&gt; entities, java.lang.Runnable runnable)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -324,78 +342,84 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>public&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#run()">run</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#setTimestampProvider(org.grails.datastore.gorm.timestamp.TimestampProvider)">setTimestampProvider</a></strong>(<a href='../../../../../org/grails/datastore/gorm/timestamp/TimestampProvider.html'>TimestampProvider</a> timestampProvider)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#storeDateCreatedAndLastUpdatedInfo(org.grails.datastore.mapping.model.PersistentEntity)">storeDateCreatedAndLastUpdatedInfo</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> persistentEntity)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#storeTimestampAvailability(Map, org.grails.datastore.mapping.model.PersistentEntity, PersistentProperty)">storeTimestampAvailability</a></strong>(java.util.Map&lt;java.lang.String, java.lang.Boolean&gt; timestampAvailabilityMap, <a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> persistentEntity, <a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html' title='PersistentProperty'>PersistentProperty</a>&lt;?&gt; property)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;boolean</code></td>
                             <td class="colLast"><code><strong><a href="#supportsEventType(Class)">supportsEventType</a></strong>(java.lang.Class&lt;? extends org.springframework.context.ApplicationEvent&gt; eventType)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#withoutDateCreated(java.lang.Runnable)">withoutDateCreated</a></strong>(java.lang.Runnable runnable)</code><br>Temporarily disables the date created processing during the execution of the runnable</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#withoutDateCreated(List, java.lang.Runnable)">withoutDateCreated</a></strong>(java.util.List&lt;java.lang.Class&gt; classes, java.lang.Runnable runnable)</code><br>Temporarily disables the date created processing only on the provided classes during the execution of the runnable</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#withoutDateCreated(java.lang.Class, java.lang.Runnable)">withoutDateCreated</a></strong>(java.lang.Class clazz, java.lang.Runnable runnable)</code><br>Temporarily disables the date created processing only on the provided class during the execution of the runnable</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#withoutLastUpdated(java.lang.Runnable)">withoutLastUpdated</a></strong>(java.lang.Runnable runnable)</code><br>Temporarily disables the last updated processing during the execution of the runnable</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#withoutLastUpdated(List, java.lang.Runnable)">withoutLastUpdated</a></strong>(java.util.List&lt;java.lang.Class&gt; classes, java.lang.Runnable runnable)</code><br>Temporarily disables the last updated processing only on the provided classes during the execution of the runnable</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#withoutLastUpdated(java.lang.Class, java.lang.Runnable)">withoutLastUpdated</a></strong>(java.lang.Class clazz, java.lang.Runnable runnable)</code><br>Temporarily disables the last updated processing only on the provided class during the execution of the runnable</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#withoutTimestamps(java.lang.Runnable)">withoutTimestamps</a></strong>(java.lang.Runnable runnable)</code><br>Temporarily disables the timestamp processing during the execution of the runnable</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#withoutTimestamps(List, java.lang.Runnable)">withoutTimestamps</a></strong>(java.util.List&lt;java.lang.Class&gt; classes, java.lang.Runnable runnable)</code><br>Temporarily disables the timestamp processing only on the provided classes during the execution of the runnable</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#withoutTimestamps(java.lang.Class, java.lang.Runnable)">withoutTimestamps</a></strong>(java.lang.Class clazz, java.lang.Runnable runnable)</code><br>Temporarily disables the timestamp processing during the execution of the runnable</td>
@@ -470,6 +494,14 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;java.util.Map&lt;java.lang.String, java.lang.Boolean&gt; <strong>entitiesWithLastUpdated</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="timestampProvider"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;<a href='../../../../../org/grails/datastore/gorm/timestamp/TimestampProvider.html'>TimestampProvider</a> <strong>timestampProvider</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -593,6 +625,14 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                             </li>
                         </ul>
                     
+                        <a name="initializeIfNecessary(org.grails.datastore.mapping.model.PersistentEntity, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;void <strong>initializeIfNecessary</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity, java.lang.String name)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="onPersistenceEvent(org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -606,6 +646,22 @@ protected&nbsp;void <strong>onPersistenceEvent</strong>(<a href='../../../../../
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;void <strong>persistentEntityAdded</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="processAllEntries(Set, java.lang.Runnable)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;void <strong>processAllEntries</strong>(java.util.Set&lt;Map.Entry&lt;java.lang.String, java.lang.Boolean&gt;&gt; entries, java.lang.Runnable runnable)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="processEntries(List, Map, java.lang.Runnable)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;void <strong>processEntries</strong>(java.util.List&lt;java.lang.Class&gt; classes, java.util.Map&lt;java.lang.String, java.lang.Boolean&gt; entities, java.lang.Runnable runnable)</h4>
                                 <p></p>
                             </li>
                         </ul>

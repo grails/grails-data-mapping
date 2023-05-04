@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -158,6 +158,84 @@ implements <a href='../../../../../../org/grails/datastore/mapping/config/Settin
         <!-- =========== ENUM CONSTANT SUMMARY =========== -->
         
         <!-- =========== FIELD SUMMARY =========== -->
+        
+            <ul class="blockList">
+                <li class="blockList"><a name="field_summary"><!--   --></a>
+                    <h3>Field Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Enum constants summary table">
+                        <caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Modifiers</th>
+                            <th class="colLast" scope="col">Name</th>
+                            <th class="colLast" scope="col">Description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#autoFlush">autoFlush</a></code></td>
+                            <td class="colLast">Whether to auto flush</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#autowire">autowire</a></code></td>
+                            <td class="colLast">Whether to autowire entities via Spring if used</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.Class&lt;<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#connectionSourcesClass">connectionSourcesClass</a></code></td>
+                            <td class="colLast">The class used to create</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.CustomSettings.html'>ConnectionSourceSettings.CustomSettings</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#custom">custom</a></code></td>
+                            <td class="colLast">Custom settings</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.DefaultSettings.html'>ConnectionSourceSettings.DefaultSettings</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#defaults">defaults</a></code></td>
+                            <td class="colLast"> <DL><DT><B>Returns:</B></DT><DD>Any defaults</DD></DL></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#failOnError">failOnError</a></code></td>
+                            <td class="colLast">Whether to fail on a validation error</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.util.List&lt;java.lang.String&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#failOnErrorPackages">failOnErrorPackages</a></code></td>
+                            <td class="colLast">Package names that should fail on error</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;javax.persistence.FlushModeType</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#flushMode">flushMode</a></code></td>
+                            <td class="colLast">The flush mode type, if any</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.Boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#markDirty">markDirty</a></code></td>
+                            <td class="colLast">Whether to mark instances dirty on explicit save()</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.html'>MultiTenancySettings</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#multiTenancy">multiTenancy</a></code></td>
+                            <td class="colLast">The settings for Multi Tenancy</td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+                </li>
+                
+            </ul>
         
 
         <!-- =========== PROPERTY SUMMARY =========== -->
@@ -321,6 +399,97 @@ implements <a href='../../../../../../org/grails/datastore/mapping/config/Settin
         <li class="blockList">
            
 
+            
+            <!-- =========== FIELD DETAIL =========== -->
+            <ul class="blockList">
+                <li class="blockList"><a name="field_detail">
+                    <!--   -->
+                </a>
+                    <h3>Field Detail</h3>
+                    
+                        <a name="autoFlush"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.Deprecated
+private&nbsp;boolean <strong>autoFlush</strong></h4>
+                                <p> Whether to auto flush<DL><DT><B>deprecated:</B></DT><DD>Enabling this is generally the wrong thing to do as it will degrade performance. Hence deprecated</DD></DL> </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="autowire"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>autowire</strong></h4>
+                                <p> Whether to autowire entities via Spring if used</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="connectionSourcesClass"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.lang.Class&lt;<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&gt; <strong>connectionSourcesClass</strong></h4>
+                                <p> The class used to create</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="custom"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.CustomSettings.html'>ConnectionSourceSettings.CustomSettings</a> <strong>custom</strong></h4>
+                                <p> Custom settings</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="defaults"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;<a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.DefaultSettings.html'>ConnectionSourceSettings.DefaultSettings</a> <strong>defaults</strong></h4>
+                                <p> <DL><DT><B>Returns:</B></DT><DD>Any defaults</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="failOnError"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>failOnError</strong></h4>
+                                <p> Whether to fail on a validation error</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="failOnErrorPackages"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.util.List&lt;java.lang.String&gt; <strong>failOnErrorPackages</strong></h4>
+                                <p> Package names that should fail on error</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="flushMode"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;javax.persistence.FlushModeType <strong>flushMode</strong></h4>
+                                <p> The flush mode type, if any</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="markDirty"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.lang.Boolean <strong>markDirty</strong></h4>
+                                <p> Whether to mark instances dirty on explicit save()</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="multiTenancy"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;<a href='../../../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.html'>MultiTenancySettings</a> <strong>multiTenancy</strong></h4>
+                                <p> The settings for Multi Tenancy</p>
+                            </li>
+                        </ul>
+                    
+                </li>
+            </ul>
             
 
             
@@ -505,11 +674,11 @@ boolean <strong>autoFlush</strong></h4>
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <p>Groovy Documentation</p>

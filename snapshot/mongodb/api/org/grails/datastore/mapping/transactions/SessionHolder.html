@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -121,6 +121,36 @@ extends org.springframework.transaction.support.ResourceHolderSupport</pre>
         <!-- =========== ENUM CONSTANT SUMMARY =========== -->
         
         <!-- =========== FIELD SUMMARY =========== -->
+        
+            <ul class="blockList">
+                <li class="blockList"><a name="field_summary"><!--   --></a>
+                    <h3>Field Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Enum constants summary table">
+                        <caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Modifiers</th>
+                            <th class="colLast" scope="col">Name</th>
+                            <th class="colLast" scope="col">Description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.Object</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#creator">creator</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.util.Deque&lt;<a href='../../../../../org/grails/datastore/mapping/core/Session.html' title='Session'>Session</a>&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#sessions">sessions</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+                </li>
+                
+            </ul>
         
 
         <!-- =========== PROPERTY SUMMARY =========== -->
@@ -262,7 +292,7 @@ extends org.springframework.transaction.support.ResourceHolderSupport</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>class org.springframework.transaction.support.ResourceHolderSupport</code></td>
-                            <td class="colLast"><code>org.springframework.transaction.support.ResourceHolderSupport#unbound(), org.springframework.transaction.support.ResourceHolderSupport#requested(), org.springframework.transaction.support.ResourceHolderSupport#released(), org.springframework.transaction.support.ResourceHolderSupport#setSynchronizedWithTransaction(boolean), org.springframework.transaction.support.ResourceHolderSupport#isSynchronizedWithTransaction(), org.springframework.transaction.support.ResourceHolderSupport#setRollbackOnly(), org.springframework.transaction.support.ResourceHolderSupport#isRollbackOnly(), org.springframework.transaction.support.ResourceHolderSupport#resetRollbackOnly(), org.springframework.transaction.support.ResourceHolderSupport#setTimeoutInSeconds(int), org.springframework.transaction.support.ResourceHolderSupport#setTimeoutInMillis(long), org.springframework.transaction.support.ResourceHolderSupport#hasTimeout(), org.springframework.transaction.support.ResourceHolderSupport#getDeadline(), org.springframework.transaction.support.ResourceHolderSupport#getTimeToLiveInSeconds(), org.springframework.transaction.support.ResourceHolderSupport#getTimeToLiveInMillis(), org.springframework.transaction.support.ResourceHolderSupport#clear(), org.springframework.transaction.support.ResourceHolderSupport#isOpen(), org.springframework.transaction.support.ResourceHolderSupport#isVoid(), org.springframework.transaction.support.ResourceHolderSupport#reset(), org.springframework.transaction.support.ResourceHolderSupport#wait(long), org.springframework.transaction.support.ResourceHolderSupport#wait(long, int), org.springframework.transaction.support.ResourceHolderSupport#wait(), org.springframework.transaction.support.ResourceHolderSupport#equals(java.lang.Object), org.springframework.transaction.support.ResourceHolderSupport#toString(), org.springframework.transaction.support.ResourceHolderSupport#hashCode(), org.springframework.transaction.support.ResourceHolderSupport#getClass(), org.springframework.transaction.support.ResourceHolderSupport#notify(), org.springframework.transaction.support.ResourceHolderSupport#notifyAll()</code></td>
+                            <td class="colLast"><code>org.springframework.transaction.support.ResourceHolderSupport#unbound(), org.springframework.transaction.support.ResourceHolderSupport#released(), org.springframework.transaction.support.ResourceHolderSupport#setRollbackOnly(), org.springframework.transaction.support.ResourceHolderSupport#isRollbackOnly(), org.springframework.transaction.support.ResourceHolderSupport#isSynchronizedWithTransaction(), org.springframework.transaction.support.ResourceHolderSupport#resetRollbackOnly(), org.springframework.transaction.support.ResourceHolderSupport#setTimeoutInSeconds(int), org.springframework.transaction.support.ResourceHolderSupport#setTimeoutInMillis(long), org.springframework.transaction.support.ResourceHolderSupport#hasTimeout(), org.springframework.transaction.support.ResourceHolderSupport#getDeadline(), org.springframework.transaction.support.ResourceHolderSupport#getTimeToLiveInSeconds(), org.springframework.transaction.support.ResourceHolderSupport#getTimeToLiveInMillis(), org.springframework.transaction.support.ResourceHolderSupport#requested(), org.springframework.transaction.support.ResourceHolderSupport#setSynchronizedWithTransaction(boolean), org.springframework.transaction.support.ResourceHolderSupport#clear(), org.springframework.transaction.support.ResourceHolderSupport#isOpen(), org.springframework.transaction.support.ResourceHolderSupport#isVoid(), org.springframework.transaction.support.ResourceHolderSupport#reset(), org.springframework.transaction.support.ResourceHolderSupport#wait(long), org.springframework.transaction.support.ResourceHolderSupport#wait(long, int), org.springframework.transaction.support.ResourceHolderSupport#wait(), org.springframework.transaction.support.ResourceHolderSupport#equals(java.lang.Object), org.springframework.transaction.support.ResourceHolderSupport#toString(), org.springframework.transaction.support.ResourceHolderSupport#hashCode(), org.springframework.transaction.support.ResourceHolderSupport#getClass(), org.springframework.transaction.support.ResourceHolderSupport#notify(), org.springframework.transaction.support.ResourceHolderSupport#notifyAll()</code></td>
                         </tr>
                     </table>
                    </ul>
@@ -279,6 +309,32 @@ extends org.springframework.transaction.support.ResourceHolderSupport</pre>
         <li class="blockList">
            
 
+            
+            <!-- =========== FIELD DETAIL =========== -->
+            <ul class="blockList">
+                <li class="blockList"><a name="field_detail">
+                    <!--   -->
+                </a>
+                    <h3>Field Detail</h3>
+                    
+                        <a name="creator"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.lang.Object <strong>creator</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="sessions"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.util.Deque&lt;<a href='../../../../../org/grails/datastore/mapping/core/Session.html' title='Session'>Session</a>&gt; <strong>sessions</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                </li>
+            </ul>
             
 
             
@@ -454,11 +510,11 @@ public&nbsp;void <strong>setTransaction</strong>(<a href='../../../../../org/gra
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <p>Groovy Documentation</p>

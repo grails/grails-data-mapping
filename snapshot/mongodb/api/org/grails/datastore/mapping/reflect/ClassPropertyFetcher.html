@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -141,6 +141,30 @@ extends java.lang.Object</pre>
                             <td class="colLast"></td>
                         </tr>
                         
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;org.codehaus.groovy.reflection.ClassInfo</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#classInfo">classInfo</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.Class</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#clazz">clazz</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.util.List&lt;groovy.lang.MetaProperty&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#metaProperties">metaProperties</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;groovy.lang.MetaClass</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#theMetaClass">theMetaClass</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
                     </table>
                    </ul>
                 </li>
@@ -154,6 +178,28 @@ extends java.lang.Object</pre>
         <!-- =========== ELEMENT SUMMARY =========== -->
         
 
+        
+        <!-- ======== CONSTRUCTOR SUMMARY ======== -->
+        <ul class="blockList">
+                <li class="blockList"><a name="constructor_summary"><!--   --></a>
+                    <h3>Constructor Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructors Summary table">
+                        <caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Constructor and description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst">
+                                <code><a href="#ClassPropertyFetcher(java.lang.Class)">ClassPropertyFetcher</a>
+                                (java.lang.Class clazz)</code><br></td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+              </li>
+        </ul>
         
 
         
@@ -209,80 +255,92 @@ extends java.lang.Object</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;java.lang.Object</code></td>
+                            <td class="colLast"><code><strong><a href="#getInstancePropertyValue(java.lang.Object, java.lang.String, groovy.lang.MetaClass)">getInstancePropertyValue</a></strong>(java.lang.Object instance, java.lang.String name, groovy.lang.MetaClass metaClass)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.lang.Class</code></td>
                             <td class="colLast"><code><strong><a href="#getJavaClass()">getJavaClass</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>The Java that this ClassPropertyFetcher was constructor for</DD></DL></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.util.List&lt;groovy.lang.MetaProperty&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getMetaProperties()">getMetaProperties</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>The meta properties of this class</DD></DL></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.util.List&lt;java.beans.PropertyDescriptor&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getPropertiesAssignableFromType(java.lang.Class)">getPropertiesAssignableFromType</a></strong>(java.lang.Class assignableType)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.util.List&lt;java.beans.PropertyDescriptor&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getPropertiesAssignableToType(java.lang.Class)">getPropertiesAssignableToType</a></strong>(java.lang.Class assignableType)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.util.List&lt;java.beans.PropertyDescriptor&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getPropertiesOfType(java.lang.Class)">getPropertiesOfType</a></strong>(java.lang.Class javaClass)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.beans.PropertyDescriptor</code></td>
                             <td class="colLast"><code><strong><a href="#getPropertyDescriptor(java.lang.String)">getPropertyDescriptor</a></strong>(java.lang.String name)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.beans.PropertyDescriptor[]</code></td>
                             <td class="colLast"><code><strong><a href="#getPropertyDescriptors()">getPropertyDescriptors</a></strong>()</code><br><DL><DT><B>deprecated:</B></DT><DD>Use getMetaProperties instead</DD></DL> </td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.lang.Class</code></td>
                             <td class="colLast"><code><strong><a href="#getPropertyType(java.lang.String)">getPropertyType</a></strong>(java.lang.String name)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.lang.Class</code></td>
                             <td class="colLast"><code><strong><a href="#getPropertyType(java.lang.String, boolean)">getPropertyType</a></strong>(java.lang.String name, boolean onlyInstanceProperties)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;static&nbsp;java.lang.Class&lt;?&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getPropertyType(Class, java.lang.String)">getPropertyType</a></strong>(java.lang.Class&lt;?&gt; cls, java.lang.String propertyName)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.lang.Object</code></td>
                             <td class="colLast"><code><strong><a href="#getPropertyValue(java.lang.String)">getPropertyValue</a></strong>(java.lang.String name)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.lang.Object</code></td>
                             <td class="colLast"><code><strong><a href="#getPropertyValue(java.lang.Object, java.lang.String)">getPropertyValue</a></strong>(java.lang.Object instance, java.lang.String name)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>public&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#getPropertyValue(java.lang.String, Class)">getPropertyValue</a></strong>(java.lang.String name, java.lang.Class&lt;T&gt; c)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;java.lang.Object</code></td>
+                            <td class="colLast"><code><strong><a href="#getPropertyWithFieldOrGetter(java.lang.Object, java.lang.String, org.codehaus.groovy.reflection.CachedField, groovy.lang.MetaMethod)">getPropertyWithFieldOrGetter</a></strong>(java.lang.Object instance, java.lang.String name, org.codehaus.groovy.reflection.CachedField field, groovy.lang.MetaMethod getter)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -292,35 +350,53 @@ extends java.lang.Object</pre>
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;java.lang.Object</code></td>
+                            <td class="colLast"><code><strong><a href="#getStaticPropertyValue(groovy.lang.MetaClass, java.lang.String)">getStaticPropertyValue</a></strong>(groovy.lang.MetaClass theMetaClass, java.lang.String name)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>public&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#getStaticPropertyValue(java.lang.String, Class)">getStaticPropertyValue</a></strong>(java.lang.String name, java.lang.Class&lt;T&gt; c)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>public&nbsp;static&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#getStaticPropertyValue(java.lang.Class, java.lang.String, Class)">getStaticPropertyValue</a></strong>(java.lang.Class clazz, java.lang.String name, java.lang.Class&lt;T&gt; requiredType)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>public&nbsp;java.util.List&lt;T&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getStaticPropertyValuesFromInheritanceHierarchy(java.lang.String, Class)">getStaticPropertyValuesFromInheritanceHierarchy</a></strong>(java.lang.String name, java.lang.Class&lt;T&gt; c)</code><br>Get the list of property values for this static property from the whole inheritance hierarchy, starting
  from the most derived version of the property ending with the base class. </td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>public&nbsp;static&nbsp;java.util.List&lt;T&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getStaticPropertyValuesFromInheritanceHierarchy(java.lang.Class, java.lang.String, Class)">getStaticPropertyValuesFromInheritanceHierarchy</a></strong>(java.lang.Class theClass, java.lang.String name, java.lang.Class&lt;T&gt; requiredTyped)</code><br>Get the list of property values for this static property from the whole inheritance hierarchy, starting
  from the most derived version of the property ending with the base class. </td>
                         </tr>
                         
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>&lt;T&gt;</code></td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;java.util.List&lt;T&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#getStaticPropertyValuesFromInheritanceHierarchy(org.codehaus.groovy.reflection.ClassInfo, java.lang.String, Class)">getStaticPropertyValuesFromInheritanceHierarchy</a></strong>(org.codehaus.groovy.reflection.ClassInfo classInfo, java.lang.String name, java.lang.Class&lt;T&gt; c)</code><br></td>
+                        </tr>
+                        
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;boolean</code></td>
                             <td class="colLast"><code><strong><a href="#isReadableProperty(java.lang.String)">isReadableProperty</a></strong>(java.lang.String name)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code>&lt;T&gt;</code></td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;T</code></td>
+                            <td class="colLast"><code><strong><a href="#returnOnlyIfInstanceOf(java.lang.Object, Class)">returnOnlyIfInstanceOf</a></strong>(java.lang.Object value, java.lang.Class&lt;T&gt; type)</code><br></td>
                         </tr>
                         
                     </table>
@@ -372,6 +448,38 @@ extends java.lang.Object</pre>
                             </li>
                         </ul>
                     
+                        <a name="classInfo"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;final&nbsp;org.codehaus.groovy.reflection.ClassInfo <strong>classInfo</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="clazz"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;final&nbsp;java.lang.Class <strong>clazz</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="metaProperties"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;final&nbsp;java.util.List&lt;groovy.lang.MetaProperty&gt; <strong>metaProperties</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="theMetaClass"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;final&nbsp;groovy.lang.MetaClass <strong>theMetaClass</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                 </li>
             </ul>
             
@@ -380,6 +488,24 @@ extends java.lang.Object</pre>
 
             
 
+            
+            <!-- =========== CONSTRUCTOR DETAIL =========== -->
+            <ul class="blockList">
+                <li class="blockList"><a name="constructor_detail">
+                    <!--   -->
+                </a>
+                    <h3>Constructor Detail</h3>
+                    
+                        <a name="ClassPropertyFetcher(java.lang.Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4><strong>ClassPropertyFetcher</strong>(java.lang.Class clazz)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                </li>
+            </ul>
             
 
 
@@ -438,6 +564,14 @@ public&nbsp;static&nbsp;void <strong>clearCache</strong>()</h4>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;static&nbsp;java.lang.Object <strong>getInstancePropertyValue</strong>(java.lang.Object instance, java.lang.String name)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getInstancePropertyValue(java.lang.Object, java.lang.String, groovy.lang.MetaClass)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;java.lang.Object <strong>getInstancePropertyValue</strong>(java.lang.Object instance, java.lang.String name, groovy.lang.MetaClass metaClass)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -552,6 +686,14 @@ public&nbsp;java.beans.PropertyDescriptor[] <strong>getPropertyDescriptors</stro
                             </li>
                         </ul>
                     
+                        <a name="getPropertyWithFieldOrGetter(java.lang.Object, java.lang.String, org.codehaus.groovy.reflection.CachedField, groovy.lang.MetaMethod)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;java.lang.Object <strong>getPropertyWithFieldOrGetter</strong>(java.lang.Object instance, java.lang.String name, org.codehaus.groovy.reflection.CachedField field, groovy.lang.MetaMethod getter)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getReference()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -559,6 +701,14 @@ public&nbsp;java.beans.PropertyDescriptor[] <strong>getPropertyDescriptors</stro
 public&nbsp;java.lang.Object <strong>getReference</strong>()</h4>
                                 <p><DL><DT><B>Deprecated:</B></DT><DD>will be removed in a future version of GORM</DD></DL>
       </p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getStaticPropertyValue(groovy.lang.MetaClass, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;java.lang.Object <strong>getStaticPropertyValue</strong>(groovy.lang.MetaClass theMetaClass, java.lang.String name)</h4>
+                                <p></p>
                             </li>
                         </ul>
                     
@@ -602,10 +752,27 @@ public&nbsp;java.lang.Object <strong>getReference</strong>()</h4>
                             </li>
                         </ul>
                     
+                        <a name="getStaticPropertyValuesFromInheritanceHierarchy(org.codehaus.groovy.reflection.ClassInfo, java.lang.String, Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>&lt;T&gt; private&nbsp;static&nbsp;java.util.List&lt;T&gt; <strong>getStaticPropertyValuesFromInheritanceHierarchy</strong>(org.codehaus.groovy.reflection.ClassInfo classInfo, java.lang.String name, java.lang.Class&lt;T&gt; c)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="isReadableProperty(java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;boolean <strong>isReadableProperty</strong>(java.lang.String name)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="returnOnlyIfInstanceOf(java.lang.Object, Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>&lt;T&gt; @java.lang.SuppressWarnings("unchecked")
+private&nbsp;static&nbsp;T <strong>returnOnlyIfInstanceOf</strong>(java.lang.Object value, java.lang.Class&lt;T&gt; type)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -644,11 +811,11 @@ public&nbsp;java.lang.Object <strong>getReference</strong>()</h4>
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructor&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <p>Groovy Documentation</p>

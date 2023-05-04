@@ -141,6 +141,18 @@ implements <a href='../../../../../org/grails/datastore/mapping/engine/Persister
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#mappingContext">mappingContext</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#persistentEntity">persistentEntity</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>protected&nbsp;<a href='../../../../../org/grails/datastore/mapping/proxy/ProxyFactory.html'>ProxyFactory</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#proxyFactory">proxyFactory</a></code></td>
                             <td class="colLast"></td>
@@ -458,11 +470,17 @@ implements <a href='../../../../../org/grails/datastore/mapping/engine/Persister
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#setDateVersionInternal(java.lang.String, org.grails.datastore.mapping.engine.EntityAccess)">setDateVersionInternal</a></strong>(java.lang.String versionName, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#setObjectIdentifier(java.lang.Object, java.io.Serializable)">setObjectIdentifier</a></strong>(java.lang.Object obj, java.io.Serializable id)</code><br>Obtains an objects identifer</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#setVersion(org.grails.datastore.mapping.engine.EntityAccess)">setVersion</a></strong>(<a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea)</code><br></td>
@@ -508,6 +526,22 @@ implements <a href='../../../../../org/grails/datastore/mapping/engine/Persister
                     <!--   -->
                 </a>
                     <h3>Field Detail</h3>
+                    
+                        <a name="mappingContext"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;final&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> <strong>mappingContext</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="persistentEntity"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;final&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> <strong>persistentEntity</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
                     
                         <a name="proxyFactory"><!-- --></a>
                         <ul class="blockListLast">
@@ -908,6 +942,14 @@ public&nbsp;java.lang.Object <strong>proxy</strong>(java.io.Serializable key)</h
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;void <strong>setDateVersion</strong>(<a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="setDateVersionInternal(java.lang.String, org.grails.datastore.mapping.engine.EntityAccess)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;void <strong>setDateVersionInternal</strong>(java.lang.String versionName, <a href='../../../../../org/grails/datastore/mapping/engine/EntityAccess.html'>EntityAccess</a> ea)</h4>
                                 <p></p>
                             </li>
                         </ul>

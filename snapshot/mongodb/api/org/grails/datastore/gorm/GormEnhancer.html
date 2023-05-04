@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -151,6 +151,102 @@ implements java.io.Closeable</pre>
         <!-- =========== ENUM CONSTANT SUMMARY =========== -->
         
         <!-- =========== FIELD SUMMARY =========== -->
+        
+            <ul class="blockList">
+                <li class="blockList"><a name="field_summary"><!--   --></a>
+                    <h3>Field Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Enum constants summary table">
+                        <caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Modifiers</th>
+                            <th class="colLast" scope="col">Name</th>
+                            <th class="colLast" scope="col">Description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.util.Map&lt;java.lang.String, java.util.Map&lt;java.lang.String, <a href='../../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt;&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#DATASTORES">DATASTORES</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.util.Map&lt;java.lang.Class, <a href='../../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#DATASTORES_BY_TYPE">DATASTORES_BY_TYPE</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.util.Map&lt;java.lang.String, java.util.Map&lt;java.lang.String, <a href='../../../../org/grails/datastore/gorm/GormInstanceApi.html' title='GormInstanceApi'>GormInstanceApi</a>&gt;&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#INSTANCE_APIS">INSTANCE_APIS</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.util.Map&lt;java.lang.String, java.util.Map&lt;java.lang.String, groovy.lang.Closure&gt;&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#NAMED_QUERIES">NAMED_QUERIES</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.util.Map&lt;java.lang.String, java.util.Map&lt;java.lang.String, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html' title='GormStaticApi'>GormStaticApi</a>&gt;&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#STATIC_APIS">STATIC_APIS</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.util.Map&lt;java.lang.String, java.util.Map&lt;java.lang.String, <a href='../../../../org/grails/datastore/gorm/GormValidationApi.html' title='GormValidationApi'>GormValidationApi</a>&gt;&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#VALIDATION_APIS">VALIDATION_APIS</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#datastore">datastore</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#dynamicEnhance">dynamicEnhance</a></code></td>
+                            <td class="colLast">Whether to enhance classes dynamically using meta programming as well, only necessary for Java classes</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#failOnError">failOnError</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.util.List&lt;<a href='../../../../org/grails/datastore/gorm/finders/FinderMethod.html' title='FinderMethod'>FinderMethod</a>&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#finders">finders</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#includeExternal">includeExternal</a></code></td>
+                            <td class="colLast">Whether to include external entities</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#markDirty">markDirty</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;org.springframework.transaction.PlatformTransactionManager</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#transactionManager">transactionManager</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+                </li>
+                
+            </ul>
         
 
         <!-- =========== PROPERTY SUMMARY =========== -->
@@ -287,140 +383,152 @@ implements java.io.Closeable</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;<a href='../../../../org/grails/datastore/gorm/query/NamedCriteriaProxy.html'>NamedCriteriaProxy</a></code></td>
+                            <td class="colLast"><code><strong><a href="#buildNamedCriteriaProxy(java.lang.Class, Map, java.lang.String, java.lang.Object)">buildNamedCriteriaProxy</a></strong>(java.lang.Class entity, java.util.Map&lt;java.lang.String, groovy.lang.Closure&gt; namedQueries, java.lang.String queryName, java.lang.Object[] args)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#close()">close</a></strong>()</code><br>Closes the enhancer clearing any stored static state</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;java.util.List&lt;<a href='../../../../org/grails/datastore/gorm/finders/FinderMethod.html' title='FinderMethod'>FinderMethod</a>&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#createDynamicFinders()">createDynamicFinders</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;java.util.List&lt;<a href='../../../../org/grails/datastore/gorm/finders/FinderMethod.html' title='FinderMethod'>FinderMethod</a>&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#createDynamicFinders(org.grails.datastore.mapping.core.Datastore)">createDynamicFinders</a></strong>(<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> targetDatastore)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;<a href='../../../../org/grails/datastore/gorm/query/GormQueryOperations.html'>GormQueryOperations</a></code></td>
                             <td class="colLast"><code><strong><a href="#createNamedQuery(java.lang.Class, java.lang.String)">createNamedQuery</a></strong>(java.lang.Class entity, java.lang.String queryName)</code><br>Finds a named query for the given entity</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;<a href='../../../../org/grails/datastore/gorm/query/GormQueryOperations.html'>GormQueryOperations</a></code></td>
                             <td class="colLast"><code><strong><a href="#createNamedQuery(java.lang.Class, java.lang.String, java.lang.Object)">createNamedQuery</a></strong>(java.lang.Class entity, java.lang.String queryName, java.lang.Object[] args)</code><br>Finds a named query for the given entity</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;static&nbsp;boolean</code></td>
                             <td class="colLast"><code><strong><a href="#doesRealMethodExist(groovy.lang.MetaClass, java.lang.String, java.lang.Class, boolean)">doesRealMethodExist</a></strong>(groovy.lang.MetaClass mc, java.lang.String methodName, java.lang.Class[] parameterTypes, boolean staticScope)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#enhance(boolean)">enhance</a></strong>(boolean onlyExtendedMethods)</code><br>Enhances all persistent entities.</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#enhance(org.grails.datastore.mapping.model.PersistentEntity, boolean)">enhance</a></strong>(<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> e, boolean onlyExtendedMethods)</code><br>Enhance and individual entity</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a></code></td>
                             <td class="colLast"><code><strong><a href="#findDatastore(java.lang.Class, java.lang.String)">findDatastore</a></strong>(java.lang.Class entity, java.lang.String qualifier)</code><br>Find a datastore for the give entity type and qualifier (the connection name)</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a></code></td>
                             <td class="colLast"><code><strong><a href="#findDatastoreByType(Class)">findDatastoreByType</a></strong>(java.lang.Class&lt;? extends <a href='../../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt; datastoreType)</code><br>Finds a datastore by type</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;<a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a></code></td>
                             <td class="colLast"><code><strong><a href="#findEntity(java.lang.Class, java.lang.String)">findEntity</a></strong>(java.lang.Class entity, java.lang.String qualifier)</code><br>Find the entity for the given type</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>&lt;D&gt;</code></td>
                             <td class="colLast"><code>static&nbsp;<a href='../../../../org/grails/datastore/gorm/GormInstanceApi.html' title='GormInstanceApi'>GormInstanceApi</a>&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#findInstanceApi(Class, java.lang.String)">findInstanceApi</a></strong>(java.lang.Class&lt;D&gt; entity, java.lang.String qualifier)</code><br>Find an instance API for the give entity type and qualifier (the connection name)</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;<a href='../../../../org/grails/datastore/gorm/query/GormQueryOperations.html'>GormQueryOperations</a></code></td>
                             <td class="colLast"><code><strong><a href="#findNamedQuery(java.lang.Class, java.lang.String)">findNamedQuery</a></strong>(java.lang.Class entity, java.lang.String queryName)</code><br><DL><DT><B>deprecated:</B></DT><DD>Use #createNamedQuery(entity, queryName) instead</DD></DL> </td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a></code></td>
                             <td class="colLast"><code><strong><a href="#findSingleDatastore()">findSingleDatastore</a></strong>()</code><br>Finds a single datastore</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.springframework.transaction.PlatformTransactionManager</code></td>
                             <td class="colLast"><code><strong><a href="#findSingleTransactionManager(java.lang.String)">findSingleTransactionManager</a></strong>(java.lang.String connectionName)</code><br>Finds a single available transaction manager</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>&lt;D&gt;</code></td>
                             <td class="colLast"><code>static&nbsp;<a href='../../../../org/grails/datastore/gorm/GormStaticApi.html' title='GormStaticApi'>GormStaticApi</a>&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#findStaticApi(Class, java.lang.String)">findStaticApi</a></strong>(java.lang.Class&lt;D&gt; entity, java.lang.String qualifier)</code><br>Find a static API for the give entity type and qualifier (the connection name)</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;static&nbsp;java.lang.String</code></td>
                             <td class="colLast"><code><strong><a href="#findTenantId(java.lang.Class)">findTenantId</a></strong>(java.lang.Class entity)</code><br>Find the tenant id for the given entity</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;org.springframework.transaction.PlatformTransactionManager</code></td>
                             <td class="colLast"><code><strong><a href="#findTransactionManager(Class, java.lang.String)">findTransactionManager</a></strong>(java.lang.Class&lt;? extends <a href='../../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt; datastoreType, java.lang.String connectionName)</code><br>Finds a single available transaction manager</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>&lt;D&gt;</code></td>
                             <td class="colLast"><code>static&nbsp;<a href='../../../../org/grails/datastore/gorm/GormValidationApi.html' title='GormValidationApi'>GormValidationApi</a>&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#findValidationApi(Class, java.lang.String)">findValidationApi</a></strong>(java.lang.Class&lt;D&gt; entity, java.lang.String qualifier)</code><br>Find a validation API for the give entity type and qualifier (the connection name)</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.util.List&lt;<a href='../../../../org/grails/datastore/gorm/finders/FinderMethod.html' title='FinderMethod'>FinderMethod</a>&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getFinders()">getFinders</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>&lt;D&gt;</code></td>
                             <td class="colLast"><code>protected&nbsp;<a href='../../../../org/grails/datastore/gorm/GormInstanceApi.html' title='GormInstanceApi'>GormInstanceApi</a>&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getInstanceApi(Class, java.lang.String)">getInstanceApi</a></strong>(java.lang.Class&lt;D&gt; cls, java.lang.String qualifier)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>&lt;D&gt;</code></td>
                             <td class="colLast"><code>protected&nbsp;java.util.List&lt;<a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html' title='AbstractGormApi'>AbstractGormApi</a>&lt;D&gt;&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getInstanceMethodApiProviders(Class)">getInstanceMethodApiProviders</a></strong>(java.lang.Class&lt;D&gt; cls)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>&lt;D&gt;</code></td>
                             <td class="colLast"><code>protected&nbsp;<a href='../../../../org/grails/datastore/gorm/GormStaticApi.html' title='GormStaticApi'>GormStaticApi</a>&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getStaticApi(Class, java.lang.String)">getStaticApi</a></strong>(java.lang.Class&lt;D&gt; cls, java.lang.String qualifier)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;org.springframework.transaction.PlatformTransactionManager</code></td>
+                            <td class="colLast"><code><strong><a href="#getTransactionManagerForConnection(org.grails.datastore.mapping.core.Datastore, java.lang.String)">getTransactionManagerForConnection</a></strong>(<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore, java.lang.String connectionName)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -465,6 +573,12 @@ implements java.io.Closeable</pre>
                             <td class="colLast"><code><strong><a href="#removeConstraints()">removeConstraints</a></strong>()</code><br></td>
                         </tr>
                         
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;java.lang.IllegalStateException</code></td>
+                            <td class="colLast"><code><strong><a href="#stateException(java.lang.Class)">stateException</a></strong>(java.lang.Class entity)</code><br></td>
+                        </tr>
+                        
                     </table>
                    </ul>
               </li>
@@ -498,6 +612,120 @@ implements java.io.Closeable</pre>
         <li class="blockList">
            
 
+            
+            <!-- =========== FIELD DETAIL =========== -->
+            <ul class="blockList">
+                <li class="blockList"><a name="field_detail">
+                    <!--   -->
+                </a>
+                    <h3>Field Detail</h3>
+                    
+                        <a name="DATASTORES"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;java.util.Map&lt;java.lang.String, java.util.Map&lt;java.lang.String, <a href='../../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt;&gt; <strong>DATASTORES</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="DATASTORES_BY_TYPE"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;java.util.Map&lt;java.lang.Class, <a href='../../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt; <strong>DATASTORES_BY_TYPE</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="INSTANCE_APIS"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;java.util.Map&lt;java.lang.String, java.util.Map&lt;java.lang.String, <a href='../../../../org/grails/datastore/gorm/GormInstanceApi.html' title='GormInstanceApi'>GormInstanceApi</a>&gt;&gt; <strong>INSTANCE_APIS</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="NAMED_QUERIES"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;java.util.Map&lt;java.lang.String, java.util.Map&lt;java.lang.String, groovy.lang.Closure&gt;&gt; <strong>NAMED_QUERIES</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="STATIC_APIS"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;java.util.Map&lt;java.lang.String, java.util.Map&lt;java.lang.String, <a href='../../../../org/grails/datastore/gorm/GormStaticApi.html' title='GormStaticApi'>GormStaticApi</a>&gt;&gt; <strong>STATIC_APIS</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="VALIDATION_APIS"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;java.util.Map&lt;java.lang.String, java.util.Map&lt;java.lang.String, <a href='../../../../org/grails/datastore/gorm/GormValidationApi.html' title='GormValidationApi'>GormValidationApi</a>&gt;&gt; <strong>VALIDATION_APIS</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="datastore"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;final&nbsp;<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> <strong>datastore</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="dynamicEnhance"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;final&nbsp;boolean <strong>dynamicEnhance</strong></h4>
+                                <p> Whether to enhance classes dynamically using meta programming as well, only necessary for Java classes</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="failOnError"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>failOnError</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="finders"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.util.List&lt;<a href='../../../../org/grails/datastore/gorm/finders/FinderMethod.html' title='FinderMethod'>FinderMethod</a>&gt; <strong>finders</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="includeExternal"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>includeExternal</strong></h4>
+                                <p> Whether to include external entities</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="markDirty"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>markDirty</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="transactionManager"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;org.springframework.transaction.PlatformTransactionManager <strong>transactionManager</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                </li>
+            </ul>
             
 
             
@@ -645,6 +873,14 @@ protected&nbsp;void <strong>addStaticMethods</strong>(<a href='../../../../org/g
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;boolean <strong>appliesToDatastore</strong>(<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore, <a href='../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="buildNamedCriteriaProxy(java.lang.Class, Map, java.lang.String, java.lang.Object)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;<a href='../../../../org/grails/datastore/gorm/query/NamedCriteriaProxy.html'>NamedCriteriaProxy</a> <strong>buildNamedCriteriaProxy</strong>(java.lang.Class entity, java.util.Map&lt;java.lang.String, groovy.lang.Closure&gt; namedQueries, java.lang.String queryName, java.lang.Object[] args)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -846,6 +1082,14 @@ protected&nbsp;<a href='../../../../org/grails/datastore/gorm/GormStaticApi.html
                             </li>
                         </ul>
                     
+                        <a name="getTransactionManagerForConnection(org.grails.datastore.mapping.core.Datastore, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;org.springframework.transaction.PlatformTransactionManager <strong>getTransactionManagerForConnection</strong>(<a href='../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore, java.lang.String connectionName)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getValidationApi(Class, java.lang.String)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -906,6 +1150,14 @@ protected&nbsp;void <strong>removeConstraints</strong>()</h4>
                             </li>
                         </ul>
                     
+                        <a name="stateException(java.lang.Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;java.lang.IllegalStateException <strong>stateException</strong>(java.lang.Class entity)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                 </li>
             </ul>
             
@@ -940,11 +1192,11 @@ protected&nbsp;void <strong>removeConstraints</strong>()</h4>
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <p>Groovy Documentation</p>

@@ -190,8 +190,32 @@ implements groovy.transform.CompilationUnitAware</pre>
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.lang.Class&lt;?&gt;[]</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#EMPTY_JAVA_CLASS_ARRAY">EMPTY_JAVA_CLASS_ARRAY</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>static&nbsp;java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#METHOD_NAME_MARK_DIRTY">METHOD_NAME_MARK_DIRTY</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.lang.Class&lt;?&gt;[]</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#OBJECT_CLASS_ARG">OBJECT_CLASS_ARG</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;org.codehaus.groovy.ast.ClassNode</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#VALIDATION_CONSTRAINT_NODE">VALIDATION_CONSTRAINT_NODE</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#VOID">VOID</a></code></td>
                             <td class="colLast"></td>
                         </tr>
                         
@@ -255,26 +279,62 @@ implements groovy.transform.CompilationUnitAware</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>static&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#<clinit>()"><clinit></a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#addDirtyCheckingSetter(org.codehaus.groovy.ast.ClassNode, java.lang.String, java.lang.String, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode, org.codehaus.groovy.transform.sc.StaticCompilationVisitor)">addDirtyCheckingSetter</a></strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.String propertyName, java.lang.String fieldName, org.codehaus.groovy.ast.ClassNode returnType, org.codehaus.groovy.ast.MethodNode markDirtyMethodNode, org.codehaus.groovy.transform.sc.StaticCompilationVisitor staticCompilationVisitor)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;org.codehaus.groovy.ast.ClassNode</code></td>
+                            <td class="colLast"><code><strong><a href="#alignReturnType(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.ClassNode)">alignReturnType</a></strong>(org.codehaus.groovy.ast.ClassNode receiver, org.codehaus.groovy.ast.ClassNode originalReturnType)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;org.codehaus.groovy.ast.expr.MethodCallExpression</code></td>
                             <td class="colLast"><code><strong><a href="#createMarkDirtyMethodCall(org.codehaus.groovy.ast.MethodNode, java.lang.String, org.codehaus.groovy.ast.Variable)">createMarkDirtyMethodCall</a></strong>(org.codehaus.groovy.ast.MethodNode markDirtyMethodNode, java.lang.String propertyName, org.codehaus.groovy.ast.Variable value)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>java.lang.String[]</code></td>
                             <td class="colLast"><code><strong><a href="#getArtefactTypes()">getArtefactTypes</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;<a href='../../../../org/grails/compiler/gorm/DirtyCheckingTransformer.GetterAndSetter.html'>DirtyCheckingTransformer.GetterAndSetter</a></code></td>
                             <td class="colLast"><code><strong><a href="#getGetterAndSetterForPropertyName(LinkedHashMap, java.lang.String)">getGetterAndSetterForPropertyName</a></strong>(java.util.LinkedHashMap&lt;java.lang.String, GetterAndSetter&gt; gettersAndSetters, java.lang.String propertyName)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;boolean</code></td>
                             <td class="colLast"><code><strong><a href="#isAnnotatedWithJavaValidationApi(List)">isAnnotatedWithJavaValidationApi</a></strong>(java.util.List&lt;org.codehaus.groovy.ast.AnnotationNode&gt; annotationNodes)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#isDefinedInTransientsNode(java.lang.String, org.codehaus.groovy.ast.PropertyNode)">isDefinedInTransientsNode</a></strong>(java.lang.String propertyName, org.codehaus.groovy.ast.PropertyNode transientPropertyNode)</code><br>Check if the property is defined in static transients block.</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#isGetter(java.lang.String, org.codehaus.groovy.ast.MethodNode)">isGetter</a></strong>(java.lang.String methodName, org.codehaus.groovy.ast.MethodNode declaredMethod)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#isSetter(java.lang.String, org.codehaus.groovy.ast.MethodNode)">isSetter</a></strong>(java.lang.String methodName, org.codehaus.groovy.ast.MethodNode declaredMethod)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -292,7 +352,7 @@ implements groovy.transform.CompilationUnitAware</pre>
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
-                            <td class="colLast"><code><strong><a href="#performInjectionOnAnnotatedClass(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ClassNode)">performInjectionOnAnnotatedClass</a></strong>(org.codehaus.groovy.control.SourceUnit source, org.codehaus.groovy.ast.ClassNode classNode)</code><br></td>
+                            <td class="colLast"><code><strong><a href="#performInjectionOnAnnotatedClass(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ClassNode, java.lang.Class)">performInjectionOnAnnotatedClass</a></strong>(org.codehaus.groovy.control.SourceUnit source, org.codehaus.groovy.ast.ClassNode classNode, java.lang.Class traitToInject)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -303,17 +363,23 @@ implements groovy.transform.CompilationUnitAware</pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;org.codehaus.groovy.ast.ClassNode</code></td>
+                            <td class="colLast"><code><strong><a href="#resolvePropertyReturnType(org.codehaus.groovy.ast.PropertyNode, org.codehaus.groovy.ast.ClassNode)">resolvePropertyReturnType</a></strong>(org.codehaus.groovy.ast.PropertyNode pn, org.codehaus.groovy.ast.ClassNode classNode)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#setCompilationUnit(org.codehaus.groovy.control.CompilationUnit)">setCompilationUnit</a></strong>(org.codehaus.groovy.control.CompilationUnit compilationUnit)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>boolean</code></td>
                             <td class="colLast"><code><strong><a href="#shouldInject(java.net.URL)">shouldInject</a></strong>(java.net.URL url)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#weaveIntoExistingSetter(java.lang.String, org.grails.compiler.gorm.DirtyCheckingTransformer.GetterAndSetter, org.codehaus.groovy.ast.MethodNode)">weaveIntoExistingSetter</a></strong>(java.lang.String propertyName, <a href='../../../../org/grails/compiler/gorm/DirtyCheckingTransformer.GetterAndSetter.html'>DirtyCheckingTransformer.GetterAndSetter</a> getterAndSetter, org.codehaus.groovy.ast.MethodNode markDirtyMethodNode)</code><br></td>
@@ -392,10 +458,42 @@ implements groovy.transform.CompilationUnitAware</pre>
                             </li>
                         </ul>
                     
+                        <a name="EMPTY_JAVA_CLASS_ARRAY"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;java.lang.Class&lt;?&gt;[] <strong>EMPTY_JAVA_CLASS_ARRAY</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="METHOD_NAME_MARK_DIRTY"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;static&nbsp;final&nbsp;java.lang.String <strong>METHOD_NAME_MARK_DIRTY</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="OBJECT_CLASS_ARG"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;java.lang.Class&lt;?&gt;[] <strong>OBJECT_CLASS_ARG</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="VALIDATION_CONSTRAINT_NODE"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;org.codehaus.groovy.ast.ClassNode <strong>VALIDATION_CONSTRAINT_NODE</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="VOID"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;java.lang.String <strong>VOID</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -445,6 +543,30 @@ implements groovy.transform.CompilationUnitAware</pre>
                 </a>
                     <h3>Method Detail</h3>
                     
+                        <a name="<clinit>()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>static&nbsp;void <strong><clinit></strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="addDirtyCheckingSetter(org.codehaus.groovy.ast.ClassNode, java.lang.String, java.lang.String, org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.MethodNode, org.codehaus.groovy.transform.sc.StaticCompilationVisitor)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;void <strong>addDirtyCheckingSetter</strong>(org.codehaus.groovy.ast.ClassNode classNode, java.lang.String propertyName, java.lang.String fieldName, org.codehaus.groovy.ast.ClassNode returnType, org.codehaus.groovy.ast.MethodNode markDirtyMethodNode, org.codehaus.groovy.transform.sc.StaticCompilationVisitor staticCompilationVisitor)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="alignReturnType(org.codehaus.groovy.ast.ClassNode, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;org.codehaus.groovy.ast.ClassNode <strong>alignReturnType</strong>(org.codehaus.groovy.ast.ClassNode receiver, org.codehaus.groovy.ast.ClassNode originalReturnType)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="createMarkDirtyMethodCall(org.codehaus.groovy.ast.MethodNode, java.lang.String, org.codehaus.groovy.ast.Variable)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -477,6 +599,30 @@ implements groovy.transform.CompilationUnitAware</pre>
                             </li>
                         </ul>
                     
+                        <a name="isDefinedInTransientsNode(java.lang.String, org.codehaus.groovy.ast.PropertyNode)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>isDefinedInTransientsNode</strong>(java.lang.String propertyName, org.codehaus.groovy.ast.PropertyNode transientPropertyNode)</h4>
+                                <p> Check if the property is defined in static transients block. <DL><DT><B>Parameters:</B></DT><DD><code>propertyName</code> -  The given name of property</DD><DD><code>transientPropertyNode</code> -  The property node representing static transients</DD></DL><DL><DT><B>Returns:</B></DT><DD>If the property is transient</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="isGetter(java.lang.String, org.codehaus.groovy.ast.MethodNode)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>isGetter</strong>(java.lang.String methodName, org.codehaus.groovy.ast.MethodNode declaredMethod)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="isSetter(java.lang.String, org.codehaus.groovy.ast.MethodNode)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>isSetter</strong>(java.lang.String methodName, org.codehaus.groovy.ast.MethodNode declaredMethod)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="performInjection(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.classgen.GeneratorContext, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -493,10 +639,10 @@ implements groovy.transform.CompilationUnitAware</pre>
                             </li>
                         </ul>
                     
-                        <a name="performInjectionOnAnnotatedClass(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
+                        <a name="performInjectionOnAnnotatedClass(org.codehaus.groovy.control.SourceUnit, org.codehaus.groovy.ast.ClassNode, java.lang.Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
-                                <h4>void <strong>performInjectionOnAnnotatedClass</strong>(org.codehaus.groovy.control.SourceUnit source, org.codehaus.groovy.ast.ClassNode classNode)</h4>
+                                <h4>void <strong>performInjectionOnAnnotatedClass</strong>(org.codehaus.groovy.control.SourceUnit source, org.codehaus.groovy.ast.ClassNode classNode, java.lang.Class traitToInject)</h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -505,6 +651,14 @@ implements groovy.transform.CompilationUnitAware</pre>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>void <strong>performInjectionOnAnnotatedEntity</strong>(org.codehaus.groovy.ast.ClassNode classNode)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="resolvePropertyReturnType(org.codehaus.groovy.ast.PropertyNode, org.codehaus.groovy.ast.ClassNode)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;org.codehaus.groovy.ast.ClassNode <strong>resolvePropertyReturnType</strong>(org.codehaus.groovy.ast.PropertyNode pn, org.codehaus.groovy.ast.ClassNode classNode)</h4>
                                 <p></p>
                             </li>
                         </ul>

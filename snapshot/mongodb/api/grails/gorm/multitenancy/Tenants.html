@@ -229,42 +229,48 @@ extends java.lang.Object</pre>
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#eachTenantInternal(org.grails.datastore.mapping.core.Datastore, groovy.lang.Closure)">eachTenantInternal</a></strong>(<a href='../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore, groovy.lang.Closure callable)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>static&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#withCurrent(Closure)">withCurrent</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br>Execute the given closure with the current tenant</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>static&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#withCurrent(Class, Closure)">withCurrent</a></strong>(java.lang.Class&lt;? extends <a href='../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt; datastoreClass, groovy.lang.Closure&lt;T&gt; callable)</code><br>Execute the given closure with the current tenant</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>static&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#withId(java.io.Serializable, Closure)">withId</a></strong>(java.io.Serializable tenantId, groovy.lang.Closure&lt;T&gt; callable)</code><br>Execute the given closure with given tenant id</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>static&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#withId(Class, java.io.Serializable, Closure)">withId</a></strong>(java.lang.Class&lt;? extends <a href='../../../org/grails/datastore/mapping/core/Datastore.html' title='Datastore'>Datastore</a>&gt; datastoreClass, java.io.Serializable tenantId, groovy.lang.Closure&lt;T&gt; callable)</code><br>Execute the given closure with given tenant id</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>static&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#withId(org.grails.datastore.mapping.multitenancy.MultiTenantCapableDatastore, java.io.Serializable, Closure)">withId</a></strong>(<a href='../../../org/grails/datastore/mapping/multitenancy/MultiTenantCapableDatastore.html'>MultiTenantCapableDatastore</a> multiTenantCapableDatastore, java.io.Serializable tenantId, groovy.lang.Closure&lt;T&gt; callable)</code><br>Execute the given closure with given tenant id for the given datastore. </td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>static&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#withoutId(Closure)">withoutId</a></strong>(groovy.lang.Closure&lt;T&gt; callable)</code><br>Execute the given closure without any tenant id. </td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T&gt;</code></td>
                             <td class="colLast"><code>static&nbsp;T</code></td>
                             <td class="colLast"><code><strong><a href="#withoutId(org.grails.datastore.mapping.multitenancy.MultiTenantCapableDatastore, Closure)">withoutId</a></strong>(<a href='../../../org/grails/datastore/mapping/multitenancy/MultiTenantCapableDatastore.html'>MultiTenantCapableDatastore</a> multiTenantCapableDatastore, groovy.lang.Closure&lt;T&gt; callable)</code><br>Execute the given closure without tenant id for the given datastore. </td>
@@ -383,6 +389,14 @@ extends java.lang.Object</pre>
                             <li class="blockList">
                                 <h4>static&nbsp;void <strong>eachTenant</strong>(<a href='../../../org/grails/datastore/mapping/multitenancy/MultiTenantCapableDatastore.html'>MultiTenantCapableDatastore</a> multiTenantCapableDatastore, groovy.lang.Closure callable)</h4>
                                 <p> Execute the given closure for each tenant for the given datastore. This method will create a new datastore session for the scope of the call and hence is designed to be used to manage the connection life cycle <DL><DT><B>Parameters:</B></DT><DD><code>callable</code> -  The closure</DD></DL><DL><DT><B>Returns:</B></DT><DD>The result of the closure</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="eachTenantInternal(org.grails.datastore.mapping.core.Datastore, groovy.lang.Closure)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;void <strong>eachTenantInternal</strong>(<a href='../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a> datastore, groovy.lang.Closure callable)</h4>
+                                <p></p>
                             </li>
                         </ul>
                     

@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -121,6 +121,36 @@ extends <a href='../../../spock.lang.Specification.html'>Specification</a></pre>
         <!-- =========== ENUM CONSTANT SUMMARY =========== -->
         
         <!-- =========== FIELD SUMMARY =========== -->
+        
+            <ul class="blockList">
+                <li class="blockList"><a name="field_summary"><!--   --></a>
+                    <h3>Field Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Enum constants summary table">
+                        <caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Modifiers</th>
+                            <th class="colLast" scope="col">Name</th>
+                            <th class="colLast" scope="col">Description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../org/grails/datastore/mapping/mongo/MongoDatastore.html'>MongoDatastore</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#mongoDatastore">mongoDatastore</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../org/grails/datastore/mapping/core/Session.html'>Session</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#mongoSession">mongoSession</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+                </li>
+                
+            </ul>
         
 
         <!-- =========== PROPERTY SUMMARY =========== -->
@@ -196,38 +226,50 @@ extends <a href='../../../spock.lang.Specification.html'>Specification</a></pre>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#canLoadFileExtension(org.springframework.boot.env.PropertySourceLoader, java.lang.String)">canLoadFileExtension</a></strong>(org.springframework.boot.env.PropertySourceLoader loader, java.lang.String name)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#cleanup()">cleanup</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>com.mongodb.client.MongoClient</code></td>
                             <td class="colLast"><code><strong><a href="#createMongoClient()">createMongoClient</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>The default mongo client</DD></DL></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;java.util.List&lt;java.lang.Class&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getDomainClasses()">getDomainClasses</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>The domain classes</DD></DL></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code><a href='../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a></code></td>
                             <td class="colLast"><code><strong><a href="#getMappingContext()">getMappingContext</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>Obtains the mapping context</DD></DL></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>com.mongodb.client.MongoClient</code></td>
                             <td class="colLast"><code><strong><a href="#getMongoClient()">getMongoClient</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>Obtain the mongo client</DD></DL></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;java.lang.String</code></td>
                             <td class="colLast"><code><strong><a href="#getPackageToScan(grails.config.Config)">getPackageToScan</a></strong>(<a href='../../../grails.config.Config.html'>Config</a> config)</code><br>Obtains the default package to scan</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;java.util.List&lt;org.springframework.core.env.PropertySource&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#load(org.springframework.core.io.ResourceLoader, org.springframework.boot.env.PropertySourceLoader, java.lang.String)">load</a></strong>(org.springframework.core.io.ResourceLoader resourceLoader, org.springframework.boot.env.PropertySourceLoader loader, java.lang.String filename)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -257,6 +299,35 @@ extends <a href='../../../spock.lang.Specification.html'>Specification</a></pre>
         <li class="blockList">
            
 
+            
+            <!-- =========== FIELD DETAIL =========== -->
+            <ul class="blockList">
+                <li class="blockList"><a name="field_detail">
+                    <!--   -->
+                </a>
+                    <h3>Field Detail</h3>
+                    
+                        <a name="mongoDatastore"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@spock.lang.Shared
+@spock.lang.AutoCleanup
+private&nbsp;<a href='../../../org/grails/datastore/mapping/mongo/MongoDatastore.html'>MongoDatastore</a> <strong>mongoDatastore</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="mongoSession"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@spock.lang.Shared
+private&nbsp;<a href='../../../org/grails/datastore/mapping/core/Session.html'>Session</a> <strong>mongoSession</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                </li>
+            </ul>
             
 
             
@@ -321,6 +392,14 @@ extends <a href='../../../spock.lang.Specification.html'>Specification</a></pre>
                 </a>
                     <h3>Method Detail</h3>
                     
+                        <a name="canLoadFileExtension(org.springframework.boot.env.PropertySourceLoader, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>canLoadFileExtension</strong>(org.springframework.boot.env.PropertySourceLoader loader, java.lang.String name)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="cleanup()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -366,6 +445,14 @@ extends <a href='../../../spock.lang.Specification.html'>Specification</a></pre>
                             <li class="blockList">
                                 <h4>protected&nbsp;java.lang.String <strong>getPackageToScan</strong>(<a href='../../../grails.config.Config.html'>Config</a> config)</h4>
                                 <p> Obtains the default package to scan <DL><DT><B>Parameters:</B></DT><DD><code>config</code> -  The configuration</DD></DL><DL><DT><B>Returns:</B></DT><DD>The package to scan</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="load(org.springframework.core.io.ResourceLoader, org.springframework.boot.env.PropertySourceLoader, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.util.List&lt;org.springframework.core.env.PropertySource&gt; <strong>load</strong>(org.springframework.core.io.ResourceLoader resourceLoader, org.springframework.boot.env.PropertySourceLoader loader, java.lang.String filename)</h4>
+                                <p></p>
                             </li>
                         </ul>
                     
@@ -419,11 +506,11 @@ extends <a href='../../../spock.lang.Specification.html'>Specification</a></pre>
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <p>Groovy Documentation</p>

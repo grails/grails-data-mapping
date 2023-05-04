@@ -148,9 +148,45 @@ extends java.lang.Object</pre>
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#autoTimestamp">autoTimestamp</a></code></td>
+                            <td class="colLast"> <DL><DT><B>Returns:</B></DT><DD>Whether automatic time stamps should be applied to 'lastUpdate' and 'dateCreated' properties</DD></DL></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#autowire">autowire</a></code></td>
+                            <td class="colLast"> <DL><DT><B>Returns:</B></DT><DD>Whether the entity should be autowired</DD></DL></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.util.List&lt;java.lang.String&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#datasources">datasources</a></code></td>
+                            <td class="colLast">Get the datasource names that this domain class works with.</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.Object</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#defaultSort">defaultSort</a></code></td>
+                            <td class="colLast"> <DL><DT><B>Returns:</B></DT><DD>The default sort order definition, could be a string or a map</DD></DL></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>protected&nbsp;java.util.Map&lt;java.lang.String, P&gt;</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#propertyConfigs">propertyConfigs</a></code></td>
                             <td class="colLast">The configuration for each property</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#stateless">stateless</a></code></td>
+                            <td class="colLast"> <DL><DT><B>Returns:</B></DT><DD>Whether the entity state should be held in the session or not</DD></DL></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#version">version</a></code></td>
+                            <td class="colLast"> <DL><DT><B>Returns:</B></DT><DD>Whether the entity is versioned</DD></DL></td>
                         </tr>
                         
                     </table>
@@ -459,11 +495,59 @@ public&nbsp;static&nbsp;final&nbsp;java.lang.String <strong>DEFAULT_DATA_SOURCE<
                             </li>
                         </ul>
                     
+                        <a name="autoTimestamp"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>autoTimestamp</strong></h4>
+                                <p> <DL><DT><B>Returns:</B></DT><DD>Whether automatic time stamps should be applied to 'lastUpdate' and 'dateCreated' properties</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="autowire"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>autowire</strong></h4>
+                                <p> <DL><DT><B>Returns:</B></DT><DD>Whether the entity should be autowired</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="datasources"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.util.List&lt;java.lang.String&gt; <strong>datasources</strong></h4>
+                                <p> Get the datasource names that this domain class works with. <DL><DT><B>Returns:</B></DT><DD>the datasource names</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="defaultSort"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.lang.Object <strong>defaultSort</strong></h4>
+                                <p> <DL><DT><B>Returns:</B></DT><DD>The default sort order definition, could be a string or a map</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="propertyConfigs"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;java.util.Map&lt;java.lang.String, P&gt; <strong>propertyConfigs</strong></h4>
                                 <p> The configuration for each property</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="stateless"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>stateless</strong></h4>
+                                <p> <DL><DT><B>Returns:</B></DT><DD>Whether the entity state should be held in the session or not</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="version"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>version</strong></h4>
+                                <p> <DL><DT><B>Returns:</B></DT><DD>Whether the entity is versioned</DD></DL></p>
                             </li>
                         </ul>
                     

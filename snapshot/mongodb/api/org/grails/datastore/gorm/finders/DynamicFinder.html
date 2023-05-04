@@ -214,20 +214,80 @@ implements <a href='../../../../../org/grails/datastore/gorm/finders/QueryBuildi
                         </tr>
                         
                         <tr class="altColor">
-                            <td class="colFirst"><code><strong>static&nbsp;java.lang.String</strong></code>&nbsp;</td>
-                            <td class="colLast"><code><a href="#ORDER_ASC">ORDER_ASC</a></code></td>
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.lang.String[]</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#DEFAULT_OPERATORS">DEFAULT_OPERATORS</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.lang.Object[]</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#EMPTY_OBJECT_ARRAY">EMPTY_OBJECT_ARRAY</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#NOT">NOT</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#OPERATOR_AND">OPERATOR_AND</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#OPERATOR_OR">OPERATOR_OR</a></code></td>
                             <td class="colLast"></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code><strong>static&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#ORDER_ASC">ORDER_ASC</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>static&nbsp;java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#ORDER_DESC">ORDER_DESC</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.util.regex.Pattern[]</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#defaultOperationPatterns">defaultOperationPatterns</a></code></td>
                             <td class="colLast"></td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code><strong>protected&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a></strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#mappingContext">mappingContext</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.util.regex.Pattern</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#methodExpressinPattern">methodExpressinPattern</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.util.Map&lt;java.lang.String, java.lang.reflect.Constructor&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#methodExpressions">methodExpressions</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.util.regex.Pattern[]</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#operatorPatterns">operatorPatterns</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String[]</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#operators">operators</a></code></td>
                             <td class="colLast"></td>
                         </tr>
                         
@@ -314,20 +374,32 @@ implements <a href='../../../../../org/grails/datastore/gorm/finders/QueryBuildi
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>public&nbsp;static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#applyDetachedCriteria(org.grails.datastore.mapping.query.Query, org.grails.datastore.gorm.query.criteria.AbstractDetachedCriteria)">applyDetachedCriteria</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query, <a href='../../../../../org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html'>AbstractDetachedCriteria</a> detachedCriteria)</code><br>Applies the given detached criteria to the given query</td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#addSimpleSort(org.grails.datastore.mapping.query.Query, java.lang.String, java.lang.String, boolean)">addSimpleSort</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> q, java.lang.String sort, java.lang.String order, boolean ignoreCase)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;static&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#applySortForMap(org.grails.datastore.mapping.query.Query, java.util.Map, boolean)">applySortForMap</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query, java.util.Map sortMap, boolean ignoreCase)</code><br>Applies sorting logic to the given query from the given map</td>
+                            <td class="colLast"><code><strong><a href="#applyDetachedCriteria(org.grails.datastore.mapping.query.Query, org.grails.datastore.gorm.query.criteria.AbstractDetachedCriteria)">applyDetachedCriteria</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query, <a href='../../../../../org/grails/datastore/gorm/query/criteria/AbstractDetachedCriteria.html'>AbstractDetachedCriteria</a> detachedCriteria)</code><br>Applies the given detached criteria to the given query</td>
                         </tr>
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>public&nbsp;static&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#applySortForMap(org.grails.datastore.mapping.query.Query, java.util.Map, boolean)">applySortForMap</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> query, java.util.Map sortMap, boolean ignoreCase)</code><br>Applies sorting logic to the given query from the given map</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;static&nbsp;<a href='../../../../../org/grails/datastore/gorm/finders/MatchSpec.html'>MatchSpec</a></code></td>
                             <td class="colLast"><code><strong><a href="#buildMatchSpec(java.lang.String, java.lang.String, int)">buildMatchSpec</a></strong>(java.lang.String prefix, java.lang.String methodName, int parameterCount)</code><br>Builds a match specification that can be used to establish information about a dynamic finder compilation for the purposes of compilation etc.</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;java.lang.String</code></td>
+                            <td class="colLast"><code><strong><a href="#calcPropertyName(java.lang.String, java.lang.String)">calcPropertyName</a></strong>(java.lang.String queryParameter, java.lang.String clause)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -368,20 +440,44 @@ implements <a href='../../../../../org/grails/datastore/gorm/finders/QueryBuildi
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;<a href='../../../../../org/grails/datastore/gorm/finders/MethodExpression.html'>MethodExpression</a></code></td>
+                            <td class="colLast"><code><strong><a href="#findMethodExpressionInternal(java.lang.Class, java.lang.String)">findMethodExpressionInternal</a></strong>(java.lang.Class clazz, java.lang.String expression)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.lang.Object[]</code></td>
                             <td class="colLast"><code><strong><a href="#getArguments()">getArguments</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;int</code></td>
                             <td class="colLast"><code><strong><a href="#getArgumentsRequired()">getArgumentsRequired</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;static&nbsp;javax.persistence.FetchType</code></td>
                             <td class="colLast"><code><strong><a href="#getFetchMode(java.lang.Object)">getFetchMode</a></strong>(java.lang.Object object)</code><br>Retrieves the fetch mode for the specified instance; otherwise returns the default FetchMode.</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;<a href='../../../../../org/grails/datastore/gorm/finders/MethodExpression.html'>MethodExpression</a></code></td>
+                            <td class="colLast"><code><strong><a href="#getInitializedExpression(org.grails.datastore.gorm.finders.MethodExpression, java.lang.Object)">getInitializedExpression</a></strong>(<a href='../../../../../org/grails/datastore/gorm/finders/MethodExpression.html'>MethodExpression</a> expression, java.lang.Object[] arguments)</code><br>Initializes the arguments of the specified expression with the specified arguments.  </td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#handleFetchType(org.grails.datastore.mapping.query.Query, java.lang.String, javax.persistence.FetchType)">handleFetchType</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> q, java.lang.String associationName, javax.persistence.FetchType fetchType)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#handleFetchType(org.grails.datastore.mapping.query.api.BuildableCriteria, java.lang.String, javax.persistence.FetchType)">handleFetchType</a></strong>(<a href='../../../../../org/grails/datastore/mapping/query/api/BuildableCriteria.html'>BuildableCriteria</a> q, java.lang.String associationName, javax.persistence.FetchType fetchType)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -422,8 +518,20 @@ implements <a href='../../../../../org/grails/datastore/gorm/finders/QueryBuildi
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#populateOperators(java.lang.String)">populateOperators</a></strong>(java.lang.String[] operators)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;static&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#registerNewMethodExpression(java.lang.Class)">registerNewMethodExpression</a></strong>(java.lang.Class methodExpression)</code><br>Registers a new method expression. </td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#resetMethodExpressionPattern()">resetMethodExpressionPattern</a></strong>()</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -575,6 +683,46 @@ implements <a href='../../../../../org/grails/datastore/gorm/finders/QueryBuildi
                             </li>
                         </ul>
                     
+                        <a name="DEFAULT_OPERATORS"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;java.lang.String[] <strong>DEFAULT_OPERATORS</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="EMPTY_OBJECT_ARRAY"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;java.lang.Object[] <strong>EMPTY_OBJECT_ARRAY</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="NOT"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;java.lang.String <strong>NOT</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="OPERATOR_AND"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;java.lang.String <strong>OPERATOR_AND</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="OPERATOR_OR"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;java.lang.String <strong>OPERATOR_OR</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="ORDER_ASC"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -591,10 +739,50 @@ implements <a href='../../../../../org/grails/datastore/gorm/finders/QueryBuildi
                             </li>
                         </ul>
                     
+                        <a name="defaultOperationPatterns"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;java.util.regex.Pattern[] <strong>defaultOperationPatterns</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="mappingContext"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;final&nbsp;<a href='../../../../../org/grails/datastore/mapping/model/MappingContext.html'>MappingContext</a> <strong>mappingContext</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="methodExpressinPattern"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;java.util.regex.Pattern <strong>methodExpressinPattern</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="methodExpressions"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;java.util.Map&lt;java.lang.String, java.lang.reflect.Constructor&gt; <strong>methodExpressions</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="operatorPatterns"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.util.regex.Pattern[] <strong>operatorPatterns</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="operators"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.lang.String[] <strong>operators</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -652,6 +840,14 @@ implements <a href='../../../../../org/grails/datastore/gorm/finders/QueryBuildi
                 </a>
                     <h3>Method Detail</h3>
                     
+                        <a name="addSimpleSort(org.grails.datastore.mapping.query.Query, java.lang.String, java.lang.String, boolean)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;void <strong>addSimpleSort</strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> q, java.lang.String sort, java.lang.String order, boolean ignoreCase)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="applyDetachedCriteria(org.grails.datastore.mapping.query.Query, org.grails.datastore.gorm.query.criteria.AbstractDetachedCriteria)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -676,6 +872,14 @@ implements <a href='../../../../../org/grails/datastore/gorm/finders/QueryBuildi
                                 <h4>public&nbsp;static&nbsp;<a href='../../../../../org/grails/datastore/gorm/finders/MatchSpec.html'>MatchSpec</a> <strong>buildMatchSpec</strong>(java.lang.String prefix, java.lang.String methodName, int parameterCount)</h4>
                                 <p> Builds a match specification that can be used to establish information about a dynamic finder compilation for the purposes of compilation etc.
       <DL><DT><B>Parameters:</B></DT><DD><code>prefix</code> -  The dynamic finder prefix. For example 'findBy'</DD><DD><code>methodName</code> -  The full method name</DD><DD><code>parameterCount</code> -  The number of parameters</DD></DL><DL><DT><B>Returns:</B></DT><DD>The match specification</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="calcPropertyName(java.lang.String, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;java.lang.String <strong>calcPropertyName</strong>(java.lang.String queryParameter, java.lang.String clause)</h4>
+                                <p></p>
                             </li>
                         </ul>
                     
@@ -728,6 +932,14 @@ public&nbsp;<a href='../../../../../org/grails/datastore/mapping/query/Query.Cri
                             </li>
                         </ul>
                     
+                        <a name="findMethodExpressionInternal(java.lang.Class, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;<a href='../../../../../org/grails/datastore/gorm/finders/MethodExpression.html'>MethodExpression</a> <strong>findMethodExpressionInternal</strong>(java.lang.Class clazz, java.lang.String expression)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getArguments()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -752,6 +964,33 @@ public&nbsp;int <strong>getArgumentsRequired</strong>()</h4>
                                 <h4>public&nbsp;static&nbsp;javax.persistence.FetchType <strong>getFetchMode</strong>(java.lang.Object object)</h4>
                                 <p> Retrieves the fetch mode for the specified instance; otherwise returns the default FetchMode.
       <DL><DT><B>Parameters:</B></DT><DD><code>object</code> -  The object, converted to a string</DD></DL><DL><DT><B>Returns:</B></DT><DD>The FetchMode</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getInitializedExpression(org.grails.datastore.gorm.finders.MethodExpression, java.lang.Object)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;<a href='../../../../../org/grails/datastore/gorm/finders/MethodExpression.html'>MethodExpression</a> <strong>getInitializedExpression</strong>(<a href='../../../../../org/grails/datastore/gorm/finders/MethodExpression.html'>MethodExpression</a> expression, java.lang.Object[] arguments)</h4>
+                                <p> Initializes the arguments of the specified expression with the specified arguments.  If the
+ expression is an Equal expression and the argument is null then a new expression is created
+ and returned of type IsNull.
+      <DL><DT><B>Parameters:</B></DT><DD><code>expression</code> -  expression to initialize</DD><DD><code>arguments</code> -  arguments to the expression</DD></DL><DL><DT><B>Returns:</B></DT><DD>the initialized expression</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="handleFetchType(org.grails.datastore.mapping.query.Query, java.lang.String, javax.persistence.FetchType)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;void <strong>handleFetchType</strong>(<a href='../../../../../org/grails/datastore/mapping/query/Query.html'>Query</a> q, java.lang.String associationName, javax.persistence.FetchType fetchType)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="handleFetchType(org.grails.datastore.mapping.query.api.BuildableCriteria, java.lang.String, javax.persistence.FetchType)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;void <strong>handleFetchType</strong>(<a href='../../../../../org/grails/datastore/mapping/query/api/BuildableCriteria.html'>BuildableCriteria</a> q, java.lang.String associationName, javax.persistence.FetchType fetchType)</h4>
+                                <p></p>
                             </li>
                         </ul>
                     
@@ -805,6 +1044,14 @@ public&nbsp;int <strong>getArgumentsRequired</strong>()</h4>
                             </li>
                         </ul>
                     
+                        <a name="populateOperators(java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;void <strong>populateOperators</strong>(java.lang.String[] operators)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="registerNewMethodExpression(java.lang.Class)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -812,6 +1059,14 @@ public&nbsp;int <strong>getArgumentsRequired</strong>()</h4>
                                 <p> Registers a new method expression. The Class must extends from the class <a href='../../../../../org/grails/datastore/gorm/finders/MethodExpression.html' title='MethodExpression'>MethodExpression</a> and provide
  a constructor that accepts a Class parameter and a String parameter.
       <DL><DT><B>Parameters:</B></DT><DD><code>methodExpression</code> -  A class that extends from <a href='../../../../../org/grails/datastore/gorm/finders/MethodExpression.html' title='MethodExpression'>MethodExpression</a></DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="resetMethodExpressionPattern()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;void <strong>resetMethodExpressionPattern</strong>()</h4>
+                                <p></p>
                             </li>
                         </ul>
                     

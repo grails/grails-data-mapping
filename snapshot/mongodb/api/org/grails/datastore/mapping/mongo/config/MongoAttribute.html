@@ -153,6 +153,18 @@ extends <a href='../../../../../../org/grails/datastore/gorm/utils/Attribute.htm
                             <td class="colLast"></td>
                         </tr>
                         
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.util.Map</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#indexAttributes">indexAttributes</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#reference">reference</a></code></td>
+                            <td class="colLast">Whether this attribute is a database reference</td>
+                        </tr>
+                        
                     </table>
                    </ul>
                 </li>
@@ -167,7 +179,7 @@ extends <a href='../../../../../../org/grails/datastore/gorm/utils/Attribute.htm
                         </tr>
                                                 <tr class="altColor">
                             <td class="colFirst"><strong><code>class <a href='../../../../../../org/grails/datastore/gorm/utils/Attribute.html'>Attribute</a></code></strong></td>
-                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/utils/Attribute.html#type'>type</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/utils/Attribute.html#next'>next</a>, <a href='../../../../../../org/grails/datastore/gorm/utils/Attribute.html#type'>type</a>, <a href='../../../../../../org/grails/datastore/gorm/utils/Attribute.html#value'>value</a></code></td>
                         </tr>
 
                     </table>
@@ -335,7 +347,7 @@ extends <a href='../../../../../../org/grails/datastore/gorm/utils/Attribute.htm
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../../../org/grails/datastore/gorm/utils/Attribute.html'>Attribute</a></code></td>
-                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/utils/Attribute.html#read(org.grails.datastore.gorm.utils.ClassReader, int, int, char[], int, org.springframework.asm.Label)'>read</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/utils/Attribute.html#getCount()'>getCount</a>, <a href='../../../../../../org/grails/datastore/gorm/utils/Attribute.html#read(org.grails.datastore.gorm.utils.ClassReader, int, int, char[], int, org.springframework.asm.Label)'>read</a></code></td>
                         </tr>
                     </table>
                    </ul>
@@ -381,6 +393,23 @@ extends <a href='../../../../../../org/grails/datastore/gorm/utils/Attribute.htm
                             <li class="blockList">
                                 <h4>public&nbsp;static&nbsp;final&nbsp;java.lang.String <strong>INDEX_TYPE_2DSPHERE</strong></h4>
                                 <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="indexAttributes"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@java.lang.SuppressWarnings(value: rawtypes)
+private&nbsp;java.util.Map <strong>indexAttributes</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="reference"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>reference</strong></h4>
+                                <p> Whether this attribute is a database reference</p>
                             </li>
                         </ul>
                     

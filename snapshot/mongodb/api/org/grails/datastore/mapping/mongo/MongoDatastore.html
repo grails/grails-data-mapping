@@ -70,7 +70,7 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
@@ -122,6 +122,29 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
     <ul class="blockList">
         <li class="blockList">
         <!-- =========== NESTED CLASS SUMMARY =========== -->
+        
+            <ul class="blockList">
+                <li class="blockList"><a name="nested_summary"><!--   --></a>
+                    <h3>Nested Class Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Nested Class Summary table, listing nested classes, and an explanation">
+                        <caption><span>Nested classes</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Modifiers</th>
+                            <th class="colLast" scope="col">Name</th>
+                            <th class="colLast" scope="col">Description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>class</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href='../../../../../org/grails/datastore/mapping/mongo/MongoDatastore.PersistentEntityCodeRegistry.html'>MongoDatastore.PersistentEntityCodeRegistry</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+                </li>
+            </ul>
         
 
         <!-- =========== ENUM CONSTANT SUMMARY =========== -->
@@ -328,7 +351,7 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         </tr>
                                                 <tr class="altColor">
                             <td class="colFirst"><strong><code>class <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html'>AbstractDatastore</a></code></strong></td>
-                            <td class="colLast"><code><a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#LOG'>LOG</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#cacheAdapterRepository'>cacheAdapterRepository</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#connectionDetails'>connectionDetails</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#mappingContext'>mappingContext</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#serviceRegistry'>serviceRegistry</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#LOG'>LOG</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#applicationContext'>applicationContext</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#cacheAdapterRepository'>cacheAdapterRepository</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#connectionDetails'>connectionDetails</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#mappingContext'>mappingContext</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#serviceRegistry'>serviceRegistry</a></code></td>
                         </tr>
 
                     </table>
@@ -547,92 +570,116 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#configureValidationRegistry(org.grails.datastore.mapping.mongo.connections.MongoConnectionSourceSettings, org.grails.datastore.mapping.mongo.config.MongoMappingContext)">configureValidationRegistry</a></strong>(<a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html'>MongoConnectionSourceSettings</a> settings, <a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html'>MongoMappingContext</a> mongoMappingContext)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#configureValidatorRegistry(org.grails.datastore.mapping.mongo.connections.MongoConnectionSourceSettings, org.grails.datastore.mapping.mongo.config.MongoMappingContext, org.springframework.context.MessageSource)">configureValidatorRegistry</a></strong>(<a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html'>MongoConnectionSourceSettings</a> settings, <a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html'>MongoMappingContext</a> mongoMappingContext, org.springframework.context.MessageSource messageSource)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;<a href='../../../../../org/grails/datastore/mapping/mongo/MongoDatastore.html'>MongoDatastore</a></code></td>
+                            <td class="colLast"><code><strong><a href="#createChildDatastore(org.grails.datastore.mapping.mongo.config.MongoMappingContext, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher, org.grails.datastore.mapping.mongo.MongoDatastore, SingletonConnectionSources)">createChildDatastore</a></strong>(<a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html'>MongoMappingContext</a> mappingContext, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, <a href='../../../../../org/grails/datastore/mapping/mongo/MongoDatastore.html'>MongoDatastore</a> parent, <a href='../../../../../org/grails/datastore/mapping/core/connections/SingletonConnectionSources.html' title='SingletonConnectionSources'>SingletonConnectionSources</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; singletonConnectionSources)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;static&nbsp;<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#createDefaultConnectionSources(com.mongodb.client.MongoClient, org.springframework.core.env.PropertyResolver, org.grails.datastore.mapping.mongo.config.MongoMappingContext)">createDefaultConnectionSources</a></strong>(com.mongodb.client.MongoClient mongoClient, org.springframework.core.env.PropertyResolver configuration, <a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html'>MongoMappingContext</a> mappingContext)</code><br>Creates the connection sources for an existing com.mongodb.client.MongoClient</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;static&nbsp;<a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html'>MongoMappingContext</a></code></td>
                             <td class="colLast"><code><strong><a href="#createMappingContext(ConnectionSources, java.lang.Class)">createMappingContext</a></strong>(<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSources, java.lang.Class classes)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;static&nbsp;<a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html'>MongoMappingContext</a></code></td>
                             <td class="colLast"><code><strong><a href="#createMappingContext(org.springframework.core.env.PropertyResolver, java.lang.Class)">createMappingContext</a></strong>(org.springframework.core.env.PropertyResolver configuration, java.lang.Class classes)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;static&nbsp;com.mongodb.client.MongoClient</code></td>
                             <td class="colLast"><code><strong><a href="#createMongoClient(org.springframework.core.env.PropertyResolver, com.mongodb.MongoClientSettings$Builder, org.grails.datastore.mapping.mongo.config.MongoMappingContext)">createMongoClient</a></strong>(org.springframework.core.env.PropertyResolver configuration, com.mongodb.MongoClientSettings$Builder mongoOptions, <a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html'>MongoMappingContext</a> mappingContext)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;<a href='../../../../../org/grails/datastore/mapping/core/Session.html'>Session</a></code></td>
                             <td class="colLast"><code><strong><a href="#createSession(org.springframework.core.env.PropertyResolver)">createSession</a></strong>(org.springframework.core.env.PropertyResolver connDetails)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;<a href='../../../../../org/grails/datastore/mapping/core/Session.html'>Session</a></code></td>
                             <td class="colLast"><code><strong><a href="#createStatelessSession(org.springframework.core.env.PropertyResolver)">createStatelessSession</a></strong>(org.springframework.core.env.PropertyResolver connectionDetails)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;<a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a></code></td>
                             <td class="colLast"><code><strong><a href="#getApplicationEventPublisher()">getApplicationEventPublisher</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>The <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html' title='ConfigurableApplicationEventPublisher'>ConfigurableApplicationEventPublisher</a> instance used by this datastore</DD></DL></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;<a href='../../../../../org/grails/datastore/gorm/events/AutoTimestampEventListener.html'>AutoTimestampEventListener</a></code></td>
                             <td class="colLast"><code><strong><a href="#getAutoTimestampEventListener()">getAutoTimestampEventListener</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;org.bson.codecs.configuration.CodecRegistry</code></td>
                             <td class="colLast"><code><strong><a href="#getCodecRegistry()">getCodecRegistry</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>The org.bson.codecs.configuration.CodecRegistry</DD></DL></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;com.mongodb.client.MongoCollection&lt;org.bson.Document&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getCollection(org.grails.datastore.mapping.model.PersistentEntity)">getCollection</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br>Obtain the raw com.mongodb.client.MongoCollection for the given entity</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.lang.String</code></td>
                             <td class="colLast"><code><strong><a href="#getCollectionName(org.grails.datastore.mapping.model.PersistentEntity)">getCollectionName</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br>Gets the default collection name for the given entity</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getConnectionSources()">getConnectionSources</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>The <a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSources.html' title='ConnectionSources'>ConnectionSources</a> for this datastore</DD></DL></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.lang.String</code></td>
                             <td class="colLast"><code><strong><a href="#getDatabaseName(org.grails.datastore.mapping.model.PersistentEntity)">getDatabaseName</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/mongo/MongoDatastore.html'>MongoDatastore</a></code></td>
                             <td class="colLast"><code><strong><a href="#getDatastoreForConnection(java.lang.String)">getDatastoreForConnection</a></strong>(java.lang.String connectionName)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/core/Datastore.html'>Datastore</a></code></td>
                             <td class="colLast"><code><strong><a href="#getDatastoreForConnection(java.lang.String)">getDatastoreForConnection</a></strong>(java.lang.String connectionName)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code>&lt;D&gt;</code></td>
+                            <td class="colLast"><code>private&nbsp;<a href='../../../../../org/grails/datastore/mapping/mongo/MongoDatastore.html'>MongoDatastore</a></code></td>
+                            <td class="colLast"><code><strong><a href="#getDatastoreForQualifier(Class, java.lang.String)">getDatastoreForQualifier</a></strong>(java.lang.Class&lt;D&gt; cls, java.lang.String qualifier)</code><br></td>
                         </tr>
                         
                         <tr class="rowColor">
@@ -673,82 +720,82 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>java.lang.String</code></td>
+                            <td class="colLast"><code><strong><a href="#getMongoFieldNameForProperty(PersistentProperty)">getMongoFieldNameForProperty</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html' title='PersistentProperty'>PersistentProperty</a>&lt;<a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoAttribute.html' title='MongoAttribute'>MongoAttribute</a>&gt; property)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/multitenancy/MultiTenancySettings.MultiTenancyMode.html'>MultiTenancyMode</a></code></td>
                             <td class="colLast"><code><strong><a href="#getMultiTenancyMode()">getMultiTenancyMode</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/mongo/engine/codecs/PersistentEntityCodec.html'>PersistentEntityCodec</a></code></td>
                             <td class="colLast"><code><strong><a href="#getPersistentEntityCodec(org.grails.datastore.mapping.model.PersistentEntity)">getPersistentEntityCodec</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br>Obtains a <a href='../../../../../org/grails/datastore/mapping/mongo/engine/codecs/PersistentEntityCodec.html' title='PersistentEntityCodec'>PersistentEntityCodec</a> for the given entity</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/mongo/engine/codecs/PersistentEntityCodec.html'>PersistentEntityCodec</a></code></td>
                             <td class="colLast"><code><strong><a href="#getPersistentEntityCodec(java.lang.Class)">getPersistentEntityCodec</a></strong>(java.lang.Class entityClass)</code><br>Obtains a <a href='../../../../../org/grails/datastore/mapping/mongo/engine/codecs/PersistentEntityCodec.html' title='PersistentEntityCodec'>PersistentEntityCodec</a> for the given entity</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>&lt;D&gt;</code></td>
                             <td class="colLast"><code>protected&nbsp;<a href='../../../../../org/grails/datastore/gorm/mongo/api/MongoStaticApi.html' title='MongoStaticApi'>MongoStaticApi</a>&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getStaticApi(Class, java.lang.String)">getStaticApi</a></strong>(java.lang.Class&lt;D&gt; cls, java.lang.String qualifier)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;<a href='../../../../../org/grails/datastore/mapping/multitenancy/TenantResolver.html'>TenantResolver</a></code></td>
                             <td class="colLast"><code><strong><a href="#getTenantResolver()">getTenantResolver</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;org.springframework.transaction.PlatformTransactionManager</code></td>
                             <td class="colLast"><code><strong><a href="#getTransactionManager()">getTransactionManager</a></strong>()</code><br> <DL><DT><B>Returns:</B></DT><DD>The transaction manager</DD></DL></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code>&lt;D&gt;</code></td>
                             <td class="colLast"><code>protected&nbsp;<a href='../../../../../org/grails/datastore/gorm/GormValidationApi.html' title='GormValidationApi'>GormValidationApi</a>&lt;D&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#getValidationApi(Class, java.lang.String)">getValidationApi</a></strong>(java.lang.Class&lt;D&gt; cls, java.lang.String qualifier)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;<a href='../../../../../org/grails/datastore/gorm/mongo/MongoGormEnhancer.html'>MongoGormEnhancer</a></code></td>
                             <td class="colLast"><code><strong><a href="#initialize(org.grails.datastore.mapping.mongo.connections.MongoConnectionSourceSettings)">initialize</a></strong>(<a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html'>MongoConnectionSourceSettings</a> settings)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;<a href='../../../../../org/grails/datastore/gorm/mongo/MongoGormEnhancer.html'>MongoGormEnhancer</a></code></td>
                             <td class="colLast"><code><strong><a href="#initialize(org.grails.datastore.mapping.mongo.connections.MongoConnectionSourceSettings)">initialize</a></strong>(<a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html'>MongoConnectionSourceSettings</a> settings)</code><br>Runs the initialization sequence</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#initializeIndices(org.grails.datastore.mapping.model.PersistentEntity)">initializeIndices</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br>Indexes any properties that are mapped with index:true</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;boolean</code></td>
                             <td class="colLast"><code><strong><a href="#isSchemaless()">isSchemaless</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#newConnectionSource(ConnectionSource)">newConnectionSource</a></strong>(<a href='../../../../../org/grails/datastore/mapping/core/connections/ConnectionSource.html' title='ConnectionSource'>ConnectionSource</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; connectionSource)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
-                            <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>public&nbsp;void</code></td>
-                            <td class="colLast"><code><strong><a href="#persistentEntityAdded(org.grails.datastore.mapping.model.PersistentEntity)">persistentEntityAdded</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
-                        </tr>
-                        
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
@@ -756,60 +803,66 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>public&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#persistentEntityAdded(org.grails.datastore.mapping.model.PersistentEntity)">persistentEntityAdded</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#registerAllEntitiesWithEnhancer()">registerAllEntitiesWithEnhancer</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#registerEntity(org.grails.datastore.mapping.model.PersistentEntity)">registerEntity</a></strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentEntity.html'>PersistentEntity</a> entity)</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#registerEventListeners(org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher)">registerEventListeners</a></strong>(<a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.io.Serializable</code></td>
                             <td class="colLast"><code><strong><a href="#resolveTenantIdentifier()">resolveTenantIdentifier</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;java.lang.Iterable&lt;java.io.Serializable&gt;</code></td>
                             <td class="colLast"><code><strong><a href="#resolveTenantIds()">resolveTenantIds</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#setCodecProviders(List)">setCodecProviders</a></strong>(java.util.List&lt;org.bson.codecs.configuration.CodecProvider&gt; codecProviders)</code><br>Sets any additional codec providers</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#setCodecRegistries(List)">setCodecRegistries</a></strong>(java.util.List&lt;org.bson.codecs.configuration.CodecRegistry&gt; codecRegistries)</code><br>Sets any additional codec registries</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#setCodecs(List)">setCodecs</a></strong>(java.util.List&lt;org.bson.codecs.Codec&lt;?&gt;&gt; codecs)</code><br>Sets any additional codecs</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#setMessageSource(org.springframework.context.MessageSource)">setMessageSource</a></strong>(org.springframework.context.MessageSource messageSource)</code><br>The message source used for validation messages</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code>&lt;T1&gt;</code></td>
                             <td class="colLast"><code>public&nbsp;<a href='../../../../../T1.html'>T1</a></code></td>
                             <td class="colLast"><code><strong><a href="#withNewSession(java.io.Serializable, Closure)">withNewSession</a></strong>(java.io.Serializable tenantId, groovy.lang.Closure&lt;T1&gt; callable)</code><br></td>
@@ -831,7 +884,7 @@ implements <a href='../../../../../MappingContextListener.html'>MappingContextLi
                         
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html'>AbstractDatastore</a></code></td>
-                            <td class="colLast"><code><a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#connect()'>connect</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#connect(org.springframework.core.env.PropertyResolver)'>connect</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#connectStateless()'>connectStateless</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#createSession(org.springframework.core.env.PropertyResolver)'>createSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#createStatelessSession(org.springframework.core.env.PropertyResolver)'>createStatelessSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#destroy()'>destroy</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#doInSession(org.grails.datastore.mapping.core.Session)'>doInSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getApplicationContext()'>getApplicationContext</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getApplicationEventPublisher()'>getApplicationEventPublisher</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getCurrentSession()'>getCurrentSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getMappingContext()'>getMappingContext</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getService(Class)'>getService</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getServices()'>getServices</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#hasCurrentSession()'>hasCurrentSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#initializeConverters(org.grails.datastore.mapping.model.MappingContext)'>initializeConverters</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#isIndexed(org.grails.datastore.mapping.model.PersistentProperty)'>isIndexed</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#isSchemaless()'>isSchemaless</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#mapToPropertyResolver(Map)'>mapToPropertyResolver</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#retrieveSession()'>retrieveSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#retrieveSession(java.lang.Class)'>retrieveSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#setApplicationContext(org.springframework.context.ApplicationContext)'>setApplicationContext</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#withSession(Closure)'>withSession</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#connect()'>connect</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#connect(org.springframework.core.env.PropertyResolver)'>connect</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#connectStateless()'>connectStateless</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#createSession(org.springframework.core.env.PropertyResolver)'>createSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#createStatelessSession(org.springframework.core.env.PropertyResolver)'>createStatelessSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#destroy()'>destroy</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#doInSession(org.grails.datastore.mapping.core.Session)'>doInSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getApplicationContext()'>getApplicationContext</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getApplicationEventPublisher()'>getApplicationEventPublisher</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getCurrentSession()'>getCurrentSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getMappingContext()'>getMappingContext</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getService(Class)'>getService</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#getServices()'>getServices</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#hasCurrentSession()'>hasCurrentSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#initializeConverters(org.grails.datastore.mapping.model.MappingContext)'>initializeConverters</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#isIndexed(org.grails.datastore.mapping.model.PersistentProperty)'>isIndexed</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#isSchemaless()'>isSchemaless</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#mapToPropertyResolver(Map)'>mapToPropertyResolver</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#publishSessionCreationEvent(org.grails.datastore.mapping.core.Session)'>publishSessionCreationEvent</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#retrieveSession()'>retrieveSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#retrieveSession(java.lang.Class)'>retrieveSession</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#setApplicationContext(org.springframework.context.ApplicationContext)'>setApplicationContext</a>, <a href='../../../../../org/grails/datastore/mapping/core/AbstractDatastore.html#withSession(Closure)'>withSession</a></code></td>
                         </tr>
                     </table>
                    </ul>
@@ -1369,6 +1422,30 @@ public&nbsp;void <strong>close</strong>()</h4>
                             </li>
                         </ul>
                     
+                        <a name="configureValidationRegistry(org.grails.datastore.mapping.mongo.connections.MongoConnectionSourceSettings, org.grails.datastore.mapping.mongo.config.MongoMappingContext)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;void <strong>configureValidationRegistry</strong>(<a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html'>MongoConnectionSourceSettings</a> settings, <a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html'>MongoMappingContext</a> mongoMappingContext)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="configureValidatorRegistry(org.grails.datastore.mapping.mongo.connections.MongoConnectionSourceSettings, org.grails.datastore.mapping.mongo.config.MongoMappingContext, org.springframework.context.MessageSource)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;void <strong>configureValidatorRegistry</strong>(<a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html'>MongoConnectionSourceSettings</a> settings, <a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html'>MongoMappingContext</a> mongoMappingContext, org.springframework.context.MessageSource messageSource)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="createChildDatastore(org.grails.datastore.mapping.mongo.config.MongoMappingContext, org.grails.datastore.gorm.events.ConfigurableApplicationEventPublisher, org.grails.datastore.mapping.mongo.MongoDatastore, SingletonConnectionSources)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;<a href='../../../../../org/grails/datastore/mapping/mongo/MongoDatastore.html'>MongoDatastore</a> <strong>createChildDatastore</strong>(<a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoMappingContext.html'>MongoMappingContext</a> mappingContext, <a href='../../../../../org/grails/datastore/gorm/events/ConfigurableApplicationEventPublisher.html'>ConfigurableApplicationEventPublisher</a> eventPublisher, <a href='../../../../../org/grails/datastore/mapping/mongo/MongoDatastore.html'>MongoDatastore</a> parent, <a href='../../../../../org/grails/datastore/mapping/core/connections/SingletonConnectionSources.html' title='SingletonConnectionSources'>SingletonConnectionSources</a>&lt;com.mongodb.client.MongoClient, <a href='../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSourceSettings.html' title='MongoConnectionSourceSettings'>MongoConnectionSourceSettings</a>&gt; singletonConnectionSources)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="createDefaultConnectionSources(com.mongodb.client.MongoClient, org.springframework.core.env.PropertyResolver, org.grails.datastore.mapping.mongo.config.MongoMappingContext)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -1500,6 +1577,14 @@ public&nbsp;<a href='../../../../../org/grails/datastore/mapping/core/Datastore.
                             </li>
                         </ul>
                     
+                        <a name="getDatastoreForQualifier(Class, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>&lt;D&gt; private&nbsp;<a href='../../../../../org/grails/datastore/mapping/mongo/MongoDatastore.html'>MongoDatastore</a> <strong>getDatastoreForQualifier</strong>(java.lang.Class&lt;D&gt; cls, java.lang.String qualifier)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="getDatastoreForTenantId(java.io.Serializable)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -1552,6 +1637,14 @@ public&nbsp;<a href='../../../../../org/grails/datastore/mapping/mongo/config/Mo
                                 <h4>public&nbsp;com.mongodb.client.MongoClient <strong>getMongoClient</strong>()</h4>
                                 <p>
       <DL><DT><B>Returns:</B></DT><DD>The com.mongodb.client.MongoClient instance</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="getMongoFieldNameForProperty(PersistentProperty)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>java.lang.String <strong>getMongoFieldNameForProperty</strong>(<a href='../../../../../org/grails/datastore/mapping/model/PersistentProperty.html' title='PersistentProperty'>PersistentProperty</a>&lt;<a href='../../../../../org/grails/datastore/mapping/mongo/config/MongoAttribute.html' title='MongoAttribute'>MongoAttribute</a>&gt; property)</h4>
+                                <p></p>
                             </li>
                         </ul>
                     
@@ -1804,7 +1897,7 @@ public&nbsp;<a href='../../../../../T1.html'>T1</a> <strong>withNewSession</stro
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#nested_summary">Nested</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>

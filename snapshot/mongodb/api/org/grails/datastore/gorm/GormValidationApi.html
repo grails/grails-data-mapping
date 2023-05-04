@@ -141,14 +141,26 @@ extends <a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html' tit
                         </tr>
                         
                         <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;org.grails.datastore.gorm.support.BeforeValidateHelper</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#beforeValidateHelper">beforeValidateHelper</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>protected&nbsp;org.springframework.context.ApplicationEventPublisher</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#eventPublisher">eventPublisher</a></code></td>
                             <td class="colLast"></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>protected&nbsp;boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#hasDatastore">hasDatastore</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;org.springframework.validation.Validator</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#internalValidator">internalValidator</a></code></td>
                             <td class="colLast"></td>
                         </tr>
                         
@@ -261,53 +273,71 @@ extends <a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html' tit
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#doValidate(D, java.util.Map, java.util.List)">doValidate</a></strong>(D instance, java.util.Map arguments, java.util.List fields)</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;<a href='../../../../org/grails/datastore/mapping/validation/ValidationErrors.html'>ValidationErrors</a></code></td>
+                            <td class="colLast"><code><strong><a href="#filterErrors(org.grails.datastore.mapping.validation.ValidationErrors, java.util.Set, java.lang.Object)">filterErrors</a></strong>(<a href='../../../../org/grails/datastore/mapping/validation/ValidationErrors.html'>ValidationErrors</a> errors, java.util.Set validatedFields, java.lang.Object target)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#fireEvent(java.lang.Object, java.util.List)">fireEvent</a></strong>(java.lang.Object target, java.util.List fields)</code><br>Fire the validation event.</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>org.springframework.validation.Errors</code></td>
                             <td class="colLast"><code><strong><a href="#getErrors(D)">getErrors</a></strong>(D instance)</code><br>Obtains the errors for an instance</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>org.springframework.validation.Validator</code></td>
                             <td class="colLast"><code><strong><a href="#getValidator()">getValidator</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>boolean</code></td>
                             <td class="colLast"><code><strong><a href="#hasErrors(D)">hasErrors</a></strong>(D instance)</code><br>Tests whether an instance has any errors</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;org.springframework.validation.Errors</code></td>
                             <td class="colLast"><code><strong><a href="#resetErrors(D)">resetErrors</a></strong>(D instance)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#setErrors(D, org.springframework.validation.Errors)">setErrors</a></strong>(D instance, org.springframework.validation.Errors errors)</code><br>Sets the errors for an instance</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>void</code></td>
                             <td class="colLast"><code><strong><a href="#setValidator(org.springframework.validation.Validator)">setValidator</a></strong>(org.springframework.validation.Validator validator)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>boolean</code></td>
                             <td class="colLast"><code><strong><a href="#validate(D, java.util.Map)">validate</a></strong>(D instance, java.util.Map arguments)</code><br>Validates an instance for the given arguments</td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>boolean</code></td>
                             <td class="colLast"><code><strong><a href="#validate(D, java.util.List)">validate</a></strong>(D instance, java.util.List fields)</code><br>Validates an instance</td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>boolean</code></td>
                             <td class="colLast"><code><strong><a href="#validate(D)">validate</a></strong>(D instance)</code><br>Validates an instance</td>
@@ -344,6 +374,14 @@ extends <a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html' tit
                             </li>
                         </ul>
                     
+                        <a name="beforeValidateHelper"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;org.grails.datastore.gorm.support.BeforeValidateHelper <strong>beforeValidateHelper</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="eventPublisher"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -356,6 +394,14 @@ extends <a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html' tit
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;final&nbsp;boolean <strong>hasDatastore</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="internalValidator"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;org.springframework.validation.Validator <strong>internalValidator</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -460,6 +506,30 @@ extends <a href='../../../../org/grails/datastore/gorm/AbstractGormApi.html' tit
                             <li class="blockList">
                                 <h4>protected&nbsp;<a href='../../../../org/grails/datastore/mapping/engine/event/ValidationEvent.html'>ValidationEvent</a> <strong>createValidationEvent</strong>(java.lang.Object target)</h4>
                                 <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="doValidate(D, java.util.Map, java.util.List)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>doValidate</strong>(D instance, java.util.Map arguments, java.util.List fields)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="filterErrors(org.grails.datastore.mapping.validation.ValidationErrors, java.util.Set, java.lang.Object)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;<a href='../../../../org/grails/datastore/mapping/validation/ValidationErrors.html'>ValidationErrors</a> <strong>filterErrors</strong>(<a href='../../../../org/grails/datastore/mapping/validation/ValidationErrors.html'>ValidationErrors</a> errors, java.util.Set validatedFields, java.lang.Object target)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="fireEvent(java.lang.Object, java.util.List)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;void <strong>fireEvent</strong>(java.lang.Object target, java.util.List fields)</h4>
+                                <p> Fire the validation event. <DL><DT><B>Parameters:</B></DT><DD><code>target</code> -  The target instance.</DD><DD><code>fields</code> -  The list of fields being validated, or null.</DD></DL></p>
                             </li>
                         </ul>
                     

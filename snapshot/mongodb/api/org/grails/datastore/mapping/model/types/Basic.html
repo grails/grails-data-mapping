@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -125,6 +125,33 @@ extends <a href='../../../../../../org/grails/datastore/mapping/model/types/ToMa
         
             <ul class="blockList">
                 <li class="blockList"><a name="field_summary"><!--   --></a>
+                    <h3>Field Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Enum constants summary table">
+                        <caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Modifiers</th>
+                            <th class="colLast" scope="col">Name</th>
+                            <th class="colLast" scope="col">Description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.Class</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#componentType">componentType</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../../org/grails/datastore/mapping/engine/types/CustomTypeMarshaller.html'>CustomTypeMarshaller</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#customTypeMarshaller">customTypeMarshaller</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+                </li>
+                
+                <li class="blockList"><a name="field_summary"><!--   --></a>
                     <ul class="blockList">
                     <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Inherited fields summary table">
                         <caption><span>Inherited fields</span><span class="tabEnd">&nbsp;</span></caption>
@@ -133,8 +160,12 @@ extends <a href='../../../../../../org/grails/datastore/mapping/model/types/ToMa
                             <th class="colLast" scope="col">Fields</th>
                         </tr>
                                                 <tr class="altColor">
+                            <td class="colFirst"><strong><code>class <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a></code></strong></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#DEFAULT_CHILD_CASCADE'>DEFAULT_CHILD_CASCADE</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#DEFAULT_OWNER_CASCADE'>DEFAULT_OWNER_CASCADE</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#associatedEntity'>associatedEntity</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#cascadeOperations'>cascadeOperations</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#cascadeTypeConversions'>cascadeTypeConversions</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#cascadeValidateType'>cascadeValidateType</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#orphanRemoval'>orphanRemoval</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#owningSide'>owningSide</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#referencedPropertyName'>referencedPropertyName</a></code></td>
+                        </tr>
+                        <tr class="altColor">
                             <td class="colFirst"><strong><code>class <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html'>AbstractPersistentProperty</a></code></strong></td>
-                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#context'>context</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#inherited'>inherited</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#name'>name</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#owner'>owner</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#type'>type</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#context'>context</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#inherited'>inherited</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#name'>name</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#owner'>owner</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#reader'>reader</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#type'>type</a>, <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html#writer'>writer</a></code></td>
                         </tr>
 
                     </table>
@@ -221,17 +252,23 @@ extends <a href='../../../../../../org/grails/datastore/mapping/model/types/ToMa
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#initializeComponentType()">initializeComponentType</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;boolean</code></td>
                             <td class="colLast"><code><strong><a href="#isOwningSide()">isOwningSide</a></strong>()</code><br></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#setCustomTypeMarshaller(org.grails.datastore.mapping.engine.types.CustomTypeMarshaller)">setCustomTypeMarshaller</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/engine/types/CustomTypeMarshaller.html'>CustomTypeMarshaller</a> customTypeMarshaller)</code><br></td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>public&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#setOwningSide(boolean)">setOwningSide</a></strong>(boolean owningSide)</code><br></td>
@@ -257,7 +294,7 @@ extends <a href='../../../../../../org/grails/datastore/mapping/model/types/ToMa
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html'>Association</a></code></td>
-                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#doesCascade(javax.persistence.CascadeType)'>doesCascade</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#doesCascade(javax.persistence.CascadeType)'>doesCascade</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#doesCascadeValidate(java.lang.Object)'>doesCascadeValidate</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#getAssociatedEntity()'>getAssociatedEntity</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#getCascadeOperations()'>getCascadeOperations</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#getCascadeValidateOperation()'>getCascadeValidateOperation</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#getFetchStrategy()'>getFetchStrategy</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#getInverseSide()'>getInverseSide</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#getReferencedPropertyName()'>getReferencedPropertyName</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#isBasic()'>isBasic</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#isBidirectional()'>isBidirectional</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#isCircular()'>isCircular</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#isEmbedded()'>isEmbedded</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#isList()'>isList</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#isOrphanRemoval()'>isOrphanRemoval</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#isOwningSide()'>isOwningSide</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#setAssociatedEntity(org.grails.datastore.mapping.model.PersistentEntity)'>setAssociatedEntity</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#setOwningSide(boolean)'>setOwningSide</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#setReferencedPropertyName(java.lang.String)'>setReferencedPropertyName</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#toString()'>toString</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#buildCascadeOperations()'>buildCascadeOperations</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#doesCascade(javax.persistence.CascadeType)'>doesCascade</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#doesCascade(javax.persistence.CascadeType)'>doesCascade</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#doesCascadeValidate(java.lang.Object)'>doesCascadeValidate</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#getAssociatedEntity()'>getAssociatedEntity</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#getCascadeOperations()'>getCascadeOperations</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#getCascadeValidateOperation()'>getCascadeValidateOperation</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#getFetchStrategy()'>getFetchStrategy</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#getInverseSide()'>getInverseSide</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#getReferencedPropertyName()'>getReferencedPropertyName</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#initializeCascadeValidateType()'>initializeCascadeValidateType</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#isBasic()'>isBasic</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#isBidirectional()'>isBidirectional</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#isCircular()'>isCircular</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#isEmbedded()'>isEmbedded</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#isList()'>isList</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#isOrphanRemoval()'>isOrphanRemoval</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#isOwningSide()'>isOwningSide</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#setAssociatedEntity(org.grails.datastore.mapping.model.PersistentEntity)'>setAssociatedEntity</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#setOwningSide(boolean)'>setOwningSide</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#setReferencedPropertyName(java.lang.String)'>setReferencedPropertyName</a>, <a href='../../../../../../org/grails/datastore/mapping/model/types/Association.html#toString()'>toString</a></code></td>
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><code>class <a href='../../../../../../org/grails/datastore/mapping/model/AbstractPersistentProperty.html'>AbstractPersistentProperty</a></code></td>
@@ -278,6 +315,32 @@ extends <a href='../../../../../../org/grails/datastore/mapping/model/types/ToMa
         <li class="blockList">
            
 
+            
+            <!-- =========== FIELD DETAIL =========== -->
+            <ul class="blockList">
+                <li class="blockList"><a name="field_detail">
+                    <!--   -->
+                </a>
+                    <h3>Field Detail</h3>
+                    
+                        <a name="componentType"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.lang.Class <strong>componentType</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="customTypeMarshaller"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;<a href='../../../../../../org/grails/datastore/mapping/engine/types/CustomTypeMarshaller.html'>CustomTypeMarshaller</a> <strong>customTypeMarshaller</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                </li>
+            </ul>
             
 
             
@@ -357,6 +420,14 @@ public&nbsp;<a href='../../../../../../org/grails/datastore/mapping/model/types/
                             </li>
                         </ul>
                     
+                        <a name="initializeComponentType()"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;void <strong>initializeComponentType</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="isOwningSide()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -417,11 +488,11 @@ public&nbsp;void <strong>setOwningSide</strong>(boolean owningSide)</h4>
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <p>Groovy Documentation</p>

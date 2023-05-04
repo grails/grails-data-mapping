@@ -194,6 +194,42 @@ implements org.springframework.context.ResourceLoaderAware</pre>
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;org.springframework.core.env.PropertyResolver</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#configuration">configuration</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.Object</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#originalConfiguration">originalConfiguration</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.util.Collection&lt;java.lang.String&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#packages">packages</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.util.Collection&lt;java.lang.Class&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#persistentClasses">persistentClasses</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#registerApplicationIfNotPresent">registerApplicationIfNotPresent</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;org.springframework.core.io.support.PathMatchingResourcePatternResolver</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#resourcePatternResolver">resourcePatternResolver</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>protected&nbsp;boolean</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#secondaryDatastore">secondaryDatastore</a></code></td>
                             <td class="colLast"></td>
@@ -443,8 +479,20 @@ implements org.springframework.context.ResourceLoaderAware</pre>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;java.lang.Class&lt;?&gt;</code></td>
+                            <td class="colLast"><code><strong><a href="#loadServiceClass(Class)">loadServiceClass</a></strong>(java.lang.Class&lt;<a href='../../../../../org/grails/datastore/mapping/services/Service.html' title='Service'>Service</a>&gt; clazz)</code><br></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>protected&nbsp;void</code></td>
                             <td class="colLast"><code><strong><a href="#scanForPersistentClasses()">scanForPersistentClasses</a></strong>()</code><br></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;void</code></td>
+                            <td class="colLast"><code><strong><a href="#scanUsingPattern(java.lang.String, org.springframework.core.type.classreading.CachingMetadataReaderFactory)">scanUsingPattern</a></strong>(java.lang.String pattern, org.springframework.core.type.classreading.CachingMetadataReaderFactory readerFactory)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -528,6 +576,54 @@ implements org.springframework.context.ResourceLoaderAware</pre>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;java.lang.ClassLoader <strong>classLoader</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="configuration"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;org.springframework.core.env.PropertyResolver <strong>configuration</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="originalConfiguration"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.lang.Object <strong>originalConfiguration</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="packages"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.util.Collection&lt;java.lang.String&gt; <strong>packages</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="persistentClasses"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.util.Collection&lt;java.lang.Class&gt; <strong>persistentClasses</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="registerApplicationIfNotPresent"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>registerApplicationIfNotPresent</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="resourcePatternResolver"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;org.springframework.core.io.support.PathMatchingResourcePatternResolver <strong>resourcePatternResolver</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -835,11 +931,28 @@ protected&nbsp;java.util.Map&lt;java.lang.String, java.lang.Class&lt;?&gt;&gt; <
                             </li>
                         </ul>
                     
+                        <a name="loadServiceClass(Class)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.lang.Class&lt;?&gt; <strong>loadServiceClass</strong>(java.lang.Class&lt;<a href='../../../../../org/grails/datastore/mapping/services/Service.html' title='Service'>Service</a>&gt; clazz)</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="scanForPersistentClasses()"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>@groovy.transform.CompileStatic
 protected&nbsp;void <strong>scanForPersistentClasses</strong>()</h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="scanUsingPattern(java.lang.String, org.springframework.core.type.classreading.CachingMetadataReaderFactory)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>@groovy.transform.CompileStatic
+private&nbsp;void <strong>scanUsingPattern</strong>(java.lang.String pattern, org.springframework.core.type.classreading.CachingMetadataReaderFactory readerFactory)</h4>
                                 <p></p>
                             </li>
                         </ul>

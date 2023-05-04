@@ -70,11 +70,11 @@ if (location.href.indexOf('is-external=true') == -1) {
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <a name="skip-navbar_top">
@@ -128,6 +128,60 @@ implements java.lang.Comparable&lt;<a href='../../../../../../org/grails/datasto
         <!-- =========== ENUM CONSTANT SUMMARY =========== -->
         
         <!-- =========== FIELD SUMMARY =========== -->
+        
+            <ul class="blockList">
+                <li class="blockList"><a name="field_summary"><!--   --></a>
+                    <h3>Field Summary</h3>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Enum constants summary table">
+                        <caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Modifiers</th>
+                            <th class="colLast" scope="col">Name</th>
+                            <th class="colLast" scope="col">Description</th>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;<a href='../../../../../../org/grails/datastore/mapping/core/grailsversion/GrailsVersion.html'>GrailsVersion</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#currentVersion">currentVersion</a></code></td>
+                            <td class="colLast">The current version</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;int</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#major">major</a></code></td>
+                            <td class="colLast">The major version</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;int</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#minor">minor</a></code></td>
+                            <td class="colLast">The minor version</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;int</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#patch">patch</a></code></td>
+                            <td class="colLast">The patch version</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;<a href='../../../../../../org/grails/datastore/mapping/core/grailsversion/Snapshot.html'>Snapshot</a></strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#snapshot">snapshot</a></code></td>
+                            <td class="colLast">Information about the snapshot status</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#versionText">versionText</a></code></td>
+                            <td class="colLast">The full version text</td>
+                        </tr>
+                        
+                    </table>
+                   </ul>
+                </li>
+                
+            </ul>
         
 
         <!-- =========== PROPERTY SUMMARY =========== -->
@@ -242,14 +296,26 @@ implements java.lang.Comparable&lt;<a href='../../../../../../org/grails/datasto
                         
                         <tr class="altColor">
                             <td class="colFirst"><code></code></td>
-                            <td class="colLast"><code>static&nbsp;boolean</code></td>
-                            <td class="colLast"><code><strong><a href="#isAtLeastMajorMinor(int, int)">isAtLeastMajorMinor</a></strong>(int majorVersion, int minorVersion)</code><br>Check whether the current version is at least the given major and minor version</td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#isAtLeastImpl(org.grails.datastore.mapping.core.grailsversion.GrailsVersion, java.lang.String)">isAtLeastImpl</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/core/grailsversion/GrailsVersion.html'>GrailsVersion</a> version, java.lang.String requiredVersion)</code><br>Check whether the version is at least the given version</td>
                         </tr>
                         
                         <tr class="rowColor">
                             <td class="colFirst"><code></code></td>
                             <td class="colLast"><code>static&nbsp;boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#isAtLeastMajorMinor(int, int)">isAtLeastMajorMinor</a></strong>(int majorVersion, int minorVersion)</code><br>Check whether the current version is at least the given major and minor version</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>static&nbsp;boolean</code></td>
                             <td class="colLast"><code><strong><a href="#isAtLeastMajorMinor(java.lang.String, int, int)">isAtLeastMajorMinor</a></strong>(java.lang.String version, int majorVersion, int minorVersion)</code><br>Check whether the current version is at least the given major and minor version</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code></code></td>
+                            <td class="colLast"><code>private&nbsp;static&nbsp;boolean</code></td>
+                            <td class="colLast"><code><strong><a href="#isAtLeastMajorMinorImpl(org.grails.datastore.mapping.core.grailsversion.GrailsVersion, int, int)">isAtLeastMajorMinorImpl</a></strong>(<a href='../../../../../../org/grails/datastore/mapping/core/grailsversion/GrailsVersion.html'>GrailsVersion</a> version, int majorVersion, int minorVersion)</code><br></td>
                         </tr>
                         
                         <tr class="altColor">
@@ -297,6 +363,64 @@ implements java.lang.Comparable&lt;<a href='../../../../../../org/grails/datasto
         <li class="blockList">
            
 
+            
+            <!-- =========== FIELD DETAIL =========== -->
+            <ul class="blockList">
+                <li class="blockList"><a name="field_detail">
+                    <!--   -->
+                </a>
+                    <h3>Field Detail</h3>
+                    
+                        <a name="currentVersion"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;<a href='../../../../../../org/grails/datastore/mapping/core/grailsversion/GrailsVersion.html'>GrailsVersion</a> <strong>currentVersion</strong></h4>
+                                <p> The current version</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="major"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;int <strong>major</strong></h4>
+                                <p> The major version</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="minor"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;int <strong>minor</strong></h4>
+                                <p> The minor version</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="patch"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;int <strong>patch</strong></h4>
+                                <p> The patch version</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="snapshot"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;<a href='../../../../../../org/grails/datastore/mapping/core/grailsversion/Snapshot.html'>Snapshot</a> <strong>snapshot</strong></h4>
+                                <p> Information about the snapshot status</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="versionText"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.lang.String <strong>versionText</strong></h4>
+                                <p> The full version text</p>
+                            </li>
+                        </ul>
+                    
+                </li>
+            </ul>
             
 
             
@@ -415,6 +539,14 @@ int <strong>compareTo</strong>(<a href='../../../../../../org/grails/datastore/m
                             </li>
                         </ul>
                     
+                        <a name="isAtLeastImpl(org.grails.datastore.mapping.core.grailsversion.GrailsVersion, java.lang.String)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;boolean <strong>isAtLeastImpl</strong>(<a href='../../../../../../org/grails/datastore/mapping/core/grailsversion/GrailsVersion.html'>GrailsVersion</a> version, java.lang.String requiredVersion)</h4>
+                                <p> Check whether the version is at least the given version <DL><DT><B>Parameters:</B></DT><DD><code>version</code> -  The version</DD><DD><code>requiredVersion</code> -  The required version</DD></DL><DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL></p>
+                            </li>
+                        </ul>
+                    
                         <a name="isAtLeastMajorMinor(int, int)"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -428,6 +560,14 @@ int <strong>compareTo</strong>(<a href='../../../../../../org/grails/datastore/m
                             <li class="blockList">
                                 <h4>static&nbsp;boolean <strong>isAtLeastMajorMinor</strong>(java.lang.String version, int majorVersion, int minorVersion)</h4>
                                 <p> Check whether the current version is at least the given major and minor version <DL><DT><B>Parameters:</B></DT><DD><code>majorVersion</code> -  The major version</DD><DD><code>minorVersion</code> -  The minor version</DD></DL><DL><DT><B>Returns:</B></DT><DD>True if it is</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="isAtLeastMajorMinorImpl(org.grails.datastore.mapping.core.grailsversion.GrailsVersion, int, int)"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;boolean <strong>isAtLeastMajorMinorImpl</strong>(<a href='../../../../../../org/grails/datastore/mapping/core/grailsversion/GrailsVersion.html'>GrailsVersion</a> version, int majorVersion, int minorVersion)</h4>
+                                <p></p>
                             </li>
                         </ul>
                     
@@ -482,11 +622,11 @@ java.lang.String <strong>toString</strong>()</h4>
     <div>
         <ul class="subNavList">
             <li>Summary:&nbsp;</li>
-            Nested&nbsp;&nbsp;&nbsp;Field&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
+            Nested&nbsp;&nbsp;&nbsp;<li><a href="#field_summary">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#property_summary">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_summary">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_summary">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
         <ul class="subNavList">
             <li>&nbsp;|&nbsp;Detail:&nbsp;</li>
-            Field&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
+            <li><a href="#field_detail">Field</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#prop_detail">Property</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#constructor_detail">Constructor</a></li>&nbsp;&nbsp;&nbsp;<li><a href="#method_detail">Method</a></li>&nbsp;&nbsp;&nbsp;
         </ul>
     </div>
     <p>Groovy Documentation</p>

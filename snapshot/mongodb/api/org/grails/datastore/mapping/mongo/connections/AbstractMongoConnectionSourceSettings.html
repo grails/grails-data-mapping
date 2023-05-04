@@ -143,13 +143,96 @@ implements <a href='../../../../../../org/grails/datastore/mapping/mongo/config/
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;org.bson.codecs.configuration.CodecRegistry</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#codecRegistry">codecRegistry</a></code></td>
+                            <td class="colLast">An additional codec registry</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.util.List&lt;java.lang.Class&lt;? extends org.bson.codecs.Codec&gt;&gt;</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#codecs">codecs</a></code></td>
+                            <td class="colLast">Custom MongoDB codecs</td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>protected&nbsp;com.mongodb.ConnectionString</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#connectionString">connectionString</a></code></td>
                             <td class="colLast">The connection string</td>
                         </tr>
                         
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#connectionsCollection">connectionsCollection</a></code></td>
+                            <td class="colLast">The collection name to use to resolve connections when using <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSources.html' title='MongoConnectionSources'>MongoConnectionSources</a></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#databaseName">databaseName</a></code></td>
+                            <td class="colLast">The default database name</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#decimalType">decimalType</a></code></td>
+                            <td class="colLast">Whether to use the decimal128 type for BigDecimal values</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#engine">engine</a></code></td>
+                            <td class="colLast">The engine to use by default</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#host">host</a></code></td>
+                            <td class="colLast">The host name to use</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#password">password</a></code></td>
+                            <td class="colLast">The password to use</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.Integer</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#port">port</a></code></td>
+                            <td class="colLast">The port to use</td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;boolean</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#stateless">stateless</a></code></td>
+                            <td class="colLast">Whether to use stateless mode by default</td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;java.lang.String</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#username">username</a></code></td>
+                            <td class="colLast">The username to use</td>
+                        </tr>
+                        
                     </table>
                    </ul>
+                </li>
+                
+                <li class="blockList"><a name="field_summary"><!--   --></a>
+                    <ul class="blockList">
+                    <table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Inherited fields summary table">
+                        <caption><span>Inherited fields</span><span class="tabEnd">&nbsp;</span></caption>
+                        <tr>
+                            <th class="colFirst" scope="col">Fields inherited from class</th>
+                            <th class="colLast" scope="col">Fields</th>
+                        </tr>
+                                                <tr class="altColor">
+                            <td class="colFirst"><strong><code>class <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html'>ConnectionSourceSettings</a></code></strong></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html#autoFlush'>autoFlush</a>, <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html#autowire'>autowire</a>, <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html#connectionSourcesClass'>connectionSourcesClass</a>, <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html#custom'>custom</a>, <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html#defaults'>defaults</a>, <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html#failOnError'>failOnError</a>, <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html#failOnErrorPackages'>failOnErrorPackages</a>, <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html#flushMode'>flushMode</a>, <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html#markDirty'>markDirty</a>, <a href='../../../../../../org/grails/datastore/mapping/core/connections/ConnectionSourceSettings.html#multiTenancy'>multiTenancy</a></code></td>
+                        </tr>
+
+                    </table>
+                    </ul>
                 </li>
                 
             </ul>
@@ -330,11 +413,99 @@ implements <a href='../../../../../../org/grails/datastore/mapping/mongo/config/
                 </a>
                     <h3>Field Detail</h3>
                     
+                        <a name="codecRegistry"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;org.bson.codecs.configuration.CodecRegistry <strong>codecRegistry</strong></h4>
+                                <p> An additional codec registry</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="codecs"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.util.List&lt;java.lang.Class&lt;? extends org.bson.codecs.Codec&gt;&gt; <strong>codecs</strong></h4>
+                                <p> Custom MongoDB codecs</p>
+                            </li>
+                        </ul>
+                    
                         <a name="connectionString"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>protected&nbsp;com.mongodb.ConnectionString <strong>connectionString</strong></h4>
                                 <p> The connection string</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="connectionsCollection"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.lang.String <strong>connectionsCollection</strong></h4>
+                                <p> The collection name to use to resolve connections when using <a href='../../../../../../org/grails/datastore/mapping/mongo/connections/MongoConnectionSources.html' title='MongoConnectionSources'>MongoConnectionSources</a></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="databaseName"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.lang.String <strong>databaseName</strong></h4>
+                                <p> The default database name</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="decimalType"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>decimalType</strong></h4>
+                                <p> Whether to use the decimal128 type for BigDecimal values <DL><DT><B>See Also:</B></DT><DD>org.bson.types.Decimal128</DD></DL></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="engine"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.lang.String <strong>engine</strong></h4>
+                                <p> The engine to use by default</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="host"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.lang.String <strong>host</strong></h4>
+                                <p> The host name to use</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="password"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.lang.String <strong>password</strong></h4>
+                                <p> The password to use</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="port"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.lang.Integer <strong>port</strong></h4>
+                                <p> The port to use</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="stateless"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;boolean <strong>stateless</strong></h4>
+                                <p> Whether to use stateless mode by default</p>
+                            </li>
+                        </ul>
+                    
+                        <a name="username"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;java.lang.String <strong>username</strong></h4>
+                                <p> The username to use</p>
                             </li>
                         </ul>
                     

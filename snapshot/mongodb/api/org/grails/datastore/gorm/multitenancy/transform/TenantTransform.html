@@ -142,26 +142,50 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                         </tr>
                         
                         <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;java.lang.Object</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#APPLIED_MARKER">APPLIED_MARKER</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>static&nbsp;org.codehaus.groovy.ast.ClassNode</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#CURRENT_TENANT_ANNOTATION_TYPE">CURRENT_TENANT_ANNOTATION_TYPE</a></code></td>
                             <td class="colLast"></td>
                         </tr>
                         
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;org.codehaus.groovy.ast.expr.ClassExpression</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#CURRENT_TENANT_ANNOTATION_TYPE_EXPR">CURRENT_TENANT_ANNOTATION_TYPE_EXPR</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
                         <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;org.codehaus.groovy.ast.Parameter[]</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#N0_PARAMETER">N0_PARAMETER</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>static&nbsp;int</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#POSITION">POSITION</a></code></td>
                             <td class="colLast">The position of the transform. </td>
                         </tr>
                         
-                        <tr class="altColor">
+                        <tr class="rowColor">
                             <td class="colFirst"><code><strong>static&nbsp;java.lang.String</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#RENAMED_METHOD_PREFIX">RENAMED_METHOD_PREFIX</a></code></td>
                             <td class="colLast"></td>
                         </tr>
                         
-                        <tr class="rowColor">
+                        <tr class="altColor">
                             <td class="colFirst"><code><strong>static&nbsp;org.codehaus.groovy.ast.ClassNode</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#TENANT_ANNOTATION_TYPE">TENANT_ANNOTATION_TYPE</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="rowColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;org.codehaus.groovy.ast.expr.ClassExpression</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#TENANT_ANNOTATION_TYPE_EXPR">TENANT_ANNOTATION_TYPE_EXPR</a></code></td>
                             <td class="colLast"></td>
                         </tr>
                         
@@ -174,6 +198,12 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                         <tr class="rowColor">
                             <td class="colFirst"><code><strong>static&nbsp;org.codehaus.groovy.ast.ClassNode</strong></code>&nbsp;</td>
                             <td class="colLast"><code><a href="#WITHOUT_TENANT_ANNOTATION_TYPE">WITHOUT_TENANT_ANNOTATION_TYPE</a></code></td>
+                            <td class="colLast"></td>
+                        </tr>
+                        
+                        <tr class="altColor">
+                            <td class="colFirst"><code><strong>private&nbsp;static&nbsp;org.codehaus.groovy.ast.expr.ClassExpression</strong></code>&nbsp;</td>
+                            <td class="colLast"><code><a href="#WITHOUT_TENANT_ANNOTATION_TYPE_EXPR">WITHOUT_TENANT_ANNOTATION_TYPE_EXPR</a></code></td>
                             <td class="colLast"></td>
                         </tr>
                         
@@ -195,7 +225,11 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                         </tr>
                         <tr class="altColor">
                             <td class="colFirst"><strong><code>class <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html'>AbstractMethodDecoratingTransformation</a></code></strong></td>
-                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#DECORATED_METHODS'>DECORATED_METHODS</a></code></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#ANNOTATION_NAME_EXCLUDES'>ANNOTATION_NAME_EXCLUDES</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#DECORATED_METHODS'>DECORATED_METHODS</a>, <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractMethodDecoratingTransformation.html#METHOD_NAME_EXCLUDES'>METHOD_NAME_EXCLUDES</a></code></td>
+                        </tr>
+                        <tr class="altColor">
+                            <td class="colFirst"><strong><code>class <a href='../../../../../../org/grails/datastore/gorm/transform/AbstractGormASTTransformation.html'>AbstractGormASTTransformation</a></code></strong></td>
+                            <td class="colLast"><code><a href='../../../../../../org/grails/datastore/gorm/transform/AbstractGormASTTransformation.html#compilationUnit'>compilationUnit</a></code></td>
                         </tr>
 
                     </table>
@@ -347,10 +381,34 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                 </a>
                     <h3>Field Detail</h3>
                     
+                        <a name="APPLIED_MARKER"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;java.lang.Object <strong>APPLIED_MARKER</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="CURRENT_TENANT_ANNOTATION_TYPE"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;static&nbsp;final&nbsp;org.codehaus.groovy.ast.ClassNode <strong>CURRENT_TENANT_ANNOTATION_TYPE</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="CURRENT_TENANT_ANNOTATION_TYPE_EXPR"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;org.codehaus.groovy.ast.expr.ClassExpression <strong>CURRENT_TENANT_ANNOTATION_TYPE_EXPR</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="N0_PARAMETER"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;org.codehaus.groovy.ast.Parameter[] <strong>N0_PARAMETER</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
@@ -379,6 +437,14 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                             </li>
                         </ul>
                     
+                        <a name="TENANT_ANNOTATION_TYPE_EXPR"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;org.codehaus.groovy.ast.expr.ClassExpression <strong>TENANT_ANNOTATION_TYPE_EXPR</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
                         <a name="VAR_TENANT_ID"><!-- --></a>
                         <ul class="blockListLast">
                             <li class="blockList">
@@ -391,6 +457,14 @@ implements <a href='../../../../../../org/grails/datastore/mapping/core/Ordered.
                         <ul class="blockListLast">
                             <li class="blockList">
                                 <h4>public&nbsp;static&nbsp;final&nbsp;org.codehaus.groovy.ast.ClassNode <strong>WITHOUT_TENANT_ANNOTATION_TYPE</strong></h4>
+                                <p></p>
+                            </li>
+                        </ul>
+                    
+                        <a name="WITHOUT_TENANT_ANNOTATION_TYPE_EXPR"><!-- --></a>
+                        <ul class="blockListLast">
+                            <li class="blockList">
+                                <h4>private&nbsp;static&nbsp;final&nbsp;org.codehaus.groovy.ast.expr.ClassExpression <strong>WITHOUT_TENANT_ANNOTATION_TYPE_EXPR</strong></h4>
                                 <p></p>
                             </li>
                         </ul>
