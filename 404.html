@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Error 404 - Page Not Found</title>
+
+    <script>
+        window.onload = function () {
+		const legacyUrlRegex = /^https:\/\/gorm\.grails\.org\/[0-7]\.[0-9]\.[0-9|x]+?(.*)/;
+		const href = window.location.href;
+		const match = legacyUrlRegex.test(href);
+	
+		if (match) {
+			const redirectLocation = window.location.href.replace(
+				"docs.grails.org/",
+	                        "grails.github.io/legacy-gorm-doc/");
+			document.getElementById("body").innerHTML = "Redirecting to " + redirectLocation + " ...";
+		    	window.location.href = redirectLocation;
+		}
+        }
+    </script>
+</head>
+
+<body id="body" style="text-align: center">
+    Page not found
+</body>
+
+</html>
