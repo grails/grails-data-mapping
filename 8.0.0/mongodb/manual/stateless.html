@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<title>7.1</title>
+<title>Stateful mode</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -441,227 +441,152 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel3">
-<li><a href="#_7_1">7.1</a></li>
-<li><a href="#_7_0">7.0</a></li>
-<li><a href="#_6_1">6.1</a></li>
-<li><a href="#_6_0">6.0</a></li>
-<li><a href="#_5_0">5.0</a></li>
-<li><a href="#_4_0">4.0</a></li>
-<li><a href="#_3_0">3.0</a></li>
-<li><a href="#_2_0">2.0</a></li>
-<li><a href="#_1_3">1.3</a></li>
-<li><a href="#_1_2">1.2</a></li>
-<li><a href="#_1_1_ga">1.1 GA</a></li>
-<li><a href="#_1_0_ga">1.0 GA</a></li>
+<ul class="sectlevel1">
+<li><a href="#_stateful_mode">Stateful mode</a></li>
+<li><a href="#_stateless_domain_classes">Stateless Domain classes</a></li>
+<li><a href="#_disadvantages_of_stateless_mode">Disadvantages of Stateless Mode</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
 <div class="paragraph">
-<p>Below are the details of the changes across releases:</p>
+<p>GORM for MongoDB supports both stateless and stateful modes for mapping domain classes to MongoDB. In general stateful mapping is superior for write heavy applications and stateless mode better for read heavy applications (particularily when large amounts of data is involved).</p>
 </div>
-<div class="sect3">
-<h4 id="_7_1">7.1</h4>
+<div class="sect1">
+<h2 id="_stateful_mode">Stateful mode</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Domain classes are by default stateful, which means when they are read from a MongoDB document their state is stored in the user session (which is typically bound to the request in Grails). This has several advantages for write heavy applications:</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p>Support Apache Groovy 3, and Java 14</p>
+<p>GORM can automatically detect whether a call to save() is a an update or an insert and act appropriately</p>
 </li>
 <li>
-<p>Upgrade to mongodb-driver-sync 4.3.3</p>
+<p>GORM stores the state of the read MongoDB document and therefore updates to schemaless properties don&#8217;t require an extra query</p>
 </li>
 <li>
-<p>Autowire bean by type in the Data Service</p>
+<p>GORM can store the current version and therefore implement optimistic locking</p>
 </li>
 <li>
-<p>Compatible only with Grails 5</p>
+<p>Repeated reads of the same entity can be retrieved from the cache, thus optimizing reads as well</p>
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>For an example of when a stateful domain class is better consider the following:</p>
 </div>
-<div class="sect3">
-<h4 id="_7_0">7.0</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Support for MongoDB Driver 3.10.0</p>
-</li>
-<li>
-<p>Support for Java 11</p>
-</li>
-<li>
-<p>Removal of RxJava 1.x Module</p>
-</li>
-<li>
-<p>Java 8 Minimum</p>
-</li>
-</ul>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def b = Book.get(1)
+b['pages'] = 400
+b['publisher'] = 'Manning'
+b['rating'] = 5
+b.save(flush:true)</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_6_1">6.1</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>GORM Data Services Support</p>
-</li>
-<li>
-<p>Package Scanning Constructors</p>
-</li>
-<li>
-<p>Decimal128 Type Support</p>
-</li>
-<li>
-<p>MongoDB 3.4.x Java Driver Support</p>
-</li>
-</ul>
+<div class="paragraph">
+<p>With a stateful entity the updates to the three properties can be batched up and executed in the save() call, when there is no state then 3 updates needs to be executed for each schemaless property (ouch!).</p>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_6_0">6.0</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Multiple Data Sources Support</p>
-</li>
-<li>
-<p>Multi Tenancy Support</p>
-</li>
-<li>
-<p>RxGORM for MongoDB (Using MongoDB Rx Drivers)</p>
-</li>
-<li>
-<p>Unified Configuration model</p>
-</li>
-</ul>
+</div>
+<div class="sect1">
+<h2 id="_stateless_domain_classes">Stateless Domain classes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>However, stateful domain classes can cause problems for read-heavy applications. Take for example the following code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def books = Book.list() // read 100,000 books
+for(b in books) {
+    println b.title
+}</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_5_0">5.0</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>MongoDB 3.x driver support</p>
-</li>
-<li>
-<p>New Codec Persistence Engine</p>
-</li>
-<li>
-<p>Removal of GMongo</p>
-</li>
-<li>
-<p>Trait based</p>
-</li>
-</ul>
+<div class="paragraph">
+<p>The above example will read 100,000 books and print the title of each. In stateful mode this will almost certainly run out of memory as each MongoDB document is stored in user memory as is each book. Rewriting the code as follows will solve the problem:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.withStatelessSession {
+    def books = Book.list() // read 100,000 books
+    for(b in books) {
+        println b.title
+    }
+}</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_4_0">4.0</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Grails 3 compatibility</p>
-</li>
-</ul>
+<div class="paragraph">
+<p>Alternatively you can map the domain class as stateless, in which case its state will never be stored in the session:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Book {
+    ...
+    static mapping = {
+        stateless true
+    }
+}</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_3_0">3.0</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Support for MongoDB 2.6</p>
-</li>
-<li>
-<p>MongoDB 2.6 GeoJSON type support (<code>MultiPoint</code>, <code>MultiLineString</code>, <code>MultiPolygon</code> and <code>GeometryCollection</code>)</p>
-</li>
-<li>
-<p>Support for Maps of embedded entities</p>
-</li>
-<li>
-<p>Flexible index definition</p>
-</li>
-<li>
-<p>Full text search support</p>
-</li>
-<li>
-<p>Support for projections using MongoDB aggregation</p>
-</li>
-<li>
-<p>Size related criteria implemented (<code>sizeEq</code>, <code>sizeLt</code> etc.) on collections</p>
-</li>
-</ul>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_2_0">2.0</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>GeoJSON shape support</p>
-</li>
-<li>
-<p>Support for SSL connections</p>
-</li>
-<li>
-<p>Support for MongoDB connection strings</p>
-</li>
-</ul>
+<div class="sect1">
+<h2 id="_disadvantages_of_stateless_mode">Disadvantages of Stateless Mode</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>There are several disadvantages to using stateless domain classes as the default. One disadvantage is that if you are using assigned identifiers GORM cannot detect whether you want to do an insert or an update so you have to be explicit about which one you want:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book b = new Book()
+b.id = "The Book"
+b.insert()</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_1_3">1.3</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Support for stateless mode to improve read performance</p>
-</li>
-<li>
-<p>Support for dynamically switching which database or collection to persist to at runtime</p>
-</li>
-</ul>
+<div class="paragraph">
+<p>In the above case we use the explicit <em>insert</em> method to tell Grails this is an insert not an udpate. Another disadvantage is that reading of schemaless/dynamic properties is more costly. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def books = Book.list() // read 100,000 books
+for(b in books) {
+    println b['pages']
+    println b['rating']
+}</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_1_2">1.2</h4>
-<div class="admonitionblock warning">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-warning" title="Warning"></i>
-</td>
-<td class="content">
-MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails version, if you are using older versions of Grails you will need to stay with 1.1
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>Here GORM has to execute an additional read method for each schemaless property! This is better written as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def books = Book.list() // read 100,000 books
+for(b in books) {
+    def dbo = b.dbo
+    println dbo['pages']
+    println dbo['rating']
+}</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_1_1_ga">1.1 GA</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>DBRefs no longer used by default for associations</p>
-</li>
-<li>
-<p>Upgrade to GMongo 1.0 and Spring Data MongoDB 1.1</p>
-</li>
-<li>
-<p>Support for global mapping configuration</p>
-</li>
-</ul>
+<div class="paragraph">
+<p>Thus only requiring one query. Or alternatively you can use the native API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">def books = Book.collection.find() // read 100,000 books
+for(dbo in books) {
+    Book b = dbo as Book
+    println dbo['pages']
+    println dbo['rating']
+}</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_1_0_ga">1.0 GA</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Initial feature complete 1.0 release</p>
-</li>
-</ul>
+<div class="paragraph">
+<p>Which would be more efficient.</p>
+</div>
 </div>
 </div>
 </div>

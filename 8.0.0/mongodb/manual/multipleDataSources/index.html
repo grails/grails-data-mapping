@@ -441,7 +441,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel2">
+<ul class="sectlevel1">
 <li><a href="#_configuring_multiple_mongo_clients">Configuring Multiple Mongo Clients</a></li>
 <li><a href="#_mapping_domain_classes_to_mongo_clients">Mapping Domain Classes to Mongo Clients</a></li>
 <li><a href="#_switching_between_mongo_clients">Switching between Mongo Clients</a></li>
@@ -453,26 +453,126 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p>GORM for MongoDB supports the notion of multiple data sources where multiple individual <code>MongoClient</code> instances can be configured and switched between.</p>
 </div>
-<div class="sect2">
-<h3 id="_configuring_multiple_mongo_clients">Configuring Multiple Mongo Clients</h3>
+<div class="sect1">
+<h2 id="_configuring_multiple_mongo_clients">Configuring Multiple Mongo Clients</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::configuration.adoc[]</p>
+<p>To configure multiple Mongo client connections you need to use the <code>grails.mongodb.connections</code> setting. For example in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">grails-app/conf/application.yml</div>
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grails:
+    mongodb:
+        url: mongodb://localhost/books
+        connections:
+            moreBooks:
+                url: mongodb://localhost/moreBooks
+            evenMoreBooks:
+                url: mongodb://localhost/moreBooks</code></pre>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_mapping_domain_classes_to_mongo_clients">Mapping Domain Classes to Mongo Clients</h3>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::mappingDomainsToDataSources.adoc[]</p>
+<p>You can configure individual settings for each Mongo client. If a setting is not specified by default the setting is inherited from the default Mongo client.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_switching_between_mongo_clients">Switching between Mongo Clients</h3>
+</div>
+<div class="sect1">
+<h2 id="_mapping_domain_classes_to_mongo_clients">Mapping Domain Classes to Mongo Clients</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::mongoClientSwitching.adoc[]</p>
+<p>If a domain class has no specify Mongo client connection configuration then the default is used.</p>
+</div>
+<div class="paragraph">
+<p>You can set the <code>connection</code> method in the <code>mapping</code> block to configure an alternate Mongo Client.</p>
+</div>
+<div class="paragraph">
+<p>For example, if you want to use the <code>ZipCode</code> domain to use a Mongo client connection called <code>'lookup'</code>, configure it like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class ZipCode {
+
+   String code
+
+   static mapping = {
+      connection 'lookup'
+   }
+}</code></pre>
 </div>
 </div>
-<div class="sect2">
-<h3 id="connectionSources">The ConnectionSources API</h3>
+<div class="paragraph">
+<p>A domain class can also use two or more configured Mongo client connections by using the <code>connections</code> method with a list of names to configure more than one, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class ZipCode {
+
+   String code
+
+   static mapping = {
+      connections(['lookup', 'auditing'])
+   }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If a domain class uses the default connection and one or more others, you can use the <code>ConnectionSource.DEFAULT</code> constant to indicate that:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import org.grails.datastore.mapping.core.connections.*
+
+class ZipCode {
+
+   String code
+
+   static mapping = {
+      connections(['lookup', ConnectionSource.DEFAULT])
+   }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If a domain class uses all configured <code>DataSource</code> instances use the value <code>ALL</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import org.grails.datastore.mapping.core.connections.*
+
+class ZipCode {
+
+   String code
+
+   static mapping = {
+      connection ConnectionSource.ALL
+   }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_switching_between_mongo_clients">Switching between Mongo Clients</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can switch to a different connection at runtime with the <code>withConnection</code> method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.withConnection("moreBooks") {
+    Book.list()
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Any logic executed within the body of the closure will use the alternate connection. Once the close finishes execution GORM will switch back to the default connection automatically.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="connectionSources">The ConnectionSources API</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>Introduced in GORM 6.0, the <a href="../api/org/grails/datastore/mapping/core/connections/ConnectionSources.html">ConnectionSources</a> API allows you to introspect the data sources configured for the application:</p>
 </div>
@@ -488,6 +588,7 @@ for(ConnectionSource&lt;MongoClient, MongoConnectionSourceSettings&gt; connectio
 	println "Name $connectionSource.name"
 	MongoClient mongoClient = connectionSource.source
 }</code></pre>
+</div>
 </div>
 </div>
 </div>

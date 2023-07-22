@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<meta name="author" content="Graeme Rocher, Burt Beckwith, Puneet Behl">
-<title>GORM for MongoDB</title>
+<title>Configuring Multi Tenancy</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -440,393 +439,311 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>GORM for MongoDB</h1>
-<div class="details">
-<span id="author" class="author">Graeme Rocher, Burt Beckwith, Puneet Behl</span><br>
-</div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#introduction">Introduction</a>
+<li><a href="#_configuring_multi_tenancy">Configuring Multi Tenancy</a></li>
+<li><a href="#_multi_tenancy_transformations">Multi-Tenancy Transformations</a></li>
+<li><a href="#_multi_tenancy_modes">Multi Tenancy Modes</a>
 <ul class="sectlevel2">
-<li><a href="#compatibility">Compatibility with GORM for Hibernate</a></li>
-<li><a href="#releaseNotes">Release Notes</a></li>
-<li><a href="#upgradeNotes">Upgrade Notes</a></li>
+<li><a href="#_database_per_tenant">Database Per Tenant</a></li>
+<li><a href="#_schema_per_tenant">Schema Per Tenant</a></li>
+<li><a href="#_partitioned_multi_tenancy">Partitioned Multi-Tenancy</a></li>
 </ul>
 </li>
-<li><a href="#gettingStarted">Getting Started</a>
-<ul class="sectlevel2">
-<li><a href="#mongoOnly">Using MongoDB Standalone</a></li>
-<li><a href="#withHibernate">Combining MongoDB and Hibernate</a></li>
-<li><a href="#advancedConfig">Advanced Configuration</a></li>
-<li><a href="#springBoot">Using GORM in Spring Boot</a></li>
-<li><a href="#outsideGrails">GORM for MongoDB without Grails</a></li>
-</ul>
-</li>
-<li><a href="#objectMapping">Mapping Domain Classes</a>
-<ul class="sectlevel2">
-<li><a href="#idGeneration">Identity Generation</a></li>
-<li><a href="#dirtyChecking">Understanding Dirty Checking</a></li>
-<li><a href="#queryIndexes">Querying Indexing</a></li>
-<li><a href="#writeConcern">Customizing the WriteConcern</a></li>
-<li><a href="#dynamicAttributes">Dynamic Attributes</a></li>
-<li><a href="#customTypes">Custom User Types</a></li>
-</ul>
-</li>
-<li><a href="#querying">Querying</a>
-<ul class="sectlevel2">
-<li><a href="#queryingBasicsl">Basic Querying</a></li>
-<li><a href="#geoSpatial">Geospacial Querying</a></li>
-<li><a href="#textSearch">Full Text Search</a></li>
-</ul>
-</li>
-<li><a href="#multipleDataSources">Multiple Data Sources</a></li>
-<li><a href="#databaseSwitching">Switching Database or Collection at Runtime</a></li>
-<li><a href="#multiTenancy">Multi-Tenancy</a></li>
-<li><a href="#stateless">Stateless Mode</a></li>
-<li><a href="#lowLevelApi">Using the MongoDB Driver Directly</a></li>
-<li><a href="#transactions">Transactions</a></li>
-<li><a href="#testing">Unit Testing</a></li>
-<li><a href="#_integration_testing">Integration Testing</a></li>
-<li><a href="#reference">Reference</a>
-<ul class="sectlevel2">
-<li><a href="#ref-beans">Beans</a></li>
-<li><a href="#ref-domain-classes">Domain Classes</a></li>
-</ul>
-</li>
+<li><a href="#_dynamic_connectionsources">Dynamic ConnectionSources</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="introduction">Introduction</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::introduction.adoc[]</p>
+<p>GORM for MongoDb supports the following multi-tenancy modes:</p>
 </div>
-<div class="sect2">
-<h3 id="compatibility">Compatibility with GORM for Hibernate</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::introduction/compatibility.adoc[]</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="releaseNotes">Release Notes</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::introduction/releaseNotes.adoc[]</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="upgradeNotes">Upgrade Notes</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::introduction/upgradeNotes.adoc[]</p>
-</div>
-</div>
-</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>DATABASE</code> - A separate database with a separate connection pool is used to store each tenants data.</p>
+</li>
+<li>
+<p><code>SCHEMA</code> - The same database, but different schemas are used to store each tenants data.</p>
+</li>
+<li>
+<p><code>DISCRIMINATOR</code> - The same database is used with a discriminator used to partition and isolate data.</p>
+</li>
+</ul>
 </div>
 <div class="sect1">
-<h2 id="gettingStarted">Getting Started</h2>
+<h2 id="_configuring_multi_tenancy">Configuring Multi Tenancy</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::gettingStarted.adoc[]</p>
+<p>You can configure Multi-Tenancy the same way described in the <a href="../../hibernate/manual/index.html#multiTenancy">GORM for Hibernate documenation</a>, simply specify a multi tenancy mode and resolver:</p>
 </div>
-<div class="sect2">
-<h3 id="mongoOnly">Using MongoDB Standalone</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grails:
+    gorm:
+        multiTenancy:
+            mode: DATABASE
+            tenantResolverClass: org.grails.datastore.mapping.multitenancy.web.SubDomainTenantResolver</code></pre>
+</div>
+</div>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::gettingStarted/mongoOnly.adoc[]</p>
+<p>Note that if you are using MongoDB and Hibernate together the above configuration will configure both MongoDB <strong>and</strong> Hibernate to use a multi-tenancy mode of <code>DATABASE</code>.</p>
 </div>
-</div>
-<div class="sect2">
-<h3 id="withHibernate">Combining MongoDB and Hibernate</h3>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::gettingStarted/withHibernate.adoc[]</p>
+<p>If you only want to enable multi-tenancy for MongoDB only you can use the following configuration instead:</p>
 </div>
-</div>
-<div class="sect2">
-<h3 id="advancedConfig">Advanced Configuration</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::gettingStarted/advancedConfig.adoc[]</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="springBoot">Using GORM in Spring Boot</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::gettingStarted/springBoot.adoc[]</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="outsideGrails">GORM for MongoDB without Grails</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::gettingStarted/outsideGrails.adoc[]</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grails:
+    mongodb:
+        multiTenancy:
+            mode: DATABASE
+            tenantResolverClass: org.grails.datastore.mapping.multitenancy.web.SubDomainTenantResolver</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="objectMapping">Mapping Domain Classes</h2>
+<h2 id="_multi_tenancy_transformations">Multi-Tenancy Transformations</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::objectMapping.adoc[]</p>
+<p>The following transformations can be applied to any class to simplify greatly the development of Multi-Tenant applications. These include:</p>
 </div>
-<div class="sect2">
-<h3 id="idGeneration">Identity Generation</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><code>@CurrentTenant</code> - Resolve the current tenant for the context of a class or method</p>
+</li>
+<li>
+<p><code>@Tenant</code> - Use a specific tenant for the context of a class or method</p>
+</li>
+<li>
+<p><code>@WithoutTenant</code> - Execute logic without a specific tenant (using the default connection)</p>
+</li>
+</ul>
+</div>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::objectMapping/idGeneration.adoc[]</p>
+<p>For example:</p>
 </div>
-</div>
-<div class="sect2">
-<h3 id="dirtyChecking">Understanding Dirty Checking</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::objectMapping/dirtyChecking.adoc[]</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="queryIndexes">Querying Indexing</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::querying/queryIndexes.adoc[]</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="writeConcern">Customizing the WriteConcern</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::objectMapping/writeConcern.adoc[]</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="dynamicAttributes">Dynamic Attributes</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::objectMapping/dynamicAttributes.adoc[]</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="customTypes">Custom User Types</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::objectMapping/customTypes.adoc[]</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.gorm.multitenancy.*
+
+// resolve the current tenant for every method
+@CurrentTenant
+class TeamService {
+
+    // execute the countPlayers method without a tenant id
+    @WithoutTenant
+    int countPlayers() {
+        Player.count()
+    }
+
+    // use the tenant id "another" for all GORM logic within the method
+    @Tenant({"another"})
+    List&lt;Team&gt; allTwoTeams() {
+        Team.list()
+    }
+
+    List&lt;Team&gt; listTeams() {
+        Team.list(max:10)
+    }
+
+    @Transactional
+    void addTeam(String name) {
+        new Team(name:name).save(flush:true)
+    }
+}</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="querying">Querying</h2>
+<h2 id="_multi_tenancy_modes">Multi Tenancy Modes</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="queryingBasicsl">Basic Querying</h3>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::querying/queryingBasics.adoc[]</p>
-</div>
+<p>As mentioned previously, GORM for MongoDB supports all three multi tenancy modes however there are some considerations to keep in mind.</p>
 </div>
 <div class="sect2">
-<h3 id="geoSpatial">Geospacial Querying</h3>
+<h3 id="_database_per_tenant">Database Per Tenant</h3>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::querying/geoSpatial.adoc[]</p>
+<p>When using the <code>DATABASE</code> mode, only GORM methods calls are dispatched to the correct tenant. This means the following will use the tenant id:</p>
 </div>
-<div class="sect3">
-<h4 id="twodsphere">Geospacial 2D Sphere Support</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">// switches to the correct client based on the tenant id
+Book.list()</code></pre>
+</div>
+</div>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::querying/geoSpatial/2dsphere.adoc[]</p>
+<p>However, going directly through the <code>MongoClient</code> will not work:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Autowired MongoClient mongoClient
+
+// uses the default connection and doesn't resolve the tenant it
+mongoClient.getDatabase("book").find()</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="twodindex">Geospacial 2D Index Support</h4>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::querying/geoSpatial/2dindex.adoc[]</p>
+<p>If you are working directly with the <code>MongoClient</code> instance you need to make sure you obtain the correct instance. For example:</p>
 </div>
-</div>
-<div class="sect3">
-<h4 id="geoJson">GeoJSON Data Models</h4>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::querying/geoSpatial/geoJson.adoc[]</p>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="textSearch">Full Text Search</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::querying/textSearch.adoc[]</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="multipleDataSources">Multiple Data Sources</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::multipleDataSources/index.adoc[]</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="databaseSwitching">Switching Database or Collection at Runtime</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::databaseSwitching.adoc[]</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="multiTenancy">Multi-Tenancy</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::multiTenancy/index.adoc[]</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="stateless">Stateless Mode</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::stateless.adoc[]</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="lowLevelApi">Using the MongoDB Driver Directly</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::lowLevelApi.adoc[]</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="transactions">Transactions</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::transactions.adoc[]</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="testing">Unit Testing</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::testing.adoc[]</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_integration_testing">Integration Testing</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::integrationTesting.adoc[]</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="reference">Reference</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="ref-beans">Beans</h3>
-<div class="sect3">
-<h4 id="ref-beans-mongo">mongo</h4>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Beans/mongo.adoc[]</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.gorm.multitenancy.*
+
+@Autowired MongoDatastore mongoDatastore
+...
+MongoClient mongoClient =
+        mongoDatastore.getDatastoreForTenantId(Tenants.currentId())
+                      .getMongoClient()</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="ref-domain-classes">Domain Classes</h3>
-<div class="sect3">
-<h4 id="ref-domain-classes-collection">collection</h4>
+<h3 id="_schema_per_tenant">Schema Per Tenant</h3>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/collection.adoc[]</p>
+<p>When using the <code>SCHEMA</code> mode, GORM for MongoDB will use a different MongoDB database, but the same <code>MongoClient</code> instance, for each tenant.</p>
 </div>
-</div>
-<div class="sect3">
-<h4 id="ref-domain-classes-collectionName">collectionName</h4>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/collectionName.adoc[]</p>
+<p>However, once again only GORM methods will use the correct database. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">// switches to the correct database based on the tenant id
+Book.list()</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="ref-domain-classes-countHits">countHits</h4>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/countHits.adoc[]</p>
+<p>However, getting the database directly from <code>MongoClient</code> will not work:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Autowired MongoClient mongoClient
+
+// uses the default connection and doesn't resolve the tenant it
+mongoClient.getDatabase("book").find()</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="ref-domain-classes-DB">DB</h4>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/DB.adoc[]</p>
+<p>To resolve this you should always use the <code>DB</code> property of the class which will ensure the right database is used:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">// switches to the correct database based on the tenant id
+Book.DB.find()</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="ref-domain-classes-dbo">dbo</h4>
+</div>
+<div class="sect2">
+<h3 id="_partitioned_multi_tenancy">Partitioned Multi-Tenancy</h3>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/dbo.adoc[]</p>
+<p>When using the <code>DISCRIMINATOR</code> approach, GORM for MongoDB will store a <code>tenantId</code> attribute in each MongoDB document and attempt to partition the data.</p>
 </div>
-</div>
-<div class="sect3">
-<h4 id="ref-domain-classes-findByGeoIntersects">findByGeoIntersects</h4>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/findByGeoIntersects.adoc[]</p>
+<p>Once again this works only when using GORM methods and even then there are cases where it will not work if you use native MongoDB interfaces.</p>
 </div>
-</div>
-<div class="sect3">
-<h4 id="ref-domain-classes-findByGeoWithin">findByGeoWithin</h4>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/findByGeoWithin.adoc[]</p>
+<p>For example the following works fine:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">// correctly includes the `tenantId` in the query
+Book.list()</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="ref-domain-classes-findByNear">findByNear</h4>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/findByNear.adoc[]</p>
+<p>As does this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import static com.mongodb.client.model.Filters.*;
+
+// correctly includes the `tenantId` in the query
+Book.find(eq("title", "The Stand")).first()</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="ref-domain-classes-findByNearSphere">findByNearSphere</h4>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/findByNearSphere.adoc[]</p>
+<p>But this logic bypasses any built into tenant id interception and inclusion:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.collection.find().first()</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="ref-domain-classes-findByWithinBox">findByWithinBox</h4>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/findByWithinBox.adoc[]</p>
+<p>Since you are operating directly on the collection GORM cannot know when you perform a query on said collection.</p>
 </div>
-</div>
-<div class="sect3">
-<h4 id="ref-domain-classes-findByWithinCircle">findByWithinCircle</h4>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/findByWithinCircle.adoc[]</p>
+<p>In this case you will have to ensure to include the <code>tenantId</code> manually:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import static com.mongodb.client.model.Filters.*;
+...
+Book.collection.find(eq("tenantId", Tenants.currentId())).first()</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="ref-domain-classes-search">search</h4>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/search.adoc[]</p>
+<p>And the same is true of write operations such as inserts that are done with the native API.</p>
 </div>
 </div>
-<div class="sect3">
-<h4 id="ref-domain-classes-searchTop">searchTop</h4>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_dynamic_connectionsources">Dynamic ConnectionSources</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/searchTop.adoc[]</p>
+<p>If you are using a multi-tenancy mode of <code>DATABASE</code> then by default the expectation is that all tenants are configured in your <code>application.yml</code> file.</p>
 </div>
-</div>
-<div class="sect3">
-<h4 id="ref-domain-classes-useCollection">useCollection</h4>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/useCollection.adoc[]</p>
+<p>However, it is possible read your Mongo client connection sources dynamically using <a href="../api/org/grails/datastore/mapping/mongo/connections/MongoConnectionSources.html">MongoConnectionSources</a>.</p>
 </div>
-</div>
-<div class="sect3">
-<h4 id="ref-domain-classes-useDatabase">useDatabase</h4>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/useDatabase.adoc[]</p>
+<p>The <code>MongoConnectionSources</code> class will read the mongo client configurations from a Mongo collection called <code>mongo.connections</code> by default. To configure it you must specify the <code>connectionSourcesClass</code> in <code>application.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grails:
+    mongodb:
+        multiTenancy:
+            mode: DATABASE
+        connectionSourcesClass: org.grails.datastore.mapping.mongo.connections.MongoConnectionSources
+        connectionsCollection: "myconnections"
+...</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="ref-domain-classes-withCollection">withCollection</h4>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/withCollection.adoc[]</p>
+<p>You can then even add new connections at runtime using the <code>ConnectionSources</code> API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.gorm.multitenancy.*
+
+@Autowired MongoDatastore mongoDatastore
+...
+def configuration = [url:"mongodb://localhost/moreBooks"]
+MongoClient mongoClient =
+        mongoDatastore.connectionSources
+					  .addConnectionSource("moreBooks", configuration)</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="ref-domain-classes-withDatabase">withDatabase</h4>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/withDatabase.adoc[]</p>
+<p>All new connection sources will be stored within the specified <code>connectionsCollection</code> and if the application is restarted will read from the <code>connectionsCollection</code>.</p>
 </div>
-</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+GORM for MongoDB does not implement provisioning of new MongoDB instances at runtime. This is something that would need to be implemented by a cloud services provider for example.
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>

@@ -441,7 +441,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel3">
+<ul class="sectlevel1">
 <li><a href="#_custom_codecs">Custom Codecs</a></li>
 <li><a href="#_custom_types_with_gorm">Custom Types with GORM</a></li>
 </ul>
@@ -451,8 +451,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p>GORM for MongoDB will persist all common known Java types like String, Integer, URL etc., however if you want to persist one of your own classes that is not a domain class you can implement a custom user type.</p>
 </div>
-<div class="sect3">
-<h4 id="_custom_codecs">Custom Codecs</h4>
+<div class="sect1">
+<h2 id="_custom_codecs">Custom Codecs</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>GORM for MongoDB is built ontop of MongoDB&#8217;s BSON encoding framework. This means it is possible to implement custom <a href="https://mongodb.github.io/mongo-java-driver/3.2/bson/codecs">Codecs</a> for encoding and decoding values to and from BSON.</p>
 </div>
@@ -519,8 +520,10 @@ class BirthdayCodec implements Codec&lt;Birthday&gt; {
 <p>Or you can create a <code>META-INF/services/org.bson.codecs.Codec</code> file containing the fully qualified class name of the <code>Codec</code>. If there are multiple codec classes you would like to register, put each one on a separate line.</p>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_custom_types_with_gorm">Custom Types with GORM</h4>
+</div>
+<div class="sect1">
+<h2 id="_custom_types_with_gorm">Custom Types with GORM</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>Another option is to define a GORM custom type. For example consider the following class:</p>
 </div>
@@ -673,6 +676,7 @@ Person.findByBirthdayBetween(new Birthday(new Date()-7), new Birthday(new Date()
 beans = {
   birthdayType(BirthdayType, Birthday)
 }</code></pre>
+</div>
 </div>
 </div>
 </div>

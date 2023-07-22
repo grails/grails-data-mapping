@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<title>Database Per Tenant</title>
+<title>Assigned Identifiers</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -441,140 +441,68 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel3">
-<li><a href="#_database_per_tenant">Database Per Tenant</a></li>
-<li><a href="#_schema_per_tenant">Schema Per Tenant</a></li>
-<li><a href="#_partitioned_multi_tenancy">Partitioned Multi-Tenancy</a></li>
+<ul class="sectlevel1">
+<li><a href="#_assigned_identifiers">Assigned Identifiers</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
 <div class="paragraph">
-<p>As mentioned previously, GORM for MongoDB supports all three multi tenancy modes however there are some considerations to keep in mind.</p>
-</div>
-<div class="sect3">
-<h4 id="_database_per_tenant">Database Per Tenant</h4>
-<div class="paragraph">
-<p>When using the <code>DATABASE</code> mode, only GORM methods calls are dispatched to the correct tenant. This means the following will use the tenant id:</p>
+<p>By default in GORM entities are supplied with an integer-based identifier. So for example the following entity:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">// switches to the correct client based on the tenant id
-Book.list()</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Person {}</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>However, going directly through the <code>MongoClient</code> will not work:</p>
+<p>Has a property called <code>id</code> of type <code>java.lang.Long</code>. In this case GORM for Mongo will generate a sequence based identifier using the technique <a href="https://docs.mongodb.org/manual/tutorial/isolate-sequence-of-operations/">described in the Mongo documentation</a> on Atomic operations.</p>
+</div>
+<div class="paragraph">
+<p>However, sequence based integer identifiers are not ideal for environments that require <a href="https://docs.mongodb.org/manual/sharding/">sharding</a> (one of the nicer features of Mongo). Hence it is generally advised to use either String based ids:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Autowired MongoClient mongoClient
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Person {
+    String id
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or a native BSON <a href="https://api.mongodb.org/java/current/org/bson/types/ObjectId.html">ObjectId</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import org.bson.types.ObjectId
 
-// uses the default connection and doesn't resolve the tenant it
-mongoClient.getDatabase("book").find()</code></pre>
+class Person {
+    ObjectId id
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>If you are working directly with the <code>MongoClient</code> instance you need to make sure you obtain the correct instance. For example:</p>
+<p>BSON <code>ObjectId</code> instances are generated in a similar fashion to <code>UUIDs</code>.</p>
+</div>
+<div class="sect1">
+<h2 id="_assigned_identifiers">Assigned Identifiers</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Note that if you manually assign an identifier, then you will need to use the <code>insert</code> method instead of the <code>save</code> method, otherwise GORM can&#8217;t work out whether you are trying to achieve an insert or an update. Example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.gorm.multitenancy.*
-
-@Autowired MongoDatastore mongoDatastore
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">class Person {
+    String id
+}
 ...
-MongoClient mongoClient =
-        mongoDatastore.getDatastoreForTenantId(Tenants.currentId())
-                      .getMongoClient()</code></pre>
+Person p = new Person()
+p.id = "Fred"
+// to insert
+p.insert()
+// to update
+p.save()</code></pre>
 </div>
 </div>
-</div>
-<div class="sect3">
-<h4 id="_schema_per_tenant">Schema Per Tenant</h4>
-<div class="paragraph">
-<p>When using the <code>SCHEMA</code> mode, GORM for MongoDB will use a different MongoDB database, but the same <code>MongoClient</code> instance, for each tenant.</p>
-</div>
-<div class="paragraph">
-<p>However, once again only GORM methods will use the correct database. For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">// switches to the correct database based on the tenant id
-Book.list()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>However, getting the database directly from <code>MongoClient</code> will not work:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Autowired MongoClient mongoClient
-
-// uses the default connection and doesn't resolve the tenant it
-mongoClient.getDatabase("book").find()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To resolve this you should always use the <code>DB</code> property of the class which will ensure the right database is used:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">// switches to the correct database based on the tenant id
-Book.DB.find()</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_partitioned_multi_tenancy">Partitioned Multi-Tenancy</h4>
-<div class="paragraph">
-<p>When using the <code>DISCRIMINATOR</code> approach, GORM for MongoDB will store a <code>tenantId</code> attribute in each MongoDB document and attempt to partition the data.</p>
-</div>
-<div class="paragraph">
-<p>Once again this works only when using GORM methods and even then there are cases where it will not work if you use native MongoDB interfaces.</p>
-</div>
-<div class="paragraph">
-<p>For example the following works fine:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">// correctly includes the `tenantId` in the query
-Book.list()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>As does this:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import static com.mongodb.client.model.Filters.*;
-
-// correctly includes the `tenantId` in the query
-Book.find(eq("title", "The Stand")).first()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>But this logic bypasses any built into tenant id interception and inclusion:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.collection.find().first()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Since you are operating directly on the collection GORM cannot know when you perform a query on said collection.</p>
-</div>
-<div class="paragraph">
-<p>In this case you will have to ensure to include the <code>tenantId</code> manually:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import static com.mongodb.client.model.Filters.*;
-...
-Book.collection.find(eq("tenantId", Tenants.currentId())).first()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And the same is true of write operations such as inserts that are done with the native API.</p>
 </div>
 </div>
 </div>
