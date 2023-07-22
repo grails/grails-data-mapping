@@ -1,7 +1,0 @@
-grails.plugins.rest.client
-grails.plugins.rest.client.async
-grails.plugins.rest.client.async.templated
-grails.plugins.rest.client.templated
-org.grails.datastore.gorm.rest.client.json
-org.grails.datastore.gorm.rest.client.utils
-org.grails.datastore.gorm.rest.client.xml
