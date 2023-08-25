@@ -37,6 +37,7 @@ apply plugin: 'project-report'
 
 allprojects {
     repositories {
+        mavenCentral()
         maven { url "https://repo.grails.org/grails/core" }
         if(isSnapshot) {
             maven { url "https://repo.grails.org/grails/libs-snapshots-local" }
