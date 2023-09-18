@@ -1,5 +1,7 @@
 package org.grails.datastore.mapping.core.connections;
 
+import org.grails.datastore.mapping.core.Datastore;
+
 /**
  * An interfaces for classes that provide {@link ConnectionSources}
  *

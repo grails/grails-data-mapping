@@ -54,7 +54,7 @@ import static org.grails.datastore.mapping.reflect.AstUtils.findAnnotation
  * @author Graeme Rocher
  */
 @CompileStatic
-class FindAllByImplementer extends AbstractArrayOrIterableResultImplementer implements Ordered, IterableServiceImplementer<GormEntity> {
+class FindAllByImplementer extends AbstractArrayOrIterableResultImplementer implements Ordered, IterableServiceImplementer {
     static final List<String> HANDLED_PREFIXES = ['listBy','findBy', 'findAllBy']
     public static final int POSITION = -100
 

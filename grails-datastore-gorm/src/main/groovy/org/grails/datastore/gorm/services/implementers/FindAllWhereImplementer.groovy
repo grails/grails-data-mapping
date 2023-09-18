@@ -19,7 +19,7 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.returnS
  * @since 6.1
  */
 @CompileStatic
-class FindAllWhereImplementer extends AbstractWhereImplementer implements IterableServiceImplementer<GormEntity> {
+class FindAllWhereImplementer extends AbstractWhereImplementer implements IterableServiceImplementer {
 
     @Override
     boolean doesImplement(ClassNode domainClass, MethodNode methodNode) {

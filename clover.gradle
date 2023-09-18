@@ -24,7 +24,7 @@ dependencies {
 
 test.doFirst {
 	if (project.hasProperty("withClover")) {
-		ant.taskdef(name: 'groovyc', classname:"org.codehaus.groovy.ant.Groovyc", classpath:configurations.testRuntimeClasspath.asPath)
+		ant.taskdef(name: 'groovyc', classname:"org.apache.groovy.ant.Groovyc", classpath:configurations.testRuntimeClasspath.asPath)
 		ant.taskdef(resource:"cloverlib.xml", classpath:configurations.testRuntimeClasspath.asPath)
 		ant.property(name:"clover.license.path", value:cloverConvention.licenseFile)
 

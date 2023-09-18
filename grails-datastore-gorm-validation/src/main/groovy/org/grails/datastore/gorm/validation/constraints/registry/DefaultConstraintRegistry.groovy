@@ -36,10 +36,10 @@ import java.util.concurrent.ConcurrentHashMap
 class DefaultConstraintRegistry implements ConstraintRegistry {
 
     protected Map<String, List<ConstraintFactory>> factoriesByName = new ConcurrentHashMap<String, List<ConstraintFactory>>().withDefault { String name ->
-        return []
+        return (List<ConstraintFactory>) []
     }
     protected Map<Class<? extends Constraint>, List<ConstraintFactory>> factoriesByType = new ConcurrentHashMap<Class<? extends Constraint>, List<ConstraintFactory>>().withDefault { Class<? extends Constraint> type ->
-        return []
+        return (List<ConstraintFactory>) []
     }
 
     protected final MessageSource messageSource

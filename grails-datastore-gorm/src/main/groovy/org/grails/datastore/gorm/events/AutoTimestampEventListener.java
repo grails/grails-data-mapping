@@ -132,6 +132,7 @@ public class AutoTimestampEventListener extends AbstractPersistenceEventListener
      *
      * @deprecated Use {@link #hasLastUpdated(String)} instead
      */
+    @Deprecated
     protected boolean hasLastUpdated(PersistentEntity entity) {
         return hasLastUpdated(entity.getName());
     }
@@ -145,6 +146,7 @@ public class AutoTimestampEventListener extends AbstractPersistenceEventListener
      *
      * @deprecated Use {@link #hasDateCreated(String)} instead
      */
+    @Deprecated
     protected boolean hasDateCreated(PersistentEntity entity) {
         return hasDateCreated(entity.getName());
     }

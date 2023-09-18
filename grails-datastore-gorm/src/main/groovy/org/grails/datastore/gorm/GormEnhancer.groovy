@@ -63,7 +63,7 @@ class GormEnhancer implements Closeable {
 
     private static final Map<String, Map<String, Closure>> NAMED_QUERIES = new ConcurrentHashMap<>()
 
-    private static final Map<String, Map<String,GormStaticApi>> STATIC_APIS = new ConcurrentHashMap<String, Map<String,GormStaticApi>>().withDefault { String key ->
+    private static final Map<String, Map<String, GormStaticApi>> STATIC_APIS = new ConcurrentHashMap<String, Map<String, GormStaticApi>>().withDefault { String key ->
         return new ConcurrentHashMap<String, GormStaticApi>()
     }
     private static final Map<String, Map<String, GormInstanceApi>> INSTANCE_APIS = new ConcurrentHashMap<String, Map<String, GormInstanceApi>>().withDefault { String key ->
