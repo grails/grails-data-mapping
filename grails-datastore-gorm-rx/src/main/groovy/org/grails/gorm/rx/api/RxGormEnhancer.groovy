@@ -23,13 +23,13 @@ import java.util.concurrent.ConcurrentHashMap
 class RxGormEnhancer {
 
     private static final Map<String, Map<String,RxGormStaticApi>> STATIC_APIS = new ConcurrentHashMap<String, Map<String,RxGormStaticApi>>().withDefault { String key ->
-        return new ConcurrentHashMap<String, RxGormStaticApi>()
+        return new ConcurrentHashMap() as Map<String, RxGormStaticApi>
     }
     private static final Map<String, Map<String, RxGormInstanceApi>> INSTANCE_APIS = new ConcurrentHashMap<String, Map<String, RxGormInstanceApi>>().withDefault { String key ->
-        return new ConcurrentHashMap<String, RxGormInstanceApi>()
+        return new ConcurrentHashMap() as Map<String, RxGormInstanceApi>
     }
     private static final Map<String, Map<String, RxGormValidationApi>> VALIDATION_APIS = new ConcurrentHashMap<String, Map<String, RxGormValidationApi>>().withDefault { String key ->
-        return new ConcurrentHashMap<String, RxGormValidationApi>()
+        return new ConcurrentHashMap() as Map<String, RxGormValidationApi>
     }
     private static final Map<Class<? extends RxDatastoreClient>, RxDatastoreClient> DATASTORE_CLIENTS = new ConcurrentHashMap<Class<? extends RxDatastoreClient>, RxDatastoreClient>()
 

@@ -35,8 +35,8 @@ trait ValidatedService<T> extends Service<T> {
      */
     private ValidatorFactory validatorFactory
 
-    private Map<Method, ExecutableValidator> executableValidatorMap = new LinkedHashMap<Method,ExecutableValidator>().withDefault {
-        getValidatorFactory().getValidator().forExecutables()
+    private Map<Method, ExecutableValidator> executableValidatorMap = new LinkedHashMap<Method, ExecutableValidator>().withDefault {
+        validatorFactory.getValidator().forExecutables()
     }
 
     /**

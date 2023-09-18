@@ -81,7 +81,7 @@ class RxPersistentSet extends PersistentSet implements RxPersistentCollection, R
     @Override
     void initialize() {
         if(initializing != null) return
-        initializing = true
+        initializing = Boolean.TRUE
 
         try {
             def observable = toListObservable()

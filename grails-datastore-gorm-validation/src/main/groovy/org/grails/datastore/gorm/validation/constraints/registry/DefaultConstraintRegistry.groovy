@@ -36,10 +36,10 @@ import java.util.concurrent.ConcurrentHashMap
 class DefaultConstraintRegistry implements ConstraintRegistry {
 
     protected Map<String, List<ConstraintFactory>> factoriesByName = new ConcurrentHashMap<String, List<ConstraintFactory>>().withDefault { String name ->
-        return []
+        return [] as List<ConstraintFactory>
     }
     protected Map<Class<? extends Constraint>, List<ConstraintFactory>> factoriesByType = new ConcurrentHashMap<Class<? extends Constraint>, List<ConstraintFactory>>().withDefault { Class<? extends Constraint> type ->
-        return []
+        return [] as List<ConstraintFactory>
     }
 
     protected final MessageSource messageSource
@@ -84,7 +84,7 @@ class DefaultConstraintRegistry implements ConstraintRegistry {
     }
 
     @Override
-    void addConstraint(Class<? extends Constraint> constraintClass, List<Class> targetPropertyTypes = [Object]) {
+    void addConstraint(Class<? extends Constraint> constraintClass, List<Class> targetPropertyTypes = [Object] as List<Class>) {
         addConstraintFactory(new DefaultConstraintFactory(constraintClass, messageSource, targetPropertyTypes))
     }
 
@@ -94,7 +94,7 @@ class DefaultConstraintRegistry implements ConstraintRegistry {
     }
 
     @Override
-    def <T extends Constraint> List<ConstraintFactory<T>> findConstraintFactories(Class<T> constraintType) {
-        return factoriesByType.get(constraintType)
+    <T extends Constraint> List<ConstraintFactory<T>> findConstraintFactories(Class<T> constraintType) {
+        return factoriesByType.get(constraintType) as List<ConstraintFactory<T>>
     }
 }

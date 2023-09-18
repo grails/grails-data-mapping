@@ -135,6 +135,7 @@ public class DomainEventListener extends AbstractPersistenceEventListener
     /**
      * @deprecated Use {@link #beforeInsert(org.grails.datastore.mapping.model.PersistentEntity, org.grails.datastore.mapping.engine.EntityAccess, org.grails.datastore.mapping.engine.event.PreInsertEvent)} instead
      */
+    @Deprecated
     public boolean beforeInsert(final PersistentEntity entity, final EntityAccess ea) {
         return beforeInsert(entity, ea, null);
     }

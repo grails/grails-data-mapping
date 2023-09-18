@@ -148,7 +148,7 @@ class RxGormStaticApi<D> implements RxGormAllOperations<D> {
     Observable<Number> count() {
         def query = datastoreClient.createQuery(entity.javaClass)
         query.projections().count()
-        return ((RxQuery)query).singleResult()
+        return ((RxQuery)query).singleResult() as Observable<Number>
     }
 
     @Override
