@@ -547,14 +547,14 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
     }
 
     /**
-     * Retrieves and object from the datastore. eg. Book.get(1)
+     * Retrieves an object from the datastore. eg. Book.get(1)
      */
     static D get(Serializable id) {
         currentGormStaticApi().get id
     }
 
     /**
-     * Retrieves and object from the datastore. eg. Book.read(1)
+     * Retrieves an object from the datastore. eg. Book.read(1)
      *
      * Since the datastore abstraction doesn't support dirty checking yet this
      * just delegates to {@link #get(Serializable)}
@@ -564,14 +564,14 @@ trait GormEntity<D> implements GormValidateable, DirtyCheckable, GormEntityApi<D
     }
 
     /**
-     * Retrieves and object from the datastore as a proxy. eg. Book.load(1)
+     * Retrieves an object from the datastore as a proxy. eg. Book.load(1)
      */
     static D load(Serializable id) {
         currentGormStaticApi().load id
     }
 
     /**
-     * Retrieves and object from the datastore as a proxy. eg. Book.proxy(1)
+     * Retrieves an object from the datastore as a proxy. eg. Book.proxy(1)
      */
     static D proxy(Serializable id) {
         currentGormStaticApi().proxy id
