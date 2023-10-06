@@ -529,11 +529,18 @@ Do not attempt to flush the session within an event (such as with obj.save(flush
       lastUpdatedBy nullable: true
    }
 
+   static mapping = {
+      autowire true
+   }
+
    def beforeUpdate() {
       lastUpdatedBy = securityService.currentAuthenticatedUsername()
    }
 }</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>Notice the usage of <code>autowire true</code> above. This is required for the bean <code>securityService</code> to be injected.</p>
 </div>
 </div>
 <div class="sect3">
