@@ -106,12 +106,12 @@ interface GormStaticOperations<D> {
     D create()
 
     /**
-     * Retrieves and object from the datastore. eg. Book.get(1)
+     * Retrieves an object from the datastore. eg. Book.get(1)
      */
     D get(Serializable id)
 
     /**
-     * Retrieves and object from the datastore. eg. Book.read(1)
+     * Retrieves an object from the datastore. eg. Book.read(1)
      *
      * Since the datastore abstraction doesn't support dirty checking yet this
      * just delegates to {@link #get(Serializable)}
@@ -119,12 +119,12 @@ interface GormStaticOperations<D> {
     D read(Serializable id)
 
     /**
-     * Retrieves and object from the datastore as a proxy. eg. Book.load(1)
+     * Retrieves an object from the datastore as a proxy. eg. Book.load(1)
      */
     D load(Serializable id)
 
     /**
-     * Retrieves and object from the datastore as a proxy. eg. Book.proxy(1)
+     * Retrieves an object from the datastore as a proxy. eg. Book.proxy(1)
      */
     D proxy(Serializable id)
 
