@@ -453,9 +453,15 @@ uses by default a <code>MongoClient</code> instance that connects to a MongoDB i
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.test.mongodb.MongoSpec
 import grails.validation.ValidationException
+import org.testcontainers.containers.MongoDBContainer
+import org.testcontainers.utility.DockerImageName
 import spock.lang.Ignore
+import spock.lang.Shared
 
 class LocalMongoUnitSpec extends MongoSpec implements EmbeddedMongoClient {
+
+    @Shared
+    final MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:latest"))
 
     @Ignore
     void "test fail on error"() {
@@ -480,8 +486,14 @@ as shown in the following example:</p>
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">package functional.tests
 
 import grails.test.mongodb.MongoSpec
+import org.testcontainers.containers.MongoDBContainer
+import org.testcontainers.utility.DockerImageName
+import spock.lang.Shared
 
 class BookUnitSpec extends MongoSpec implements EmbeddedMongoClient {
+
+    @Shared
+    final MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:latest"))
 
     void "Test low-level API extensions"() {
         when:

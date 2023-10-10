@@ -5,7 +5,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<title>Configuring Multi Tenancy</title>
+<meta name="author" content="Graeme Rocher, Burt Beckwith, Puneet Behl">
+<title>GORM for MongoDB</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -439,60 +440,423 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
+<h1>GORM for MongoDB</h1>
+<div class="details">
+<span id="author" class="author">Graeme Rocher, Burt Beckwith, Puneet Behl</span><br>
+<span id="revnumber">version 8.1.0</span>
+</div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#introduction">Introduction</a>
 <ul class="sectlevel2">
-<li><a href="#_configuring_multi_tenancy">Configuring Multi Tenancy</a></li>
-<li><a href="#_multi_tenancy_transformations">Multi-Tenancy Transformations</a></li>
-<li><a href="#_multi_tenancy_modes">Multi Tenancy Modes</a></li>
-<li><a href="#_dynamic_connectionsources">Dynamic ConnectionSources</a></li>
+<li><a href="#compatibility">Compatibility with GORM for Hibernate</a></li>
+<li><a href="#releaseNotes">Release Notes</a></li>
+<li><a href="#upgradeNotes">Upgrade Notes</a></li>
+</ul>
+</li>
+<li><a href="#gettingStarted">Getting Started</a>
+<ul class="sectlevel2">
+<li><a href="#mongoOnly">Using MongoDB Standalone</a></li>
+<li><a href="#withHibernate">Combining MongoDB and Hibernate</a></li>
+<li><a href="#advancedConfig">Advanced Configuration</a></li>
+<li><a href="#springBoot">Using GORM in Spring Boot</a></li>
+<li><a href="#outsideGrails">GORM for MongoDB without Grails</a></li>
+</ul>
+</li>
+<li><a href="#objectMapping">Mapping Domain Classes</a>
+<ul class="sectlevel2">
+<li><a href="#idGeneration">Identity Generation</a></li>
+<li><a href="#dirtyChecking">Understanding Dirty Checking</a></li>
+<li><a href="#queryIndexes">Querying Indexing</a></li>
+<li><a href="#writeConcern">Customizing the WriteConcern</a></li>
+<li><a href="#dynamicAttributes">Dynamic Attributes</a></li>
+<li><a href="#customTypes">Custom User Types</a></li>
+</ul>
+</li>
+<li><a href="#querying">Querying</a>
+<ul class="sectlevel2">
+<li><a href="#queryingBasicsl">Basic Querying</a></li>
+<li><a href="#geoSpatial">Geospacial Querying</a></li>
+<li><a href="#textSearch">Full Text Search</a></li>
+</ul>
+</li>
+<li><a href="#multipleDataSources">Multiple Data Sources</a></li>
+<li><a href="#databaseSwitching">Switching Database or Collection at Runtime</a></li>
+<li><a href="#multiTenancy">Multi-Tenancy</a></li>
+<li><a href="#stateless">Stateless Mode</a></li>
+<li><a href="#lowLevelApi">Using the MongoDB Driver Directly</a></li>
+<li><a href="#transactions">Transactions</a></li>
+<li><a href="#testing">Unit Testing</a></li>
+<li><a href="#_integration_testing">Integration Testing</a></li>
+<li><a href="#reference">Reference</a>
+<ul class="sectlevel2">
+<li><a href="#ref-beans">Beans</a></li>
+<li><a href="#ref-domain-classes">Domain Classes</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
 <div id="content">
+<div class="sect1">
+<h2 id="introduction">Introduction</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>GORM for MongoDb supports the following multi-tenancy modes:</p>
+<p>MongoDB bridges the gap between key-value stores (which are fast and highly scalable) and traditional RDBMS systems (which provide rich queries and deep functionality).</p>
+</div>
+<div class="paragraph">
+<p>MongoDB (from "humongous") is a scalable, high-performance, open source, document-oriented database.</p>
+</div>
+<div class="paragraph">
+<p>This project aims to provide an object-mapping layer on top of Mongo to ease common activities such as:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><code>DATABASE</code> - A separate database with a separate connection pool is used to store each tenants data.</p>
+<p>Marshalling from Mongo to Groovy/Java types and back again</p>
 </li>
 <li>
-<p><code>SCHEMA</code> - The same database, but different schemas are used to store each tenants data.</p>
+<p>Support for GORM dynamic finders, criteria and named queries</p>
 </li>
 <li>
-<p><code>DISCRIMINATOR</code> - The same database is used with a discriminator used to partition and isolate data.</p>
+<p>Session-managed transactions</p>
+</li>
+<li>
+<p>Validating domain instances backed by the Mongo datastore</p>
 </li>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="_configuring_multi_tenancy">Configuring Multi Tenancy</h3>
+<h3 id="compatibility">Compatibility with GORM for Hibernate</h3>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::configuration.adoc[]</p>
+<p>Unresolved directive in index.adoc - include::introduction/compatibility.adoc[]</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_multi_tenancy_transformations">Multi-Tenancy Transformations</h3>
+<h3 id="releaseNotes">Release Notes</h3>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::tenantTransforms.adoc[]</p>
+<p>Unresolved directive in index.adoc - include::introduction/releaseNotes.adoc[]</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_multi_tenancy_modes">Multi Tenancy Modes</h3>
+<h3 id="upgradeNotes">Upgrade Notes</h3>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::multiTenancyModes.adoc[]</p>
+<p>Unresolved directive in index.adoc - include::introduction/upgradeNotes.adoc[]</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="gettingStarted">Getting Started</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::gettingStarted.adoc[]</p>
+</div>
+<div class="sect2">
+<h3 id="mongoOnly">Using MongoDB Standalone</h3>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::gettingStarted/mongoOnly.adoc[]</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_dynamic_connectionsources">Dynamic ConnectionSources</h3>
+<h3 id="withHibernate">Combining MongoDB and Hibernate</h3>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::dynamicConnectionSources.adoc[]</p>
+<p>Unresolved directive in index.adoc - include::gettingStarted/withHibernate.adoc[]</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="advancedConfig">Advanced Configuration</h3>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::gettingStarted/advancedConfig.adoc[]</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="springBoot">Using GORM in Spring Boot</h3>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::gettingStarted/springBoot.adoc[]</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="outsideGrails">GORM for MongoDB without Grails</h3>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::gettingStarted/outsideGrails.adoc[]</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="objectMapping">Mapping Domain Classes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::objectMapping.adoc[]</p>
+</div>
+<div class="sect2">
+<h3 id="idGeneration">Identity Generation</h3>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::objectMapping/idGeneration.adoc[]</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="dirtyChecking">Understanding Dirty Checking</h3>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::objectMapping/dirtyChecking.adoc[]</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="queryIndexes">Querying Indexing</h3>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::querying/queryIndexes.adoc[]</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="writeConcern">Customizing the WriteConcern</h3>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::objectMapping/writeConcern.adoc[]</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="dynamicAttributes">Dynamic Attributes</h3>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::objectMapping/dynamicAttributes.adoc[]</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="customTypes">Custom User Types</h3>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::objectMapping/customTypes.adoc[]</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="querying">Querying</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="queryingBasicsl">Basic Querying</h3>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::querying/queryingBasics.adoc[]</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="geoSpatial">Geospacial Querying</h3>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::querying/geoSpatial.adoc[]</p>
+</div>
+<div class="sect3">
+<h4 id="twodsphere">Geospacial 2D Sphere Support</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::querying/geoSpatial/2dsphere.adoc[]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="twodindex">Geospacial 2D Index Support</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::querying/geoSpatial/2dindex.adoc[]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="geoJson">GeoJSON Data Models</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::querying/geoSpatial/geoJson.adoc[]</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="textSearch">Full Text Search</h3>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::querying/textSearch.adoc[]</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="multipleDataSources">Multiple Data Sources</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::multipleDataSources/index.adoc[]</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="databaseSwitching">Switching Database or Collection at Runtime</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::databaseSwitching.adoc[]</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="multiTenancy">Multi-Tenancy</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::multiTenancy/index.adoc[]</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="stateless">Stateless Mode</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::stateless.adoc[]</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="lowLevelApi">Using the MongoDB Driver Directly</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::lowLevelApi.adoc[]</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="transactions">Transactions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::transactions.adoc[]</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="testing">Unit Testing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::testing.adoc[]</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_integration_testing">Integration Testing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::integrationTesting.adoc[]</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="reference">Reference</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="ref-beans">Beans</h3>
+<div class="sect3">
+<h4 id="ref-beans-mongo">mongo</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::ref/Beans/mongo.adoc[]</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="ref-domain-classes">Domain Classes</h3>
+<div class="sect3">
+<h4 id="ref-domain-classes-collection">collection</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::ref/Domain Classes/collection.adoc[]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ref-domain-classes-collectionName">collectionName</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::ref/Domain Classes/collectionName.adoc[]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ref-domain-classes-countHits">countHits</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::ref/Domain Classes/countHits.adoc[]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ref-domain-classes-DB">DB</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::ref/Domain Classes/DB.adoc[]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ref-domain-classes-dbo">dbo</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::ref/Domain Classes/dbo.adoc[]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ref-domain-classes-findByGeoIntersects">findByGeoIntersects</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::ref/Domain Classes/findByGeoIntersects.adoc[]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ref-domain-classes-findByGeoWithin">findByGeoWithin</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::ref/Domain Classes/findByGeoWithin.adoc[]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ref-domain-classes-findByNear">findByNear</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::ref/Domain Classes/findByNear.adoc[]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ref-domain-classes-findByNearSphere">findByNearSphere</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::ref/Domain Classes/findByNearSphere.adoc[]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ref-domain-classes-findByWithinBox">findByWithinBox</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::ref/Domain Classes/findByWithinBox.adoc[]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ref-domain-classes-findByWithinCircle">findByWithinCircle</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::ref/Domain Classes/findByWithinCircle.adoc[]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ref-domain-classes-search">search</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::ref/Domain Classes/search.adoc[]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ref-domain-classes-searchTop">searchTop</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::ref/Domain Classes/searchTop.adoc[]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ref-domain-classes-useCollection">useCollection</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::ref/Domain Classes/useCollection.adoc[]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ref-domain-classes-useDatabase">useDatabase</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::ref/Domain Classes/useDatabase.adoc[]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ref-domain-classes-withCollection">withCollection</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::ref/Domain Classes/withCollection.adoc[]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="ref-domain-classes-withDatabase">withDatabase</h4>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::ref/Domain Classes/withDatabase.adoc[]</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
+Version 8.1.0<br>
 </div>
 </div>
 </body>

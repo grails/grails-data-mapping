@@ -441,7 +441,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel1">
+<ul class="sectlevel3">
 <li><a href="#_dirty_checking_and_proxies">Dirty Checking and Proxies</a></li>
 </ul>
 </div>
@@ -485,9 +485,8 @@ dirty checking and prevent the property from being updated.</p>
 <div class="paragraph">
 <p>This will force GORM for MongoDB to issue an update for the given property name.</p>
 </div>
-<div class="sect1">
-<h2 id="_dirty_checking_and_proxies">Dirty Checking and Proxies</h2>
-<div class="sectionbody">
+<div class="sect3">
+<h4 id="_dirty_checking_and_proxies">Dirty Checking and Proxies</h4>
 <div class="paragraph">
 <p>Dirty checking uses the <code>equals()</code> method to determine if a property has changed. In the case of associations, it is important to recognize that if the association is a proxy, comparing properties on the domain that are not related to the identifier will initialize the proxy, causing another database query.</p>
 </div>
@@ -519,7 +518,6 @@ class Book {
     String title
     Author author
 }</code></pre>
-</div>
 </div>
 </div>
 </div>
