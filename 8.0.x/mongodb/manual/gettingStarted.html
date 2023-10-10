@@ -5,8 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<meta name="author" content="Graeme Rocher, Burt Beckwith, Puneet Behl">
-<title>GORM for MongoDB</title>
+<title>Basic Setup</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -440,393 +439,112 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>GORM for MongoDB</h1>
-<div class="details">
-<span id="author" class="author">Graeme Rocher, Burt Beckwith, Puneet Behl</span><br>
-</div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel1">
-<li><a href="#introduction">Introduction</a>
 <ul class="sectlevel2">
-<li><a href="#compatibility">Compatibility with GORM for Hibernate</a></li>
-<li><a href="#releaseNotes">Release Notes</a></li>
-<li><a href="#upgradeNotes">Upgrade Notes</a></li>
-</ul>
-</li>
-<li><a href="#gettingStarted">Getting Started</a>
-<ul class="sectlevel2">
-<li><a href="#mongoOnly">Using MongoDB Standalone</a></li>
-<li><a href="#withHibernate">Combining MongoDB and Hibernate</a></li>
-<li><a href="#advancedConfig">Advanced Configuration</a></li>
-<li><a href="#springBoot">Using GORM in Spring Boot</a></li>
-<li><a href="#outsideGrails">GORM for MongoDB without Grails</a></li>
-</ul>
-</li>
-<li><a href="#objectMapping">Mapping Domain Classes</a>
-<ul class="sectlevel2">
-<li><a href="#idGeneration">Identity Generation</a></li>
-<li><a href="#dirtyChecking">Understanding Dirty Checking</a></li>
-<li><a href="#queryIndexes">Querying Indexing</a></li>
-<li><a href="#writeConcern">Customizing the WriteConcern</a></li>
-<li><a href="#dynamicAttributes">Dynamic Attributes</a></li>
-<li><a href="#customTypes">Custom User Types</a></li>
-</ul>
-</li>
-<li><a href="#querying">Querying</a>
-<ul class="sectlevel2">
-<li><a href="#queryingBasicsl">Basic Querying</a></li>
-<li><a href="#geoSpatial">Geospacial Querying</a></li>
-<li><a href="#textSearch">Full Text Search</a></li>
-</ul>
-</li>
-<li><a href="#multipleDataSources">Multiple Data Sources</a></li>
-<li><a href="#databaseSwitching">Switching Database or Collection at Runtime</a></li>
-<li><a href="#multiTenancy">Multi-Tenancy</a></li>
-<li><a href="#stateless">Stateless Mode</a></li>
-<li><a href="#lowLevelApi">Using the MongoDB Driver Directly</a></li>
-<li><a href="#transactions">Transactions</a></li>
-<li><a href="#testing">Unit Testing</a></li>
-<li><a href="#_integration_testing">Integration Testing</a></li>
-<li><a href="#reference">Reference</a>
-<ul class="sectlevel2">
-<li><a href="#ref-beans">Beans</a></li>
-<li><a href="#ref-domain-classes">Domain Classes</a></li>
-</ul>
-</li>
+<li><a href="#_basic_setup">Basic Setup</a></li>
+<li><a href="#_common_errors">Common Errors</a></li>
+<li><a href="#_configuring_mongodb">Configuring MongoDB</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="introduction">Introduction</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::introduction.adoc[]</p>
-</div>
 <div class="sect2">
-<h3 id="compatibility">Compatibility with GORM for Hibernate</h3>
+<h3 id="_basic_setup">Basic Setup</h3>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::introduction/compatibility.adoc[]</p>
+<p>To get started with GORM for MongoDB within Grails you need configure it as a dependency in <code>build.gradle</code>:</p>
 </div>
-</div>
-<div class="sect2">
-<h3 id="releaseNotes">Release Notes</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::introduction/releaseNotes.adoc[]</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="upgradeNotes">Upgrade Notes</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::introduction/upgradeNotes.adoc[]</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="gettingStarted">Getting Started</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::gettingStarted.adoc[]</p>
-</div>
-<div class="sect2">
-<h3 id="mongoOnly">Using MongoDB Standalone</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::gettingStarted/mongoOnly.adoc[]</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="withHibernate">Combining MongoDB and Hibernate</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::gettingStarted/withHibernate.adoc[]</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="advancedConfig">Advanced Configuration</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::gettingStarted/advancedConfig.adoc[]</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="springBoot">Using GORM in Spring Boot</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::gettingStarted/springBoot.adoc[]</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="outsideGrails">GORM for MongoDB without Grails</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::gettingStarted/outsideGrails.adoc[]</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="objectMapping">Mapping Domain Classes</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::objectMapping.adoc[]</p>
-</div>
-<div class="sect2">
-<h3 id="idGeneration">Identity Generation</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::objectMapping/idGeneration.adoc[]</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="dirtyChecking">Understanding Dirty Checking</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::objectMapping/dirtyChecking.adoc[]</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="queryIndexes">Querying Indexing</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::querying/queryIndexes.adoc[]</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="writeConcern">Customizing the WriteConcern</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::objectMapping/writeConcern.adoc[]</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="dynamicAttributes">Dynamic Attributes</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::objectMapping/dynamicAttributes.adoc[]</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="customTypes">Custom User Types</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::objectMapping/customTypes.adoc[]</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="querying">Querying</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="queryingBasicsl">Basic Querying</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::querying/queryingBasics.adoc[]</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="geoSpatial">Geospacial Querying</h3>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::querying/geoSpatial.adoc[]</p>
-</div>
-<div class="sect3">
-<h4 id="twodsphere">Geospacial 2D Sphere Support</h4>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::querying/geoSpatial/2dsphere.adoc[]</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="twodindex">Geospacial 2D Index Support</h4>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::querying/geoSpatial/2dindex.adoc[]</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="geoJson">GeoJSON Data Models</h4>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::querying/geoSpatial/geoJson.adoc[]</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">dependencies {
+    compile 'org.grails.plugins:mongodb:8.1.1-SNAPSHOT'
+}</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="textSearch">Full Text Search</h3>
+<h3 id="_common_errors">Common Errors</h3>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::querying/textSearch.adoc[]</p>
+<p>If you receive an error that indicates a failure to resolve the <code>grails-datastore-simple</code> dependency you may need to add the following to <code>build.gradle</code> directly above the <code>dependencies</code> block:</p>
+</div>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">configurations.all {
+    exclude module:'grails-datastore-simple'
+}</code></pre>
 </div>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="multipleDataSources">Multiple Data Sources</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::multipleDataSources/index.adoc[]</p>
+<p>If you receive an error at runtime such as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">Caused by: org.bson.codecs.configuration.CodecConfigurationException: Can't find a codec for class org.bson.BsonDecimal128.
+        at org.bson.codecs.configuration.CodecCache.getOrThrow(CodecCache.java:46)
+        at org.bson.codecs.configuration.ProvidersCodecRegistry.get(ProvidersCodecRegistry.java:63)
+        at org.bson.codecs.configuration.ChildCodecRegistry.get(ChildCodecRegistry.java:51)
+        at org.bson.codecs.BsonTypeCodecMap.&lt;init&gt;(BsonTypeCodecMap.java:44)
+        at org.bson.codecs.BsonDocumentCodec.&lt;init&gt;(BsonDocumentCodec.java:65)</code></pre>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="databaseSwitching">Switching Database or Collection at Runtime</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::databaseSwitching.adoc[]</p>
+<p>It means you have an older version of the MongoDB Java driver on your classpath and you should add the following declaration to <code>build.gradle</code> to ensure the dependency is correct:</p>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="multiTenancy">Multi-Tenancy</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::multiTenancy/index.adoc[]</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="stateless">Stateless Mode</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::stateless.adoc[]</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="lowLevelApi">Using the MongoDB Driver Directly</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::lowLevelApi.adoc[]</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="transactions">Transactions</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::transactions.adoc[]</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="testing">Unit Testing</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::testing.adoc[]</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_integration_testing">Integration Testing</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::integrationTesting.adoc[]</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="reference">Reference</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="ref-beans">Beans</h3>
-<div class="sect3">
-<h4 id="ref-beans-mongo">mongo</h4>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Beans/mongo.adoc[]</p>
+<div class="listingblock">
+<div class="title">build.gradle</div>
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.mongodb:mongodb-driver:4.10.2"</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="ref-domain-classes">Domain Classes</h3>
-<div class="sect3">
-<h4 id="ref-domain-classes-collection">collection</h4>
+<h3 id="_configuring_mongodb">Configuring MongoDB</h3>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/collection.adoc[]</p>
+<p>With that done you need to set up a running MongoDB server. Refer to the <a href="https://docs.mongodb.com/getting-started/shell/">MongoDB Documentation</a> for an explanation on how to startup a MongoDB instance. Once installed, starting MongoDB is typically a matter of executing the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">MONGO_HOME/bin/mongod</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="ref-domain-classes-collectionName">collectionName</h4>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/collectionName.adoc[]</p>
+<p>With the above command executed in a terminal window you should see output like the following appear:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">2015-11-18T19:38:50.073+0100 I JOURNAL  &lt;&lt;initandlisten&gt;&gt; journal dir=/data/db/journal
+2015-11-18T19:38:50.073+0100 I JOURNAL  &lt;&lt;initandlisten&gt;&gt; recover : no journal files present, no recovery needed
+2015-11-18T19:38:50.090+0100 I JOURNAL  &lt;&lt;durability&gt;&gt; Durability thread started
+2015-11-18T19:38:50.090+0100 I JOURNAL  &lt;&lt;journal writer&gt;&gt; Journal writer thread started
+2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; MongoDB starting : pid=52540 port=27017 dbpath=/data/db 64-bit host=Graemes-iMac.local
+2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; ** WARNING: You are running this process as the root user, which is not recommended.
+2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt;
+2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt;
+2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; ** WARNING: soft rlimits too low. Number of files is 256, should be at least 1000
+2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; db version v3.0.4
+2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; git version: 0481c958daeb2969800511e7475dc66986fa9ed5
+2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; build info: Darwin mci-osx108-11.build.10gen.cc 12.5.0 Darwin Kernel Version 12.5.0: Sun Sep 29 13:33:47 PDT 2013; root:xnu-2050.48.12~1/RELEASE_X86_64 x86_64 BOOST_LIB_VERSION=1_49
+2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; allocator: system
+2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; options: {}
+2015-11-18T19:38:50.176+0100 I NETWORK  &lt;&lt;initandlisten&gt;&gt; waiting for connections on port 27017</code></pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="ref-domain-classes-countHits">countHits</h4>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/countHits.adoc[]</p>
+<p>As you can see the server is running on port 27017, but don&#8217;t worry the MongoDB plugin for Grails will automatically configure itself to look for MongoDB on that port by default.</p>
 </div>
-</div>
-<div class="sect3">
-<h4 id="ref-domain-classes-DB">DB</h4>
 <div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/DB.adoc[]</p>
+<p>If you want to configure how Grails connects to MongoDB then you can do so using the following settings in <code>grails-app/conf/application.yml</code>:</p>
 </div>
-</div>
-<div class="sect3">
-<h4 id="ref-domain-classes-dbo">dbo</h4>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/dbo.adoc[]</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="ref-domain-classes-findByGeoIntersects">findByGeoIntersects</h4>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/findByGeoIntersects.adoc[]</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="ref-domain-classes-findByGeoWithin">findByGeoWithin</h4>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/findByGeoWithin.adoc[]</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="ref-domain-classes-findByNear">findByNear</h4>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/findByNear.adoc[]</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="ref-domain-classes-findByNearSphere">findByNearSphere</h4>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/findByNearSphere.adoc[]</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="ref-domain-classes-findByWithinBox">findByWithinBox</h4>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/findByWithinBox.adoc[]</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="ref-domain-classes-findByWithinCircle">findByWithinCircle</h4>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/findByWithinCircle.adoc[]</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="ref-domain-classes-search">search</h4>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/search.adoc[]</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="ref-domain-classes-searchTop">searchTop</h4>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/searchTop.adoc[]</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="ref-domain-classes-useCollection">useCollection</h4>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/useCollection.adoc[]</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="ref-domain-classes-useDatabase">useDatabase</h4>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/useDatabase.adoc[]</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="ref-domain-classes-withCollection">withCollection</h4>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/withCollection.adoc[]</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="ref-domain-classes-withDatabase">withDatabase</h4>
-<div class="paragraph">
-<p>Unresolved directive in index.adoc - include::ref/Domain Classes/withDatabase.adoc[]</p>
-</div>
-</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails:
+    mongodb:
+        host: "localhost"
+        port: 27017
+        username: "blah"
+        password: "blah"
+        databaseName: "foo"</code></pre>
 </div>
 </div>
 </div>

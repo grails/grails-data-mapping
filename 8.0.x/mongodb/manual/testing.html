@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.18">
-<title>Basic Setup</title>
+<title>Untitled</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -437,115 +437,107 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<body class="article toc2 toc-left">
+<body class="article">
 <div id="header">
-<div id="toc" class="toc2">
-<div id="toctitle">Table of Contents</div>
-<ul class="sectlevel2">
-<li><a href="#_basic_setup">Basic Setup</a></li>
-<li><a href="#_common_errors">Common Errors</a></li>
-<li><a href="#_configuring_mongodb">Configuring MongoDB</a></li>
-</ul>
-</div>
 </div>
 <div id="content">
-<div class="sect2">
-<h3 id="_basic_setup">Basic Setup</h3>
 <div class="paragraph">
-<p>To get started with GORM for MongoDB within Grails you need configure it as a dependency in <code>build.gradle</code>:</p>
+<p>To write unit tests with MongoDB and Spock you can simply extend from <code>grails.test.mongodb.MongoSpec</code>.</p>
+</div>
+<div class="paragraph">
+<p><code>MongoSpec</code> is an abstract class that will initialise GORM in the setup phase of the specification being executed. It
+uses by default a <code>MongoClient</code> instance that connects to a MongoDB instance as defined in your configuration
+(by default, <code>localhost</code> and port <code>27017</code>, see <a href="#gettingStarted">[gettingStarted]</a> for more details):</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">dependencies {
-    compile 'org.grails.plugins:mongodb:8.0.0'
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.test.mongodb.MongoSpec
+import grails.validation.ValidationException
+import org.testcontainers.containers.MongoDBContainer
+import org.testcontainers.utility.DockerImageName
+import spock.lang.Ignore
+import spock.lang.Shared
+
+class LocalMongoUnitSpec extends MongoSpec implements EmbeddedMongoClient {
+
+    @Shared
+    final MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:latest"))
+
+    @Ignore
+    void "test fail on error"() {
+
+        when:
+        def invalid = new Book(title: "")
+        invalid.save()
+
+        then:
+        thrown ValidationException
+        invalid.hasErrors()
+    }
 }</code></pre>
 </div>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_common_errors">Common Errors</h3>
 <div class="paragraph">
-<p>If you receive an error that indicates a failure to resolve the <code>grails-datastore-simple</code> dependency you may need to add the following to <code>build.gradle</code> directly above the <code>dependencies</code> block:</p>
+<p>You can also provide your own <code>MongoClient</code> instance to use something such as <a href="https://github.com/fakemongo/fongo">Fongo</a>,
+as shown in the following example:</p>
 </div>
 <div class="listingblock">
-<div class="title">build.gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">configurations.all {
-    exclude module:'grails-datastore-simple'
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">package functional.tests
+
+import grails.test.mongodb.MongoSpec
+import org.testcontainers.containers.MongoDBContainer
+import org.testcontainers.utility.DockerImageName
+import spock.lang.Shared
+
+class BookUnitSpec extends MongoSpec implements EmbeddedMongoClient {
+
+    @Shared
+    final MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:latest"))
+
+    void "Test low-level API extensions"() {
+        when:
+        def db = createMongoClient().getDatabase("test")
+//        db.drop()
+        // Insert a document
+        db['languages'].insert([name: 'Groovy'])
+        // A less verbose way to do it
+        db.languages.insert(name: 'Ruby')
+        // Yet another way
+        db.languages &lt;&lt; [name: 'Python']
+
+        then:
+        db.languages.count() == 3
+    }
+
+    void "Test GORM access"(){
+        when:
+        Book book = new Book(title: 'El Quijote').save(flush: true)
+
+        then:
+        Book.count() ==1
+
+        when:
+        book = Book.findByTitle('El Quijote')
+
+        then:
+        book.id
+    }
+
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>If you receive an error at runtime such as:</p>
+<p>Note that the default implementation is to scan your classpath searching for domain classes, from the package defined
+in the configuration property <code>grails.codegen.defaultPackage</code>, and all the way down its subpackages. If your application
+is large, classpath scanning may be slow, so it&#8217;s better to override the method <code>getDomainClasses()</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">Caused by: org.bson.codecs.configuration.CodecConfigurationException: Can't find a codec for class org.bson.BsonDecimal128.
-        at org.bson.codecs.configuration.CodecCache.getOrThrow(CodecCache.java:46)
-        at org.bson.codecs.configuration.ProvidersCodecRegistry.get(ProvidersCodecRegistry.java:63)
-        at org.bson.codecs.configuration.ChildCodecRegistry.get(ChildCodecRegistry.java:51)
-        at org.bson.codecs.BsonTypeCodecMap.&lt;init&gt;(BsonTypeCodecMap.java:44)
-        at org.bson.codecs.BsonDocumentCodec.&lt;init&gt;(BsonDocumentCodec.java:65)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>It means you have an older version of the MongoDB Java driver on your classpath and you should add the following declaration to <code>build.gradle</code> to ensure the dependency is correct:</p>
-</div>
-<div class="listingblock">
-<div class="title">build.gradle</div>
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">compile "org.mongodb:mongodb-driver:4.5.0"</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_configuring_mongodb">Configuring MongoDB</h3>
-<div class="paragraph">
-<p>With that done you need to set up a running MongoDB server. Refer to the <a href="https://docs.mongodb.com/getting-started/shell/">MongoDB Documentation</a> for an explanation on how to startup a MongoDB instance. Once installed, starting MongoDB is typically a matter of executing the following command:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">MONGO_HOME/bin/mongod</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>With the above command executed in a terminal window you should see output like the following appear:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">2015-11-18T19:38:50.073+0100 I JOURNAL  &lt;&lt;initandlisten&gt;&gt; journal dir=/data/db/journal
-2015-11-18T19:38:50.073+0100 I JOURNAL  &lt;&lt;initandlisten&gt;&gt; recover : no journal files present, no recovery needed
-2015-11-18T19:38:50.090+0100 I JOURNAL  &lt;&lt;durability&gt;&gt; Durability thread started
-2015-11-18T19:38:50.090+0100 I JOURNAL  &lt;&lt;journal writer&gt;&gt; Journal writer thread started
-2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; MongoDB starting : pid=52540 port=27017 dbpath=/data/db 64-bit host=Graemes-iMac.local
-2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; ** WARNING: You are running this process as the root user, which is not recommended.
-2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt;
-2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt;
-2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; ** WARNING: soft rlimits too low. Number of files is 256, should be at least 1000
-2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; db version v3.0.4
-2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; git version: 0481c958daeb2969800511e7475dc66986fa9ed5
-2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; build info: Darwin mci-osx108-11.build.10gen.cc 12.5.0 Darwin Kernel Version 12.5.0: Sun Sep 29 13:33:47 PDT 2013; root:xnu-2050.48.12~1/RELEASE_X86_64 x86_64 BOOST_LIB_VERSION=1_49
-2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; allocator: system
-2015-11-18T19:38:50.090+0100 I CONTROL  &lt;&lt;initandlisten&gt;&gt; options: {}
-2015-11-18T19:38:50.176+0100 I NETWORK  &lt;&lt;initandlisten&gt;&gt; waiting for connections on port 27017</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>As you can see the server is running on port 27017, but don&#8217;t worry the MongoDB plugin for Grails will automatically configure itself to look for MongoDB on that port by default.</p>
-</div>
-<div class="paragraph">
-<p>If you want to configure how Grails connects to MongoDB then you can do so using the following settings in <code>grails-app/conf/application.yml</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">grails:
-    mongodb:
-        host: "localhost"
-        port: 27017
-        username: "blah"
-        password: "blah"
-        databaseName: "foo"</code></pre>
-</div>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Override
+protected List&lt;Class&gt; getDomainClasses() {
+    [Book]
+}</code></pre>
 </div>
 </div>
 </div>
