@@ -441,16 +441,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel1">
+<ul class="sectlevel2">
 <li><a href="#_configuring_multi_tenancy">Configuring Multi Tenancy</a></li>
 <li><a href="#_multi_tenancy_transformations">Multi-Tenancy Transformations</a></li>
-<li><a href="#_multi_tenancy_modes">Multi Tenancy Modes</a>
-<ul class="sectlevel2">
-<li><a href="#_database_per_tenant">Database Per Tenant</a></li>
-<li><a href="#_schema_per_tenant">Schema Per Tenant</a></li>
-<li><a href="#_partitioned_multi_tenancy">Partitioned Multi-Tenancy</a></li>
-</ul>
-</li>
+<li><a href="#_multi_tenancy_modes">Multi Tenancy Modes</a></li>
 <li><a href="#_dynamic_connectionsources">Dynamic ConnectionSources</a></li>
 </ul>
 </div>
@@ -472,279 +466,28 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 </ul>
 </div>
-<div class="sect1">
-<h2 id="_configuring_multi_tenancy">Configuring Multi Tenancy</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>You can configure Multi-Tenancy the same way described in the <a href="../../hibernate/manual/index.html#multiTenancy">GORM for Hibernate documenation</a>, simply specify a multi tenancy mode and resolver:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-yaml" data-lang="yaml">grails:
-    gorm:
-        multiTenancy:
-            mode: DATABASE
-            tenantResolverClass: org.grails.datastore.mapping.multitenancy.web.SubDomainTenantResolver</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Note that if you are using MongoDB and Hibernate together the above configuration will configure both MongoDB <strong>and</strong> Hibernate to use a multi-tenancy mode of <code>DATABASE</code>.</p>
-</div>
-<div class="paragraph">
-<p>If you only want to enable multi-tenancy for MongoDB only you can use the following configuration instead:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-yaml" data-lang="yaml">grails:
-    mongodb:
-        multiTenancy:
-            mode: DATABASE
-            tenantResolverClass: org.grails.datastore.mapping.multitenancy.web.SubDomainTenantResolver</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_multi_tenancy_transformations">Multi-Tenancy Transformations</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The following transformations can be applied to any class to simplify greatly the development of Multi-Tenant applications. These include:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>@CurrentTenant</code> - Resolve the current tenant for the context of a class or method</p>
-</li>
-<li>
-<p><code>@Tenant</code> - Use a specific tenant for the context of a class or method</p>
-</li>
-<li>
-<p><code>@WithoutTenant</code> - Execute logic without a specific tenant (using the default connection)</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.gorm.multitenancy.*
-
-// resolve the current tenant for every method
-@CurrentTenant
-class TeamService {
-
-    // execute the countPlayers method without a tenant id
-    @WithoutTenant
-    int countPlayers() {
-        Player.count()
-    }
-
-    // use the tenant id "another" for all GORM logic within the method
-    @Tenant({"another"})
-    List&lt;Team&gt; allTwoTeams() {
-        Team.list()
-    }
-
-    List&lt;Team&gt; listTeams() {
-        Team.list(max:10)
-    }
-
-    @Transactional
-    void addTeam(String name) {
-        new Team(name:name).save(flush:true)
-    }
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_multi_tenancy_modes">Multi Tenancy Modes</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>As mentioned previously, GORM for MongoDB supports all three multi tenancy modes however there are some considerations to keep in mind.</p>
-</div>
 <div class="sect2">
-<h3 id="_database_per_tenant">Database Per Tenant</h3>
+<h3 id="_configuring_multi_tenancy">Configuring Multi Tenancy</h3>
 <div class="paragraph">
-<p>When using the <code>DATABASE</code> mode, only GORM methods calls are dispatched to the correct tenant. This means the following will use the tenant id:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">// switches to the correct client based on the tenant id
-Book.list()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>However, going directly through the <code>MongoClient</code> will not work:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Autowired MongoClient mongoClient
-
-// uses the default connection and doesn't resolve the tenant it
-mongoClient.getDatabase("book").find()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If you are working directly with the <code>MongoClient</code> instance you need to make sure you obtain the correct instance. For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.gorm.multitenancy.*
-
-@Autowired MongoDatastore mongoDatastore
-...
-MongoClient mongoClient =
-        mongoDatastore.getDatastoreForTenantId(Tenants.currentId())
-                      .getMongoClient()</code></pre>
-</div>
+<p>Unresolved directive in index.adoc - include::configuration.adoc[]</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_schema_per_tenant">Schema Per Tenant</h3>
+<h3 id="_multi_tenancy_transformations">Multi-Tenancy Transformations</h3>
 <div class="paragraph">
-<p>When using the <code>SCHEMA</code> mode, GORM for MongoDB will use a different MongoDB database, but the same <code>MongoClient</code> instance, for each tenant.</p>
-</div>
-<div class="paragraph">
-<p>However, once again only GORM methods will use the correct database. For example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">// switches to the correct database based on the tenant id
-Book.list()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>However, getting the database directly from <code>MongoClient</code> will not work:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">@Autowired MongoClient mongoClient
-
-// uses the default connection and doesn't resolve the tenant it
-mongoClient.getDatabase("book").find()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To resolve this you should always use the <code>DB</code> property of the class which will ensure the right database is used:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">// switches to the correct database based on the tenant id
-Book.DB.find()</code></pre>
-</div>
+<p>Unresolved directive in index.adoc - include::tenantTransforms.adoc[]</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_partitioned_multi_tenancy">Partitioned Multi-Tenancy</h3>
+<h3 id="_multi_tenancy_modes">Multi Tenancy Modes</h3>
 <div class="paragraph">
-<p>When using the <code>DISCRIMINATOR</code> approach, GORM for MongoDB will store a <code>tenantId</code> attribute in each MongoDB document and attempt to partition the data.</p>
+<p>Unresolved directive in index.adoc - include::multiTenancyModes.adoc[]</p>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_dynamic_connectionsources">Dynamic ConnectionSources</h3>
 <div class="paragraph">
-<p>Once again this works only when using GORM methods and even then there are cases where it will not work if you use native MongoDB interfaces.</p>
-</div>
-<div class="paragraph">
-<p>For example the following works fine:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">// correctly includes the `tenantId` in the query
-Book.list()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>As does this:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import static com.mongodb.client.model.Filters.*;
-
-// correctly includes the `tenantId` in the query
-Book.find(eq("title", "The Stand")).first()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>But this logic bypasses any built into tenant id interception and inclusion:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">Book.collection.find().first()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Since you are operating directly on the collection GORM cannot know when you perform a query on said collection.</p>
-</div>
-<div class="paragraph">
-<p>In this case you will have to ensure to include the <code>tenantId</code> manually:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import static com.mongodb.client.model.Filters.*;
-...
-Book.collection.find(eq("tenantId", Tenants.currentId())).first()</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And the same is true of write operations such as inserts that are done with the native API.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_dynamic_connectionsources">Dynamic ConnectionSources</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>If you are using a multi-tenancy mode of <code>DATABASE</code> then by default the expectation is that all tenants are configured in your <code>application.yml</code> file.</p>
-</div>
-<div class="paragraph">
-<p>However, it is possible read your Mongo client connection sources dynamically using <a href="../api/org/grails/datastore/mapping/mongo/connections/MongoConnectionSources.html">MongoConnectionSources</a>.</p>
-</div>
-<div class="paragraph">
-<p>The <code>MongoConnectionSources</code> class will read the mongo client configurations from a Mongo collection called <code>mongo.connections</code> by default. To configure it you must specify the <code>connectionSourcesClass</code> in <code>application.yml</code>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-yaml" data-lang="yaml">grails:
-    mongodb:
-        multiTenancy:
-            mode: DATABASE
-        connectionSourcesClass: org.grails.datastore.mapping.mongo.connections.MongoConnectionSources
-        connectionsCollection: "myconnections"
-...</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can then even add new connections at runtime using the <code>ConnectionSources</code> API:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import grails.gorm.multitenancy.*
-
-@Autowired MongoDatastore mongoDatastore
-...
-def configuration = [url:"mongodb://localhost/moreBooks"]
-MongoClient mongoClient =
-        mongoDatastore.connectionSources
-					  .addConnectionSource("moreBooks", configuration)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>All new connection sources will be stored within the specified <code>connectionsCollection</code> and if the application is restarted will read from the <code>connectionsCollection</code>.</p>
-</div>
-<div class="admonitionblock warning">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-warning" title="Warning"></i>
-</td>
-<td class="content">
-GORM for MongoDB does not implement provisioning of new MongoDB instances at runtime. This is something that would need to be implemented by a cloud services provider for example.
-</td>
-</tr>
-</table>
-</div>
+<p>Unresolved directive in index.adoc - include::dynamicConnectionSources.adoc[]</p>
 </div>
 </div>
 </div>

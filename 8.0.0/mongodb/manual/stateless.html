@@ -441,7 +441,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
-<ul class="sectlevel1">
+<ul class="sectlevel3">
 <li><a href="#_stateful_mode">Stateful mode</a></li>
 <li><a href="#_stateless_domain_classes">Stateless Domain classes</a></li>
 <li><a href="#_disadvantages_of_stateless_mode">Disadvantages of Stateless Mode</a></li>
@@ -452,9 +452,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p>GORM for MongoDB supports both stateless and stateful modes for mapping domain classes to MongoDB. In general stateful mapping is superior for write heavy applications and stateless mode better for read heavy applications (particularily when large amounts of data is involved).</p>
 </div>
-<div class="sect1">
-<h2 id="_stateful_mode">Stateful mode</h2>
-<div class="sectionbody">
+<div class="sect3">
+<h4 id="_stateful_mode">Stateful mode</h4>
 <div class="paragraph">
 <p>Domain classes are by default stateful, which means when they are read from a MongoDB document their state is stored in the user session (which is typically bound to the request in Grails). This has several advantages for write heavy applications:</p>
 </div>
@@ -490,10 +489,8 @@ b.save(flush:true)</code></pre>
 <p>With a stateful entity the updates to the three properties can be batched up and executed in the save() call, when there is no state then 3 updates needs to be executed for each schemaless property (ouch!).</p>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="_stateless_domain_classes">Stateless Domain classes</h2>
-<div class="sectionbody">
+<div class="sect3">
+<h4 id="_stateless_domain_classes">Stateless Domain classes</h4>
 <div class="paragraph">
 <p>However, stateful domain classes can cause problems for read-heavy applications. Take for example the following code:</p>
 </div>
@@ -532,10 +529,8 @@ for(b in books) {
 </div>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="_disadvantages_of_stateless_mode">Disadvantages of Stateless Mode</h2>
-<div class="sectionbody">
+<div class="sect3">
+<h4 id="_disadvantages_of_stateless_mode">Disadvantages of Stateless Mode</h4>
 <div class="paragraph">
 <p>There are several disadvantages to using stateless domain classes as the default. One disadvantage is that if you are using assigned identifiers GORM cannot detect whether you want to do an insert or an update so you have to be explicit about which one you want:</p>
 </div>
@@ -586,7 +581,6 @@ for(dbo in books) {
 </div>
 <div class="paragraph">
 <p>Which would be more efficient.</p>
-</div>
 </div>
 </div>
 </div>
