@@ -63,17 +63,17 @@ class GormEnhancer implements Closeable {
 
     private static final Map<String, Map<String, Closure>> NAMED_QUERIES = new ConcurrentHashMap<>()
 
-    private static final Map<String, Map<String,GormStaticApi>> STATIC_APIS = new ConcurrentHashMap<String, Map<String,GormStaticApi>>().withDefault { String key ->
-        return new ConcurrentHashMap<String, GormStaticApi>()
+    private static final Map<String, Map<String, GormStaticApi>> STATIC_APIS = new ConcurrentHashMap<String, Map<String, GormStaticApi>>().withDefault { String key ->
+        return new ConcurrentHashMap() as Map<String, GormStaticApi>
     }
     private static final Map<String, Map<String, GormInstanceApi>> INSTANCE_APIS = new ConcurrentHashMap<String, Map<String, GormInstanceApi>>().withDefault { String key ->
-        return new ConcurrentHashMap<String, GormInstanceApi>()
+        return new ConcurrentHashMap() as Map<String, GormInstanceApi>
     }
     private static final Map<String, Map<String, GormValidationApi>> VALIDATION_APIS = new ConcurrentHashMap<String, Map<String, GormValidationApi>>().withDefault { String key ->
-        return new ConcurrentHashMap<String, GormValidationApi>()
+        return new ConcurrentHashMap() as Map<String, GormValidationApi>
     }
     private static final Map<String, Map<String, Datastore>> DATASTORES = new ConcurrentHashMap<String, Map<String, Datastore>>().withDefault { String key ->
-        return new ConcurrentHashMap<String, Datastore>()
+        return new ConcurrentHashMap() as Map<String, Datastore>
     }
 
     private static final Map<Class, Datastore> DATASTORES_BY_TYPE = new ConcurrentHashMap<Class, Datastore>()
@@ -580,7 +580,7 @@ class GormEnhancer implements Closeable {
                 Class[] parameterTypes = method.parameterTypes
 
                 if (parameterTypes) {
-                    parameterTypes = parameterTypes.length == 1 ? []: parameterTypes[1..-1]
+                    parameterTypes = (parameterTypes.length == 1 ? [] : parameterTypes[1..-1]) as Class[]
 
                     boolean realMethodExists = doesRealMethodExist(mc, methodName, parameterTypes, false)
 

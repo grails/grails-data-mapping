@@ -266,7 +266,7 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
         return initialized;
     }
 
-    private void setInitializing(Boolean initializing) {
+    protected void setInitializing(Boolean initializing) {
         this.initializing = initializing;
     }
 

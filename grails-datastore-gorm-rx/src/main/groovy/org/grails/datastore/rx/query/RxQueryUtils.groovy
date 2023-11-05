@@ -111,7 +111,8 @@ class RxQueryUtils {
                         return Arrays.asList(args)
                     }
                 })
-            }.map { List<Object> result ->
+            }.map { r ->
+                List<Object> result = (List<Object>) r
                 // first result is the entity
                 def entityInstance = result.get(0)
                 if(result.size() > 1) {

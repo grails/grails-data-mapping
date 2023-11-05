@@ -378,7 +378,7 @@ abstract class AbstractRxDatastoreClient<T> implements RxDatastoreClient<T>, RxD
                         }
                     }
                     return identifiers
-                })
+                }) as Observable<List<Serializable>>
             } else {
                 return Observable.just(identifiers)
             }

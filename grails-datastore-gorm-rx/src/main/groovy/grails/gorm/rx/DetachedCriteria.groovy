@@ -118,7 +118,7 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> implem
     Observable<Number> getCount(Map args = Collections.emptyMap(), @DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
         Query query = prepareQuery(args, additionalCriteria)
         query.projections().count()
-        return ((RxQuery)query).singleResult(args)
+        return ((RxQuery)query).singleResult(args) as Observable<Number>
     }
 
     /**
