@@ -86,4 +86,3 @@ jobs:
           repo: grails/gorm-neo4j
           ref: ${{ steps.extract_branch.outputs.value }}
           token: ${{ secrets.GH_TOKEN }}
-          inputs: ${{ steps.dispatch_message.outputs.value }}
