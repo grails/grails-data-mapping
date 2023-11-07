@@ -71,7 +71,6 @@ jobs:
           repo: grails/gorm-hibernate5
           ref: ${{ steps.extract_branch.outputs.value }}
           token: ${{ secrets.GH_TOKEN }}
-          inputs: ${{ steps.dispatch_message.outputs.value }}
       - name: Invoke the Java CI workflow in GORM MongoDB
         uses: benc-uk/workflow-dispatch@v1.2
         with:
