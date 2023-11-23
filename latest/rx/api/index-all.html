@@ -454,9 +454,9 @@ if (location.href.indexOf('is-external=true') == -1) {
 </dt><dd> <div class="block">Adds a listener</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/rx/query/QueryState.html#addLoadedEntity(java.lang.Class, java.io.Serializable, java.lang.Object)" title="Method in QueryState">addLoadedEntity(java.lang.Class, java.io.Serializable, java.lang.Object)</a></span> - Method in <a href="org/grails/datastore/rx/query/QueryState.html">QueryState</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractMappingContext.html#addMappingContextListener(Listener)" title="Method in AbstractMappingContext">addMappingContextListener(Listener)</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractMappingContext.html">AbstractMappingContext</a>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/AbstractMappingContext.html#addMappingContextListener(org.grails.datastore.mapping.model.MappingContext.Listener)" title="Method in AbstractMappingContext">addMappingContextListener(org.grails.datastore.mapping.model.MappingContext.Listener)</a></span> - Method in <a href="org/grails/datastore/mapping/model/AbstractMappingContext.html">AbstractMappingContext</a>
 </dt><dd> <div class="block"></div></dd>
-<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingContext.html#addMappingContextListener(Listener)" title="Method in MappingContext">addMappingContextListener(Listener)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingContext.html">MappingContext</a>
+<dt><span class="strong"><a href="org/grails/datastore/mapping/model/MappingContext.html#addMappingContextListener(org.grails.datastore.mapping.model.MappingContext.Listener)" title="Method in MappingContext">addMappingContextListener(org.grails.datastore.mapping.model.MappingContext.Listener)</a></span> - Method in <a href="org/grails/datastore/mapping/model/MappingContext.html">MappingContext</a>
 </dt><dd> <div class="block">Adds a new mapping context listener instance</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/jdbc/RelaxedDataBinder.html#addMapPrefix(org.springframework.beans.MutablePropertyValues)" title="Method in RelaxedDataBinder">addMapPrefix(org.springframework.beans.MutablePropertyValues)</a></span> - Method in <a href="org/grails/datastore/gorm/jdbc/RelaxedDataBinder.html">RelaxedDataBinder</a>
 </dt><dd> <div class="block"></div></dd>
@@ -4314,13 +4314,13 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="grails/gorm/rx/DetachedCriteria.html#get(groovy.lang.Closure)" title="Method in DetachedCriteria">get(groovy.lang.Closure)</a></span> - Method in <a href="grails/gorm/rx/DetachedCriteria.html">DetachedCriteria</a>
 </dt><dd> <div class="block">The same as <a href='#find(java.util.Map, groovy.lang.Closure)'>find(java.util.Map, groovy.lang.Closure)</a></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#get(java.io.Serializable)" title="Method in GormEntity">get(java.io.Serializable)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
-</dt><dd> <div class="block">Retrieves and object from the datastore. eg. </div></dd>
+</dt><dd> <div class="block">Retrieves an object from the datastore. eg. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/query/GormQueryOperations.html#get()" title="Method in GormQueryOperations">get()</a></span> - Method in <a href="org/grails/datastore/gorm/query/GormQueryOperations.html">GormQueryOperations</a>
 </dt><dd> <div class="block">Returns a single result matching the criterion contained within this DetachedCriteria instance</div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#get(java.io.Serializable)" title="Method in GormStaticApi">get(java.io.Serializable)</a></span> - Method in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
-</dt><dd> <div class="block">Retrieves and object from the datastore. eg. </div></dd>
+</dt><dd> <div class="block">Retrieves an object from the datastore. eg. </div></dd>
 <dt><span class="strong"><a href="grails/gorm/api/GormStaticOperations.html#get(java.io.Serializable)" title="Method in GormStaticOperations">get(java.io.Serializable)</a></span> - Method in <a href="grails/gorm/api/GormStaticOperations.html">GormStaticOperations</a>
-</dt><dd> <div class="block">Retrieves and object from the datastore. eg. </div></dd>
+</dt><dd> <div class="block">Retrieves an object from the datastore. eg. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/EntityProxyMethodHandler.html#GET_ID_METHOD" title="Field in EntityProxyMethodHandler">GET_ID_METHOD</a></span> - Field in <a href="org/grails/datastore/mapping/proxy/EntityProxyMethodHandler.html">EntityProxyMethodHandler</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/GroovyObjectMethodHandler.html#GET_META_CLASS" title="Field in GroovyObjectMethodHandler">GET_META_CLASS</a></span> - Field in <a href="org/grails/datastore/mapping/proxy/GroovyObjectMethodHandler.html">GroovyObjectMethodHandler</a>
@@ -8172,11 +8172,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/services/DefaultServiceDefinition.html#load()" title="Method in DefaultServiceDefinition">load()</a></span> - Method in <a href="org/grails/datastore/mapping/services/DefaultServiceDefinition.html">DefaultServiceDefinition</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#load(java.io.Serializable)" title="Method in GormEntity">load(java.io.Serializable)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
-</dt><dd> <div class="block">Retrieves and object from the datastore as a proxy. eg. </div></dd>
+</dt><dd> <div class="block">Retrieves an object from the datastore as a proxy. eg. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#load(java.io.Serializable)" title="Method in GormStaticApi">load(java.io.Serializable)</a></span> - Method in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
-</dt><dd> <div class="block">Retrieves and object from the datastore as a proxy. eg. </div></dd>
+</dt><dd> <div class="block">Retrieves an object from the datastore as a proxy. eg. </div></dd>
 <dt><span class="strong"><a href="grails/gorm/api/GormStaticOperations.html#load(java.io.Serializable)" title="Method in GormStaticOperations">load(java.io.Serializable)</a></span> - Method in <a href="grails/gorm/api/GormStaticOperations.html">GormStaticOperations</a>
-</dt><dd> <div class="block">Retrieves and object from the datastore as a proxy. eg. </div></dd>
+</dt><dd> <div class="block">Retrieves an object from the datastore as a proxy. eg. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/services/ServiceDefinition.html#load()" title="Method in ServiceDefinition">load()</a></span> - Method in <a href="org/grails/datastore/mapping/services/ServiceDefinition.html">ServiceDefinition</a>
 </dt><dd> <div class="block"> <DL><DT><B>Returns:</B></DT><DD>load the service</DD></DL></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/services/transform/ServiceTransformation.html#load(Class<T>)" title="Method in ServiceTransformation">load(Class&lt;T&gt;)</a></span> - Method in <a href="org/grails/datastore/gorm/services/transform/ServiceTransformation.html">ServiceTransformation</a>
@@ -10001,11 +10001,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/rx/proxy/RxJavassistProxyFactory.html#PROXY_FACTORIES" title="Field in RxJavassistProxyFactory">PROXY_FACTORIES</a></span> - Field in <a href="org/grails/datastore/rx/proxy/RxJavassistProxyFactory.html">RxJavassistProxyFactory</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#proxy(java.io.Serializable)" title="Method in GormEntity">proxy(java.io.Serializable)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
-</dt><dd> <div class="block">Retrieves and object from the datastore as a proxy. eg. </div></dd>
+</dt><dd> <div class="block">Retrieves an object from the datastore as a proxy. eg. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#proxy(java.io.Serializable)" title="Method in GormStaticApi">proxy(java.io.Serializable)</a></span> - Method in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
-</dt><dd> <div class="block">Retrieves and object from the datastore as a proxy. eg. </div></dd>
+</dt><dd> <div class="block">Retrieves an object from the datastore as a proxy. eg. </div></dd>
 <dt><span class="strong"><a href="grails/gorm/api/GormStaticOperations.html#proxy(java.io.Serializable)" title="Method in GormStaticOperations">proxy(java.io.Serializable)</a></span> - Method in <a href="grails/gorm/api/GormStaticOperations.html">GormStaticOperations</a>
-</dt><dd> <div class="block">Retrieves and object from the datastore as a proxy. eg. </div></dd>
+</dt><dd> <div class="block">Retrieves an object from the datastore as a proxy. eg. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/proxy/EntityProxyMethodHandler.html#PROXY_KEY_PROPERTY" title="Field in EntityProxyMethodHandler">PROXY_KEY_PROPERTY</a></span> - Field in <a href="org/grails/datastore/mapping/proxy/EntityProxyMethodHandler.html">EntityProxyMethodHandler</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/mapping/engine/LockableEntityPersister.html#proxy(java.io.Serializable)" title="Method in LockableEntityPersister">proxy(java.io.Serializable)</a></span> - Method in <a href="org/grails/datastore/mapping/engine/LockableEntityPersister.html">LockableEntityPersister</a>
@@ -10356,11 +10356,11 @@ if (location.href.indexOf('is-external=true') == -1) {
 <dt><span class="strong"><a href="org/grails/datastore/mapping/reflect/FieldEntityAccess/FieldEntityReflector.ReflectMethodReader.html#read(java.lang.Object)" title="Method in FieldEntityAccess.FieldEntityReflector.ReflectMethodReader">read(java.lang.Object)</a></span> - Method in <a href="org/grails/datastore/mapping/reflect/FieldEntityAccess/FieldEntityReflector.ReflectMethodReader.html">FieldEntityAccess.FieldEntityReflector.ReflectMethodReader</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormEntity.html#read(java.io.Serializable)" title="Method in GormEntity">read(java.io.Serializable)</a></span> - Method in <a href="org/grails/datastore/gorm/GormEntity.html">GormEntity</a>
-</dt><dd> <div class="block">Retrieves and object from the datastore. eg. </div></dd>
+</dt><dd> <div class="block">Retrieves an object from the datastore. eg. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/GormStaticApi.html#read(java.io.Serializable)" title="Method in GormStaticApi">read(java.io.Serializable)</a></span> - Method in <a href="org/grails/datastore/gorm/GormStaticApi.html">GormStaticApi</a>
-</dt><dd> <div class="block">Retrieves and object from the datastore. eg. </div></dd>
+</dt><dd> <div class="block">Retrieves an object from the datastore. eg. </div></dd>
 <dt><span class="strong"><a href="grails/gorm/api/GormStaticOperations.html#read(java.io.Serializable)" title="Method in GormStaticOperations">read(java.io.Serializable)</a></span> - Method in <a href="grails/gorm/api/GormStaticOperations.html">GormStaticOperations</a>
-</dt><dd> <div class="block">Retrieves and object from the datastore. eg. </div></dd>
+</dt><dd> <div class="block">Retrieves an object from the datastore. eg. </div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html#READ_ONLY_TYPE" title="Field in TransactionalTransform">READ_ONLY_TYPE</a></span> - Field in <a href="org/grails/datastore/gorm/transactions/transform/TransactionalTransform.html">TransactionalTransform</a>
 </dt><dd> <div class="block"></div></dd>
 <dt><span class="strong"><a href="org/grails/datastore/gorm/multitenancy/TenantDelegatingGormOperations.html#read(java.io.Serializable)" title="Method in TenantDelegatingGormOperations">read(java.io.Serializable)</a></span> - Method in <a href="org/grails/datastore/gorm/multitenancy/TenantDelegatingGormOperations.html">TenantDelegatingGormOperations</a>
