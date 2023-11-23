@@ -1,226 +1,170 @@
 <!DOCTYPE html>
+<!--[if lt IE 7]>
+<html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>
+<html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>
+<html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js"> <!--<![endif]-->
 <html>
-  <head>
-    <meta name='google-site-verification' content='REYQ1_I6HGowAE7LOLVqfQbnKaB4IfFpMlGzMbJj55Q' />
-    <meta name='viewport' content='width=device-width, initial-scale=1' />
-    <link rel='icon' href='/images/gormfavicon.ico' />
-    <link rel='mask-icon' href='//images/gorm-pinned-icon.svg' color='feb672' />
-    <meta charset='UTF-8' />
-    <title>Grails Framework</title>
-    <link rel='stylesheet' href='/stylesheets/722162730.screen.css' />
-    <script src='/javascripts/722162730.navigation.js'></script>
-  </head>
-  <body class='gorm'><header class='mainheader'>
-  <div class='content'>
-    <a href='https://grails.org/index.html'><img class='grailslogo' src='/images/gorm_logo.svg' alt='GOM LOGO' /></a>
-    <a href='javascript:show(&apos;topmenus&apos;, &apos;showNavigationLink&apos;)' id='showNavigationLink' class='mobile align-center'>Show Navigation</a>
-    <div id='topmenus'>
-      <nav class='secondarymenu' id='secondarymenu'><ul /></nav>
-      <nav class='mainmenu' id='mainmenu'><ul>
-  <li>
-    <a href='https://guides.grails.org/categories/gorm.html'>Guides</a>
-  </li>
-  <li>
-    <a href='http://gorm.grails.org/latest/whatsNew/manual/index.html'>What's new?</a>
-  </li>
-  <li>
-    <a href='http://gorm.grails.org/latest/developer/manual/index.html'>Developer Guide</a>
-  </li>
-  <li>
-    <a href='https://grails.org/support.html'>Support</a>
-  </li>
-</ul></nav>
+<head>
+    <meta charset='utf-8'/>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'/>
+    <meta name='viewport' content='width=device-width, initial-scale=1'/>
+    <title>GORM for Grails</title>
+    <link href='img/favicon.ico' type='image/x-ico' rel='icon'/>
+    <link rel='stylesheet' type='text/css' href='css/bootstrap.css'/>
+    <link rel='stylesheet' type='text/css' href='css/font-awesome.min.css'/>
+    <link rel='stylesheet' type='text/css' href='css/style.css'/>
+</head>
+<body>
+<a href='https://github.com/grails/grails-data-mapping' target='_blank'>
+    <div id='fork-me'>
+        <p>Fork me on Github</p>
     </div>
-  </div>
-</header><div class='homebar'>
-  <div class='content'>
-    <h1>GORM 7 - A powerful Groovy-based data access toolkit for the JVM</h1>
-  </div>
-  <div class='content'>
-    <div class='twocolumns'>
-      <div class='odd column'>
-        <article class='quote'>
-          <h2>
-            <b>GORM</b> is the data access toolkit used by 
-            <a href='http://grails.org'>Grails</a> and provides a rich set of APIs for accessing relational and non-relational data including implementations for Hibernate (SQL), MongoDB, Neo4j, Cassandra,  an in-memory ConcurrentHashMap for testing and an automatic GraphQL schema generator
-          </h2>
-        </article>
-      </div>
-      <div class='column'><div class='guidegroup' style=''>
-  <div class='guidegroupheader'>
-    <img src='images/hibernate.svg' alt='Gorm for Hibernate' />
-    <h2>Gorm for Hibernate</h2>
-  </div>
-  <ul>
-    <li class='legend'>The original implementation of GORM, GORM for Hibernate provides all the goodness of GORM for SQL databases.</li>
-    <li>
-      <a href='http://gorm.grails.org/latest/hibernate/manual/index.html'>Documentation</a>
-    </li>
-    <li>
-      <a href='http://gorm.grails.org/latest/hibernate/api/index.html'>API</a>
-    </li>
-    <li>
-      <a href='https://github.com/grails/gorm-hibernate5'>Source</a>
-    </li>
-  </ul>
-</div></div>
-      <div class='odd column'><div class='guidegroup' style='margin-top: 0px !important;'>
-  <div class='guidegroupheader'>
-    <img src='images/mongo.svg' alt='Gorm for MongoDB' />
-    <h2>Gorm for MongoDB</h2>
-  </div>
-  <ul>
-    <li class='legend'>Built on the MongoDB Java Driver GORM for MongoDB includes features like Geospatial querying, Text search and Schemaless access etc.</li>
-    <li>
-      <a href='http://gorm.grails.org/latest/mongodb/manual/index.html'>Documentation</a>
-    </li>
-    <li>
-      <a href='http://gorm.grails.org/latest/mongodb/api/index.html'>API</a>
-    </li>
-    <li>
-      <a href='https://github.com/grails/gorm-mongodb'>Source</a>
-    </li>
-  </ul>
-</div><div class='guidegroup' style=''>
-  <div class='guidegroupheader'>
-    <img src='images/graphql.svg' alt='Graphql GORM' />
-    <h2>Graphql GORM</h2>
-  </div>
-  <ul>
-    <li class='legend'>The GORM GraphQL library provides functionality to generate a GraphQL schema based on your GORM entities</li>
-    <li>
-      <a href='https://grails.github.io/gorm-graphql/snapshot/guide/index.html'>Documentation</a>
-    </li>
-    <li>
-      <a href='https://grails.github.io/gorm-graphql/snapshot/api/index.html'>API</a>
-    </li>
-    <li>
-      <a href='https://github.com/grails/gorm-graphql'>Source</a>
-    </li>
-  </ul>
-</div><div class='guidegroup' style=''>
-  <div class='guidegroupheader'>
-    <img src='images/cassandra.svg' alt='Gorm for Cassandra' />
-    <h2>Gorm for Cassandra</h2>
-  </div>
-  <ul>
-    <li class='legend'>Built for managing massive amounts of data in the cloud. GORM for Cassandra lets you map your objects to Cassandra tables.</li>
-    <li>
-      <a href='http://gorm.grails.org/latest/cassandra/manual/index.html'>Documentation</a>
-    </li>
-    <li>
-      <a href='http://gorm.grails.org/latest/cassandra/api/index.html'>API</a>
-    </li>
-    <li>
-      <a href='https://github.com/grails/gorm-cassandra'>Source</a>
-    </li>
-  </ul>
-</div></div>
-      <div class='column'><div class='guidegroup' style='margin-top: 0px !important;'>
-  <div class='guidegroupheader'>
-    <img src='images/neo4j.svg' alt='Gorm for Neo4j' />
-    <h2>Gorm for Neo4j</h2>
-  </div>
-  <ul>
-    <li class='legend'>Built for Neo4j 3.0 and above, GORM for Neo4j is built on the native Neo4j Bolt driver.</li>
-    <li>
-      <a href='http://gorm.grails.org/latest/neo4j/manual/index.html'>Documentation</a>
-    </li>
-    <li>
-      <a href='http://gorm.grails.org/latest/hibernate/api/index.html'>API</a>
-    </li>
-    <li>
-      <a href='https://github.com/grails/gorm-neo4j'>Source</a>
-    </li>
-  </ul>
-</div><div class='guidegroup'>
-  <div class='guidegroupheader'>
-    <img src='images/rxjava.svg' alt='RxGORM' />
-    <h2>RxGORM</h2>
-  </div>
-  <ul>
-    <li class='legend'>GORM for RxJava. Build Reactive data access code using the powerful GORM API!</li>
-    <li>
-      <a href='http://gorm.grails.org/latest/rx/manual/index.html'>Documentation</a>
-    </li>
-    <li>
-      <a href='http://gorm.grails.org/latest/rx/api/index.html'>API</a>
-    </li>
-    <li>
-      <a href=''>Source</a>
-    </li>
-    <li>
-      <a href='http://gorm.grails.org/latest/rx/manual/index.html'>RxGORM for MongoDB</a>
-    </li>
-    <li>
-      <a href='http://gorm.grails.org/latest/rx/rest-client/manual/index.html'>RxGORM for REST</a>
-    </li>
-  </ul>
-</div></div>
-    </div>
-  </div>
-</div><footer>
-  <div class='content'>
-    <div class='ocihometograils'>
-      <span>Sponsored by</span>
-      <a href='https://objectcomputing.com/products/grails/'><img class='' src='/images/oci_home_to_grails.svg' alt='Object Computing - Home to Grails' width='300px' /></a>
-    </div>
-    <nav class='socialmedianav'><ul>
-  <li>
-    <a href='https://github.com/grails/grails-data-mapping'></a>
-  </li>
-  <li>
-    <a href='https://github.com/grails/grails-data-mapping'></a>
-  </li>
-  <li>
-    <a href='https://github.com/grails/grails-data-mapping'></a>
-  </li>
-  <li>
-    <a href='https://github.com/grails/grails-data-mapping'></a>
-  </li>
-</ul></nav>
-    <nav class='partnersnav'><ul>
-  <li>GORM's sources is available at 
-    <a href='https://github.com/grails/grails-data-mapping'>Github</a>
-  </li>
-  <li>GORM's repositories are hosted by
-    <a href='http://artifactoryonline.com/'>Artifactory</a>
-  </li>
-  <li>GORM is Open Source
-    <a href='http://www.apache.org/licenses/LICENSE-2.0.html'>Apache 2 License</a>
-  </li>
-</ul></nav>
-  </div>
-</footer><div>
-  <script type='text/javascript'>
-              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+</a>
 
-              ga('create', 'UA-82213539-2', 'auto');
-              ga('send', 'pageview');
-</script>
-  <script type='text/javascript'>
-adroll_adv_id = "HBWJH4CQCJGS5DJRSB4Z4D";
-adroll_pix_id = "IVEQYFOZXZAPZMDVQH7BFE";
-/* OPTIONAL: provide email to improve user identification */
-/* adroll_email = "username@example.com"; */
-(function () {
-    var _onload = function(){
-        if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
-        if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
-        var scr = document.createElement("script");
-        var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
-        scr.setAttribute('async', 'true');
-        scr.type = "text/javascript";
-        scr.src = host + "/j/roundtrip.js";
-        ((document.getElementsByTagName('head') || [null])[0] ||
-            document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
-    };
-    if (window.addEventListener) {window.addEventListener('load', _onload, false);}
-    else {window.attachEvent('onload', _onload)}
-}());            
-</script>
-</div></body>
+<div id='st-container' class='st-container st-effect-9'>
+    <nav class='st-menu st-effect-9' id='menu-12'>
+        <h2 class='icon icon-lab'>Socialize</h2>
+        <ul>
+            <li>
+                <a href='https://grails.org/mailing-lists.html' class='icon'><span class='fa fa-envelope'></span> Discuss on the Mailing
+                    List</a>
+            </li>
+            <li>
+                <a href='https://slack-signup.grails.org' class='icon'><span class='fa fa-slack'></span> Discuss on Slack</a>
+            </li>
+            <li>
+                <a href='https://twitter.com/grailsframework' class='icon'><span class='fa fa-twitter'></span> Grails on
+                    Twitter</a>
+            </li>
+            <li>
+                <a href='https://grails.org/events.html' class='icon'><span class='fa fa-calendar'></span> Events and conferences</a>
+            </li>
+            <li>
+                <a href='https://github.com/grails/grails-data-mapping' class='icon'><span class='fa fa-github'></span>
+                    Source code on GitHub</a>
+            </li>
+            <li>
+                <a href='https://github.com/grails/grails-data-mapping/issues' class='icon'><span class='fa fa-bug'></span> Report issues on
+                    Github</a>
+            </li>
+            <li>
+                <a href='https://stackoverflow.com/questions/tagged/grails' class='icon'><span
+                        class='fa fa-stack-overflow'></span> Stack Overflow questions</a>
+            </li>
+        </ul>
+    </nav>
+    <div class='st-pusher'>
+        <div class='st-content'>
+            <div class='st-content-inner'>
+                <!--[if lt IE 7]>
+                <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a
+                        href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+                <![endif]-->
+                <div>
+                    <div class='navbar navbar-default navbar-static-top' role='navigation'>
+                        <div class='container'>
+                            <div class='navbar-header'>
+                                <button type='button' class='navbar-toggle' data-toggle='collapse'
+                                        data-target='.navbar-collapse'>
+                                    <span class='sr-only'></span><span class='icon-bar'></span><span
+                                        class='icon-bar'></span><span class='icon-bar'></span>
+                                </button>
+                                <a class='navbar-brand' href='index.html'>
+                                    <i class='fa grails-icon'>
+                                        <img src='img/grails-cupsonly-logo-white.svg'/>
+                                    </i> GORM 
+                                </a>
+                            </div>
+                            <div class='navbar-collapse collapse'>
+                                <ul class='nav navbar-nav navbar-right'>
+                                    <li class=''><a href='whatsNew/manual/index.html'>What's New?</a></li>                                
+                                    <li class=''><a href='hibernate/manual/index.html'>Documentation</a></li>                                
+                                    <li class=''><a href='hibernate/api/index.html'>Core API</a></li>
+                                    <li class=''><a href='developer/manual/index.html'>Developer Guide</a></li>                                    
+                                    <li class=''><a href='https://grails.org/support.html'>Support</a></li>
+                                    <li>
+                                        <a data-effect='st-effect-9' class='st-trigger' href='#'>Socialize</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id='band' class='band'></div>
+                    <div id='content'>
+                        <section class="row colset-2-its">
+                            <h1>GORM 8 - A powerful Groovy-based data access toolkit for the JVM</h1>
+
+                            <p>
+                                <strong>GORM</strong> is the data access toolkit used by <a href="https://grails.org">Grails</a>
+                                and provides a rich set
+                                of APIs for accessing relational and non-relational data including implementations for
+                                Hibernate (SQL), MongoDB, Neo4j, Cassandra and an in-memory ConcurrentHashMap for
+                                testing.
+                            </p>
+
+                            <div class="col1">
+                                <article>
+                                    <div class="icon icon-1"></div>
+                                    <h1>Hibernate</h1>
+
+                                    <p>The original implementation of GORM, GORM for Hibernate provides all the goodness of GORM for SQL databases.
+
+                                    </p>
+                                    <p>- <a href="hibernate/manual/index.html">Documentation</a> - <a href="hibernate/api/index.html">API</a> - <a href="https://github.com/grails/gorm-hibernate5">Source</a>
+
+                                    </p>
+                                </article>
+
+                                <article>
+                                    <div class="icon icon-6"></div>
+                                    <h1>Neo4j</h1>
+
+                                    <p>
+                                        GORM for Neo4j is built on the native Neo4j Bolt driver.
+                                    </p>
+                                    <p>- <a href="neo4j/manual/index.html">Documentation</a> - <a href="neo4j/api/index.html">API</a> - <a href="https://github.com/grails/gorm-neo4j">Source</a></p>
+                                </article>
+                                       
+                            </div>
+
+                            <div class="col2">
+                                <article>
+                                    <div class="icon icon-2"></div>
+                                    <h1>MongoDB</h1>
+
+                                    <p>
+                                        Built on the MongoDB Java Driver GORM for MongoDB includes features like Geospatial querying, Text search and Schemaless access etc.
+                                    </p>
+                                    <p>- <a href="mongodb/manual/index.html">Documentation</a> - <a href="mongodb/api/index.html">API</a> - <a href="https://github.com/grails/gorm-mongodb">Source</a></p>
+                                </article>                            
+                                <article>
+                                    <div class="icon icon-4"></div>
+                                    <h1>Cassandra</h1>
+
+                                    <p>
+                                        Built for managing massive amounts of data in the cloud. GORM for Cassandra lets you map your objects to Cassandra tables.
+                                    </p>
+                                    <p>- <a href="cassandra/manual/index.html">Documentation</a> - <a href="cassandra/api/index.html">API</a> - <a href="https://github.com/grails/gorm-cassandra">Source</a></p>
+                                </article>   
+                            </div>
+
+                        </section>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src='js/vendor/jquery-1.10.2.min.js' defer></script>
+<script src='js/vendor/bootstrap.js' defer></script>
+<script src='js/vendor/modernizr.min.js' defer></script>
+<script src='js/vendor/classie.js' defer></script>
+<script src='js/vendor/sidebarEffects.js' defer></script>
+<script src='js/plugins.js' defer></script>
+</body>
 </html>
