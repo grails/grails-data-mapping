@@ -12,9 +12,6 @@ jobs:
     strategy:
       matrix:
         java: ['11', '14']
-    env:
-      WORKSPACE: ${{ github.workspace }}
-      GRADLE_OPTS: -Xmx1500m -Dfile.encoding=UTF-8
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK
