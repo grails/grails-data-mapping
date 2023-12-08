@@ -4,7 +4,6 @@ on:
     types: [closed,reopened]
   push:
     branches:
-      - master
       - '[7-9]+.[0-9]+.x'
   workflow_dispatch:
 jobs:
@@ -25,8 +24,6 @@ jobs:
         if: steps.check_release_drafter.outputs.has_release_drafter == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        with:
-          commitish: ${{ steps.extract_branch.outputs.value }}
       # Otherwise:
       - name: Export Gradle Properties
         if: steps.check_release_drafter.outputs.has_release_drafter == 'false'
