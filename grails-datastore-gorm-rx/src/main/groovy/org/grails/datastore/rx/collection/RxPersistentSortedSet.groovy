@@ -131,7 +131,7 @@ class RxPersistentSortedSet extends PersistentSet implements SortedSet, RxPersis
     @Override
     List<Serializable> getAssociationKeys() {
         if(keys != null) {
-            return keys.toList()
+            return keys.toList() as List<Serializable>
         }
         else {
             return Collections.emptyList()
