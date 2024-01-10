@@ -20,8 +20,6 @@ ext {
     nexusPassword = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
 }
 
-project.groovyVersion = System.getenv('CI_GROOVY_VERSION') ?: project.groovyVersion
-
 def spockDependency = "org.spockframework:spock-core:$spockVersion"
 
 def isGroovyProject(project) {
@@ -39,7 +37,11 @@ apply plugin: 'idea'
 apply plugin: 'project-report'
 
 allprojects {
+
+    ext.groovyVersion = System.getenv('CI_GROOVY_VERSION') ?: project.groovyVersion
+
     repositories {
+        mavenLocal()
         mavenCentral()
         maven { url = 'https://repo.grails.org/grails/core' }
         if(isSnapshot) {
