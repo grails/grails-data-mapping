@@ -10,6 +10,7 @@ buildscript {
 }
 
 ext {
+    groovyVersion = System.getenv('CI_GROOVY_VERSION') ?: project.groovyVersion
     // overall project version
     isCiBuild = System.getenv().get("CI") as Boolean
     isSnapshot = project.projectVersion.endsWith("-SNAPSHOT")
