@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="">
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -532,7 +532,7 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <h1>GORM for Neo4j</h1>
 <div class="details">
 <span id="author" class="author">Stefan Armbruster, Graeme Rocher, Puneet Behl</span><br>
-<span id="revnumber">version 8.0.2</span>
+<span id="revnumber">version 8.0.3</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -1009,7 +1009,7 @@ abstract class BookService {
 <div class="title">build.gradle</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-	compile 'org.grails.plugins:neo4j:8.0.2'
+	compile 'org.grails.plugins:neo4j:8.0.3'
 }</code></pre>
 </div>
 </div>
@@ -1018,7 +1018,7 @@ abstract class BookService {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=8.0.2</code></pre>
+<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=8.0.3</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1031,7 +1031,7 @@ abstract class BookService {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("8.0.2")
+            details.useVersion("8.0.3")
         }
     }
 }
@@ -1058,7 +1058,7 @@ GORM for Neo4j requires Grails 2.5.x or above and Neo4j 3.0.x or above, if you w
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">plugins {
-    compile ':neo4j:8.0.2'
+    compile ':neo4j:8.0.3'
     build ':tomcat:8.22'
 }</code></pre>
 </div>
@@ -1220,7 +1220,7 @@ The Neo4j server uses Jetty, so when you add Neo4j as embedded Grails will also 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-neo4j-spring-boot:8.0.2")</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-neo4j-spring-boot:8.0.3")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1280,7 +1280,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-neo4j:8.0.2"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-neo4j:8.0.3"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2941,7 +2941,7 @@ person.someDoubleArray == [<span class="float">0.9</span>, <span class="float">1
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 8.0.2<br>
+Version 8.0.3<br>
 </div>
 </div>
 </body>

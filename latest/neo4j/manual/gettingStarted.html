@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="">
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -451,7 +451,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="title">build.gradle</div>
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">dependencies {
-	compile 'org.grails.plugins:neo4j:8.0.2'
+	compile 'org.grails.plugins:neo4j:8.0.3'
 }</code></pre>
 </div>
 </div>
@@ -460,7 +460,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-properties" data-lang="properties">gormVersion=8.0.2</code></pre>
+<pre class="highlight"><code class="language-properties" data-lang="properties">gormVersion=8.0.3</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -473,7 +473,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("8.0.2")
+            details.useVersion("8.0.3")
         }
     }
 }
@@ -500,7 +500,7 @@ GORM for Neo4j requires Grails 2.5.x or above and Neo4j 3.0.x or above, if you w
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-groovy" data-lang="groovy">plugins {
-    compile ':neo4j:8.0.2'
+    compile ':neo4j:8.0.3'
     build ':tomcat:8.22'
 }</code></pre>
 </div>
@@ -560,6 +560,7 @@ The Neo4j server uses Jetty, so when you add Neo4j as embedded Grails will also 
 </div>
 <div id="footer">
 <div id="footer-text">
+Version 8.0.3<br>
 </div>
 </div>
 </body>
