@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="">
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -532,7 +532,7 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <h1>GORM for Hibernate</h1>
 <div class="details">
 <span id="author" class="author">Graeme Rocher, Puneet Behl</span><br>
-<span id="revnumber">version 8.0.2</span>
+<span id="revnumber">version 8.0.3</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -900,12 +900,12 @@ abstract class BookService {
 <h2 id="gettingStarted">2. Getting Started</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To use GORM 8.0.2 for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
+<p>To use GORM 8.0.3 for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile "org.grails.plugins:hibernate5:8.0.2"
+    compile "org.grails.plugins:hibernate5:8.0.3"
     compile "org.hibernate:hibernate-ehcache"
 }</code></pre>
 </div>
@@ -915,7 +915,7 @@ abstract class BookService {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=8.0.2</code></pre>
+<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=8.0.3</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -928,7 +928,7 @@ abstract class BookService {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("8.0.2")
+            details.useVersion("8.0.3")
         }
     }
 }
@@ -954,7 +954,7 @@ dependencies {
 <div class="sect2">
 <h3 id="hibernateVersions">2.2. Configuring Different Hibernate Versions</h3>
 <div class="paragraph">
-<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 8.0.2.</p>
+<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 8.0.3.</p>
 </div>
 <div class="sect3">
 <h4 id="_grails_3_2_x_and_above_with_hibernate_4">2.2.1. Grails 3.2.x and above with Hibernate 4</h4>
@@ -1020,7 +1020,7 @@ configurations.all {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:8.0.2")
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:8.0.3")
 compile "org.hibernate:hibernate-core"
 compile "org.hibernate:hibernate-ehcache"
 runtime "com.h2database:h2:1.4.192"
@@ -1153,7 +1153,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:8.0.2"
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:8.0.3"
 runtime "com.h2database:h2:1.4.192"
 runtime "org.apache.tomcat:tomcat-jdbc:8.5.0"
 runtime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"
@@ -7877,7 +7877,7 @@ RxJava 2.x support is planned for a future release
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx:8.0.2"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx:8.0.3"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -8623,7 +8623,7 @@ sessionFactory.openSession()</code></pre>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:8.0.2"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:8.0.3"</code></pre>
 </div>
 </div>
 </div>
@@ -9392,7 +9392,7 @@ JUnit doesn&#8217;t have anything like Spock&#8217;s <code>AutoCleanup</code> so
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 8.0.2<br>
+Version 8.0.3<br>
 </div>
 </div>
 </body>
