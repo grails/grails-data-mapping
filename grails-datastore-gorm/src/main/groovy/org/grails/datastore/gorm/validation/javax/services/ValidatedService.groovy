@@ -1,6 +1,5 @@
 package org.grails.datastore.gorm.validation.javax.services
 
-import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.validation.javax.ConstraintViolationUtils
 import org.grails.datastore.gorm.validation.javax.JavaxValidatorRegistry
@@ -34,18 +33,17 @@ trait ValidatedService<T> extends Service<T> {
     /**
      * The validator factory
      */
-    private ValidatorFactory validatorFactory
+    private ValidatorFactory validatorFactoryInstance
 
-    @CompileDynamic
     private Map<Method, ExecutableValidator> executableValidatorMap = new LinkedHashMap<Method, ExecutableValidator>().withDefault {
-        getValidatorFactory().getValidator().forExecutables()
+        validatorFactory.getValidator().forExecutables()
     }
 
     /**
      * @return The validator factory for this service
      */
     ValidatorFactory getValidatorFactory() {
-        if(validatorFactory == null) {
+        if(validatorFactoryInstance == null) {
 
             Configuration configuration
             if(datastore != null) {
@@ -62,9 +60,9 @@ trait ValidatedService<T> extends Service<T> {
             if(parameterNameProvider != null) {
                 configuration = configuration.parameterNameProvider(parameterNameProvider)
             }
-            validatorFactory = configuration.buildValidatorFactory()
+            validatorFactoryInstance = configuration.buildValidatorFactory()
         }
-        return validatorFactory
+        return validatorFactoryInstance
     }
 
     /**
