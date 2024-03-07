@@ -13,19 +13,17 @@ gradleEnterprise {
             taskInputFiles = true
         }
     }
+
 }
 
 buildCache {
     local { enabled = System.getenv('CI') != 'true' }
-    remote(HttpBuildCache) {
-        push = System.getenv('CI') == 'true'
+    remote(gradleEnterprise.buildCache) {
+        def isAuthenticated = System.getenv('GRADLE_ENTERPRISE_ACCESS_KEY')
+        push = System.getenv('CI') == 'true' && isAuthenticated
         enabled = true
-        url = 'https://ge.grails.org/cache/'
-        credentials {
-            username = System.getenv('GRADLE_ENTERPRISE_BUILD_CACHE_NODE_USER')
-            password = System.getenv('GRADLE_ENTERPRISE_BUILD_CACHE_NODE_KEY')
-        }
-    }}
+    }
+}
 
 
 include ("grails-datastore-core",
