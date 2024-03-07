@@ -3,7 +3,10 @@ on:
   release:
     types: [published]
 jobs:
-  release:
+  publish:
+    outputs:
+      release_version: ${{ steps.release_version.outputs.value }}
+      target_branch: ${{ steps.extract_branch.outputs.value }}
     runs-on: ubuntu-latest
     env:
       GIT_USER_NAME: puneetbehl
@@ -18,6 +21,10 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: 11
+      - name: Run pre-release
+        uses: micronaut-projects/github-actions/pre-release@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Extract Target Branch
         id: extract_branch
         run: |
@@ -27,11 +34,23 @@ jobs:
           echo "value=${TARGET_BRANCH}" >> $GITHUB_OUTPUT
       - name: Set the current release version
         id: release_version
-        run: echo "release_version=${GITHUB_REF:11}" >> $GITHUB_OUTPUT
-      - name: Run pre-release
-        uses: micronaut-projects/github-actions/pre-release@master
+        run: echo "value=${GITHUB_REF:11}" >> $GITHUB_OUTPUT
+      - name: Run Assemble
+        if: success()
+        id: assemble
+        uses: gradle/gradle-build-action@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          arguments: assemble
+        env:
+          GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_ACCESS_KEY }}
+          GRADLE_ENTERPRISE_BUILD_CACHE_NODE_USER: ${{ secrets.GRADLE_ENTERPRISE_BUILD_CACHE_NODE_USER }}
+          GRADLE_ENTERPRISE_BUILD_CACHE_NODE_KEY: ${{ secrets.GRADLE_ENTERPRISE_BUILD_CACHE_NODE_KEY }}
+      - name: Upload Distribution
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: grails-data-mapping-${{ steps.release_version.outputs.value }}.zip
+          path: ./**/build/libs/*
       - name: Generate secring file
         env:
           SECRING_FILE: ${{ secrets.SECRING_FILE }}
@@ -50,21 +69,53 @@ jobs:
           SIGNING_PASSPHRASE: ${{ secrets.SIGNING_PASSPHRASE }}
           SECRING_FILE: ${{ secrets.SECRING_FILE }}
         with:
-          arguments: -Psigning.secretKeyRingFile=${{ github.workspace }}/secring.gpg publishToSonatype closeAndReleaseSonatypeStagingRepository
-      - name: Run post-release
-        if: steps.publish.outcome == 'success'
-        uses: micronaut-projects/github-actions/post-release@master
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-        env:
-          SNAPSHOT_SUFFIX: -SNAPSHOT
+          arguments: |
+            -Psigning.secretKeyRingFile=${{ github.workspace }}/secring.gpg 
+            publishToSonatype 
+            closeSonatypeStagingRepository
+  release:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+          with:
+            token: ${{ secrets.GH_TOKEN }}
+            ref: v${{ needs.publish.outputs.release_version }}
+        - name: Nexus Staging Close And Release
+          uses: gradle/gradle-build-action@v2
+          env:
+            GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_ACCESS_KEY }}
+            GRADLE_ENTERPRISE_BUILD_CACHE_NODE_USER: ${{ secrets.GRADLE_ENTERPRISE_BUILD_CACHE_NODE_USER }}
+            GRADLE_ENTERPRISE_BUILD_CACHE_NODE_KEY: ${{ secrets.GRADLE_ENTERPRISE_BUILD_CACHE_NODE_KEY }}
+            SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+            SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+            SONATYPE_STAGING_PROFILE_ID: ${{ secrets.SONATYPE_STAGING_PROFILE_ID }}
+          with:
+            arguments: |
+              findSonatypeStagingRepository
+              releaseSonatypeStagingRepository
+        - name: Run post-release
+          if: success()
+          uses: micronaut-projects/github-actions/post-release@master
+          with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+          env:
+            SNAPSHOT_SUFFIX: -SNAPSHOT
+  docs:
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
       - name: Create Message for the GORM Documentation Release
-        if: steps.assemble.outcome == 'success'
         id: gorm_docs_release_message
         run: |
           echo "value={\"gorm_version\":\"$RELEASE_VERSION\"}" >> $GITHUB_OUTPUT
         env:
-          RELEASE_VERSION: ${{ steps.release_version.outputs.release_version }}
+          RELEASE_VERSION: ${{ needs.publish.outputs.release_version }}
       - name: Invoke gorm-docs release workflow
         if: success()
         id: gorm_docs
@@ -72,6 +123,6 @@ jobs:
         with:
           workflow: Release
           repo: grails/gorm-docs
-          ref: ${{ steps.extract_branch.outputs.value }}
+          ref: ${{ needs.publish.outputs.target_branch }}
           token: ${{ secrets.GH_TOKEN }}
           inputs: ${{ steps.gorm_docs_release_message.outputs.value }}
