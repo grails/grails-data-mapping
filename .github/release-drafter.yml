@@ -23,9 +23,9 @@ autolabeler:
       - '/docs/i'
   - label: 'maintenance'
     branch:
-      - '/(chore|refactor|style|test|ci|perf|build|deps)\/.+/'
+      - '/(chore|refactor|style|test|ci|perf|build)\/.+/'
     title:
-      - '/(chore|refactor|style|test|ci|perf|build|deps)/i'
+      - '/(chore|refactor|style|test|ci|perf|build)/i'
   - label: 'chore'
     branch:
       - '/chore\/.+/'
