@@ -97,9 +97,6 @@ categories:
       - 'ci'
       - 'perf'
       - 'build'
-      - 'deps'
-      - "type: dependency upgrade"
-      - "dependencies"
       - "type: ci"
       - "type: build"
   - title: '⏪ Reverts'
