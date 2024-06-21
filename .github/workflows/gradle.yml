@@ -13,44 +13,54 @@ jobs:
       matrix:
         java: ['11', '14']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'adopt'
           java-version: ${{ matrix.java }}
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          # Publish a Gradle build scan so you can see all the build logs,
+          # a complete task timeline, test outputs, and the resolved dependencies of your build.
+          build-scan-publish: true
+          build-scan-terms-of-use-url: "https://gradle.com/terms-of-service"
+          build-scan-terms-of-use-agree: "yes"
       - name: Run Build
         id: build
-        uses: gradle/gradle-build-action@v2
+        run: ./gradlew build
         env:
           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_ACCESS_KEY }}
-        with:
-          arguments: build
   publish:
     if: github.event_name == 'push'
     needs: ["build"]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'adopt'
           java-version: '11'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          build-scan-publish: true
+          build-scan-terms-of-use-url: "https://gradle.com/terms-of-service"
+          build-scan-terms-of-use-agree: "yes"
       - name: Publish to Artifactory (repo.grails.org)
-        uses: gradle/gradle-build-action@v2
+        run: ./gradlew -Dorg.gradle.internal.publish.checksums.insecure=true publish
         env:
           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_ACCESS_KEY }}
           ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
           ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
-        with:
-          arguments: -Dorg.gradle.internal.publish.checksums.insecure=true publish
   trigger-build-gorm-impls:
     if: github.event_name == 'push'
     needs: ["build", "publish"]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Extract branch name
         id: extract_branch
         run: echo "value=${GITHUB_REF:11}" >> $GITHUB_OUTPUT
