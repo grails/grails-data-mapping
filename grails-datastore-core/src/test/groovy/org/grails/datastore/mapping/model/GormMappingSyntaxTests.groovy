@@ -156,7 +156,7 @@ class GormMappingSyntaxTests {
 
     }
 
-    @javax.persistence.Entity
+    @jakarta.persistence.Entity
     class JavaEntity {}
 }
 

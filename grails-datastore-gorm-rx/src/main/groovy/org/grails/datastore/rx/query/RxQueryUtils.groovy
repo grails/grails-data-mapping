@@ -16,7 +16,7 @@ import org.grails.datastore.rx.internal.RxDatastoreClientImplementor
 import rx.Observable
 import rx.functions.FuncN
 
-import javax.persistence.FetchType
+import jakarta.persistence.FetchType
 
 /**
  * Utility methods for building Query implementations

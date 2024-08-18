@@ -29,10 +29,10 @@ import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.FetchType;
-import javax.persistence.FlushModeType;
-import javax.persistence.LockModeType;
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.criteria.JoinType;
 import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Pattern;

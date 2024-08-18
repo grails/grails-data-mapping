@@ -1,8 +1,8 @@
 dependencies {
-    api "javax.transaction:jta:$jtaVersion"
+    api "jakarta.transaction:jakarta.transaction-api:$jakartaTransactionVersion"
     api "org.slf4j:slf4j-api:$slf4jVersion"
     api "org.slf4j:jcl-over-slf4j:$slf4jVersion"
-    api "javax.persistence:javax.persistence-api:$jpaVersion"
+    api "jakarta.persistence:jakarta.persistence-api:$jakartaPersistenceVersion"
     api "org.springframework:spring-core:$springVersion" , {
         exclude group:'commons-logging',module:'commons-logging'
     }

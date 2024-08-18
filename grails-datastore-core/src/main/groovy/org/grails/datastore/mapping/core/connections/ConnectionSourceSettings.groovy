@@ -8,7 +8,7 @@ import org.grails.datastore.mapping.config.Settings
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller
 import org.grails.datastore.mapping.multitenancy.MultiTenancySettings
 
-import javax.persistence.FlushModeType
+import jakarta.persistence.FlushModeType
 
 /**
  * Default settings shared across all implementations

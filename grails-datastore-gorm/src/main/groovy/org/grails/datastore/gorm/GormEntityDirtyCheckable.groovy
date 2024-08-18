@@ -22,7 +22,7 @@ import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 
-import javax.annotation.Generated
+import jakarta.annotation.Generated
 
 /**
  *

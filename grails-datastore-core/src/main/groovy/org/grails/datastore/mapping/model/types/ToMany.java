@@ -19,7 +19,7 @@ import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 
-import javax.persistence.FetchType;
+import jakarta.persistence.FetchType;
 import java.beans.PropertyDescriptor;
 
 /**

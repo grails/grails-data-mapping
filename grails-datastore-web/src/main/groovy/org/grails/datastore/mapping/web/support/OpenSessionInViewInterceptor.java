@@ -15,7 +15,7 @@
 
 package org.grails.datastore.mapping.web.support;
 
-import javax.persistence.FlushModeType;
+import jakarta.persistence.FlushModeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

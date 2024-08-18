@@ -16,6 +16,6 @@ class AnnotationMetadataReaderFactory extends CachingMetadataReaderFactory {
 
     @Override
     public MetadataReader getMetadataReader(Resource resource) throws IOException {
-        return new AnnotationMetadataReader(resource, getResourceLoader().getClassLoader(), false);
+        return new AnnotationMetadataReader(resource);
     }
 }

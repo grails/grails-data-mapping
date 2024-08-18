@@ -25,7 +25,10 @@ import groovy.transform.CompileStatic
 class InstanceMethodInvokingClosure extends MethodInvokingClosure {
     InstanceMethodInvokingClosure(apiDelegate, Class<?> persistentClass, String methodName, Class[] parameterTypes) {
         super(apiDelegate, methodName, parameterTypes)
-        Class[] metaMethodParams = ([persistentClass] + (parameterTypes as List)) as Class[]
+        List<Class> params = parameterTypes.toList()
+        params.add(persistentClass)
+
+        Class[] metaMethodParams = params.toArray() as Class[]
         super.metaMethod = pickMetaMethod(apiDelegate.getMetaClass(), methodName, metaMethodParams, false)
     }
 

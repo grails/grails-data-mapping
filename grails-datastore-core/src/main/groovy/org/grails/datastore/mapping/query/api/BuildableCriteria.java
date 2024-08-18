@@ -18,7 +18,7 @@ package org.grails.datastore.mapping.query.api;
 import groovy.lang.Closure;
 import groovy.lang.DelegatesTo;
 
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.JoinType;
 import java.util.Map;
 
 /**

@@ -29,7 +29,7 @@ public class RangeConstraint extends AbstractConstraint {
     }
 
     /* (non-Javadoc)
-     * @see org.codehaus.groovy.grails.validation.Constraint#supports(java.lang.Class)
+     * @see org.apache.groovy.grails.validation.Constraint#supports(java.lang.Class)
      */
     public boolean supports(Class type) {
         return type != null && (Comparable.class.isAssignableFrom(type) ||

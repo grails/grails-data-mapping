@@ -51,9 +51,9 @@ public class ValidatorRegistries {
     }
 
     /**
-     * @return Whether javax.validation is available
+     * @return Whether jakarta.validation is available
      */
     static boolean isJavaxValidationAvailable() {
-        return ClassUtils.isPresent("javax.validation.Validation");
+        return ClassUtils.isPresent("jakarta.validation.Validation");
     }
 }

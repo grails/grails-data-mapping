@@ -5,6 +5,7 @@ import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.stmt.Statement
+import org.grails.datastore.gorm.GormEntity
 
 /**
  * Interface projection finder
@@ -13,7 +14,7 @@ import org.codehaus.groovy.ast.stmt.Statement
  * @since 6.1
  */
 @CompileStatic
-class FindOneInterfaceProjectionImplementer extends FindOneImplementer implements SingleResultInterfaceProjectionBuilder, SingleResultServiceImplementer {
+class FindOneInterfaceProjectionImplementer extends FindOneImplementer implements SingleResultInterfaceProjectionBuilder, SingleResultServiceImplementer<GormEntity> {
 
     @Override
     protected ClassNode resolveDomainClassFromSignature(ClassNode currentDomainClassNode, MethodNode methodNode) {

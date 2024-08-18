@@ -3,7 +3,7 @@ package org.grails.datastore.mapping.dirty.checking
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.proxy.EntityProxy
 
-import javax.persistence.Transient
+import jakarta.persistence.Transient
 
 /**
  * Interface to classes that are able to track changes to their internal state.

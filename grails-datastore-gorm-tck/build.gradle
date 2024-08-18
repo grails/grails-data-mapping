@@ -3,8 +3,8 @@ dependencies {
     api 'commons-lang:commons-lang:2.6'
     api project(":grails-datastore-gorm-async")
     api project(":grails-datastore-gorm-support")
-    api("javax.servlet:javax.servlet-api:$servletApiVersion")
-    runtimeOnly "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
+    api("jakarta.servlet:jakarta.servlet-api:$servletApiVersion")
+    runtimeOnly "org.apache.groovy:groovy-dateutil:$groovyVersion"
 }
 
 //compileGroovy.groovyOptions.fork = false

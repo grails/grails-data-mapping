@@ -16,15 +16,15 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.validation.beanvalidation.MessageSourceResourceBundleLocator
 import org.springframework.validation.beanvalidation.SpringConstraintValidatorFactory
 
-import javax.validation.ClockProvider
-import javax.validation.Configuration
-import javax.validation.ConstraintValidatorFactory
-import javax.validation.MessageInterpolator
-import javax.validation.ParameterNameProvider
-import javax.validation.TraversableResolver
-import javax.validation.Validation
-import javax.validation.ValidatorContext
-import javax.validation.ValidatorFactory
+import jakarta.validation.ClockProvider
+import jakarta.validation.Configuration
+import jakarta.validation.ConstraintValidatorFactory
+import jakarta.validation.MessageInterpolator
+import jakarta.validation.ParameterNameProvider
+import jakarta.validation.TraversableResolver
+import jakarta.validation.Validation
+import jakarta.validation.ValidatorContext
+import jakarta.validation.ValidatorFactory
 
 /**
  * A validator registry that creates validators
@@ -108,7 +108,7 @@ class JavaxValidatorRegistry extends DefaultValidatorRegistry implements Validat
     }
 
     @Override
-    javax.validation.Validator getValidator() {
+    jakarta.validation.Validator getValidator() {
         return validatorFactory.getValidator()
     }
 
@@ -153,9 +153,9 @@ class JavaxValidatorRegistry extends DefaultValidatorRegistry implements Validat
     }
 
     /**
-     * @return Whether javax.validation is available
+     * @return Whether jakarta.validation is available
      */
     static boolean isAvailable() {
-        ClassUtils.isPresent("javax.validation.Validation")
+        ClassUtils.isPresent("jakarta.validation.Validation")
     }
 }

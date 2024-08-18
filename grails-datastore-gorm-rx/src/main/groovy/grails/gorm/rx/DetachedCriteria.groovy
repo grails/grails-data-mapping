@@ -15,7 +15,7 @@ import rx.Observable
 import rx.Subscriber
 import rx.Subscription
 
-import javax.persistence.FetchType
+import jakarta.persistence.FetchType
 
 /**
  * Reactive version of {@link grails.gorm.DetachedCriteria}

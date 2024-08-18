@@ -7,7 +7,7 @@ import org.springframework.core.env.PropertyResolver
 import org.springframework.util.ReflectionUtils
 import spock.lang.Specification
 
-import javax.persistence.FlushModeType
+import jakarta.persistence.FlushModeType
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.concurrent.TimeUnit

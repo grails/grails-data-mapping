@@ -14,7 +14,7 @@
  */
 package org.grails.datastore.mapping.transactions;
 
-import javax.persistence.FlushModeType;
+import jakarta.persistence.FlushModeType;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;

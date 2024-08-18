@@ -63,12 +63,12 @@ import org.grails.datastore.mapping.reflect.AstUtils
 import org.grails.datastore.mapping.reflect.ClassUtils
 import org.grails.datastore.mapping.reflect.NameUtils
 import static org.codehaus.groovy.ast.tools.GeneralUtils.*
-import javax.persistence.Embeddable
-import javax.persistence.Id
-import javax.persistence.ManyToMany
-import javax.persistence.OneToMany
-import javax.persistence.Transient
-import javax.persistence.Version
+import jakarta.persistence.Embeddable
+import jakarta.persistence.Id
+import jakarta.persistence.ManyToMany
+import jakarta.persistence.OneToMany
+import jakarta.persistence.Transient
+import jakarta.persistence.Version
 import java.lang.annotation.Annotation
 import java.lang.reflect.Modifier
 
@@ -90,7 +90,7 @@ import java.lang.reflect.Modifier
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
 class GormEntityTransformation extends AbstractASTTransformation implements CompilationUnitAware,ASTTransformation {
     private static final ClassNode MY_TYPE = new ClassNode(Entity.class);
-    protected static final ClassNode JPA_ENTITY_CLASS_NODE = ClassHelper.make(javax.persistence.Entity)
+    protected static final ClassNode JPA_ENTITY_CLASS_NODE = ClassHelper.make(jakarta.persistence.Entity)
     public static final AnnotationNode JPA_ENTITY_ANNOTATION_NODE = new AnnotationNode(JPA_ENTITY_CLASS_NODE)
     public static final AnnotationNode JPA_VERSION_ANNOTATION_NODE = new AnnotationNode(ClassHelper.make(Version))
     public static final AnnotationNode JPA_ID_ANNOTATION_NODE = new AnnotationNode(ClassHelper.make(Id))

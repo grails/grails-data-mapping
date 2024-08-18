@@ -1,6 +1,6 @@
 package org.grails.datastore.gorm.utils;
 /*
- * Copyright 2016 original authors
+ * Copyright 2016-2024 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,12 @@ package org.grails.datastore.gorm.utils;
 
 import org.springframework.asm.AnnotationVisitor;
 import org.springframework.asm.SpringAsmInfo;
-import org.springframework.asm.Type;
-import org.springframework.core.NestedIOException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.ClassMetadata;
-import org.springframework.core.type.classreading.AnnotationMetadataReadingVisitor;
 import org.springframework.core.type.classreading.MetadataReader;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * A more limited version of Spring's annotation reader that only reads annotations on classes
@@ -43,51 +38,17 @@ public class AnnotationMetadataReader implements MetadataReader {
     private final AnnotationMetadata annotationMetadata;
 
     /**
-     * Constructs a new annotation metadata reader
+     * Constructs a new annotation metadata reader with the attributes
      *
      * @param resource The resource
-     * @param classLoader The classloader
-     * @param readAttributeValues Whether to read the attributes in addition or just the annotation class names
      * @throws IOException
      */
-    AnnotationMetadataReader(Resource resource, ClassLoader classLoader, boolean readAttributeValues) throws IOException {
-        InputStream is = new BufferedInputStream(resource.getInputStream());
-        ClassReader classReader;
-        try {
-            classReader = new ClassReader(is);
-        }
-        catch (IllegalArgumentException ex) {
-            throw new NestedIOException("ASM ClassReader failed to parse class file - " +
-                    "probably due to a new Java class file version that isn't supported yet: " + resource, ex);
-        }
-        finally {
-            is.close();
-        }
-
-
-        AnnotationMetadataReadingVisitor visitor;
-
-        if(readAttributeValues) {
-            visitor = new AnnotationMetadataReadingVisitor(classLoader);
-        }
-        else {
-            visitor = new AnnotationMetadataReadingVisitor(classLoader) {
-                @Override
-                public AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
-                    String className = Type.getType(desc).getClassName();
-                    this.annotationSet.add(className);
-                    return new EmptyAnnotationVisitor();
-                }
-            };
-        }
-        classReader.accept(visitor, ClassReader.SKIP_DEBUG);
-
-        this.annotationMetadata = visitor;
-        // (since AnnotationMetadataReadingVisitor extends ClassMetadataReadingVisitor)
-        this.classMetadata = visitor;
+    AnnotationMetadataReader(Resource resource) throws IOException {
+        this.annotationMetadata = AnnotationMetadata.introspect(resource.getClass());
+        // since AnnotationMetadata extends ClassMetadata
+        this.classMetadata = this.annotationMetadata;
         this.resource = resource;
     }
-
 
     @Override
     public Resource getResource() {

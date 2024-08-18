@@ -42,7 +42,7 @@ public class ScaleConstraint extends AbstractConstraint {
 
     /*
      * {@inheritDoc}
-     * @see org.codehaus.groovy.grails.validation.Constraint#supports(java.lang.Class)
+     * @see org.apache.groovy.grails.validation.Constraint#supports(java.lang.Class)
      */
     @SuppressWarnings("rawtypes")
     public boolean supports(Class type) {
@@ -54,7 +54,7 @@ public class ScaleConstraint extends AbstractConstraint {
 
     /*
      * {@inheritDoc}
-     * @see org.codehaus.groovy.grails.validation.Constraint#getName()
+     * @see org.apache.groovy.grails.validation.Constraint#getName()
      */
     public String getName() {
         return ConstrainedProperty.SCALE_CONSTRAINT;

@@ -2,6 +2,7 @@ package org.grails.datastore.gorm.services.implementers
 
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
+import org.grails.datastore.gorm.GormEntity
 
 /**
  * Represents a projection implementer
@@ -9,7 +10,7 @@ import org.codehaus.groovy.ast.MethodNode
  * @author Graeme Rocher
  * @since 6.1.1
  */
-interface SingleResultProjectionServiceImplementer extends SingleResultServiceImplementer {
+interface SingleResultProjectionServiceImplementer extends SingleResultServiceImplementer<GormEntity> {
 
     /**
      * Is the return type compatible with the projection query

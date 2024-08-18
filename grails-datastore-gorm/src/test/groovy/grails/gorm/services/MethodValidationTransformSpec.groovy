@@ -4,8 +4,8 @@ import org.grails.datastore.gorm.validation.javax.services.ValidatedService
 import org.grails.datastore.mapping.validation.ValidationException
 import spock.lang.Specification
 
-import javax.validation.ConstraintViolationException
-import javax.validation.ParameterNameProvider
+import jakarta.validation.ConstraintViolationException
+import jakarta.validation.ParameterNameProvider
 
 /**
  * Created by graemerocher on 14/02/2017.
@@ -17,13 +17,13 @@ class MethodValidationTransformSpec extends Specification {
         Class service = new GroovyClassLoader().parseClass('''
 import grails.gorm.services.*
 import grails.gorm.annotation.Entity
-import javax.validation.constraints.*
+import jakarta.validation.constraints.*
 
 @Service(Foo)
 interface MyService {
 
     @grails.gorm.transactions.NotTransactional
-    Foo find(@NotNull String title) throws javax.validation.ConstraintViolationException
+    Foo find(@NotNull String title) throws jakarta.validation.ConstraintViolationException
     
     @grails.gorm.transactions.NotTransactional
     Foo findAgain(@NotNull @org.hibernate.validator.constraints.NotBlank String title)
@@ -64,7 +64,7 @@ class Foo {
         then:
         def e = thrown( ConstraintViolationException)
         e.constraintViolations.size() == 1
-        e.constraintViolations.first().messageTemplate == '{javax.validation.constraints.NotNull.message}'
+        e.constraintViolations.first().messageTemplate == '{jakarta.validation.constraints.NotNull.message}'
         e.constraintViolations.first().propertyPath.toString() == 'find.title'
 
         when:

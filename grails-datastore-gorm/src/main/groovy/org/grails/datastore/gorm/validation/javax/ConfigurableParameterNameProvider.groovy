@@ -2,7 +2,7 @@ package org.grails.datastore.gorm.validation.javax
 
 import groovy.transform.CompileStatic
 
-import javax.validation.ParameterNameProvider
+import jakarta.validation.ParameterNameProvider
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 

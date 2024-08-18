@@ -17,8 +17,8 @@ package org.grails.datastore.mapping.model.types;
 import java.beans.PropertyDescriptor;
 import java.util.*;
 
-import javax.persistence.CascadeType;
-import javax.persistence.FetchType;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
 
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;

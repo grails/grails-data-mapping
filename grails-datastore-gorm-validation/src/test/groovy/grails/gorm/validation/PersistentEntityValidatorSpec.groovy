@@ -16,8 +16,8 @@ import spock.lang.Issue
 import spock.lang.Shared
 import spock.lang.Specification
 
-import javax.persistence.Entity
-import javax.persistence.Transient
+import jakarta.persistence.Entity
+import jakarta.persistence.Transient
 
 class PersistentEntityValidatorSpec extends Specification {
     @Shared Validator authorValidator

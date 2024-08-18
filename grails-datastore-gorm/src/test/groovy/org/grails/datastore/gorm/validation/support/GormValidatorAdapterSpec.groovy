@@ -4,9 +4,9 @@ import org.grails.datastore.gorm.GormValidateable
 import org.grails.datastore.gorm.validation.javax.GormValidatorAdapter
 import spock.lang.Specification
 
-import javax.validation.Validation
-import javax.validation.Validator
-import javax.validation.constraints.Digits
+import jakarta.validation.Validation
+import jakarta.validation.Validator
+import jakarta.validation.constraints.Digits
 
 /**
  * Created by graemerocher on 30/12/2016.

@@ -1,6 +1,6 @@
 package org.grails.datastore.gorm
 
-import javax.persistence.Entity
+import jakarta.persistence.Entity
 import grails.gorm.tests.GormDatastoreSpec
 
 class NestedAssociationQuerySpec extends GormDatastoreSpec{

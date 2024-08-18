@@ -13,7 +13,7 @@ import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.AbstractASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 
-import javax.persistence.Entity
+import jakarta.persistence.Entity
 
 /**
  * Makes all entities annotated with @Entity JPA into GORM entities

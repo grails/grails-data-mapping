@@ -16,8 +16,8 @@ import org.grails.datastore.mapping.query.api.Criteria
 import org.grails.datastore.mapping.query.api.ProjectionList
 import org.grails.datastore.mapping.query.api.QueryableCriteria
 
-import javax.persistence.FetchType
-import javax.persistence.criteria.JoinType
+import jakarta.persistence.FetchType
+import jakarta.persistence.criteria.JoinType
 
 /**
  * Abstract super class for DetachedCriteria implementations

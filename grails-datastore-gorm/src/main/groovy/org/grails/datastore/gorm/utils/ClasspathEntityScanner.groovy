@@ -37,7 +37,7 @@ class ClasspathEntityScanner {
     /**
      * The annotations to scan
      */
-    List<Class<? extends Annotation>> annotations = [Entity, javax.persistence.Entity]
+    List<Class<? extends Annotation>> annotations = [Entity, jakarta.persistence.Entity]
     /**
      * The classloader to use
      */

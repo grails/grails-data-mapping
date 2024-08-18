@@ -28,9 +28,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import javax.persistence.CascadeType;
-import javax.persistence.FetchType;
-import javax.persistence.FlushModeType;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.FlushModeType;
 
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
 import org.grails.datastore.mapping.collection.AbstractPersistentCollection;

@@ -28,8 +28,8 @@ import org.codehaus.groovy.transform.sc.StaticCompileTransformation
 import org.codehaus.groovy.transform.trait.Traits
 import org.grails.datastore.mapping.reflect.NameUtils
 
-import javax.annotation.PostConstruct
-import javax.annotation.PreDestroy
+import jakarta.annotation.PostConstruct
+import jakarta.annotation.PreDestroy
 import java.beans.Introspector
 import java.lang.reflect.Modifier
 

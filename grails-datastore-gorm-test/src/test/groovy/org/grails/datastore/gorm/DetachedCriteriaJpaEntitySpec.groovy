@@ -2,7 +2,7 @@ package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
 
-import javax.persistence.Entity
+import jakarta.persistence.Entity
 
 import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 
@@ -50,7 +50,7 @@ class DetachedCriteriaJpaEntitySpec extends GormDatastoreSpec {
 
 }
 
-@javax.persistence.Entity
+@jakarta.persistence.Entity
 @grails.persistence.Entity
 class Todo {
     Long id

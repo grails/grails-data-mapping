@@ -470,7 +470,7 @@ class GormEnhancer implements Closeable {
     @CompileDynamic
     protected void removeConstraints() {
         try {
-            String className = "org.codehaus.groovy.grails.validation.ConstrainedProperty"
+            String className = "org.apache.groovy.grails.validation.ConstrainedProperty"
             ClassLoader classLoader = getClass().getClassLoader()
             if(ClassUtils.isPresent(className, classLoader)) {
                 classLoader.loadClass(className).removeConstraint('unique')

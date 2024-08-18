@@ -50,7 +50,7 @@ import org.springframework.context.MessageSourceAware
 import org.springframework.context.support.StaticMessageSource
 import rx.Observable
 
-import javax.persistence.CascadeType
+import jakarta.persistence.CascadeType
 /**
  * Abstract implementation the {@link RxDatastoreClient} interface
  *

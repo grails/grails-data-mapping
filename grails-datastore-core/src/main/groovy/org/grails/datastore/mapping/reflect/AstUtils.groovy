@@ -52,7 +52,7 @@ import org.codehaus.groovy.transform.trait.Traits
 import org.springframework.util.StringUtils
 import static org.codehaus.groovy.ast.tools.GenericsUtils.correctToGenericsSpecRecurse
 
-import javax.persistence.Entity
+import jakarta.persistence.Entity
 import java.lang.annotation.Annotation
 import java.lang.reflect.Modifier
 import java.util.regex.Pattern
