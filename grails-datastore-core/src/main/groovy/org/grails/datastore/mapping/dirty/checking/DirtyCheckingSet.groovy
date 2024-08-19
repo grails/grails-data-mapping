@@ -11,7 +11,8 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class DirtyCheckingSet extends DirtyCheckingCollection implements Set {
 
-    @Delegate Set target
+    @Delegate
+    Set target
 
     DirtyCheckingSet(Set target, DirtyCheckable parent, String property) {
         super(target, parent, property)

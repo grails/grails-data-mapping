@@ -881,10 +881,10 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
     @Override
     def <T> T withTenant(Serializable tenantId, Closure<T> callable) {
         if(multiTenancyMode == MultiTenancyMode.DATABASE) {
-            Tenants.withId((Class<Datastore>)GormEnhancer.findDatastore(persistentClass, tenantId.toString()).getClass(), tenantId, callable)
+            Tenants.withIdMultiTenancyDatabase((Class<Datastore>)GormEnhancer.findDatastore(persistentClass, tenantId.toString()).getClass(), tenantId, callable)
         }
         else if(multiTenancyMode.isSharedConnection()) {
-            Tenants.withId((Class<Datastore>)GormEnhancer.findDatastore(persistentClass, ConnectionSource.DEFAULT).getClass(), tenantId, callable)
+            Tenants.withIdSharedConnection((Class<Datastore>)GormEnhancer.findDatastore(persistentClass, ConnectionSource.DEFAULT).getClass(), tenantId, callable)
         }
         else {
             throw new UnsupportedOperationException("Method not supported in multi tenancy mode $multiTenancyMode")

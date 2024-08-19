@@ -13,7 +13,7 @@ import rx.Subscription
  * @since 6.0
  */
 @CompileStatic
-trait RxCollection implements ObservableCollection{
+trait RxCollection<T> implements ObservableCollection<T>{
 
     /**
      * The underlying observable

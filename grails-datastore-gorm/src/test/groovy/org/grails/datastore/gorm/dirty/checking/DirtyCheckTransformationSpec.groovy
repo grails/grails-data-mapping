@@ -10,6 +10,7 @@ import spock.lang.Issue
 /**
  * @author Graeme Rocher
  */
+@Ignore("https://issues.apache.org/jira/browse/GROOVY-5106")
 class DirtyCheckTransformationSpec extends Specification {
     @Issue('https://github.com/grails/grails-data-mapping/issues/894')
     void "Test transform doesn't make getters require static compilation"() {
@@ -205,8 +206,8 @@ class Author  {
 
     void "Test dirty check with generic types"() {
         when:"A Dirty checkable class with generic types is parsed"
-            def gcl = new GroovyClassLoader()
-            Class cls = gcl.parseClass('''
+        def gcl = new GroovyClassLoader()
+        Class cls = gcl.parseClass('''
 package org.grails.datastore.gorm.dirty.checking
 
 import grails.gorm.dirty.checking.DirtyCheck
@@ -224,14 +225,14 @@ class ChildAuthor extends Author {
 ''')
 
         then:"The generic types are retained"
-            cls.getMethod("getBooks").getReturnType().getGenericInterfaces()
+        cls.getMethod("getBooks").getReturnType().getGenericInterfaces()
     }
 
     @Issue('GRAILS-10433')
     void "Test that properties with single character getters generate the correct getter and setter combo"() {
         when:"A Dirty checkable class with generic types is parsed"
-            def gcl = new GroovyClassLoader()
-            Class cls = gcl.parseClass('''
+        def gcl = new GroovyClassLoader()
+        Class cls = gcl.parseClass('''
 class FundProduct {
 
    String gSeriesOptionCode
@@ -244,69 +245,69 @@ class FundProduct {
     ''')
 
         then:"The generic types are retained"
-            cls.getMethod("getgSeriesOptionCode")
+        cls.getMethod("getgSeriesOptionCode")
 
         when:"An invalid getter is used"
-            cls.getMethod('getGSeriesOptionCode')
+        cls.getMethod('getGSeriesOptionCode')
 
         then:"an error is thrown"
-            thrown(NoSuchMethodException)
+        thrown(NoSuchMethodException)
     }
 
     void "Test that the dirty checking transformations allows you to track changes to a class"() {
         when:"A new dirty checking instance is created"
-            def b = new Book()
+        def b = new Book()
 
         then:"It implements the DirtyCheckable interface"
-            b instanceof DirtyCheckable
-            b.hasChanged()
-            b.hasChanged("title")
+        b instanceof DirtyCheckable
+        b.hasChanged()
+        b.hasChanged("title")
 
         when:"The title is changed"
-            b.title = "My Title"
+        b.title = "My Title"
 
         then:"No tracking started yet so return true by default"
-            b.hasChanged()
-            b.hasChanged("title")
+        b.hasChanged()
+        b.hasChanged("title")
 
         when:"We start tracking and change the title"
-            b.trackChanges()
+        b.trackChanges()
 
         then:"If no changes a present then hasChanges returns false"
-            !b.hasChanged()
-            !b.hasChanged("title")
+        !b.hasChanged()
+        !b.hasChanged("title")
 
         when:"The a property is changed"
-            b.title = "Changed"
+        b.title = "Changed"
 
         then:"The changes are tracked"
-            b.hasChanged()
-            b.hasChanged("title")
-            b.getOriginalValue('title') == "My Title"
-            b.listDirtyPropertyNames() == ['title']
-            !b.hasChanged("author")
+        b.hasChanged()
+        b.hasChanged("title")
+        b.getOriginalValue('title') == "My Title"
+        b.listDirtyPropertyNames() == ['title']
+        !b.hasChanged("author")
 
         when:"A property with a getter and setter is changed"
-            b.title = "Some other value"
-            b.author = "Some Bloke"
+        b.title = "Some other value"
+        b.author = "Some Bloke"
 
         then:"We track that change too"
-            b.hasChanged("title")
-            b.getOriginalValue('title') == "My Title"
-            b.listDirtyPropertyNames() == ['title', 'author']
-            b.hasChanged("author")
+        b.hasChanged("title")
+        b.getOriginalValue('title') == "My Title"
+        b.listDirtyPropertyNames() == ['title', 'author']
+        b.hasChanged("author")
 
     }
 
     void "Test that dirty checking transformation doesn't allow for NPE for new objects"(){
-			given: "A new book is created"
-				def book = new Book()
+        given: "A new book is created"
+        def book = new Book()
 
-			when: "Title is set"
-				book.title = "Title"
+        when: "Title is set"
+        book.title = "Title"
 
-			then: "getOrginal Value returns null"
-				book.getOriginalValue('title') == null
+        then: "getOrginal Value returns null"
+        book.getOriginalValue('title') == null
     }
 
     @Issue('https://github.com/grails/grails-data-mapping/issues/629')
@@ -367,29 +368,29 @@ class FundProduct {
 
     void "Test dirty check with inheritance"() {
         when:"An inherited property is updated"
-            def b = new KidsBook()
-            b.age = 10
-            b.trackChanges()
-            b.age = 12
+        def b = new KidsBook()
+        b.age = 10
+        b.trackChanges()
+        b.age = 12
         then:"It is dirty"
-            b.hasChanged()
-            b.hasChanged("age")
+        b.hasChanged()
+        b.hasChanged("age")
     }
 
     @Issue("https://github.com/grails/grails-data-mapping/issues/744")
     void "Test that listDirtyPropertyNames does not include the entity name"() {
         when: "A new book is created"
-            def book = new Book(title: "Book Title", releaseDate: new Date())
-            book.trackChanges()
+        def book = new Book(title: "Book Title", releaseDate: new Date())
+        book.trackChanges()
         then:"The object has no changes"
-            !book.hasChanged()
+        !book.hasChanged()
         when: "The title is updated"
-            book.title = "Title (Edited)"
+        book.title = "Title (Edited)"
         then: "The listDirtyPropertyNames should not include the class name"
-            book.hasChanged()
-            book.hasChanged("title")
-            !(book.class.name in book.listDirtyPropertyNames())
-            book.listDirtyPropertyNames().size() == 1
+        book.hasChanged()
+        book.hasChanged("title")
+        !(book.class.name in book.listDirtyPropertyNames())
+        book.listDirtyPropertyNames().size() == 1
     }
 
     void "Test that dirty checking should not track changes to transients"() {
@@ -423,7 +424,7 @@ class Practice {
         !child.hasChanged()
         child.message == "Test Message"
     }
-    
+
     void "Test dirty check with belongsTo"() {
         when:
         Child child = new Child()
@@ -476,6 +477,7 @@ class Parent {
     String name
 }
 
+@DirtyCheck
 @Entity
 class Child {
     String name

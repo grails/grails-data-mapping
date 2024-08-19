@@ -1,5 +1,7 @@
 package org.grails.datastore.gorm.model
 
+import spock.lang.Ignore
+
 import grails.gorm.annotation.Entity
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
 import org.grails.datastore.mapping.model.MappingContext
@@ -9,6 +11,7 @@ import spock.lang.Specification
 /**
  * Created by graemerocher on 03/11/16.
  */
+@Ignore("https://issues.apache.org/jira/browse/GROOVY-5106")
 class TransientInheritanceSpec extends Specification {
 
     void "test inherit transient config from abstract non-entity parent"() {
@@ -26,7 +29,7 @@ class TransientInheritanceSpec extends Specification {
         static transients = ['bar']
     }
 
-    @Entity
+//    @Entity
     static class Child extends Parent{
 
         String one

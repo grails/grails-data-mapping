@@ -3,10 +3,8 @@ dependencies {
     api project(":grails-datastore-gorm-validation")
 
     implementation "org.slf4j:slf4j-api:$slf4jVersion"
-    //TODO: remove extra el version
-    implementation("javax.el:javax.el-api:$elVersion")
     implementation("jakarta.el:jakarta.el-api:$jakartaElVersion")
-    runtimeOnly('org.glassfish:javax.el:3.0.1-b12')
+    runtimeOnly('org.glassfish:jakarta.el:4.0.2')
 
     compileOnly("org.hibernate:hibernate-validator:$hibernateValidatorVersion")
     compileOnly("org.springframework:spring-jdbc:$springVersion")

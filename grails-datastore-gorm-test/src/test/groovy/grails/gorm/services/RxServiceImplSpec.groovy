@@ -165,7 +165,7 @@ class Book {
 }
 
 
-@Service(value = Book)
+@Service(Book)
 interface BookService {
 
     Single<String> findBookAuthor(String title)

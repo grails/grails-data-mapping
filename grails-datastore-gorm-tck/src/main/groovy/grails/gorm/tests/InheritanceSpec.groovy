@@ -1,11 +1,13 @@
 package grails.gorm.tests
 
-import grails.persistence.Entity
 import spock.lang.Ignore
+
+import grails.persistence.Entity
 
 /**
  * @author graemerocher
  */
+@Ignore("https://issues.apache.org/jira/browse/GROOVY-5106")
 class InheritanceSpec extends GormDatastoreSpec {
 
     @Override
@@ -16,61 +18,61 @@ class InheritanceSpec extends GormDatastoreSpec {
     void "Test inheritance with dynamic finder"() {
 
         given:
-            def city = new City([code: "UK", name: "London", longitude: 49.1, latitude: 53.1])
-            def country = new Country([code: "UK", name: "United Kingdom", population: 10000000])
+        def city = new City([code: "UK", name: "London", longitude: 49.1, latitude: 53.1])
+        def country = new Country([code: "UK", name: "United Kingdom", population: 10000000])
 
-            city.save()
-            country.save(flush:true)
-            session.clear()
+        city.save()
+        country.save(flush:true)
+        session.clear()
 
         when:
-            def locations = Location.findAllByCode("UK")
-            def cities = City.findAllByCode("UK")
-            def countries = Country.findAllByCode("UK")
+        def locations = Location.findAllByCode("UK")
+        def cities = City.findAllByCode("UK")
+        def countries = Country.findAllByCode("UK")
 
         then:
-            2 == locations.size()
-            1 == cities.size()
-            1 == countries.size()
-            "London" == cities[0].name
-            "United Kingdom" == countries[0].name
+        2 == locations.size()
+        1 == cities.size()
+        1 == countries.size()
+        "London" == cities[0].name
+        "United Kingdom" == countries[0].name
     }
 
     void "Test querying with inheritance"() {
 
         given:
-            def city = new City([code: "LON", name: "London", longitude: 49.1, latitude: 53.1])
-            def location = new Location([code: "XX", name: "The World"])
-            def country = new Country([code: "UK", name: "United Kingdom", population: 10000000])
+        def city = new City([code: "LON", name: "London", longitude: 49.1, latitude: 53.1])
+        def location = new Location([code: "XX", name: "The World"])
+        def country = new Country([code: "UK", name: "United Kingdom", population: 10000000])
 
-            country.save()
-            city.save()
-            location.save()
+        country.save()
+        city.save()
+        location.save()
 
-            session.flush()
+        session.flush()
 
         when:
-            city = City.get(city.id)
-            def london = Location.get(city.id)
-            country = Location.findByName("United Kingdom")
-            def london2 = Location.findByName("London")
+        city = City.get(city.id)
+        def london = Location.get(city.id)
+        country = Location.findByName("United Kingdom")
+        def london2 = Location.findByName("London")
 
         then:
-            1 == City.count()
-            1 == Country.count()
-            3 == Location.count()
+        1 == City.count()
+        1 == Country.count()
+        3 == Location.count()
 
-            city != null
-            city instanceof City
-            london instanceof City
-            london2 instanceof City
-            "London" == london2.name
-            49.1 == london2.longitude
-            "LON" == london2.code
+        city != null
+        city instanceof City
+        london instanceof City
+        london2 instanceof City
+        "London" == london2.name
+        49.1 == london2.longitude
+        "LON" == london2.code
 
-            country instanceof Country
-            "UK" == country.code
-            10000000 == country.population
+        country instanceof Country
+        "UK" == country.code
+        10000000 == country.population
     }
 
     void "Test hasMany with inheritance should return appropriate class"() {
@@ -98,7 +100,7 @@ class Practice implements Serializable {
     static hasMany = [locations: Location]
 }
 
-@Entity
+//@Entity
 class Location implements Serializable {
 //    Long id
     Long version

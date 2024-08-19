@@ -30,7 +30,7 @@ import org.grails.datastore.mapping.services.Service
  * @author Graeme Rocher
  * @since 6.1
  */
-@CompileStatic
+//@CompileStatic
 class DefaultTenantService implements Service, TenantService {
 
     @Override
