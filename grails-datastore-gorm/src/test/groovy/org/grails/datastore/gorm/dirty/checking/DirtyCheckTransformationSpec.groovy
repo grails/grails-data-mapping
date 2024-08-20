@@ -10,7 +10,7 @@ import spock.lang.Issue
 /**
  * @author Graeme Rocher
  */
-@Ignore("https://issues.apache.org/jira/browse/GROOVY-5106")
+@Ignore("https://issues.apache.org/jira/browse/GROOVY-5106 - The interface GormEntity cannot be implemented more than once with different arguments: org.grails.datastore.gorm.GormEntity<grails.gorm.tests.XXX> and org.grails.datastore.gorm.GormEntity<grails.gorm.tests.XXX>")
 class DirtyCheckTransformationSpec extends Specification {
     @Issue('https://github.com/grails/grails-data-mapping/issues/894')
     void "Test transform doesn't make getters require static compilation"() {

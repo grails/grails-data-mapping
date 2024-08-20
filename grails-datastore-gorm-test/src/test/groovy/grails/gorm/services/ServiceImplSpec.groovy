@@ -18,7 +18,7 @@ import spock.lang.Specification
 /**
  * Created by graemerocher on 06/02/2017.
  */
-@Ignore("https://issues.apache.org/jira/browse/GROOVY-5106")
+@Ignore("https://issues.apache.org/jira/browse/GROOVY-5106 - The interface GormEntity cannot be implemented more than once with different arguments: org.grails.datastore.gorm.GormEntity<grails.gorm.tests.XXX> and org.grails.datastore.gorm.GormEntity<grails.gorm.tests.XXX>")
 class ServiceImplSpec extends Specification {
 
     @AutoCleanup SimpleMapDatastore datastore = new SimpleMapDatastore(

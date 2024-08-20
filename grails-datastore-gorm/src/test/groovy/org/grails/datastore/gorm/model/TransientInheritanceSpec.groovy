@@ -11,7 +11,7 @@ import spock.lang.Specification
 /**
  * Created by graemerocher on 03/11/16.
  */
-@Ignore("https://issues.apache.org/jira/browse/GROOVY-5106")
+@Ignore("https://issues.apache.org/jira/browse/GROOVY-5106 - The interface GormEntity cannot be implemented more than once with different arguments: org.grails.datastore.gorm.GormEntity<grails.gorm.tests.XXX> and org.grails.datastore.gorm.GormEntity<grails.gorm.tests.XXX>")
 class TransientInheritanceSpec extends Specification {
 
     void "test inherit transient config from abstract non-entity parent"() {
