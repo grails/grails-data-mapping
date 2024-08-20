@@ -23,7 +23,7 @@ import rx.Subscription
  * @since 6.0
  */
 
-//@CompileStatic
+@CompileStatic
 @Slf4j
 class RxPersistentSortedSet<T> extends PersistentSortedSet implements RxPersistentCollection<T>, RxUnidirectionalCollection, RxCollection<T> {
     final RxDatastoreClient datastoreClient

@@ -182,14 +182,14 @@ class MappingTest2 extends MappingTest {
     }
 }
 
-@Entity
+//@Entity
 class DerivedEntityChildA extends DerivedEntity {
 }
 
-@Entity
+//@Entity
 class DerivedEntityChildB extends DerivedEntity {
 }
 
-@Entity
+//@Entity
 class DerivedEntityChildC extends DerivedEntity {
 }
