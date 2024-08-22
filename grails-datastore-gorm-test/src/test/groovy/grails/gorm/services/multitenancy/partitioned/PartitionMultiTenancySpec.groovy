@@ -1,10 +1,8 @@
 package grails.gorm.services.multitenancy.partitioned
 
-
 import grails.gorm.MultiTenant
 import grails.gorm.annotation.Entity
 import grails.gorm.multitenancy.CurrentTenant
-import grails.gorm.multitenancy.Tenants
 import grails.gorm.multitenancy.WithoutTenant
 import grails.gorm.services.Service
 import grails.gorm.transactions.ReadOnly
@@ -14,8 +12,8 @@ import org.grails.datastore.mapping.multitenancy.MultiTenancySettings
 import org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException
 import org.grails.datastore.mapping.multitenancy.resolvers.SystemPropertyTenantResolver
 import org.grails.datastore.mapping.simple.SimpleMapDatastore
-import spock.lang.Ignore
 import spock.lang.AutoCleanup
+import spock.lang.PendingFeature
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -29,7 +27,7 @@ class PartitionMultiTenancySpec extends Specification {
     )
     @Shared IBookService bookDataService = datastore.getService(IBookService)
 
-    @Ignore('''Expected exception of type 'org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException', but got 'java.lang.IllegalStateException\'
+    @PendingFeature(reason='''Expected exception of type 'org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException', but got 'java.lang.IllegalStateException\'
               at app//org.spockframework.lang.SpecInternals.checkExceptionThrown(SpecInternals.java:84)
               at app//org.spockframework.lang.SpecInternals.thrownImpl(SpecInternals.java:71)
               at grails.gorm.services.multitenancy.partitioned.PartitionMultiTenancySpec.Test partitioned multi-tenancy with GORM services(PartitionMultiTenancySpec.groovy:42)
