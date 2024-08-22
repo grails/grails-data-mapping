@@ -41,7 +41,7 @@ public class ValidatorRegistries {
      */
     public static ValidatorRegistry createValidatorRegistry(MappingContext mappingContext, ConnectionSourceSettings settings, MessageSource messageSource ) {
         ValidatorRegistry validatorRegistry;
-        if(isJavaxValidationAvailable()) {
+        if(isJakartaValidationAvailable()) {
             validatorRegistry = new JakartaValidatorRegistry(mappingContext, settings, messageSource);
         }
         else {
@@ -53,7 +53,7 @@ public class ValidatorRegistries {
     /**
      * @return Whether jakarta.validation is available
      */
-    static boolean isJavaxValidationAvailable() {
+    static boolean isJakartaValidationAvailable() {
         return ClassUtils.isPresent("jakarta.validation.Validation");
     }
 }
