@@ -49,8 +49,8 @@ jobs:
             ~/groovy
             ~/.m2/repository
           key: cache-local-groovy-maven-${{ github.sha }}
-      - name: Checkout Groovy 3_0_X (Grails 5 and later)
-        run: cd .. && git clone --depth 1 https://github.com/apache/groovy.git -b GROOVY_3_0_X --single-branch
+      - name: Checkout Groovy 4_0_X (Grails 7 and later)
+        run: cd .. && git clone --depth 1 https://github.com/apache/groovy.git -b GROOVY_4_0_X --single-branch
       - name: Set CI_GROOVY_VERSION for Grails
         id: groovy-version
         run: |
