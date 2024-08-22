@@ -17,7 +17,7 @@ import org.grails.gorm.rx.api.RxGormEnhancer
  */
 @CompileStatic
 @Slf4j
-class Tenants extends grails.gorm.multitenancy.Tenants {
+class Tenants {
     /**
      * Execute the given closure for each tenant.
      *

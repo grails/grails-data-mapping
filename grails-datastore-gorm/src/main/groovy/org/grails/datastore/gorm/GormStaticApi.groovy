@@ -98,7 +98,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
     PersistentEntity getGormPersistentEntity() {
         persistentEntity
     }
-    
+
     List<FinderMethod> getGormDynamicFinders() {
         gormDynamicFinders
     }
@@ -253,7 +253,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
      */
     List<Serializable> saveAll(Object... objectsToSave) {
         (List<Serializable>)execute({ Session session ->
-           session.persist Arrays.asList(objectsToSave)
+            session.persist Arrays.asList(objectsToSave)
         } as SessionCallback)
     }
 
@@ -337,7 +337,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
      */
     D get(Serializable id) {
         (D)execute({ Session session ->
-           session.retrieve((Class)persistentClass, id)
+            session.retrieve((Class)persistentClass, id)
         } as SessionCallback)
     }
 
@@ -349,7 +349,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
      */
     D read(Serializable id) {
         (D)execute ({ Session session ->
-           session.retrieve((Class)persistentClass, id)
+            session.retrieve((Class)persistentClass, id)
         } as SessionCallback)
     }
 
@@ -358,7 +358,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
      */
     D load(Serializable id) {
         (D)execute ({ Session session ->
-           session.proxy((Class)persistentClass, id)
+            session.proxy((Class)persistentClass, id)
         } as SessionCallback)
     }
 
@@ -368,7 +368,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
     D proxy(Serializable id) {
         load(id)
     }
-    
+
     /**
      * Retrieve all the objects for the given identifiers
      * @param ids The identifiers to operate against
@@ -385,7 +385,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
      */
     List<D> getAll(Serializable... ids) {
         (List<D>)execute ({ Session session ->
-           session.retrieveAll(persistentClass, ids.flatten())
+            session.retrieveAll(persistentClass, ids.flatten())
         } as SessionCallback)
     }
 
@@ -446,7 +446,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
      */
     D lock(Serializable id) {
         (D)execute ({ Session session ->
-                session.lock((Class)persistentClass, id)
+            session.lock((Class)persistentClass, id)
         } as SessionCallback)
     }
 
@@ -709,14 +709,14 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
     }
 
 /**
-     * Finds the last object.  If queryParams includes 'sort', that will
-     * dictate the sort order, otherwise natural sort order will be used.
-     * queryParams may include any of the same parameters that might be passed
-     * to the list(Map) method.  This method will ignore 'order' and 'max' as
-     * those are always 'asc' and 1, respectively.
-     *
-     * @return the last object in the datastore, null if none exist
-     */
+ * Finds the last object.  If queryParams includes 'sort', that will
+ * dictate the sort order, otherwise natural sort order will be used.
+ * queryParams may include any of the same parameters that might be passed
+ * to the list(Map) method.  This method will ignore 'order' and 'max' as
+ * those are always 'asc' and 1, respectively.
+ *
+ * @return the last object in the datastore, null if none exist
+ */
     D last(Map queryParams) {
         queryParams.max = 1
         queryParams.order = 'desc'
@@ -818,23 +818,23 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
         } as SessionCallback)
     }
 
-   /**
-    * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand").  If
-    * a matching persistent entity is not found a new entity is created and returned.
-    *
-    * @param queryMap The map of conditions
-    * @return A single result
+    /**
+     * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand").  If
+     * a matching persistent entity is not found a new entity is created and returned.
+     *
+     * @param queryMap The map of conditions
+     * @return A single result
      */
     D findOrCreateWhere(Map queryMap) {
         internalFindOrCreate(queryMap, false)
     }
 
-   /**
-    * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand").  If
-    * a matching persistent entity is not found a new entity is created, saved and returned.
-    *
-    * @param queryMap The map of conditions
-    * @return A single result
+    /**
+     * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand").  If
+     * a matching persistent entity is not found a new entity is created, saved and returned.
+     *
+     * @param queryMap The map of conditions
+     * @return A single result
      */
     D findOrSaveWhere(Map queryMap) {
         internalFindOrCreate(queryMap, true)
@@ -881,10 +881,10 @@ class GormStaticApi<D> extends AbstractGormApi<D> implements GormAllOperations<D
     @Override
     def <T> T withTenant(Serializable tenantId, Closure<T> callable) {
         if(multiTenancyMode == MultiTenancyMode.DATABASE) {
-            Tenants.withIdMultiTenancyDatabase((Class<Datastore>)GormEnhancer.findDatastore(persistentClass, tenantId.toString()).getClass(), tenantId, callable)
+            Tenants.withId((Class<Datastore>)GormEnhancer.findDatastore(persistentClass, tenantId.toString()).getClass(), tenantId, callable)
         }
         else if(multiTenancyMode.isSharedConnection()) {
-            Tenants.withIdSharedConnection((Class<Datastore>)GormEnhancer.findDatastore(persistentClass, ConnectionSource.DEFAULT).getClass(), tenantId, callable)
+            Tenants.withId((Class<Datastore>)GormEnhancer.findDatastore(persistentClass, ConnectionSource.DEFAULT).getClass(), tenantId, callable)
         }
         else {
             throw new UnsupportedOperationException("Method not supported in multi tenancy mode $multiTenancyMode")

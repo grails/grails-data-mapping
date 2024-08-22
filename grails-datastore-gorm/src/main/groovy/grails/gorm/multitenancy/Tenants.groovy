@@ -37,7 +37,7 @@ class Tenants {
      * @param callable The closure
      * @return The result of the closure
      */
-    static void eachTenantFromDatasource(Class<? extends Datastore> datastoreClass, Closure callable) {
+    static void eachTenant(Class<? extends Datastore> datastoreClass, Closure callable) {
         eachTenantInternal(GormEnhancer.findDatastoreByType(datastoreClass), callable)
     }
 
@@ -81,7 +81,7 @@ class Tenants {
      *
      * @throws org.grails.datastore.mapping.multitenancy.exceptions.TenantNotFoundException if no current tenant is found
      */
-    static Serializable currentIdFromDatasource(Class<? extends Datastore> datastoreClass) {
+    static Serializable currentId(Class<? extends Datastore> datastoreClass) {
         Datastore datastore = GormEnhancer.findDatastoreByType(datastoreClass)
         if(datastore instanceof MultiTenantCapableDatastore) {
             MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore)datastore
@@ -125,17 +125,17 @@ class Tenants {
      * @param callable The closure
      * @return The result of the closure
      */
-//    static <T> T withCurrent(Closure<T> callable) {
-//        Serializable tenantIdentifier = currentId()
-//        Datastore datastore = GormEnhancer.findSingleDatastore()
-//        if(datastore instanceof MultiTenantCapableDatastore) {
-//            MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore)datastore
-//            return withId(multiTenantCapableDatastore, tenantIdentifier, callable)
-//        }
-//        else {
-//            throw new UnsupportedOperationException("Datastore implementation does not support multi-tenancy")
-//        }
-//    }
+    static <T> T withCurrent(Closure<T> callable) {
+        Serializable tenantIdentifier = currentId()
+        Datastore datastore = GormEnhancer.findSingleDatastore()
+        if(datastore instanceof MultiTenantCapableDatastore) {
+            MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore)datastore
+            return withId(multiTenantCapableDatastore, tenantIdentifier, callable)
+        }
+        else {
+            throw new UnsupportedOperationException("Datastore implementation does not support multi-tenancy")
+        }
+    }
 
     /**
      * Execute the given closure with the current tenant
@@ -144,45 +144,12 @@ class Tenants {
      * @param callable The closure
      * @return The result of the closure
      */
-//    static <T> T withCurrent(Class<? extends Datastore> datastoreClass, Closure<T> callable) {
-//        Serializable tenantIdentifier = currentIdFromDatasource(datastoreClass)
-//        Datastore datastore = GormEnhancer.findDatastoreByType(datastoreClass)
-//        if(datastore instanceof MultiTenantCapableDatastore) {
-//            MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore)datastore
-//            return withId(multiTenantCapableDatastore, tenantIdentifier, callable)
-//        }
-//        else {
-//            throw new UnsupportedOperationException("Datastore implementation does not support multi-tenancy")
-//        }
-//    }
-
-    /**
-     * Execute the given closure with given tenant id
-     * @param tenantId The tenant id
-     * @param callable The closure
-     * @return The result of the closure
-     */
-//    static <T> T withId(Serializable tenantId, Closure<T> callable) {
-//        Datastore datastore = GormEnhancer.findSingleDatastore()
-//        if(datastore instanceof MultiTenantCapableDatastore) {
-//            MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore)datastore
-//            return withId(multiTenantCapableDatastore, tenantId, callable)
-//        }
-//        else {
-//            throw new UnsupportedOperationException("Datastore implementation does not support multi-tenancy")
-//        }
-//    }
-    /**
-     * Execute the given closure with given tenant id
-     * @param tenantId The tenant id
-     * @param callable The closure
-     * @return The result of the closure
-     */
-    static <T> T withIdFromDatastore(Class<? extends Datastore> datastoreClass, Serializable tenantId, Closure callable) {
+    static <T> T withCurrent(Class<? extends Datastore> datastoreClass, Closure<T> callable) {
+        Serializable tenantIdentifier = currentId(datastoreClass)
         Datastore datastore = GormEnhancer.findDatastoreByType(datastoreClass)
         if(datastore instanceof MultiTenantCapableDatastore) {
             MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore)datastore
-            return withId(multiTenantCapableDatastore, tenantId, callable)
+            return withId(multiTenantCapableDatastore, tenantIdentifier, callable)
         }
         else {
             throw new UnsupportedOperationException("Datastore implementation does not support multi-tenancy")
@@ -194,11 +161,9 @@ class Tenants {
      * @param tenantId The tenant id
      * @param callable The closure
      * @return The result of the closure
-     *
-     * method duplicated to address name clash: <T#1>withId(Class<? extends RxDatastoreClient>,Serializable,Closure<T#1>) in grails.gorm.rx.multitenancy.Tenants and <T#2>withId(Class<? extends Datastore>,Serializable,Closure<T#2>) in grails.gorm.multitenancy.Tenants have the same erasure, yet neither hides the other
      */
-    static <T> T withIdSharedConnection(Class<? extends Datastore> datastoreClass, Serializable tenantId, Closure<T> callable) {
-        Datastore datastore = GormEnhancer.findDatastoreByType(datastoreClass)
+    static <T> T withId(Serializable tenantId, Closure<T> callable) {
+        Datastore datastore = GormEnhancer.findSingleDatastore()
         if(datastore instanceof MultiTenantCapableDatastore) {
             MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore)datastore
             return withId(multiTenantCapableDatastore, tenantId, callable)
@@ -207,17 +172,13 @@ class Tenants {
             throw new UnsupportedOperationException("Datastore implementation does not support multi-tenancy")
         }
     }
-
-
     /**
      * Execute the given closure with given tenant id
      * @param tenantId The tenant id
      * @param callable The closure
      * @return The result of the closure
-     *
-     * method duplicated to address name clash: <T#1>withId(Class<? extends RxDatastoreClient>,Serializable,Closure<T#1>) in grails.gorm.rx.multitenancy.Tenants and <T#2>withId(Class<? extends Datastore>,Serializable,Closure<T#2>) in grails.gorm.multitenancy.Tenants have the same erasure, yet neither hides the other
      */
-    static <T> T withIdMultiTenancyDatabase(Class<? extends Datastore> datastoreClass, Serializable tenantId, Closure<T> callable) {
+    static <T> T withId(Class<? extends Datastore> datastoreClass, Serializable tenantId, Closure<T> callable) {
         Datastore datastore = GormEnhancer.findDatastoreByType(datastoreClass)
         if(datastore instanceof MultiTenantCapableDatastore) {
             MultiTenantCapableDatastore multiTenantCapableDatastore = (MultiTenantCapableDatastore)datastore
@@ -266,12 +227,12 @@ class Tenants {
     }
 
     /**
-    * Execute the given closure with given tenant id for the given datastore. This method will create a new datastore session for the scope of the call and hence is designed to be used to manage the connection life cycle
-    * @param tenantId The tenant id
-    * @param callable The closure
-    * @return The result of the closure
-    */
-    static <T> T withId(MultiTenantCapableDatastore multiTenantCapableDatastore, Serializable tenantId, Closure callable) {
+     * Execute the given closure with given tenant id for the given datastore. This method will create a new datastore session for the scope of the call and hence is designed to be used to manage the connection life cycle
+     * @param tenantId The tenant id
+     * @param callable The closure
+     * @return The result of the closure
+     */
+    static <T> T withId(MultiTenantCapableDatastore multiTenantCapableDatastore, Serializable tenantId, Closure<T> callable) {
         return CurrentTenant.withTenant(tenantId) {
             if(multiTenantCapableDatastore.getMultiTenancyMode().isSharedConnection()) {
                 def i = callable.parameterTypes.length
