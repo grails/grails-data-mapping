@@ -1,8 +1,7 @@
-package org.grails.datastore.gorm.validation.javax
+package org.grails.datastore.gorm.validation.jakarta
 
 import grails.gorm.services.Service
 import groovy.transform.CompileStatic
-import org.grails.datastore.mapping.validation.ValidationErrors
 import org.springframework.validation.Errors
 import org.springframework.validation.MapBindingResult
 

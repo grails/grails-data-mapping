@@ -1,7 +1,7 @@
 package org.grails.datastore.gorm.validation.support
 
 import org.grails.datastore.gorm.GormValidateable
-import org.grails.datastore.gorm.validation.javax.GormValidatorAdapter
+import org.grails.datastore.gorm.validation.jakarta.GormValidatorAdapter
 import spock.lang.Specification
 
 import jakarta.validation.Validation

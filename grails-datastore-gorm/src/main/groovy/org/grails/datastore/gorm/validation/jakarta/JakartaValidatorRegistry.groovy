@@ -1,4 +1,4 @@
-package org.grails.datastore.gorm.validation.javax
+package org.grails.datastore.gorm.validation.jakarta
 
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry
@@ -7,7 +7,6 @@ import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.reflect.ClassUtils
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory
 import org.springframework.context.ApplicationContext
 import org.springframework.context.MessageSource
 import org.springframework.context.support.StaticMessageSource
@@ -33,14 +32,14 @@ import jakarta.validation.ValidatorFactory
  * @since 6.1
  */
 @CompileStatic
-class JavaxValidatorRegistry extends DefaultValidatorRegistry implements ValidatorFactory {
+class JakartaValidatorRegistry extends DefaultValidatorRegistry implements ValidatorFactory {
 
     /**
      * The validator factory
      */
     final ValidatorFactory validatorFactory
 
-    JavaxValidatorRegistry(MappingContext mappingContext, ConnectionSourceSettings settings, MessageSource messageSource = new StaticMessageSource()) {
+    JakartaValidatorRegistry(MappingContext mappingContext, ConnectionSourceSettings settings, MessageSource messageSource = new StaticMessageSource()) {
         super(mappingContext, settings, messageSource)
 
         Configuration validatorConfiguration = buildConfiguration()

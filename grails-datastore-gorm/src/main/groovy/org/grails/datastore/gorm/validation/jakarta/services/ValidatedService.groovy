@@ -1,10 +1,9 @@
-package org.grails.datastore.gorm.validation.javax.services
+package org.grails.datastore.gorm.validation.jakarta.services
 
 import groovy.transform.CompileStatic
-import org.grails.datastore.gorm.validation.javax.ConstraintViolationUtils
-import org.grails.datastore.gorm.validation.javax.JavaxValidatorRegistry
+import org.grails.datastore.gorm.validation.jakarta.ConstraintViolationUtils
+import org.grails.datastore.gorm.validation.jakarta.JakartaValidatorRegistry
 import org.grails.datastore.mapping.services.Service
-import org.grails.datastore.mapping.validation.ValidationErrors
 import org.grails.datastore.mapping.validation.ValidationException
 import org.springframework.validation.Errors
 
@@ -47,7 +46,7 @@ trait ValidatedService<T> extends Service<T> {
 
             Configuration configuration
             if(datastore != null) {
-                configuration = JavaxValidatorRegistry.buildConfigurationFor(
+                configuration = JakartaValidatorRegistry.buildConfigurationFor(
                         datastore.mappingContext,
                         datastore.mappingContext.validatorRegistry.messageSource
                 )

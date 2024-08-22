@@ -2,8 +2,6 @@ package org.grails.datastore.rx
 
 import grails.gorm.rx.proxy.ObservableProxy
 import groovy.transform.CompileStatic
-import org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry
-import org.grails.datastore.gorm.validation.javax.JavaxValidatorRegistry
 import org.grails.datastore.gorm.validation.registry.support.ValidatorRegistries
 import org.grails.datastore.mapping.collection.PersistentCollection
 import org.grails.datastore.mapping.config.Property

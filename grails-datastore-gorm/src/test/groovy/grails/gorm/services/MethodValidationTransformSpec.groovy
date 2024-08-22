@@ -1,6 +1,6 @@
 package grails.gorm.services
 
-import org.grails.datastore.gorm.validation.javax.services.ValidatedService
+import org.grails.datastore.gorm.validation.jakarta.services.ValidatedService
 import org.grails.datastore.mapping.validation.ValidationException
 import spock.lang.Specification
 

@@ -1,8 +1,7 @@
-package org.grails.datastore.gorm.validation.javax
+package org.grails.datastore.gorm.validation.jakarta
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import groovy.transform.InheritConstructors
 import org.grails.datastore.gorm.GormValidateable
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter
 

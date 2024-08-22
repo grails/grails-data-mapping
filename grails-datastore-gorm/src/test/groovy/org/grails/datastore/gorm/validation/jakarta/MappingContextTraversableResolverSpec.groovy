@@ -1,4 +1,4 @@
-package org.grails.datastore.gorm.validation.javax
+package org.grails.datastore.gorm.validation.jakarta
 
 import grails.gorm.annotation.Entity
 import org.grails.datastore.mapping.core.Session

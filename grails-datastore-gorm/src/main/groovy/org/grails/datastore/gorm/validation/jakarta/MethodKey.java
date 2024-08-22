@@ -1,4 +1,4 @@
-package org.grails.datastore.gorm.validation.javax;
+package org.grails.datastore.gorm.validation.jakarta;
 
 import java.util.Arrays;
 
