@@ -73,7 +73,7 @@ trait ValidatedService<T> extends Service<T> {
      *
      * @throws ConstraintViolationException If a validation error occurs
      */
-    void javaxValidate(Object instance, Method method, Object...args) throws ConstraintViolationException {
+    void jakartaValidate(Object instance, Method method, Object...args) throws ConstraintViolationException {
         ExecutableValidator validator = executableValidatorMap.get(method)
         Set<ConstraintViolation> constraintViolations = validator.validateParameters(instance, method, args)
         if(!constraintViolations.isEmpty()) {

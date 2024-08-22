@@ -14,7 +14,7 @@ import jakarta.validation.constraints.Digits
 class GormValidatorAdapterSpec extends Specification {
 
 
-    void "test propagate javax.valdiation errors to gorm object"() {
+    void "test propagate jakarta.valdiation errors to gorm object"() {
 
         given:
         def factory = Validation.byDefaultProvider().configure().buildValidatorFactory()

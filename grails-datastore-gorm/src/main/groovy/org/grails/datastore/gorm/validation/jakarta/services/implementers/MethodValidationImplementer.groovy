@@ -98,7 +98,7 @@ class MethodValidationImplementer implements ServiceEnhancer {
 
         // add a first line to the method body that validates the method
         ArrayExpression argArray = new ArrayExpression(OBJECT_TYPE, validateArgsList)
-        String validateMethodName = abstractMethodNode.exceptions?.contains( make(ConstraintViolationException) ) ? "javaxValidate" : "validate"
+        String validateMethodName = abstractMethodNode.exceptions?.contains( make(ConstraintViolationException) ) ? "jakartaValidate" : "validate"
         MethodCallExpression validateCall = callThisD(ValidatedService, validateMethodName, args(varThis(), varX(methodField),argArray))
         if(body instanceof BlockStatement) {
             ((BlockStatement)body).statements.add(0, stmt( validateCall ))

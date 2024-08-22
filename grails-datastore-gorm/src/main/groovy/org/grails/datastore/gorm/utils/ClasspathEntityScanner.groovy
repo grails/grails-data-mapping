@@ -45,8 +45,9 @@ class ClasspathEntityScanner {
 
     /**
      * Packages that won't be scanned for performance reasons
+     * javax still exists for select packages
      */
-    List<String> ignoredPackages = ['com', 'net', '', 'org', 'java', 'javax', 'groovy']
+    List<String> ignoredPackages = ['com', 'net', '', 'org', 'java', 'javax', 'jakarta', 'groovy']
 
     ClasspathEntityScanner() {
         if(ClassUtils.isPresent("grails.persistence.Entity")) {
