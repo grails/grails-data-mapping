@@ -118,6 +118,7 @@ subprojects {
     dependencies {
         api "jakarta.annotation:jakarta.annotation-api:$jakartaAnnotationApiVersion"
         implementation "jakarta.validation:jakarta.validation-api:$jakartaValidationVersion"
+        compileOnly "com.github.spotbugs:spotbugs-annotations:4.8.6"
 
         if (isStandardGroovyMavenProject) {
             documentation "org.fusesource.jansi:jansi:2.4.0"
