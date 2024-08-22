@@ -170,9 +170,13 @@ class Book {
 @Service(value = Book)
 interface BookService {
 
+//    Cannot implement method for argument [title]. No property exists on domain class [java.lang.String]
     //Single<String> findBookAuthor(String title)
 
+//    No implementations possible for method 'rx.Observable updateBook(java.lang.String, java.lang.String)'. Please use an abstract class instead and provide an implementation.
     //@Query("update ${Book b} set $b.title = $title where $b.title = $oldTitle")
+
+//    No implementations possible for method 'rx.Observable updateBook(java.lang.String, java.lang.String)'. Please use an abstract class instead and provide an implementation.
     //rx.Observable<Number> updateBook(String oldTitle, String title)
 
     Single<Book> updateBook(Serializable id, String title)
