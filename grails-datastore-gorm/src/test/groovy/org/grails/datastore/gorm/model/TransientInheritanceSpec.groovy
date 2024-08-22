@@ -1,7 +1,5 @@
 package org.grails.datastore.gorm.model
 
-import spock.lang.Ignore
-
 import grails.gorm.annotation.Entity
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
 import org.grails.datastore.mapping.model.MappingContext
