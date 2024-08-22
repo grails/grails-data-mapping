@@ -19,8 +19,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          distribution: 'adopt'
-          java-version: 11
+          distribution: temurin
+          java-version: 17
       - name: Run pre-release
         uses: micronaut-projects/github-actions/pre-release@master
         with:
