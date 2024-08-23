@@ -60,8 +60,8 @@ allprojects {
         all {
             resolutionStrategy {
                 eachDependency { DependencyResolveDetails details ->
-                    if (details.requested.group == 'org.codehaus.groovy' || details.requested.group == 'org.apache.groovy') {
-                        details.useTarget(group: 'org.apache.groovy', name: details.requested.name, version: "$groovyVersion")
+                    if (details.requested.group == 'org.codehaus.groovy') {
+                        details.useTarget(group: 'org.apache.groovy', name: details.requested.name, version: groovyVersion)
                         details.because "The dependency coordinates are changed in Apache Groovy 4, plus ensure version"
                     }
                 }
