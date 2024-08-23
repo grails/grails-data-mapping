@@ -44,13 +44,14 @@ allprojects {
         mavenLocal()
         mavenCentral()
         maven { url = 'https://repo.grails.org/grails/core' }
+        maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
         if(isSnapshot) {
             maven { url = 'https://repo.grails.org/grails/libs-snapshots-local' }
         }
         if(groovyVersion && groovyVersion.endsWith('-SNAPSHOT')) {
             maven {
-                name = 'JFrog Groovy snapshot repo'
-                url = 'https://groovy.jfrog.io/artifactory/libs-snapshot-local'
+                name = 'ASF Snapshot repo'
+                url = 'https://repository.apache.org/content/repositories/snapshots'
             }
         }
     }
@@ -60,7 +61,7 @@ allprojects {
             resolutionStrategy {
                 eachDependency { DependencyResolveDetails details ->
                     if (details.requested.group == 'org.codehaus.groovy' || details.requested.group == 'org.apache.groovy') {
-                        details.useTarget(group: 'org.apache.groovy', name: details.requested.name, version: groovyVersion)
+                        details.useTarget(group: 'org.apache.groovy', name: details.requested.name, version: "$groovyVersion")
                         details.because "The dependency coordinates are changed in Apache Groovy 4, plus ensure version"
                     }
                 }
