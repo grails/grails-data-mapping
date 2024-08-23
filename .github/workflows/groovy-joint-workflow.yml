@@ -101,9 +101,9 @@ jobs:
         run: |
           cd ../groovy
           # Delete exiting plugins and build-scan from settings.gradle file
-          sed -i '21,31d' settings.gradle
-          # Add Gradle Enterprise set-up related configuration after line no 20 in settings.gradle
-          echo "${{ steps.develocity_conf_1.outputs.value}}" | sed -i -e "20r /dev/stdin" settings.gradle
+          sed -i '1,5d' settings.gradle
+          # Add Gradle Enterprise set-up related configuration after line no 1 in settings.gradle
+          echo "${{ steps.develocity_conf_1.outputs.value}}" | sed -i -e "1r /dev/stdin" settings.gradle
       - name: Build and install groovy (no docs)
         uses: gradle/gradle-build-action@v3
         env:
