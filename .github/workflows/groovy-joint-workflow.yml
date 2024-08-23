@@ -100,10 +100,14 @@ jobs:
       - name: Develocity Set-up
         run: |
           cd ../groovy
-          # Delete exiting plugins and build-scan from settings.gradle file
-          sed -i '1,5d' settings.gradle
-          # Add Gradle Enterprise set-up related configuration after line no 1 in settings.gradle
-          echo "${{ steps.develocity_conf_1.outputs.value}}" | sed -i -e "1r /dev/stdin" settings.gradle
+          # Delete existing plugins from settings.gradle file
+          sed -i '32,37d' settings.gradle
+          # Add Gradle Enterprise set-up related configuration after line no 31 in settings.gradle
+          echo "${{ steps.develocity_conf_1.outputs.value }}" | sed -i -e "31r /dev/stdin" settings.gradle
+          # Delete existing buildCache configuration from gradle/build-scans.gradle file
+          sed -i '23,46d' gradle/build-scans.gradle
+          # Add Gradle Enterprise set-up related configuration after line no 22 in gradle/build-scans.gradle
+          echo "${{ steps.develocity_conf_2.outputs.value }}" | sed -i -e "22r /dev/stdin" gradle/build-scans.gradle
       - name: Build and install groovy (no docs)
         uses: gradle/gradle-build-action@v3
         env:
