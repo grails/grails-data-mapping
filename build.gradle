@@ -10,6 +10,7 @@ buildscript {
 }
 
 ext {
+    // https://github.com/grails/grails-data-mapping/actions/runs/10528294929/job/29180566819
     groovyVersion = /*System.getenv('CI_GROOVY_VERSION') ?:*/ project.groovyVersion
     // overall project version
     isCiBuild = System.getenv().get("CI") as Boolean
