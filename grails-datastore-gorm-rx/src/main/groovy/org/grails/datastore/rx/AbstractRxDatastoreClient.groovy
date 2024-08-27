@@ -2,8 +2,6 @@ package org.grails.datastore.rx
 
 import grails.gorm.rx.proxy.ObservableProxy
 import groovy.transform.CompileStatic
-import org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry
-import org.grails.datastore.gorm.validation.javax.JavaxValidatorRegistry
 import org.grails.datastore.gorm.validation.registry.support.ValidatorRegistries
 import org.grails.datastore.mapping.collection.PersistentCollection
 import org.grails.datastore.mapping.config.Property
@@ -50,7 +48,7 @@ import org.springframework.context.MessageSourceAware
 import org.springframework.context.support.StaticMessageSource
 import rx.Observable
 
-import javax.persistence.CascadeType
+import jakarta.persistence.CascadeType
 /**
  * Abstract implementation the {@link RxDatastoreClient} interface
  *

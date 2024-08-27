@@ -1,4 +1,4 @@
-package org.grails.datastore.gorm.validation.javax
+package org.grails.datastore.gorm.validation.jakarta
 
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.model.MappingContext
@@ -7,8 +7,8 @@ import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.proxy.ProxyHandler
 
-import javax.validation.Path
-import javax.validation.TraversableResolver
+import jakarta.validation.Path
+import jakarta.validation.TraversableResolver
 import java.lang.annotation.ElementType
 
 /**

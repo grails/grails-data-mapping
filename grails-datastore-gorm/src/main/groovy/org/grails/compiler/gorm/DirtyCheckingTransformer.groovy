@@ -50,9 +50,9 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
     public static final AnnotationNode DIRTY_CHECKED_PROPERTY_ANNOTATION_NODE = new AnnotationNode(DIRTY_CHECKED_PROPERTY_CLASS_NODE)
 
     static {
-        if(ClassUtils.isPresent("javax.validation.Constraint")) {
+        if(ClassUtils.isPresent("jakarta.validation.Constraint")) {
             try {
-                VALIDATION_CONSTRAINT_NODE = ClassHelper.make(Class.forName("javax.validation.Constraint"))
+                VALIDATION_CONSTRAINT_NODE = ClassHelper.make(Class.forName("jakarta.validation.Constraint"))
             } catch (Throwable e) {
                 VALIDATION_CONSTRAINT_NODE = null
             }
@@ -127,7 +127,7 @@ class DirtyCheckingTransformer implements CompilationUnitAware {
             } else if (isGetter(methodName, mn)) {
                 String propertyName = NameUtils.getPropertyNameForGetterOrSetter(methodName)
 
-                // if there are any javax.validation constraints present
+                // if there are any jakarta.validation constraints present
                 def annotationNodes = mn.annotations
                 if(!isJavaValidateable && isAnnotatedWithJavaValidationApi(annotationNodes)) {
                     addAnnotationIfNecessary(classNode, Validated)

@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 import groovy.lang.MetaBeanProperty;
 import groovy.lang.MetaProperty;

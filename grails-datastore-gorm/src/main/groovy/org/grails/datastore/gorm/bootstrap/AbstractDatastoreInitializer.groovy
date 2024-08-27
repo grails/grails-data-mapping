@@ -201,7 +201,7 @@ abstract class AbstractDatastoreInitializer implements ResourceLoaderAware{
         for (Resource res in resources) {
             def reader = readerFactory.getMetadataReader(res)
             def annotationMetadata = reader.annotationMetadata
-            if (annotationMetadata.hasAnnotation("grails.persistence.Entity") || annotationMetadata.hasAnnotation(Entity.name) || annotationMetadata.hasAnnotation(javax.persistence.Entity.name)) {
+            if (annotationMetadata.hasAnnotation("grails.persistence.Entity") || annotationMetadata.hasAnnotation(Entity.name) || annotationMetadata.hasAnnotation(jakarta.persistence.Entity.name)) {
                 persistentClasses << classLoader.loadClass(reader.classMetadata.className)
             }
         }

@@ -217,7 +217,7 @@ class Foo {
         Class service = new GroovyClassLoader().parseClass('''
 import grails.gorm.services.*
 import grails.gorm.annotation.Entity
-import static javax.persistence.criteria.JoinType.*
+import static jakarta.persistence.criteria.JoinType.*
 
 @Service(Foo)
 interface MyService {
@@ -250,7 +250,7 @@ interface IFoo {
         Class service = new GroovyClassLoader().parseClass('''
 import grails.gorm.services.*
 import grails.gorm.annotation.Entity
-import static javax.persistence.criteria.JoinType.*
+import static jakarta.persistence.criteria.JoinType.*
 
 @Service(Foo)
 interface MyService {
@@ -283,7 +283,7 @@ interface IFoo {
         Class service = new GroovyClassLoader().parseClass('''
 import grails.gorm.services.*
 import grails.gorm.annotation.Entity
-import static javax.persistence.criteria.JoinType.*
+import static jakarta.persistence.criteria.JoinType.*
 
 @Service(Foo)
 interface MyService {
@@ -317,7 +317,7 @@ interface IFoo {
         Class service = new GroovyClassLoader().parseClass('''
 import grails.gorm.services.*
 import grails.gorm.annotation.Entity
-import static javax.persistence.criteria.JoinType.*
+import static jakarta.persistence.criteria.JoinType.*
 
 @Service(Foo)
 interface MyService {
@@ -350,7 +350,7 @@ interface IFoo {
         Class service = new GroovyClassLoader().parseClass('''
 import grails.gorm.services.*
 import grails.gorm.annotation.Entity
-import static javax.persistence.criteria.JoinType.*
+import static jakarta.persistence.criteria.JoinType.*
 
 @Service(Foo)
 interface MyService {
@@ -384,7 +384,7 @@ interface IFoo {
         Class service = new GroovyClassLoader().parseClass('''
 import grails.gorm.services.*
 import grails.gorm.annotation.Entity
-import static javax.persistence.criteria.JoinType.*
+import static jakarta.persistence.criteria.JoinType.*
 
 @Service(Foo)
 interface MyService {
@@ -420,7 +420,7 @@ class Foo {
         Class service = new GroovyClassLoader().parseClass('''
 import grails.gorm.services.*
 import grails.gorm.annotation.Entity
-import static javax.persistence.criteria.JoinType.*
+import static jakarta.persistence.criteria.JoinType.*
 
 @Service(Foo)
 interface MyService {
@@ -452,7 +452,7 @@ class Foo {
         Class service = new GroovyClassLoader().parseClass('''
 import grails.gorm.services.*
 import grails.gorm.annotation.Entity
-import static javax.persistence.criteria.JoinType.*
+import static jakarta.persistence.criteria.JoinType.*
 
 @Service(Foo)
 interface MyService {
@@ -483,7 +483,7 @@ class Foo {
         Class service = new GroovyClassLoader().parseClass('''
 import grails.gorm.services.*
 import grails.gorm.annotation.Entity
-import static javax.persistence.criteria.JoinType.*
+import static jakarta.persistence.criteria.JoinType.*
 
 @Service(Foo)
 interface MyService {

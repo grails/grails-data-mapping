@@ -1,4 +1,4 @@
-package org.grails.datastore.gorm.validation.javax.services.implementers
+package org.grails.datastore.gorm.validation.jakarta.services.implementers
 
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.*
@@ -7,13 +7,13 @@ import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.Statement
 import org.grails.datastore.gorm.services.ServiceEnhancer
 import org.grails.datastore.gorm.transform.AbstractTraitApplyingGormASTTransformation
-import org.grails.datastore.gorm.validation.javax.ConfigurableParameterNameProvider
-import org.grails.datastore.gorm.validation.javax.services.ValidatedService
+import org.grails.datastore.gorm.validation.jakarta.ConfigurableParameterNameProvider
+import org.grails.datastore.gorm.validation.jakarta.services.ValidatedService
 import org.grails.datastore.mapping.reflect.ClassUtils
 
-import javax.validation.Constraint
-import javax.validation.ConstraintViolationException
-import javax.validation.ParameterNameProvider
+import jakarta.validation.Constraint
+import jakarta.validation.ConstraintViolationException
+import jakarta.validation.ParameterNameProvider
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
@@ -45,7 +45,7 @@ class MethodValidationImplementer implements ServiceEnhancer {
 
     @Override
     boolean doesEnhance(ClassNode domainClass, MethodNode methodNode) {
-        if(ClassUtils.isPresent("javax.validation.Validation")) {
+        if(ClassUtils.isPresent("jakarta.validation.Validation")) {
             for(Parameter p in methodNode.parameters) {
                 if( p.annotations.any() { AnnotationNode ann ->
                     def constraintAnn = findAnnotation(ann.classNode, Constraint)
@@ -98,7 +98,7 @@ class MethodValidationImplementer implements ServiceEnhancer {
 
         // add a first line to the method body that validates the method
         ArrayExpression argArray = new ArrayExpression(OBJECT_TYPE, validateArgsList)
-        String validateMethodName = abstractMethodNode.exceptions?.contains( make(ConstraintViolationException) ) ? "javaxValidate" : "validate"
+        String validateMethodName = abstractMethodNode.exceptions?.contains( make(ConstraintViolationException) ) ? "jakartaValidate" : "validate"
         MethodCallExpression validateCall = callThisD(ValidatedService, validateMethodName, args(varThis(), varX(methodField),argArray))
         if(body instanceof BlockStatement) {
             ((BlockStatement)body).statements.add(0, stmt( validateCall ))

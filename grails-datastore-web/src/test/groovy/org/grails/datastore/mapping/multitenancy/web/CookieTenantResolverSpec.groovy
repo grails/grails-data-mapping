@@ -6,7 +6,7 @@ import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletWebRequest
 import spock.lang.Specification
 
-import javax.servlet.http.Cookie
+import jakarta.servlet.http.Cookie
 
 /**
  * Created by graemerocher on 15/07/2016.

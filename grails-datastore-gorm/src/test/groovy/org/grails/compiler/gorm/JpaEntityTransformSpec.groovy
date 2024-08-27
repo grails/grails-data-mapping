@@ -6,7 +6,7 @@ import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.validation.annotation.Validated
 import spock.lang.Specification
 
-import javax.persistence.Transient
+import jakarta.persistence.Transient
 
 
 /**
@@ -18,8 +18,8 @@ class JpaEntityTransformSpec extends Specification {
         given:
         GroovyClassLoader gcl = new GroovyClassLoader()
         Class customerClass = gcl.parseClass('''
-import javax.persistence.*
-import javax.validation.constraints.Digits
+import jakarta.persistence.*
+import jakarta.validation.constraints.Digits
 @Entity
 class Customer {
 
@@ -30,7 +30,7 @@ class Customer {
     String firstName;
     String lastName;
     
-    @javax.persistence.OneToMany
+    @jakarta.persistence.OneToMany
     Set<Customer> related
 
 }

@@ -6,7 +6,7 @@ import org.springframework.context.MessageSourceResolvable
 import org.springframework.context.NoSuchMessageException
 import spock.lang.Specification
 
-import javax.persistence.Entity
+import jakarta.persistence.Entity
 
 /**
  * Created by gonmarques on 23/12/17.

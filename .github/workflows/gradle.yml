@@ -9,16 +9,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java: ['11', '14']
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          distribution: 'adopt'
-          java-version: ${{ matrix.java }}
+          distribution: temurin
+          java-version: 17
       - name: Run Build
         id: build
         uses: gradle/gradle-build-action@v2
@@ -35,8 +32,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          distribution: 'adopt'
-          java-version: '11'
+          distribution: temurin
+          java-version: '17'
       - name: Publish to Artifactory (repo.grails.org)
         uses: gradle/gradle-build-action@v2
         env:

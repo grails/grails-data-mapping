@@ -25,7 +25,7 @@ public class NullableConstraint extends AbstractVetoingConstraint {
     }
 
     /* (non-Javadoc)
-     * @see org.codehaus.groovy.grails.validation.Constraint#supports(java.lang.Class)
+     * @see org.apache.groovy.grails.validation.Constraint#supports(java.lang.Class)
      */
     @SuppressWarnings("rawtypes")
     public boolean supports(Class type) {

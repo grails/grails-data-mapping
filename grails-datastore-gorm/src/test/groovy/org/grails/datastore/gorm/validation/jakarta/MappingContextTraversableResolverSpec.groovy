@@ -1,4 +1,4 @@
-package org.grails.datastore.gorm.validation.javax
+package org.grails.datastore.gorm.validation.jakarta
 
 import grails.gorm.annotation.Entity
 import org.grails.datastore.mapping.core.Session
@@ -6,7 +6,7 @@ import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingConte
 import org.grails.datastore.mapping.model.MappingContext
 import spock.lang.Specification
 
-import javax.validation.Path
+import jakarta.validation.Path
 import java.lang.annotation.ElementType
 
 /**

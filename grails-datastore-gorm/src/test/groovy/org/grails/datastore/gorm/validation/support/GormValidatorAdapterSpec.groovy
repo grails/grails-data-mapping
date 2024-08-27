@@ -1,12 +1,12 @@
 package org.grails.datastore.gorm.validation.support
 
 import org.grails.datastore.gorm.GormValidateable
-import org.grails.datastore.gorm.validation.javax.GormValidatorAdapter
+import org.grails.datastore.gorm.validation.jakarta.GormValidatorAdapter
 import spock.lang.Specification
 
-import javax.validation.Validation
-import javax.validation.Validator
-import javax.validation.constraints.Digits
+import jakarta.validation.Validation
+import jakarta.validation.Validator
+import jakarta.validation.constraints.Digits
 
 /**
  * Created by graemerocher on 30/12/2016.
@@ -14,7 +14,7 @@ import javax.validation.constraints.Digits
 class GormValidatorAdapterSpec extends Specification {
 
 
-    void "test propagate javax.valdiation errors to gorm object"() {
+    void "test propagate jakarta.valdiation errors to gorm object"() {
 
         given:
         def factory = Validation.byDefaultProvider().configure().buildValidatorFactory()

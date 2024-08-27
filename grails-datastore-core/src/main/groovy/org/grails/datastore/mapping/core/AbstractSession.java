@@ -40,7 +40,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.Assert;
 
-import javax.persistence.FlushModeType;
+import jakarta.persistence.FlushModeType;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

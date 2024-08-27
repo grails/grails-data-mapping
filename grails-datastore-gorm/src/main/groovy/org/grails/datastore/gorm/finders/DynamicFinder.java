@@ -24,8 +24,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.persistence.FetchType;
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.criteria.JoinType;
 
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.grails.datastore.gorm.finders.MethodExpression.Between;

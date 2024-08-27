@@ -20,7 +20,7 @@ import org.grails.datastore.mapping.validation.ValidationErrors
 import org.springframework.validation.Errors
 import org.springframework.validation.annotation.Validated
 
-import javax.persistence.Transient
+import jakarta.persistence.Transient
 
 
 /**
@@ -54,7 +54,7 @@ trait GormValidateable {
      * @return Whether this instance should skip validation
      */
     boolean shouldSkipValidation() {
-        // skip validation if validation set to true or validation handled by javax.validation
+        // skip validation if validation set to true or validation handled by jakarta.validation
         return this.skipValidate
     }
 

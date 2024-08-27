@@ -6,7 +6,7 @@ import org.grails.datastore.mapping.model.PropertyMapping
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import javax.persistence.CascadeType
+import jakarta.persistence.CascadeType
 
 class AssociationCascadeOperationsSpec extends Specification {
 

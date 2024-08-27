@@ -1,7 +1,7 @@
 package grails.gorm.validation.cascade
 
-import javax.persistence.Entity
-import javax.persistence.Transient
+import jakarta.persistence.Entity
+import jakarta.persistence.Transient
 
 import org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry
 import org.grails.datastore.mapping.core.connections.ConnectionSourceSettings

@@ -109,7 +109,7 @@ class RxScheduleIOTransformation extends AbstractMethodDecoratingTransformation 
             }
             Expression returnExpr = rs?.expression
             if (returnExpr instanceof CastExpression) {
-                ((CastExpression) returnExpr).setType(newReturnType)
+                returnExpr = CastExpression.asExpression(newReturnType, returnExpr)
             }
         }
     }

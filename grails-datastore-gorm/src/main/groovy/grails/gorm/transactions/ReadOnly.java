@@ -84,7 +84,7 @@ public @interface ReadOnly {
      * a transaction rollback.
      * <p>This can be a substring, with no wildcard support at present.
      * A value of "ServletException" would match
-     * javax.servlet.ServletException and subclasses, for example.
+     * jakarta.servlet.ServletException and subclasses, for example.
      * <p><b>NB: </b>Consider carefully how specific the pattern is, and whether
      * to include package information (which isn't mandatory). For example,
      * "Exception" will match nearly anything, and will probably hide other rules.

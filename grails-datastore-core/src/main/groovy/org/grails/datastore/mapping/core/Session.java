@@ -18,7 +18,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.FlushModeType;
+import jakarta.persistence.FlushModeType;
 
 import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.model.MappingContext;

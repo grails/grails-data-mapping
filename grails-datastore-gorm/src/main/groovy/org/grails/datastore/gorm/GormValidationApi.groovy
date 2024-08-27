@@ -31,7 +31,7 @@ import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
 import org.springframework.validation.Validator
 
-import javax.persistence.FlushModeType
+import jakarta.persistence.FlushModeType
 
 /**
  * Methods used for validating GORM instances.

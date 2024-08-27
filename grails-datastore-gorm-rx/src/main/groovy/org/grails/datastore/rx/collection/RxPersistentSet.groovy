@@ -24,7 +24,7 @@ import rx.Subscription
  */
 @CompileStatic
 @Slf4j
-class RxPersistentSet extends PersistentSet implements RxPersistentCollection, RxUnidirectionalCollection, RxCollection {
+class RxPersistentSet<T> extends PersistentSet implements RxPersistentCollection<T>, RxUnidirectionalCollection, RxCollection<T> {
     final RxDatastoreClient datastoreClient
     final Association association
 

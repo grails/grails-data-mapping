@@ -26,7 +26,7 @@ import org.grails.datastore.mapping.query.api.BuildableCriteria;
 import org.grails.datastore.mapping.query.api.Criteria;
 import org.grails.datastore.mapping.query.api.ProjectionList;
 
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.JoinType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

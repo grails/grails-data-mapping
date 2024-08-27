@@ -4,7 +4,7 @@ import grails.gorm.rx.collection.RxPersistentCollection
 import grails.gorm.rx.collection.RxUnidirectionalCollection
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
-import org.grails.datastore.mapping.collection.PersistentSet
+import org.grails.datastore.mapping.collection.PersistentSortedSet
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.rx.RxDatastoreClient
@@ -25,14 +25,14 @@ import rx.Subscription
 
 @CompileStatic
 @Slf4j
-class RxPersistentSortedSet extends PersistentSet implements SortedSet, RxPersistentCollection, RxUnidirectionalCollection, RxCollection {
+class RxPersistentSortedSet<T> extends PersistentSortedSet implements RxPersistentCollection<T>, RxUnidirectionalCollection, RxCollection<T> {
     final RxDatastoreClient datastoreClient
     final Association association
 
     protected final QueryState queryState
 
     RxPersistentSortedSet( RxDatastoreClient datastoreClient, Association association, Serializable associationKey, QueryState queryState = null) {
-        super(association, associationKey, null, new TreeSet())
+        super(association, associationKey, null)
         this.datastoreClient = datastoreClient
         this.association = association
         this.queryState = queryState

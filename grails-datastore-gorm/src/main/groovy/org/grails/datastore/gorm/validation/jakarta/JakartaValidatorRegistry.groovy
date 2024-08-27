@@ -1,4 +1,4 @@
-package org.grails.datastore.gorm.validation.javax
+package org.grails.datastore.gorm.validation.jakarta
 
 import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.validation.constraints.registry.DefaultValidatorRegistry
@@ -7,7 +7,6 @@ import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.reflect.ClassUtils
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory
 import org.springframework.context.ApplicationContext
 import org.springframework.context.MessageSource
 import org.springframework.context.support.StaticMessageSource
@@ -16,15 +15,15 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.validation.beanvalidation.MessageSourceResourceBundleLocator
 import org.springframework.validation.beanvalidation.SpringConstraintValidatorFactory
 
-import javax.validation.ClockProvider
-import javax.validation.Configuration
-import javax.validation.ConstraintValidatorFactory
-import javax.validation.MessageInterpolator
-import javax.validation.ParameterNameProvider
-import javax.validation.TraversableResolver
-import javax.validation.Validation
-import javax.validation.ValidatorContext
-import javax.validation.ValidatorFactory
+import jakarta.validation.ClockProvider
+import jakarta.validation.Configuration
+import jakarta.validation.ConstraintValidatorFactory
+import jakarta.validation.MessageInterpolator
+import jakarta.validation.ParameterNameProvider
+import jakarta.validation.TraversableResolver
+import jakarta.validation.Validation
+import jakarta.validation.ValidatorContext
+import jakarta.validation.ValidatorFactory
 
 /**
  * A validator registry that creates validators
@@ -33,14 +32,14 @@ import javax.validation.ValidatorFactory
  * @since 6.1
  */
 @CompileStatic
-class JavaxValidatorRegistry extends DefaultValidatorRegistry implements ValidatorFactory {
+class JakartaValidatorRegistry extends DefaultValidatorRegistry implements ValidatorFactory {
 
     /**
      * The validator factory
      */
     final ValidatorFactory validatorFactory
 
-    JavaxValidatorRegistry(MappingContext mappingContext, ConnectionSourceSettings settings, MessageSource messageSource = new StaticMessageSource()) {
+    JakartaValidatorRegistry(MappingContext mappingContext, ConnectionSourceSettings settings, MessageSource messageSource = new StaticMessageSource()) {
         super(mappingContext, settings, messageSource)
 
         Configuration validatorConfiguration = buildConfiguration()
@@ -108,7 +107,7 @@ class JavaxValidatorRegistry extends DefaultValidatorRegistry implements Validat
     }
 
     @Override
-    javax.validation.Validator getValidator() {
+    jakarta.validation.Validator getValidator() {
         return validatorFactory.getValidator()
     }
 
@@ -153,9 +152,9 @@ class JavaxValidatorRegistry extends DefaultValidatorRegistry implements Validat
     }
 
     /**
-     * @return Whether javax.validation is available
+     * @return Whether jakarta.validation is available
      */
     static boolean isAvailable() {
-        ClassUtils.isPresent("javax.validation.Validation")
+        ClassUtils.isPresent("jakarta.validation.Validation")
     }
 }

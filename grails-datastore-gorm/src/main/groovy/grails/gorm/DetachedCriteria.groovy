@@ -30,7 +30,7 @@ import org.grails.datastore.mapping.query.api.QueryAliasAwareSession
 import org.grails.datastore.mapping.query.api.QueryArgumentsAware
 import org.grails.datastore.mapping.query.api.QueryableCriteria
 
-import javax.persistence.criteria.JoinType
+import jakarta.persistence.criteria.JoinType
 
 /**
  * Represents criteria that is not bound to the current connection and can be built up and re-used at a later date.

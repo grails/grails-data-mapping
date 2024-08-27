@@ -1,14 +1,13 @@
-package org.grails.datastore.gorm.validation.javax
+package org.grails.datastore.gorm.validation.jakarta
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import groovy.transform.InheritConstructors
 import org.grails.datastore.gorm.GormValidateable
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter
 
-import javax.validation.ConstraintViolation
-import javax.validation.Validator
-import javax.validation.executable.ExecutableValidator
+import jakarta.validation.ConstraintViolation
+import jakarta.validation.Validator
+import jakarta.validation.executable.ExecutableValidator
 
 /**
  * A validator adapter that applies translates the constraint errors into the Errors object of a GORM entity

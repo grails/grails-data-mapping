@@ -9,8 +9,8 @@ jobs:
       target_branch: ${{ steps.extract_branch.outputs.value }}
     runs-on: ubuntu-latest
     env:
-      GIT_USER_NAME: puneetbehl
-      GIT_USER_EMAIL: behlp@unityfoundation.io
+      GIT_USER_NAME: 'grails-build'
+      GIT_USER_EMAIL: 'grails-build@users.noreply.github.com'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -19,8 +19,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          distribution: 'adopt'
-          java-version: 11
+          distribution: temurin
+          java-version: 17
       - name: Run pre-release
         uses: micronaut-projects/github-actions/pre-release@master
         with:

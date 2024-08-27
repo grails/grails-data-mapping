@@ -1,24 +1,23 @@
-package org.grails.datastore.gorm.validation.javax.services
+package org.grails.datastore.gorm.validation.jakarta.services
 
 import groovy.transform.CompileStatic
-import org.grails.datastore.gorm.validation.javax.ConstraintViolationUtils
-import org.grails.datastore.gorm.validation.javax.JavaxValidatorRegistry
+import org.grails.datastore.gorm.validation.jakarta.ConstraintViolationUtils
+import org.grails.datastore.gorm.validation.jakarta.JakartaValidatorRegistry
 import org.grails.datastore.mapping.services.Service
-import org.grails.datastore.mapping.validation.ValidationErrors
 import org.grails.datastore.mapping.validation.ValidationException
 import org.springframework.validation.Errors
 
-import javax.validation.Configuration
-import javax.validation.ConstraintViolation
-import javax.validation.ConstraintViolationException
-import javax.validation.ParameterNameProvider
-import javax.validation.Validation
-import javax.validation.ValidatorFactory
-import javax.validation.executable.ExecutableValidator
+import jakarta.validation.Configuration
+import jakarta.validation.ConstraintViolation
+import jakarta.validation.ConstraintViolationException
+import jakarta.validation.ParameterNameProvider
+import jakarta.validation.Validation
+import jakarta.validation.ValidatorFactory
+import jakarta.validation.executable.ExecutableValidator
 import java.lang.reflect.Method
 
 /**
- * A service that is validated by javax.validation
+ * A service that is validated by jakarta.validation
  *
  * @author Graeme Rocher
  */
@@ -47,7 +46,7 @@ trait ValidatedService<T> extends Service<T> {
 
             Configuration configuration
             if(datastore != null) {
-                configuration = JavaxValidatorRegistry.buildConfigurationFor(
+                configuration = JakartaValidatorRegistry.buildConfigurationFor(
                         datastore.mappingContext,
                         datastore.mappingContext.validatorRegistry.messageSource
                 )
@@ -74,7 +73,7 @@ trait ValidatedService<T> extends Service<T> {
      *
      * @throws ConstraintViolationException If a validation error occurs
      */
-    void javaxValidate(Object instance, Method method, Object...args) throws ConstraintViolationException {
+    void jakartaValidate(Object instance, Method method, Object...args) throws ConstraintViolationException {
         ExecutableValidator validator = executableValidatorMap.get(method)
         Set<ConstraintViolation> constraintViolations = validator.validateParameters(instance, method, args)
         if(!constraintViolations.isEmpty()) {

@@ -33,7 +33,7 @@ import org.grails.datastore.mapping.query.api.Criteria
 import org.grails.datastore.mapping.reflect.EntityReflector
 import org.springframework.transaction.TransactionDefinition
 
-import javax.persistence.Transient
+import jakarta.persistence.Transient
 
 /**
  *

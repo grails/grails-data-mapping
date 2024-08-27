@@ -227,11 +227,11 @@ class Tenants {
     }
 
     /**
-    * Execute the given closure with given tenant id for the given datastore. This method will create a new datastore session for the scope of the call and hence is designed to be used to manage the connection life cycle
-    * @param tenantId The tenant id
-    * @param callable The closure
-    * @return The result of the closure
-    */
+     * Execute the given closure with given tenant id for the given datastore. This method will create a new datastore session for the scope of the call and hence is designed to be used to manage the connection life cycle
+     * @param tenantId The tenant id
+     * @param callable The closure
+     * @return The result of the closure
+     */
     static <T> T withId(MultiTenantCapableDatastore multiTenantCapableDatastore, Serializable tenantId, Closure<T> callable) {
         return CurrentTenant.withTenant(tenantId) {
             if(multiTenantCapableDatastore.getMultiTenancyMode().isSharedConnection()) {

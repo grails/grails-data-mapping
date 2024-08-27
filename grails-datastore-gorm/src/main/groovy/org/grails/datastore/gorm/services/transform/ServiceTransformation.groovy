@@ -75,7 +75,7 @@ import org.grails.datastore.gorm.services.implementers.FindOneWhereImplementer
 import org.grails.datastore.gorm.services.implementers.UpdateStringQueryImplementer
 import org.grails.datastore.gorm.transactions.transform.TransactionalTransform
 import org.grails.datastore.gorm.transform.AbstractTraitApplyingGormASTTransformation
-import org.grails.datastore.gorm.validation.javax.services.implementers.MethodValidationImplementer
+import org.grails.datastore.gorm.validation.jakarta.services.implementers.MethodValidationImplementer
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.order.OrderedComparator
 

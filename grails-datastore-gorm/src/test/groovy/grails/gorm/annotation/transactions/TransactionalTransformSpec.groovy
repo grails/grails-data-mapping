@@ -19,7 +19,7 @@ import org.springframework.util.ReflectionUtils
 import spock.lang.Issue
 import spock.lang.Specification
 
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 import javax.sql.DataSource
 /**
  */

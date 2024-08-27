@@ -3,15 +3,15 @@ dependencies {
     api project(":grails-datastore-gorm-validation")
 
     implementation "org.slf4j:slf4j-api:$slf4jVersion"
-    implementation("javax.el:javax.el-api:$elVersion")
-    runtimeOnly('org.glassfish:javax.el:3.0.1-b12')
+    implementation("jakarta.el:jakarta.el-api:$jakartaElVersion")
+    runtimeOnly('org.glassfish:jakarta.el:4.0.2')
 
     compileOnly("org.hibernate:hibernate-validator:$hibernateValidatorVersion")
     compileOnly("org.springframework:spring-jdbc:$springVersion")
     compileOnly("org.springframework:spring-web:$springVersion")
     testImplementation("org.springframework:spring-jdbc:$springVersion")
     testImplementation("org.hibernate:hibernate-validator:$hibernateValidatorVersion")
-    testRuntimeOnly('com.h2database:h2:2.2.224')
+    testRuntimeOnly("com.h2database:h2:$h2Version")
 }
 
 //compileGroovy.groovyOptions.forkOptions.jvmArgs = ['-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005']

@@ -11,7 +11,7 @@ import java.util.List;
  * @author Graeme Rocher
  * @since 6.0
  */
-public interface RxPersistentCollection extends PersistentCollection, ObservableCollection {
+public interface RxPersistentCollection<T> extends PersistentCollection, ObservableCollection<T> {
 
 
 }

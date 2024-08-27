@@ -156,7 +156,7 @@ class GormMappingSyntaxTests {
 
     }
 
-    @javax.persistence.Entity
+    @jakarta.persistence.Entity
     class JavaEntity {}
 }
 
@@ -193,9 +193,9 @@ class TestEntity {
 
     SecondEntity second
 
-    transient String getTransientMethodProperty() {}
+    String getTransientMethodProperty() {}
 
-    transient void setTransientMethodProperty(String value) {}
+    void setTransientMethodProperty(String value) {}
 
     static hasOne = [second:SecondEntity]
     static transients = ['bar']

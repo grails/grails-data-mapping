@@ -3,7 +3,7 @@ package org.grails.datastore.mapping.model
 import org.grails.datastore.mapping.model.config.JpaMappingConfigurationStrategy
 import org.grails.datastore.mapping.model.types.Association
 import spock.lang.Specification
-import javax.persistence.*
+import jakarta.persistence.*
 
 /**
  * Created by jameskleeh on 12/21/16.
@@ -262,11 +262,11 @@ class JpaMappingSyntaxTests extends Specification {
 
     }
 
-    @javax.persistence.Entity
+    @jakarta.persistence.Entity
     class JavaEntity {}
 }
 
-@javax.persistence.Entity
+@jakarta.persistence.Entity
 class JpaPerson {
     @Id
     Long id
@@ -277,7 +277,7 @@ class JpaPerson {
     Set<JpaAuthority> roles
 }
 
-@javax.persistence.Entity
+@jakarta.persistence.Entity
 class JpaAuthority {
     @Id
     Long id
@@ -289,7 +289,7 @@ class JpaAuthority {
 }
 
 
-@javax.persistence.Entity
+@jakarta.persistence.Entity
 class JpaBook {
     @Id
     Long id
@@ -303,7 +303,7 @@ class JpaBook {
     JpaSimpleEntity simple
 }
 
-@javax.persistence.Entity
+@jakarta.persistence.Entity
 class JpaAuthor {
     @Id
     Long id
@@ -316,7 +316,7 @@ class JpaAuthor {
     def shouldBeIgnored
 }
 
-@javax.persistence.Entity
+@jakarta.persistence.Entity
 class JpaPublisher {
     @Id
     Long id
@@ -325,7 +325,7 @@ class JpaPublisher {
     Set<JpaAuthor> authors
 }
 
-@javax.persistence.Entity
+@jakarta.persistence.Entity
 class JpaTestEntity {
     @Id
     Long customId
@@ -342,7 +342,7 @@ class JpaTestEntity {
     JpaSecondEntity third
 }
 
-@javax.persistence.Entity
+@jakarta.persistence.Entity
 class JpaSecondEntity {
     @Id
     Long id
