@@ -442,14 +442,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="paragraph">
-<p>GORM Data Services have built in support for <code>javax.validation</code> annotations for method parameters.</p>
+<p>GORM Data Services have built in support for <code>jakarta.validation</code> annotations for method parameters.</p>
 </div>
 <div class="paragraph">
-<p>You will need to have a <code>javax.validation</code> implementation on your classpath (such as <code>hibernate-validator</code> and then simply annotate your method parameters using the appropriate annotation. For example:</p>
+<p>You will need to have a <code>jakarta.validation</code> implementation on your classpath (such as <code>hibernate-validator</code> and then simply annotate your method parameters using the appropriate annotation. For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">import javax.validation.constraints.*
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">import jakarta.validation.constraints.*
 
 @Service(Book)
 interface BookService {
@@ -464,7 +464,7 @@ interface BookService {
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 8.1.1-SNAPSHOT<br>
+Version 9.0.0-SNAPSHOT<br>
 </div>
 </div>
 </body>

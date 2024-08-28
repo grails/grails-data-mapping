@@ -532,7 +532,7 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <h1>GORM for Hibernate</h1>
 <div class="details">
 <span id="author" class="author">Graeme Rocher, Puneet Behl</span><br>
-<span id="revnumber">version 8.1.1-SNAPSHOT</span>
+<span id="revnumber">version 9.0.0-SNAPSHOT</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -900,12 +900,12 @@ abstract class BookService {
 <h2 id="gettingStarted">2. Getting Started</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To use GORM 8.1.1-SNAPSHOT for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
+<p>To use GORM 9.0.0-SNAPSHOT for Hibernate in Grails 3 you can specify the following configuration in <code>build.gradle</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile "org.grails.plugins:hibernate5:8.1.1-SNAPSHOT"
+    compile "org.grails.plugins:hibernate5:9.0.0-SNAPSHOT"
     compile "org.hibernate:hibernate-ehcache"
 }</code></pre>
 </div>
@@ -915,7 +915,7 @@ abstract class BookService {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=8.1.1-SNAPSHOT</code></pre>
+<pre class="CodeRay highlight"><code data-lang="properties">gormVersion=9.0.0-SNAPSHOT</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -928,7 +928,7 @@ abstract class BookService {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if( details.requested.group == 'org.grails' &&
             details.requested.name.startsWith('grails-datastore')) {
-            details.useVersion("8.1.1-SNAPSHOT")
+            details.useVersion("9.0.0-SNAPSHOT")
         }
     }
 }
@@ -954,7 +954,7 @@ dependencies {
 <div class="sect2">
 <h3 id="hibernateVersions">2.2. Configuring Different Hibernate Versions</h3>
 <div class="paragraph">
-<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 8.1.1-SNAPSHOT.</p>
+<p>There are various changes you have to make to your build depending on the version of Grails when using GORM 9.0.0-SNAPSHOT.</p>
 </div>
 <div class="sect3">
 <h4 id="_grails_3_2_x_and_above_with_hibernate_4">2.2.1. Grails 3.2.x and above with Hibernate 4</h4>
@@ -1020,8 +1020,8 @@ configurations.all {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:8.1.1-SNAPSHOT")
-compile "org.hibernate:hibernate-core"
+<pre class="CodeRay highlight"><code data-lang="groovy">compile("org.grails:gorm-hibernate5-spring-boot:9.0.0-SNAPSHOT")
+compile "org.hibernate:hibernate-core-jakarta"
 compile "org.hibernate:hibernate-ehcache"
 runtime "com.h2database:h2:1.4.192"
 // for MySQL
@@ -1153,7 +1153,7 @@ If your GORM entities are in a different package specify the package name as the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:8.1.1-SNAPSHOT"
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-hibernate5:9.0.0-SNAPSHOT"
 runtime "com.h2database:h2:1.4.192"
 runtime "org.apache.tomcat:tomcat-jdbc:8.5.0"
 runtime "org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.0"
@@ -7545,7 +7545,7 @@ In this case the names of the properties to query are inferred from the method s
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">javax.persistence.criteria.JoinType.*</span>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">static</span> <span class="include">jakarta.persistence.criteria.JoinType.*</span>
 
 <span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
 <span class="type">interface</span> BookService {
@@ -7834,14 +7834,14 @@ If a property exists on the interface but not on the domain class you will recei
 <div class="sect2">
 <h3 id="_validating_data_services">10.5. Validating Data Services</h3>
 <div class="paragraph">
-<p>GORM Data Services have built in support for <code>javax.validation</code> annotations for method parameters.</p>
+<p>GORM Data Services have built in support for <code>jakarta.validation</code> annotations for method parameters.</p>
 </div>
 <div class="paragraph">
-<p>You will need to have a <code>javax.validation</code> implementation on your classpath (such as <code>hibernate-validator</code> and then simply annotate your method parameters using the appropriate annotation. For example:</p>
+<p>You will need to have a <code>jakarta.validation</code> implementation on your classpath (such as <code>hibernate-validator</code> and then simply annotate your method parameters using the appropriate annotation. For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">javax.validation.constraints.*</span>
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">jakarta.validation.constraints.*</span>
 
 <span class="annotation">@Service</span>(<span class="predefined-type">Book</span>)
 <span class="type">interface</span> BookService {
@@ -7877,7 +7877,7 @@ RxJava 2.x support is planned for a future release
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx:8.1.1-SNAPSHOT"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-gorm-rx:9.0.0-SNAPSHOT"</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -8623,7 +8623,7 @@ sessionFactory.openSession()</code></pre>
 <div class="listingblock">
 <div class="title">build.gradle</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:8.1.1-SNAPSHOT"</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">compile "org.grails:grails-datastore-web:9.0.0-SNAPSHOT"</code></pre>
 </div>
 </div>
 </div>
@@ -9392,7 +9392,7 @@ JUnit doesn&#8217;t have anything like Spock&#8217;s <code>AutoCleanup</code> so
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 8.1.1-SNAPSHOT<br>
+Version 9.0.0-SNAPSHOT<br>
 </div>
 </div>
 </body>
