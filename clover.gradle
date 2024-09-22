@@ -19,7 +19,7 @@ class CloverPluginConvention {
 }
 
 dependencies {
-	testRuntimeOnly "com.cenqua.clover:clover:3.3.0"
+	testRuntimeOnly "org.openclover:clover:$cloverVersion"
 }
 
 test.doFirst {

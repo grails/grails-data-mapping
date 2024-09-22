@@ -1,6 +1,6 @@
 dependencies {
     api "org.springframework:spring-expression:$springVersion"
-    api 'commons-lang:commons-lang:2.6'
+    api "org.apache.commons:commons-lang3:$commonsLangVersion"
     api project(":grails-datastore-gorm-async")
     api project(":grails-datastore-gorm-support")
     api("jakarta.servlet:jakarta.servlet-api:$servletApiVersion")

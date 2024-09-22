@@ -4,8 +4,8 @@ buildscript {
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath "io.github.gradle-nexus:publish-plugin:1.3.0"
-        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+        classpath "io.github.gradle-nexus:publish-plugin:$gradleNexusPublishPluginVersion"
+        classpath "com.bmuschko:gradle-nexus-plugin:$gradleNexusPluginVersion"
     }
 }
 
@@ -119,12 +119,12 @@ subprojects {
     dependencies {
         api "jakarta.annotation:jakarta.annotation-api:$jakartaAnnotationApiVersion"
         implementation "jakarta.validation:jakarta.validation-api:$jakartaValidationVersion"
-        compileOnly "com.github.spotbugs:spotbugs-annotations:4.8.6"
+        compileOnly "com.github.spotbugs:spotbugs-annotations:$jsr305Version"
 
         if (isStandardGroovyMavenProject) {
-            documentation "org.fusesource.jansi:jansi:2.4.0"
+            documentation "org.fusesource.jansi:jansi:$jansiVersion"
             documentation "org.apache.groovy:groovy-dateutil:$groovyVersion"
-            documentation 'info.picocli:picocli:4.6.3'
+            documentation "info.picocli:picocli:$picocliVersion"
             documentation ("com.github.javaparser:javaparser-core:$javaParserCoreVersion")
 
             api "org.apache.groovy:groovy:$groovyVersion"
@@ -250,9 +250,9 @@ configurations {
 }
 
 dependencies {
-    build "com.cenqua.clover:clover:3.3.0"
-    build "org.apache.ant:ant-junit:1.10.12"
-    build "org.apache.ant:ant-nodeps:1.8.1"
+    build "org.openclover:clover:$cloverVersion"
+    build "org.apache.ant:ant-junit:$antVersion"
+    build "org.apache.ant:ant:$antVersion"
 }
 
 task install(dependsOn: subprojects*.tasks*.withType(PublishToMavenLocal))
