@@ -46,7 +46,7 @@ dependencies {
     compileOnly "org.springframework:spring-webmvc:$springVersion"
     compileOnly "org.grails:grails-web-url-mappings:$grailsVersion", { transitive = false }
     compileOnly "org.grails:grails-web-common:$grailsVersion", { transitive = false }
-    compileOnly("org.hibernate:hibernate-core:${hibernateVersion}") {
+    compileOnly("org.hibernate:hibernate-core-jakarta:$hibernateVersion") {
         exclude group:'commons-logging', module:'commons-logging'
         exclude group:'commons-collections', module:'commons-collections'
         exclude group:'org.slf4j', module:'slf4j-api'
