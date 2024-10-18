@@ -3,9 +3,11 @@ dependencies {
     api project(":grails-datastore-gorm-validation")
 
     implementation "org.slf4j:slf4j-api:$slf4jVersion"
+    
     // :grails-datastore-gorm:compileGroovy requires jakarta.el.ExpressionFactory
     // required by gorm-hibernate5 test compilation 
     compileOnlyApi("jakarta.el:jakarta.el-api:$jakartaElVersion")
+    runtimeOnly "org.glassfish:jakarta.el:$jakartaElGlassfishImplVersion"
 
     compileOnly("org.hibernate:hibernate-validator:$hibernateValidatorVersion")
     compileOnly("org.springframework:spring-jdbc:$springVersion")
