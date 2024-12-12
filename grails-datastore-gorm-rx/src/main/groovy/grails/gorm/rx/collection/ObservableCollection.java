@@ -2,7 +2,7 @@ package grails.gorm.rx.collection;
 
 
 import grails.gorm.rx.PersistentObservable;
-import rx.Observable;
+import io.reactivex.rxjava3.core.Observable;
 
 import java.util.List;
 

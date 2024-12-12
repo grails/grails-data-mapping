@@ -4,6 +4,8 @@ import grails.gorm.rx.collection.RxPersistentCollection
 import grails.gorm.rx.collection.RxUnidirectionalCollection
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.functions.Consumer
 import org.grails.datastore.mapping.collection.PersistentSortedSet
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.query.Query
@@ -12,9 +14,9 @@ import org.grails.datastore.rx.exceptions.BlockingOperationException
 import org.grails.datastore.rx.internal.RxDatastoreClientImplementor
 import org.grails.datastore.rx.query.QueryState
 import org.grails.datastore.rx.query.RxQuery
-import rx.Observable
-import rx.Subscriber
-import rx.Subscription
+import io.reactivex.rxjava3.core.Observable
+import org.reactivestreams.Subscriber
+import org.reactivestreams.Subscription
 
 /**
  * Represents a reactive sorted set that can be observed in order to allow non-blocking lazy loading of associations
@@ -82,7 +84,7 @@ class RxPersistentSortedSet<T> extends PersistentSortedSet implements RxPersiste
             if(((RxDatastoreClientImplementor)datastoreClient).isAllowBlockingOperations()) {
                 log.warn("Association $association initialised using blocking operation. Consider using subscribe(..) or an eager query instead")
 
-                addAll observable.toBlocking().first()
+                addAll observable.blockingFirst()
             }
             else {
                 throw new BlockingOperationException("Cannot initialize $association using a blocking operation. Use subscribe(..) instead.")
@@ -94,7 +96,7 @@ class RxPersistentSortedSet<T> extends PersistentSortedSet implements RxPersiste
     }
 
     @Override
-    Subscription subscribe(Subscriber subscriber) {
+    Disposable subscribe(Consumer subscriber) {
         return toObservable().subscribe(subscriber)
     }
 

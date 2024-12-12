@@ -21,8 +21,8 @@ import org.grails.datastore.mapping.validation.ValidationException
 import org.grails.gorm.rx.api.RxGormEnhancer
 import org.grails.gorm.rx.api.RxGormInstanceApi
 import org.grails.gorm.rx.api.RxGormStaticApi
-import rx.Observable
-import rx.Subscriber
+import io.reactivex.rxjava3.core.Observable
+import org.reactivestreams.Subscriber
 
 /**
  * Represents a reactive GORM entity
@@ -79,9 +79,9 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
                 throw ValidationException.newInstance("Validation error occurred during call to save() for entity [$this]", errors)
             } else {
                 if (isInsert) {
-                    return currentRxGormInstanceApi().insert(this, arguments)
+                    return currentRxGormInstanceApi().insert(this as D, arguments)
                 } else {
-                    return currentRxGormInstanceApi().save(this, arguments)
+                    return currentRxGormInstanceApi().save(this as D, arguments)
                 }
 
             }
@@ -89,9 +89,9 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
             skipValidation(true)
             clearErrors()
             if (isInsert) {
-                return currentRxGormInstanceApi().insert(this, arguments)
+                return currentRxGormInstanceApi().insert(this as D, arguments)
             } else {
-                return currentRxGormInstanceApi().save(this, arguments)
+                return currentRxGormInstanceApi().save(this as D, arguments)
             }
         }
     }
@@ -345,7 +345,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @return The number of objects actually deleted
      */
     static Observable<Number> deleteAll(D...objects) {
-        deleteAll( (Iterable<D>)Arrays.asList(objects) )
+        RxEntity.deleteAll( (Iterable<D>)Arrays.asList(objects) )
     }
 
     /**
@@ -375,7 +375,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @return An observable that emits the identifiers of the saved objects
      */
     static Observable<List<Serializable>> saveAll(D... objects) {
-        saveAll((Iterable<D>)Arrays.asList(objects))
+        RxEntity.saveAll((Iterable<D>)Arrays.asList(objects))
     }
 
     /**
@@ -395,7 +395,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @return An observable that emits the identifiers of the saved objects
      */
     static Observable<List<Serializable>> insertAll(D... objects) {
-        insertAll((Iterable<D>)Arrays.asList(objects))
+        RxEntity.insertAll((Iterable<D>)Arrays.asList(objects))
     }
 
     /**
@@ -405,11 +405,9 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @return
      */
     static Observable<Boolean> exists(Serializable id) {
-        get(id).map { D o ->
+        RxEntity.get(id).map { D o ->
             o != null
-        }.switchIfEmpty(Observable.create( { Subscriber s ->
-            s.onNext(false)
-        } as Observable.OnSubscribe))
+        }.switchIfEmpty { Observable.just(false) };
     }
 
     /**
@@ -504,7 +502,7 @@ trait RxEntity<D> implements RxGormOperations<D>, GormValidateable, DirtyCheckab
      * @return An observable with all results
      */
     static Observable<D> findAll() {
-        findAll(Collections.<String, Object> emptyMap())
+        RxEntity.findAll(Collections.<String, Object> emptyMap())
     }
 
     /**

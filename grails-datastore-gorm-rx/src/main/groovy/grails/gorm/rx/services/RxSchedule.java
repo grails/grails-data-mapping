@@ -2,7 +2,7 @@ package grails.gorm.rx.services;
 
 import org.codehaus.groovy.transform.GroovyASTTransformationClass;
 import org.grails.datastore.gorm.transform.GormASTTransformationClass;
-import rx.schedulers.Schedulers;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import java.lang.annotation.*;
 

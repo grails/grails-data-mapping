@@ -1,15 +1,13 @@
 package org.grails.gorm.rx.services.support
 
 import groovy.transform.CompileStatic
-import rx.Observable
-import rx.Observer
-import rx.Scheduler
-import rx.Single
-import rx.SingleSubscriber
-import rx.Subscriber
-import rx.observables.SyncOnSubscribe
-import rx.schedulers.Schedulers
-
+import io.reactivex.rxjava3.annotations.NonNull
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.ObservableEmitter
+import io.reactivex.rxjava3.core.ObservableOnSubscribe
+import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.concurrent.Callable
 
 /**
@@ -38,39 +36,33 @@ class RxServiceSupport {
      * @param callable The callable
      * @return The {@link Observable}
      */
+    static lockObj = new Object()
     static <T> Observable<T> create(Scheduler scheduler, Callable<T> callable) {
-        Observable.create(new SyncOnSubscribe() {
+        synchronized(lockObj) {
+            File testFile = new File("/tmp/gorm-rx.log")
+            String input = testFile.text
+            def os = testFile.newOutputStream()
+            os << input
+            os << "Creating observable ${callable.class.name}\n"
+            os.flush()
+            os.close()
+        }
+
+        Observable.create(new ObservableOnSubscribe<T>() {
             @Override
-            protected Object generateState() {
-                def result = callable.call()
+            void subscribe(@NonNull ObservableEmitter<T> emitter) throws Exception {
+
+                Object result = callable.call()
                 if(result instanceof Iterable) {
-                    return ((Iterable)result).iterator()
-                }
-                return result
-            }
-
-            @Override
-            protected Object next(Object state, Observer observer) {
-                if(state == null) {
-                    observer.onCompleted()
-                }
-                else if(state instanceof Iterator) {
-                    Iterator i = (Iterator)state
-                    if(i.hasNext()) {
-                        observer.onNext(i.next())
+                    for(Object o in (Iterable)result) {
+                        emitter.onNext((T)o)
                     }
-                    else {
-                        observer.onCompleted()
-                    }
-
                 }
                 else {
-                    observer.onNext(state)
-                    observer.onCompleted()
+                    emitter.onNext(result)
                 }
-                return state
+                emitter.onComplete()
             }
-
         }).observeOn(scheduler)
     }
 
@@ -92,13 +84,6 @@ class RxServiceSupport {
      * @return The {@link Observable}
      */
     static <T>  Single<T> createSingle(Scheduler scheduler, Callable<T> callable) {
-        Single.create({ SingleSubscriber<? super T> singleSubscriber ->
-            try {
-                def result = callable.call()
-                singleSubscriber.onSuccess(result)
-            } catch (Throwable e) {
-                singleSubscriber.onError(e)
-            }
-        } as Single.OnSubscribe).observeOn(scheduler)
+        Single.fromCallable { callable.call() }.observeOn(scheduler)
     }
 }

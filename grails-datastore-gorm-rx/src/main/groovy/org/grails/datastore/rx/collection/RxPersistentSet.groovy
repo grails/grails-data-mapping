@@ -4,6 +4,8 @@ import grails.gorm.rx.collection.RxPersistentCollection
 import grails.gorm.rx.collection.RxUnidirectionalCollection
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.functions.Consumer
 import org.grails.datastore.mapping.collection.PersistentSet
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.query.Query
@@ -12,9 +14,9 @@ import org.grails.datastore.rx.exceptions.BlockingOperationException
 import org.grails.datastore.rx.internal.RxDatastoreClientImplementor
 import org.grails.datastore.rx.query.QueryState
 import org.grails.datastore.rx.query.RxQuery
-import rx.Observable
-import rx.Subscriber
-import rx.Subscription
+import io.reactivex.rxjava3.core.Observable
+import org.reactivestreams.Subscriber
+import org.reactivestreams.Subscription
 
 /**
  * Represents a reactive set that can be observed in order to allow non-blocking lazy loading of associations
@@ -89,7 +91,7 @@ class RxPersistentSet<T> extends PersistentSet implements RxPersistentCollection
             if(((RxDatastoreClientImplementor)datastoreClient).isAllowBlockingOperations()) {
                 log.warn("Association $association initialised using blocking operation. Consider using subscribe(..) or an eager query instead")
 
-                addAll observable.toBlocking().first()
+                addAll observable.blockingFirst()
             }
             else {
                 throw new BlockingOperationException("Cannot initialize $association using a blocking operation. Use subscribe(..) instead.")
@@ -109,5 +111,22 @@ class RxPersistentSet<T> extends PersistentSet implements RxPersistentCollection
         else {
             return Collections.emptyList()
         }
+    }
+/**
+ * A convenience method that subscribes to the Observable as provided by {@link #toObservable}.
+ *
+ * <p>
+ * For more information on Subscriptions see the
+ * <a href="http://reactivex.io/documentation/observable.html">ReactiveX documentation</a>.
+ * </p>
+ *
+ * @param subscriber the Subscriber that will handle emissions and notifications from the Observable
+ * @return a Subscription reference with which Subscribers that are Observers can
+ *         unsubscribe from the Observable
+ */
+
+    @Override
+    Disposable subscribe(Consumer<? super T> subscriber) {
+        return null
     }
 }

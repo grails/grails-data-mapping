@@ -16,8 +16,8 @@ import org.grails.datastore.gorm.services.implementers.FindOneWhereImplementer
 import org.grails.datastore.gorm.services.implementers.UpdateOneImplementer
 import org.grails.datastore.gorm.services.implementers.UpdateStringQueryImplementer
 import org.grails.gorm.rx.services.support.RxServiceSupport
-import rx.Observable
-import rx.Single
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
 import spock.lang.Specification
 
 /**
@@ -30,7 +30,7 @@ class ObservableServiceTransformSpec extends Specification {
 import grails.gorm.annotation.Entity
 import grails.gorm.rx.services.RxSchedule
 import grails.gorm.services.Service
-import rx.Observable
+import io.reactivex.rxjava3.core.Observable
 import rx.schedulers.Schedulers
 import org.grails.gorm.rx.services.implementers.*
 
@@ -60,7 +60,7 @@ return Book.classLoader
         o != null
 
         when:"The observable result is produced"
-        def result = o.toBlocking().first()
+        def result = o.blockingFirst()
 
         then:"A GORM method is invoked"
         def e = thrown(IllegalStateException)
@@ -78,7 +78,7 @@ import org.grails.gorm.rx.services.implementers.*
 
 @Service(value = Foo, adapters = [ObservableServiceImplementerAdapter])
 interface MyService {
-    rx.Observable<IFoo> findByNameLike(String n)
+    io.reactivex.rxjava3.core.Observable<IFoo> findByNameLike(String n)
 }
 @Entity
 class Foo {
@@ -106,7 +106,7 @@ interface IFoo {
         o != null
 
         when:"The observable result is produced"
-        def result = o.toBlocking().first()
+        def result = o.blockingFirst()
 
         then:"A GORM method is invoked"
         def e = thrown(IllegalStateException)
@@ -120,7 +120,7 @@ interface IFoo {
 import grails.gorm.annotation.Entity
 import grails.gorm.rx.services.RxSchedule
 import grails.gorm.services.Service
-import rx.Observable
+import io.reactivex.rxjava3.core.Observable
 import rx.schedulers.Schedulers
 import org.grails.gorm.rx.services.implementers.*
 
@@ -151,7 +151,7 @@ return Book.classLoader
         o != null
 
         when:"The observable result is produced"
-        def result = o.toBlocking().first()
+        def result = o.blockingFirst()
 
         then:"A GORM method is invoked"
         def e = thrown(IllegalStateException)
@@ -165,7 +165,7 @@ return Book.classLoader
 import grails.gorm.annotation.Entity
 import grails.gorm.rx.services.RxSchedule
 import grails.gorm.services.Service
-import rx.Single
+import io.reactivex.rxjava3.core.Single
 import rx.schedulers.Schedulers
 import org.grails.gorm.rx.services.implementers.*
 
@@ -210,9 +210,9 @@ return Book.classLoader
 import grails.gorm.annotation.Entity
 import grails.gorm.services.Service
 import grails.gorm.services.Where
-import rx.Observable
+import io.reactivex.rxjava3.core.Observable
 import org.grails.gorm.rx.services.implementers.*
-import rx.Single
+import io.reactivex.rxjava3.core.Single
 
 @Entity
 class Book {
@@ -221,7 +221,7 @@ class Book {
 @Service(value=Book,adapters= [ObservableServiceImplementerAdapter])
 interface BookService {
     @Where({ title ==~ pattern})
-    rx.Observable<Book> findWhereTitle(String pattern)
+    io.reactivex.rxjava3.core.Observable<Book> findWhereTitle(String pattern)
 }
 return Book.classLoader
 ''')
@@ -241,7 +241,7 @@ return Book.classLoader
         o != null
 
         when:"The observable result is produced"
-        def result = o.toBlocking().first()
+        def result = o.blockingFirst()
 
         then:"A GORM method is invoked"
         def e = thrown(IllegalStateException)
@@ -255,9 +255,9 @@ return Book.classLoader
 import grails.gorm.annotation.Entity
 import grails.gorm.services.Service
 import grails.gorm.services.Where
-import rx.Observable
+import io.reactivex.rxjava3.core.Observable
 import org.grails.gorm.rx.services.implementers.*
-import rx.Single
+import io.reactivex.rxjava3.core.Single
 
 @Entity
 class Book {
@@ -300,9 +300,9 @@ import grails.gorm.annotation.Entity
 import grails.gorm.services.Query
 import grails.gorm.services.Service
 import grails.gorm.services.Where
-import rx.Observable
+import io.reactivex.rxjava3.core.Observable
 import org.grails.gorm.rx.services.implementers.*
-import rx.Single
+import io.reactivex.rxjava3.core.Single
 
 @Entity
 class Book {
@@ -345,9 +345,9 @@ import grails.gorm.annotation.Entity
 import grails.gorm.services.Query
 import grails.gorm.services.Service
 import grails.gorm.services.Where
-import rx.Observable
+import io.reactivex.rxjava3.core.Observable
 import org.grails.gorm.rx.services.implementers.*
-import rx.Single
+import io.reactivex.rxjava3.core.Single
 
 @Entity
 class Book {

@@ -24,7 +24,7 @@ import static org.grails.datastore.mapping.reflect.AstUtils.addAnnotationOrGetEx
 import static org.grails.gorm.rx.transform.RxAstUtils.isRxEntity
 
 /**
- * Adapts results for queries that return an {@link rx.Observable}
+ * Adapts results for queries that return an {@link io.reactivex.rxjava3.core.Observable}
  *
  * @author Graeme Rocher
  * @since 6.1.1

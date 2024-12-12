@@ -1,11 +1,12 @@
 package org.grails.datastore.rx.proxy;
 
+import io.reactivex.rxjava3.functions.Consumer;
 import org.grails.datastore.mapping.proxy.EntityProxyMethodHandler;
 import org.grails.datastore.rx.RxDatastoreClient;
 import org.grails.datastore.rx.query.QueryState;
 import org.springframework.util.ReflectionUtils;
-import rx.Observable;
-import rx.Subscriber;
+import io.reactivex.rxjava3.core.Observable;
+import org.reactivestreams.Subscriber;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -40,7 +41,7 @@ public abstract class AbstractObservableProxyMethodHandler extends EntityProxyMe
     protected Object invokeEntityProxyMethods(Object self, String methodName, Object[] args) {
         if(methodName.equals("subscribe")) {
             Observable observable = resolveObservable();
-            return observable.subscribe((Subscriber) args[0]);
+            return observable.subscribe((Consumer) args[0]);
         }
         else if(methodName.equals("toObservable")) {
             return resolveObservable();

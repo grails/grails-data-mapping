@@ -13,9 +13,8 @@ import org.grails.datastore.mapping.model.types.ToMany
 import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.reflect.EntityReflector
 import org.grails.datastore.rx.internal.RxDatastoreClientImplementor
-import rx.Observable
-import rx.functions.FuncN
-
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.functions.Function
 import jakarta.persistence.FetchType
 
 /**
@@ -82,7 +81,7 @@ class RxQueryUtils {
                                         RxQuery rxQuery = (RxQuery)datastoreClient.createQuery(inverseSide.owner.javaClass, queryState)
                                                 .eq(inverseSide.name, o)
 
-                                        observables.add((Observable) rxQuery.findAll().toList())
+                                        observables.add(rxQuery.findAll().toList().toObservable())
                                     }
                                 }
                                 else if(currentValue instanceof RxUnidirectionalCollection) {
@@ -94,7 +93,7 @@ class RxQueryUtils {
                                         RxQuery rxQuery = (RxQuery)datastoreClient.createQuery(inverseEntity.javaClass, queryState)
                                                 .in(inverseEntity.identity.name, associationKeys)
 
-                                        observables.add(rxQuery.findAll().toList())
+                                        observables.add(rxQuery.findAll().toList().toObservable())
                                     }
                                     else {
                                         observables.add(Observable.just([]))
@@ -105,9 +104,10 @@ class RxQueryUtils {
                     }
                 }
 
-                return Observable.zip(observables, new FuncN() {
+                return Observable.zip(observables, new Function<Object[],Object>() {
+
                     @Override
-                    Object call(Object... args) {
+                    Object apply(Object[] args) {
                         return Arrays.asList(args)
                     }
                 })

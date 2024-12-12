@@ -1,8 +1,10 @@
 package grails.gorm.rx;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Consumer;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 /**
  * Common interface for persistent related observables to implement such as collections and proxies
@@ -35,5 +37,5 @@ public interface PersistentObservable<T> {
      * @return a Subscription reference with which Subscribers that are Observers can
      *         unsubscribe from the Observable
      */
-    Subscription subscribe(Subscriber<? super T> subscriber);
+    Disposable subscribe(Consumer<? super T> subscriber);
 }

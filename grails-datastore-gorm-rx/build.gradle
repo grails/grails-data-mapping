@@ -1,5 +1,5 @@
 dependencies {
-    api "io.reactivex:rxjava:$rxjavaVersion"
+    api "io.reactivex.rxjava3:rxjava:$rxjavaVersion"
     api project(":grails-datastore-gorm"), {
         exclude group:"org.grails", module:'grails-async'
         exclude group:"org.grails", module:'grails-datastore-core'

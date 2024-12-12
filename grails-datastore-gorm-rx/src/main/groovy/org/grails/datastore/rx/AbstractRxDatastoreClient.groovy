@@ -46,7 +46,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.MessageSource
 import org.springframework.context.MessageSourceAware
 import org.springframework.context.support.StaticMessageSource
-import rx.Observable
+import io.reactivex.rxjava3.core.Observable
 
 import jakarta.persistence.CascadeType
 /**

@@ -1,7 +1,7 @@
 package grails.gorm.rx.api
 
-import rx.Observable
-import rx.Single
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
 
 /**
  * Interface for Reactive GORM operations on instances

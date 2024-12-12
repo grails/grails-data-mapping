@@ -2,6 +2,8 @@ package grails.gorm.rx
 
 import groovy.transform.CompileStatic
 import groovy.transform.InheritConstructors
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.functions.Consumer
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.query.criteria.AbstractDetachedCriteria
 import org.grails.datastore.mapping.query.Query
@@ -11,9 +13,9 @@ import org.grails.datastore.mapping.query.api.QueryArgumentsAware
 import org.grails.datastore.mapping.query.api.QueryableCriteria
 import org.grails.datastore.rx.query.RxQuery
 import org.grails.gorm.rx.api.RxGormEnhancer
-import rx.Observable
-import rx.Subscriber
-import rx.Subscription
+import io.reactivex.rxjava3.core.Observable
+import org.reactivestreams.Subscriber
+import org.reactivestreams.Subscription
 
 import jakarta.persistence.FetchType
 
@@ -93,7 +95,7 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> implem
      */
     Observable<List<T>> toList(Map args = Collections.emptyMap(), @DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
         Query query = prepareQuery(args, additionalCriteria)
-        return ((RxQuery)query).findAll(args).toList()
+        return ((RxQuery)query).findAll(args).toList().toObservable() as Observable<List<T>>
     }
 
     /**
@@ -105,7 +107,7 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> implem
      */
     Observable<List<T>> list(Map args = Collections.emptyMap(), @DelegatesTo(DetachedCriteria) Closure additionalCriteria = null) {
         Query query = prepareQuery(args, additionalCriteria)
-        return ((RxQuery)query).findAll(args).toList()
+        return ((RxQuery)query).findAll(args).toList().toObservable() as Observable<List<T>>
     }
 
     /**
@@ -653,8 +655,20 @@ class DetachedCriteria<T> extends AbstractDetachedCriteria<Observable<T>> implem
         findAll()
     }
 
+    /**
+     * A convenience method that subscribes to the Observable as provided by {@link #toObservable}.
+     *
+     * <p>
+     * For more information on Subscriptions see the
+     * <a href="http://reactivex.io/documentation/observable.html">ReactiveX documentation</a>.
+     * </p>
+     *
+     * @param subscriber the Subscriber that will handle emissions and notifications from the Observable
+     * @return a Subscription reference with which Subscribers that are Observers can
+     *         unsubscribe from the Observable
+     */
     @Override
-    Subscription subscribe(Subscriber<? super T> subscriber) {
+    Disposable subscribe(Consumer<? super T> subscriber) {
         findAll().subscribe(subscriber)
     }
 }

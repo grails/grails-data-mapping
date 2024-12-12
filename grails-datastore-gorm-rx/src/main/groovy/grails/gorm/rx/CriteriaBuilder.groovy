@@ -7,7 +7,7 @@ import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.QueryCreator
 import org.grails.datastore.mapping.query.api.Criteria
 import org.grails.datastore.rx.query.RxQuery
-import rx.Observable
+import io.reactivex.rxjava3.core.Observable
 
 import static org.grails.datastore.gorm.finders.DynamicFinder.populateArgumentsForCriteria
 
