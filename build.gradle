@@ -5,11 +5,6 @@ ext {
     excludeUnusedTransDeps = findProperty('excludeUnusedTransDeps')
 }
 
-if (isReleaseVersion) {
-    // This has to be applied to the root project
-    apply plugin: 'io.github.gradle-nexus.publish-plugin'
-}
-
 String customGroovyVersion = findProperty('groovyVersion') ?: System.getenv('GROOVY_VERSION')
 if (customGroovyVersion) {
     logger.lifecycle("Using custom Groovy version: $customGroovyVersion")
@@ -49,6 +44,30 @@ allprojects {
                     password = System.getenv('GITHUB_MAVEN_PASSWORD')
                 }
             }
+        }
+    }
+}
+
+if (isReleaseVersion) {
+    // This has to be applied to the root project
+    apply plugin: 'io.github.gradle-nexus.publish-plugin'
+    def publishedProjects = [
+            'grails-datastore-async',
+            'grails-datastore-core',
+            'grails-datastore-gorm',
+            'grails-datastore-gorm-async',
+            //'grails-datastore-gorm-rx',
+            'grails-datastore-gorm-support',
+            'grails-datastore-gorm-tck',
+            'grails-datastore-gorm-test',
+            'grails-datastore-gorm-validation',
+            'grails-datastore-web',
+            'grails-gorm-testing-support',
+    ]
+    subprojects {
+        if (name in publishedProjects) {
+            // This has to be applied here
+            apply plugin: 'org.grails.grails-publish'
         }
     }
 }
