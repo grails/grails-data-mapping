@@ -49,6 +49,13 @@ allprojects {
 }
 
 if (isReleaseVersion) {
+
+    // Workaround needed for nexus publishing bug
+    // version and group must be specified in the root project
+    // https://github.com/gradle-nexus/publish-plugin/issues/310
+    version = projectVersion
+    group = 'this.will.be.overridden'
+
     // This has to be applied to the root project
     apply plugin: 'io.github.gradle-nexus.publish-plugin'
     def publishedProjects = [
