@@ -16,7 +16,7 @@ dependencies {
     api "javax.servlet:javax.servlet-api:$servletApiVersion"
     api "io.micronaut:micronaut-http-client:$micronautVersion"
     api "org.grails.plugins:converters:3.3.1"
-    api 'com.github.javaparser:javaparser-core:3.25.7'
+    api 'com.github.javaparser:javaparser-core:3.26.3'
     api "com.graphql-java:graphql-java:$graphqlJavaVersion"
     testImplementation "org.grails:grails-web-testing-support"
     testImplementation "cglib:cglib-nodep:3.3.0"

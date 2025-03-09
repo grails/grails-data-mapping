@@ -10,7 +10,7 @@ dependencies {
     api "org.grails:grails-datastore-gorm:${gormVersion}"
     api "com.graphql-java:graphql-java:$graphqlJavaVersion"
     api "com.graphql-java:graphql-java-extended-scalars:$graphqlJavaScalarExtVersion"
-    api 'com.github.javaparser:javaparser-core:3.25.7'
+    api 'com.github.javaparser:javaparser-core:3.26.3'
     api "org.grails.plugins:views-json:2.3.2"
     api 'org.javassist:javassist:3.29.2-GA'
 
