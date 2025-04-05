@@ -64,7 +64,6 @@ dependencies {
             exclude group: 'org.springframework.boot', module: 'spring-boot'
             exclude group: 'org.springframework.boot', module: 'spring-boot-autoconfigure'
         }
-        exclude group: 'org.grails', module: 'grails-datastore-core' // TODO: Remove after gorm published & core updated
     }
 
     compileOnlyApi project(':grails-datamapping-support'), {

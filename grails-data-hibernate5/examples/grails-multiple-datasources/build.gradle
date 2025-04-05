@@ -17,9 +17,7 @@ dependencies {
     astTransformation 'org.apache.grails:grails-controllers'
 
     implementation project(':hibernate5-grails-plugin')
-    implementation 'org.apache.grails:grails-core', {
-        exclude group: 'org.grails', module: 'grails-datastore-core' // TODO: Remove after gorm published & core updated
-    }
+    implementation 'org.apache.grails:grails-core'
     implementation 'org.apache.grails:grails-domain-class'
 
     runtimeOnly 'com.h2database:h2'
@@ -32,10 +30,7 @@ dependencies {
 
     testImplementation 'org.apache.grails.testing:grails-testing-support-core'
 
-    testRuntimeOnly "org.grails:grails-web-testing-support", {
-        exclude group: 'org.grails', module: 'grails-testing-support' // TODO: Remove after views are published
-    }
-    testRuntimeOnly 'org.apache.grails.testing:grails-testing-support-core' // TODO: Remove after views are published
+    testRuntimeOnly "org.apache.grails:grails-testing-support-web"
 }
 
 sourceSets {

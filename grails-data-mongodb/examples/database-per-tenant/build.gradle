@@ -9,17 +9,10 @@ dependencies {
     implementation platform("org.apache.grails:grails-bom:$grailsVersion")
 
     implementation project(':mongodb-grails-plugin')
-    implementation 'org.apache.grails:grails-core', {
-        exclude group: 'org.grails', module: 'grails-datastore-core' // TODO: Remove after gorm published & core updated
-    }
-    implementation 'org.apache.grails:grails-rest-transforms', {
-        exclude group: 'org.grails', module: 'grails-datastore-core'  // TODO: Remove when views published
-        exclude group: 'org.grails', module: 'grails-datastore-gorm'  // TODO: Remove when views published
-        exclude group: 'org.grails', module: 'grails-datastore-gorm-support'  // TODO: Remove when views published
-        exclude group: 'org.grails', module: 'grails-datastore-gorm-validation'  // TODO: Remove when views published
-    }
+    implementation 'org.apache.grails:grails-core'
+    implementation 'org.apache.grails:grails-rest-transforms'
     implementation 'org.apache.grails.web:grails-web-boot'
-    implementation 'org.grails.plugins:gsp'
+    implementation 'org.apache.grails:grails-gsp'
 
     runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-grails'
     runtimeOnly 'org.fusesource.jansi:jansi'

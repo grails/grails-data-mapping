@@ -37,26 +37,15 @@ dependencies {
     compileOnly "org.springframework.boot:spring-boot-starter-logging"
     compileOnly "org.springframework.boot:spring-boot-autoconfigure"
     compileOnly project(":hibernate5-grails-plugin")
-    compileOnly "org.apache.grails:grails-core", {
-        exclude group: 'org.grails', module: 'grails-datastore-core' // TODO: Remove after gorm published & core updated
-    }
+    compileOnly "org.apache.grails:grails-core"
     compileOnly "org.apache.groovy:groovy-sql"
     compileOnly "org.apache.groovy:groovy-xml"
 
     testImplementation "org.springframework.boot:spring-boot-starter-tomcat"
     testImplementation project(":hibernate5-grails-plugin")
-    testImplementation "org.apache.grails:grails-core", {
-        exclude group: 'org.grails', module: 'grails-datastore-core' // TODO: Remove after gorm published & core updated
-    }
+    testImplementation "org.apache.grails:grails-core"
     testImplementation project(":grails-testing-support-datamapping")
-    testImplementation "org.grails:grails-web-testing-support", {
-        exclude group: 'org.grails', module: 'grails-testing-support' // TODO: Remove after views are published
-        exclude group: 'org.grails', module: 'grails-plugin-interceptors' // TODO: remove after views published
-        exclude group: 'org.grails', module: 'grails-plugin-rest' // TODO: remove when views published
-    }
-    testImplementation 'org.apache.grails:grails-rest-transforms' // TODO: Remove when views published
-    testImplementation 'org.apache.grails:grails-interceptors' // TODO: Remove when views published
-    testImplementation 'org.apache.grails.testing:grails-testing-support-core' // TODO: Remove after views are published
+    testImplementation "org.apache.grails:grails-testing-support-web"
     testImplementation "com.h2database:h2"
 }
 

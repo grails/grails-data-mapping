@@ -38,9 +38,7 @@ dependencies {
     }
 
     compileOnly "org.apache.grails.bootstrap:grails-bootstrap"
-    compileOnly "org.apache.grails:grails-core", {
-        exclude group: 'org.grails', module: 'grails-datastore-core' // TODO: Remove after gorm published & core updated
-    }
+    compileOnly "org.apache.grails:grails-core"
 
     compileOnly "org.spockframework:spock-core", {
         exclude group: "junit", module: "junit-dep"

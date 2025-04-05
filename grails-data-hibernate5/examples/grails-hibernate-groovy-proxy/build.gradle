@@ -9,9 +9,7 @@ dependencies {
     implementation platform("org.apache.grails:grails-bom:$grailsVersion")
 
     implementation project(':hibernate5-grails-plugin')
-    implementation 'org.apache.grails:grails-core', {
-        exclude group: 'org.grails', module: 'grails-datastore-core' // TODO: Remove after gorm published & core updated
-    }
+    implementation 'org.apache.grails:grails-core'
     implementation "org.yakworks:hibernate-groovy-proxy:$yakworksHibernateGroovyProxyVersion", {
         exclude group: 'org.codehaus.groovy', module: 'groovy'
     }

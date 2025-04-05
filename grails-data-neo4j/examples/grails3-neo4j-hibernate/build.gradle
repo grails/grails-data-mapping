@@ -9,9 +9,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.springframework.boot:spring-boot-starter-tomcat"
     implementation "javax.servlet:javax.servlet-api:$servletApiVersion"
-    implementation "org.apache.grails:grails-core:$grailsVersion", {
-        exclude group: 'org.grails', module: 'grails-datastore-core' // TODO: Remove after gorm published & core updated
-    }
+    implementation "org.apache.grails:grails-core:$grailsVersion"
     implementation "org.apache.grails:grails-dependencies:$grailsVersion"
     implementation "org.apache.grails.web:grails-web-boot:$grailsVersion"
 
@@ -20,12 +18,12 @@ dependencies {
     implementation "org.hibernate:hibernate-ehcache:$hibernateEhcacheVersion"
 
     runtimeOnly "com.bertramlabs.plugins:asset-pipeline-grails:$assetPipelineVersion"
-    runtimeOnly "org.grails.plugins:scaffolding:$scaffoldingVersion"
-    runtimeOnly "org.grails.plugins:fields:$fieldsVersion"
+    runtimeOnly "org.apache.grails:grails-scaffolding:$scaffoldingVersion"
+    runtimeOnly "org.apache.grails:grails-fields:$fieldsVersion"
     runtimeOnly "org.apache.tomcat:tomcat-jdbc:9.0.36"
 
     testImplementation project(':grails-testing-support-datamapping')
-    testImplementation ("org.grails:grails-web-testing-support:$testingSupportVersion") {
+    testImplementation ("org.apache.grails:grails-testing-support-web:$testingSupportVersion") {
         exclude group: "org.spockframework", module: "spock-core"
     }
 

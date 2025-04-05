@@ -11,7 +11,7 @@ dependencies {
     api "com.graphql-java:graphql-java:$graphqlJavaVersion"
     api "com.graphql-java:graphql-java-extended-scalars:$graphqlJavaScalarExtVersion"
     api 'com.github.javaparser:javaparser-core:3.25.7'
-    api 'org.grails.plugins:views-json:2.3.2'
+    api 'org.apache.grails:grails-views-gson:2.3.2'
     api 'org.javassist:javassist:3.29.2-GA'
 
     codenarc "org.codenarc:CodeNarc:$codenarcVersion"

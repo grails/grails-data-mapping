@@ -25,9 +25,7 @@ configurations.all {
 }
 
 dependencies {
-    compileOnly "org.apache.grails:grails-core", {
-        exclude group: 'org.grails', module: 'grails-datastore-core' // TODO: Remove after gorm published & core updated
-    }
+    compileOnly "org.apache.grails:grails-core"
     compileOnly "org.apache.grails.bootstrap:grails-bootstrap"
     compileOnly "org.spockframework:spock-core:$spockVersion", {
         exclude group: "junit", module: "junit-dep"
@@ -58,9 +56,7 @@ dependencies {
         exclude group:'javax.transaction', module:'jta'
     }
 
-    testImplementation "org.apache.grails:grails-core", {
-        exclude group: 'org.grails', module: 'grails-datastore-core' // TODO: Remove after gorm published & core updated
-    }
+    testImplementation "org.apache.grails:grails-core"
     testImplementation "org.apache.grails.bootstrap:grails-bootstrap"
     testImplementation "org.neo4j.test:neo4j-harness:$neo4jVersion"
 

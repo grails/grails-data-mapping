@@ -11,16 +11,9 @@ dependencies {
     implementation platform("org.apache.grails:grails-bom:$grailsVersion")
 
     implementation project(':hibernate5-grails-plugin')
-    implementation 'org.apache.grails:grails-core', {
-        exclude group: 'org.grails', module: 'grails-datastore-core' // TODO: Remove after gorm published & core updated
-    }
-    implementation 'org.apache.grails:grails-rest-transforms', {
-        exclude group: 'org.grails', module: 'grails-datastore-core'  // TODO: Remove when views published
-        exclude group: 'org.grails', module: 'grails-datastore-gorm'  // TODO: Remove when views published
-        exclude group: 'org.grails', module: 'grails-datastore-gorm-support'  // TODO: Remove when views published
-        exclude group: 'org.grails', module: 'grails-datastore-gorm-validation'  // TODO: Remove when views published
-    }
-    implementation 'org.grails.plugins:gsp'
+    implementation 'org.apache.grails:grails-core'
+    implementation 'org.apache.grails:grails-rest-transforms'
+    implementation 'org.apache.grails:grails-gsp'
 
     runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-grails'
     runtimeOnly 'com.h2database:h2'
@@ -29,7 +22,7 @@ dependencies {
     runtimeOnly 'org.apache.grails:grails-i18n'
     runtimeOnly 'org.apache.grails:grails-services'
     runtimeOnly 'org.apache.grails:grails-url-mappings'
-    runtimeOnly 'org.grails.plugins:fields'
+    runtimeOnly 'org.apache.grails:grails-fields'
     runtimeOnly 'org.springframework.boot:spring-boot-autoconfigure'
     runtimeOnly 'org.springframework.boot:spring-boot-starter-logging'
     runtimeOnly 'org.springframework.boot:spring-boot-starter-tomcat'

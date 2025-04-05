@@ -24,9 +24,7 @@ dependencies {
 		// exclude javax variant of hibernate-core
 		exclude group: 'org.hibernate', module: 'hibernate-core'
 	}
-	implementation "org.apache.grails:grails-core", {
-		exclude group: 'org.grails', module: 'grails-datastore-core' // TODO: Remove after gorm published & core updated
-	}
+	implementation "org.apache.grails:grails-core"
 	implementation project(":gorm-graphql")
 	//implementation 'org.codehaus.groovy:groovy-astbuilder:3.0.19'
 	implementation 'jakarta.transaction:jakarta.transaction-api'
