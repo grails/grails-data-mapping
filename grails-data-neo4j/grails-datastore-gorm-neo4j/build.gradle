@@ -20,7 +20,7 @@ dependencies {
     testImplementation "org.objenesis:objenesis:${objenesisVersion}"
     
     testRuntimeOnly "org.springframework:spring-aop:$springVersion"
-    testRuntimeOnly "ch.qos.logback:logback-classic:1.4.14"
+    testRuntimeOnly "ch.qos.logback:logback-classic:1.5.17"
     testRuntimeOnly "javax.el:javax.el-api:3.0.0"
     testRuntimeOnly "org.glassfish.web:el-impl:2.2.1-b05"
 
