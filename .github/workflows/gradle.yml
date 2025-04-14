@@ -28,7 +28,7 @@ jobs:
       - name: "🐘 Setup Gradle"
         uses: gradle/actions/setup-gradle@v4
         with:
-          develocity-access-key: ${{ secrets.GRAILS_DEVELOCITY_ACCESS_KEY }}
+          develocity-access-key: ge.grails.org=${{ secrets.GRAILS_DEVELOCITY_ACCESS_KEY }}
       - name: "🔨 Run Build"
         id: build
         env:
@@ -63,7 +63,7 @@ jobs:
       - name: "🐘 Setup Gradle"
         uses: gradle/actions/setup-gradle@v4
         with:
-          develocity-access-key: ${{ secrets.GRAILS_DEVELOCITY_ACCESS_KEY }}
+          develocity-access-key: ge.grails.org=${{ secrets.GRAILS_DEVELOCITY_ACCESS_KEY }}
       - name: "🔨 Run Build"
         id: build
         env:
@@ -87,7 +87,7 @@ jobs:
       - name: "🐘 Setup Gradle"
         uses: gradle/actions/setup-gradle@v4
         with:
-          develocity-access-key: ${{ secrets.GRAILS_DEVELOCITY_ACCESS_KEY }}
+          develocity-access-key: ge.grails.org=${{ secrets.GRAILS_DEVELOCITY_ACCESS_KEY }}
       - name: "🔨 Run Build"
         id: build
         env:
@@ -109,7 +109,7 @@ jobs:
       - name: "🐘 Setup Gradle"
         uses: gradle/actions/setup-gradle@v4
         with:
-          develocity-access-key: ${{ secrets.GRAILS_DEVELOCITY_ACCESS_KEY }}
+          develocity-access-key: ge.grails.org=${{ secrets.GRAILS_DEVELOCITY_ACCESS_KEY }}
       - name: "📤 Publish Snapshot artifacts"
         env:
           GITHUB_MAVEN_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
@@ -135,7 +135,7 @@ jobs:
       - name: "🐘 Setup Gradle"
         uses: gradle/actions/setup-gradle@v4
         with:
-          develocity-access-key: ${{ secrets.GRAILS_DEVELOCITY_ACCESS_KEY }}
+          develocity-access-key: ge.grails.org=${{ secrets.GRAILS_DEVELOCITY_ACCESS_KEY }}
       - name: "🔨 Build Docs"
         env:
           GITHUB_MAVEN_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
