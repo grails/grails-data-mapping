@@ -1,7 +1,0 @@
-
-=== Introduction
-
-The GORM Developer API is divided into a low-level API that implementors must implement for each specific datastore, and a set of higher-level APIs that enhance domain classes with features visible to regular users, such as dynamic finders, criteria queries, and so on.
-
-The low-level API classes are located within the `grails-datastore-core` subproject, whereas the higher-level APIs used to enhance domain classes can be found in `grails-datastore-gorm`. In this section, we will discuss the low-level API.
-

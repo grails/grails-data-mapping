@@ -1,6 +1,0 @@
-dataSource:
-  logSql: true
----
-grails:
-  gorm:
-    failOnError: false # Default, just for testing override in HibernateSpecOverrideSpec

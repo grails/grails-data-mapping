@@ -1,6 +1,0 @@
-environments:
-    development:
-        grails:
-            gorm:
-                graphql:
-                    browser: true

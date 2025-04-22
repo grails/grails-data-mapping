@@ -1,7 +1,0 @@
-grails:
-  neo4j:
-    type: embedded
-    embedded:
-      ephemeral: true
-    options:
-      encryptionLevel: NONE
