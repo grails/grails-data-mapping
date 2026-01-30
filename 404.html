@@ -2,9 +2,16 @@
 <html lang="en">
 <head>
     <title>Redirecting...</title>
-    <meta http-equiv="refresh" content="0; url=https://grails.apache.org/docs-legacy-gorm/"/>
+    <noscript>
+        <meta http-equiv="refresh" content="0; url=https://grails.apache.org/docs-legacy-gorm/"/>
+    </noscript>
+    <script>
+        var newBaseUrl = 'https://grails.apache.org/docs-legacy-gorm';
+        var currentPath = window.location.pathname;
+        window.location.href = newBaseUrl + currentPath;
+    </script>
 </head>
 <body>
-<p>This page has moved to <a href="https://grails.apache.org/docs-legacy-gorm/">https://grails.apache.org/docs-legacy-gorm/</a></p>
+    <p>This page has moved to <a href="https://grails.apache.org/docs-legacy-gorm/">https://grails.apache.org/docs-legacy-gorm/</a></p>
 </body>
 </html>
